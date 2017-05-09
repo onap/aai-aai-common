@@ -1,0 +1,19 @@
+{
+	"related-to": "l-interface",
+	"relationship-data" : [{
+		"relationship-key" : "generic-vnf.vnf-id",
+		"relationship-value":"key1"
+	},{
+		"relationship-key" : "vlan.vlan-interface",
+		"relationship-value":"key3"
+	},{
+		"relationship-key" : "l-interface.interface-name",
+		"relationship-value":"key2"
+	},{
+		"relationship-key" : "zone.zone-id",
+		"relationship-value":"key5"
+	},{
+		"relationship-key" : "l3-interface-ipv4-address-list.l3-interface-ipv4-address",
+		"relationship-value":"key4"
+	}]
+}

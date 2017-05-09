@@ -1,0 +1,10 @@
+{
+	"related-to": "test-object",
+	"relationship-data" : [{
+		"relationship-key" : "test-object.vnf-id",
+		"relationship-value":"key1"
+	},{
+		"relationship-key" : "test-object.vnf-id",
+		"relationship-value":"key2"
+	}]
+}

@@ -1,0 +1,211 @@
+<?xml version="1.0"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.openecomp.aai</groupId>
+	<artifactId>aai-annotations</artifactId>
+	<version>1.2.4-SNAPSHOT</version>
+	<name>aai-annotations</name>
+	<packaging>jar</packaging>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<nexusproxy>https://nexus.onap.org</nexusproxy>
+		<sitePath>/content/sites/site/${project.artifactId}/${project.version}</sitePath>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+				  <groupId>org.apache.maven.plugins</groupId>
+				  <artifactId>maven-site-plugin</artifactId>
+				  <version>3.6</version>
+				  <dependencies>
+				    <dependency>
+				      <groupId>org.apache.maven.wagon</groupId>
+				      <artifactId>wagon-webdav-jackrabbit</artifactId>
+				      <version>2.10</version>
+				    </dependency>
+				  </dependencies>
+				</plugin>
+				<!-- Checkstyle plugin - used to report on compliance with -->
+				<!-- the Google style guide. -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-site-plugin</artifactId>
+					<version>3.3</version>
+					<configuration>
+						<reportPlugins>
+							<plugin>
+								<groupId>org.apache.maven.plugins</groupId>
+								<artifactId>maven-checkstyle-plugin</artifactId>
+								<version>2.17</version>
+								<reportSets>
+									<reportSet>
+										<reports>
+											<report>checkstyle</report>
+										</reports>
+									</reportSet>
+								</reportSets>
+							</plugin>
+						</reportPlugins>
+					</configuration>
+				</plugin>
+
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>license-maven-plugin</artifactId>
+					<version>1.12</version>
+					<configuration>
+						<addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
+						<licenseName>apache_v2</licenseName>
+						<inceptionYear>2017</inceptionYear>
+						<organizationName>AT&amp;T Intellectual Property. All rights reserved.</organizationName>
+						<projectName>org.openecomp.aai</projectName>
+						<canUpdateCopyright>true</canUpdateCopyright>
+						<canUpdateDescription>true</canUpdateDescription>
+						<canUpdateLicense>true</canUpdateLicense>
+						<emptyLineAfterHeader>true</emptyLineAfterHeader>
+						<processStartTag>============LICENSE_START=======================================================</processStartTag>
+						<processEndTag>============LICENSE_END=========================================================</processEndTag>
+						<sectionDelimiter>================================================================================</sectionDelimiter>
+						<includes>
+							<include>**/*.java</include>
+							<include>**/*.ksh</include>
+							<include>**/*.sh</include>
+							<include>**/*.ftl</include>
+							<include>**/*.xsd</include>
+							<include>**/*.xjb</include>
+							<include>**/aai*.xml</include>
+							<include>**/*logback*.xml</include>
+							<include>**/*aaiconfig*.properties</include>
+							<include>**/*titan*.properties</include>
+						</includes>
+					</configuration>
+					<executions>
+						<execution>
+							<id>first</id>
+							<goals>
+								<goal>update-file-header</goal>
+							</goals>
+							<phase>process-sources</phase>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<configuration>
+						<source>1.8</source>
+						<target>1.8</target>
+					</configuration>
+				</plugin>
+				<plugin>
+					<artifactId>maven-release-plugin</artifactId>
+					<version>2.4.2</version>
+					<dependencies>
+						<dependency>
+							<groupId>org.apache.maven.scm</groupId>
+							<artifactId>maven-scm-provider-gitexe</artifactId>
+							<version>1.8.1</version>
+						</dependency>
+					</dependencies>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+	
+	<distributionManagement>
+		<repository>
+			<id>ecomp-releases</id>
+			<name>ECOMP Release Repository</name>
+			<url>${nexusproxy}/content/repositories/releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>ecomp-snapshots</id>
+			<name>ECOMP Snapshot Repository</name>
+			<url>${nexusproxy}/content/repositories/snapshots/</url>
+		</snapshotRepository>
+		<site>
+			<id>ecomp-site</id>
+			<url>dav:${nexusproxy}${sitePath}</url>
+		</site>
+	</distributionManagement>
+
+	<!-- Plugins and repositories -->
+	<pluginRepositories>
+		<pluginRepository>
+			<id>central</id>
+			<url>http://repo1.maven.org/maven2</url>
+		</pluginRepository>
+		<pluginRepository>
+			<id>EvoSuite</id>
+			<name>EvoSuite Repository</name>
+			<url>http://www.evosuite.org/m2</url>
+		</pluginRepository>
+	</pluginRepositories>
+	
+	<repositories>
+		<repository>
+			<id>AJSC</id>
+			<name>AJSC repository</name>
+			<url>https://mvnrepository.com/artifact/com.att.ajsc</url>
+		</repository>
+		<repository>
+			<id>restlet</id>
+			<name>maven reslet</name>
+			<url>https://maven.restlet.com/</url>
+		</repository>
+		
+		<repository>
+			<id>central</id>
+			<name>Maven 2 repository 2</name>
+			<url>http://repo2.maven.org/maven2/</url>
+		</repository>
+		<repository>
+			<id>ecomp-releases</id>
+			<name>ECOMP Release Repository</name>
+			<url>${nexusproxy}/content/repositories/releases/</url>
+		</repository>
+		<repository>
+			<id>ecomp-staging</id>
+			<name>ECOMP Staging Repository</name>
+			<url>${nexusproxy}/content/repositories/staging/</url>
+		</repository>
+		<repository>
+			<id>ecomp-snapshots</id>
+			<name>ECOMP Snapshot Repository</name>
+			<url>${nexusproxy}/content/repositories/snapshots/</url>
+		</repository>
+	</repositories>
+	
+	<reporting>
+	  <plugins>
+	    <plugin>
+	      <groupId>org.apache.maven.plugins</groupId>
+	      <artifactId>maven-javadoc-plugin</artifactId>
+	      <version>2.10.4</version>
+	      <configuration>
+	        <failOnError>false</failOnError>
+	        <doclet>org.umlgraph.doclet.UmlGraphDoc</doclet>
+	        <docletArtifact>
+	          <groupId>org.umlgraph</groupId>
+	          <artifactId>umlgraph</artifactId>
+	          <version>5.6</version>
+	        </docletArtifact>
+	        <additionalparam>-views</additionalparam>
+	        <useStandardDocletOptions>true</useStandardDocletOptions>
+	      </configuration>
+	    </plugin>
+	  </plugins>
+	</reporting>
+</project>

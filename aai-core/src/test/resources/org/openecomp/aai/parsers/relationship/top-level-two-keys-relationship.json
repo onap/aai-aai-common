@@ -1,0 +1,13 @@
+{
+   "related-to" : "availability-zone",
+   "relationship-data" : [ {
+      "relationship-key" : "cloud-region.cloud-owner",
+      "relationship-value" : "key1"
+   }, {
+      "relationship-key" : "cloud-region.cloud-region-id",
+      "relationship-value" : "key2"
+   }, {
+      "relationship-key" : "availability-zone.availability-zone-name",
+      "relationship-value" : "key3"
+   } ]
+}

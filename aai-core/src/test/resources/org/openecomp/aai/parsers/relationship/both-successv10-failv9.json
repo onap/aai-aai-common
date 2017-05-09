@@ -1,0 +1,8 @@
+{
+	"related-to": "test-object",
+	"related-link": "http://localhost/aai/v10/network/test-objects/test-object/key1",
+	"relationship-data" : [{
+		"relationship-key" : "test-obect.vnf-id",
+		"relationship-value":"key2"
+	}]
+}

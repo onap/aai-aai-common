@@ -1,0 +1,43 @@
+{
+	"results" : [{
+		"id" : "0",
+		"node-type" : "generic-vnf",
+		"url" : "urimissing",
+		"properties" : {
+			"vnf-name" : "myVnf"
+		},
+		"related-to" : [{
+			"node-type" : "vserver",
+			"id" : "1",
+			"url" : "urimissing"
+		}]
+	} , {
+		"id" : "1",
+		"node-type" : "vserver",
+		"url" : "urimissing",
+		"properties" : {
+			"vserver-name" : "myVserver"
+		},
+		"related-to" : [{
+			"node-type" : "generic-vnf",
+			"id" : "0",
+			"url" : "urimissing"
+		},{
+			"node-type" : "pserver",	
+			"id" : "2",
+			"url" : "/pservers/pserver/key1"
+		}]
+	},{
+		"id" : "2",
+		"node-type" : "pserver",
+		"url" : "/pservers/pserver/key1",
+		"properties" : {
+			"hostname" : "myPserver"
+		},
+		"related-to" : [{
+			"node-type" : "vserver",
+			"id" : "1",
+			"url" : "urimissing"
+		}]
+	}]
+}

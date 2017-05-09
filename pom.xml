@@ -1,0 +1,87 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.openecomp.aai</groupId>
+  <artifactId>aai-common</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>aai-common</name>
+  
+  <modules>
+  	<module>aai-schema</module>
+  	<module>aai-annotations</module>
+  	<module>aai-core</module>
+  </modules>
+  
+  <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                        <source>1.8</source>
+                        <target>1.8</target>
+                    </configuration>
+                </plugin>
+                <plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>license-maven-plugin</artifactId>
+					<version>1.12</version>
+					<configuration>
+						<addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
+						<licenseName>apache_v2</licenseName>
+						<inceptionYear>2017</inceptionYear>
+						<organizationName>AT&amp;T Intellectual Property. All rights reserved.</organizationName>
+						<projectName>org.openecomp.aai</projectName>
+						<canUpdateCopyright>true</canUpdateCopyright>
+						<canUpdateDescription>true</canUpdateDescription>
+						<canUpdateLicense>true</canUpdateLicense>
+						<emptyLineAfterHeader>true</emptyLineAfterHeader>
+						<processStartTag>============LICENSE_START=======================================================</processStartTag>
+						<processEndTag>============LICENSE_END=========================================================</processEndTag>
+						<sectionDelimiter>================================================================================</sectionDelimiter>
+						<includes>
+							<include>**/*.java</include>
+							<include>**/*.ksh</include>
+							<include>**/*.sh</include>
+							<include>**/*.ftl</include>
+							<include>**/*.xsd</include>
+							<include>**/*.xjb</include>
+							<include>**/aai*.xml</include>
+							<include>**/*logback*.xml</include>
+							<include>**/*aaiconfig*.properties</include>
+							<include>**/*titan*.properties</include>
+						</includes>
+					</configuration>
+					<executions>
+						<execution>
+							<id>first</id>
+							<goals>
+								<goal>update-file-header</goal>
+							</goals>
+							<phase>process-sources</phase>
+						</execution>
+					</executions>
+				</plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+	<distributionManagement>
+		<repository>
+			<id>ecomp-releases</id>
+			<name>ECOMP Release Repository</name>
+			<url>${nexusproxy}/content/repositories/releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>ecomp-snapshots</id>
+			<name>ECOMP Snapshot Repository</name>
+			<url>${nexusproxy}/content/repositories/snapshots/</url>
+		</snapshotRepository>
+		<site>
+			<id>ecomp-site</id>
+			<url>dav:${nexusproxy}${sitePath}</url>
+		</site>
+	</distributionManagement>
+
+</project>
