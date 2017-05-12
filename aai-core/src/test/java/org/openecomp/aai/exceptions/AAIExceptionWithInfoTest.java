@@ -5,21 +5,22 @@
  * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-     http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  * ============LICENSE_END=========================================================
  */
 
 package org.openecomp.aai.exceptions;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -38,9 +39,15 @@ public class AAIExceptionWithInfoTest {
 	}
 
 	private static final String info = "An error has occurred.";
-	private static final String code = "4004";
+	private static final String code = "AAI_4004";
 	private static final String details = "This is a detailed description of the exception.";
 	private static final Throwable cause = new RuntimeException("This is a runtime exception.");
+
+	@BeforeClass
+	public static void configure() {
+		System.setProperty("AJSC_HOME", "./src/test/resources/");
+		System.setProperty("BUNDLECONFIG_DIR", "bundleconfig-local");
+	}
 
 	/**
 	 * Test constructor with 2 params.
@@ -64,7 +71,7 @@ public class AAIExceptionWithInfoTest {
 	public void testConstructorWith3Params() throws Exception {
 		AAIExceptionWithInfo exception = new AAIExceptionWithInfo(code, map, info);
 
-		assertEquals(code, exception.getErrorObject().getErrorCode());
+		assertEquals("4004", exception.getErrorObject().getErrorCode());
 		assertEquals(map, exception.getInfoHash());
 		assertEquals(info, exception.getInfo());
 	}
@@ -78,7 +85,7 @@ public class AAIExceptionWithInfoTest {
 	public void testConstructorWith4ParamsI() throws Exception {
 		AAIExceptionWithInfo exception = new AAIExceptionWithInfo(code, details, map, info);
 
-		assertEquals(code, exception.getErrorObject().getErrorCode());
+		assertEquals("4004", exception.getErrorObject().getErrorCode());
 		assertEquals(details, exception.getMessage());
 		assertEquals(map, exception.getInfoHash());
 		assertEquals(info, exception.getInfo());
@@ -93,8 +100,8 @@ public class AAIExceptionWithInfoTest {
 	public void testConstructorWith4ParamsII() throws Exception {
 		AAIExceptionWithInfo exception = new AAIExceptionWithInfo(code, cause, map, info);
 
-		assertEquals(code, exception.getErrorObject().getErrorCode());
-		assertEquals(cause.getMessage(), exception.getMessage());
+		assertEquals("4004", exception.getErrorObject().getErrorCode());
+		assertEquals(cause.toString(), exception.getMessage());
 		assertEquals(map, exception.getInfoHash());
 		assertEquals(info, exception.getInfo());
 	}
@@ -108,8 +115,8 @@ public class AAIExceptionWithInfoTest {
 	public void testConstructorWith5Params() throws Exception {
 		AAIExceptionWithInfo exception = new AAIExceptionWithInfo(code, cause, details, map, info);
 
-		assertEquals(code, exception.getErrorObject().getErrorCode());
-		assertEquals(cause.getMessage() + "-" + details, exception.getMessage());
+		assertEquals("4004", exception.getErrorObject().getErrorCode());
+		assertEquals(details, exception.getMessage());
 		assertEquals(map, exception.getInfoHash());
 		assertEquals(info, exception.getInfo());
 	}

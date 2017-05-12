@@ -5,16 +5,16 @@
  * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-     http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  * ============LICENSE_END=========================================================
  */
 
@@ -486,10 +486,8 @@ public class GraphTraversalTest {
 		QueryParser query = dbEngine.getQueryBuilder().createQueryFromURI(uri);
 		
 		GraphTraversal<Vertex, Vertex> expected = __.<Vertex>start()
-				.has("vnf-id", "key1").or(
-						__.has(AAIProperties.NODE_TYPE, "vce"),
-						__.has(AAIProperties.NODE_TYPE, "vpe"),
-						__.has(AAIProperties.NODE_TYPE, "generic-vnf"));
+				.has("vnf-id", "key1").has(
+						AAIProperties.NODE_TYPE, P.within("vce" , "vpe" , "generic-vnf"));
 			
 		GraphTraversal<Vertex, Vertex> expectedParent = expected;
 		assertEquals(
@@ -535,17 +533,12 @@ public class GraphTraversalTest {
 		QueryParser query = dbEngine.getQueryBuilder().createQueryFromURI(uri);
 		
 		GraphTraversal<Vertex, Vertex> expected = __.<Vertex>start()
-				.has("vnf-id", "key1").or(
-						__.has(AAIProperties.NODE_TYPE, "vce"),
-						__.has(AAIProperties.NODE_TYPE, "vpe"),
-						__.has(AAIProperties.NODE_TYPE, "generic-vnf"))
-				.filter(x -> true).outE().has("isParent", true).inV().has("vf-module-id", "key2");
+				.has("vnf-id", "key1").has(AAIProperties.NODE_TYPE, P.within("vce", "vpe", "generic-vnf"))
+                .union(__.out("has").has("aai-node-type", "vf-module"))
+				.has("vf-module-id", "key2");
 		
 		GraphTraversal<Vertex, Vertex> expectedParent = __.<Vertex>start()
-				.has("vnf-id", "key1").or(
-						__.has(AAIProperties.NODE_TYPE, "vce"),
-						__.has(AAIProperties.NODE_TYPE, "vpe"),
-						__.has(AAIProperties.NODE_TYPE, "generic-vnf"));
+				.has("vnf-id", "key1").has(AAIProperties.NODE_TYPE, P.within("vce", "vpe", "generic-vnf"));
 		assertEquals(
 				"gremlin query should be " + expected.toString(),
 				expected.toString(),

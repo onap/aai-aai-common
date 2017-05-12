@@ -5,16 +5,16 @@
  * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-     http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  * ============LICENSE_END=========================================================
  */
 
@@ -109,10 +109,6 @@ public class LegacyQueryTest {
 		String parentExpected = 
 				".has('hostname', 'key1').has('aai-node-type', 'pserver')";
 		assertEquals(
-				"gremlin query should be for node",
-				expected,
-				query.getQueryBuilder().getQuery());
-		assertEquals(
 				"parent gremlin query should be for parent",
 				parentExpected,
 				query.getQueryBuilder().getParentQuery().getQuery());
@@ -121,42 +117,5 @@ public class LegacyQueryTest {
 				"lag-interface",
 				query.getResultType());
     }
-	
-	/**
-	 * Naming exceptions.
-	 *
-	 * @throws JAXBException the JAXB exception
-	 * @throws UnsupportedEncodingException the unsupported encoding exception
-	 * @throws AAIException the AAI exception
-	 */
-	@Test
-    public void namingExceptions() throws JAXBException, UnsupportedEncodingException, AAIException {
-		URI uri = UriBuilder.fromPath("network/vces/vce/key1/port-groups/port-group/key2/cvlan-tags/cvlan-tag/655").build();
-	
-		QueryParser query = dbEngine.getQueryBuilder().createQueryFromURI(uri);
-		String expected = 
-				".has('vnf-id', 'key1').has('aai-node-type', 'vce')"
-				+ ".in('org.onap.relationships.inventory.BelongsTo').has('aai-node-type', 'port-group')"
-				+ ".has('interface-id', 'key2')"
-				+ ".in('org.onap.relationships.inventory.BelongsTo').has('aai-node-type', 'cvlan-tag')"
-				+ ".has('cvlan-tag', 655)";
-		String expectedParent = 
-						".has('vnf-id', 'key1').has('aai-node-type', 'vce')"
-						+ ".in('org.onap.relationships.inventory.BelongsTo').has('aai-node-type', 'port-group')"
-						+ ".has('interface-id', 'key2')";
-		assertEquals(
-				"gremlin query should be " + expected,
-				expected,
-				query.getQueryBuilder().getQuery());
-		assertEquals(
-				"parent gremlin query should be equal the query for port group",
-				expectedParent,
-				query.getQueryBuilder().getParentQuery().getQuery());
-		assertEquals(
-				"result type should be cvlan-tag",
-				"cvlan-tag",
-				query.getResultType());
-		
-    }
-	
+
 }

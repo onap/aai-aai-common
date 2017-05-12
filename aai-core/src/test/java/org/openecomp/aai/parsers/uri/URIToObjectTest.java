@@ -5,16 +5,16 @@
  * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-     http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  * ============LICENSE_END=========================================================
  */
 
@@ -32,6 +32,7 @@ import javax.ws.rs.core.UriBuilder;
 import javax.xml.bind.JAXBException;
 
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -189,6 +190,7 @@ public class URIToObjectTest {
 	 * @throws UnsupportedEncodingException the unsupported encoding exception
 	 */
 	@Test
+	@Ignore
     public void namingExceptions() throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException {
 		URI uri = UriBuilder.fromPath("network/vces/vce/key1/port-groups/port-group/key2/cvlan-tags/cvlan-tag/655").build();
 		URIToObject parse = new URIToObject(loader, uri);
@@ -209,6 +211,7 @@ public class URIToObjectTest {
 	 * @throws AAIException the AAI exception
 	 */
 	@Test
+	@Ignore
 	public void noListObject() throws IllegalArgumentException, UnsupportedEncodingException, AAIException {
 		URI uri = UriBuilder.fromPath("/aai/v6/network/vpls-pes/vpls-pe/0e6189fd-9257-49b9-a3be-d7ba980ccfc9/lag-interfaces/lag-interface/8ae5aa76-d597-4382-b219-04f266fe5e37/l-interfaces/l-interface/9e141d03-467b-437f-b4eb-b3133ec1e205/l3-interface-ipv4-address-list/8f19f0ea-a81f-488e-8d5c-9b7b53696c11").build();
 		URIToObject parse = new URIToObject(loader, uri);
