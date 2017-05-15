@@ -11,7 +11,12 @@
   	<module>aai-annotations</module>
   	<module>aai-core</module>
   </modules>
-  
+
+	<properties>
+		<nexusproxy>https://nexus.onap.org</nexusproxy>
+		<sitePath>/content/sites/site/${project.groupId}/${project.artifactId}/${project.version}</sitePath>
+	</properties>
+
   <build>
         <pluginManagement>
             <plugins>

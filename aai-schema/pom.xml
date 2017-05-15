@@ -11,7 +11,9 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<aai.annotations.version>1.1.0-SNAPSHOT</aai.annotations.version>
 		<nexusproxy>https://nexus.onap.org</nexusproxy>
-		<sitePath>/content/sites/site/${project.artifactId}/${project.version}</sitePath>
+        <sitePath>/content/sites/site/${project.groupId}/${project.artifactId}/${project.version}</sitePath>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven.compiler.source>1.8</maven.compiler.source>
 	</properties>
 	<dependencies>
 		<dependency>
