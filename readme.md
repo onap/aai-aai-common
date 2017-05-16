@@ -5,6 +5,7 @@
 
 # Introduction
 
+
 OpenECOMP AAI-Common is a collection of common utility modules used by the other OpenECOMP AAI components (AAI-Resources and AAI-Traversal). These utilities include aai-schema, which contains the schema oxm and xsd files; aai-annotations, which enables the annotations on the schema files; and aai-core, which includes various java packages used by all AAI microservices. AAI-Resources and AAI-Traversal are already configured to pull these dependencies using maven. For more information on AAI-Resources and AAI-Traversal, please see the readme.md files in their respective repositories. This readme only covers AAI-Common.
 
 # Compiling AAI-Common
