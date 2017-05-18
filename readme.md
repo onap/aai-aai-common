@@ -1,4 +1,4 @@
-# OpenECOMP AAI-Common Repo
+# OpenECOMP AAI-Common
 
 ---
 ---
