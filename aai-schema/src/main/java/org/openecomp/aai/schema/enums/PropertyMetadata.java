@@ -48,6 +48,10 @@ public enum PropertyMetadata {
 	 */
 	VISIBILITY("visibility"),
 	/**
+	 * specifies a field which must be populated to pass validation
+	 */
+	REQUIRES("requires"),
+	/**
 	 * automatically creates an id for the property if not specified
 	 */
 	AUTO_GENERATE_UUID("autoGenerateUuid"),

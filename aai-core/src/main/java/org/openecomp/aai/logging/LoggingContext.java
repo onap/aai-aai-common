@@ -20,17 +20,21 @@
 
 package org.openecomp.aai.logging;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.MDC;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.Iterator;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
+import com.att.eelf.configuration.EELFLogger;
+import com.att.eelf.configuration.EELFManager;
 
 public class LoggingContext {
 
@@ -41,7 +45,7 @@ public class LoggingContext {
 
 	private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(LoggingContext.class);
 
-	private static final String PREVIOUS_CONTEXT_KEY = "_PREVIOUS_CONTEXT";
+	private static final String PREVIOUS_CONTEXTS_KEY = "_PREVIOUS_CONTEXTS";
 
 	//ECOMP Specific Log Event Fields
 	public static enum LoggingField {
@@ -97,6 +101,14 @@ public class LoggingContext {
 		MDC.put(LoggingField.START_TIME.toString(), LogFormatTools.getCurrentDateTime());
 	}
 
+	public static UUID requestId() {
+		final String sUuid = MDC.get(LoggingField.REQUEST_ID.toString());
+
+		if (sUuid == null) return null;
+
+		return UUID.fromString(sUuid);
+	}
+
 	public static void requestId(UUID requestId) {
 		MDC.put(LoggingField.REQUEST_ID.toString(), requestId.toString());
 	}
@@ -141,6 +153,10 @@ public class LoggingContext {
 
 	public static void responseDescription(String responseDescription) {
 		MDC.put(LoggingField.RESPONSE_DESCRIPTION.toString(), responseDescription);
+	}
+
+	public static Object instanceUuid() {
+		return UUID.fromString(MDC.get(LoggingField.INSTANCE_UUID.toString()));
 	}
 
 	public static void instanceUuid(UUID instanceUuid) {
@@ -193,6 +209,10 @@ public class LoggingContext {
 		MDC.put(LoggingField.PROCESS_KEY.toString(), processKey);
 	}
 
+	public static String customField1() {
+		return MDC.get(LoggingField.CUSTOM_FIELD_1.toString());
+	}
+
 	public static void customField1(String customField1) {
 		MDC.put(LoggingField.CUSTOM_FIELD_1.toString(), customField1);
 	}
@@ -223,9 +243,11 @@ public class LoggingContext {
 
 	public static double stopWatchStop() {
 		final long stopWatchEnd = System.nanoTime();
-		final Long stopWatchStart = Long.valueOf(MDC.get(LoggingField.STOP_WATCH_START.toString()));
+		final String rawStopWatchStart = MDC.get(LoggingField.STOP_WATCH_START.toString());
 
-		if (stopWatchStart == null) throw new StopWatchNotStartedException();
+		if (rawStopWatchStart == null) throw new StopWatchNotStartedException();
+
+		final Long stopWatchStart = Long.valueOf(rawStopWatchStart);
 
 		MDC.remove(LoggingField.STOP_WATCH_START.toString());
 
@@ -263,19 +285,36 @@ public class LoggingContext {
 			}
 		}
 
-		MDC.put("_PREVIOUS_CONTEXT", context.toString());
+		final String rawJsonArray = MDC.get(PREVIOUS_CONTEXTS_KEY);
+
+		if (rawJsonArray == null) {
+			final JSONArray stack = new JSONArray()
+											.put(context);
+
+			MDC.put(PREVIOUS_CONTEXTS_KEY, stack.toString());
+		} else {
+			try {
+				final JSONArray stack = new JSONArray(rawJsonArray)
+												.put(context);
+
+				MDC.put(PREVIOUS_CONTEXTS_KEY, stack.toString());
+			} catch (JSONException e) {
+				//Ignore
+			}
+		}
 	}
 
 	public static void restore() {
 		
-		final String rawPreviousContext = MDC.get(PREVIOUS_CONTEXT_KEY);
+		final String rawPreviousContexts = MDC.get(PREVIOUS_CONTEXTS_KEY);
 	
-		if (rawPreviousContext == null) {
+		if (rawPreviousContexts == null) {
 			throw new LoggingContextNotExistsException();
 		}
 
 		try {
-			final JSONObject previousContext = new JSONObject(rawPreviousContext);
+			final JSONArray previousContexts = new JSONArray(rawPreviousContexts);
+			final JSONObject previousContext = previousContexts.getJSONObject(previousContexts.length() - 1);
 
 			@SuppressWarnings("unchecked")
 			final Iterator<String> keys = previousContext.keys();
@@ -290,10 +329,42 @@ public class LoggingContext {
 					//			or the value is invalid (they are all strings)
 				}
 			}
-	
-			MDC.remove(PREVIOUS_CONTEXT_KEY);
+
+			MDC.put(PREVIOUS_CONTEXTS_KEY, removeLast(previousContexts).toString());
 		} catch (JSONException e) {
 			//Ignore, the previousContext is serialized from a JSONObject
 		}
+	}
+
+	/**
+	 * AJSC declares an ancient version of org.json:json in one of the parent POMs of this project.
+	 * I tried to update our version of that library in our POM, but it's ignored because of the way
+	 * AJSC has organized their <dependencies>.  Had they put it into the <dependencyManagement> section,
+	 * this method would not be necessary.
+	 */
+	private static JSONArray removeLast(JSONArray previousContexts) {
+		final JSONArray result = new JSONArray();
+
+		for (int i = 0; i < previousContexts.length() - 1; i++) {
+			try {
+				result.put(previousContexts.getJSONObject(i));
+			} catch (JSONException e) {
+				//Ignore - not possible
+			}
+		}
+
+		return result;
+	}
+
+	public static Map<String, String> getCopy() {
+		final Map<String, String> copy = new HashMap<String, String> ();
+
+		for (LoggingField field : LoggingField.values()) {
+			final String value = MDC.get(field.toString());
+
+			if (value != null) copy.put(field.toString(), value);
+		}
+
+		return copy;
 	}
 }

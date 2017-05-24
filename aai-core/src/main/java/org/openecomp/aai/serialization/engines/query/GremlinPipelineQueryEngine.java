@@ -25,7 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.openecomp.aai.db.props.AAIProperties;
+import org.openecomp.aai.db.AAIProperties;
 import org.openecomp.aai.query.builder.QueryBuilder;
 import org.openecomp.aai.serialization.engines.TransactionalGraphEngine;
 import com.tinkerpop.blueprints.Direction;

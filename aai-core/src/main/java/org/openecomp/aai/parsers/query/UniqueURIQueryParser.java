@@ -109,40 +109,6 @@ public class UniqueURIQueryParser extends QueryParser implements Parsable {
 	public UniqueURIQueryParser(Loader loader, QueryBuilder queryBuilder) {
 		super(loader, queryBuilder);
 	}
-
-
-	/**
-	 * @{inheritDoc}
-	 */
-	@Override
-	public void processObject(Introspector obj, MultivaluedMap<String, String> uriKeys) {
-		this.resultResource = obj.getDbName();
-		if (previous != null) {
-			this.parentName = previous.getDbName();
-		}
-		this.previous  = obj;
-		
-		
-	}
-
-
-	/**
-	 * @{inheritDoc}
-	 */
-	@Override
-	public void processContainer(Introspector obj, MultivaluedMap<String, String> uriKeys, boolean isFinalContainer) {
-		this.containerResource = obj.getName();
-		if (previous != null) {
-			this.parentName = previous.getDbName();
-		}
-		if (isFinalContainer) {
-			this.endsInContainer = true;
-			this.resultResource = obj.getChildDBName();
-			
-			this.finalContainer = obj;
-		}
-		
-	}
 	
 	/**
 	 * @{inheritDoc}
@@ -166,6 +132,34 @@ public class UniqueURIQueryParser extends QueryParser implements Parsable {
 	@Override
 	public boolean useOriginalLoader() {
 		return false;
+	}
+
+
+	@Override
+	public void processObject(Introspector obj, EdgeType type, MultivaluedMap<String, String> uriKeys)
+			throws AAIException {
+		this.resultResource = obj.getDbName();
+		if (previous != null) {
+			this.parentName = previous.getDbName();
+		}
+		this.previous  = obj;
+				
+	}
+
+
+	@Override
+	public void processContainer(Introspector obj, EdgeType type, MultivaluedMap<String, String> uriKeys,
+			boolean isFinalContainer) throws AAIException {
+		this.containerResource = obj.getName();
+		if (previous != null) {
+			this.parentName = previous.getDbName();
+		}
+		if (isFinalContainer) {
+			this.endsInContainer = true;
+			this.resultResource = obj.getChildDBName();
+			
+			this.finalContainer = obj;
+		}		
 	}
 	
 }

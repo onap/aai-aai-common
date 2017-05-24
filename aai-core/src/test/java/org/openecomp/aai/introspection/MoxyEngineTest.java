@@ -20,18 +20,20 @@
 
 package org.openecomp.aai.introspection;
 
+import java.io.StringReader;
+
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
 import org.openecomp.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.openecomp.aai.serialization.queryformats.QueryFormatTestHelper;
 import org.openecomp.aai.util.AAIConstants;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import java.io.StringReader;
 
 public class MoxyEngineTest extends IntrospectorTestSpec {
 
@@ -50,7 +52,7 @@ public class MoxyEngineTest extends IntrospectorTestSpec {
 	
 	/**
 	 * Container object.
-	 * @throws AAIUnknownObjectException
+	 * @throws AAIUnknownObjectException 
 	 */
 	@Test
 	public void containerObject() throws AAIUnknownObjectException {

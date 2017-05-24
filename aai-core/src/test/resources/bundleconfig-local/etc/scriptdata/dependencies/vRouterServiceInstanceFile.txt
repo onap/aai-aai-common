@@ -1,0 +1,6 @@
+vnf-id,service-instance-id,global-customer-id
+vnf-id1,sample-service-instance-id,customer-id1
+vnf-id2,sample-service-instance-id-1,customer-id1
+vnf-id3,sample-service-instance-id-2,customer-id2
+vnf-id5,sample-service-instance-id-3,customer-id3
+vnf-id6,sample-service-instance-id-4,customer-id4

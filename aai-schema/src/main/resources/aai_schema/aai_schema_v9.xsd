@@ -2252,14 +2252,14 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
         <xs:element name="persona-model-id" type="xs:string" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
-              <annox:annotate target="field">@org.openecomp.aai.annotations.Metadata(description="the ASDC model id for this resource or service model.",dbAlias="model-invariant-id-local",visibility="deployment")</annox:annotate>
+              <annox:annotate target="field">@org.openecomp.aai.annotations.Metadata(description="the ASDC model id for this resource or service model.",dbAlias="model-invariant-id-local",requires="persona-model-version",visibility="deployment")</annox:annotate>
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
         <xs:element name="persona-model-version" type="xs:string" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
-              <annox:annotate target="field">@org.openecomp.aai.annotations.Metadata(description="the ASDC model version for this resource or service model.",visibility="deployment")</annox:annotate>
+              <annox:annotate target="field">@org.openecomp.aai.annotations.Metadata(description="the ASDC model version for this resource or service model.",visibility="deployment",requires="persona-model-id")</annox:annotate>
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
@@ -2399,14 +2399,14 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
         <xs:element name="persona-model-id" type="xs:string" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
-              <annox:annotate target="field">@org.openecomp.aai.annotations.Metadata(description="the ASDC model id for this resource or service model.",dbAlias="model-invariant-id-local",visibility="deployment")</annox:annotate>
+              <annox:annotate target="field">@org.openecomp.aai.annotations.Metadata(description="the ASDC model id for this resource or service model.",dbAlias="model-invariant-id-local",requires="persona-model-version",visibility="deployment")</annox:annotate>
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
         <xs:element name="persona-model-version" type="xs:string" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
-              <annox:annotate target="field">@org.openecomp.aai.annotations.Metadata(description="the ASDC model version for this resource or service model.",visibility="deployment")</annox:annotate>
+              <annox:annotate target="field">@org.openecomp.aai.annotations.Metadata(description="the ASDC model version for this resource or service model.",visibility="deployment",requires="persona-model-id")</annox:annotate>
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
@@ -2473,14 +2473,14 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
         <xs:element name="persona-model-id" type="xs:string" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
-              <annox:annotate target="field">@org.openecomp.aai.annotations.Metadata(description="the ASDC model id for this resource or service model.",dbAlias="model-invariant-id-local",visibility="deployment")</annox:annotate>
+              <annox:annotate target="field">@org.openecomp.aai.annotations.Metadata(description="the ASDC model id for this resource or service model.",dbAlias="model-invariant-id-local",requires="persona-model-version",visibility="deployment")</annox:annotate>
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
         <xs:element name="persona-model-version" type="xs:string" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
-              <annox:annotate target="field">@org.openecomp.aai.annotations.Metadata(description="the ASDC model version for this resource or service model.",visibility="deployment")</annox:annotate>
+              <annox:annotate target="field">@org.openecomp.aai.annotations.Metadata(description="the ASDC model version for this resource or service model.",visibility="deployment",requires="persona-model-id")</annox:annotate>
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
@@ -3346,14 +3346,14 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
         <xs:element name="persona-model-id" type="xs:string" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
-              <annox:annotate target="field">@org.openecomp.aai.annotations.Metadata(description="the ASDC model id for this resource or service model.",dbAlias="model-invariant-id-local",visibility="deployment")</annox:annotate>
+              <annox:annotate target="field">@org.openecomp.aai.annotations.Metadata(description="the ASDC model id for this resource or service model.",dbAlias="model-invariant-id-local",requires="persona-model-version",visibility="deployment")</annox:annotate>
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
         <xs:element name="persona-model-version" type="xs:string" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
-              <annox:annotate target="field">@org.openecomp.aai.annotations.Metadata(description="the ASDC model version for this resource or service model.",visibility="deployment")</annox:annotate>
+              <annox:annotate target="field">@org.openecomp.aai.annotations.Metadata(description="the ASDC model version for this resource or service model.",visibility="deployment",requires="persona-model-id")</annox:annotate>
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
@@ -4794,14 +4794,14 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
         <xs:element name="persona-model-id" type="xs:string" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
-              <annox:annotate target="field">@org.openecomp.aai.annotations.Metadata(description="the ASDC model id for this resource or service model.",dbAlias="model-invariant-id-local",visibility="deployment")</annox:annotate>
+              <annox:annotate target="field">@org.openecomp.aai.annotations.Metadata(description="the ASDC model id for this resource or service model.",dbAlias="model-invariant-id-local",requires="persona-model-version",visibility="deployment")</annox:annotate>
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
         <xs:element name="persona-model-version" type="xs:string" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
-              <annox:annotate target="field">@org.openecomp.aai.annotations.Metadata(description="the ASDC model version for this resource or service model.",visibility="deployment")</annox:annotate>
+              <annox:annotate target="field">@org.openecomp.aai.annotations.Metadata(description="the ASDC model version for this resource or service model.",visibility="deployment",requires="persona-model-id")</annox:annotate>
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
@@ -4988,14 +4988,14 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
         <xs:element name="persona-model-id" type="xs:string" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
-              <annox:annotate target="field">@org.openecomp.aai.annotations.Metadata(description="the ASDC model id for this resource or service model.",dbAlias="model-invariant-id-local",visibility="deployment")</annox:annotate>
+              <annox:annotate target="field">@org.openecomp.aai.annotations.Metadata(description="the ASDC model id for this resource or service model.",dbAlias="model-invariant-id-local",requires="persona-model-version",visibility="deployment")</annox:annotate>
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
         <xs:element name="persona-model-version" type="xs:string" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
-              <annox:annotate target="field">@org.openecomp.aai.annotations.Metadata(description="the ASDC model version for this resource or service model.",visibility="deployment")</annox:annotate>
+              <annox:annotate target="field">@org.openecomp.aai.annotations.Metadata(description="the ASDC model version for this resource or service model.",visibility="deployment",requires="persona-model-id")</annox:annotate>
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
@@ -5278,14 +5278,14 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
         <xs:element name="persona-model-id" type="xs:string" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
-              <annox:annotate target="field">@org.openecomp.aai.annotations.Metadata(description="the ASDC model id for this resource or service model.",dbAlias="model-invariant-id-local",visibility="deployment")</annox:annotate>
+              <annox:annotate target="field">@org.openecomp.aai.annotations.Metadata(description="the ASDC model id for this resource or service model.",dbAlias="model-invariant-id-local",requires="persona-model-version",visibility="deployment")</annox:annotate>
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
         <xs:element name="persona-model-version" type="xs:string" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
-              <annox:annotate target="field">@org.openecomp.aai.annotations.Metadata(description="the ASDC model version for this resource or service model.",visibility="deployment")</annox:annotate>
+              <annox:annotate target="field">@org.openecomp.aai.annotations.Metadata(description="the ASDC model version for this resource or service model.",visibility="deployment",requires="persona-model-id")</annox:annotate>
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
@@ -5894,7 +5894,7 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
         <xs:element name="ikev1-encryption" type="xs:string" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
-              <annox:annotate target="field">@org.openecomp.aai.annotations.Metadata(description="Encyption values like 3des-cbc, des-cbc, aes-128-cbc, aes-192-cbc, aes-265-cbc")</annox:annotate>
+              <annox:annotate target="field">@org.openecomp.aai.annotations.Metadata(description="Encyption values like 3des-cbc, des-cbc, aes-128-cbc,?aes-192-cbc, aes-265-cbc")</annox:annotate>
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
@@ -5936,7 +5936,7 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
         <xs:element name="ipsec-encryption" type="xs:string" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
-              <annox:annotate target="field">@org.openecomp.aai.annotations.Metadata(description="3des-cbc, des-cbc, aes-128-cbc, aes-192-cbc, aes-265-cbc")</annox:annotate>
+              <annox:annotate target="field">@org.openecomp.aai.annotations.Metadata(description="3des-cbc, des-cbc, aes-128-cbc,?aes-192-cbc, aes-265-cbc")</annox:annotate>
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
@@ -5957,7 +5957,7 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
         <xs:element name="xauth-userid" type="xs:string" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
-              <annox:annotate target="field">@org.openecomp.aai.annotations.Metadata(description="user ID for xAuth, sm-user, nmteHostName")</annox:annotate>
+              <annox:annotate target="field">@org.openecomp.aai.annotations.Metadata(description="user ID for xAuth, sm-user, ,nmteHostName")</annox:annotate>
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
@@ -6130,7 +6130,7 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
         <xs:element name="design-type" type="xs:string">
           <xs:annotation>
             <xs:appinfo>
-              <annox:annotate target="field">@org.openecomp.aai.annotations.Metadata(description="Design of zone [Medium/Large]")</annox:annotate>
+              <annox:annotate target="field">@org.openecomp.aai.annotations.Metadata(description="Design of zone [Medium/Large?]")</annox:annotate>
             </xs:appinfo>
           </xs:annotation>
         </xs:element>

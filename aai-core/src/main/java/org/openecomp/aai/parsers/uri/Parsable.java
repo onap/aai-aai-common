@@ -24,6 +24,7 @@ import javax.ws.rs.core.MultivaluedMap;
 
 import org.openecomp.aai.exceptions.AAIException;
 import org.openecomp.aai.introspection.Introspector;
+import org.openecomp.aai.serialization.db.EdgeType;
 
 /**
  * The Interface Parsable.
@@ -31,14 +32,13 @@ import org.openecomp.aai.introspection.Introspector;
 public interface Parsable {
 
 	/**
-	 * Process object.
-	 *
-	 * @param obj the obj
-	 * @param uriKeys the uri keys
-	 * @throws AAIException 
+	 * 
+	 * @param obj
+	 * @param type
+	 * @param uriKeys
+	 * @throws AAIException
 	 */
-	public void processObject(Introspector obj, MultivaluedMap<String, String> uriKeys) throws AAIException;
-	
+	public void processObject(Introspector obj, EdgeType type, MultivaluedMap<String, String> uriKeys) throws AAIException;
 	/**
 	 * Process container.
 	 *
@@ -47,8 +47,8 @@ public interface Parsable {
 	 * @param isFinalContainer the is final container
 	 * @throws AAIException the AAI exception
 	 */
-	public void processContainer(Introspector obj, MultivaluedMap<String, String> uriKeys, boolean isFinalContainer) throws AAIException;
-	
+	public void processContainer(Introspector obj, EdgeType type, MultivaluedMap<String, String> uriKeys, boolean isFinalContainer) throws AAIException;
+
 	/**
 	 * Process namespace.
 	 *

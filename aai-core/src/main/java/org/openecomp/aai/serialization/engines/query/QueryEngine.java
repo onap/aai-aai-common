@@ -62,6 +62,8 @@ public abstract class QueryEngine {
 	public abstract List<Vertex> findAllChildren(Vertex start);
 	
 	public abstract List<Vertex> findChildrenOfType(Vertex start, String type);
+	
+	public abstract List<Vertex> findChildren(Vertex start);
 	/**
 	 * Find deletable.
 	 *

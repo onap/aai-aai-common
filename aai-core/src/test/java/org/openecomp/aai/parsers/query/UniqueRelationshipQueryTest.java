@@ -20,6 +20,15 @@
 
 package org.openecomp.aai.parsers.query;
 
+import static org.junit.Assert.assertEquals;
+
+import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.stream.StreamSource;
+
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
@@ -30,25 +39,22 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+
 import org.openecomp.aai.exceptions.AAIException;
-import org.openecomp.aai.introspection.*;
+import org.openecomp.aai.introspection.Introspector;
+import org.openecomp.aai.introspection.IntrospectorFactory;
+import org.openecomp.aai.introspection.LoaderFactory;
+import org.openecomp.aai.introspection.ModelInjestor;
+import org.openecomp.aai.introspection.ModelType;
+import org.openecomp.aai.introspection.Version;
 import org.openecomp.aai.serialization.engines.QueryStyle;
 import org.openecomp.aai.serialization.engines.TitanDBEngine;
 import org.openecomp.aai.serialization.engines.TransactionalGraphEngine;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.stream.StreamSource;
-import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
-
-import static org.junit.Assert.assertEquals;
-
 @Ignore
 public class UniqueRelationshipQueryTest {
 	private ModelInjestor injestor = ModelInjestor.getInstance();
-	private TransactionalGraphEngine dbEngine =
-			new TitanDBEngine(QueryStyle.GREMLIN_UNIQUE,
+	private TransactionalGraphEngine dbEngine = 
+			new TitanDBEngine(QueryStyle.GREMLIN_UNIQUE, 
 				LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.v8),
 				false);
 	private final Version version = Version.v8;

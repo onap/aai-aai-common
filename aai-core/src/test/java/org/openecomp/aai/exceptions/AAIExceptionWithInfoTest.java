@@ -22,6 +22,8 @@ package org.openecomp.aai.exceptions;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.openecomp.aai.serialization.queryformats.QueryFormatTestHelper;
+import org.openecomp.aai.util.AAIConstants;
 
 import java.util.HashMap;
 
@@ -44,9 +46,10 @@ public class AAIExceptionWithInfoTest {
 	private static final Throwable cause = new RuntimeException("This is a runtime exception.");
 
 	@BeforeClass
-	public static void configure() {
-		System.setProperty("AJSC_HOME", "./src/test/resources/");
-		System.setProperty("BUNDLECONFIG_DIR", "bundleconfig-local");
+	public static void configure() throws NoSuchFieldException, SecurityException, Exception {
+		System.setProperty("AJSC_HOME", ".");
+		System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
+		QueryFormatTestHelper.setFinalStatic(AAIConstants.class.getField("AAI_HOME_ETC_OXM"), "src/test/resources/org/openecomp/aai/introspection/");
 	}
 
 	/**

@@ -56,7 +56,7 @@ import com.thinkaurelius.titan.core.TitanTransaction;
 
 import java.util.Collections;
 
-@Ignore("Causing problems when only parallel tests are run")
+@Ignore
 public class DbAliasTest {
 
 	
@@ -71,8 +71,8 @@ public class DbAliasTest {
 	@Before
 	public void setup() throws NoSuchFieldException, SecurityException, Exception {
 		graph = TitanFactory.build().set("storage.backend","inmemory").open();
-		System.setProperty("AJSC_HOME", "./src/test/resources/");
-		System.setProperty("BUNDLECONFIG_DIR", "bundleconfig-local");
+		System.setProperty("AJSC_HOME", ".");
+		System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
 		loader = LoaderFactory.createLoaderForVersion(introspectorFactoryType, version);
 		dbEngine = new TitanDBEngine(
 				queryStyle,

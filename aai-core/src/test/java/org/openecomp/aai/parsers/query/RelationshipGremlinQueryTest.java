@@ -69,8 +69,8 @@ public class RelationshipGremlinQueryTest {
 	 */
 	@BeforeClass
 	public static void configure() {
-		System.setProperty("AJSC_HOME", "./src/test/resources/");
-		System.setProperty("BUNDLECONFIG_DIR", "bundleconfig-local");
+		System.setProperty("AJSC_HOME", ".");
+		System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
 	}
 	
 	

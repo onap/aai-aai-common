@@ -26,7 +26,7 @@ import java.util.List;
 
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 
-import org.openecomp.aai.db.props.AAIProperties;
+import org.openecomp.aai.db.AAIProperties;
 import org.openecomp.aai.exceptions.AAIException;
 import org.openecomp.aai.introspection.Introspector;
 import org.openecomp.aai.introspection.Loader;

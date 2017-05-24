@@ -20,17 +20,16 @@
 
 package org.openecomp.aai.introspection;
 
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
+import java.util.Set;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
+
 import org.openecomp.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.openecomp.aai.serialization.queryformats.QueryFormatTestHelper;
 import org.openecomp.aai.util.AAIConstants;
-
-import java.util.Set;
-
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
 
 public class PropertyPredicatesTest {
 

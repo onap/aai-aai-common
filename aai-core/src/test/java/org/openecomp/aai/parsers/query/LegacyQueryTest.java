@@ -20,9 +20,19 @@
 
 package org.openecomp.aai.parsers.query;
 
+import static org.junit.Assert.assertEquals;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+
+import javax.ws.rs.core.UriBuilder;
+import javax.xml.bind.JAXBException;
+
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
+
 import org.openecomp.aai.exceptions.AAIException;
 import org.openecomp.aai.introspection.LoaderFactory;
 import org.openecomp.aai.introspection.ModelInjestor;
@@ -31,13 +41,6 @@ import org.openecomp.aai.introspection.Version;
 import org.openecomp.aai.serialization.engines.QueryStyle;
 import org.openecomp.aai.serialization.engines.TitanDBEngine;
 import org.openecomp.aai.serialization.engines.TransactionalGraphEngine;
-
-import javax.ws.rs.core.UriBuilder;
-import javax.xml.bind.JAXBException;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-
-import static org.junit.Assert.assertEquals;
 
 
 public class LegacyQueryTest {
@@ -55,8 +58,8 @@ public class LegacyQueryTest {
 	 */
 	@BeforeClass
 	public static void configure() {
-		System.setProperty("AJSC_HOME", "./src/test/resources/");
-		System.setProperty("BUNDLECONFIG_DIR", "bundleconfig-local");
+		System.setProperty("AJSC_HOME", ".");
+		System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
 	}
 	
 	/**
@@ -104,10 +107,14 @@ public class LegacyQueryTest {
 
 		String expected =
 				".has('hostname', 'key1').has('aai-node-type', 'pserver')"
-				+ ".in('tosca.relationships.BindsTo').has('aai-node-type', 'lag-interface')"
+				+ ".out('hasLAGInterface').has('aai-node-type', 'lag-interface')"
 				+ ".has('interface-name', 'key2')";
 		String parentExpected = 
 				".has('hostname', 'key1').has('aai-node-type', 'pserver')";
+		assertEquals(
+				"gremlin query should be for node",
+				expected,
+				query.getQueryBuilder().getQuery());
 		assertEquals(
 				"parent gremlin query should be for parent",
 				parentExpected,
@@ -117,5 +124,43 @@ public class LegacyQueryTest {
 				"lag-interface",
 				query.getResultType());
     }
-
+	
+	/**
+	 * Naming exceptions.
+	 *
+	 * @throws JAXBException the JAXB exception
+	 * @throws UnsupportedEncodingException the unsupported encoding exception
+	 * @throws AAIException the AAI exception
+	 */
+	@Ignore
+	@Test
+    public void namingExceptions() throws JAXBException, UnsupportedEncodingException, AAIException {
+		URI uri = UriBuilder.fromPath("network/vces/vce/key1/port-groups/port-group/key2/cvlan-tags/cvlan-tag/655").build();
+	
+		QueryParser query = dbEngine.getQueryBuilder().createQueryFromURI(uri);
+		String expected = 
+				".has('vnf-id', 'key1').has('aai-node-type', 'vce')"
+				+ ".in('org.onap.relationships.inventory.BelongsTo').has('aai-node-type', 'port-group')"
+				+ ".has('interface-id', 'key2')"
+				+ ".in('org.onap.relationships.inventory.BelongsTo').has('aai-node-type', 'cvlan-tag')"
+				+ ".has('cvlan-tag', 655)";
+		String expectedParent = 
+						".has('vnf-id', 'key1').has('aai-node-type', 'vce')"
+						+ ".in('org.onap.relationships.inventory.BelongsTo').has('aai-node-type', 'port-group')"
+						+ ".has('interface-id', 'key2')";
+		assertEquals(
+				"gremlin query should be " + expected,
+				expected,
+				query.getQueryBuilder().getQuery());
+		assertEquals(
+				"parent gremlin query should be equal the query for port group",
+				expectedParent,
+				query.getQueryBuilder().getParentQuery().getQuery());
+		assertEquals(
+				"result type should be cvlan-tag",
+				"cvlan-tag",
+				query.getResultType());
+		
+    }
+	
 }

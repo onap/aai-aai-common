@@ -20,24 +20,31 @@
 
 package org.openecomp.aai.logging;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
-import org.apache.commons.lang.StringUtils;
-import org.openecomp.aai.exceptions.AAIException;
-import org.openecomp.aai.logging.LoggingContext.StatusCode;
-import org.openecomp.aai.util.AAIConstants;
-import org.openecomp.aai.util.MapperUtil;
-import org.slf4j.MDC;
-
-import javax.ws.rs.core.MediaType;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
+
+import javax.ws.rs.core.MediaType;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
+
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.MDC;
+
+import org.openecomp.aai.exceptions.AAIException;
+import org.openecomp.aai.logging.LoggingContext.StatusCode;
+import org.openecomp.aai.util.AAIConstants;
+import org.openecomp.aai.util.MapperUtil;
+import com.att.eelf.configuration.EELFLogger;
+import com.att.eelf.configuration.EELFManager;
 
 /**
  * 
@@ -67,7 +74,7 @@ public class ErrorLogHelper {
 	 * @throws Exception the exception
 	 */
 	public static void loadProperties() throws IOException, ErrorObjectFormatException {
-		final String filePath = AAIConstants.AAI_HOME_ETC_APP_PROPERTIES + "error.properties";
+		final String filePath = AAIConstants.AAI_HOME_ETC_APP_PROPERTIES + "error.properties"; 
 		final InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(filePath);
 		final Properties properties = new Properties();
 		
@@ -105,8 +112,8 @@ public class ErrorLogHelper {
 	 *
 	 * @param key The key for the error in the error.properties file
 	 * @throws IOException 
-	 * @throws ErrorObjectNotFoundException
-	 * @throws ErrorObjectFormatException
+	 * @throws ErrorObjectNotFoundException 
+	 * @throws ErrorObjectFormatException 
 	 */
 	public static ErrorObject getErrorObject(String code) throws ErrorObjectNotFoundException {
 		
@@ -130,8 +137,8 @@ public class ErrorLogHelper {
 	 * @param are must have a restError value whose numeric value must match what should be returned in the REST API
 	 * @param variables optional list of variables to flesh out text in error string
 	 * @return appropriately formatted JSON response per the REST API spec.
-	 * @throws ErrorObjectFormatException
-	 * @throws ErrorObjectNotFoundException
+	 * @throws ErrorObjectFormatException 
+	 * @throws ErrorObjectNotFoundException 
 	 * @throws IOException 
 	 * @deprecated
 	 */
@@ -152,8 +159,8 @@ public class ErrorLogHelper {
 	 * @param are must have a restError value whose numeric value must match what should be returned in the REST API
 	 * @param variables optional list of variables to flesh out text in error string
 	 * @return appropriately formatted JSON response per the REST API spec.
-	 * @throws ErrorObjectFormatException
-	 * @throws ErrorObjectNotFoundException
+	 * @throws ErrorObjectFormatException 
+	 * @throws ErrorObjectNotFoundException 
 	 * @throws IOException 
 	 */
 	public static String getRESTAPIErrorResponse(List<MediaType> acceptHeadersOrig, AAIException are, ArrayList<String> variables) {
@@ -326,8 +333,8 @@ public class ErrorLogHelper {
 	 * @param variables the variables
 	 * @param logline the logline
 	 * @return the RESTAPI error response with logging
-	 * @throws ErrorObjectFormatException
-	 * @throws ErrorObjectNotFoundException
+	 * @throws ErrorObjectFormatException 
+	 * @throws ErrorObjectNotFoundException 
 	 * @throws IOException 
 	 */
 	public static String getRESTAPIErrorResponseWithLogging(List<MediaType> acceptHeadersOrig, AAIException are, ArrayList<String> variables) {
@@ -344,8 +351,8 @@ public class ErrorLogHelper {
 	 * @param acceptHeaders the accept headers
 	 * @param areList the are list
 	 * @return the RESTAPI info response
-	 * @throws ErrorObjectFormatException
-	 * @throws ErrorObjectNotFoundException
+	 * @throws ErrorObjectFormatException 
+	 * @throws ErrorObjectNotFoundException 
 	 * @throws IOException 
 	 */
 	public static Object getRESTAPIInfoResponse(List<MediaType> acceptHeaders, HashMap<AAIException,ArrayList<String>> areList) {
@@ -355,10 +362,10 @@ public class ErrorLogHelper {
 		org.openecomp.aai.domain.restResponseInfo.ObjectFactory factory = new org.openecomp.aai.domain.restResponseInfo.ObjectFactory();
 		org.openecomp.aai.domain.restResponseInfo.Info info = factory.createInfo();
 		org.openecomp.aai.domain.restResponseInfo.Info.ResponseMessages responseMessages = factory.createInfoResponseMessages();
-		Iterator<Entry<AAIException, ArrayList<String>>> it = areList.entrySet().iterator();
-
+		Iterator<Map.Entry<AAIException, ArrayList<String>>> it = areList.entrySet().iterator();
+		
 		while (it.hasNext()) {
-			Entry<AAIException,ArrayList<String>> pair = (Entry<AAIException, ArrayList<String>>)it.next();
+			Map.Entry<AAIException,ArrayList<String>> pair = (Map.Entry<AAIException, ArrayList<String>>)it.next();
 			AAIException are = pair.getKey();
 			ArrayList<String> variables = pair.getValue();
 
@@ -436,8 +443,8 @@ public class ErrorLogHelper {
 		 * @param are must have a restError value whose numeric value must match what should be returned in the REST API
 		 * @param variables optional list of variables to flesh out text in error string
 		 * @return appropriately formatted JSON response per the REST API spec.
-		 * @throws ErrorObjectFormatException
-		 * @throws ErrorObjectNotFoundException
+		 * @throws ErrorObjectFormatException 
+		 * @throws ErrorObjectNotFoundException 
 		 * @throws IOException 
 		 */
 		public static String getRESTAPIPolicyErrorResponseXML(AAIException are, ArrayList<String> variables) {

@@ -33,6 +33,7 @@ import org.openecomp.aai.introspection.Introspector;
 import org.openecomp.aai.introspection.Loader;
 import org.openecomp.aai.introspection.Version;
 import org.openecomp.aai.introspection.exceptions.AAIUnknownObjectException;
+import org.openecomp.aai.serialization.db.EdgeType;
 import org.openecomp.aai.util.AAIApiServerURLBase;
 import org.openecomp.aai.workarounds.LegacyURITransformer;
 
@@ -102,35 +103,6 @@ public class URIToRelationshipObject implements Parsable {
 	public String getCloudRegionTransform(){
 		return "remove";
 	}
-	
-	/**
-	 * @{inheritDoc}
-	 */
-	@Override
-	public void processObject(Introspector obj, MultivaluedMap<String, String> uriKeys) {
-		
-
-		for (String key : obj.getKeys()) {
-			try {
-				Introspector data = loader.introspectorFromName("relationship-data");
-				data.setValue("relationship-key", obj.getDbName() + "." + key);
-				data.setValue("relationship-value", obj.getValue(key));
-				
-				((List<Object>)relationship.getValue("relationship-data")).add(data.getUnderlyingObject());
-			} catch (AAIUnknownObjectException e) {
-				throw new RuntimeException("Fatal error - relationship-data object not found!");
-			}
-		}
-		relationship.setValue("related-to", obj.getDbName());
-	}
-	
-	/**
-	 * @{inheritDoc}
-	 */
-	@Override
-	public void processContainer(Introspector obj, MultivaluedMap<String, String> uriKeys, boolean isFinalContainer) {
-		
-	}
 
 	/**
 	 * @{inheritDoc}
@@ -163,9 +135,36 @@ public class URIToRelationshipObject implements Parsable {
 		
 		URI relatedLink = new URI(this.baseURL + this.originalVersion + "/" + originalUri);
 		this.relationship.setValue("related-link", relatedLink);
-		
-		
+		if (this.originalVersion.compareTo(Version.v10) >= 0) {
+			//only return the path section of the URI past v10
+			relatedLink = new URI(relatedLink.getRawPath());
+		}
+
+		this.relationship.setValue("related-link", relatedLink.toString());
+
 		this.result = relationship;
 		return this.result;
+	}
+
+	@Override
+	public void processObject(Introspector obj, EdgeType type, MultivaluedMap<String, String> uriKeys)
+			throws AAIException {
+		for (String key : obj.getKeys()) {
+			try {
+				Introspector data = loader.introspectorFromName("relationship-data");
+				data.setValue("relationship-key", obj.getDbName() + "." + key);
+				data.setValue("relationship-value", obj.getValue(key));
+
+				((List<Object>)relationship.getValue("relationship-data")).add(data.getUnderlyingObject());
+			} catch (AAIUnknownObjectException e) {
+				throw new RuntimeException("Fatal error - relationship-data object not found!");
+			}
+		}
+		relationship.setValue("related-to", obj.getDbName());
+	}
+
+	@Override
+	public void processContainer(Introspector obj, EdgeType type, MultivaluedMap<String, String> uriKeys,
+			boolean isFinalContainer) throws AAIException {
 	}
 }

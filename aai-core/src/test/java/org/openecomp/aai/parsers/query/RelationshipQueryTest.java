@@ -62,8 +62,8 @@ public class RelationshipQueryTest {
 	 */
 	@BeforeClass
 	public static void configure() {
-		System.setProperty("AJSC_HOME", "./src/test/resources/");
-		System.setProperty("BUNDLECONFIG_DIR", "bundleconfig-local");
+		System.setProperty("AJSC_HOME", ".");
+		System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
 	}
 	
 	
@@ -171,8 +171,8 @@ public class RelationshipQueryTest {
 	 * @throws UnsupportedEncodingException the unsupported encoding exception
 	 * @throws AAIException the AAI exception
 	 */
-	@Test
 	@Ignore
+	@Test
     public void namingExceptions() throws JAXBException, UnsupportedEncodingException, AAIException {
 		String content =
 				"{"

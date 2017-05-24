@@ -95,16 +95,16 @@ public class LegacyQueryParser extends QueryParser implements Parsable {
 	public LegacyQueryParser(Loader loader, QueryBuilder queryBuilder) {
 		super(loader, queryBuilder);
 	}
-	
+
 	/**
 	 * @throws AAIException 
 	 * @{inheritDoc}
 	 */
 	@Override
-	public void processObject(Introspector obj, MultivaluedMap<String, String> uriKeys) throws AAIException {
+	public void processObject(Introspector obj, EdgeType type, MultivaluedMap<String, String> uriKeys) throws AAIException {
 		if (previous != null) {
 			this.parentResourceType = previous.getDbName();
-			queryBuilder.createEdgeTraversal(EdgeType.TREE, previous, obj);
+			queryBuilder.createEdgeTraversal(type, previous, obj);
 		}
 		if (previous == null) {
 			queryBuilder.createDBQuery(obj);
@@ -114,18 +114,18 @@ public class LegacyQueryParser extends QueryParser implements Parsable {
 			this.handleUriKeys(obj, uriKeys);
 		}
 		previous = obj;
-		this.resultResource = obj.getDbName();
+		this.resultResource = obj.getDbName();		
 	}
 	
 	/**
 	 * @{inheritDoc}
 	 */
 	@Override
-	public void processContainer(Introspector obj, MultivaluedMap<String, String> uriKeys, boolean isFinalContainer) throws AAIException {
+	public void processContainer(Introspector obj, EdgeType type, MultivaluedMap<String, String> uriKeys, boolean isFinalContainer) throws AAIException {
 		if (isFinalContainer) {
 			if (previous != null) {
 				this.parentResourceType = previous.getDbName();
-				queryBuilder.createEdgeTraversal(EdgeType.TREE, previous, obj);
+				queryBuilder.createEdgeTraversal(type, previous, obj);
 			}
 			
 			if (previous == null) {
@@ -146,7 +146,6 @@ public class LegacyQueryParser extends QueryParser implements Parsable {
 			this.containerResource = obj.getName();
 		}
 	}
-	
 	private void handleUriKeys(Introspector obj, MultivaluedMap<String, String> uriKeys) throws AAIException {
 		for (String key : uriKeys.keySet()) {
 			//to validate whether this property exists

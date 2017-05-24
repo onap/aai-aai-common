@@ -20,15 +20,16 @@
 
 package org.openecomp.aai.introspection;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.openecomp.aai.db.props.AAIProperties;
+import static org.junit.Assert.*;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
-import static org.junit.Assert.*;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import org.openecomp.aai.db.props.AAIProperties;
 
 public class PojoInjestorTest {
 

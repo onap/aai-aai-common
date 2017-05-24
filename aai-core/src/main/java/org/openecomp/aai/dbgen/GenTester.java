@@ -20,22 +20,24 @@
 
 package org.openecomp.aai.dbgen;
 
+import java.util.Properties;
+
+import org.openecomp.aai.dbmap.AAIGraph;
+import org.openecomp.aai.logging.ErrorLogHelper;
+import org.openecomp.aai.util.AAIConfig;
+import org.openecomp.aai.util.AAIConstants;
 import com.att.eelf.configuration.Configuration;
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 import com.thinkaurelius.titan.core.TitanGraph;
 import com.thinkaurelius.titan.core.schema.TitanManagement;
-import org.openecomp.aai.dbmap.AAIGraph;
-import org.openecomp.aai.logging.ErrorLogHelper;
-import org.openecomp.aai.util.AAIConfig;
-import org.openecomp.aai.util.AAIConstants;
 
-import java.util.Properties;
+
 
 
 public class GenTester {
 
-	private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(GenTester.class);
+	private static EELFLogger LOGGER;
 	
 	/**
 	 * The main method.
@@ -50,20 +52,23 @@ public class GenTester {
 		Properties props = System.getProperties();
 		props.setProperty(Configuration.PROPERTY_LOGGING_FILE_NAME, AAIConstants.AAI_CREATE_DB_SCHEMA_LOGBACK_PROPS);
 		props.setProperty(Configuration.PROPERTY_LOGGING_FILE_PATH, AAIConstants.AAI_HOME_ETC_APP_PROPERTIES);
+		LOGGER = EELFManager.getInstance().getLogger(GenTester.class);
 		boolean addDefaultCR = true;
 		
 		try {   
 			AAIConfig.init();
 	    	if (args != null && args.length > 0 ){
 	    		if( "genDbRulesOnly".equals(args[0]) ){
-	    			ErrorLogHelper.logError("AAI_3100",
+	    			ErrorLogHelper.logError("AAI_3100", 
 	    					" This option is no longer supported. What was in DbRules is now derived from the OXM files. ");
 	    			return;
 	    		}
 	    		else if ( "GEN_DB_WITH_NO_SCHEMA".equals(args[0]) ){
 		    		// Note this is done to create an empty DB with no Schema so that
 					// an HBase copyTable can be used to set up a copy of the db.
-					LOGGER.info("    ---- NOTE --- about to load a graph without doing any schema processing (takes a little while) --------   ");
+					String imsg = "    ---- NOTE --- about to load a graph without doing any schema processing (takes a little while) --------   ";
+	            	System.out.println(imsg);
+	            	LOGGER.info(imsg);
 					graph = AAIGraph.getInstance().getGraph();
 			    	
 			       if( graph == null ){
@@ -71,7 +76,9 @@ public class GenTester {
 			           return;
 			       }
 			       else {
-			    	   LOGGER.auditEvent("Successfully loaded a Titan graph without doing any schema work.  ");
+			    	   String amsg = "Successfully loaded a Titan graph without doing any schema work.  ";
+			    	   System.out.println(amsg);
+			    	   LOGGER.auditEvent(amsg);
 			           return;
 			       }
 	    		} else if ("GEN_DB_WITH_NO_DEFAULT_CR".equals(args[0])) {
@@ -79,15 +86,24 @@ public class GenTester {
 	    		}
 	    		else {
 	    			ErrorLogHelper.logError("AAI_3000", "Unrecognized argument passed to GenTester.java: [" + args[0] + "]. ");
-	    			LOGGER.error("Unrecognized argument passed to GenTester.java: [" + args[0] + "]. ");
-	    			LOGGER.error("Either pass no argument for normal processing, or use 'GEN_DB_WITH_NO_SCHEMA'.");
+	    			
+	    			String emsg = "Unrecognized argument passed to GenTester.java: [" + args[0] + "]. ";
+	    			System.out.println(emsg);
+	    			LOGGER.error(emsg);
+	    			
+	    			emsg = "Either pass no argument for normal processing, or use 'GEN_DB_WITH_NO_SCHEMA'.";
+	    			System.out.println(emsg);
+	    			LOGGER.error(emsg);
+	    			
 	    			return;
 	    		}
 	    	}
 	    	
 			//AAIConfig.init();
 			ErrorLogHelper.loadProperties();
-			LOGGER.info("    ---- NOTE --- about to open graph (takes a little while)--------;");
+			String imsg = "    ---- NOTE --- about to open graph (takes a little while)--------;";
+        	System.out.println(imsg);
+        	LOGGER.info(imsg);
 			graph = AAIGraph.getInstance().getGraph();
 	    	
 			if( graph == null ){
@@ -95,11 +111,13 @@ public class GenTester {
 				return;
 			}
 
-	       // Load the propertyKeys, indexes and edge-Labels into the DB
-	       TitanManagement graphMgt = graph.openManagement();
+			// Load the propertyKeys, indexes and edge-Labels into the DB
+			TitanManagement graphMgt = graph.openManagement();
 
-	       LOGGER.info("-- Loading new schema elements into Titan --");
-	       SchemaGenerator.loadSchemaIntoTitan( graph, graphMgt, addDefaultCR );
+	       	imsg = "-- Loading new schema elements into Titan --";
+       		System.out.println(imsg);
+       		LOGGER.info(imsg);
+       		SchemaGenerator.loadSchemaIntoTitan( graph, graphMgt, addDefaultCR );
 
 	    } catch(Exception ex) {
 	    	ErrorLogHelper.logError("AAI_4000", ex.getMessage());
@@ -107,10 +125,14 @@ public class GenTester {
 	    
 
 	    if( graph != null ){
-		    LOGGER.info("-- graph commit");
+		    String imsg = "-- graph commit";
+        	System.out.println(imsg);
+        	LOGGER.info(imsg);
 	        graph.tx().commit();
 
-		   	LOGGER.info("-- graph shutdown ");
+		   	imsg = "-- graph shutdown ";
+        	System.out.println(imsg);
+        	LOGGER.info(imsg);
 	        graph.close();
 	    }
 	    

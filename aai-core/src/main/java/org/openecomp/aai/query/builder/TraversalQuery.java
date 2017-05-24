@@ -40,7 +40,7 @@ import org.openecomp.aai.parsers.query.TraversalStrategy;
 /**
  * The Class TraversalQuery.
  */
-public class TraversalQuery extends GraphTraversalBuilder {
+public class TraversalQuery<E> extends GraphTraversalBuilder<E> {
 
 	/**
 	 * Instantiates a new traversal query.
@@ -63,7 +63,7 @@ public class TraversalQuery extends GraphTraversalBuilder {
 		this.factory = new TraversalStrategy(this.loader, this);
 	}
 	
-	protected TraversalQuery(GraphTraversal<Vertex, Vertex> traversal, Loader loader, GraphTraversalSource source, GraphTraversalBuilder gtb) {
+	protected TraversalQuery(GraphTraversal<Vertex, E> traversal, Loader loader, GraphTraversalSource source, GraphTraversalBuilder<E> gtb) {
 		super(loader, source);
 		this.traversal = traversal;
 		this.stepIndex = gtb.getStepIndex();
@@ -110,41 +110,41 @@ public class TraversalQuery extends GraphTraversalBuilder {
 	 * @{inheritDoc}
 	 */
 	@Override
-	public QueryBuilder newInstance(Vertex start) {
-		return new TraversalQuery(loader, source, start);
+	public QueryBuilder<E> newInstance(Vertex start) {
+		return new TraversalQuery<>(loader, source, start);
 	}
 	
 	/**
 	 * @{inheritDoc}
 	 */
 	@Override
-	public QueryBuilder newInstance() {
-		return new TraversalQuery(loader, source);
+	public QueryBuilder<E> newInstance() {
+		return new TraversalQuery<>(loader, source);
 	}
 	
 	@Override
-	protected QueryBuilder cloneQueryAtStep(int index) {
+	protected QueryBuilder<E> cloneQueryAtStep(int index) {
 		if (index == 0) {
 			index = stepIndex;
 		}
-		GraphTraversal<Vertex, Vertex> clone = this.traversal.asAdmin().clone();
-		GraphTraversal.Admin<Vertex, Vertex> cloneAdmin = clone.asAdmin();
+		GraphTraversal<Vertex, E> clone = this.traversal.asAdmin().clone();
+		GraphTraversal.Admin<Vertex, E> cloneAdmin = clone.asAdmin();
 		List<Step> steps = cloneAdmin.getSteps();
 
 		for (int i = steps.size()-1; i >= index; i--) {
 			cloneAdmin.removeStep(i);
 		}
-		return new TraversalQuery(cloneAdmin, loader, source, this);
+		return new TraversalQuery<>(cloneAdmin, loader, source, this);
 	}
 	
 	@Override
-	protected QueryBuilder removeQueryStepsBetween(int start, int end) {
-		GraphTraversal<Vertex, Vertex> clone = this.traversal.asAdmin().clone();
-		GraphTraversal.Admin<Vertex, Vertex> cloneAdmin = clone.asAdmin();
+	protected QueryBuilder<E> removeQueryStepsBetween(int start, int end) {
+		GraphTraversal<Vertex, E> clone = this.traversal.asAdmin().clone();
+		GraphTraversal.Admin<Vertex, E> cloneAdmin = clone.asAdmin();
 
 		for (int i = end-2; i >= start; i--) {
 			cloneAdmin.removeStep(i);
 		}
-		return new TraversalQuery(cloneAdmin, loader, source, this);
+		return new TraversalQuery<>(cloneAdmin, loader, source, this);
 	}
 }

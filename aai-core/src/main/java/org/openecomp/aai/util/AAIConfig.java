@@ -20,12 +20,6 @@
 
 package org.openecomp.aai.util;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
-import org.eclipse.jetty.util.security.Password;
-import org.openecomp.aai.exceptions.AAIException;
-import org.openecomp.aai.logging.ErrorLogHelper;
-
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -35,6 +29,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
 import java.util.Timer;
+
+import org.eclipse.jetty.util.security.Password;
+
+import org.openecomp.aai.exceptions.AAIException;
+import org.openecomp.aai.logging.ErrorLogHelper;
+import com.att.eelf.configuration.EELFLogger;
+import com.att.eelf.configuration.EELFManager;
 
 
 public class AAIConfig {
@@ -59,7 +60,7 @@ public class AAIConfig {
      *
      * @throws AAIException the AAI exception
      */
-    public synchronized static void init() throws AAIException {
+    public synchronized static void init() throws AAIException{
 		LOGGER.info("Initializing AAIConfig");
 		
 		ArrayList<String> genericVnfBools = new ArrayList<String>();
@@ -89,7 +90,7 @@ public class AAIConfig {
         AAIConfig.getConfigFile();
         AAIConfig.reloadConfig();
         
-        if (AAIConstants.AAI_NODENAME == null || AAIConstants.AAI_NODENAME == "") {
+        if (AAIConstants.AAI_NODENAME == null || AAIConstants.AAI_NODENAME == "") {      
             ErrorLogHelper.logError("AAI_4005", " AAI_NODENAME is not defined");
         } else {
             LOGGER.info("A&AI Server Node Name = " + AAIConstants.AAI_NODENAME);
@@ -217,7 +218,7 @@ public class AAIConfig {
      * @return the int
      * @throws AAIException the AAI exception
      */
-    public static int getInt(String key) throws AAIException {
+    public static int getInt(String key) throws AAIException{
     	return Integer.valueOf(AAIConfig.get(key));
 	}
 

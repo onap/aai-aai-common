@@ -31,6 +31,7 @@ import org.openecomp.aai.exceptions.AAIException;
 import org.openecomp.aai.introspection.Introspector;
 import org.openecomp.aai.introspection.Loader;
 import org.openecomp.aai.restcore.HttpMethod;
+import org.openecomp.aai.serialization.db.EdgeType;
 import com.google.common.base.CaseFormat;
 import com.google.common.base.Joiner;
 
@@ -62,27 +63,6 @@ public class URIToExtensionInformation implements Parsable {
 		parser.parse(this);
 		
 		this.methodName = Joiner.on("").join(this.pieces);
-	}
-	
-	/**
-	 * @{inheritDoc}
-	 */
-	@Override
-	public void processObject(Introspector obj, MultivaluedMap<String, String> uriKeys) {
-		String upperCamel = toUpperCamel(obj.getDbName());
-		if (topObject.equals("")) {
-			topObject = upperCamel;
-		}
-		pieces.add(upperCamel);
-
-	}
-
-	/**
-	 * @{inheritDoc}
-	 */
-	@Override
-	public void processContainer(Introspector obj, MultivaluedMap<String, String> uriKeys, boolean isFinalContainer) {
-		pieces.add(toUpperCamel(obj.getName()));
 	}
 	
 	/**
@@ -165,5 +145,21 @@ public class URIToExtensionInformation implements Parsable {
 		String result = "";
 		result = CaseFormat.LOWER_HYPHEN.to(CaseFormat.UPPER_CAMEL, name);
 		return result;
+	}
+
+	@Override
+	public void processObject(Introspector obj, EdgeType type, MultivaluedMap<String, String> uriKeys)
+			throws AAIException {
+		String upperCamel = toUpperCamel(obj.getDbName());
+		if (topObject.equals("")) {
+			topObject = upperCamel;
+		}
+		pieces.add(upperCamel);
+	}
+
+	@Override
+	public void processContainer(Introspector obj, EdgeType type, MultivaluedMap<String, String> uriKeys,
+			boolean isFinalContainer) throws AAIException {
+		pieces.add(toUpperCamel(obj.getName()));
 	}
 }

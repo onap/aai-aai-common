@@ -20,16 +20,16 @@
 
 package org.openecomp.aai.serialization.queryformats;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
+
+import org.openecomp.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import org.openecomp.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Stream;
 
 public class Formatter {
 
@@ -37,7 +37,7 @@ public class Formatter {
 
 	protected JsonParser parser = new JsonParser();
 	protected final FormatMapper format;
-	public Formatter(FormatMapper format) {
+	public Formatter (FormatMapper format) {
 		this.format = format;
 	}
 	
@@ -50,7 +50,7 @@ public class Formatter {
 		} else {
 			stream = vertices.stream();
 		}
-		
+		final boolean isParallel = stream.isParallel();
 		stream.map(v -> {
 			try {
 				return Optional.<JsonObject>of(format.formatObject(v));
@@ -61,7 +61,11 @@ public class Formatter {
 			return Optional.<JsonObject>empty();
 		}).forEach(obj -> {
 			if (obj.isPresent()) {
-				synchronized (body) {
+				if (isParallel) {
+					synchronized (body) {
+						body.add(obj.get());
+					}
+				} else {
 					body.add(obj.get());
 				}
 			}

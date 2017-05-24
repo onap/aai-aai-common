@@ -36,7 +36,9 @@ import org.openecomp.aai.introspection.Loader;
 import org.openecomp.aai.introspection.LoaderFactory;
 import org.openecomp.aai.introspection.Version;
 import org.openecomp.aai.logging.ErrorLogHelper;
+import org.openecomp.aai.rest.RestTokens;
 import org.openecomp.aai.schema.enums.ObjectMetadata;
+import org.openecomp.aai.serialization.db.EdgeType;
 import org.openecomp.aai.util.AAIConfig;
 
 
@@ -130,10 +132,35 @@ public class URIParser {
 			Set<String> keys = null;
 			String part = "";
 			Introspector previousObj = null;
-
+			EdgeType type = EdgeType.TREE;
 			for (int i = 0; i < parts.length;) {
 				part = parts[i];
 				Introspector introspector = null;
+				if (part.equals(RestTokens.COUSIN.toString())) {
+					if (i == parts.length-1) {
+						throw new AAIException("AAI_3000", uri + " not a valid path. Cannot end in " + RestTokens.COUSIN);
+					}
+					introspector = loader.introspectorFromName(parts[i+1]);
+					if (previousObj.isContainer() && introspector.isContainer()) {
+						throw new AAIException("AAI_3000", uri + " not a valid path. Cannot chain plurals together");
+					}
+					MultivaluedMap<String, String> uriKeys = new MultivaluedHashMap<>();
+					if (i == parts.length-2 && queryParams != null) {
+						Set<String> queryKeys = queryParams.keySet();
+						for (String key : queryKeys) {
+							uriKeys.put(key, queryParams.get(key));
+							
+						}
+					}
+					if (introspector.isContainer()) {
+						boolean isFinalContainer = i == parts.length-2;
+						p.processContainer(introspector, EdgeType.COUSIN, uriKeys, isFinalContainer);
+					}
+					previousObj = introspector;
+					type = EdgeType.COUSIN;
+					i+=2;
+					continue;
+				}
 				introspector = loader.introspectorFromName(part);
 				if (introspector != null) {
 					
@@ -172,8 +199,8 @@ public class URIParser {
 							}
 						}
 						
-						p.processObject(introspector, uriKeys);
-	
+						p.processObject(introspector, type, uriKeys);
+						type = EdgeType.TREE;
 					} else if (introspector.isContainer()) {
 						boolean isFinalContainer = i == parts.length-1;
 						MultivaluedMap<String, String> uriKeys = new MultivaluedHashMap<>();
@@ -185,7 +212,7 @@ public class URIParser {
 								
 							}
 						}
-						p.processContainer(introspector, uriKeys, isFinalContainer);
+						p.processContainer(introspector, type, uriKeys, isFinalContainer);
 						
 						i++; 
 					} else {

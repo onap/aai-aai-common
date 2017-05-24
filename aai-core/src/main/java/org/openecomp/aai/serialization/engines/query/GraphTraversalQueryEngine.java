@@ -88,6 +88,15 @@ public class GraphTraversalQueryEngine extends QueryEngine {
  
 		return pipe.toList();
 	}
+	
+	public List<Vertex> findChildren(Vertex start) {
+		GraphTraversal<Vertex, Vertex> pipe =  this.g.V(start).union(
+					__.outE().has("isParent", true),
+					__.inE().has("isParent-REV", true)
+				).otherV().dedup();
+ 
+		return pipe.toList();
+	}
 
 	/**
 	 * {@inheritDoc}

@@ -67,7 +67,7 @@ import com.thinkaurelius.titan.core.TitanVertex;
 
 public class DataGrooming {
 
-	private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(DataGrooming.class);
+	private static EELFLogger LOGGER;
 	private static final String FROMAPPID = "AAI-DB";
 	private static final String TRANSID = UUID.randomUUID().toString();
 	private static int dupeGrpsDeleted = 0;
@@ -83,7 +83,7 @@ public class DataGrooming {
 		Properties props = System.getProperties();
 		props.setProperty(Configuration.PROPERTY_LOGGING_FILE_NAME, AAIConstants.AAI_DATA_GROOMING_LOGBACK_PROPS);
 		props.setProperty(Configuration.PROPERTY_LOGGING_FILE_PATH, AAIConstants.AAI_HOME_ETC_APP_PROPERTIES);
-				
+		LOGGER = EELFManager.getInstance().getLogger(DataGrooming.class);
 		String ver = "version"; // Placeholder
 		Boolean doAutoFix = false;
 		Boolean edgesOnlyFlag = false;
@@ -557,7 +557,8 @@ public class DataGrooming {
 										// NOTE --- We're just going to do the same check from the other direction - because
 										//  there could be duplicates or the pointer going the other way could be broken
 										ArrayList <TitanVertex> tmpListSec = new ArrayList <> ();
-										tmpListSec = getConnectedChildren( g, parentVtx ) ;
+										
+										tmpListSec = getConnectedChildrenOfOneType( g, parentVtx, nType ) ;
 										Iterator<TitanVertex> vIter = tmpListSec.iterator();
 										while (vIter.hasNext()) {
 											TitanVertex tmpV = vIter.next();
@@ -682,7 +683,7 @@ public class DataGrooming {
 						LOGGER.warn(">>> WARNING trying to get next vertex on the vItor2 ");
 						continue;
 					}
-
+					
 					counter++;
 					String thisVertId = "";
 					try {
@@ -1315,15 +1316,28 @@ public class DataGrooming {
 	 * @return the boolean
 	 */
 	private static Boolean anyKeyFieldsMissing(String nType, Vertex v, DbMaps dbMaps) {
-
+		
 		try {
+			if( nType != null && !nType.trim().equals("") 
+					&& !dbMaps.NodeKeyProps.containsKey(nType) ){
+				// They gave us a non-empty nodeType but our NodeKeyProps does
+				//   not have data for it.  Since we do not know what the
+				//   key params are for this type of node, we will just
+				//   return "false".
+				String emsg = " -- WARNING -- Unrecognized nodeType: [" + nType 
+						+ "].  We cannot determine required keys for this nType. ";
+				// NOTE - this will be caught below and a "false" returned
+				throw new AAIException("AAI_6121", emsg); 
+			}			
+			
 			// Determine what the key fields are for this nodeType
 			Collection <String> keyPropNamesColl = new ArrayList <>();
 			if( dbMaps.NodeKeyProps.containsKey(nType) ){
 				keyPropNamesColl = dbMaps.NodeKeyProps.get(nType);
 			}
 			else {
-				throw new AAIException("AAI_6105", "Required Property name(s) not found for nodeType = " + nType + ")"); 
+				// NOTE - this will be caught below and a "false" returned
+				throw new AAIException("AAI_6121", "Definition of key props not found for nodeType = " + nType + ")"); 
 			}
 			
 			Iterator<String> keyPropI = keyPropNamesColl.iterator();
@@ -1336,8 +1350,9 @@ public class DataGrooming {
 				}
 			}
 		} catch (AAIException e) {
-			// Something was wrong
-			return true;
+			// Something was wrong -- but since we weren't able to check
+			// the keys, we will not declare that it is missing keys.
+			return false;
 		}
 		return false;
 	}
@@ -1769,14 +1784,12 @@ public class DataGrooming {
 				}
 			} else {
 				// More than one node have the same key fields since they may
-				// depend on a parent node for
-				// uniqueness. Since we're finding more than one, we want to
-				// check to see if any of the
-				// vertices that have this set of keys are also pointing at the
-				// same 'parent' node.
+				// depend on a parent node for uniqueness. Since we're finding 
+				// more than one, we want to check to see if any of the
+				// vertices that have this set of keys (and are the same nodeType)
+				// are also pointing at the same 'parent' node.
 				// Note: for a given set of key data, it is possible that there
-				// could be more than one set of
-				// duplicates.
+				// could be more than one set of duplicates.
 				HashMap<String, ArrayList<TitanVertex>> vertsGroupedByParentHash = groupVertsByDepNodes(
 						transId, fromAppId, g, version, nType,
 						checkVertList, dbMaps);
@@ -1849,10 +1862,10 @@ public class DataGrooming {
 			String transId, String fromAppId, TitanTransaction g, String version,
 			String nType, ArrayList<TitanVertex> passedVertList, DbMaps dbMaps)
 			throws AAIException {
-		// Given a list of Titan Vertices, group them together by dependent
-		// nodes. Ie. if given a list of
-		// ip address nodes (assumed to all have the same key info) they might
-		// sit under several different parent vertices.
+		// Given a list of Titan Vertices of one nodeType (see AAI-8956), group 
+		// them together by the parent node they depend on.
+		// Ie. if given a list of ip address nodes (assumed to all have the
+		// same key info) they might sit under several different parent vertices.
 		// Under Normal conditions, there would only be one per parent -- but
 		// we're trying to find duplicates - so we
 		// allow for the case where more than one is under the same parent node.
@@ -1873,24 +1886,22 @@ public class DataGrooming {
 		while (ntItr.hasNext()) {
 			depNodeTypeL.add(ntItr.next());
 		}
-		// For each vertex, we want find its dependent vertex and add it to
-		// other vertexes that are dependent on that same guy.
+		// For each vertex, we want find its depended-on/parent vertex so we
+		// can track what other vertexes that are dependent on that same guy.
 		if (passedVertList != null) {
 			Iterator<TitanVertex> iter = passedVertList.iterator();
 			while (iter.hasNext()) {
 				TitanVertex thisVert = iter.next();
-				ArrayList<TitanVertex> connectedVList = getConnectedNodes( g, thisVert );
-				Iterator<TitanVertex> connIter = connectedVList.iterator();
-				while (connIter.hasNext()) {
-					TitanVertex tvCon = connIter.next();
-					String conNt = "";
-					Object obj = tvCon.<Object>property("aai-node-type").orElse(null);
+				TitanVertex tmpParentVtx = getConnectedParent( g, thisVert );
+				if( tmpParentVtx != null ) {
+					String parentNt = null;
+					Object obj = tmpParentVtx.<Object>property("aai-node-type").orElse(null);
 					if (obj != null) {
-						conNt = obj.toString();
+						parentNt = obj.toString();
 					}
-					if (depNTColl.contains(conNt)) {
+					if (depNTColl.contains(parentNt)) {
 						// This must be the parent/dependent node
-						String parentVid = tvCon.id().toString();
+						String parentVid = tmpParentVtx.id().toString();
 						if (retHash.containsKey(parentVid)) {
 							// add this vert to the list for this parent key
 							retHash.get(parentVid).add(thisVert);
@@ -2200,23 +2211,43 @@ public class DataGrooming {
 	}// End of getConnectedNodes()
 	
 
-	private static ArrayList <TitanVertex> getConnectedChildren( TitanTransaction graph, 
-			TitanVertex startVtx ) throws AAIException{
+	private static ArrayList <TitanVertex> getConnectedChildrenOfOneType( TitanTransaction graph, 
+			TitanVertex startVtx, String childNType ) throws AAIException{
 		
 		ArrayList <TitanVertex> childList = new ArrayList <> ();
-		
 		Iterable <?> verts = startVtx.query().direction(Direction.OUT).has("isParent",true).vertices();
 		Iterator <?> vertI = verts.iterator();
 		TitanVertex tmpVtx = null;
 		while( vertI != null && vertI.hasNext() ){
 			tmpVtx = (TitanVertex) vertI.next();
-			childList.add(tmpVtx);
+			Object ob = tmpVtx.<Object>property("aai-node-type").orElse(null);
+			if (ob != null) {
+				String tmpNt = ob.toString();
+				if( tmpNt.equals(childNType)){
+					childList.add(tmpVtx);
+				}
+			}
 		}
 		
 		return childList;		
 
-	}// End of getConnectedChildren()
+	}// End of getConnectedChildrenOfOneType()
 
+
+	private static TitanVertex getConnectedParent( TitanTransaction graph, 
+			TitanVertex startVtx ) throws AAIException{
+		
+		TitanVertex parentVtx = null;
+		Iterable <?> verts = startVtx.query().direction(Direction.IN).has("isParent",true).vertices();
+		Iterator <?> vertI = verts.iterator();
+		while( vertI != null && vertI.hasNext() ){
+			// Note - there better only be one!
+			parentVtx = (TitanVertex) vertI.next();
+		}
+		
+		return parentVtx;		
+
+	}// End of getConnectedParent()
 	
 	
 	

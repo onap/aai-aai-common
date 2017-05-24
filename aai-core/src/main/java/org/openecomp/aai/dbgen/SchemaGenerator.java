@@ -21,12 +21,14 @@
 package org.openecomp.aai.dbgen;
 
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
-import com.google.common.collect.Multimap;
-import com.thinkaurelius.titan.core.*;
-import com.thinkaurelius.titan.core.schema.TitanManagement;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+
 import org.apache.tinkerpop.gremlin.structure.Vertex;
+
 import org.openecomp.aai.db.props.AAIProperties;
 import org.openecomp.aai.exceptions.AAIException;
 import org.openecomp.aai.introspection.Introspector;
@@ -37,11 +39,18 @@ import org.openecomp.aai.schema.enums.PropertyMetadata;
 import org.openecomp.aai.serialization.db.EdgeRule;
 import org.openecomp.aai.serialization.db.EdgeRules;
 import org.openecomp.aai.util.AAIConfig;
+import com.att.eelf.configuration.EELFLogger;
+import com.att.eelf.configuration.EELFManager;
+import com.google.common.collect.Multimap;
+import com.thinkaurelius.titan.core.Cardinality;
+import com.thinkaurelius.titan.core.Multiplicity;
+import com.thinkaurelius.titan.core.PropertyKey;
+import com.thinkaurelius.titan.core.TitanGraph;
+import com.thinkaurelius.titan.core.schema.TitanManagement;
 
-import java.util.*;
 
 
-public class SchemaGenerator {
+public class SchemaGenerator{
 
 	private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(SchemaGenerator.class);
 	private static boolean addDefaultCR = true;
@@ -72,6 +81,7 @@ public class SchemaGenerator {
     	}
     	catch (Exception ex){
 			LOGGER.error(" ERROR - Could not run AAIConfig.init(). ", ex);
+			System.out.println(" ERROR - Could not run AAIConfig.init(). ");
 			System.exit(1);
 		}
     	
@@ -93,13 +103,18 @@ public class SchemaGenerator {
 			}
 		} catch (AAIException e) {
 			LOGGER.error("could not get edge rules", e);
+			System.out.println("could not get edge rules");
 			System.exit(1);
 		}
 		for( String label: labels){
 			if( graphMgmt.containsRelationType(label) ) {
-            	LOGGER.debug(" EdgeLabel  [" + label + "] already existed. ");
+				String dmsg = " EdgeLabel  [" + label + "] already existed. ";
+            	System.out.println(dmsg);
+            	LOGGER.debug(dmsg);
             } else {
-            	LOGGER.debug("Making EdgeLabel: [" + label + "]");
+            	String dmsg = "Making EdgeLabel: [" + label + "]";
+            	System.out.println(dmsg);
+            	LOGGER.debug(dmsg);
             	graphMgmt.makeEdgeLabel(label).multiplicity(Multiplicity.valueOf("MULTI")).make();
             }
         }     
@@ -116,7 +131,9 @@ public class SchemaGenerator {
 					dbPropName = alias.get();
 				}
 				if( graphMgmt.containsRelationType(propName) ){
-	            	LOGGER.debug(" PropertyKey  [" + propName + "] already existed in the DB. ");
+	            	String dmsg = " PropertyKey  [" + propName + "] already existed in the DB. ";
+	            	System.out.println(dmsg);
+	            	LOGGER.debug(dmsg);
 	            } else {
 	            	Class<?> type = obj.getClass(propName);
 	            	Cardinality cardinality = Cardinality.SINGLE;
@@ -131,7 +148,9 @@ public class SchemaGenerator {
 
 	            	if (process) {
 
-		            	LOGGER.info("Creating PropertyKey: [" + dbPropName + "], ["+ type.getSimpleName() + "], [" + cardinality + "]");
+		            	String imsg = "Creating PropertyKey: [" + dbPropName + "], ["+ type.getSimpleName() + "], [" + cardinality + "]";
+		            	System.out.println(imsg);
+		            	LOGGER.info(imsg);
 		            	PropertyKey propK;
 		            	if (!seenProps.containsKey(dbPropName)) {
 		            		propK = graphMgmt.makePropertyKey(dbPropName).dataType(type).cardinality(cardinality).make();
@@ -140,18 +159,26 @@ public class SchemaGenerator {
 		            		propK = seenProps.get(dbPropName);
 		            	}
 		            	if (graphMgmt.containsGraphIndex(dbPropName)) {
-			            	LOGGER.debug(" Index  [" + dbPropName + "] already existed in the DB. ");
+			            	String dmsg = " Index  [" + dbPropName + "] already existed in the DB. ";
+			            	System.out.println(dmsg);
+			            	LOGGER.debug(dmsg);
 		            	} else {
 		            		if( obj.getIndexedProperties().contains(propName) ){
 			                 	if( obj.getUniqueProperties().contains(propName) ){
-			 						LOGGER.info("Add Unique index for PropertyKey: [" + dbPropName + "]");
-			                         graphMgmt.buildIndex(dbPropName,Vertex.class).addKey(propK).unique().buildCompositeIndex();
+			 						imsg = "Add Unique index for PropertyKey: [" + dbPropName + "]";
+					            	System.out.println(imsg);
+					            	LOGGER.info(imsg);
+			                        graphMgmt.buildIndex(dbPropName,Vertex.class).addKey(propK).unique().buildCompositeIndex();
 			                     } else {
-			                     	LOGGER.info("Add index for PropertyKey: [" + dbPropName + "]");
-			                         graphMgmt.buildIndex(dbPropName,Vertex.class).addKey(propK).buildCompositeIndex();
+			                     	imsg = "Add index for PropertyKey: [" + dbPropName + "]";
+					            	System.out.println(imsg);
+					            	LOGGER.info(imsg);
+			                        graphMgmt.buildIndex(dbPropName,Vertex.class).addKey(propK).buildCompositeIndex();
 			                     }
 			                 } else {
-			                 	LOGGER.info("No index added for PropertyKey: [" + dbPropName + "]");
+			                 	imsg = "No index added for PropertyKey: [" + dbPropName + "]";
+				            	System.out.println(imsg);
+				            	LOGGER.info(imsg);
 			                 }
 		            	}
 	            	}
@@ -159,7 +186,10 @@ public class SchemaGenerator {
 			}
 		}
         
-        LOGGER.info("-- About to call graphMgmt commit");
+        String imsg = "-- About to call graphMgmt commit";
+    	System.out.println(imsg);
+    	LOGGER.info(imsg);
+
         graphMgmt.commit();
     }// End of loadSchemaIntoTitan()
 

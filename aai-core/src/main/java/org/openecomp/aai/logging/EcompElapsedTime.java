@@ -20,9 +20,10 @@
 
 package org.openecomp.aai.logging;
 
+import org.openecomp.aai.logging.LoggingContext.LoggingField;
+
 import ch.qos.logback.classic.pattern.ClassicConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
-import org.openecomp.aai.logging.LoggingContext.LoggingField;
 
 public class EcompElapsedTime extends ClassicConverter {
 

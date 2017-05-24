@@ -24,22 +24,9 @@ import javax.ws.rs.core.MultivaluedMap;
 
 import org.openecomp.aai.exceptions.AAIException;
 import org.openecomp.aai.introspection.Introspector;
+import org.openecomp.aai.serialization.db.EdgeType;
 
 class URIValidate implements Parsable {
-
-	@Override
-	public void processObject(Introspector obj, MultivaluedMap<String, String> uriKeys) throws AAIException {
-		//NO-OP
-		//just want to make sure this URI has valid tokens
-	}
-
-	@Override
-	public void processContainer(Introspector obj, MultivaluedMap<String, String> uriKeys, boolean isFinalContainer)
-			throws AAIException {
-		//NO-OP
-		//just want to make sure this URI has valid tokens
-
-	}
 
 	@Override
 	public void processNamespace(Introspector obj) {
@@ -57,6 +44,20 @@ class URIValidate implements Parsable {
 	public boolean useOriginalLoader() {
 		
 		return true;
+	}
+
+	@Override
+	public void processObject(Introspector obj, EdgeType type, MultivaluedMap<String, String> uriKeys)
+			throws AAIException {
+		//NO-OP
+		//just want to make sure this URI has valid tokens
+	}
+
+	@Override
+	public void processContainer(Introspector obj, EdgeType type, MultivaluedMap<String, String> uriKeys,
+			boolean isFinalContainer) throws AAIException {
+		//NO-OP
+		//just want to make sure this URI has valid tokens
 	}
 
 }

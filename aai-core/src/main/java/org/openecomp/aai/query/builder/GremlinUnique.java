@@ -40,7 +40,7 @@ import org.openecomp.aai.parsers.query.UniqueStrategy;
 /**
  * The Class GremlinUnique.
  */
-public class GremlinUnique extends GremlinQueryBuilder {
+public class GremlinUnique<E> extends GremlinQueryBuilder<E> {
 	
 	/**
 	 * Instantiates a new gremlin unique.
@@ -63,7 +63,7 @@ public class GremlinUnique extends GremlinQueryBuilder {
 		this.factory = new UniqueStrategy(this.loader, this);
 	}
 	
-	protected GremlinUnique(List<String> traversal, Loader loader, GraphTraversalSource source, GremlinQueryBuilder gtb) {
+	protected GremlinUnique(List<String> traversal, Loader loader, GraphTraversalSource source, GremlinQueryBuilder<E> gtb) {
 		super(loader, source);
 		this.list = traversal;
 		this.stepIndex = gtb.getStepIndex();
@@ -110,20 +110,20 @@ public class GremlinUnique extends GremlinQueryBuilder {
 	 * @{inheritDoc}
 	 */
 	@Override
-	public QueryBuilder newInstance() {
-		return new GremlinUnique(loader, source);
+	public QueryBuilder<E> newInstance() {
+		return new GremlinUnique<>(loader, source);
 	}
 
 	/**
 	 * @{inheritDoc}
 	 */
 	@Override
-	public QueryBuilder newInstance(Vertex start) {
-		return new GremlinUnique(loader, source, start);
+	public QueryBuilder<E> newInstance(Vertex start) {
+		return new GremlinUnique<>(loader, source, start);
 	}
 	
 	@Override
-	protected QueryBuilder cloneQueryAtStep(int index) {
+	protected QueryBuilder<E> cloneQueryAtStep(int index) {
 		if (index == 0) {
 			index = stepIndex;
 		}
@@ -132,6 +132,6 @@ public class GremlinUnique extends GremlinQueryBuilder {
 			newList.add(this.list.get(i));
 		}
 		
-		return new GremlinUnique(newList, loader, source, this);
+		return new GremlinUnique<>(newList, loader, source, this);
 	}
 }

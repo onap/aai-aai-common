@@ -20,14 +20,14 @@
 
 package org.openecomp.aai.introspection;
 
+import static org.junit.Assert.*;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
+
 import org.openecomp.aai.domain.yang.v9.VnfImage;
 import org.openecomp.aai.introspection.exceptions.AAIUnmarshallingException;
 import org.openecomp.aai.restcore.MediaType;
-
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 public class PojoLoaderTest {
 

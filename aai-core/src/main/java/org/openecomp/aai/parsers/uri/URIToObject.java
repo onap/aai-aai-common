@@ -32,6 +32,7 @@ import org.openecomp.aai.introspection.Introspector;
 import org.openecomp.aai.introspection.Loader;
 import org.openecomp.aai.introspection.Version;
 import org.openecomp.aai.schema.enums.ObjectMetadata;
+import org.openecomp.aai.serialization.db.EdgeType;
 
 /**
  * Given a URI this class returns an object, or series of nested objects
@@ -88,61 +89,6 @@ public class URIToObject implements Parsable {
 		this.loader = parser.getLoader();
 		this.version = loader.getVersion();
 
-	}
-	
-	/**
-	 * @{inheritDoc}
-	 */
-	@Override
-	public void processObject(Introspector obj, MultivaluedMap<String, String> uriKeys) {
-		
-		if (this.entityName == null) {
-			this.topEntityName = obj.getDbName();
-			this.topEntity = obj;
-		}
-		this.entityName = obj.getDbName();
-		this.entity = obj;
-		this.parentList = (List<Object>)this.previous.getValue(obj.getName());
-		this.parentList.add(entity.getUnderlyingObject());
-		
-		for (String key : uriKeys.keySet()) {
-			entity.setValue(key, uriKeys.getFirst(key));
-		}
-		try {
-			if (relatedObjects.containsKey(entity.getObjectId())) {
-				Introspector relatedObject = relatedObjects.get(entity.getObjectId());
-				String nameProp = relatedObject.getMetadata(ObjectMetadata.NAME_PROPS);
-				if (nameProp == null) {
-					nameProp = "";
-				}
-				if (nameProp != null && !nameProp.equals("")) {
-					String[] nameProps = nameProp.split(",");
-					for (String prop : nameProps) {
-						entity.setValue(prop, relatedObject.getValue(prop));
-					}
-				}
-			}
-		} catch (UnsupportedEncodingException e) {
-		}
-		this.previous = entity;
-		
-	}
-	
-	/**
-	 * @{inheritDoc}
-	 */
-	@Override
-	public void processContainer(Introspector  obj, MultivaluedMap<String, String> uriKeys, boolean isFinalContainer) {
-		
-		this.previous = obj;
-
-		if (this.entity != null) {
-			this.entity.setValue(obj.getName(), obj.getUnderlyingObject());
-		} else {
-			this.entity = obj;
-			this.topEntity = obj;
-		}
-		
 	}
 	
 	/**
@@ -225,5 +171,51 @@ public class URIToObject implements Parsable {
 	}
 	public Loader getLoader() {
 		return this.loader;
+	}
+	@Override
+	public void processObject(Introspector obj, EdgeType type, MultivaluedMap<String, String> uriKeys)
+			throws AAIException {
+
+		if (this.entityName == null) {
+			this.topEntityName = obj.getDbName();
+			this.topEntity = obj;
+		}
+		this.entityName = obj.getDbName();
+		this.entity = obj;
+		this.parentList = (List<Object>)this.previous.getValue(obj.getName());
+		this.parentList.add(entity.getUnderlyingObject());
+		
+		for (String key : uriKeys.keySet()) {
+			entity.setValue(key, uriKeys.getFirst(key));
+		}
+		try {
+			if (relatedObjects.containsKey(entity.getObjectId())) {
+				Introspector relatedObject = relatedObjects.get(entity.getObjectId());
+				String nameProp = relatedObject.getMetadata(ObjectMetadata.NAME_PROPS);
+				if (nameProp == null) {
+					nameProp = "";
+				}
+				if (nameProp != null && !nameProp.equals("")) {
+					String[] nameProps = nameProp.split(",");
+					for (String prop : nameProps) {
+						entity.setValue(prop, relatedObject.getValue(prop));
+					}
+				}
+			}
+		} catch (UnsupportedEncodingException e) {
+		}
+		this.previous = entity;
+	}
+	@Override
+	public void processContainer(Introspector obj, EdgeType type, MultivaluedMap<String, String> uriKeys,
+			boolean isFinalContainer) throws AAIException {
+		this.previous = obj;
+
+		if (this.entity != null) {
+			this.entity.setValue(obj.getName(), obj.getUnderlyingObject());
+		} else {
+			this.entity = obj;
+			this.topEntity = obj;
+		}
 	}
 }

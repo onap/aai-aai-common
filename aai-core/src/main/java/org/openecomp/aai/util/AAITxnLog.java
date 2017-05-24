@@ -20,21 +20,6 @@
 
 package org.openecomp.aai.util;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
-import org.apache.hadoop.hbase.HBaseConfiguration;
-import org.apache.hadoop.hbase.client.*;
-import org.apache.hadoop.hbase.filter.CompareFilter.CompareOp;
-import org.apache.hadoop.hbase.filter.Filter;
-import org.apache.hadoop.hbase.filter.FilterList;
-import org.apache.hadoop.hbase.filter.RegexStringComparator;
-import org.apache.hadoop.hbase.filter.SingleColumnValueFilter;
-import org.apache.hadoop.hbase.util.Bytes;
-import org.openecomp.aai.domain.notificationEvent.NotificationEvent;
-import org.openecomp.aai.domain.translog.TransactionLogEntries;
-import org.openecomp.aai.domain.translog.TransactionLogEntry;
-import org.openecomp.aai.exceptions.AAIException;
-
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -42,7 +27,28 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class AAITxnLog {
+import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.client.Get;
+import org.apache.hadoop.hbase.client.HTable;
+import org.apache.hadoop.hbase.client.Put;
+import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.client.ResultScanner;
+import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.filter.CompareFilter.CompareOp;
+import org.apache.hadoop.hbase.filter.Filter;
+import org.apache.hadoop.hbase.filter.FilterList;
+import org.apache.hadoop.hbase.filter.RegexStringComparator;
+import org.apache.hadoop.hbase.filter.SingleColumnValueFilter;
+import org.apache.hadoop.hbase.util.Bytes;
+
+import org.openecomp.aai.domain.notificationEvent.NotificationEvent;
+import org.openecomp.aai.domain.translog.TransactionLogEntries;
+import org.openecomp.aai.domain.translog.TransactionLogEntry;
+import org.openecomp.aai.exceptions.AAIException;
+import com.att.eelf.configuration.EELFLogger;
+import com.att.eelf.configuration.EELFManager;
+
+public class AAITxnLog  {
 
 	private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(AAITxnLog.class);
 
@@ -340,8 +346,8 @@ public class AAITxnLog {
 	 * @param fromAppIdFilter the from app id filter
 	 * @return the transaction log entries
 	 */
-	public TransactionLogEntries scanFiltered(long startMillis, long endMillis, List<String> methodList,
-                                              String putFilter, String getFilter, String resourceFilter, String fromAppIdFilter) {
+	public TransactionLogEntries scanFiltered(long startMillis, long endMillis, List<String> methodList, 
+			String putFilter, String getFilter, String resourceFilter, String fromAppIdFilter) {
 
 		LOGGER.debug("Starting scanFiltered()");
 		

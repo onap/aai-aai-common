@@ -39,6 +39,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -48,6 +49,7 @@ import org.openecomp.aai.exceptions.AAIException;
 import org.openecomp.aai.introspection.LoaderFactory;
 import org.openecomp.aai.introspection.ModelType;
 import org.openecomp.aai.introspection.Version;
+import org.openecomp.aai.rest.RestTokens;
 import org.openecomp.aai.serialization.engines.QueryStyle;
 import org.openecomp.aai.serialization.engines.TitanDBEngine;
 import org.openecomp.aai.serialization.engines.TransactionalGraphEngine;
@@ -72,8 +74,8 @@ public class GraphTraversalTest {
 	 */
 	@BeforeClass
 	public static void configure() throws NoSuchFieldException, SecurityException, Exception {
-		System.setProperty("AJSC_HOME", "./src/test/resources/");
-		System.setProperty("BUNDLECONFIG_DIR", "bundleconfig-local");
+		System.setProperty("AJSC_HOME", ".");
+		System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
 		QueryFormatTestHelper.setFinalStatic(AAIConstants.class.getField("AAI_HOME_ETC_OXM"), "src/test/resources/org/openecomp/aai/introspection/");
 		dbEngine = 
 				new TitanDBEngine(QueryStyle.TRAVERSAL, 
@@ -486,8 +488,7 @@ public class GraphTraversalTest {
 		QueryParser query = dbEngine.getQueryBuilder().createQueryFromURI(uri);
 		
 		GraphTraversal<Vertex, Vertex> expected = __.<Vertex>start()
-				.has("vnf-id", "key1").has(
-						AAIProperties.NODE_TYPE, P.within("vce" , "vpe" , "generic-vnf"));
+				.has("vnf-id", "key1").has(AAIProperties.NODE_TYPE, P.within("vce", "vpe", "generic-vnf"));
 			
 		GraphTraversal<Vertex, Vertex> expectedParent = expected;
 		assertEquals(
@@ -534,8 +535,7 @@ public class GraphTraversalTest {
 		
 		GraphTraversal<Vertex, Vertex> expected = __.<Vertex>start()
 				.has("vnf-id", "key1").has(AAIProperties.NODE_TYPE, P.within("vce", "vpe", "generic-vnf"))
-                .union(__.out("has").has("aai-node-type", "vf-module"))
-				.has("vf-module-id", "key2");
+				.union(__.out("has").has(AAIProperties.NODE_TYPE, "vf-module")).has("vf-module-id", "key2");
 		
 		GraphTraversal<Vertex, Vertex> expectedParent = __.<Vertex>start()
 				.has("vnf-id", "key1").has(AAIProperties.NODE_TYPE, P.within("vce", "vpe", "generic-vnf"));
@@ -691,7 +691,138 @@ public class GraphTraversalTest {
 				"",
 				query.getParentResultType());
 		assertEquals("dependent",true, query.isDependent());
-		
+	}
+
+	@Ignore
+	@Test
+	public void pluralCousin() throws UnsupportedEncodingException, AAIException {
+		URI uri = UriBuilder.fromPath("cloud-infrastructure/complexes/complex/key1/related-to/pservers").build();
+
+		QueryParser query = dbEnginev9.getQueryBuilder().createQueryFromURI(uri);
+		GraphTraversal<Vertex, Vertex> expected = __.<Vertex>start()
+				.has("physical-location-id", "key1")
+				.has("aai-node-type", "complex")
+				.in("locatedIn").has("aai-node-type", "pserver");
+		GraphTraversal<Vertex, Vertex> expectedParent = __.<Vertex>start()
+				.has("physical-location-id", "key1")
+				.has("aai-node-type", "complex");
+
+		assertEquals(
+				"gremlin query should be " + expected.toString(),
+				expected.toString(),
+				query.getQueryBuilder().getQuery().toString());
+		assertEquals(
+				"parent",
+				expectedParent.toString(),
+				query.getQueryBuilder().getParentQuery().getQuery().toString());
+
+		assertEquals(
+				"result type should be",
+				"pserver",
+				query.getResultType());
+		assertEquals(
+				"result type should be",
+				"complex",
+				query.getParentResultType());
+		//this is controversial but we're not allowing writes on this currently
+		assertEquals("dependent",true, query.isDependent());
+	}
+
+	@Ignore
+	@Test
+	public void specificCousin() throws UnsupportedEncodingException, AAIException {
+		URI uri = UriBuilder.fromPath("cloud-infrastructure/complexes/complex/key1/related-to/pservers/pserver/key2").build();
+
+		QueryParser query = dbEnginev9.getQueryBuilder().createQueryFromURI(uri);
+		GraphTraversal<Vertex, Vertex> expected = __.<Vertex>start()
+				.has("physical-location-id", "key1")
+				.has("aai-node-type", "complex")
+				.in("locatedIn").has("aai-node-type", "pserver")
+				.has("hostname", "key2");
+		GraphTraversal<Vertex, Vertex> expectedParent = __.<Vertex>start()
+				.has("physical-location-id", "key1")
+				.has("aai-node-type", "complex");
+
+		assertEquals(
+				"gremlin query should be " + expected.toString(),
+				expected.toString(),
+				query.getQueryBuilder().getQuery().toString());
+		assertEquals(
+				"parent",
+				expectedParent.toString(),
+				query.getQueryBuilder().getParentQuery().getQuery().toString());
+
+		assertEquals(
+				"result type should be",
+				"pserver",
+				query.getResultType());
+		assertEquals(
+				"result type should be",
+				"complex",
+				query.getParentResultType());
+		//this is controversial but we're not allowing writes on this currently
+		assertEquals("dependent",true, query.isDependent());
+	}
+
+	@Ignore
+	@Test
+	public void doubleSpecificCousin() throws UnsupportedEncodingException, AAIException {
+		URI uri = UriBuilder.fromPath("cloud-infrastructure/complexes/complex/key1/related-to/pservers/pserver/key2/related-to/vservers/vserver/key3").build();
+
+		QueryParser query = dbEnginev9.getQueryBuilder().createQueryFromURI(uri);
+		GraphTraversal<Vertex, Vertex> expected = __.<Vertex>start()
+				.has("physical-location-id", "key1")
+				.has("aai-node-type", "complex")
+				.in("locatedIn").has("aai-node-type", "pserver")
+				.has("hostname", "key2")
+				.in("runsOnPserver").has("aai-node-type", "vserver")
+				.has("vserver-id", "key3");
+		GraphTraversal<Vertex, Vertex> expectedParent = __.<Vertex>start()
+				.has("physical-location-id", "key1")
+				.has("aai-node-type", "complex")
+				.in("locatedIn").has("aai-node-type", "pserver")
+				.has("hostname", "key2");
+
+		assertEquals(
+				"gremlin query should be " + expected.toString(),
+				expected.toString(),
+				query.getQueryBuilder().getQuery().toString());
+		assertEquals(
+				"parent",
+				expectedParent.toString(),
+				query.getQueryBuilder().getParentQuery().getQuery().toString());
+
+		assertEquals(
+				"result type should be",
+				"vserver",
+				query.getResultType());
+		assertEquals(
+				"result type should be",
+				"pserver",
+				query.getParentResultType());
+		//this is controversial but we're not allowing writes on this currently
+		assertEquals("dependent",true, query.isDependent());
+	}
+
+	@Ignore
+	@Test
+	public void traversalEndsInRelatedTo() throws UnsupportedEncodingException, AAIException {
+		URI uri = UriBuilder.fromPath("cloud-infrastructure/complexes/complex/key1/related-to").build();
+
+		thrown.expect(AAIException.class);
+		thrown.expectMessage(containsString(RestTokens.COUSIN.toString()));
+		QueryParser query = dbEnginev9.getQueryBuilder().createQueryFromURI(uri);
+
+	}
+
+	@Ignore
+	@Test
+	public void pluralCousinToPluralCousin() throws UnsupportedEncodingException, AAIException {
+		URI uri = UriBuilder.fromPath("cloud-infrastructure/complexes/related-to/pservers").build();
+
+		thrown.expect(AAIException.class);
+		thrown.expectMessage(containsString("chain plurals"));
+		QueryParser query = dbEnginev9.getQueryBuilder().createQueryFromURI(uri);
 	
 	}
 }

@@ -29,6 +29,7 @@ import java.util.List;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 
 import org.openecomp.aai.exceptions.AAIException;
@@ -42,7 +43,7 @@ import org.openecomp.aai.serialization.db.exceptions.NoEdgeRuleFoundException;
 /**
  * The Class QueryBuilder.
  */
-public abstract class QueryBuilder implements Iterator<Vertex> {
+public abstract class QueryBuilder<E> implements Iterator<E> {
 
 	protected QueryParserStrategy factory = null;
 	
@@ -82,7 +83,7 @@ public abstract class QueryBuilder implements Iterator<Vertex> {
 	 * @param value the value
 	 * @return the vertices by indexed property
 	 */
-	public abstract QueryBuilder getVerticesByIndexedProperty(String key, Object value);
+	public abstract QueryBuilder<Vertex> getVerticesByIndexedProperty(String key, Object value);
 	
 	/**
 	 * Gets the vertices by property.
@@ -91,7 +92,7 @@ public abstract class QueryBuilder implements Iterator<Vertex> {
 	 * @param value the value
 	 * @return the vertices by property
 	 */
-	public abstract QueryBuilder getVerticesByProperty(String key, Object value);
+	public abstract QueryBuilder<Vertex> getVerticesByProperty(String key, Object value);
 	
 	/**
 	 * filters by all the values for this property
@@ -99,7 +100,7 @@ public abstract class QueryBuilder implements Iterator<Vertex> {
 	 * @param values
 	 * @return vertices that match these values
 	 */
-	public abstract QueryBuilder getVerticesByIndexedProperty(String key, List<?> values);
+	public abstract QueryBuilder<Vertex> getVerticesByIndexedProperty(String key, List<?> values);
 
 	/**
 	 * filters by all the values for this property
@@ -107,7 +108,7 @@ public abstract class QueryBuilder implements Iterator<Vertex> {
 	 * @param values
 	 * @return vertices that match these values
 	 */
-	public abstract QueryBuilder getVerticesByProperty(String key, List<?> values);
+	public abstract QueryBuilder<Vertex> getVerticesByProperty(String key, List<?> values);
 
 	/**
 	 * Gets the child vertices from parent.
@@ -117,7 +118,7 @@ public abstract class QueryBuilder implements Iterator<Vertex> {
 	 * @param childType the child type
 	 * @return the child vertices from parent
 	 */
-	public abstract QueryBuilder getChildVerticesFromParent(String parentKey, String parentValue, String childType);
+	public abstract QueryBuilder<Vertex> getChildVerticesFromParent(String parentKey, String parentValue, String childType);
 		
 	/**
 	 * Gets the typed vertices by map.
@@ -126,7 +127,7 @@ public abstract class QueryBuilder implements Iterator<Vertex> {
 	 * @param map the map
 	 * @return the typed vertices by map
 	 */
-	public abstract QueryBuilder getTypedVerticesByMap(String type, LinkedHashMap<String, String> map);
+	public abstract QueryBuilder<Vertex> getTypedVerticesByMap(String type, LinkedHashMap<String, String> map);
 
 	/**
 	 * Creates the DB query.
@@ -134,7 +135,7 @@ public abstract class QueryBuilder implements Iterator<Vertex> {
 	 * @param obj the obj
 	 * @return the query builder
 	 */
-	public abstract QueryBuilder createDBQuery(Introspector obj);
+	public abstract QueryBuilder<Vertex> createDBQuery(Introspector obj);
 	
 	/**
 	 * Creates the key query.
@@ -142,7 +143,7 @@ public abstract class QueryBuilder implements Iterator<Vertex> {
 	 * @param obj the obj
 	 * @return the query builder
 	 */
-	public abstract QueryBuilder createKeyQuery(Introspector obj);
+	public abstract QueryBuilder<Vertex> createKeyQuery(Introspector obj);
 	
 	/**
 	 * Creates the container query.
@@ -150,7 +151,7 @@ public abstract class QueryBuilder implements Iterator<Vertex> {
 	 * @param obj the obj
 	 * @return the query builder
 	 */
-	public abstract QueryBuilder createContainerQuery(Introspector obj);
+	public abstract QueryBuilder<Vertex> createContainerQuery(Introspector obj);
 	
 	/**
 	 * Creates the edge traversal.
@@ -159,7 +160,7 @@ public abstract class QueryBuilder implements Iterator<Vertex> {
 	 * @param child the child
 	 * @return the query builder
 	 */
-	public abstract QueryBuilder createEdgeTraversal(EdgeType type, Introspector parent, Introspector child) throws AAIException;
+	public abstract QueryBuilder<Vertex> createEdgeTraversal(EdgeType type, Introspector parent, Introspector child) throws AAIException;
 	
 	/**
 	 * Creates the edge traversal.
@@ -168,15 +169,16 @@ public abstract class QueryBuilder implements Iterator<Vertex> {
 	 * @param child the child
 	 * @return the query builder
 	 */
-	public abstract QueryBuilder createEdgeTraversal(EdgeType type, Vertex parent, Introspector child) throws AAIException;
+	public abstract QueryBuilder<Vertex> createEdgeTraversal(EdgeType type, Vertex parent, Introspector child) throws AAIException;
 
-	public QueryBuilder createEdgeTraversal(EdgeType type, String outNodeType, String inNodeType) throws NoEdgeRuleFoundException, AAIException {
+	public QueryBuilder<Vertex> createEdgeTraversal(EdgeType type, String outNodeType, String inNodeType) throws NoEdgeRuleFoundException, AAIException {
 		Introspector out = loader.introspectorFromName(outNodeType);
 		Introspector in = loader.introspectorFromName(inNodeType);
 		
 		return createEdgeTraversal(type, out, in);
 	}
-
+	
+	public abstract QueryBuilder<Edge> getEdgesBetween(EdgeType type, String outNodeType, String inNodeType) throws AAIException;
 	/**
 	 * Creates the query from URI.
 	 *
@@ -221,35 +223,35 @@ public abstract class QueryBuilder implements Iterator<Vertex> {
 	 *
 	 * @return the parent query
 	 */
-	public abstract QueryBuilder getParentQuery();
+	public abstract QueryBuilder<E> getParentQuery();
 	
 	/**
 	 * Gets the query.
 	 *
 	 * @return the query
 	 */
-	public abstract <T> T getQuery();
+	public abstract <E2> E2 getQuery();
 	
 	/**
 	 * Form boundary.
 	 */
 	public abstract void markParentBoundary();
 	
-	public abstract QueryBuilder limit(long amount);
+	public abstract QueryBuilder<E> limit(long amount);
 	/**
 	 * New instance.
 	 *
 	 * @param start the start
 	 * @return the query builder
 	 */
-	public abstract QueryBuilder newInstance(Vertex start);
+	public abstract QueryBuilder<E> newInstance(Vertex start);
 	
 	/**
 	 * New instance.
 	 *
 	 * @return the query builder
 	 */
-	public abstract QueryBuilder newInstance();
+	public abstract QueryBuilder<E> newInstance();
 	
 	/**
 	 * Gets the start.
@@ -272,7 +274,7 @@ public abstract class QueryBuilder implements Iterator<Vertex> {
 	 * @param obj
 	 * @return
 	 */
-	public abstract QueryBuilder exactMatchQuery(Introspector obj);
+	public abstract QueryBuilder<Vertex> exactMatchQuery(Introspector obj);
 
 	/**
 	 * lets you join any number of QueryBuilders
@@ -280,14 +282,14 @@ public abstract class QueryBuilder implements Iterator<Vertex> {
 	 * @param builder
 	 * @return
 	 */
-	public abstract QueryBuilder union(QueryBuilder[] builder);
+	public abstract QueryBuilder<E> union(QueryBuilder<E>... builder);
 	
-	public abstract QueryBuilder where(QueryBuilder[] builder);
+	public abstract QueryBuilder<E> where(QueryBuilder<E>... builder);
 	public abstract void markContainer();
 
-	public abstract QueryBuilder getContainerQuery();
+	public abstract QueryBuilder<E> getContainerQuery();
 
-	public abstract List<Vertex> toList();
+	public abstract List<E> toList();
 	
 		
 }

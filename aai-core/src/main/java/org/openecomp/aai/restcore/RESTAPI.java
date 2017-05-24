@@ -20,24 +20,7 @@
 
 package org.openecomp.aai.restcore;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
-import com.google.common.base.Joiner;
-import org.openecomp.aai.db.props.AAIProperties;
-import org.openecomp.aai.dbmap.DBConnectionType;
-import org.openecomp.aai.exceptions.AAIException;
-import org.openecomp.aai.introspection.Introspector;
-import org.openecomp.aai.introspection.Loader;
-import org.openecomp.aai.introspection.tools.*;
-import org.openecomp.aai.logging.ErrorLogHelper;
-import org.openecomp.aai.util.AAIConfig;
-import org.openecomp.aai.util.AAIConstants;
-import org.openecomp.aai.util.AAITxnLog;
-
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
+import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.text.DateFormat;
@@ -45,6 +28,38 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import javax.xml.bind.JAXBException;
+import javax.xml.transform.stream.StreamSource;
+
+import org.eclipse.persistence.dynamic.DynamicEntity;
+import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
+
+import org.openecomp.aai.db.props.AAIProperties;
+import org.openecomp.aai.dbmap.DBConnectionType;
+import org.openecomp.aai.domain.model.AAIResource;
+import org.openecomp.aai.exceptions.AAIException;
+import org.openecomp.aai.introspection.Introspector;
+import org.openecomp.aai.introspection.Loader;
+import org.openecomp.aai.introspection.tools.CreateUUID;
+import org.openecomp.aai.introspection.tools.DefaultFields;
+import org.openecomp.aai.introspection.tools.InjectKeysFromURI;
+import org.openecomp.aai.introspection.tools.IntrospectorValidator;
+import org.openecomp.aai.introspection.tools.Issue;
+import org.openecomp.aai.introspection.tools.RemoveNonVisibleProperty;
+import org.openecomp.aai.logging.ErrorLogHelper;
+import org.openecomp.aai.logging.LoggingContext;
+import org.openecomp.aai.util.AAIConfig;
+import org.openecomp.aai.util.AAIConstants;
+import org.openecomp.aai.util.AAITxnLog;
+import com.att.eelf.configuration.EELFLogger;
+import com.att.eelf.configuration.EELFManager;
+import com.google.common.base.Joiner;
 
 
 /**
@@ -79,7 +94,7 @@ public class RESTAPI {
 	 * @return the from app id
 	 * @throws AAIException the AAI exception
 	 */
-	protected String getFromAppId(HttpHeaders headers) throws AAIException {
+	protected String getFromAppId(HttpHeaders headers) throws AAIException { 
 		String fromAppId = null;
 		if (headers != null) {
 			List<String> fromAppIdHeader = headers.getRequestHeader("X-FromAppId");
@@ -93,7 +108,9 @@ public class RESTAPI {
 		if (fromAppId == null) {
 			throw new AAIException("AAI_4009");
 		}
-		
+
+		LoggingContext.partnerName(fromAppId);
+
 		return fromAppId;
 	}
 	
@@ -105,7 +122,7 @@ public class RESTAPI {
 	 * @return the trans id
 	 * @throws AAIException the AAI exception
 	 */
-	protected String getTransId(HttpHeaders headers) throws AAIException {
+	protected String getTransId(HttpHeaders headers) throws AAIException { 
 		String transId = null;
 		if (headers != null) {
 			List<String> transIdHeader = headers.getRequestHeader("X-TransactionId");
@@ -119,7 +136,9 @@ public class RESTAPI {
 		if (transId == null) {
 			throw new AAIException("AAI_4010");
 		}
-		
+
+		LoggingContext.requestId(transId);
+
 		return transId;
 	}
 	
@@ -233,7 +252,7 @@ public class RESTAPI {
 	 * @throws AAIException the AAI exception
 	 */
 	protected int setDepth(String depthParam) throws AAIException {
-		int depth = AAIProperties.MAXIMUM_DEPTH; //default
+		int depth = AAIProperties.MAXIMUM_DEPTH; //default 
 		if (depthParam != null && depthParam.length() > 0 && !depthParam.equals("all")){
 			try {
 				depth = Integer.valueOf(depthParam);

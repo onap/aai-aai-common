@@ -397,7 +397,7 @@ public class DbEdgeRules {
 			.putAll("ctag-pool", "THIS_NODE_ONLY")
 			.putAll("subnet", "THIS_NODE_ONLY")
 			.putAll("sriov-vf", "THIS_NODE_ONLY")
-			.putAll("vpn-binding", "ERROR_IF_ANY_IN_EDGES")
+			.putAll("vpn-binding", "ERROR_4_IN_EDGES_OR_CASCADE")
 			.putAll("vnf-image", "ERROR_IF_ANY_IN_EDGES")
 			.putAll("site-pair-set", "CASCADE_TO_CHILDREN")
 			.putAll("routing-instance", "CASCADE_TO_CHILDREN")

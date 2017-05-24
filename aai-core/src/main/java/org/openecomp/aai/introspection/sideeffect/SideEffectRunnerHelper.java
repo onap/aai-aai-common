@@ -20,17 +20,17 @@
 
 package org.openecomp.aai.introspection.sideeffect;
 
-import org.openecomp.aai.exceptions.AAIException;
-import org.openecomp.aai.introspection.Introspector;
-import org.openecomp.aai.introspection.Wanderer;
-import org.openecomp.aai.serialization.db.DBSerializer;
-import org.openecomp.aai.serialization.engines.TransactionalGraphEngine;
-
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Set;
+
+import org.openecomp.aai.exceptions.AAIException;
+import org.openecomp.aai.introspection.Introspector;
+import org.openecomp.aai.introspection.Wanderer;
+import org.openecomp.aai.serialization.db.DBSerializer;
+import org.openecomp.aai.serialization.engines.TransactionalGraphEngine;
 
 class SideEffectRunnerHelper implements Wanderer {
 
@@ -77,7 +77,7 @@ class SideEffectRunnerHelper implements Wanderer {
 
 	@Override
 	public void modifyComplexList(List<Introspector> list, List<Object> listReference, Introspector parent,
-                                  Introspector child) {
+			Introspector child) {
 		// TODO Auto-generated method stub
 
 	}

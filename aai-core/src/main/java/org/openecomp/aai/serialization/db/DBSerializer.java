@@ -21,19 +21,46 @@
 package org.openecomp.aai.serialization.db;
 
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
-import com.google.common.base.CaseFormat;
-import com.thinkaurelius.titan.core.SchemaViolationException;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Array;
+import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+
+import javax.ws.rs.core.UriBuilder;
+
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.Tree;
-import org.apache.tinkerpop.gremlin.structure.*;
+import org.apache.tinkerpop.gremlin.structure.Direction;
+import org.apache.tinkerpop.gremlin.structure.Edge;
+import org.apache.tinkerpop.gremlin.structure.Element;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 import org.javatuples.Pair;
+
 import org.openecomp.aai.db.props.AAIProperties;
 import org.openecomp.aai.exceptions.AAIException;
-import org.openecomp.aai.introspection.*;
+import org.openecomp.aai.introspection.Introspector;
+import org.openecomp.aai.introspection.IntrospectorFactory;
+import org.openecomp.aai.introspection.Loader;
+import org.openecomp.aai.introspection.LoaderFactory;
+import org.openecomp.aai.introspection.ModelType;
+import org.openecomp.aai.introspection.PropertyPredicates;
+import org.openecomp.aai.introspection.Version;
 import org.openecomp.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.openecomp.aai.introspection.sideeffect.DataCopy;
 import org.openecomp.aai.introspection.sideeffect.DataLinkReader;
@@ -53,19 +80,10 @@ import org.openecomp.aai.util.AAIApiServerURLBase;
 import org.openecomp.aai.util.AAIConfig;
 import org.openecomp.aai.util.AAIConstants;
 import org.openecomp.aai.workarounds.NamingExceptions;
-
-import javax.ws.rs.core.UriBuilder;
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Array;
-import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
+import com.att.eelf.configuration.EELFLogger;
+import com.att.eelf.configuration.EELFManager;
+import com.google.common.base.CaseFormat;
+import com.thinkaurelius.titan.core.SchemaViolationException;
 
 public class DBSerializer {
 	
@@ -88,7 +106,7 @@ public class DBSerializer {
 	 * @param introspectionType the introspection type
 	 * @param sourceOfTruth the source of truth
 	 * @param llBuilder the ll builder
-	 * @throws AAIException
+	 * @throws AAIException 
 	 */
 	public DBSerializer(Version version, TransactionalGraphEngine engine, ModelType introspectionType, String sourceOfTruth) throws AAIException {
 		this.engine = engine;
@@ -179,7 +197,7 @@ public class DBSerializer {
 	 * @throws NoSuchMethodException the no such method exception
 	 * @throws AAIException the AAI exception
 	 * @throws UnsupportedEncodingException the unsupported encoding exception
-	 * @throws AAIUnknownObjectException
+	 * @throws AAIUnknownObjectException 
 	 */
 	public void serializeToDb(Introspector obj, Vertex v, QueryParser uriQuery, String identifier, String requestContext) throws AAIException, UnsupportedEncodingException {
 
@@ -240,7 +258,7 @@ public class DBSerializer {
 	 * @throws SecurityException the security exception
 	 * @throws AAIException the AAI exception
 	 * @throws UnsupportedEncodingException the unsupported encoding exception
-	 * @throws AAIUnknownObjectException
+	 * @throws AAIUnknownObjectException 
 	 */
 	/*
 	 * Helper method for reflectToDb
@@ -435,7 +453,7 @@ public class DBSerializer {
 	 *
 	 * @param v the v
 	 * @param obj the obj
-	 * @throws AAIUnknownObjectException
+	 * @throws AAIUnknownObjectException 
 	 */
 	private void writeThroughDefaults(Vertex v, Introspector obj) throws AAIUnknownObjectException {
 		Introspector latest = this.latestLoader.introspectorFromName(obj.getName());
@@ -472,7 +490,7 @@ public class DBSerializer {
 	  * @throws SecurityException the security exception
 	  * @throws AAIException the AAI exception
 	  * @throws UnsupportedEncodingException the unsupported encoding exception
- 	 * @throws AAIUnknownObjectException
+ 	 * @throws AAIUnknownObjectException 
 	  */
 	 private Vertex reflectDependentVertex(Vertex v, Introspector dependentObj, String requestContext) throws AAIException, UnsupportedEncodingException {
 		
@@ -512,13 +530,15 @@ public class DBSerializer {
 	  * @throws SecurityException the security exception
 	  * @throws AAIException the AAI exception
 	  * @throws UnsupportedEncodingException the unsupported encoding exception
- 	 * @throws AAIUnknownObjectException
+ 	 * @throws AAIUnknownObjectException 
 	  */
 	 private Vertex reflectDependentVertex(Vertex parent, Vertex child, Introspector obj, String requestContext) throws AAIException, UnsupportedEncodingException {
 		
 		String parentUri = parent.<String>property(AAIProperties.AAI_URI).orElse(null);
 		if (parentUri != null) {
-			child.property(AAIProperties.AAI_URI, parentUri + obj.getURI());
+			String uri;
+			uri = obj.getURI();
+			child.property(AAIProperties.AAI_URI, parentUri + uri);
 		}
 		processObject(obj, child, requestContext);
 		
@@ -555,7 +575,7 @@ public class DBSerializer {
 	  * @throws NoSuchMethodException the no such method exception
 	  * @throws UnsupportedEncodingException the unsupported encoding exception
 	  * @throws MalformedURLException the malformed URL exception
- 	 * @throws AAIUnknownObjectException
+ 	 * @throws AAIUnknownObjectException 
  	 * @throws URISyntaxException 
 	  */
 	 public Introspector dbToObject(List<Vertex> vertices, final Introspector obj, int depth, boolean nodeOnly, String cleanUp) throws UnsupportedEncodingException, AAIException {
@@ -639,7 +659,7 @@ public class DBSerializer {
 	 * @throws UnsupportedEncodingException the unsupported encoding exception
 	 * @throws AAIException the AAI exception
 	 * @throws MalformedURLException the malformed URL exception
-	 * @throws AAIUnknownObjectException
+	 * @throws AAIUnknownObjectException 
 	 * @throws URISyntaxException 
 	 */
 	private Introspector dbToObject(Introspector obj, Vertex v, Set<Vertex> seen, int depth, boolean nodeOnly, String cleanUp) throws AAIException, UnsupportedEncodingException {
@@ -696,7 +716,7 @@ public class DBSerializer {
 							//vertices = this.queryEngine.findRelatedVertices(v, Direction.OUT, rule.getLabel(), childDbName);
 							Direction ruleDirection = rule.getDirection();
 							Iterator<Vertex> itr = v.vertices(ruleDirection, rule.getLabel());
-							List<Vertex> verticesList = (List<Vertex>) IteratorUtils.toList(itr);
+							List<Vertex> verticesList = (List<Vertex>)IteratorUtils.toList(itr);
 							itr = verticesList.stream().filter(item -> {
 								return item.property(AAIProperties.NODE_TYPE).orElse("").equals(childDbName);
 							}).iterator();
@@ -754,7 +774,7 @@ public class DBSerializer {
 	}
 	
 	
-	public Introspector getVertexProperties(Vertex v) throws AAIException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, SecurityException, InstantiationException, NoSuchMethodException, UnsupportedEncodingException, AAIUnknownObjectException, URISyntaxException {
+	public Introspector getVertexProperties(Vertex v) throws AAIException, UnsupportedEncodingException {
 		String nodeType = v.<String>property(AAIProperties.NODE_TYPE).orElse(null);
 		if (nodeType == null) {
 			throw new AAIException("AAI_6143");
@@ -769,7 +789,7 @@ public class DBSerializer {
 		return obj;
 		
 	}
-	public Introspector getLatestVersionView(Vertex v) throws AAIException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, SecurityException, InstantiationException, NoSuchMethodException, UnsupportedEncodingException, AAIUnknownObjectException, URISyntaxException {
+	public Introspector getLatestVersionView(Vertex v) throws AAIException, UnsupportedEncodingException {
 		String nodeType = v.<String>property(AAIProperties.NODE_TYPE).orElse(null);
 		if (nodeType == null) {
 			throw new AAIException("AAI_6143");
@@ -892,7 +912,7 @@ public class DBSerializer {
 	 * @throws UnsupportedEncodingException the unsupported encoding exception
 	 * @throws AAIException the AAI exception
 	 * @throws MalformedURLException the malformed URL exception
-	 * @throws AAIUnknownObjectException
+	 * @throws AAIUnknownObjectException 
 	 * @throws URISyntaxException 
 	 */
 		private Object processEdgeRelationship(Introspector relationshipObj, Vertex cousin, String cleanUp) throws UnsupportedEncodingException, AAIUnknownObjectException {
@@ -940,7 +960,7 @@ public class DBSerializer {
 	 * @throws NoSuchMethodException the no such method exception
 	 * @throws SecurityException the security exception
 	 * @throws UnsupportedEncodingException the unsupported encoding exception
-	 * @throws AAIUnknownObjectException
+	 * @throws AAIUnknownObjectException 
 	 */
 	public URI getURIForVertex(Vertex v) throws UnsupportedEncodingException {
 		
@@ -992,7 +1012,7 @@ public class DBSerializer {
 	 * @throws InvocationTargetException the invocation target exception
 	 * @throws NoSuchMethodException the no such method exception
 	 * @throws SecurityException the security exception
-	 * @throws AAIUnknownObjectException
+	 * @throws AAIUnknownObjectException 
 	 */
 	private Pair<Vertex, List<Introspector>> getParents(Loader loader, Vertex start, boolean removeDamaged) {
 		
@@ -1069,7 +1089,7 @@ public class DBSerializer {
 	
 	/**
 	 * Adds the r
-	 * @throws AAIUnknownObjectException
+	 * @throws AAIUnknownObjectException 
 	 * @throws IllegalArgumentException elated to property.
 	 *
 	 * @param relationship the relationship
@@ -1154,7 +1174,7 @@ public class DBSerializer {
 	 * @param bVertex the in vertex
 	 * @return the edges between
 	 * @throws AAIException the AAI exception
-	 * @throws NoEdgeRuleFoundException
+	 * @throws NoEdgeRuleFoundException 
 	 */
 	private List<Edge> getEdgesBetween(EdgeType type, Vertex aVertex, Vertex bVertex) throws AAIException, NoEdgeRuleFoundException {
 		
@@ -1183,9 +1203,9 @@ public class DBSerializer {
 	 * @param bVertex the in vertex
 	 * @return the edge between
 	 * @throws AAIException the AAI exception
-	 * @throws NoEdgeRuleFoundException
+	 * @throws NoEdgeRuleFoundException 
 	 */
-	private Edge getEdgeBetween(EdgeType type, Vertex aVertex, Vertex bVertex) throws AAIException {
+	public Edge getEdgeBetween(EdgeType type, Vertex aVertex, Vertex bVertex) throws AAIException {
 		
 		
 		
@@ -1314,8 +1334,8 @@ public class DBSerializer {
 		if (enableResourceVersion && !this.verifyResourceVersion("delete", nodeType, vertex.<String>property(AAIProperties.RESOURCE_VERSION).orElse(null), resourceVersion, nodeType)) {
 		}
 		semantic = edgeRules.getDeleteSemantic(nodeType);
-		inEdges = (List<Edge>) IteratorUtils.toList(vertex.edges(Direction.IN));
-		outEdges = (List<Edge>) IteratorUtils.toList(vertex.edges(Direction.OUT));
+		inEdges = (List<Edge>)IteratorUtils.toList(vertex.edges(Direction.IN));
+		outEdges = (List<Edge>)IteratorUtils.toList(vertex.edges(Direction.OUT));
 		if (semantic.equals(DeleteSemantic.CASCADE_TO_CHILDREN)) {
 			result = true;
 		} else if (semantic.equals(DeleteSemantic.ERROR_IF_ANY_EDGES)) {
@@ -1380,7 +1400,7 @@ public class DBSerializer {
 		
 		
 		if (!result) {
-			throw new AAIException(aaiExceptionCode, errorDetail);
+			throw new AAIException(aaiExceptionCode, errorDetail); 
 		}
 		return result;
 	}
@@ -1426,7 +1446,7 @@ public class DBSerializer {
 					aaiExceptionCode = "AAI_6131";
 				}
 				
-				throw new AAIException(aaiExceptionCode, errorDetail);
+				throw new AAIException(aaiExceptionCode, errorDetail); 
 				
 			}
 		}
@@ -1478,7 +1498,7 @@ public class DBSerializer {
 		runner.execute(obj, self);
 	}
 	
-	private void enrichData(Introspector obj, Vertex self) throws AAIException {
+	private void enrichData(Introspector obj, Vertex self) throws AAIException  {
 		
 		SideEffectRunner runner = new SideEffectRunner
 				.Builder(this.engine, this).addSideEffect(DataLinkReader.class).build();

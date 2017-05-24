@@ -165,14 +165,22 @@ public class IntrospectorValidator implements Wanderer {
 			}
 			
 			final Optional<String> visibility = obj.getPropertyMetadata(prop, PropertyMetadata.VISIBILITY);
-			if(visibility.isPresent() && Visibility.internal.equals(Visibility.valueOf(visibility.get()))) {
+			if(visibility.isPresent() && Visibility.internal.equals(Visibility.valueOf(visibility.get())) && obj.getValue(prop) != null) {
 				Issue message =
 						this.buildMessage(Severity.ERROR, IssueType.PROPERTY_NOT_VISIBLE, "client attemptted to set property not visible: " + prop);
 				message.setIntrospector(obj);
 				message.setPropName(prop);
 				issues.add(message);
 				
-			}			
+			}
+			final Optional<String> requires = obj.getPropertyMetadata(prop, PropertyMetadata.REQUIRES);
+			if (requires.isPresent() && (obj.getValue(prop) != null && obj.getValue(requires.get()) == null)) {
+				Issue message =
+						this.buildMessage(Severity.CRITICAL, IssueType.DEPENDENT_PROP_NOT_FOUND, prop + " requires " + requires.get() + " to also be popluated.");
+				message.setIntrospector(obj);
+				message.setPropName(prop);
+				issues.add(message);
+			}
 		}
 		
 		if (!relationshipChain.contains(obj.getDbName())) {

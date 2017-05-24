@@ -58,7 +58,9 @@ public class GremlinGroovyShellSingleton {
 		imports.addImports(
 				"org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__",
 				"org.apache.tinkerpop.gremlin.structure.T",
-				"org.apache.tinkerpop.gremlin.process.traversal.P");
+				"org.apache.tinkerpop.gremlin.process.traversal.P",
+				"java.util.Map.Entry");
+		imports.addStarImports("java.util");
 		CompilerConfiguration config = new CompilerConfiguration();
 		config.addCompilationCustomizers(custom, imports);
 

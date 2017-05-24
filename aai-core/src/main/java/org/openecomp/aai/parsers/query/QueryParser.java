@@ -22,6 +22,8 @@ package org.openecomp.aai.parsers.query;
 
 import java.net.URI;
 
+import org.apache.tinkerpop.gremlin.structure.Vertex;
+
 import org.openecomp.aai.db.props.AAIProperties;
 import org.openecomp.aai.introspection.Loader;
 import org.openecomp.aai.introspection.LoaderFactory;
@@ -34,9 +36,9 @@ public abstract class QueryParser {
 
 	protected Loader loader = null;
 	protected Loader latestLoader = null;
-	protected QueryBuilder queryBuilder = null;
+	protected QueryBuilder<Vertex> queryBuilder = null;
 	
-	protected QueryBuilder parentQueryBuilder = null;
+	protected QueryBuilder<Vertex> parentQueryBuilder = null;
 	
 	protected URI uri = null;
 	
@@ -53,7 +55,7 @@ public abstract class QueryParser {
 	 * @param queryBuilder the query builder
 	 * @param uri the uri
 	 */
-	protected QueryParser(Loader loader, QueryBuilder queryBuilder, URI uri) {
+	protected QueryParser(Loader loader, QueryBuilder<Vertex> queryBuilder, URI uri) {
 		this.uri = uri;
 		this.queryBuilder = queryBuilder;
 		this.loader = loader;
@@ -66,7 +68,7 @@ public abstract class QueryParser {
 	 * @param loader the loader
 	 * @param queryBuilder the query builder
 	 */
-	protected QueryParser(Loader loader, QueryBuilder queryBuilder) {
+	protected QueryParser(Loader loader, QueryBuilder<Vertex> queryBuilder) {
 		this.queryBuilder = queryBuilder;
 		this.loader = loader;
 		this.latestLoader = LoaderFactory.createLoaderForVersion(loader.getModelType(), AAIProperties.LATEST);
@@ -105,7 +107,7 @@ public abstract class QueryParser {
 	 *
 	 * @return the query builder
 	 */
-	public QueryBuilder getQueryBuilder() {
+	public QueryBuilder<Vertex> getQueryBuilder() {
 		return this.queryBuilder;
 	}
 	
@@ -123,7 +125,7 @@ public abstract class QueryParser {
 	 *
 	 * @return the parent query builder
 	 */
-	public QueryBuilder getParentQueryBuilder() {
+	public QueryBuilder<Vertex> getParentQueryBuilder() {
 		if (this.parentQueryBuilder != null) {
 			return this.parentQueryBuilder;
 		} else {

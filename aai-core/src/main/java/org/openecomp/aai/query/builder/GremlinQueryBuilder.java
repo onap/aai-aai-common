@@ -30,6 +30,7 @@ import java.util.Set;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Direction;
+import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 
 import org.openecomp.aai.db.props.AAIProperties;
@@ -47,7 +48,7 @@ import com.google.common.base.Joiner;
 /**
  * The Class GremlinQueryBuilder.
  */
-public abstract class GremlinQueryBuilder extends QueryBuilder {
+public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
 	
 	private EdgeRules edgeRules = EdgeRules.getInstance();
 	private GremlinGroovyShellSingleton gremlinGroovy = GremlinGroovyShellSingleton.getInstance();
@@ -83,26 +84,26 @@ public abstract class GremlinQueryBuilder extends QueryBuilder {
 	 * @{inheritDoc}
 	 */
 	@Override
-	public QueryBuilder createDBQuery(Introspector obj) {
+	public QueryBuilder<Vertex> createDBQuery(Introspector obj) {
 		this.createKeyQuery(obj);
 		this.createContainerQuery(obj);
-		return this;
+		return (QueryBuilder<Vertex>) this;
 	}
 	
 	@Override
-	public QueryBuilder exactMatchQuery(Introspector obj) {
+	public QueryBuilder<Vertex> exactMatchQuery(Introspector obj) {
 		// TODO not implemented because this is implementation is no longer used
 		this.createKeyQuery(obj);
 		//allPropertiesQuery(obj);
 		this.createContainerQuery(obj);
-		return this;
+		return (QueryBuilder<Vertex>) this;
 	}
 	
 	/**
 	 * @{inheritDoc}
 	 */
 	@Override
-	public QueryBuilder getVerticesByIndexedProperty(String key, Object value) {
+	public QueryBuilder<Vertex> getVerticesByIndexedProperty(String key, Object value) {
 		return this.getVerticesByProperty(key, value);
 	}
 	
@@ -110,7 +111,7 @@ public abstract class GremlinQueryBuilder extends QueryBuilder {
 	 * @{inheritDoc}
 	 */
 	@Override
-	public QueryBuilder getVerticesByIndexedProperty(String key, List<?> values) {
+	public QueryBuilder<Vertex> getVerticesByIndexedProperty(String key, List<?> values) {
 		return this.getVerticesByProperty(key, values);
 	}
 
@@ -118,7 +119,7 @@ public abstract class GremlinQueryBuilder extends QueryBuilder {
 	 * @{inheritDoc}
 	 */
 	@Override
-	public QueryBuilder getVerticesByProperty(String key, Object value) {
+	public QueryBuilder<Vertex> getVerticesByProperty(String key, Object value) {
 
 		String term = "";
 		if (value != null && !value.getClass().getName().equals("java.lang.String")) {
@@ -128,14 +129,14 @@ public abstract class GremlinQueryBuilder extends QueryBuilder {
 		}
 		list.add(".has('" + key + "', " + term + ")");
 		stepIndex++;
-		return this;
+		return (QueryBuilder<Vertex>) this;
 	}
 	
 	/**
 	 * @{inheritDoc}
 	 */
 	@Override
-	public QueryBuilder getVerticesByProperty(String key, List<?> values) {
+	public QueryBuilder<Vertex> getVerticesByProperty(String key, List<?> values) {
 
 		String term = "";
 		String predicate = "P.within(#!#argument#!#)";
@@ -151,7 +152,7 @@ public abstract class GremlinQueryBuilder extends QueryBuilder {
 		predicate = predicate.replace("#!#argument#!#", argument);
 		list.add(".has('" + key + "', " + predicate + ")");
 		stepIndex++;
-		return this;
+		return (QueryBuilder<Vertex>) this;
 	}
 	
 	
@@ -159,21 +160,21 @@ public abstract class GremlinQueryBuilder extends QueryBuilder {
 	 * @{inheritDoc}
 	 */
 	@Override
-	public QueryBuilder getChildVerticesFromParent(String parentKey, String parentValue, String childType) {
+	public QueryBuilder<Vertex> getChildVerticesFromParent(String parentKey, String parentValue, String childType) {
 		/*
 		String query = ".has('aai-node-type', '" + childType + "')";
 		
 		return this.processGremlinQuery(parentKey, parentValue, query);
 		*/
 		//TODO
-		return this;
+		return (QueryBuilder<Vertex>) this;
 	}
 	
 	/**
 	 * @{inheritDoc}
 	 */
 	@Override
-	public QueryBuilder getTypedVerticesByMap(String type, LinkedHashMap<String, String> map) {
+	public QueryBuilder<Vertex> getTypedVerticesByMap(String type, LinkedHashMap<String, String> map) {
 		
 		for (String key : map.keySet()) {
 			list.add(".has('" + key + "', '" + map.get(key) + "')");
@@ -181,14 +182,14 @@ public abstract class GremlinQueryBuilder extends QueryBuilder {
 		}
 		list.add(".has('aai-node-type', '" + type + "')");
 		stepIndex++;
-		return this;
+		return (QueryBuilder<Vertex>) this;
 	}
 	
 	/**
 	 * @{inheritDoc}
 	 */
 	@Override
-	public QueryBuilder createKeyQuery(Introspector obj) {
+	public QueryBuilder<Vertex> createKeyQuery(Introspector obj) {
 		Set<String> keys = obj.getKeys();
 
 		for (String key : keys) {
@@ -196,7 +197,7 @@ public abstract class GremlinQueryBuilder extends QueryBuilder {
 			this.getVerticesByProperty(key, obj.<Object>getValue(key));
 			
 		}		
-		return this;
+		return (QueryBuilder<Vertex>) this;
 	}
 	
 	/**
@@ -214,7 +215,7 @@ public abstract class GremlinQueryBuilder extends QueryBuilder {
 		if (child.isContainer()) {
 			childName = child.getChildDBName();
 		}
-		this.edgeQuery(type, parentName, childName);
+		this.edgeQueryToVertex(type, parentName, childName);
 		return this;
 			
 	}
@@ -225,12 +226,41 @@ public abstract class GremlinQueryBuilder extends QueryBuilder {
 	 * @{inheritDoc}
 	 */
 	@Override
-	public QueryBuilder createEdgeTraversal(EdgeType type, Vertex parent, Introspector child) throws AAIException, NoEdgeRuleFoundException {
+	public QueryBuilder<Vertex> createEdgeTraversal(EdgeType type, Vertex parent, Introspector child) throws AAIException, NoEdgeRuleFoundException {
 		String nodeType = parent.<String>property(AAIProperties.NODE_TYPE).orElse(null);
-		this.edgeQuery(type, nodeType, child.getDbName());
+		this.edgeQueryToVertex(type, nodeType, child.getDbName());
 		
-		return this;
+		return (QueryBuilder<Vertex>) this;
 			
+	}
+	
+	@Override
+	public QueryBuilder<Edge> getEdgesBetween(EdgeType type, String outNodeType, String inNodeType) throws AAIException {
+		this.edgeQuery(type, outNodeType, inNodeType);
+		
+		return (QueryBuilder<Edge>)this;
+
+	}
+	/**
+	 * Edge query.
+	 *
+	 * @param outType the out type
+	 * @param inType the in type
+	 * @throws NoEdgeRuleFoundException 
+	 * @throws AAIException 
+	 */
+	private void edgeQueryToVertex(EdgeType type, String outType, String inType) throws AAIException, NoEdgeRuleFoundException {
+		markParentBoundary();
+		EdgeRule rule = edgeRules.getEdgeRule(type, outType, inType);
+		if (rule.getDirection().equals(Direction.OUT)) {
+			list.add(".out('" + rule.getLabel() + "')");
+		} else {
+			list.add(".in('" + rule.getLabel() + "')");
+		}
+		stepIndex++;
+		list.add(".has('" + AAIProperties.NODE_TYPE + "', '" + inType + "')");
+		stepIndex++;
+		
 	}
 	
 	/**
@@ -245,15 +275,15 @@ public abstract class GremlinQueryBuilder extends QueryBuilder {
 		markParentBoundary();
 		EdgeRule rule = edgeRules.getEdgeRule(type, outType, inType);
 		if (rule.getDirection().equals(Direction.OUT)) {
-			list.add(".out('" + rule.getLabel() + "')");
+			list.add(".outE('" + rule.getLabel() + "')");
 		} else {
-			list.add(".in('" + rule.getLabel() + "')");
+			list.add(".inV('" + rule.getLabel() + "')");
 		}
-		list.add(".has('" + AAIProperties.NODE_TYPE + "', '" + inType + "')");
-		stepIndex += 2;
+		stepIndex++;
+		
 	}
 	@Override
-	public QueryBuilder limit(long amount) {
+	public QueryBuilder<E> limit(long amount) {
 		list.add(".limit(" + amount + ")");
 		return this;
 	}
@@ -261,7 +291,7 @@ public abstract class GremlinQueryBuilder extends QueryBuilder {
 	 * @{inheritDoc}
 	 */
 	@Override
-	public QueryBuilder createContainerQuery(Introspector obj) {
+	public QueryBuilder<Vertex> createContainerQuery(Introspector obj) {
 		String type = obj.getChildDBName();
 		String abstractType = obj.getMetadata(ObjectMetadata.ABSTRACT);
 		if (abstractType != null) {
@@ -281,11 +311,11 @@ public abstract class GremlinQueryBuilder extends QueryBuilder {
 		}
 		stepIndex++;
 		this.markContainer();
-		return this;
+		return (QueryBuilder<Vertex>) this;
 	}
 	
 	@Override
-	public QueryBuilder union(QueryBuilder... builder) {
+	public QueryBuilder<E> union(QueryBuilder<E>... builder) {
 		markParentBoundary();
 		String[] traversals = new String[builder.length];
 		StringBuilder command = new StringBuilder();
@@ -302,7 +332,7 @@ public abstract class GremlinQueryBuilder extends QueryBuilder {
 	}
 	
 	@Override
-	public QueryBuilder where(QueryBuilder... builder) {
+	public QueryBuilder<E> where(QueryBuilder<E>... builder) {
 		markParentBoundary();
 		List<String> traversals = new ArrayList<>();
 		for (int i = 0; i < builder.length; i++) {
@@ -319,12 +349,12 @@ public abstract class GremlinQueryBuilder extends QueryBuilder {
 	 * @{inheritDoc}
 	 */
 	@Override
-	public QueryBuilder getParentQuery() {
+	public QueryBuilder<E> getParentQuery() {
 		return cloneQueryAtStep(parentStepIndex);
 	}
 	
 	@Override
-	public QueryBuilder getContainerQuery() {
+	public QueryBuilder<E> getContainerQuery() {
 		return cloneQueryAtStep(containerStepIndex);
 	}
 	
@@ -332,14 +362,14 @@ public abstract class GremlinQueryBuilder extends QueryBuilder {
 	 * @{inheritDoc}
 	 */
 	@Override
-	public <T> T getQuery() {
+	public <T2> T2 getQuery() {
 		StringBuilder sb = new StringBuilder();
 		
 		for (String piece : this.list) {
 			sb.append(piece);
 		}
 		
-		return (T)sb.toString();
+		return (T2)sb.toString();
 	}
 	
 	/**
@@ -355,7 +385,7 @@ public abstract class GremlinQueryBuilder extends QueryBuilder {
 		this.containerStepIndex = stepIndex;
 	}
 	
-	protected abstract QueryBuilder cloneQueryAtStep(int index);
+	protected abstract QueryBuilder<E> cloneQueryAtStep(int index);
 	/**
 	 * @{inheritDoc}
 	 */
@@ -396,21 +426,21 @@ public abstract class GremlinQueryBuilder extends QueryBuilder {
 	}
 	
 	@Override
-	public Vertex next() {
+	public E next() {
 		if (this.completeTraversal == null) {
 			executeQuery();
 		}
 		
-		return (Vertex)this.completeTraversal.next();
+		return (E)this.completeTraversal.next();
 	}
 	
 	@Override
-	public List<Vertex> toList() {
+	public List<E> toList() {
 		if (this.completeTraversal == null) {
 			executeQuery();
 		}
 		
-		return (List<Vertex>)this.completeTraversal.toList();
+		return (List<E>)this.completeTraversal.toList();
 	}
 	
 }

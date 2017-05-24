@@ -20,12 +20,13 @@
 
 package org.openecomp.aai.introspection;
 
+import static org.junit.Assert.*;
+
 import org.junit.Test;
+
 import org.openecomp.aai.domain.yang.CloudRegion;
 import org.openecomp.aai.domain.yang.VolumeGroup;
 import org.openecomp.aai.schema.enums.ObjectMetadata;
-
-import static org.junit.Assert.assertEquals;
 
 public class PojoStrategyTest {
 

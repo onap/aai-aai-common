@@ -20,12 +20,13 @@
 
 package org.openecomp.aai.introspection;
 
-import com.google.common.collect.Sets;
-import org.openecomp.aai.introspection.exceptions.AAIUnknownObjectException;
+import static org.junit.Assert.assertEquals;
 
+import java.util.Arrays;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
+import org.openecomp.aai.introspection.exceptions.AAIUnknownObjectException;
+import com.google.common.collect.Sets;
 
 public class IntrospectorTestSpec {
 
@@ -35,7 +36,7 @@ public class IntrospectorTestSpec {
 	 * Container test set.
 	 *
 	 * @param wrappedPortGroups the wrapped port groups
-	 * @throws AAIUnknownObjectException
+	 * @throws AAIUnknownObjectException 
 	 */
 	protected void containerTestSet(Introspector wrappedPortGroups) throws AAIUnknownObjectException {
 		

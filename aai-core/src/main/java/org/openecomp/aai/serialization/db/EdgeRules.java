@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
@@ -35,6 +36,7 @@ import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.openecomp.aai.db.props.AAIProperties;
 import org.openecomp.aai.dbmodel.DbEdgeRules;
 import org.openecomp.aai.exceptions.AAIException;
+import org.openecomp.aai.serialization.db.exceptions.EdgeMultiplicityException;
 import org.openecomp.aai.serialization.db.exceptions.NoEdgeRuleFoundException;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
@@ -82,7 +84,7 @@ public class EdgeRules {
 	 * @throws NoEdgeRuleFoundException 
 	 */
 	public Edge addTreeEdge(GraphTraversalSource traversalSource, Vertex aVertex, Vertex bVertex) throws AAIException {
-		return this.addEdge(EdgeType.TREE, traversalSource, aVertex, bVertex);
+		return this.addEdge(EdgeType.TREE, traversalSource, aVertex, bVertex, false);
 	}
 	
 	/**
@@ -95,7 +97,33 @@ public class EdgeRules {
 	 * @throws NoEdgeRuleFoundException 
 	 */
 	public Edge addEdge(GraphTraversalSource traversalSource, Vertex aVertex, Vertex bVertex) throws AAIException {
-		return this.addEdge(EdgeType.COUSIN, traversalSource, aVertex, bVertex);
+		return this.addEdge(EdgeType.COUSIN, traversalSource, aVertex, bVertex, false);
+	}
+	
+	/**
+	 * Adds the tree edge.
+	 *
+	 * @param aVertex the out vertex
+	 * @param bVertex the in vertex
+	 * @return the edge
+	 * @throws AAIException the AAI exception
+	 * @throws NoEdgeRuleFoundException 
+	 */
+	public Edge addTreeEdgeIfPossible(GraphTraversalSource traversalSource, Vertex aVertex, Vertex bVertex) throws AAIException {
+		return this.addEdge(EdgeType.TREE, traversalSource, aVertex, bVertex, true);
+	}
+	
+	/**
+	 * Adds the edge.
+	 *
+	 * @param aVertex the out vertex
+	 * @param bVertex the in vertex
+	 * @return the edge
+	 * @throws AAIException the AAI exception
+	 * @throws NoEdgeRuleFoundException 
+	 */
+	public Edge addEdgeIfPossible(GraphTraversalSource traversalSource, Vertex aVertex, Vertex bVertex) throws AAIException {
+		return this.addEdge(EdgeType.COUSIN, traversalSource, aVertex, bVertex, true);
 	}
 	
 	/**
@@ -108,12 +136,18 @@ public class EdgeRules {
 	 * @throws AAIException the AAI exception
 	 * @throws NoEdgeRuleFoundException 
 	 */
-	private Edge addEdge(EdgeType type, GraphTraversalSource traversalSource, Vertex aVertex, Vertex bVertex) throws AAIException, NoEdgeRuleFoundException {
+	private Edge addEdge(EdgeType type, GraphTraversalSource traversalSource, Vertex aVertex, Vertex bVertex, boolean isBestEffort) throws AAIException, NoEdgeRuleFoundException {
 
 		EdgeRule rule = this.getEdgeRule(type, aVertex, bVertex);
 
 		Edge e = null;
-		if (this.validateMultiplicity(rule, traversalSource, aVertex, bVertex)) {
+		
+		Optional<String> message = this.validateMultiplicity(rule, traversalSource, aVertex, bVertex);
+		
+		if (message.isPresent() && !isBestEffort) {
+			throw new EdgeMultiplicityException(message.get());
+		}
+		if (!message.isPresent()) {
 			if (rule.getDirection().equals(Direction.OUT)) {
 				e = aVertex.addEdge(rule.getLabel(), bVertex);
 			} else if (rule.getDirection().equals(Direction.IN)) {
@@ -319,7 +353,7 @@ public class EdgeRules {
 	 * @return true, if successful
 	 * @throws AAIException the AAI exception
 	 */
-	private boolean validateMultiplicity(EdgeRule rule, GraphTraversalSource traversalSource, Vertex aVertex, Vertex bVertex) throws AAIException {
+	private Optional<String> validateMultiplicity(EdgeRule rule, GraphTraversalSource traversalSource, Vertex aVertex, Vertex bVertex) {
 
 		if (rule.getDirection().equals(Direction.OUT)) {
 			
@@ -353,11 +387,12 @@ public class EdgeRules {
 		}
 		
 		if (!detail.equals("")) {
-			throw new AAIException("AAI_6140", detail);
+			return Optional.of(detail);
+		} else  {
+			return Optional.empty();
 		}
 		
-		return true;
-		
+				
 	}
 	
 	public Multimap<String, EdgeRule> getAllRules() throws AAIException {

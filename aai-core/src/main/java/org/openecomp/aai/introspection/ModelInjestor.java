@@ -38,7 +38,6 @@ import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
 
 import org.openecomp.aai.util.AAIConstants;
 
-
 public class ModelInjestor {
 	
 	private Map<Version, DynamicJAXBContext> versionContextMap = new HashMap<>();

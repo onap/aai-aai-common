@@ -44,7 +44,7 @@ public abstract class TransactionalGraphEngine {
 	
 	protected GraphSingleton singleton = null;
 	protected QueryEngine queryEngine = null;
-	protected QueryBuilder queryBuilder = null;
+	protected QueryBuilder<Vertex> queryBuilder = null;
 	protected QueryStyle style = null;
 	protected final DBConnectionType connectionType;
 	protected final Loader loader;
@@ -141,19 +141,19 @@ public abstract class TransactionalGraphEngine {
 	 *
 	 * @return the query builder
 	 */
-	public QueryBuilder getQueryBuilder() {
+	public QueryBuilder<Vertex> getQueryBuilder() {
 		return getQueryBuilder(this.loader);
 	}
 	
-	public QueryBuilder getQueryBuilder(Loader loader) {
+	public QueryBuilder<Vertex> getQueryBuilder(Loader loader) {
 		if (style.equals(QueryStyle.GREMLIN_TRAVERSAL)) {
-			return new GremlinTraversal(loader, this.asAdmin().getTraversalSource());
+			return new GremlinTraversal<>(loader, this.asAdmin().getTraversalSource());
 		} else if (style.equals(QueryStyle.GREMLIN_UNIQUE)) {
-			return new GremlinUnique(loader, this.asAdmin().getTraversalSource());
+			return new GremlinUnique<>(loader, this.asAdmin().getTraversalSource());
 		} else if (style.equals(QueryStyle.GREMLINPIPELINE_TRAVERSAL)) {
 			//return new GremlinPipelineTraversal(loader);
 		} else if (style.equals(QueryStyle.TRAVERSAL)) {
-			return new TraversalQuery(loader, this.asAdmin().getTraversalSource());
+			return new TraversalQuery<>(loader, this.asAdmin().getTraversalSource());
 		}  else {
 			throw new IllegalArgumentException("Query Builder type not recognized");
 		}
@@ -165,19 +165,19 @@ public abstract class TransactionalGraphEngine {
 	 * @param start the start
 	 * @return the query builder
 	 */
-	public QueryBuilder getQueryBuilder(Vertex start) {
+	public QueryBuilder<Vertex> getQueryBuilder(Vertex start) {
 		return getQueryBuilder(this.loader, start);
 	}
 	
-	public QueryBuilder getQueryBuilder(Loader loader, Vertex start) {
+	public QueryBuilder<Vertex> getQueryBuilder(Loader loader, Vertex start) {
 		if (style.equals(QueryStyle.GREMLIN_TRAVERSAL)) {
-			return new GremlinTraversal(loader, this.asAdmin().getTraversalSource(), start);
+			return new GremlinTraversal<>(loader, this.asAdmin().getTraversalSource(), start);
 		} else if (style.equals(QueryStyle.GREMLIN_UNIQUE)) {
-			return new GremlinUnique(loader, this.asAdmin().getTraversalSource(), start);
+			return new GremlinUnique<>(loader, this.asAdmin().getTraversalSource(), start);
 		} else if (style.equals(QueryStyle.GREMLINPIPELINE_TRAVERSAL)) {
 			//return new GremlinPipelineTraversal(loader,start);
 		} else if (style.equals(QueryStyle.TRAVERSAL)) {
-			return new TraversalQuery(loader, this.asAdmin().getTraversalSource(), start);
+			return new TraversalQuery<>(loader, this.asAdmin().getTraversalSource(), start);
 		} else {
 			throw new IllegalArgumentException("Query Builder type not recognized");
 		}

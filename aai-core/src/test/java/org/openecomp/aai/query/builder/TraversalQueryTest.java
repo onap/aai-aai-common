@@ -50,17 +50,17 @@ public class TraversalQueryTest {
 	@BeforeClass
 	public static void configure() throws NoSuchFieldException, SecurityException, Exception {
 		
-		System.setProperty("AJSC_HOME", "./src/test/resources/");
-		System.setProperty("BUNDLECONFIG_DIR", "bundleconfig-local");
+		System.setProperty("AJSC_HOME", ".");
+		System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
 		QueryFormatTestHelper.setFinalStatic(AAIConstants.class.getField("AAI_HOME_ETC_OXM"), "src/test/resources/org/openecomp/aai/introspection/");
 		loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, AAIProperties.LATEST);
 	}
 	
 	@Test
 	public void unionQuery() {
-		TraversalQuery tQ = new TraversalQuery(loader, g);
-		TraversalQuery tQ2 = new TraversalQuery(loader, g);
-		TraversalQuery tQ3 = new TraversalQuery(loader, g);
+		TraversalQuery<Vertex> tQ = new TraversalQuery<>(loader, g);
+		TraversalQuery<Vertex> tQ2 = new TraversalQuery<>(loader, g);
+		TraversalQuery<Vertex> tQ3 = new TraversalQuery<>(loader, g);
 		tQ.union(
 				tQ2.getVerticesByProperty("test1", "value1"),
 				tQ3.getVerticesByIndexedProperty("test2", "value2"));
@@ -74,9 +74,8 @@ public class TraversalQueryTest {
 	
 	@Test
 	public void traversalClones() throws UnsupportedEncodingException, AAIException, URISyntaxException {
-		TraversalQuery tQ = new TraversalQuery(loader, g);
-		Introspector test = loader.introspectorFromName("test-object");
-		QueryBuilder builder = tQ.createQueryFromURI(new URI("network/test-objects/test-object/key1")).getQueryBuilder();
+		TraversalQuery<Vertex> tQ = new TraversalQuery<>(loader, g);
+		QueryBuilder<Vertex> builder = tQ.createQueryFromURI(new URI("network/test-objects/test-object/key1")).getQueryBuilder();
 		GraphTraversal<Vertex, Vertex> expected = __.<Vertex>start().has("vnf-id", "key1").has("aai-node-type", "test-object");
 		GraphTraversal<Vertex, Vertex> containerExpected = __.<Vertex>start().has("aai-node-type", "test-object");
 		
@@ -88,8 +87,8 @@ public class TraversalQueryTest {
 	@Test
 	public void nestedTraversalClones() throws UnsupportedEncodingException, AAIException, URISyntaxException {
 		
-		TraversalQuery tQ = new TraversalQuery(loader, g);
-		QueryBuilder builder = tQ.createQueryFromURI(new URI("network/generic-vnfs/generic-vnf/key1/l-interfaces/l-interface/key2")).getQueryBuilder();
+		TraversalQuery<Vertex> tQ = new TraversalQuery<>(loader, g);
+		QueryBuilder<Vertex> builder = tQ.createQueryFromURI(new URI("network/generic-vnfs/generic-vnf/key1/l-interfaces/l-interface/key2")).getQueryBuilder();
 		GraphTraversal<Vertex, Vertex> expected = __.<Vertex>start().has("vnf-id", "key1").has("aai-node-type", "generic-vnf").out("hasLInterface").has(AAIProperties.NODE_TYPE, "l-interface").has("interface-name", "key2");
 		GraphTraversal<Vertex, Vertex> containerExpected = __.<Vertex>start().has("vnf-id", "key1").has("aai-node-type", "generic-vnf").out("hasLInterface").has(AAIProperties.NODE_TYPE, "l-interface");
 		

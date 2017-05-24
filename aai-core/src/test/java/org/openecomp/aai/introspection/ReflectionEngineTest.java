@@ -20,16 +20,18 @@
 
 package org.openecomp.aai.introspection;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.openecomp.aai.introspection.exceptions.AAIUnknownObjectException;
-import org.openecomp.aai.restcore.CustomJacksonJaxBJsonProvider;
-
-import javax.xml.bind.JAXBException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+
+import javax.xml.bind.JAXBException;
+
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import org.openecomp.aai.introspection.exceptions.AAIUnknownObjectException;
+import org.openecomp.aai.restcore.CustomJacksonJaxBJsonProvider;
 
 public class ReflectionEngineTest extends IntrospectorTestSpec {
 
@@ -48,7 +50,7 @@ public class ReflectionEngineTest extends IntrospectorTestSpec {
 	 * @throws InstantiationException the instantiation exception
 	 * @throws IllegalAccessException the illegal access exception
 	 * @throws ClassNotFoundException the class not found exception
-	 * @throws AAIUnknownObjectException
+	 * @throws AAIUnknownObjectException 
 	 */
 	@Test
 	public void containerObject() throws InstantiationException, IllegalAccessException, ClassNotFoundException, AAIUnknownObjectException {

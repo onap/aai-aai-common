@@ -20,14 +20,12 @@
 
 package org.openecomp.aai.exceptions;
 
-
 import static org.junit.Assert.assertEquals;
 
 import org.junit.BeforeClass;
-
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
+import org.openecomp.aai.serialization.queryformats.QueryFormatTestHelper;
+import org.openecomp.aai.util.AAIConstants;
 
 public class AAIExceptionTest {
   private static final String code = "4004";
@@ -36,11 +34,12 @@ public class AAIExceptionTest {
   private static final Throwable noMessage = new RuntimeException();
   
   @BeforeClass
-	public static void configure() {
-		System.setProperty("AJSC_HOME", "./src/test/resources/");
-		System.setProperty("BUNDLECONFIG_DIR", "bundleconfig-local");
+	public static void configure() throws NoSuchFieldException, SecurityException, Exception {
+		System.setProperty("AJSC_HOME", ".");
+		System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
+		QueryFormatTestHelper.setFinalStatic(AAIConstants.class.getField("AAI_HOME_ETC_OXM"), "src/test/resources/org/openecomp/aai/introspection/");
 	}
-  
+
   /**
    * Test constructor with 0 params.
    *

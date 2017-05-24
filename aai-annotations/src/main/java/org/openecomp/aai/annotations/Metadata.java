@@ -45,6 +45,7 @@ public @interface Metadata {
 	String alternateKeys1() default "";
 	String maximumDepth() default "";
 	String crossEntityReference() default "";
+	String requires() default "";
 	String dbAlias() default ""; 
 	String dataLocation() default "";
 	String containsSuggestibleProps() default "";

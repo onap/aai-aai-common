@@ -30,6 +30,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import org.openecomp.aai.exceptions.AAIException;
 import org.openecomp.aai.introspection.Introspector;
 import org.openecomp.aai.introspection.Loader;
+import org.openecomp.aai.serialization.db.EdgeType;
 import com.google.common.base.Joiner;
 
 /**
@@ -75,27 +76,6 @@ public class URIToDBKey implements Parsable {
 	 * @{inheritDoc}
 	 */
 	@Override
-	public void processObject (Introspector obj, MultivaluedMap<String, String> uriKeys) {
-		
-		dbKeys.add(obj.getDbName());
-
-		for (String key : uriKeys.keySet()) {
-			dbKeys.add(uriKeys.getFirst(key).toString());
-		}
-	}
-	
-	/**
-	 * @{inheritDoc}
-	 */
-	@Override
-	public void processContainer (Introspector obj, MultivaluedMap<String, String> uriKeys, boolean isFinalContainer) {
-		
-	}
-	
-	/**
-	 * @{inheritDoc}
-	 */
-	@Override
 	public void processNamespace(Introspector obj) {
 	
 	}
@@ -123,5 +103,21 @@ public class URIToDBKey implements Parsable {
 	@Override
 	public boolean useOriginalLoader() {
 		return false;
+	}
+
+	@Override
+	public void processObject(Introspector obj, EdgeType type, MultivaluedMap<String, String> uriKeys)
+			throws AAIException {
+
+		dbKeys.add(obj.getDbName());
+
+		for (String key : uriKeys.keySet()) {
+			dbKeys.add(uriKeys.getFirst(key).toString());
+		}		
+	}
+
+	@Override
+	public void processContainer(Introspector obj, EdgeType type, MultivaluedMap<String, String> uriKeys,
+			boolean isFinalContainer) throws AAIException {
 	}
 }

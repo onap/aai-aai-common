@@ -39,7 +39,7 @@ import org.openecomp.aai.parsers.query.TraversalStrategy;
 /**
  * The Class GremlinTraversal.
  */
-public class GremlinTraversal extends GremlinQueryBuilder {
+public class GremlinTraversal<E> extends GremlinQueryBuilder<E> {
 
 	/**
 	 * Instantiates a new gremlin traversal.
@@ -62,7 +62,7 @@ public class GremlinTraversal extends GremlinQueryBuilder {
 		this.factory = new TraversalStrategy(this.loader, this);
 	}
 
-	protected GremlinTraversal(List<String> traversal, Loader loader, GraphTraversalSource source, GremlinQueryBuilder gtb) {
+	protected GremlinTraversal(List<String> traversal, Loader loader, GraphTraversalSource source, GremlinQueryBuilder<E> gtb) {
 		super(loader, source);
 		this.list = traversal;
 		this.stepIndex = gtb.getStepIndex();
@@ -110,20 +110,20 @@ public class GremlinTraversal extends GremlinQueryBuilder {
 	 * @{inheritDoc}
 	 */
 	@Override
-	public QueryBuilder newInstance(Vertex start) {
-		return new GremlinTraversal(loader, source, start);
+	public QueryBuilder<E> newInstance(Vertex start) {
+		return new GremlinTraversal<>(loader, source, start);
 	}
 
 	/**
 	 * @{inheritDoc}
 	 */
 	@Override
-	public QueryBuilder newInstance() {
-		return new GremlinTraversal(loader, source);
+	public QueryBuilder<E> newInstance() {
+		return new GremlinTraversal<>(loader, source);
 	}
 	
 	@Override
-	protected QueryBuilder cloneQueryAtStep(int index) {
+	protected QueryBuilder<E> cloneQueryAtStep(int index) {
 		if (index == 0) {
 			index = stepIndex;
 		}
@@ -132,6 +132,6 @@ public class GremlinTraversal extends GremlinQueryBuilder {
 			newList.add(this.list.get(i));
 		}
 		
-		return new GremlinTraversal(newList, loader, source, this);
+		return new GremlinTraversal<>(newList, loader, source, this);
 	}
 }

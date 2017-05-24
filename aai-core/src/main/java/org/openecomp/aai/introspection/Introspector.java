@@ -171,7 +171,7 @@ public abstract class Introspector implements Cloneable {
 						nameClass = ClassUtils.primitiveToWrapper(nameClass);	
 						result = nameClass.getConstructor(String.class).newInstance(obj.toString());
 					}
-					if (obj.getClass().getName().equals("java.lang.String")) {
+					if (obj instanceof String) {
 						result = nameClass.getConstructor(String.class).newInstance(obj);
 					} else if (!this.isListType(name) && !this.isComplexType(name)){
 						//box = obj.toString();

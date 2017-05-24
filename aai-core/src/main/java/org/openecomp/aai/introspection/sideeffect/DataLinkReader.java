@@ -20,18 +20,6 @@
 
 package org.openecomp.aai.introspection.sideeffect;
 
-import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.openecomp.aai.db.props.AAIProperties;
-import org.openecomp.aai.exceptions.AAIException;
-import org.openecomp.aai.introspection.Introspector;
-import org.openecomp.aai.introspection.sideeffect.exceptions.AAIMissingRequiredPropertyException;
-import org.openecomp.aai.parsers.query.QueryParser;
-import org.openecomp.aai.restcore.util.URITools;
-import org.openecomp.aai.schema.enums.PropertyMetadata;
-import org.openecomp.aai.serialization.db.DBSerializer;
-import org.openecomp.aai.serialization.engines.TransactionalGraphEngine;
-
-import javax.ws.rs.core.MultivaluedMap;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -41,6 +29,20 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.regex.Matcher;
+
+import javax.ws.rs.core.MultivaluedMap;
+
+import org.apache.tinkerpop.gremlin.structure.Vertex;
+
+import org.openecomp.aai.db.props.AAIProperties;
+import org.openecomp.aai.exceptions.AAIException;
+import org.openecomp.aai.introspection.Introspector;
+import org.openecomp.aai.introspection.sideeffect.exceptions.AAIMissingRequiredPropertyException;
+import org.openecomp.aai.parsers.query.QueryParser;
+import org.openecomp.aai.restcore.util.URITools;
+import org.openecomp.aai.schema.enums.PropertyMetadata;
+import org.openecomp.aai.serialization.db.DBSerializer;
+import org.openecomp.aai.serialization.engines.TransactionalGraphEngine;
 
 public class DataLinkReader extends SideEffect {
 	
