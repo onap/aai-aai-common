@@ -56,6 +56,8 @@ public class CNNameTest {
 	 */
 	@Before
 	public void initialize(){
+		System.setProperty("AJSC_HOME", ".");
+		System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
 		mockAccEvent = Mockito.mock(IAccessEvent.class);
 		mockHttpServletRequest = Mockito.mock(HttpServletRequest.class);
 		cert = Mockito.mock(X509Certificate.class);
