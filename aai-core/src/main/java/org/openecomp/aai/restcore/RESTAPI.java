@@ -20,29 +20,18 @@
 
 package org.openecomp.aai.restcore;
 
-import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import javax.xml.bind.JAXBException;
-import javax.xml.transform.stream.StreamSource;
-
-import org.eclipse.persistence.dynamic.DynamicEntity;
-import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
-import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
 
 import org.openecomp.aai.db.props.AAIProperties;
 import org.openecomp.aai.dbmap.DBConnectionType;
-import org.openecomp.aai.domain.model.AAIResource;
 import org.openecomp.aai.exceptions.AAIException;
 import org.openecomp.aai.introspection.Introspector;
 import org.openecomp.aai.introspection.Loader;
@@ -57,6 +46,8 @@ import org.openecomp.aai.logging.LoggingContext;
 import org.openecomp.aai.util.AAIConfig;
 import org.openecomp.aai.util.AAIConstants;
 import org.openecomp.aai.util.AAITxnLog;
+import org.openecomp.aai.util.FormatDate;
+
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 import com.google.common.base.Joiner;
@@ -149,19 +140,9 @@ public class RESTAPI {
 	 * @return the string
 	 */
 	protected String genDate() {
-		Date date = new Date();
-		DateFormat formatter = null;
-		try {
-			formatter = new SimpleDateFormat(AAIConfig.get(AAIConstants.HBASE_TABLE_TIMESTAMP_FORMAT));
-		} catch (AAIException ex) {
-			ErrorLogHelper.logException(ex);
-		} finally {
-			if (formatter == null) {
-				formatter = new SimpleDateFormat("YYMMdd-HH:mm:ss:SSS");
-			}
-		}
-
-		return formatter.format(date);
+		FormatDate fd = new FormatDate(AAIConfig.get(AAIConstants.HBASE_TABLE_TIMESTAMP_FORMAT, "YYMMdd-HH:mm:ss:SSS"));
+		
+		return fd.getDateTime();
 	}
 
 	/**

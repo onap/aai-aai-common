@@ -558,7 +558,13 @@ public class ErrorLogHelper {
 	public static void logException(AAIException e) {
 		final ErrorObject errorObject = e.getErrorObject();
 
-		MDC.put("severity", errorObject.getSeverity()); //TODO Use LoggingContext.severity(int severity)
+//		MDC.put("severity", errorObject.getSeverity()); //TODO Use LoggingContext.severity(int severity)
+		String severityCode = errorObject.getSeverityCode(errorObject.getSeverity());
+		int sevCode = Integer.parseInt(severityCode);
+		if (sevCode > 0 && sevCode <= 3 )
+		{
+			LoggingContext.severity(sevCode);
+		}
 		
 		final String errorMessage = new StringBuilder()
 											.append(errorObject.getErrorText())

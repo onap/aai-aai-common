@@ -37,16 +37,16 @@ import javax.xml.transform.stream.StreamSource;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-
 import org.openecomp.aai.exceptions.AAIException;
 import org.openecomp.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.openecomp.aai.introspection.exceptions.AAIUnmarshallingException;
 import org.openecomp.aai.logging.ErrorLogHelper;
 import org.openecomp.aai.restcore.MediaType;
 import org.openecomp.aai.workarounds.NamingExceptions;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 import com.google.common.base.CaseFormat;
@@ -85,6 +85,9 @@ public class MoxyLoader extends Loader {
 	@Override
 	public Object objectFromName(String name) throws AAIUnknownObjectException {
 
+		if (name == null) {
+			throw new AAIUnknownObjectException("null name passed in");
+		}
 		final String sanitizedName = NamingExceptions.getInstance().getObjectName(name);
 		final String upperCamel;
 
@@ -185,6 +188,10 @@ public class MoxyLoader extends Loader {
 
 		result.remove("EdgePropNames");
 		return result;
+	}
+	
+	public DynamicJAXBContext getJAXBContext() {
+		return this.jaxbContext;
 	}
 
 }

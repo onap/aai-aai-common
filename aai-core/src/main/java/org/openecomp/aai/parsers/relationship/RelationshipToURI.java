@@ -31,7 +31,6 @@ import java.util.Optional;
 import javax.ws.rs.core.UriBuilder;
 
 import org.apache.tinkerpop.gremlin.structure.Direction;
-
 import org.openecomp.aai.exceptions.AAIException;
 import org.openecomp.aai.introspection.Introspector;
 import org.openecomp.aai.introspection.IntrospectorFactory;
@@ -47,6 +46,7 @@ import org.openecomp.aai.serialization.db.EdgeRule;
 import org.openecomp.aai.serialization.db.EdgeRules;
 import org.openecomp.aai.serialization.db.EdgeType;
 import org.openecomp.aai.workarounds.LegacyURITransformer;
+
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 
@@ -115,7 +115,9 @@ public class RelationshipToURI {
 			} else {
 				throw new AAIIdentityMapParseException("nothing to parse");
 			}
-		} catch (UnsupportedEncodingException | URISyntaxException e) {
+		} catch (AAIException e) { 
+			throw e;
+		} catch (Exception e) {
 			throw new AAIIdentityMapParseException("Could not parse relationship-list object: " + e.getMessage(), e);
 		}
 

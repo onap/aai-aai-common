@@ -115,6 +115,10 @@ public class LoggingContext {
 
 	public static void requestId(String requestId) {
 		try {
+			if (requestId.contains(":")) {
+				String[] uuidParts = requestId.split(":");
+				requestId = uuidParts[0];
+			}
 			MDC.put(LoggingField.REQUEST_ID.toString(), UUID.fromString(requestId).toString());
 		} catch (IllegalArgumentException e) {
 			final UUID generatedRequestUuid = UUID.randomUUID();

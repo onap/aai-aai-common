@@ -18,23 +18,25 @@
  * ============LICENSE_END=========================================================
  */
 
-package org.openecomp.aai.domain.model;
+package org.openecomp.aai.parsers.exceptions;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.openecomp.aai.exceptions.AAIException;
 
-public class AAIResourceKeys {
-	private List<AAIResourceKey> aaiResourceKey;
+public class DoesNotStartWithValidNamespaceException extends AAIException {
 
-	/**
-	 * Gets the aai resource key.
-	 *
-	 * @return the aai resource key
-	 */
-	public List<AAIResourceKey> getAaiResourceKey() {
-		if (aaiResourceKey == null) { 
-			aaiResourceKey = new ArrayList<AAIResourceKey>();
-		}
-		return aaiResourceKey;
+	private static final long serialVersionUID = -888876613879411865L;
+	
+	public DoesNotStartWithValidNamespaceException(String message) {
+		super("AAI_3000", message);
 	}
+
+	public DoesNotStartWithValidNamespaceException(Throwable cause) {
+		super("AAI_3000",cause);
+	}
+
+	public DoesNotStartWithValidNamespaceException(String message, Throwable cause) {
+		super("AAI_3000", cause, message);
+	}
+
 }
+

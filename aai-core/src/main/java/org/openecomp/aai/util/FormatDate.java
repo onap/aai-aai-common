@@ -20,35 +20,27 @@
 
 package org.openecomp.aai.util;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Collections;
-import java.util.Date;
-import java.util.TimeZone;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
-public class AAIUtils {
+public class FormatDate {
 
-	/**
-	 * Null check.
-	 *
-	 * @param <T> the generic type
-	 * @param iterable the iterable
-	 * @return the iterable
-	 */
-	public static <T> Iterable<T> nullCheck(Iterable<T> iterable) {
-	    return iterable == null ? Collections.<T>emptyList() : iterable;
+	private final String timeZone;
+	private final String pattern;
+	public FormatDate(String pattern) {
+		this.pattern = pattern;
+		this.timeZone = "GMT";
+	}
+	public FormatDate(String pattern, String timeZone) {
+		this.pattern = pattern;
+		this.timeZone = timeZone;
 	}
 	
-	/**
-	 * Gen date.
-	 *
-	 * @return the string
-	 */
-	public static String genDate() {
-		Date date = new Date();
-		DateFormat formatter = new SimpleDateFormat("YYMMdd-HH:mm:ss:SSS");
-		formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
-		return formatter.format(date);
-	}	
-
+	public String getDateTime() {
+		
+		final DateTimeFormatter formatter =
+				DateTimeFormatter.ofPattern(pattern);
+		return formatter.format(ZonedDateTime.now(ZoneId.of(timeZone)));
+	}
 }

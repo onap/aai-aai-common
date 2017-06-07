@@ -294,6 +294,29 @@ public class ErrorObject {
 		}
 		return prefix + disposition + "." + category + "." + errorCode;
 	}
+	
+	/**
+	 * Gets the severity Code.  This is also the string
+	 * configured in Nagios to alert on
+	 *
+	 * @return the severity
+	 */
+	// Get the numerical value of severity
+	public String getSeverityCode(String severity) {
+		String severityCode = "";
+		switch (severity) {
+		case "WARN":
+			severityCode = "1";
+			break;
+		case "ERROR":
+			severityCode = "2";
+			break;
+		case "FATAL":
+			severityCode = "3";
+			break;
+		}
+		return severityCode;
+	}
 
 	/**
 	 * {@inheritDoc}

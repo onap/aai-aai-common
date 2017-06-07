@@ -26,35 +26,37 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
-import java.util.TimeZone;
 import java.util.UUID;
 
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Property;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
-
+import org.openecomp.aai.db.props.AAIProperties;
 import org.openecomp.aai.dbmap.AAIGraph;
 import org.openecomp.aai.exceptions.AAIException;
-import org.openecomp.aai.ingestModel.DbMaps;
-import org.openecomp.aai.ingestModel.IngestModelMoxyOxm;
+import org.openecomp.aai.introspection.Introspector;
+import org.openecomp.aai.introspection.Loader;
+import org.openecomp.aai.introspection.LoaderFactory;
+import org.openecomp.aai.introspection.ModelType;
+import org.openecomp.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.openecomp.aai.logging.ErrorLogHelper;
 import org.openecomp.aai.util.AAIConfig;
 import org.openecomp.aai.util.AAIConstants;
+import org.openecomp.aai.util.FormatDate;
+
 import com.att.eelf.configuration.Configuration;
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
@@ -88,6 +90,7 @@ public class DataGrooming {
 		Boolean doAutoFix = false;
 		Boolean edgesOnlyFlag = false;
 		Boolean dontFixOrphansFlag = false;
+		Boolean skipHostCheck = false;
 		Boolean singleCommits = false;
 		Boolean dupeCheckOff = false;
 		Boolean dupeFixOn = false;
@@ -114,9 +117,8 @@ public class DataGrooming {
 		
 		String prevFileName = "";
 		dupeGrpsDeleted = 0;
-		SimpleDateFormat d = new SimpleDateFormat("yyyyMMddHHmm");
-		d.setTimeZone(TimeZone.getTimeZone("GMT"));
-		String dteStr = d.format(new Date()).toString();
+		FormatDate fd = new FormatDate("yyyyMMddHHmm", "GMT");
+		String dteStr = fd.getDateTime();
 		String groomOutFileName = "dataGrooming." + dteStr + ".out";
 
 		if (args.length > 0) {
@@ -127,6 +129,8 @@ public class DataGrooming {
 					edgesOnlyFlag = true;
 				} else if (thisArg.equals("-autoFix")) {
 					doAutoFix = true;
+				} else if (thisArg.equals("-skipHostCheck")) {
+					skipHostCheck = true;
 				} else if (thisArg.equals("-dontFixOrphans")) {
 					dontFixOrphansFlag = true;
 				} else if (thisArg.equals("-singleCommits")) {
@@ -186,14 +190,12 @@ public class DataGrooming {
 		}
 		
 
-		IngestModelMoxyOxm moxyMod = new IngestModelMoxyOxm();
 		try {
-			ArrayList <String> defaultVerLst = new ArrayList <> ();
-			defaultVerLst.add( AAIConfig.get(AAIConstants.AAI_DEFAULT_API_VERSION_PROP) );
-			moxyMod.init( defaultVerLst, false);
+			LoaderFactory.createLoaderForVersion(ModelType.MOXY, AAIProperties.LATEST);
+
 		}
 		catch (Exception ex){
-			LOGGER.error("ERROR - Could not do the moxyMod.init()", ex);
+			LOGGER.error("ERROR - Could not create loader", ex);
 			System.exit(1);
 		}
 
@@ -239,9 +241,7 @@ public class DataGrooming {
 						System.exit(0);
 					}
 
-					d = new SimpleDateFormat("yyyyMMddHHmm");
-					d.setTimeZone(TimeZone.getTimeZone("GMT"));
-					dteStr = d.format(new Date()).toString();
+					dteStr = fd.getDateTime();
 					String secondGroomOutFileName = "dataGrooming." + dteStr
 							+ ".out";
 					LOGGER.info(" Now, call doTheGrooming() a second time and pass in the name of the file "
@@ -342,9 +342,6 @@ public class DataGrooming {
 				deleteCandidateList = new LinkedHashSet<>();
 			}
 
-			SimpleDateFormat d = new SimpleDateFormat("yyyyMMddHHmm");
-			d.setTimeZone(TimeZone.getTimeZone("GMT"));
-
 			String fullOutputFileName = targetDir + AAIConstants.AAI_FILESEP
 					+ groomOutFileName;
 			File groomOutFile = new File(fullOutputFileName);
@@ -394,11 +391,10 @@ public class DataGrooming {
 			HashMap<String, String> emptyVertexHash = new HashMap<String, String>();
 			HashMap<String, TitanVertex> ghostNodeHash = new HashMap<String, TitanVertex>();
 			ArrayList<String> dupeGroups = new ArrayList<>();
-
-
-			DbMaps dbMaps = IngestModelMoxyOxm.dbMapsContainer.get(AAIConfig.get(AAIConstants.AAI_DEFAULT_API_VERSION_PROP));
 			
-			Iterator<String> nodeMapKPropsIterator = dbMaps.NodeKeyProps.keySet().iterator();
+			Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, AAIProperties.LATEST);
+
+			Set<Entry<String, Introspector>> entrySet = loader.getAllObjects().entrySet();
 			String ntList = "";
 
 			LOGGER.info("  Starting DataGrooming Processing ");
@@ -407,8 +403,8 @@ public class DataGrooming {
 				LOGGER.info(" NOTE >> Skipping Node processing as requested.  Will only process Edges. << ");
 			} 
 			else {
-				while (nodeMapKPropsIterator.hasNext()) {
-					String nType = nodeMapKPropsIterator.next();
+				for (Entry<String, Introspector> entry : entrySet) {
+					String nType = entry.getKey();
 					int thisNtCount = 0;
 					int thisNtDeleteCount = 0;
 					LOGGER.debug(" >  Look at : [" + nType + "] ...");
@@ -416,19 +412,10 @@ public class DataGrooming {
 
 					// Get a collection of the names of the key properties for this nodeType to use later
 					// Determine what the key fields are for this nodeType
-					Collection <String> keyProps = new ArrayList <>();
-					if( dbMaps.NodeKeyProps.containsKey(nType) ){
-						keyProps = dbMaps.NodeKeyProps.get(nType);
-					}
-					else {
-						throw new AAIException("AAI_6105", "Required Property name(s) not found for nodeType = " + nType + ")"); 
-					}
+					Collection <String> keyProps = entry.getValue().getKeys();
 					
 					// Get the types of nodes that this nodetype depends on for uniqueness (if any)
-					Collection <String> depNodeTypes = new ArrayList <>();
-					if( dbMaps.NodeDependencies.containsKey(nType) ){
-						depNodeTypes = dbMaps.NodeDependencies.get(nType);
-					}
+					Collection <String> depNodeTypes = loader.introspectorFromName(nType).getDependentOn();
 					
 					// Loop through all the nodes of this Node type
 					int lastShownForNt = 0;
@@ -595,7 +582,7 @@ public class DataGrooming {
 									List<String> tmpDupeGroups = checkAndProcessDupes(
 												TRANSID, FROMAPPID, g, version,
 												nType, secondGetList, dupeFixOn,
-												deleteCandidateList, singleCommits,	dupeGroups, dbMaps);
+												deleteCandidateList, singleCommits,	dupeGroups, loader);
 									Iterator<String> dIter = tmpDupeGroups.iterator();
 									while (dIter.hasNext()) {
 										// Add in any newly found dupes to our running list
@@ -732,7 +719,7 @@ public class DataGrooming {
 								Object ob = vIn.<Object>property("aai-node-type").orElse(null);
 								if (ob != null) {
 									vNtI = ob.toString();
-									keysMissing = anyKeyFieldsMissing(vNtI, vIn, dbMaps);
+									keysMissing = anyKeyFieldsMissing(vNtI, vIn, loader);
 								}
 								ob = vIn.id();
 								long vIdLong = 0L;
@@ -845,7 +832,7 @@ public class DataGrooming {
 								if (ob != null) {
 									vNtO = ob.toString();
 									keysMissing = anyKeyFieldsMissing(vNtO,
-											vOut, dbMaps);
+											vOut, loader);
 								}
 								ob = vOut.id();
 								long vIdLong = 0L;
@@ -1315,11 +1302,13 @@ public class DataGrooming {
 	 * @param v the v
 	 * @return the boolean
 	 */
-	private static Boolean anyKeyFieldsMissing(String nType, Vertex v, DbMaps dbMaps) {
+	private static Boolean anyKeyFieldsMissing(String nType, Vertex v, Loader loader) {
 		
 		try {
-			if( nType != null && !nType.trim().equals("") 
-					&& !dbMaps.NodeKeyProps.containsKey(nType) ){
+			Introspector obj = null;
+			try {
+				obj = loader.introspectorFromName(nType);
+			} catch (AAIUnknownObjectException e) {
 				// They gave us a non-empty nodeType but our NodeKeyProps does
 				//   not have data for it.  Since we do not know what the
 				//   key params are for this type of node, we will just
@@ -1327,19 +1316,11 @@ public class DataGrooming {
 				String emsg = " -- WARNING -- Unrecognized nodeType: [" + nType 
 						+ "].  We cannot determine required keys for this nType. ";
 				// NOTE - this will be caught below and a "false" returned
-				throw new AAIException("AAI_6121", emsg); 
-			}			
+				throw new AAIException("AAI_6121", emsg);
+			}	
 			
 			// Determine what the key fields are for this nodeType
-			Collection <String> keyPropNamesColl = new ArrayList <>();
-			if( dbMaps.NodeKeyProps.containsKey(nType) ){
-				keyPropNamesColl = dbMaps.NodeKeyProps.get(nType);
-			}
-			else {
-				// NOTE - this will be caught below and a "false" returned
-				throw new AAIException("AAI_6121", "Definition of key props not found for nodeType = " + nType + ")"); 
-			}
-			
+			Collection <String> keyPropNamesColl = obj.getKeys();
 			Iterator<String> keyPropI = keyPropNamesColl.iterator();
 			while (keyPropI.hasNext()) {
 				String propName = keyPropI.next();
@@ -1422,7 +1403,7 @@ public class DataGrooming {
 	 */
 	public static TitanVertex getPreferredDupe(String transId,
 			String fromAppId, TitanTransaction g,
-			ArrayList<TitanVertex> dupeVertexList, String ver, DbMaps dbMaps)
+			ArrayList<TitanVertex> dupeVertexList, String ver, Loader loader)
 			throws AAIException {
 
 		// This method assumes that it is being passed a List of vertex objects
@@ -1447,7 +1428,7 @@ public class DataGrooming {
 		for (int i = 1; i < listSize; i++) {
 			TitanVertex vtxB = (TitanVertex) dupeVertexList.get(i);
 			vtxPreferred = pickOneOfTwoDupes(transId, fromAppId, g,
-					currentFaveVtx, vtxB, ver, dbMaps);
+					currentFaveVtx, vtxB, ver, loader);
 			if (vtxPreferred == null) {
 				// We couldn't choose one
 				return nullVtx;
@@ -1474,7 +1455,7 @@ public class DataGrooming {
 	 */
 	public static TitanVertex pickOneOfTwoDupes(String transId,
 			String fromAppId, TitanTransaction g, TitanVertex vtxA,
-			TitanVertex vtxB, String ver, DbMaps dbMaps) throws AAIException {
+			TitanVertex vtxB, String ver, Loader loader) throws AAIException {
 
 		TitanVertex nullVtx = null;
 		TitanVertex preferredVtx = null;
@@ -1484,13 +1465,13 @@ public class DataGrooming {
 
 		String vtxANodeType = "";
 		String vtxBNodeType = "";
-		Object obj = vtxA.<Object>property("aai-node-type").orElse(null);
-		if (obj != null) {
-			vtxANodeType = obj.toString();
+		Object objType = vtxA.<Object>property("aai-node-type").orElse(null);
+		if (objType != null) {
+			vtxANodeType = objType.toString();
 		}
-		obj = vtxB.<Object>property("aai-node-type").orElse(null);
-		if (obj != null) {
-			vtxBNodeType = obj.toString();
+		objType = vtxB.<Object>property("aai-node-type").orElse(null);
+		if (objType != null) {
+			vtxBNodeType = objType.toString();
 		}
 
 		if (vtxANodeType.equals("") || (!vtxANodeType.equals(vtxBNodeType))) {
@@ -1504,10 +1485,9 @@ public class DataGrooming {
 		// (We'll check dep-node later)
 		// Determine what the key fields are for this nodeType
 		Collection <String> keyProps = new ArrayList <>();
-		if( dbMaps.NodeKeyProps.containsKey(vtxANodeType) ){
-			keyProps = dbMaps.NodeKeyProps.get(vtxANodeType);
-		}
-		else {
+		try {
+			keyProps = loader.introspectorFromName(vtxANodeType).getKeys();
+		} catch (AAIUnknownObjectException e) {
 			throw new AAIException("AAI_6105", "Required Property name(s) not found for nodeType = " + vtxANodeType + ")"); 
 		}
 		
@@ -1515,14 +1495,14 @@ public class DataGrooming {
 		while (keyPropI.hasNext()) {
 			String propName = keyPropI.next();
 			String vtxAKeyPropVal = "";
-			obj = vtxA.<Object>property(propName).orElse(null);
-			if (obj != null) {
-				vtxAKeyPropVal = obj.toString();
+			objType = vtxA.<Object>property(propName).orElse(null);
+			if (objType != null) {
+				vtxAKeyPropVal = objType.toString();
 			}
 			String vtxBKeyPropVal = "";
-			obj = vtxB.<Object>property(propName).orElse(null);
-			if (obj != null) {
-				vtxBKeyPropVal = obj.toString();
+			objType = vtxB.<Object>property(propName).orElse(null);
+			if (objType != null) {
+				vtxBKeyPropVal = objType.toString();
 			}
 
 			if (vtxAKeyPropVal.equals("")
@@ -1547,9 +1527,9 @@ public class DataGrooming {
 				TitanVertex tvCon = iter.next();
 				String conVid = tvCon.id().toString();
 				String nt = "";
-				obj = tvCon.<Object>property("aai-node-type").orElse(null);
-				if (obj != null) {
-					nt = obj.toString();
+				objType = tvCon.<Object>property("aai-node-type").orElse(null);
+				if (objType != null) {
+					nt = objType.toString();
 				}
 				nodeTypesConn2A.put(nt, conVid);
 				vtxIdsConn2A.add(conVid);
@@ -1563,9 +1543,9 @@ public class DataGrooming {
 				TitanVertex tvCon = iter.next();
 				String conVid = tvCon.id().toString();
 				String nt = "";
-				obj = tvCon.<Object>property("aai-node-type").orElse(null);
-				if (obj != null) {
-					nt = obj.toString();
+				objType = tvCon.<Object>property("aai-node-type").orElse(null);
+				if (objType != null) {
+					nt = objType.toString();
 				}
 				nodeTypesConn2B.put(nt, conVid);
 				vtxIdsConn2B.add(conVid);
@@ -1581,11 +1561,8 @@ public class DataGrooming {
 		// different ways. But for a particular node, it will only have one
 		// dependent node that it's
 		// connected to.
-		Collection <String> depNodeTypes = new ArrayList <>();
-		if( dbMaps.NodeDependencies.containsKey(vtxANodeType) ){
-			depNodeTypes = dbMaps.NodeDependencies.get(vtxANodeType);
-		}
-				
+		Collection <String> depNodeTypes = loader.introspectorFromName(vtxANodeType).getDependentOn();
+			
 		if (depNodeTypes.isEmpty()) {
 			// This kind of node is not dependent on any other. That is ok.
 		} else {
@@ -1689,7 +1666,7 @@ public class DataGrooming {
 			String fromAppId, TitanTransaction g, String version, String nType,
 			List<TitanVertex> passedVertList, Boolean dupeFixOn,
 			Set<String> deleteCandidateList, Boolean singleCommits,
-			ArrayList<String> alreadyFoundDupeGroups, DbMaps dbMaps ) {
+			ArrayList<String> alreadyFoundDupeGroups, Loader loader ) {
 		
 		ArrayList<String> returnList = new ArrayList<>();
 		ArrayList<TitanVertex> checkVertList = new ArrayList<>();
@@ -1748,7 +1725,7 @@ public class DataGrooming {
 				return returnList;
 			}
 
-			if (!dbMaps.NodeDependencies.containsKey(nType)) {
+			if (loader.introspectorFromName(nType).isTopLevel()) {
 				// If this was a node that does NOT depend on other nodes for
 				// uniqueness, and we
 				// found more than one node using its key -- record the found
@@ -1761,7 +1738,7 @@ public class DataGrooming {
 				}
 				if (dupesStr != "") {
 					TitanVertex prefV = getPreferredDupe(transId, fromAppId,
-							g, checkVertList, version, dbMaps);
+							g, checkVertList, version, loader);
 					if (prefV == null) {
 						// We could not determine which duplicate to keep
 						dupesStr = dupesStr + "KeepVid=UNDETERMINED";
@@ -1792,7 +1769,7 @@ public class DataGrooming {
 				// could be more than one set of duplicates.
 				HashMap<String, ArrayList<TitanVertex>> vertsGroupedByParentHash = groupVertsByDepNodes(
 						transId, fromAppId, g, version, nType,
-						checkVertList, dbMaps);
+						checkVertList, loader);
 				for (Map.Entry<String, ArrayList<TitanVertex>> entry : vertsGroupedByParentHash
 						.entrySet()) {
 					ArrayList<TitanVertex> thisParentsVertList = entry
@@ -1809,7 +1786,7 @@ public class DataGrooming {
 						if (dupesStr != "") {
 							TitanVertex prefV = getPreferredDupe(transId,
 									fromAppId, g, thisParentsVertList,
-									version, dbMaps);
+									version, loader);
 
 							if (prefV == null) {
 								// We could not determine which duplicate to
@@ -1860,7 +1837,7 @@ public class DataGrooming {
 	 */
 	private static HashMap<String, ArrayList<TitanVertex>> groupVertsByDepNodes(
 			String transId, String fromAppId, TitanTransaction g, String version,
-			String nType, ArrayList<TitanVertex> passedVertList, DbMaps dbMaps)
+			String nType, ArrayList<TitanVertex> passedVertList, Loader loader)
 			throws AAIException {
 		// Given a list of Titan Vertices of one nodeType (see AAI-8956), group 
 		// them together by the parent node they depend on.
@@ -1871,7 +1848,7 @@ public class DataGrooming {
 		// allow for the case where more than one is under the same parent node.
 
 		HashMap<String, ArrayList<TitanVertex>> retHash = new HashMap<String, ArrayList<TitanVertex>>();
-		if (!dbMaps.NodeDependencies.containsKey(nType)) {
+		if (loader.introspectorFromName(nType).isTopLevel()) {
 			// This method really should not have been called if this is not the
 			// kind of node
 			// that depends on a parent for uniqueness, so just return the empty
@@ -1881,7 +1858,7 @@ public class DataGrooming {
 
 		// Find out what types of nodes the passed in nodes can depend on
 		ArrayList<String> depNodeTypeL = new ArrayList<>();
-		Collection<String> depNTColl = dbMaps.NodeDependencies.get(nType);
+		Collection<String> depNTColl = loader.introspectorFromName(nType).getDependentOn();
 		Iterator<String> ntItr = depNTColl.iterator();
 		while (ntItr.hasNext()) {
 			depNodeTypeL.add(ntItr.next());
@@ -2248,7 +2225,6 @@ public class DataGrooming {
 		return parentVtx;		
 
 	}// End of getConnectedParent()
-	
 	
 	
 }

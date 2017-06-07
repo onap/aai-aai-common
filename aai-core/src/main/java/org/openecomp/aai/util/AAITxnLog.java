@@ -21,10 +21,7 @@
 package org.openecomp.aai.util;
 
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.hadoop.hbase.HBaseConfiguration;
@@ -40,11 +37,11 @@ import org.apache.hadoop.hbase.filter.FilterList;
 import org.apache.hadoop.hbase.filter.RegexStringComparator;
 import org.apache.hadoop.hbase.filter.SingleColumnValueFilter;
 import org.apache.hadoop.hbase.util.Bytes;
-
 import org.openecomp.aai.domain.notificationEvent.NotificationEvent;
 import org.openecomp.aai.domain.translog.TransactionLogEntries;
 import org.openecomp.aai.domain.translog.TransactionLogEntry;
 import org.openecomp.aai.exceptions.AAIException;
+
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 
@@ -74,9 +71,9 @@ public class AAITxnLog  {
 			config.set(AAIConstants.HBASE_CONFIGURATION_ZOOKEEPER_QUORUM, AAIConfig.get(AAIConstants.HBASE_CONFIGURATION_ZOOKEEPER_QUORUM));
 			config.set(AAIConstants.HBASE_CONFIGURATION_ZOOKEEPER_CLIENTPORT, AAIConfig.get(AAIConstants.HBASE_CONFIGURATION_ZOOKEEPER_CLIENTPORT));
 			
-			Date date = new Date();
-			DateFormat formatter = new SimpleDateFormat(AAIConfig.get(AAIConstants.HBASE_TABLE_TIMESTAMP_FORMAT));
-			tm = formatter.format(date);
+			FormatDate fd = new FormatDate(AAIConfig.get(AAIConstants.HBASE_TABLE_TIMESTAMP_FORMAT, "YYMMdd-HH:mm:ss:SSS"));
+			
+			tm = fd.getDateTime();
 		} catch (AAIException e) {
 			LOGGER.warn("Missing configuration in AAIConfig: " + e.getMessage());
 		}
@@ -188,14 +185,9 @@ public class AAITxnLog  {
 			) {
 
 		if (tid == null || "".equals(tid)) {
-			Date date = new Date();
-			DateFormat formatter = null;
-			try {
-				formatter = new SimpleDateFormat(AAIConfig.get(AAIConstants.HBASE_TABLE_TIMESTAMP_FORMAT));
-			} catch (Exception e) {
-				formatter = new SimpleDateFormat("YYYYMMdd-HH:mm:ss:SSS");
-			}
-			tm = formatter.format(date);
+			FormatDate fd = new FormatDate(AAIConfig.get(AAIConstants.HBASE_TABLE_TIMESTAMP_FORMAT, "YYMMdd-HH:mm:ss:SSS"));
+			
+			tm = fd.getDateTime();
 			tid = tm + "-";
 		} 
 		String htid = tid;

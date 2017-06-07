@@ -28,18 +28,18 @@ import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
 
-import org.springframework.web.util.UriUtils;
-
 import org.openecomp.aai.exceptions.AAIException;
 import org.openecomp.aai.introspection.Introspector;
 import org.openecomp.aai.introspection.Loader;
 import org.openecomp.aai.introspection.LoaderFactory;
 import org.openecomp.aai.introspection.Version;
 import org.openecomp.aai.logging.ErrorLogHelper;
+import org.openecomp.aai.parsers.exceptions.DoesNotStartWithValidNamespaceException;
 import org.openecomp.aai.rest.RestTokens;
 import org.openecomp.aai.schema.enums.ObjectMetadata;
 import org.openecomp.aai.serialization.db.EdgeType;
 import org.openecomp.aai.util.AAIConfig;
+import org.springframework.web.util.UriUtils;
 
 
 /**
@@ -48,7 +48,7 @@ import org.openecomp.aai.util.AAIConfig;
 public class URIParser {
 	
 	private URI uri = null;
-	
+
 	protected Loader loader = null;
 	
 	protected Loader originalLoader = null;
@@ -74,9 +74,9 @@ public class URIParser {
 		} catch (AAIException e) {
 			ErrorLogHelper.logException(e);
 		}
-		
+
 		//Load the latest version because we need it for cloud region
-		
+
 		this.loader = loader;
 	}
 	
@@ -175,7 +175,7 @@ public class URIParser {
 						//first time through, make sure it starts from a namespace
 						//ignore abstract types
 						if (!isRelative && !abstractType.equals("true") && !validNamespaces.hasChild(introspector)) {
-							throw new AAIException("AAI_3000", uri + " not a valid path. It does not start from a valid namespace");
+							throw new DoesNotStartWithValidNamespaceException( uri + " not a valid path. It does not start from a valid namespace");
 						}
 					}
 					
@@ -248,7 +248,7 @@ public class URIParser {
 	protected URI handleCloudRegion(String action, URI uri) {
 		
 		return uri;
-		
+
 	}
 	
 	/**

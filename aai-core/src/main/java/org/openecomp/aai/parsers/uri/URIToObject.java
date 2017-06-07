@@ -71,7 +71,7 @@ public class URIToObject implements Parsable {
 	 * @throws AAIException the AAI exception
 	 * @throws UnsupportedEncodingException the unsupported encoding exception
 	 */
-	public URIToObject(Loader loader, URI uri) throws IllegalArgumentException, AAIException, UnsupportedEncodingException {
+	public URIToObject(Loader loader, URI uri) throws AAIException, UnsupportedEncodingException {
 		
 		URIParser parser = new URIParser(loader, uri);
 		this.relatedObjects = new HashMap<>();
@@ -80,7 +80,7 @@ public class URIToObject implements Parsable {
 		this.loader = parser.getLoader();
 		this.version = loader.getVersion();
 	}
-	public URIToObject(Loader loader, URI uri, HashMap<String, Introspector> relatedObjects) throws IllegalArgumentException, AAIException, UnsupportedEncodingException {
+	public URIToObject(Loader loader, URI uri, HashMap<String, Introspector> relatedObjects) throws AAIException, UnsupportedEncodingException {
 		
 		URIParser parser = new URIParser(loader, uri);
 		this.relatedObjects = relatedObjects;

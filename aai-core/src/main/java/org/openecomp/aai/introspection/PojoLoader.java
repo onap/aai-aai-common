@@ -28,18 +28,18 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
-
 import org.openecomp.aai.db.props.AAIProperties;
 import org.openecomp.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.openecomp.aai.introspection.exceptions.AAIUnmarshallingException;
 import org.openecomp.aai.logging.ErrorLogHelper;
 import org.openecomp.aai.restcore.MediaType;
 import org.openecomp.aai.workarounds.NamingExceptions;
+
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 import com.google.common.base.CaseFormat;
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
 
 public class PojoLoader extends Loader {
 
@@ -73,6 +73,9 @@ public class PojoLoader extends Loader {
 	@Override
 	public Object objectFromName(String name) throws AAIUnknownObjectException {
 
+		if (name == null) {
+			throw new AAIUnknownObjectException("null name passed in");
+		}
 		final String sanitizedName = NamingExceptions.getInstance().getObjectName(name);
 		final String upperCamel;
 

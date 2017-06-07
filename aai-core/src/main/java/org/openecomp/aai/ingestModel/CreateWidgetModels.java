@@ -22,24 +22,20 @@ package org.openecomp.aai.ingestModel;
 
 import java.io.File;
 import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Map;
+import java.util.List;
+import java.util.Map.Entry;
 import java.util.UUID;
 
 import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.persistence.dynamic.DynamicEntity;
-import org.eclipse.persistence.jaxb.JAXBMarshaller;
-import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
-import org.eclipse.persistence.jaxb.MarshallerProperties;
-import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
-
-import org.openecomp.aai.domain.model.AAIResource;
-import org.openecomp.aai.domain.model.AAIResources;
+import org.openecomp.aai.introspection.Introspector;
+import org.openecomp.aai.introspection.Loader;
+import org.openecomp.aai.introspection.LoaderFactory;
+import org.openecomp.aai.introspection.ModelType;
+import org.openecomp.aai.introspection.Version;
 import org.openecomp.aai.util.AAIConfig;
 import org.openecomp.aai.util.AAIConstants;
-import com.google.common.base.CaseFormat;
 
 /**
  * The Class CreateWidgetModels.
@@ -78,33 +74,27 @@ public class CreateWidgetModels
 			System.exit(0);
 		}
 
-		ArrayList<String> apiVersions = new ArrayList<String>();
-		apiVersions.add(_apiVersion);
-		final IngestModelMoxyOxm m = new IngestModelMoxyOxm();
-		m.init(apiVersions, false);
 
-		AAIResources aaiResources = IngestModelMoxyOxm.aaiResourceContainer.get(_apiVersion);
-
-		DynamicJAXBContext jaxbContext = aaiResources.getJaxbContext();
+		Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.valueOf(_apiVersion));
 
 		// iterate the collection of resources
 
 		ArrayList<String> processedWidgets = new ArrayList<String>();
-		for (Map.Entry<String, AAIResource> aaiResEnt : aaiResources.getAaiResources().entrySet()) { 
-			DynamicEntity meObject = jaxbContext.newDynamicEntity("inventory.aai.openecomp.org." + _apiVersion + ".Model");
+		for (Entry<String, Introspector> aaiResEnt : loader.getAllObjects().entrySet()) {
+			Introspector meObject = loader.introspectorFromName("model");
 			// no need for a ModelVers DynamicEntity
 
-			AAIResource aaiRes = aaiResEnt.getValue();
+			Introspector aaiRes = aaiResEnt.getValue();
 
-			if (aaiRes.getResourceType().equals("node")) {
-				String resource = aaiRes.getSimpleName();
+			if (!(aaiRes.isContainer() || aaiRes.getName().equals("aai-internal"))) {
+				String resource = aaiRes.getName();
 
 				if (processedWidgets.contains(resource)) {
 					continue;
 				}
 				processedWidgets.add(resource);
 
-				String widgetName = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, resource);
+				String widgetName = resource;
 				String filePathString = widgetJsonDir + "/" + widgetName + "-" + modelVersion + ".json";
 				File f = new File(filePathString);
 
@@ -116,46 +106,32 @@ public class CreateWidgetModels
 					if (f2.exists()) { 
 						System.out.println("Using old file for " + resource + ".");
 
-						JAXBUnmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-						unmarshaller.setProperty("eclipselink.media-type", "application/json");
-						unmarshaller.setProperty("eclipselink.json.include-root", false);
-						Class<? extends DynamicEntity> resultClass = meObject.getClass();
-						meObject = (DynamicEntity) unmarshaller.unmarshal(new StreamSource(f2), resultClass).getValue();
+						meObject = loader.unmarshal("model", new StreamSource(f2).getReader().toString());
 						// override, some of them are wrong
-						meObject.set("modelVersion", modelVersion);
-					} else { 
-
+						meObject.setValue("model-version", modelVersion);
+					} else {
 						System.out.println("Making new file for " + resource + ".");
-						meObject.set("modelInvariantId", UUID.randomUUID().toString());
-						meObject.set("modelType", "widget");
-						DynamicEntity mevObject = jaxbContext.newDynamicEntity("inventory.aai.openecomp.org." + _apiVersion + ".ModelVer");
-						DynamicEntity mevsObject = jaxbContext.newDynamicEntity("inventory.aai.openecomp.org." + _apiVersion + ".ModelVers");
-						mevObject.set("modelVersionId", UUID.randomUUID().toString());
-						mevObject.set("modelVersion", modelVersion);
-						mevObject.set("modelName", widgetName);
+						meObject.setValue("model-invariant-id", UUID.randomUUID().toString());
+						meObject.setValue("model-type", "widget");
+						Introspector mevObject = loader.introspectorFromName("model-ver");
+						Introspector mevsObject = loader.introspectorFromName("model-vers");
+						mevObject.setValue("model-version-id", UUID.randomUUID().toString());
+						mevObject.setValue("model-version", modelVersion);
+						mevObject.setValue("model-Name", widgetName);
 						// make a list of dynamic Entities
-						ArrayList<DynamicEntity> mevsList = new ArrayList<DynamicEntity>();
+						List<Object> mevsList = new ArrayList<>();
 						// add this one, it will be the only one in the list in this case
-						mevsList.add(mevObject);
-						mevsObject.set("modelVer", mevsList);
+						mevsList.add(mevObject.getUnderlyingObject());
+						mevsObject.setValue("model-ver", mevsList);
 						// Have to figure out how to add my mev object to the mevsObject, 
 						// the modelVers is a list of dynamic entities so we can just attach the array here
-						meObject.set("modelVers",mevsObject);
+						meObject.setValue("model-vers",mevsObject.getUnderlyingObject());
 					}
 
 					// put it out as JSON
 
-					JAXBMarshaller marshaller = jaxbContext.createMarshaller();
-					marshaller.setProperty(JAXBMarshaller.JAXB_FORMATTED_OUTPUT, true);
-
-					marshaller.setProperty("eclipselink.media-type", "application/json");
-					marshaller.setProperty("eclipselink.json.include-root", false);
-					marshaller.setProperty(MarshallerProperties.JSON_MARSHAL_EMPTY_COLLECTIONS, Boolean.FALSE) ;
-
-					StringWriter writer = new StringWriter();
-					marshaller.marshal(meObject, writer);
 					PrintWriter out = new PrintWriter(f);
-					out.println(writer.toString());
+					out.println(meObject.marshal(true));
 					out.close();
 
 				} else { 
