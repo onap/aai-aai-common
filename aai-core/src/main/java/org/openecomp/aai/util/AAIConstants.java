@@ -20,6 +20,8 @@
 
 package org.openecomp.aai.util;
 
+import org.openecomp.aai.db.props.AAIProperties;
+
 public final class AAIConstants {
 	
 	//
@@ -78,7 +80,12 @@ public final class AAIConstants {
 	public static final String AAI_SERVER_URL = "aai.server.url";
 	public static final String AAI_OLDSERVER_URL = "aai.oldserver.url";
 	public static final String AAI_GLOBAL_CALLBACK_URL = "aai.global.callback.url";
+	public static final String AAI_LOCAL_REST = "https://localhost:%d/aai/" + AAIProperties.LATEST + "/";
 	
+	public static final int AAI_RESOURCES_PORT = 8447;
+	public static final int AAI_QUERY_PORT = 8446;
+	public static final int AAI_LEGACY_PORT = 8443;
+
 	public static final String AAI_DEFAULT_API_VERSION = "v7";
 	public static final String AAI_DEFAULT_API_VERSION_PROP = "aai.default.api.version";
 	public static final String AAI_NOTIFICATION_CURRENT_VERSION = "aai.notification.current.version";

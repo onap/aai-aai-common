@@ -33,6 +33,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -51,7 +52,6 @@ import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 import org.javatuples.Pair;
-
 import org.openecomp.aai.db.props.AAIProperties;
 import org.openecomp.aai.exceptions.AAIException;
 import org.openecomp.aai.introspection.Introspector;
@@ -80,6 +80,7 @@ import org.openecomp.aai.util.AAIApiServerURLBase;
 import org.openecomp.aai.util.AAIConfig;
 import org.openecomp.aai.util.AAIConstants;
 import org.openecomp.aai.workarounds.NamingExceptions;
+
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 import com.google.common.base.CaseFormat;
@@ -295,10 +296,12 @@ public class DBSerializer {
 						continue;
 					}
 					if (value != null) {
-						if (propertyType.toLowerCase().contains(".long")) {
-							v.property(dbProperty, new Integer(((Long)value).toString()));
-						} else {
-							v.property(dbProperty, value);
+						if (!value.equals(v.property(dbProperty).orElse(null))) {
+							if (propertyType.toLowerCase().contains(".long")) {
+								v.property(dbProperty, new Integer(((Long)value).toString()));
+							} else {
+								v.property(dbProperty, value);
+							}
 						}
 					} else {
 						v.property(dbProperty).remove();
@@ -920,12 +923,12 @@ public class DBSerializer {
 
 		//we must look up all parents in this case because we need to compute name-properties
 		//we cannot used the cached aaiUri to perform this action currently
-		Pair<Vertex, List<Introspector>> tuple = this.getParents(relationshipObj.getLoader(), cousin, "true".equals(cleanUp));
+		Optional<Pair<Vertex, List<Introspector>>> tuple = this.getParents(relationshipObj.getLoader(), cousin, "true".equals(cleanUp));
 		//damaged vertex found, ignore
-		if (tuple == null) {
+		if (!tuple.isPresent()) {
 			return null;
 		}
-		List<Introspector> list = tuple.getValue1();
+		List<Introspector> list = tuple.get().getValue1();
 		URI uri = this.getURIFromList(list);
 		
 		URIToRelationshipObject uriParser = null;
@@ -934,9 +937,9 @@ public class DBSerializer {
 			uriParser = new URIToRelationshipObject(relationshipObj.getLoader(), uri, this.baseURL);
 			result = uriParser.getResult();
 		} catch (AAIException | URISyntaxException e) {
-			LOGGER.error("Error while processing edge relationship in version " + relationshipObj.getVersion() + " (bad vertex ID=" + tuple.getValue0().id().toString() + ": " + e.getMessage(), e);
+			LOGGER.error("Error while processing edge relationship in version " + relationshipObj.getVersion() + " (bad vertex ID=" + tuple.get().getValue0().id().toString() + ": " + e.getMessage(), e);
 			if ("true".equals(cleanUp)) {
-				this.deleteWithTraversal(tuple.getValue0());
+				this.deleteWithTraversal(tuple.get().getValue0());
 			}
 			return null;
 		}
@@ -968,18 +971,20 @@ public class DBSerializer {
 	}
 	
 	public URI getURIForVertex(Vertex v, boolean overwrite) throws UnsupportedEncodingException {
-		URI uri = null;
+		URI uri = UriBuilder.fromPath("/unknown-uri").build();
 		
 		String aaiUri = v.<String>property(AAIProperties.AAI_URI).orElse(null);
 		
 		if (aaiUri != null && !overwrite) {
 			uri = UriBuilder.fromPath(aaiUri).build();
 		} else {
-			Pair<Vertex, List<Introspector>> tuple = this.getParents(this.loader, v, false);
-			List<Introspector> list = tuple.getValue1();
-			uri = this.getURIFromList(list);
+			Optional<Pair<Vertex, List<Introspector>>> tuple = this.getParents(this.loader, v, false);
+			if (tuple.isPresent()) {
+				List<Introspector> list = tuple.get().getValue1();
+				uri = this.getURIFromList(list);
+			}
 		}
-		return uri; 
+		return uri;
 	}
 	/**
 	 * Gets the URI from list.
@@ -1014,7 +1019,7 @@ public class DBSerializer {
 	 * @throws SecurityException the security exception
 	 * @throws AAIUnknownObjectException 
 	 */
-	private Pair<Vertex, List<Introspector>> getParents(Loader loader, Vertex start, boolean removeDamaged) {
+	private Optional<Pair<Vertex, List<Introspector>>> getParents(Loader loader, Vertex start, boolean removeDamaged) {
 		
 		List<Vertex> results = this.engine.getQueryEngine().findParents(start);
 		List<Introspector> objs = new ArrayList<>();
@@ -1050,10 +1055,10 @@ public class DBSerializer {
 		
 		//stop processing and don't return anything for this bad vertex
 		if (shortCircuit) {
-			return null;
+			return Optional.empty();
 		}
 		
-		return new Pair<>(results.get(results.size()-1), objs);
+		return Optional.of(new Pair<>(results.get(results.size()-1), objs));
 	}
 	/**
 	 * Takes a list of vertices and a list of objs and assumes they are in

@@ -26,9 +26,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -55,6 +57,8 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.NodeList;
 
 import org.openecomp.aai.dbmodel.DbEdgeRules;
+import org.openecomp.aai.db.props.AAIProperties;
+import org.openecomp.aai.introspection.Version;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Multimap;
 
@@ -62,10 +66,13 @@ import com.google.common.collect.Multimap;
 public class GenerateXsd {
 	static String apiVersion = null;
 	static String apiVersionFmt = null;
+	static boolean useAnnotationsInXsd = false;
 	static String responsesUrl = null;
 	static String responsesLabel = null;
-	static Map<String, String> generatedJavaType = new HashMap<String, String>();
-	static Map<String, String> appliedPaths = new HashMap<String, String>();
+	//static Map<String, String> generatedJavaType = new HashMap<String, String>();
+	//static Map<String, String> appliedPaths = new HashMap<String, String>();
+	static Map<String, String> generatedJavaType;
+	static Map<String, String> appliedPaths;
 	static NodeList javaTypeNodes;
 	static Class<?> versionedClass;
 
@@ -74,6 +81,16 @@ public class GenerateXsd {
 	public static final int VALUE_DESCRIPTION = 1;
 	public static final int VALUE_INDEXED_PROPS = 2;
 	
+	private static final String generateTypeXSD = "xsd";
+	private static final String generateTypeYAML = "yaml";
+
+	private static final String root = "../aai-schema/src/main/resources";
+	private static final String xsd_dir = root + "/aai_schema";
+	private static final String yaml_dir = root + "/aai_swagger_yaml";
+
+	private static int annotationsStartVersion = 9; // minimum version to support annotations in xsd
+	private static int swaggerSupportStartsVersion = 7; // minimum version to support swagger documentation
+
 	private static XPath xpath = XPathFactory.newInstance().newXPath();
 	
 
@@ -211,62 +228,107 @@ public class GenerateXsd {
 //		}
 	}
 	
+	private static boolean validVersion(String versionToGen) {
+
+		if ("ALL".equalsIgnoreCase(versionToGen)) {
+			return true;
+		}
+
+		for (Version v : Version.values()) {
+	        if (v.name().equals(versionToGen)) {
+	            return true;
+	        }
+	    }
+
+	    return false;
+	}
+
+	private static boolean versionUsesAnnotations( String version) {
+		if (new Integer(version.substring(1)).intValue() >= annotationsStartVersion ) {
+			return true;
+		}
+		return false;
+	}
+
+	private static boolean versionSupportsSwagger( String version) {
+		if (new Integer(version.substring(1)).intValue() >= swaggerSupportStartsVersion ) {
+			return true;
+		}
+		return false;
+	}
+
 	public static void main(String[] args) throws IOException {
-	
-		if (args.length > 0) { 
-			if (args[0] != null) {
-				apiVersion = args[0];
+		String versionToGen = System.getProperty("gen_version").toLowerCase();
+		String fileTypeToGen = System.getProperty("gen_type").toLowerCase();
+		if ( fileTypeToGen == null ) {
+			fileTypeToGen = generateTypeXSD;
+		}
+
+		if ( !fileTypeToGen.equals( generateTypeXSD ) && !fileTypeToGen.equals( generateTypeYAML )) {
+			System.err.println("Invalid gen_type passed. " + fileTypeToGen);
+			System.exit(1);
+		}
+
+
+		if ( versionToGen == null ) {
+			System.err.println("Version is required, ie v<n> or ALL.");
+			System.exit(1);
+		}
+
+		responsesUrl = System.getProperty("yamlresponses_url");
+		String responsesLabel = System.getProperty("yamlresponses_label");
+		List<Version> versionsToGen = new ArrayList<>();
+
+
+		if (!"ALL".equalsIgnoreCase(versionToGen) && !versionToGen.matches("v\\d+") && !validVersion(versionToGen)) {
+			System.err.println("Invalid version passed. " + versionToGen);
+			System.exit(1);
+		}
+
+		if ("ALL".equalsIgnoreCase(versionToGen)) {
+			versionsToGen = Arrays.asList(Version.values());
+			Collections.sort(versionsToGen);
+			Collections.reverse(versionsToGen);
+		} else {
+			versionsToGen.add(Version.valueOf(versionToGen));
+		}
+
+		if ( fileTypeToGen.equals(generateTypeYAML) ) {
+			if ( responsesUrl == null || responsesUrl.length() < 1
+					|| responsesLabel == null || responsesLabel.length() < 1 ) {
+				System.err.println("generating swagger yaml file requires yamlresponses_url and yamlresponses_label properties" );
+				System.exit(1);
 			}
+			responsesUrl = "description: "+ responsesLabel+ "(" + responsesUrl + ").\n";
 		}
-		boolean genDoc = false;
-		if ( args.length > 1 ) {
-			genDoc = true;
-			int index = args[1].indexOf("|");
-			if ( index > 0 ) {
-				responsesUrl = args[1].substring(0, index);
-				responsesLabel = args[1].substring(index+1);
-				//System.out.println( "response URL " + responsesUrl);
-				//System.out.println( "response label " + responsesLabel);
-				responsesUrl = "description: "+ responsesLabel + "(" +
-						responsesUrl + ").\n";
-				//System.out.println( "operation described with " + responsesUrl);
-			} else { // default
-				responsesUrl = "";
-			}
-		}
-		String oxmPath = null;
-		if ( apiVersion == null ) { 
-			// to run from eclipse, set these env, e.g. v7, \sources\aai\aaimastergit\bundleconfig-local\etc\oxm\
-			String envRev= System.getenv("OXM_REV");
-			if ( envRev != null )
-				apiVersion = envRev;
-			
-		}
-		oxmPath = System.getenv("OXM_PATH");	
+		String oxmPath = root + "/oxm/";
+
 		String outfileName;
-		if ( genDoc ) {
-			outfileName = "c:\\temp\\aai.yaml";
-		} else
-			outfileName = "c:\\temp\\aai_schema.xsd";
-		if ( apiVersion != null ) { // generate from oxm
-			apiVersionFmt = "." + apiVersion + ".";
-			if ( oxmPath == null ) {
-				oxmPath = AAIConstants.AAI_HOME_ETC_OXM + AAIConstants.AAI_FILESEP;
-				//oxmPath = "\\sources\\aai\\aaimastergit\\bundleconfig-local\\etc\\oxm\\";
-			}
-				
+		File outfile;
+		String fileContent;
+
+		for (Version v : versionsToGen) {
+			apiVersion = v.toString();
+			System.out.println("Generating " + apiVersion + " " + fileTypeToGen);
 			File oxm_file = new File(oxmPath + "aai_oxm_" + apiVersion + ".xml");
-			String xsd;
-			File outfile;
-			if ( genDoc ) {
-				xsd = generateSwaggerFromOxmFile( oxm_file);
-				outfile =new File(outfileName);				
+			apiVersionFmt = "." + apiVersion + ".";
+			generatedJavaType = new HashMap<String, String>();
+			appliedPaths = new HashMap<String, String>();
+			if ( fileTypeToGen.equals(generateTypeXSD) ) {
+				useAnnotationsInXsd = versionUsesAnnotations(apiVersion);
+				outfileName = xsd_dir + "/aai_schema_" + apiVersion + "." + generateTypeXSD;
+				fileContent = processOxmFile( oxm_file);
+			} else if ( versionSupportsSwagger(apiVersion )) {
+				outfileName = yaml_dir + "/aai_swagger_" + apiVersion + "." + generateTypeYAML;
+				fileContent = generateSwaggerFromOxmFile( oxm_file);
 			} else {
-				xsd = processOxmFile( oxm_file);
-				outfile =new File(outfileName);
+				continue;
 			}
-			
-			
+			outfile = new File(outfileName);
+			File parentDir = outfile.getParentFile();
+			if(! parentDir.exists())
+			      parentDir.mkdirs();
+
 		    try {
 		        outfile.createNewFile();
 		    } catch (IOException e) {
@@ -276,7 +338,7 @@ public class GenerateXsd {
 	        try {
 	        	FileWriter fw = new FileWriter(outfile.getAbsoluteFile());
 	        	BufferedWriter bw = new BufferedWriter(fw);
-	        	bw.write(xsd);
+	        	bw.write(fileContent);
 	        	bw.close();
 
 	        } catch ( IOException e) {
@@ -284,32 +346,11 @@ public class GenerateXsd {
 	        	e.printStackTrace();
 	        }
 			System.out.println( "GeneratedXSD successful, saved in " + outfileName);
-			return;
-		}
-		
-		JAXBContext jaxbContext = null;
-		try {
-			jaxbContext = JAXBContext.newInstance(org.openecomp.aai.domain.yang.Vce.class);
-		} catch (JAXBException e) {
-
-			e.printStackTrace();
-		}
-		SchemaOutputResolver sor = new MySchemaOutputResolver();
-		jaxbContext.generateSchema(sor);
-		
-	}
-
-	public static class MySchemaOutputResolver extends SchemaOutputResolver {
-
-		public Result createOutput(String namespaceURI, String suggestedFileName) throws IOException {
-			File file = new File("c:\\temp\\aai_schema.xsd");
-			StreamResult result = new StreamResult(file);
-			result.setSystemId(file.toURI().toURL().toString());
-			return result;
 		}
 
 	}
-	
+
+
 	public static String processJavaTypeElement( String javaTypeName, Element javaTypeElement) {
 		
 		String xmlRootElementName = null;
@@ -317,7 +358,7 @@ public class GenerateXsd {
 		NodeList parentNodes = javaTypeElement.getElementsByTagName("java-attributes");
 		StringBuffer sb = new StringBuffer();
 		if ( parentNodes.getLength() == 0 ) {
-			System.out.println( "no java-attributes for java-type " + javaTypeName);
+			//System.out.println( "no java-attributes for java-type " + javaTypeName);
 			return "";
 
 		}
@@ -358,15 +399,15 @@ public class GenerateXsd {
 			sb1.append("  <xs:element name=\"" + xmlRootElementName + "\">\n");
 			sb1.append("    <xs:complexType>\n");
 			NodeList properties = GenerateXsd.locateXmlProperties(javaTypeElement);
-			if (properties != null) {
-				System.out.println("properties found for: " + xmlRootElementName);
+			if (properties != null && useAnnotationsInXsd) {
+				//System.out.println("properties found for: " + xmlRootElementName);
 				sb1.append("      <xs:annotation>\r\n");
 				insertAnnotation(properties, false, "class", sb1, "      ");
 				
 				sb1.append("      </xs:annotation>\r\n");
-			} else {
+			} /*else {
 				System.out.println("no properties found for: " + xmlRootElementName);
-			}
+			}*/
 			sb1.append("      <xs:sequence>\n");
 			for ( int i = 0; i < xmlElementNodes.getLength(); ++i ) {
 				
@@ -434,18 +475,18 @@ public class GenerateXsd {
 					sb1.append(">\n");
 					sb1.append("          <xs:complexType>\n");
 					properties = GenerateXsd.locateXmlProperties(javaTypeElement);
-					if (properties != null) {
+					if (properties != null && useAnnotationsInXsd) {
 						sb1.append("            <xs:annotation>\r\n");
 						insertAnnotation(properties, false, "class", sb1, "            ");
 						sb1.append("            </xs:annotation>\r\n");
-					} else {
+					} /*else {
 						System.out.println("no properties found for: " + xmlElementWrapper);
-					}
+					}*/
 					sb1.append("            <xs:sequence>\n");
 					sb1.append("      ");
 				}
             	if ("Nodes".equals(addType)) {
-            		System.out.println ("Skipping nodes, temporary testing");
+            		//System.out.println ("Skipping nodes, temporary testing");
             		continue;
             	}
 				if ( addType != null ) {
@@ -474,10 +515,11 @@ public class GenerateXsd {
 				properties = GenerateXsd.locateXmlProperties(xmlElementElement);
 				if (properties != null || elementIsKey != null) {
 					sb1.append(">\n");
-					sb1.append("          <xs:annotation>\r\n");
-					insertAnnotation(properties, elementIsKey != null, "field", sb1, "          ");
-					sb1.append("          </xs:annotation>\r\n");
-
+					if ( useAnnotationsInXsd ) {
+						sb1.append("          <xs:annotation>\r\n");
+						insertAnnotation(properties, elementIsKey != null, "field", sb1, "          ");
+						sb1.append("          </xs:annotation>\r\n");
+					}
 					if (xmlElementWrapper== null) {
 						sb1.append("        </xs:element>\n");
 					}
@@ -553,7 +595,7 @@ public class GenerateXsd {
 						name = "extendsFrom";
 					}
 					metadata.add(name + "=\"" + value.replaceAll("&",  "&amp;") + "\"");
-					System.out.println("property name: " + name);
+					//System.out.println("property name: " + name);
 	
 				}
 			}
@@ -645,13 +687,18 @@ public class GenerateXsd {
 		StringBuffer sb = new StringBuffer();
 		sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n");
 		String namespace = "org.openecomp";
-		sb.append("<xs:schema elementFormDefault=\"qualified\" version=\"1.0\" targetNamespace=\"http://" + namespace + ".aai.inventory/" 
+		if ( useAnnotationsInXsd ) {
+			sb.append("<xs:schema elementFormDefault=\"qualified\" version=\"1.0\" targetNamespace=\"http://" + namespace + ".aai.inventory/"
 				+ apiVersion + "\" xmlns:tns=\"http://" + namespace + ".aai.inventory/" + apiVersion + "\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\""
 						+ "\n"
 						+ "xmlns:jaxb=\"http://java.sun.com/xml/ns/jaxb\"\r\n" + 
 						"    jaxb:version=\"2.1\" \r\n" + 
 						"    xmlns:annox=\"http://annox.dev.java.net\" \r\n" + 
 						"    jaxb:extensionBindingPrefixes=\"annox\">\n\n");
+		} else {
+			sb.append("<xs:schema elementFormDefault=\"qualified\" version=\"1.0\" targetNamespace=\"http://" + namespace + ".aai.inventory/"
+					+ apiVersion + "\" xmlns:tns=\"http://" + namespace + ".aai.inventory/" + apiVersion + "\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\">\n\n");
+		}
 
 		try {
 		    
@@ -705,7 +752,7 @@ public class GenerateXsd {
 					return null;
 				}
 				if ("Nodes".equals(javaTypeName)) {
-					System.out.println("skipping Nodes entry (temporary feature)");
+					//System.out.println("skipping Nodes entry (temporary feature)");
 					continue;
 				}
 				if ( !generatedJavaType.containsKey(javaTypeName) ) {
@@ -886,7 +933,33 @@ public class GenerateXsd {
 				return null;
 			}
 		}
+		/*
+		if ( path == null )
+			System.out.println( "processJavaTypeElementSwagger called with null path for javaTypeName " + javaTypeName);
+		*/
+		/*
+		if ( path == null || !(path.contains("cloud-infrastructure")))
+			switch ( javaTypeName) {
+			 case "Inventory":
+				useTag = null;
+				break;
+				
+			case "CloudInfrastructure":
+			case "Search":
+			case "Actions":
+			case "ServiceDesignAndCreation":
+			case "LicenseManagement":
+			case "Network":
+				if ( tag == null )
+					useTag = javaTypeName;
 
+				break;
+			default:
+					return null;
+					
+			}
+		*/
+		
 		if ( !javaTypeName.equals("Inventory") ) {
 			if ( javaTypeName.equals("AaiInternal"))
 				return null;
@@ -898,10 +971,18 @@ public class GenerateXsd {
 				useTag = javaTypeName;
 		}
 		
+		/*
+		if ( javaTypeName.equals("GenericVnf"))
+			System.out.println( "Processing " + javaTypeName);
+		else if ( javaTypeName.equals("Service"))
+				System.out.println( "Processing " + javaTypeName);
+		else if ( javaTypeName.equals("SitePair"))
+			System.out.println( "Processing " + javaTypeName);
+		*/
 		NodeList parentNodes = javaTypeElement.getElementsByTagName("java-attributes");
 
 		if ( parentNodes.getLength() == 0 ) {
-			System.out.println( "no java-attributes for java-type " + javaTypeName);
+			//System.out.println( "no java-attributes for java-type " + javaTypeName);
 			return "";
 
 		}
@@ -1555,7 +1636,7 @@ public class GenerateXsd {
 	{
 
 		StringBuffer sb = new StringBuffer();
-		sb.append("swagger: \"2.0\"\ninfo:\n  description:\n    A&AI REST API\n  version: \"" + apiVersion +"\"\n");
+		sb.append("swagger: \"2.0\"\ninfo:\n  description: |\n    Copyright &copy; 2017 AT&amp;T Intellectual Property. All rights reserved.\n\n    Licensed under the Creative Commons License, Attribution 4.0 Intl. (the &quot;License&quot;); you may not use this documentation except in compliance with the License.\n\n    You may obtain a copy of the License at\n\n    (https://creativecommons.org/licenses/by/4.0/)\n\n    Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.\n\n    ECOMP and OpenECOMP are trademarks and service marks of AT&amp;T Intellectual Property.\n\n    This document is best viewed with Firefox or Chrome. Nodes can be found by appending /#/definitions/node-type-to-find to the path to this document. Edge definitions can be found with the node definitions.\n  version: \"" + apiVersion +"\"\n");
 		sb.append("  title: Active and Available Inventory REST API\n");
 		sb.append("  license:\n    name: Apache 2.0\n    url: http://www.apache.org/licenses/LICENSE-2.0.html\n");
 		sb.append("schemes:\n  - https\npaths:\n");

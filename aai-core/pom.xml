@@ -322,7 +322,7 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	
+
 	<build>
 		<plugins>
 			<plugin>
@@ -423,7 +423,7 @@
             		<phase>none</phase>
         		</execution>
    			</executions>
-		</plugin>        
+		</plugin>
 		<plugin>
 		    <groupId>org.sonatype.plugins</groupId>
 		    <artifactId>nexus-staging-maven-plugin</artifactId>
@@ -437,7 +437,7 @@
 		</plugin>
 		</plugins>
 	</build>
-	
+
 	<distributionManagement>
 		<repository>
 			<id>ecomp-releases</id>
@@ -467,7 +467,7 @@
 			<url>http://www.evosuite.org/m2</url>
 		</pluginRepository>
 	</pluginRepositories>
-	
+
 	<repositories>
 		<repository>
 			<id>AJSC</id>
@@ -479,7 +479,7 @@
 			<name>maven reslet</name>
 			<url>https://maven.restlet.com/</url>
 		</repository>
-		
+
 		<repository>
 			<id>central</id>
 			<name>Maven 2 repository 2</name>

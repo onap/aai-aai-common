@@ -302,7 +302,7 @@ public abstract class Introspector implements Cloneable {
 	public Set<String> getDependentOn() {
 		String dependentOn = this.getMetadata(ObjectMetadata.DEPENDENT_ON);
 		if (dependentOn == null) {
-			dependentOn = "";
+			return  new LinkedHashSet<>();
 		}
 		return new LinkedHashSet<>(Arrays.asList(dependentOn.split(",")));
 	}

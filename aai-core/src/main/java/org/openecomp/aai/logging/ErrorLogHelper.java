@@ -41,8 +41,10 @@ import org.slf4j.MDC;
 
 import org.openecomp.aai.exceptions.AAIException;
 import org.openecomp.aai.logging.LoggingContext.StatusCode;
+import org.openecomp.aai.util.AAIConfig;
 import org.openecomp.aai.util.AAIConstants;
 import org.openecomp.aai.util.MapperUtil;
+
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 
@@ -560,10 +562,13 @@ public class ErrorLogHelper {
 
 //		MDC.put("severity", errorObject.getSeverity()); //TODO Use LoggingContext.severity(int severity)
 		String severityCode = errorObject.getSeverityCode(errorObject.getSeverity());
-		int sevCode = Integer.parseInt(severityCode);
-		if (sevCode > 0 && sevCode <= 3 )
-		{
-			LoggingContext.severity(sevCode);
+		
+		if (!AAIConfig.isEmpty(severityCode)) {
+			int sevCode = Integer.parseInt(severityCode);
+			if (sevCode > 0 && sevCode <= 3 )
+			{
+				LoggingContext.severity(sevCode);
+			}
 		}
 		
 		final String errorMessage = new StringBuilder()
