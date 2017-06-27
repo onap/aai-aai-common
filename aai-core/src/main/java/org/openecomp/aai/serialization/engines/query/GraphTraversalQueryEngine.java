@@ -32,9 +32,10 @@ import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
-
 import org.openecomp.aai.db.props.AAIProperties;
 import org.openecomp.aai.introspection.Loader;
+import org.openecomp.aai.serialization.db.EdgeProperties;
+import org.openecomp.aai.serialization.db.EdgeProperty;
 
 /*
  * This class needs some big explanation despite its compact size.
@@ -62,7 +63,7 @@ public class GraphTraversalQueryEngine extends QueryEngine {
 	@Override
 	public List<Vertex> findParents(Vertex start) {
 		
-		final GraphTraversal<Vertex, Vertex> pipe = this.g.V(start).emit(v -> true).repeat(__.inE().has("isParent", true).outV());
+		final GraphTraversal<Vertex, Vertex> pipe = this.g.V(start).emit(v -> true).repeat(__.union(__.inE().has(EdgeProperties.out(EdgeProperty.IS_PARENT), true).outV(), __.outE().has(EdgeProperties.in(EdgeProperty.IS_PARENT), true).inV()));
 		return pipe.toList();
 	}
 
@@ -73,7 +74,7 @@ public class GraphTraversalQueryEngine extends QueryEngine {
 	public List<Vertex> findAllChildren(Vertex start) {
 		
 		GraphTraversal<Vertex, Vertex> pipe =  this.g
-				.V(start).emit(v -> true).repeat(__.outE().has("isParent", true).inV());
+				.V(start).emit(v -> true).repeat(__.union(__.outE().has(EdgeProperties.out(EdgeProperty.IS_PARENT), true).inV(), __.inE().has(EdgeProperties.in(EdgeProperty.IS_PARENT), true).outV()));
 		
 
 		return pipe.toList();
@@ -82,8 +83,8 @@ public class GraphTraversalQueryEngine extends QueryEngine {
 
 	public List<Vertex> findChildrenOfType(Vertex start, String type) {
 		GraphTraversal<Vertex, Vertex> pipe =  this.g.V(start).union(
-					__.outE().has("isParent", true).inV(),
-					__.inE().has("isParent-REV", true).outV()
+					__.outE().has(EdgeProperties.out(EdgeProperty.IS_PARENT), true).inV(),
+					__.inE().has(EdgeProperties.in(EdgeProperty.IS_PARENT), true).outV()
 				).has(AAIProperties.NODE_TYPE, type).dedup();
  
 		return pipe.toList();
@@ -91,8 +92,8 @@ public class GraphTraversalQueryEngine extends QueryEngine {
 	
 	public List<Vertex> findChildren(Vertex start) {
 		GraphTraversal<Vertex, Vertex> pipe =  this.g.V(start).union(
-					__.outE().has("isParent", true),
-					__.inE().has("isParent-REV", true)
+					__.outE().has(EdgeProperties.out(EdgeProperty.IS_PARENT), true),
+					__.inE().has(EdgeProperties.in(EdgeProperty.IS_PARENT), true)
 				).otherV().dedup();
  
 		return pipe.toList();
@@ -104,9 +105,18 @@ public class GraphTraversalQueryEngine extends QueryEngine {
 	@Override
 	public List<Vertex> findDeletable(Vertex start) {
 		GraphTraversal<Vertex, Vertex> pipe = this.g
-				.V(start).emit(v -> true).repeat(__.outE().or(
-						__.has("isParent", true),
-						__.has("hasDelTarget", true)).inV());
+				.V(start).emit(v -> true).repeat(
+					__.union(
+						__.outE().or(
+							__.has(EdgeProperties.out(EdgeProperty.IS_PARENT), true),
+							__.has(EdgeProperties.out(EdgeProperty.HAS_DEL_TARGET), true)
+						).inV(),
+						__.inE().or(
+								__.has(EdgeProperties.in(EdgeProperty.IS_PARENT), true),
+								__.has(EdgeProperties.in(EdgeProperty.HAS_DEL_TARGET), true)
+						).outV()
+					)
+				);
 		
 		return pipe.toList();
 	}
@@ -138,12 +148,15 @@ public class GraphTraversalQueryEngine extends QueryEngine {
 	@Override
 	public Tree<Element> findSubGraph(Vertex start, int iterations, boolean nodeOnly) {
 		final GraphTraversal<Vertex, ?> t = this.g.V(start).emit(v -> true).times(iterations).repeat(
-				__.outE().has("isParent", true).inV());
+				__.union(
+					__.outE().has(EdgeProperties.out(EdgeProperty.IS_PARENT), true).inV(),
+					__.inE().has(EdgeProperties.in(EdgeProperty.IS_PARENT), true).outV())
+				);
 			
 		if (!nodeOnly) {
 			t.union(
 					__.identity(),
-					__.bothE().has("isParent", false).dedup().otherV()
+					__.bothE().and(__.has(EdgeProperties.out(EdgeProperty.IS_PARENT), false), __.has(EdgeProperties.in(EdgeProperty.IS_PARENT), false)).dedup().otherV()
 			);
 		}
 		t.tree();
@@ -158,8 +171,8 @@ public class GraphTraversalQueryEngine extends QueryEngine {
 	public List<Edge> findEdgesForVersion(Vertex start, Loader loader) {
 		final Set<String> objects = loader.getAllObjects().keySet();
 		GraphTraversal<Vertex, Edge> pipeline = this.g.V(start).union(
-				__.inE().has("isParent", false).has("isParent-REV", false).where(__.outV().has(AAIProperties.NODE_TYPE, P.within(objects))),
-				__.outE().has("isParent", false).has("isParent-REV", false).where(__.inV().has(AAIProperties.NODE_TYPE, P.within(objects)))
+				__.inE().has(EdgeProperties.out(EdgeProperty.IS_PARENT), false).has(EdgeProperties.in(EdgeProperty.IS_PARENT), false).where(__.outV().has(AAIProperties.NODE_TYPE, P.within(objects))),
+				__.outE().has(EdgeProperties.out(EdgeProperty.IS_PARENT), false).has(EdgeProperties.in(EdgeProperty.IS_PARENT), false).where(__.inV().has(AAIProperties.NODE_TYPE, P.within(objects)))
 			).dedup();
 		
 		return pipeline.toList();
@@ -169,8 +182,8 @@ public class GraphTraversalQueryEngine extends QueryEngine {
 	@Override
 	public List<Vertex> findCousinVertices(Vertex start) {
 		GraphTraversal<Vertex, Vertex> pipeline = this.g.V(start).union(
-				__.inE().has("isParent", false).has("isParent-REV", false),
-				__.outE().has("isParent", false).has("isParent-REV", false)).otherV().dedup();
+				__.inE().has(EdgeProperties.out(EdgeProperty.IS_PARENT), false).has(EdgeProperties.in(EdgeProperty.IS_PARENT), false),
+				__.outE().has(EdgeProperties.out(EdgeProperty.IS_PARENT), false).has(EdgeProperties.in(EdgeProperty.IS_PARENT), false)).otherV().dedup();
 				
 		return pipeline.toList();
 	}

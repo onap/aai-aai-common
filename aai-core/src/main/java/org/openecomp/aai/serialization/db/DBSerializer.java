@@ -142,6 +142,13 @@ public class DBSerializer {
 		
 	}
 	
+	private void touchStandardVertexProperties(String nodeType, Vertex v, boolean isNewVertex) {
+
+		v.property(AAIProperties.NODE_TYPE, nodeType);
+		touchStandardVertexProperties(v, isNewVertex);
+
+	}
+
 	
 	
 	/**
@@ -156,8 +163,7 @@ public class DBSerializer {
 
 		
 		Vertex v = this.engine.tx().addVertex();
-		v.property(AAIProperties.NODE_TYPE, wrappedObject.getDbName());
-		touchStandardVertexProperties(v, true);
+		touchStandardVertexProperties(wrappedObject.getDbName(), v, true);
 		
 		return v;
 	}
@@ -272,6 +278,9 @@ public class DBSerializer {
 		List<Vertex> processedVertexes = new ArrayList<>();
 		boolean isComplexType = false;
 		boolean isListType = false;
+		if (!obj.isContainer()) {
+			this.touchStandardVertexProperties(obj.getDbName(), v, false);
+		}
 		this.executePreSideEffects(obj, v);
 		for (String property : properties) {
 			Object value = null;
@@ -1156,7 +1165,7 @@ public class DBSerializer {
 				e = this.getEdgeBetween(EdgeType.COUSIN, inputVertex, relatedVertex);
 				if (e == null) {				
 					edgeRules.addEdge(this.engine.asAdmin().getTraversalSource(), inputVertex, relatedVertex);
-					
+
 				} else {
 					//attempted to link two vertexes already linked
 				}
@@ -1358,7 +1367,12 @@ public class DBSerializer {
 				//are there any cousin edges?
 				long children = 0;
 				for (Edge e : inEdges) {
-					if (e.<Boolean>property("isParent").orElse(false)) {
+					if (e.<Boolean>property(EdgeProperties.out(EdgeProperty.IS_PARENT)).orElse(false)) {
+						children++;
+					}
+				}
+				for (Edge e : outEdges) {
+					if (e.<Boolean>property(EdgeProperties.in(EdgeProperty.IS_PARENT)).orElse(false)) {
 						children++;
 					}
 				}
@@ -1376,7 +1390,7 @@ public class DBSerializer {
 			} else {
 				result = true;
 				for (Edge edge : outEdges) {
-					Object property = edge.<Boolean>property("isParent").orElse(null);
+					Object property = edge.<Boolean>property(EdgeProperties.out(EdgeProperty.IS_PARENT)).orElse(null);
 					if (property != null && property.equals(Boolean.TRUE)) {
 						Vertex v = edge.inVertex();
 						String vType = v.<String>property(AAIProperties.NODE_TYPE).orElse(null);
@@ -1389,7 +1403,7 @@ public class DBSerializer {
 				}
 				
 				for (Edge edge : inEdges) {
-					Object property = edge.<Boolean>property("isParent-REV").orElse(null);
+					Object property = edge.<Boolean>property(EdgeProperties.in(EdgeProperty.IS_PARENT)).orElse(null);
 					if (property != null && property.equals(Boolean.TRUE)) {
 						Vertex v = edge.outVertex();
 						String vType = v.<String>property(AAIProperties.NODE_TYPE).orElse(null);

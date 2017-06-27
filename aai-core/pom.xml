@@ -22,7 +22,126 @@
 		<sonar.jacoco.reportPath>${project.build.directory}/coverage-reports/jacoco.exec</sonar.jacoco.reportPath>
 		<sonar.jacoco.reportMissing.force.zero>false</sonar.jacoco.reportMissing.force.zero>
 		<sonar.projectVersion>${project.version}</sonar.projectVersion>
+		<gendoc.version>v10</gendoc.version>
+		<aai.wiki.link>https://wiki.onap.org/</aai.wiki.link>
 	</properties>
+	<profiles>		
+		<profile>
+			<id>generateXsd</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>exec-maven-plugin</artifactId>
+						<version>1.1.1</version>
+						<executions>
+							<execution>
+								<phase>process-classes</phase>
+								<goals>
+									<goal>java</goal>
+								</goals>
+								<configuration>
+									<mainClass>org.openecomp.aai.util.GenerateXsd</mainClass>
+									<systemProperties>
+					                    <systemProperty>
+					                        <key>gen_version</key>
+					                        <value>${gendoc.version}</value>
+					                    </systemProperty>
+					                    <systemProperty>
+					                        <key>gen_type</key>
+					                        <value>XSD</value>
+					                    </systemProperty>
+					                    <systemProperty>
+					                        <key>yamlresponses_url</key>
+					                        <value></value>
+					                    </systemProperty>
+					                    <systemProperty>
+					                        <key>yamlresponses_label</key>
+					                        <value></value>
+					                    </systemProperty>					                    
+					                </systemProperties>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>generateYaml</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>exec-maven-plugin</artifactId>
+						<version>1.1.1</version>
+						<executions>
+							<execution>
+								<phase>process-classes</phase>
+								<goals>
+									<goal>java</goal>
+								</goals>
+								<configuration>
+									<mainClass>org.openecomp.aai.util.GenerateXsd</mainClass>
+									<systemProperties>
+					                    <systemProperty>
+					                        <key>gen_version</key>
+					                        <value>${gendoc.version}</value>
+					                    </systemProperty>
+					                    <systemProperty>
+					                        <key>gen_type</key>
+					                        <value>YAML</value>
+					                    </systemProperty>
+					                    <systemProperty>
+					                        <key>yamlresponses_url</key>
+								<value>${aai.wiki.link}</value>
+					                    </systemProperty>
+					                    <systemProperty>
+					                        <key>yamlresponses_label</key>
+					                        <value>Response codes found in [response codes]</value>
+					                    </systemProperty>					                    
+					                </systemProperties>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>generateHtml</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>exec-maven-plugin</artifactId>
+						<version>1.1.1</version>
+						<executions>
+							<execution>
+								<phase>process-classes</phase>
+								<goals>
+									<goal>java</goal>
+								</goals>
+								<configuration>
+									<mainClass>org.openecomp.aai.util.swagger.GenerateSwagger</mainClass>
+                                    <systemProperties>
+                                        <property>
+											<key>aai.generate.version</key>
+											<value>${gendoc.version}</value>
+										</property>
+										<property>
+											<key>aai.wiki.link</key>
+											<value>${aai.wiki.link}</value>
+										</property>
+									</systemProperties>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 	<dependencies>
 		<dependency>
 			<groupId>org.onap.aai.aai-common</groupId>
@@ -187,6 +306,11 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-annotations</artifactId>
+			<version>2.1.4</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.dataformat</groupId>
+			<artifactId>jackson-dataformat-yaml</artifactId>
 			<version>2.1.4</version>
 		</dependency>
 		<dependency>

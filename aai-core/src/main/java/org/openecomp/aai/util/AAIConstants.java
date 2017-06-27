@@ -105,16 +105,6 @@ public final class AAIConstants {
     public static final String AAI_DBMODEL_FILENAME = "aai.dbmodel.filename";
     public static final String AAI_RESVERSION_ENABLEFLAG = "aai.resourceversion.enableflag";
 
-    public static final String ECM_OPENSTACK_TENANTID = "ecm.openstack.tenantid";
-
-	public static final String HBASE_TABLE_NAME = "hbase.table.name";
-	public static final String HBASE_NOTIFICATION_TABLE_NAME = "hbase.notificationTable.name";
-	public static final String HBASE_TABLE_TIMESTAMP_FORMAT = "hbase.table.timestamp.format";
-	public static final String HBASE_CONFIGURATION_ZOOKEEPER_QUORUM = "hbase.zookeeper.quorum";
-	public static final String HBASE_CONFIGURATION_ZOOKEEPER_CLIENTPORT = "hbase.zookeeper.property.clientPort";
-	public static final String HBASE_ZOOKEEPER_ZNODE_PARENT = "hbase.zookeeper.znode.parent";
-	public static final String ZOOKEEPER_ZNODE_PARENT = "zookeeper.znode.parent";
-	
 	public static final int AAI_MAX_TRANS_RETRIES = 5;
 	public static final long AAI_TRANS_RETRY_SLEEP_MSEC = 500;
 	
@@ -129,12 +119,12 @@ public final class AAIConstants {
 	/** Default to skipping real-time grooming unless system property aai.skiprealtime.grooming is set to "false" */
 	public static final String AAI_SKIPREALTIME_GROOMING = (System.getProperty("aai.skiprealtime.grooming") == null) ? "true" : System.getProperty("aai.skiprealtime.grooming");
 	
-	
+
 	/*** UEB ***/	
 	public static final String UEB_PUB_PARTITION_AAI = "AAI";
 	public static final String UEB_PUB_AAI_VCE_INTERFACE_DATA_TOPIC = "ueb.pub.aai.vce.interface.data.topic";
 
-	
+
 	/** Service description for Hosted Communications */
 	public static final String AAI_SERVICEDESCRIPTION_HOSTEDCOMM = "aai.servicedescription.hostedcomm";
 
@@ -143,7 +133,7 @@ public final class AAIConstants {
 
 	/** Service description for Mobility */
 	public static final String AAI_SERVICEDESCRIPTION_VUSP = "aai.servicedescription.vusp";
-	
+
 	/** Service description for Vvig */
 	public static final String AAI_SERVICEDESCRIPTION_VVIG = "aai.servicedescription.vvig";
 	

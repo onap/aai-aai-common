@@ -32,6 +32,7 @@ import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.Ignore;
 
 import org.openecomp.aai.serialization.engines.query.GraphTraversalQueryEngine;
 
@@ -64,6 +65,8 @@ public class TreeBackedVertexTest {
 		treeDepth1 = new GraphTraversalQueryEngine(g).findSubGraph((Vertex)startKey, 1, false);
 		treeDepth0NodeOnly = new GraphTraversalQueryEngine(g).findSubGraph((Vertex)startKey, 0, true);
 	}
+
+	@Ignore
 	@Test
 	public void oneHopViaEdges() {
 
@@ -77,6 +80,7 @@ public class TreeBackedVertexTest {
 		
 	}
 	
+	@Ignore
 	@Test
 	public void oneHopViaVertices() {
 
@@ -89,6 +93,7 @@ public class TreeBackedVertexTest {
 	
 	}
 	
+	@Ignore
 	@Test
 	public void twoHopCousinViaVertices() {
 

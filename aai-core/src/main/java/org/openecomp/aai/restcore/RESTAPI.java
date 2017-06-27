@@ -44,8 +44,6 @@ import org.openecomp.aai.introspection.tools.RemoveNonVisibleProperty;
 import org.openecomp.aai.logging.ErrorLogHelper;
 import org.openecomp.aai.logging.LoggingContext;
 import org.openecomp.aai.util.AAIConfig;
-import org.openecomp.aai.util.AAIConstants;
-import org.openecomp.aai.util.AAITxnLog;
 import org.openecomp.aai.util.FormatDate;
 
 import com.att.eelf.configuration.EELFLogger;
@@ -73,9 +71,6 @@ public class RESTAPI {
 	public enum Action {
 		GET, PUT, POST, DELETE
 	};
-
-	
-	public AAITxnLog txn = null;
 
 	/**
 	 * Gets the from app id.
@@ -140,7 +135,7 @@ public class RESTAPI {
 	 * @return the string
 	 */
 	protected String genDate() {
-		FormatDate fd = new FormatDate(AAIConfig.get(AAIConstants.HBASE_TABLE_TIMESTAMP_FORMAT, "YYMMdd-HH:mm:ss:SSS"));
+		FormatDate fd = new FormatDate( "YYMMdd-HH:mm:ss:SSS");
 		
 		return fd.getDateTime();
 	}
@@ -162,67 +157,6 @@ public class RESTAPI {
 	}
 	
 
-	/**
-	 * Log transaction.
-	 *
-	 * @param appId the app id
-	 * @param tId the t id
-	 * @param action the action
-	 * @param input the input
-	 * @param rqstTm the rqst tm
-	 * @param respTm the resp tm
-	 * @param request the request
-	 * @param response the response
-	 */
-	/*  ---------------- Log Transaction into HBase --------------------- */
-	public void logTransaction(	String appId, String tId, String action, 
-			String input, String rqstTm, String respTm, String request, Response response) {	
-		String respBuf = "";
-		int status = 0;
-
-		if (response != null && response.getEntity() != null) {		
-			respBuf = response.getEntity().toString();
-			status = response.getStatus();
-		}
-		logTransaction(appId, tId, action, input, rqstTm, respTm, request, respBuf, String.valueOf(status));
-	}
-	
-	/**
-	 * Log transaction.
-	 *
-	 * @param appId the app id
-	 * @param tId the t id
-	 * @param action the action
-	 * @param input the input
-	 * @param rqstTm the rqst tm
-	 * @param respTm the resp tm
-	 * @param request the request
-	 * @param respBuf the resp buf
-	 * @param status the status
-	 * @param logline the logline
-	 */
-	public void logTransaction(	String appId, String tId, String action, 
-			String input, String rqstTm, String respTm, String request, String respBuf, String status) {	
-		try {
-			// we only run this way if we're not doing it in the CXF interceptor
-			if (!AAIConfig.get(AAIConstants.AAI_LOGGING_HBASE_INTERCEPTOR).equalsIgnoreCase("true")) {
-				if (AAIConfig.get(AAIConstants.AAI_LOGGING_HBASE_ENABLED).equalsIgnoreCase("true")) {
-					txn = new AAITxnLog(tId, appId);
-					// tid, status, rqstTm, respTm, srcId, rsrcId, rsrcType, rqstBuf, respBuf		
-					String hbtid = txn.put(tId, status, 
-							rqstTm, respTm, appId, input, action, request, respBuf);
-
-					LOGGER.debug("HbTransId={}",hbtid);
-					LOGGER.debug("action={}",  action);
-					LOGGER.debug("urlin={}", input);
-				}
-
-			}
-		} catch (AAIException e) {
-			// i think we do nothing
-		}
-	}
-	
 	/* ----------helpers for common consumer actions ----------- */
 	
 	/**

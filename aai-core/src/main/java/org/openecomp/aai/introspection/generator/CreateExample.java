@@ -20,9 +20,9 @@
 
 package org.openecomp.aai.introspection.generator;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import org.openecomp.aai.exceptions.AAIException;
 import org.openecomp.aai.introspection.Introspector;
@@ -33,7 +33,7 @@ import org.openecomp.aai.introspection.Wanderer;
 
 public class CreateExample implements Wanderer {
 
-	private Random rand = new Random();
+	private SecureRandom rand = new SecureRandom();
 	private final long range = 100000000L;
 	private Loader loader = null;
 	private Introspector result = null;

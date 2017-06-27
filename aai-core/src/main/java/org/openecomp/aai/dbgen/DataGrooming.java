@@ -39,6 +39,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Property;
@@ -53,6 +55,8 @@ import org.openecomp.aai.introspection.LoaderFactory;
 import org.openecomp.aai.introspection.ModelType;
 import org.openecomp.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.openecomp.aai.logging.ErrorLogHelper;
+import org.openecomp.aai.serialization.db.EdgeProperties;
+import org.openecomp.aai.serialization.db.EdgeProperty;
 import org.openecomp.aai.util.AAIConfig;
 import org.openecomp.aai.util.AAIConstants;
 import org.openecomp.aai.util.FormatDate;
@@ -64,7 +68,6 @@ import com.thinkaurelius.titan.core.TitanEdge;
 import com.thinkaurelius.titan.core.TitanFactory;
 import com.thinkaurelius.titan.core.TitanGraph;
 import com.thinkaurelius.titan.core.TitanTransaction;
-import com.thinkaurelius.titan.core.TitanVertex;
 
 
 public class DataGrooming {
@@ -198,6 +201,7 @@ public class DataGrooming {
 			LOGGER.error("ERROR - Could not create loader", ex);
 			System.exit(1);
 		}
+
 
 		try {
 			if (!prevFileName.equals("")) {
@@ -380,16 +384,16 @@ public class DataGrooming {
 				String emsg = "null graphTransaction object in DataGrooming\n";
 				throw new AAIException("AAI_6101", emsg);
 			}
-
+			GraphTraversalSource source1 = g.traversal();
 			
 			ArrayList<String> errArr = new ArrayList<>();
 			int totalNodeCount = 0;
 			HashMap<String, String> misMatchedHash = new HashMap<String, String>();
-			HashMap<String, TitanVertex> orphanNodeHash = new HashMap<String, TitanVertex>();
-			HashMap<String, TitanVertex> missingDepNodeHash = new HashMap<String, TitanVertex>();
+			HashMap<String, Vertex> orphanNodeHash = new HashMap<String, Vertex>();
+			HashMap<String, Vertex> missingDepNodeHash = new HashMap<String, Vertex>();
 			HashMap<String, Edge> oneArmedEdgeHash = new HashMap<String, Edge>();
 			HashMap<String, String> emptyVertexHash = new HashMap<String, String>();
-			HashMap<String, TitanVertex> ghostNodeHash = new HashMap<String, TitanVertex>();
+			HashMap<String, Vertex> ghostNodeHash = new HashMap<String, Vertex>();
 			ArrayList<String> dupeGroups = new ArrayList<>();
 			
 			Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, AAIProperties.LATEST);
@@ -419,15 +423,14 @@ public class DataGrooming {
 					
 					// Loop through all the nodes of this Node type
 					int lastShownForNt = 0;
-					ArrayList <TitanVertex> tmpList = new ArrayList <> ();
-					Iterable <?> verts =  g.query().has("aai-node-type",nType).vertices(); 
-					Iterator<?> iterv = verts.iterator();
+					ArrayList <Vertex> tmpList = new ArrayList <> ();
+					Iterator <Vertex> iterv =  source1.V().has("aai-node-type",nType); 
 					while (iterv.hasNext()) {
 						// We put the nodes into an ArrayList because the graph.query iterator can time out
-						tmpList.add((TitanVertex)iterv.next());
+						tmpList.add(iterv.next());
 					}
 					
-					Iterator <?> iter = tmpList.iterator();
+					Iterator <Vertex> iter = tmpList.iterator();
 					while (iter.hasNext()) {
 						try {
 							thisNtCount++;
@@ -435,14 +438,14 @@ public class DataGrooming {
 								lastShownForNt = thisNtCount;
 								LOGGER.debug("count for " + nType + " so far = " + thisNtCount );
 							}
-							TitanVertex thisVtx = (TitanVertex) iter.next();
+							Vertex thisVtx = iter.next();
 							String thisVid = thisVtx.id().toString();
 							if (processedVertices.contains(thisVid)) {
 								LOGGER.debug("skipping already processed vertex: " + thisVid);
 								continue;
 							}
 							totalNodeCount++;
-							List <TitanVertex> secondGetList = new ArrayList <> ();
+							List <Vertex> secondGetList = new ArrayList <> ();
 							// -----------------------------------------------------------------------
 							// For each vertex of this nodeType, we want to:
 							//		a) make sure that it can be retrieved using it's AAI defined key
@@ -470,19 +473,18 @@ public class DataGrooming {
 								if( depNodeTypes.isEmpty() ){
 									// This kind of node is not dependent on any other.
 									// Make sure we can get it back using it's key properties and that we only get one.
-									secondGetList = getNodeJustUsingKeyParams( TRANSID, FROMAPPID, g, nType, 
+									secondGetList = getNodeJustUsingKeyParams( TRANSID, FROMAPPID, source1, nType, 
 											propHashWithKeys, version );
 								} 
 								else {
 									// This kind of node is dependent on another for uniqueness.  
 									// Start at it's parent (the dependent vertex) and make sure we can get it
 									// back using it's key properties and that we only get one.
-									Iterable <?> verts2 = thisVtx.query().direction(Direction.IN).has("isParent",true).vertices();
-									Iterator <?> vertI2 = verts2.iterator();
-									TitanVertex parentVtx = null;
+									Iterator <Vertex> vertI2 = source1.V(thisVtx).union(__.inE().has(EdgeProperties.out(EdgeProperty.IS_PARENT), true).outV(), __.outE().has(EdgeProperties.in(EdgeProperty.IS_PARENT)).inV());
+									Vertex parentVtx = null;
 									int pCount = 0;
 									while( vertI2 != null && vertI2.hasNext() ){
-										parentVtx = (TitanVertex) vertI2.next();
+										parentVtx = vertI2.next();
 										pCount++;
 									}
 									if( pCount <= 0 ){
@@ -543,12 +545,12 @@ public class DataGrooming {
 										// We found the parent - so use it to do the second-look.
 										// NOTE --- We're just going to do the same check from the other direction - because
 										//  there could be duplicates or the pointer going the other way could be broken
-										ArrayList <TitanVertex> tmpListSec = new ArrayList <> ();
+										ArrayList <Vertex> tmpListSec = new ArrayList <> ();
 										
-										tmpListSec = getConnectedChildrenOfOneType( g, parentVtx, nType ) ;
-										Iterator<TitanVertex> vIter = tmpListSec.iterator();
+										tmpListSec = getConnectedChildrenOfOneType( source1, parentVtx, nType ) ;
+										Iterator<Vertex> vIter = tmpListSec.iterator();
 										while (vIter.hasNext()) {
-											TitanVertex tmpV = vIter.next();
+											Vertex tmpV = vIter.next();
 											if( vertexHasTheseKeys(tmpV, propHashWithKeys) ){
 												secondGetList.add(tmpV);
 											}
@@ -580,7 +582,7 @@ public class DataGrooming {
 									// Found some DUPLICATES - need to process them
 									LOGGER.info(" - now check Dupes for this guy - ");
 									List<String> tmpDupeGroups = checkAndProcessDupes(
-												TRANSID, FROMAPPID, g, version,
+												TRANSID, FROMAPPID, g, source1, version,
 												nType, secondGetList, dupeFixOn,
 												deleteCandidateList, singleCommits,	dupeGroups, loader);
 									Iterator<String> dIter = tmpDupeGroups.iterator();
@@ -710,7 +712,7 @@ public class DataGrooming {
 						}
 						String vNtI = "";
 						String vIdI = "";
-						TitanVertex ghost2 = null;
+						Vertex ghost2 = null;
 						
 						Boolean keysMissing = true;
 						Boolean cantGetUsingVid = false;
@@ -729,7 +731,7 @@ public class DataGrooming {
 								}
 								
 								if( ! ghost2CheckOff ){
-									TitanVertex connectedVert = g2.getVertex(vIdLong);
+									Vertex connectedVert = g2.getVertex(vIdLong);
 									if( connectedVert == null ) {
 										LOGGER.warn( "GHOST2 -- got NULL when doing getVertex for vid = " + vIdLong);
 										cantGetUsingVid = true;
@@ -842,7 +844,7 @@ public class DataGrooming {
 								}
 								
 								if( ! ghost2CheckOff ){
-									TitanVertex connectedVert = g2.getVertex(vIdLong);
+									Vertex connectedVert = g2.getVertex(vIdLong);
 									if( connectedVert == null ) {
 										cantGetUsingVid = true;
 										LOGGER.info( "GHOST2 -- got NULL when doing getVertex for vid = " + vIdLong);
@@ -972,13 +974,13 @@ public class DataGrooming {
 					+ misMatchedHash.size() + "\n");
 
 			bw.write("\n ------------- Delete Candidates ---------\n");
-			for (Map.Entry<String, TitanVertex> entry : ghostNodeHash
+			for (Map.Entry<String, Vertex> entry : ghostNodeHash
 					.entrySet()) {
 				String vid = entry.getKey();
 				bw.write("DeleteCandidate: Phantom Vid = [" + vid + "]\n");
 				cleanupCandidateCount++;
 			}
-			for (Map.Entry<String, TitanVertex> entry : orphanNodeHash
+			for (Map.Entry<String, Vertex> entry : orphanNodeHash
 					.entrySet()) {
 				String vid = entry.getKey();
 				bw.write("DeleteCandidate: OrphanDepNode Vid = [" + vid + "]\n");
@@ -991,7 +993,7 @@ public class DataGrooming {
 				bw.write("DeleteCandidate: Bad EDGE Edge-id = [" + eid + "]\n");
 				cleanupCandidateCount++;
 			}
-			for (Map.Entry<String, TitanVertex> entry : missingDepNodeHash
+			for (Map.Entry<String, Vertex> entry : missingDepNodeHash
 					.entrySet()) {
 				String vid = entry.getKey();
 				bw.write("DeleteCandidate: (maybe) missingDepNode Vid = ["
@@ -1001,7 +1003,7 @@ public class DataGrooming {
 			bw.write("\n-- NOTE - To see DeleteCandidates for Duplicates, you need to look in the Duplicates Detail section below.\n");
 
 			bw.write("\n ------------- GHOST NODES - detail ");
-			for (Map.Entry<String, TitanVertex> entry : ghostNodeHash
+			for (Map.Entry<String, Vertex> entry : ghostNodeHash
 					.entrySet()) {
 				try {
 					String vid = entry.getKey();
@@ -1023,7 +1025,7 @@ public class DataGrooming {
 			}
 
 			bw.write("\n ------------- Missing Dependent Edge ORPHAN NODES - detail: ");
-			for (Map.Entry<String, TitanVertex> entry : orphanNodeHash
+			for (Map.Entry<String, Vertex> entry : orphanNodeHash
 					.entrySet()) {
 				try {
 					String vid = entry.getKey();
@@ -1045,7 +1047,7 @@ public class DataGrooming {
 			}
 
 			bw.write("\n ------------- Missing Dependent Edge (but not orphan) NODES: ");
-			for (Map.Entry<String, TitanVertex> entry : missingDepNodeHash
+			for (Map.Entry<String, Vertex> entry : missingDepNodeHash
 					.entrySet()) {
 				try {
 					String vid = entry.getKey();
@@ -1113,9 +1115,9 @@ public class DataGrooming {
 							idArr.add(vidString);
 							long longVertId = Long.parseLong(vidString);
 							Iterator<Vertex> vtxIterator = g.vertices(longVertId);
-							TitanVertex vtx = null;
+							Vertex vtx = null;
 							if (vtxIterator.hasNext()) {
-								vtx = (TitanVertex)vtxIterator.next();
+								vtx = vtxIterator.next();
 							}
 							ArrayList<String> retArr = showPropertiesForNode(TRANSID, FROMAPPID, vtx);
 							for (String info : retArr) {
@@ -1269,7 +1271,7 @@ public class DataGrooming {
 	 * @param propHashWithKeys the prop hash with keys
 	 * @return the boolean
 	 */
-	private static Boolean vertexHasTheseKeys( TitanVertex tmpV, HashMap <String, Object> propHashWithKeys) {
+	private static Boolean vertexHasTheseKeys( Vertex tmpV, HashMap <String, Object> propHashWithKeys) {
 		Iterator <?> it = propHashWithKeys.entrySet().iterator();
 		while( it.hasNext() ){
 			String propName = "";
@@ -1398,19 +1400,19 @@ public class DataGrooming {
 	 * @param g the g
 	 * @param dupeVertexList the dupe vertex list
 	 * @param ver the ver
-	 * @return TitanVertex
+	 * @return Vertex
 	 * @throws AAIException the AAI exception
 	 */
-	public static TitanVertex getPreferredDupe(String transId,
-			String fromAppId, TitanTransaction g,
-			ArrayList<TitanVertex> dupeVertexList, String ver, Loader loader)
+	public static Vertex getPreferredDupe(String transId,
+			String fromAppId, GraphTraversalSource g,
+			ArrayList<Vertex> dupeVertexList, String ver, Loader loader)
 			throws AAIException {
 
 		// This method assumes that it is being passed a List of vertex objects
 		// which
 		// violate our uniqueness constraints.
 
-		TitanVertex nullVtx = null;
+		Vertex nullVtx = null;
 
 		if (dupeVertexList == null) {
 			return nullVtx;
@@ -1420,13 +1422,13 @@ public class DataGrooming {
 			return nullVtx;
 		}
 		if (listSize == 1) {
-			return ((TitanVertex) dupeVertexList.get(0));
+			return (dupeVertexList.get(0));
 		}
 
-		TitanVertex vtxPreferred = null;
-		TitanVertex currentFaveVtx = (TitanVertex) dupeVertexList.get(0);
+		Vertex vtxPreferred = null;
+		Vertex currentFaveVtx = dupeVertexList.get(0);
 		for (int i = 1; i < listSize; i++) {
-			TitanVertex vtxB = (TitanVertex) dupeVertexList.get(i);
+			Vertex vtxB = dupeVertexList.get(i);
 			vtxPreferred = pickOneOfTwoDupes(transId, fromAppId, g,
 					currentFaveVtx, vtxB, ver, loader);
 			if (vtxPreferred == null) {
@@ -1450,15 +1452,15 @@ public class DataGrooming {
 	 * @param vtxA the vtx A
 	 * @param vtxB the vtx B
 	 * @param ver the ver
-	 * @return TitanVertex
+	 * @return Vertex
 	 * @throws AAIException the AAI exception
 	 */
-	public static TitanVertex pickOneOfTwoDupes(String transId,
-			String fromAppId, TitanTransaction g, TitanVertex vtxA,
-			TitanVertex vtxB, String ver, Loader loader) throws AAIException {
+	public static Vertex pickOneOfTwoDupes(String transId,
+			String fromAppId, GraphTraversalSource g, Vertex vtxA,
+			Vertex vtxB, String ver, Loader loader) throws AAIException {
 
-		TitanVertex nullVtx = null;
-		TitanVertex preferredVtx = null;
+		Vertex nullVtx = null;
+		Vertex preferredVtx = null;
 
 		Long vidA = new Long(vtxA.id().toString());
 		Long vidB = new Long(vtxB.id().toString());
@@ -1520,11 +1522,11 @@ public class DataGrooming {
 		HashMap<String, String> nodeTypesConn2A = new HashMap<>();
 		HashMap<String, String> nodeTypesConn2B = new HashMap<>();
 
-		ArrayList<TitanVertex> vertListA = getConnectedNodes( g, vtxA );
+		ArrayList<Vertex> vertListA = getConnectedNodes( g, vtxA );
 		if (vertListA != null) {
-			Iterator<TitanVertex> iter = vertListA.iterator();
+			Iterator<Vertex> iter = vertListA.iterator();
 			while (iter.hasNext()) {
-				TitanVertex tvCon = iter.next();
+				Vertex tvCon = iter.next();
 				String conVid = tvCon.id().toString();
 				String nt = "";
 				objType = tvCon.<Object>property("aai-node-type").orElse(null);
@@ -1536,11 +1538,11 @@ public class DataGrooming {
 			}
 		}
 
-		ArrayList<TitanVertex> vertListB = getConnectedNodes( g, vtxB );
+		ArrayList<Vertex> vertListB = getConnectedNodes( g, vtxB );
 		if (vertListB != null) {
-			Iterator<TitanVertex> iter = vertListB.iterator();
+			Iterator<Vertex> iter = vertListB.iterator();
 			while (iter.hasNext()) {
-				TitanVertex tvCon = iter.next();
+				Vertex tvCon = iter.next();
 				String conVid = tvCon.id().toString();
 				String nt = "";
 				objType = tvCon.<Object>property("aai-node-type").orElse(null);
@@ -1663,13 +1665,13 @@ public class DataGrooming {
 	 * @return the array list
 	 */
 	private static List<String> checkAndProcessDupes(String transId,
-			String fromAppId, TitanTransaction g, String version, String nType,
-			List<TitanVertex> passedVertList, Boolean dupeFixOn,
+			String fromAppId, TitanTransaction g, GraphTraversalSource source, String version, String nType,
+			List<Vertex> passedVertList, Boolean dupeFixOn,
 			Set<String> deleteCandidateList, Boolean singleCommits,
 			ArrayList<String> alreadyFoundDupeGroups, Loader loader ) {
 		
 		ArrayList<String> returnList = new ArrayList<>();
-		ArrayList<TitanVertex> checkVertList = new ArrayList<>();
+		ArrayList<Vertex> checkVertList = new ArrayList<>();
 		ArrayList<String> alreadyFoundDupeVidArr = new ArrayList<>();
 		Boolean noFilterList = true;
 		Iterator<String> afItr = alreadyFoundDupeGroups.iterator();
@@ -1710,9 +1712,9 @@ public class DataGrooming {
 		// not process any vertices that we've already seen.
 
 		try {
-			Iterator<TitanVertex> pItr = passedVertList.iterator();
+			Iterator<Vertex> pItr = passedVertList.iterator();
 			while (pItr.hasNext()) {
-				TitanVertex tvx = (TitanVertex) pItr.next();
+				Vertex tvx = pItr.next();
 				String passedId = tvx.id().toString();
 				if (noFilterList || !alreadyFoundDupeVidArr.contains(passedId)) {
 					// We haven't seen this one before - so we should check it.
@@ -1733,12 +1735,12 @@ public class DataGrooming {
 				String dupesStr = "";
 				for (int i = 0; i < checkVertList.size(); i++) {
 					dupesStr = dupesStr
-							+ ((TitanVertex) (checkVertList.get(i))).id()
+							+ ((checkVertList.get(i))).id()
 									.toString() + "|";
 				}
 				if (dupesStr != "") {
-					TitanVertex prefV = getPreferredDupe(transId, fromAppId,
-							g, checkVertList, version, loader);
+					Vertex prefV = getPreferredDupe(transId, fromAppId,
+							source, checkVertList, version, loader);
 					if (prefV == null) {
 						// We could not determine which duplicate to keep
 						dupesStr = dupesStr + "KeepVid=UNDETERMINED";
@@ -1767,12 +1769,12 @@ public class DataGrooming {
 				// are also pointing at the same 'parent' node.
 				// Note: for a given set of key data, it is possible that there
 				// could be more than one set of duplicates.
-				HashMap<String, ArrayList<TitanVertex>> vertsGroupedByParentHash = groupVertsByDepNodes(
-						transId, fromAppId, g, version, nType,
+				HashMap<String, ArrayList<Vertex>> vertsGroupedByParentHash = groupVertsByDepNodes(
+						transId, fromAppId, source, version, nType,
 						checkVertList, loader);
-				for (Map.Entry<String, ArrayList<TitanVertex>> entry : vertsGroupedByParentHash
+				for (Map.Entry<String, ArrayList<Vertex>> entry : vertsGroupedByParentHash
 						.entrySet()) {
-					ArrayList<TitanVertex> thisParentsVertList = entry
+					ArrayList<Vertex> thisParentsVertList = entry
 							.getValue();
 					if (thisParentsVertList.size() > 1) {
 						// More than one vertex found with the same key info
@@ -1780,12 +1782,12 @@ public class DataGrooming {
 						String dupesStr = "";
 						for (int i = 0; i < thisParentsVertList.size(); i++) {
 							dupesStr = dupesStr
-									+ ((TitanVertex) (thisParentsVertList
+									+ ((thisParentsVertList
 											.get(i))).id() + "|";
 						}
 						if (dupesStr != "") {
-							TitanVertex prefV = getPreferredDupe(transId,
-									fromAppId, g, thisParentsVertList,
+							Vertex prefV = getPreferredDupe(transId,
+									fromAppId, source, thisParentsVertList,
 									version, loader);
 
 							if (prefV == null) {
@@ -1835,9 +1837,9 @@ public class DataGrooming {
 	 * @return the hash map
 	 * @throws AAIException the AAI exception
 	 */
-	private static HashMap<String, ArrayList<TitanVertex>> groupVertsByDepNodes(
-			String transId, String fromAppId, TitanTransaction g, String version,
-			String nType, ArrayList<TitanVertex> passedVertList, Loader loader)
+	private static HashMap<String, ArrayList<Vertex>> groupVertsByDepNodes(
+			String transId, String fromAppId, GraphTraversalSource g, String version,
+			String nType, ArrayList<Vertex> passedVertList, Loader loader)
 			throws AAIException {
 		// Given a list of Titan Vertices of one nodeType (see AAI-8956), group 
 		// them together by the parent node they depend on.
@@ -1847,7 +1849,7 @@ public class DataGrooming {
 		// we're trying to find duplicates - so we
 		// allow for the case where more than one is under the same parent node.
 
-		HashMap<String, ArrayList<TitanVertex>> retHash = new HashMap<String, ArrayList<TitanVertex>>();
+		HashMap<String, ArrayList<Vertex>> retHash = new HashMap<String, ArrayList<Vertex>>();
 		if (loader.introspectorFromName(nType).isTopLevel()) {
 			// This method really should not have been called if this is not the
 			// kind of node
@@ -1866,10 +1868,10 @@ public class DataGrooming {
 		// For each vertex, we want find its depended-on/parent vertex so we
 		// can track what other vertexes that are dependent on that same guy.
 		if (passedVertList != null) {
-			Iterator<TitanVertex> iter = passedVertList.iterator();
+			Iterator<Vertex> iter = passedVertList.iterator();
 			while (iter.hasNext()) {
-				TitanVertex thisVert = iter.next();
-				TitanVertex tmpParentVtx = getConnectedParent( g, thisVert );
+				Vertex thisVert = iter.next();
+				Vertex tmpParentVtx = getConnectedParent( g, thisVert );
 				if( tmpParentVtx != null ) {
 					String parentNt = null;
 					Object obj = tmpParentVtx.<Object>property("aai-node-type").orElse(null);
@@ -1884,7 +1886,7 @@ public class DataGrooming {
 							retHash.get(parentVid).add(thisVert);
 						} else {
 							// This is the first one we found on this parent
-							ArrayList<TitanVertex> vList = new ArrayList<>();
+							ArrayList<Vertex> vList = new ArrayList<>();
 							vList.add(thisVert);
 							retHash.put(parentVid, vList);
 						}
@@ -1960,7 +1962,7 @@ public class DataGrooming {
 									try {
 										long longVertId = Long
 												.parseLong(thisVid);
-										TitanVertex vtx = g
+										Vertex vtx = g
 												.getVertex(longVertId);
 										vtx.remove();
 										if (singleCommits) {
@@ -2005,10 +2007,10 @@ public class DataGrooming {
 	 * @return the node just using key params
 	 * @throws AAIException the AAI exception
 	 */
-	public static List <TitanVertex> getNodeJustUsingKeyParams( String transId, String fromAppId, TitanTransaction graph, String nodeType,
+	public static List <Vertex> getNodeJustUsingKeyParams( String transId, String fromAppId, GraphTraversalSource graph, String nodeType,
 			HashMap<String,Object> keyPropsHash, String apiVersion ) 	 throws AAIException{
 		
-		List <TitanVertex> retVertList = new ArrayList <> ();
+		List <Vertex> retVertList = new ArrayList <> ();
 		
 		// We assume that all NodeTypes have at least one key-property defined.  
 		// Note - instead of key-properties (the primary key properties), a user could pass
@@ -2026,32 +2028,32 @@ public class DataGrooming {
 			kVal.add(i, entry.getValue());
 		}
 		int topPropIndex = i;
-		TitanVertex tiV = null;
+		Vertex tiV = null;
 		String propsAndValuesForMsg = "";
-		Iterable <?> verts = null;
+		Iterator <Vertex> verts = null;
 
 		try { 
 			if( topPropIndex == 0 ){
 				propsAndValuesForMsg = " (" + kName.get(0) + " = " + kVal.get(0) + ") ";
-				verts= graph.query().has(kName.get(0),kVal.get(0)).has("aai-node-type",nodeType).vertices();	
+				verts= graph.V().has(kName.get(0),kVal.get(0)).has("aai-node-type",nodeType);	
 			}	
 			else if( topPropIndex == 1 ){
 				propsAndValuesForMsg = " (" + kName.get(0) + " = " + kVal.get(0) + ", " 
 						+ kName.get(1) + " = " + kVal.get(1) + ") ";
-				verts =  graph.query().has(kName.get(0),kVal.get(0)).has(kName.get(1),kVal.get(1)).has("aai-node-type",nodeType).vertices();	
+				verts =  graph.V().has(kName.get(0),kVal.get(0)).has(kName.get(1),kVal.get(1)).has("aai-node-type",nodeType);	
 			}	 		
 			else if( topPropIndex == 2 ){
 				propsAndValuesForMsg = " (" + kName.get(0) + " = " + kVal.get(0) + ", " 
 						+ kName.get(1) + " = " + kVal.get(1) + ", " 
 						+ kName.get(2) + " = " + kVal.get(2) +  ") ";
-				verts= graph.query().has(kName.get(0),kVal.get(0)).has(kName.get(1),kVal.get(1)).has(kName.get(2),kVal.get(2)).has("aai-node-type",nodeType).vertices();			
+				verts= graph.V().has(kName.get(0),kVal.get(0)).has(kName.get(1),kVal.get(1)).has(kName.get(2),kVal.get(2)).has("aai-node-type",nodeType);
 			}	
 			else if( topPropIndex == 3 ){
 				propsAndValuesForMsg = " (" + kName.get(0) + " = " + kVal.get(0) + ", " 
 						+ kName.get(1) + " = " + kVal.get(1) + ", " 
 						+ kName.get(2) + " = " + kVal.get(2) + ", " 
 						+ kName.get(3) + " = " + kVal.get(3) +  ") ";
-				verts= graph.query().has(kName.get(0),kVal.get(0)).has(kName.get(1),kVal.get(1)).has(kName.get(2),kVal.get(2)).has(kName.get(3),kVal.get(3)).has("aai-node-type",nodeType).vertices();			
+				verts= graph.V().has(kName.get(0),kVal.get(0)).has(kName.get(1),kVal.get(1)).has(kName.get(2),kVal.get(2)).has(kName.get(3),kVal.get(3)).has("aai-node-type",nodeType);
 			}	 		
 			else {
 				throw new AAIException("AAI_6114", " We only support 4 keys per nodeType for now \n"); 
@@ -2062,9 +2064,8 @@ public class DataGrooming {
 		}
 
 		if( verts != null ){
-			Iterator <?> vertI = verts.iterator();
-			while( vertI.hasNext() ){
-				tiV = (TitanVertex) vertI.next();
+			while( verts.hasNext() ){
+				tiV = verts.next();
 				retVertList.add(tiV);
 			}
 		}
@@ -2086,7 +2087,7 @@ public class DataGrooming {
 	 * @param tVert the t vert
 	 * @return the array list
 	 */
-	private static ArrayList <String> showAllEdgesForNode( String transId, String fromAppId, TitanVertex tVert ){ 
+	private static ArrayList <String> showAllEdgesForNode( String transId, String fromAppId, Vertex tVert ){ 
 
 		ArrayList <String> retArr = new ArrayList <> ();
 		Iterator <Edge> eI = tVert.edges(Direction.IN);
@@ -2096,7 +2097,7 @@ public class DataGrooming {
 		while( eI.hasNext() ){
 			TitanEdge ed = (TitanEdge) eI.next();
 			String lab = ed.label();
-			TitanVertex vtx = (TitanVertex) ed.otherVertex(tVert);
+			Vertex vtx = ed.otherVertex(tVert);
 			if( vtx == null ){
 				retArr.add(" >>> COULD NOT FIND VERTEX on the other side of this edge edgeId = " + ed.id() + " <<< ");
 			}
@@ -2115,7 +2116,7 @@ public class DataGrooming {
 		while( eI.hasNext() ){
 			TitanEdge ed = (TitanEdge) eI.next();
 			String lab = ed.label();
-			TitanVertex vtx = (TitanVertex) ed.otherVertex(tVert);
+			Vertex vtx = ed.otherVertex(tVert);
 			if( vtx == null ){
 				retArr.add(" >>> COULD NOT FIND VERTEX on the other side of this edge edgeId = " + ed.id() + " <<< ");
 			}
@@ -2137,7 +2138,7 @@ public class DataGrooming {
 	 * @param tVert the t vert
 	 * @return the array list
 	 */
-	private static ArrayList <String> showPropertiesForNode( String transId, String fromAppId, TitanVertex tVert ){ 
+	private static ArrayList <String> showPropertiesForNode( String transId, String fromAppId, Vertex tVert ){ 
 
 		ArrayList <String> retArr = new ArrayList <> ();
 		if( tVert == null ){
@@ -2166,19 +2167,19 @@ public class DataGrooming {
 	}
 
 	
-	private static ArrayList <TitanVertex> getConnectedNodes(TitanTransaction g, TitanVertex startVtx ) 
+	private static ArrayList <Vertex> getConnectedNodes(GraphTraversalSource g, Vertex startVtx ) 
 			throws AAIException {
 	
-		ArrayList <TitanVertex> retArr = new ArrayList <> ();
+		ArrayList <Vertex> retArr = new ArrayList <> ();
 		if( startVtx == null ){
 			return retArr;
 		}
 		else {
 			 GraphTraversal<Vertex, Vertex> modPipe = null;
-			 modPipe = g.traversal().V(startVtx).both();
+			 modPipe = g.V(startVtx).both();
 			 if( modPipe != null && modPipe.hasNext() ){
 				while( modPipe.hasNext() ){
-					TitanVertex conVert = (TitanVertex) modPipe.next();
+					Vertex conVert = modPipe.next();
 					retArr.add(conVert);
 				}
 			}
@@ -2188,15 +2189,14 @@ public class DataGrooming {
 	}// End of getConnectedNodes()
 	
 
-	private static ArrayList <TitanVertex> getConnectedChildrenOfOneType( TitanTransaction graph, 
-			TitanVertex startVtx, String childNType ) throws AAIException{
+	private static ArrayList <Vertex> getConnectedChildrenOfOneType( GraphTraversalSource g, 
+			Vertex startVtx, String childNType ) throws AAIException{
 		
-		ArrayList <TitanVertex> childList = new ArrayList <> ();
-		Iterable <?> verts = startVtx.query().direction(Direction.OUT).has("isParent",true).vertices();
-		Iterator <?> vertI = verts.iterator();
-		TitanVertex tmpVtx = null;
+		ArrayList <Vertex> childList = new ArrayList <> ();
+		Iterator <Vertex> vertI = g.V(startVtx).union(__.outE().has(EdgeProperties.out(EdgeProperty.IS_PARENT), true), __.inE().has(EdgeProperties.in(EdgeProperty.IS_PARENT), true)).bothV();
+		Vertex tmpVtx = null;
 		while( vertI != null && vertI.hasNext() ){
-			tmpVtx = (TitanVertex) vertI.next();
+			tmpVtx = vertI.next();
 			Object ob = tmpVtx.<Object>property("aai-node-type").orElse(null);
 			if (ob != null) {
 				String tmpNt = ob.toString();
@@ -2211,15 +2211,14 @@ public class DataGrooming {
 	}// End of getConnectedChildrenOfOneType()
 
 
-	private static TitanVertex getConnectedParent( TitanTransaction graph, 
-			TitanVertex startVtx ) throws AAIException{
+	private static Vertex getConnectedParent( GraphTraversalSource g, 
+			Vertex startVtx ) throws AAIException{
 		
-		TitanVertex parentVtx = null;
-		Iterable <?> verts = startVtx.query().direction(Direction.IN).has("isParent",true).vertices();
-		Iterator <?> vertI = verts.iterator();
+		Vertex parentVtx = null;
+		Iterator <Vertex> vertI = g.V(startVtx).union(__.inE().has(EdgeProperties.out(EdgeProperty.IS_PARENT), true), __.outE().has(EdgeProperties.in(EdgeProperty.IS_PARENT), true)).bothV();
 		while( vertI != null && vertI.hasNext() ){
 			// Note - there better only be one!
-			parentVtx = (TitanVertex) vertI.next();
+			parentVtx = vertI.next();
 		}
 		
 		return parentVtx;		
