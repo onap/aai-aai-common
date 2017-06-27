@@ -51,11 +51,11 @@ public class UrlBuilder {
 		try {
 			final StringBuilder result = new StringBuilder();
 			final URI uri = this.serializer.getURIForVertex(v);
-	
+
 			result.append(this.serverBase);
 			result.append(this.version);
 			result.append(uri.getRawPath());
-	
+
 			return result.toString();
 		} catch (UnsupportedEncodingException | IllegalArgumentException | SecurityException e) {
 			throw new AAIFormatVertexException(e);
