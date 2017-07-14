@@ -36,7 +36,7 @@ public class GenerateSwagger {
     public static final String DEFAULT_WIKI = "";
 
     public static final String DEFAULT_SCHEMA_DIR = "../aai-schema";
-    public static final String CURRENT_VERSION = "v10";
+    public static final String CURRENT_VERSION = "v11";
 
     public static void main(String[] args) throws IOException, TemplateException {
 

@@ -22,7 +22,7 @@
 		<sonar.jacoco.reportPath>${project.build.directory}/coverage-reports/jacoco.exec</sonar.jacoco.reportPath>
 		<sonar.jacoco.reportMissing.force.zero>false</sonar.jacoco.reportMissing.force.zero>
 		<sonar.projectVersion>${project.version}</sonar.projectVersion>
-		<gendoc.version>v10</gendoc.version>
+		<gendoc.version>v11</gendoc.version>
 		<aai.wiki.link>https://wiki.onap.org/</aai.wiki.link>
 	</properties>
 	<profiles>		
