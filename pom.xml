@@ -10,7 +10,7 @@
   	<module>aai-schema</module>
   	<module>aai-annotations</module>
   	<module>aai-core</module>
-	<module>auth</module>
+	<module>aai-auth</module>
   </modules>
 
 	<properties>
