@@ -96,16 +96,12 @@ public class SchemaGenerator{
 
 		Multimap<String, EdgeRule> edges = null;
 		Set<String> labels = new HashSet<>();
-		try {
-			edges = EdgeRules.getInstance().getAllRules();
-			for (EdgeRule rule : edges.values()) {
-				labels.add(rule.getLabel());
-			}
-		} catch (AAIException e) {
-			LOGGER.error("could not get edge rules", e);
-			System.out.println("could not get edge rules");
-			System.exit(1);
+		
+		edges = EdgeRules.getInstance().getAllRules();
+		for (EdgeRule rule : edges.values()) {
+			labels.add(rule.getLabel());
 		}
+		
 		for( String label: labels){
 			if( graphMgmt.containsRelationType(label) ) {
 				String dmsg = " EdgeLabel  [" + label + "] already existed. ";

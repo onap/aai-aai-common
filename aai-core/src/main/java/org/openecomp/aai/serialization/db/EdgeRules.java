@@ -20,13 +20,16 @@
 
 package org.openecomp.aai.serialization.db;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Direction;
@@ -36,32 +39,49 @@ import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.openecomp.aai.db.props.AAIProperties;
 import org.openecomp.aai.dbmodel.DbEdgeRules;
 import org.openecomp.aai.exceptions.AAIException;
+import org.openecomp.aai.introspection.Version;
 import org.openecomp.aai.serialization.db.exceptions.EdgeMultiplicityException;
 import org.openecomp.aai.serialization.db.exceptions.NoEdgeRuleFoundException;
+
+import com.att.eelf.configuration.EELFLogger;
+import com.att.eelf.configuration.EELFManager;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import com.jayway.jsonpath.JsonPath;
+
+import static com.jayway.jsonpath.Filter.filter;
+import static com.jayway.jsonpath.Criteria.where;
+
+import com.jayway.jsonpath.DocumentContext;
+import com.jayway.jsonpath.Filter;
+
+import java.util.Scanner;
 
 public class EdgeRules {
-
-	private Multimap<String, String> rules = DbEdgeRules.EdgeRules;
+	
+	private EELFLogger logger = EELFManager.getInstance().getLogger(EdgeRules.class);
+	
 	private Multimap<String, String> deleteScope = 	DbEdgeRules.DefaultDeleteScope;
-	private final int EDGE_NAME = 0;
-	private final int DIRECTION = 1;
-	private final int MULTIPLICITY_RULE = 2;
-	private final int IS_PARENT = 3;
-	private final int USES_RESOURCE = 4;
-	private final int HAS_DEL_TARGET = 5;
-	private final int SVC_INFRA = 6;
+	
+	private DocumentContext rulesDoc;
 	
 	/**
-	 * Instantiates a new edge rules.
+	 * Loads the most recent DbEdgeRules json file for later parsing.
+	 * Only need most recent version for actual A&AI operations that call this class; 
+	 *   the old ones are only used in tests.
 	 */
 	private EdgeRules() {
-	
+
+		InputStream is = getClass().getResourceAsStream("/dbedgerules/DbEdgeRules_" + Version.getLatest().toString() + ".json");
+
+		Scanner scanner = new Scanner(is);
+		String json = scanner.useDelimiter("\\Z").next();
+		scanner.close();
+		rulesDoc = JsonPath.parse(json);
 	}
+	
 	private static class Helper {
 		private static final EdgeRules INSTANCE = new EdgeRules();
-		
 	}
 	
 	/**
@@ -81,7 +101,6 @@ public class EdgeRules {
 	 * @param bVertex the in vertex
 	 * @return the edge
 	 * @throws AAIException the AAI exception
-	 * @throws NoEdgeRuleFoundException 
 	 */
 	public Edge addTreeEdge(GraphTraversalSource traversalSource, Vertex aVertex, Vertex bVertex) throws AAIException {
 		return this.addEdge(EdgeType.TREE, traversalSource, aVertex, bVertex, false);
@@ -94,7 +113,6 @@ public class EdgeRules {
 	 * @param bVertex the in vertex
 	 * @return the edge
 	 * @throws AAIException the AAI exception
-	 * @throws NoEdgeRuleFoundException 
 	 */
 	public Edge addEdge(GraphTraversalSource traversalSource, Vertex aVertex, Vertex bVertex) throws AAIException {
 		return this.addEdge(EdgeType.COUSIN, traversalSource, aVertex, bVertex, false);
@@ -107,7 +125,6 @@ public class EdgeRules {
 	 * @param bVertex the in vertex
 	 * @return the edge
 	 * @throws AAIException the AAI exception
-	 * @throws NoEdgeRuleFoundException 
 	 */
 	public Edge addTreeEdgeIfPossible(GraphTraversalSource traversalSource, Vertex aVertex, Vertex bVertex) throws AAIException {
 		return this.addEdge(EdgeType.TREE, traversalSource, aVertex, bVertex, true);
@@ -120,7 +137,6 @@ public class EdgeRules {
 	 * @param bVertex the in vertex
 	 * @return the edge
 	 * @throws AAIException the AAI exception
-	 * @throws NoEdgeRuleFoundException 
 	 */
 	public Edge addEdgeIfPossible(GraphTraversalSource traversalSource, Vertex aVertex, Vertex bVertex) throws AAIException {
 		return this.addEdge(EdgeType.COUSIN, traversalSource, aVertex, bVertex, true);
@@ -134,9 +150,8 @@ public class EdgeRules {
 	 * @param bVertex the in vertex
 	 * @return the edge
 	 * @throws AAIException the AAI exception
-	 * @throws NoEdgeRuleFoundException 
 	 */
-	private Edge addEdge(EdgeType type, GraphTraversalSource traversalSource, Vertex aVertex, Vertex bVertex, boolean isBestEffort) throws AAIException, NoEdgeRuleFoundException {
+	private Edge addEdge(EdgeType type, GraphTraversalSource traversalSource, Vertex aVertex, Vertex bVertex, boolean isBestEffort) throws AAIException {
 
 		EdgeRule rule = this.getEdgeRule(type, aVertex, bVertex);
 
@@ -192,35 +207,53 @@ public class EdgeRules {
 	}
 	
 	/**
-	 * Checks for edge rule.
+	 * Checks if any edge rules exist between the two given nodes, in either A|B or B|A order.
 	 *
-	 * @param outType the out type
-	 * @param inType the in type
-	 * @return true, if successful
+	 * @param nodeA - node at one end of the edge
+	 * @param nodeB - node at the other end
+	 * @return true, if any such rules exist
 	 */
-	public boolean hasEdgeRule(String outType, String inType) {
+	public boolean hasEdgeRule(String nodeA, String nodeB) {
+		Filter aToB = filter(
+				where("from").is(nodeA).and("to").is(nodeB)
+				);
+		Filter bToA = filter(
+				where("from").is(nodeB).and("to").is(nodeA)
+				);
 		
-		Collection<String> collection = rules.get(outType + "|" + inType);
+		List<Object> results = rulesDoc.read("$.rules.[?]", aToB);
+		results.addAll(rulesDoc.read("$.rules.[?]", bToA));
 
-		return !collection.isEmpty();
+		return !results.isEmpty();
 		
 	}
 	
 	/**
-	 * Checks for edge rule.
+	 * Checks if any edge rules exist between the two given nodes, in either A|B or B|A order.
 	 *
-	 * @param aVertex the out vertex
-	 * @param bVertex the in vertex
-	 * @return true, if successful
+	 * @param aVertex - node at one end of the edge
+	 * @param bVertex - node at the other end
+	 * @return true, if any such rules exist
 	 */
 	public boolean hasEdgeRule(Vertex aVertex, Vertex bVertex) {
-		String outType = (String)aVertex.<String>property("aai-node-type").orElse(null);
-		String inType = (String)bVertex.<String>property("aai-node-type").orElse(null);
+		String outType = aVertex.<String>property("aai-node-type").orElse(null);
+		String inType = bVertex.<String>property("aai-node-type").orElse(null);
 		
 		return this.hasEdgeRule(outType, inType);
 		
 	}
 	
+	/**
+	 * Gets all the edge rules that exist between the given node types.
+	 * The rules will be phrased in terms of out|in, though this will
+	 * also find rules defined as in|out (it will flip the direction in
+	 * the EdgeRule object returned accordingly to match out|in).
+	 * 
+	 * @param outType 
+	 * @param inType
+	 * @return Map<String edgeLabel, EdgeRule rule> where edgeLabel is the label name
+	 * @throws AAIException
+	 */
 	public Map<String, EdgeRule> getEdgeRules(String outType, String inType) throws AAIException {
 		Map<String, EdgeRule> result = new HashMap<>();
 		EdgeRule rule = null;
@@ -235,95 +268,113 @@ public class EdgeRules {
 		
 		return result;
 	}
-	/**
-	 * Gets the edge rule.
-	 *
-	 * @param outType the out type
-	 * @param inType the in type
-	 * @return the edge rule
-	 * @throws AAIException the AAI exception
-	 */
-	public EdgeRule getEdgeRule(EdgeType type, String outType, String inType) throws AAIException {
-		EdgeRule rule = new EdgeRule();
-		Collection<String> collection = null;
-		boolean isFlipped = false;
-		if (this.hasEdgeRule(outType, inType) || this.hasEdgeRule(inType, outType)) {
-		} else {
-			String detail = "No EdgeRule found for passed nodeTypes: " + outType + ", " + inType + ".";
-			throw new AAIException("AAI_6120", detail); 
-		}
-		String key = outType + "|" + inType;
-		collection = rules.get(key);
-
-		String[] info = null;
-		Iterator<String> iterator = collection.iterator();
-		info = this.findRuleForContext(type, key, iterator);
-		if (info == null) { //didn't find anything in that order, look again
-			key = inType + "|" + outType;
-			collection = rules.get(key);
-			iterator = collection.iterator();
-			info = this.findRuleForContext(type, key, iterator);
-			isFlipped = true;
-		}
-		if (info == null) {
-			throw new NoEdgeRuleFoundException("No EdgeRule found for EdgeType: " + type + " and node types: " + outType + " " + inType);
-		}
-		rule.setLabel(info[this.EDGE_NAME]);
-		rule.setMultiplicityRule(MultiplicityRule.valueOf(info[this.MULTIPLICITY_RULE].toUpperCase()));
-		rule.setHasDelTarget(info[this.HAS_DEL_TARGET]);
-		rule.setUsesResource(info[this.USES_RESOURCE]);
-		rule.setIsParent(info[this.IS_PARENT]);
-		rule.setServiceInfrastructure(info[this.SVC_INFRA]);
-		Direction direction = Direction.valueOf(info[this.DIRECTION]);
-		if (isFlipped && direction.equals(Direction.OUT)) {
-			rule.setDirection(Direction.IN);
-		} else if (isFlipped && direction.equals(Direction.IN)){
-			rule.setDirection(Direction.OUT);
-		} else {
-			rule.setDirection(direction);
-		}
-
-		return rule;
-	}
 	
-	private String[] findRuleForContext (EdgeType type, String key, Iterator<String> itr) {
-		String[] result = null;
-		String s = "";
-		String isParent = "";
-		String[] info = new String[10];
-		while (itr.hasNext()) {
-			s = itr.next();
-			info = s.split(",");
-			isParent = info[this.IS_PARENT];
+	/**
+	 * Gets the edge rule of the given type that exists between A and B.
+	 * Will check B|A as well, and flips the direction accordingly if that succeeds
+	 * to match the expected A|B return.
+	 *
+	 * @param type - the type of edge you're looking for
+	 * @param nodeA - first node type
+	 * @param nodeB - second node type
+	 * @return EdgeRule describing the rule in terms of A|B, if there is any such rule
+	 * @throws AAIException if no such edge exists
+	 */
+	public EdgeRule getEdgeRule(EdgeType type, String nodeA, String nodeB) throws AAIException {
+		//try A to B
+		List<Map<String, String>> aToBEdges = rulesDoc.read("$.rules.[?]", buildFilter(type, nodeA, nodeB));
+		if (!aToBEdges.isEmpty()) {
 			//lazily stop iterating if we find a match
 			//should there be a mismatch between type and isParent,
 			//the caller will receive something.
 			//this operates on the assumption that there are at most two rules
 			//for a given vertex pair
-			if (type.equals(EdgeType.TREE) && (isParent.equals("true") || isParent.equals("reverse"))) {
-				result = info;
-				break;
-			} else if (type.equals(EdgeType.COUSIN) && isParent.equals("false")) {
-				result = info;
-				break;
-			}
+			return buildRule(aToBEdges.get(0));
 		}
 		
+		//we get here if there was nothing for A to B, so let's try B to A
+		List<Map<String, String>> bToAEdges = rulesDoc.read("$.rules.[?]", buildFilter(type, nodeB, nodeA));
+		if (!bToAEdges.isEmpty()) {
+			return flipDirection(buildRule(bToAEdges.get(0))); //bc we need to return as A|B, so flip the direction to match
+		}
 		
-		return result;
+		//found none
+		throw new NoEdgeRuleFoundException("no " + type.toString() + " edge between " + nodeA + " and " + nodeB);
 	}
+	
 	/**
-	 * Gets the edge rule.
-	 *
-	 * @param aVertex the out vertex
-	 * @param bVertex the in vertex
-	 * @return the edge rule
-	 * @throws AAIException the AAI exception
-	 * @throws NoEdgeRuleFoundException 
+	 * Builds a JsonPath filter to search for an edge from nodeA to nodeB with the given edge type (cousin or parent/child)
+	 * 
+	 * @param type
+	 * @param nodeA - start node
+	 * @param nodeB - end node
+	 * @return
 	 */
-	public EdgeRule getEdgeRule(EdgeType type, Vertex aVertex, Vertex bVertex) throws AAIException, NoEdgeRuleFoundException {
-		String outType = (String)aVertex.<String>property(AAIProperties.NODE_TYPE).orElse(null);
-		String inType = (String)bVertex.<String>property(AAIProperties.NODE_TYPE).orElse(null);
+	private Filter buildFilter(EdgeType type, String nodeA, String nodeB) {
+		if (EdgeType.COUSIN.equals(type)) {
+			return filter(
+					where("from").is(nodeA).and("to").is(nodeB).and("isParent").is("false")
+					);
+		} else {
+			return filter(
+					where("from").is(nodeA).and("to").is(nodeB).and("isParent").is("true")).or(
+							where("from").is(nodeA).and("to").is(nodeB).and("isParent").is("reverse")	
+					);
+		}
+	}
+	
+	/**
+	 * Puts the give edge rule information into an EdgeRule object. 
+	 * 
+	 * @param edge - the edge information returned from JsonPath
+	 * @return EdgeRule containing that information
+	 */
+	private EdgeRule buildRule(Map<String, String> edge) {
+		EdgeRule rule = new EdgeRule();
+		rule.setLabel(edge.get("label"));
+		rule.setDirection(edge.get("direction"));
+		rule.setMultiplicityRule(edge.get("multiplicity"));
+		rule.setIsParent(edge.get("isParent"));
+		rule.setUsesResource(edge.get("usesResource"));
+		rule.setHasDelTarget(edge.get("hasDelTarget"));
+		rule.setServiceInfrastructure(edge.get("SVC-INFRA"));
+		return rule;
+	}
+	
+	/**
+	 * If getEdgeRule gets a request for A|B, and it finds something as B|A, the caller still expects
+	 * the returned EdgeRule to reflect A|B directionality. This helper method flips B|A direction to
+	 * match this expectation.
+	 * 
+	 * @param rule whose direction needs flipped
+	 * @return the updated rule
+	 */
+	private EdgeRule flipDirection(EdgeRule rule) {
+		if (Direction.IN.equals(rule.getDirection())) {
+			rule.setDirection(Direction.OUT);
+			return rule;
+		} else if (Direction.OUT.equals(rule.getDirection())) {
+			rule.setDirection(Direction.IN);
+			return rule;
+		} else { //direction is BOTH, flipping both is still both
+			return rule; 
+		}
+	}
+	
+	/**
+	 * Gets the edge rule of the given type that exists between A and B.
+	 * Will check B|A as well, and flips the direction accordingly if that succeeds
+	 * to match the expected A|B return.
+	 *
+	 * @param type - the type of edge you're looking for
+	 * @param aVertex - first node type
+	 * @param bVertex - second node type
+	 * @return EdgeRule describing the rule in terms of A|B, if there is any such rule
+	 * @throws AAIException if no such edge exists
+	 */
+	public EdgeRule getEdgeRule(EdgeType type, Vertex aVertex, Vertex bVertex) throws AAIException {
+		String outType = aVertex.<String>property(AAIProperties.NODE_TYPE).orElse(null);
+		String inType = bVertex.<String>property(AAIProperties.NODE_TYPE).orElse(null);
 		
 		return this.getEdgeRule(type, outType, inType);
 
@@ -386,7 +437,7 @@ public class EdgeRules {
 			
 		}
 		
-		if (!detail.equals("")) {
+		if (!"".equals(detail)) {
 			return Optional.of(detail);
 		} else  {
 			return Optional.empty();
@@ -395,17 +446,19 @@ public class EdgeRules {
 				
 	}
 	
-	public Multimap<String, EdgeRule> getAllRules() throws AAIException {
-		
+	/**
+	 * Gets all the edge rules we define.
+	 * 
+	 * @return Multimap<String "from|to", EdgeRule rule>
+	 */
+	public Multimap<String, EdgeRule> getAllRules() {
 		Multimap<String, EdgeRule> result = ArrayListMultimap.create();
 		
-		for (String key : this.rules.keySet()) {
-			String outType = "";
-			String inType = "";
-			String[] split = key.split("\\|");
-			outType = split[0];
-			inType = split[1];
-			result.putAll(key,this.getEdgeRules(outType, inType).values());
+		List<Map<String, String>> rules = rulesDoc.read("$.rules.*");
+		for (Map<String, String> rule : rules) {
+			EdgeRule er = buildRule(rule);
+			String name = rule.get("from") + "|" + rule.get("to");
+			result.put(name, er);
 		}
 		
 		return result;

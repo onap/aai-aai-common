@@ -70,6 +70,18 @@ public class EdgeRule {
 		return multiplicityRule;
 	}
 	
+	public void setMultiplicityRule(String multiplicity){
+		if ("Many2Many".equalsIgnoreCase(multiplicity)) {
+			this.multiplicityRule = MultiplicityRule.MANY2MANY;
+		} else if ("One2Many".equalsIgnoreCase(multiplicity)) {
+			this.multiplicityRule = MultiplicityRule.ONE2MANY;
+		} else if ("One2One".equalsIgnoreCase(multiplicity)) {
+			this.multiplicityRule = MultiplicityRule.ONE2ONE;
+		} else { //should be "Many2One"
+			this.multiplicityRule = MultiplicityRule.MANY2ONE;
+		}
+	}
+	
 	/**
 	 * Sets the multiplicity rule.
 	 *
@@ -86,6 +98,16 @@ public class EdgeRule {
 	 */
 	public Direction getDirection() {
 		return direction;
+	}
+	
+	public void setDirection(String direction){
+		if ("OUT".equalsIgnoreCase(direction)) {
+			this.direction = Direction.OUT;
+		} else if ("IN".equalsIgnoreCase(direction)) {
+			this.direction = Direction.IN;
+		} else {
+			this.direction = Direction.BOTH;
+		}
 	}
 	
 	/**

@@ -424,49 +424,4 @@ public class DbEdgeRules {
 			.putAll("license","THIS_NODE_ONLY")
 			.putAll("zone", "THIS_NODE_ONLY")
 			.putAll("route-target", "CASCADE_TO_CHILDREN").build();
-
-	// NOTE -- Sorry, this is ugly, but we are mapping the nodeTypeCategory two
-	// ways just to
-	// make the code a little less bulky. But that means that we need to ensure
-	// that
-	// nodeTypeCategory and nodeTypeCatMap are kept in synch.
-
-	// NodeTypeCategory: key is: nodeTypeCategory, value is:
-	// "nodeTypes,keyProperties,AltKeyProps,depNode4UniquenessFlag"
-	public static final Multimap<String, String> NodeTypeCategory = new ImmutableSetMultimap.Builder<String, String>()
-			.putAll("vnf", "vce|vpe|generic-vnf,vnf-id,,true").build();
-
-	// NodeTypeCatMap: key is nodeType; value is: "nodeTypeCategory"
-	// So -- we're assuming that a nodeType can only be in one nodeTypeCategory.
-	public static final Map<String, String> NodeTypeCatMap;
-	static {
-		NodeTypeCatMap = new HashMap<String, String>();
-		NodeTypeCatMap.put("vpe", "vnf");
-		NodeTypeCatMap.put("vce", "vnf");
-		NodeTypeCatMap.put("generic-vnf", "vnf");
-	}
-
-	// ReservedPropNames: keys are property names of (node) properties that are
-	// common to all nodes and
-	// should not be removed if not passed in on an UPDATE request.
-	public static final Map<String, String> ReservedPropNames;
-	static {
-		ReservedPropNames = new HashMap<String, String>();
-		ReservedPropNames.put("source-of-truth", "");
-		ReservedPropNames.put("last-mod-source-of-truth", "");
-		ReservedPropNames.put("aai-created-ts", "");
-		ReservedPropNames.put("aai-last-mod-ts", "");
-	}
-	
-	// This just lists which node types can be connected to themselves recursively.
-	// It's temporary - since DbEdgeRules is going to be overhauled in 16-10, this will
-	// get generated automatically.   But for 1607, it can work like this.
-	public static final Map<String, String> CanBeRecursiveNT;
-	static {
-		CanBeRecursiveNT = new HashMap<String, String>();
-		CanBeRecursiveNT.put("model-element", "");
-		CanBeRecursiveNT.put("service-instance", "");
-		CanBeRecursiveNT.put("named-query-element", "");
-	}
-
 }

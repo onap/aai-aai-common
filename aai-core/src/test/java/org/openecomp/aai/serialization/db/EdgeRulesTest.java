@@ -25,6 +25,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.Map;
 
 import org.apache.tinkerpop.gremlin.structure.Direction;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import org.openecomp.aai.exceptions.AAIException;
@@ -32,7 +33,11 @@ import org.openecomp.aai.serialization.db.exceptions.NoEdgeRuleFoundException;
 
 public class EdgeRulesTest {
 
-	
+	@BeforeClass
+	public static void setup() {
+		System.setProperty("AJSC_HOME", ".");
+		System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
+	}
 	
 	
 	@Test
