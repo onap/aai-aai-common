@@ -740,6 +740,11 @@
 						<xml-property name="defaultValue" value="false"/>
 						<xml-property name="description" value="used to indicate whether or not this object is in maintenance mode (maintenance mode = true)" />
 					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="provStatus" name="prov-status" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Prov Status of the logical interface. Valid values [PREPROV/NVTPROV/PROV]." />
+					</xml-properties>
 				</xml-element>				
 				<xml-element java-attribute="vlans" name="vlans" type="inventory.aai.onap.org.v11.Vlans" />
 				<xml-element java-attribute="sriovVfs" name="sriov-vfs" type="inventory.aai.onap.org.v11.SriovVfs" />
@@ -964,6 +969,11 @@
 					<xml-properties>
 						<xml-property name="defaultValue" value="false"/>
 						<xml-property name="description" value="used to indicate whether or not this object is in maintenance mode (maintenance mode = true)" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="provStatus" name="prov-status" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Prov Status of the VLAN configuration related to a logical interface. Valid values [PREPROV/NVTPROV/PROV]." />
 					</xml-properties>
 				</xml-element>			
 				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v11.RelationshipList" />
@@ -1685,6 +1695,11 @@
 					<xml-properties>
 						<xml-property name="defaultValue" value="false"/>
 						<xml-property name="description" value="used to indicate whether or not this object is in maintenance mode (maintenance mode = true)" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="invStatus" name="inv-status" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="inventory status" />
 					</xml-properties>
 				</xml-element>
 				<xml-element java-attribute="invStatus" name="inv-status" type="java.lang.String">
