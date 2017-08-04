@@ -1702,11 +1702,6 @@
 						<xml-property name="description" value="inventory status" />
 					</xml-properties>
 				</xml-element>
-				<xml-element java-attribute="invStatus" name="inv-status" type="java.lang.String">
-					<xml-properties>
-						<xml-property name="description" value="inventory status" />
-					</xml-properties>
-				</xml-element>
 				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v11.RelationshipList" />
 				<xml-element java-attribute="sriovPfs" name="sriov-pfs" type="inventory.aai.onap.org.v11.SriovPfs" />
 				<xml-element java-attribute="lInterfaces" name="l-interfaces" type="inventory.aai.onap.org.v11.LInterfaces" />
