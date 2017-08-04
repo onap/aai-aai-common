@@ -2777,6 +2777,16 @@
 						<xml-property name="description" value="Type of the vpn, should be taken from enumerated/valid values" />
 					</xml-properties>
 				</xml-element>
+				<xml-element java-attribute="vpnRegion" name="vpn-region" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="region of customer vpn" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="customerVpnId" name="customer-vpn-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="id for this customer vpn" />
+					</xml-properties>
+				</xml-element>
 				<xml-element java-attribute="routeDistinguisher" name="route-distinguisher" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Used to distinguish the distinct VPN routes of separate customers who connect to the provider in an MPLS network." />
@@ -5259,6 +5269,23 @@
 		<java-type name="InstanceGroup">
 			<xml-root-element name="instance-group" />
 			<java-attributes>
+				<xml-element java-attribute="instanceGroupRole" name="instance-group-role" required="false" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="role of the instance group." />
+					</xml-properties>
+				</xml-element>
+
+				<xml-element java-attribute="modelInvariantId" name="model-invariant-id" required="false" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="ASDC model id for this resource or service model." />
+					</xml-properties>
+				</xml-element>
+
+				<xml-element java-attribute="modelVersionId" name="model-version-id" required="false" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="ASDC model version uid for this resource model." />
+					</xml-properties>
+				</xml-element>
 				<xml-element java-attribute="id" name="id" required="true" type="java.lang.String" xml-key="true">
 					<xml-properties>
 						<xml-property name="description" value="Instance Group ID, UUID assigned to this instance." />

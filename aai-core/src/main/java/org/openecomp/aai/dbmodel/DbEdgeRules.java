@@ -151,6 +151,8 @@ public class DbEdgeRules {
 					"isMemberOf,OUT,Many2Many,false,false,false,true")
 			.putAll("l3-network|vpn-binding",
 					"usesVpnBinding,OUT,Many2Many,false,false,false,false")
+			.putAll("l3-network|instance-group",
+					"memberOf,OUT,Many2Many,false,false,false,false")
 			.putAll("l3-network|subnet",
 					"hasSubnet,OUT,Many2Many,true,false,false,reverse")
 			.putAll("l3-network|service-instance",
@@ -328,6 +330,7 @@ public class DbEdgeRules {
             .putAll("allotted-resource|instance-group", "isMemberOf,OUT,Many2Many,false,false,false,false")
             .putAll("allotted-resource|network-policy", "uses,OUT,One2One,false,false,false,false")
             .putAll("allotted-resource|vlan", "isPartOf,OUT,Many2Many,false,false,false,false")
+            .putAll("allotted-resource|l-interface", "uses,OUT,One2Many,false,false,false,false")
             .putAll("generic-vnf|instance-group", "isMemberOf,OUT,Many2Many,false,false,false,false")
             .putAll("service-instance|instance-group", "isMemberOf,OUT,Many2Many,false,false,false,false")      
             .putAll("allotted-resource|tunnel-xconnect", "has,OUT,One2One,true,false,false,false")
@@ -342,8 +345,10 @@ public class DbEdgeRules {
             .putAll("zone|complex", "existsIn,OUT,Many2One,false,false,false,false")
             .putAll("service-instance|allotted-resource", "has,OUT,Many2Many,true,false,false,false")
             .putAll("service-instance|allotted-resource", "uses,OUT,Many2Many,false,false,false,false")
+			.putAll("allotted-resource|vpn-binding", "belongsTo,OUT,Many2Many,false,false,false,false")
+			.putAll("allotted-resource|allotted-resource", "bindsTo,OUT,One2One,false,false,false,false")
 			.build();
-
+	
 	public static final Multimap<String, String> DefaultDeleteScope = new ImmutableSetMultimap.Builder<String, String>()
 			.putAll("customer", "CASCADE_TO_CHILDREN")
 			.putAll("cloud-region", "THIS_NODE_ONLY")
