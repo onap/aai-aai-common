@@ -4517,7 +4517,7 @@
 				</xml-element>
 				<xml-element java-attribute="ikev1Encryption" name="ikev1-encryption" type="java.lang.String">
 					<xml-properties>
-						<xml-property name="description" value="Encyption values like 3des-cbc, des-cbc, aes-128-cbc,Â aes-192-cbc, aes-265-cbc" />
+						<xml-property name="description" value="Encyption values like 3des-cbc, des-cbc, aes-128-cbc, aes-192-cbc, aes-265-cbc" />
 					</xml-properties>
 				</xml-element>
 				<xml-element java-attribute="ikev1DhGroup" name="ikev1-dh-group" type="java.lang.String">
@@ -4547,7 +4547,7 @@
 				</xml-element>
 				<xml-element java-attribute="ipsecEncryption" name="ipsec-encryption" type="java.lang.String">
 					<xml-properties>
-						<xml-property name="description" value="3des-cbc, des-cbc, aes-128-cbc,Â aes-192-cbc, aes-265-cbc" />
+						<xml-property name="description" value="3des-cbc, des-cbc, aes-128-cbc, aes-192-cbc, aes-265-cbc" />
 					</xml-properties>
 				</xml-element>
 				<xml-element java-attribute="ipsecSaLifetime" name="ipsec-sa-lifetime" type="java.lang.String">
@@ -5626,7 +5626,7 @@
 				</xml-element>
 				<xml-element java-attribute="designType" name="design-type" required="true" type="java.lang.String">
 					<xml-properties>
-						<xml-property name="description" value="Design of zone [Medium/Large…]" />
+						<xml-property name="description" value="Design of zone [Medium/Large�]" />
 					</xml-properties>
 				</xml-element>
 				<xml-element java-attribute="zoneContext" name="zone-context" required="true" type="java.lang.String">

@@ -26,11 +26,13 @@ import java.util.Map;
 
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import org.openecomp.aai.exceptions.AAIException;
 import org.openecomp.aai.serialization.db.exceptions.NoEdgeRuleFoundException;
 
+@Ignore
 public class EdgeRulesTest {
 
 	@BeforeClass

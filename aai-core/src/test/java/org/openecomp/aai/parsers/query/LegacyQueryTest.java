@@ -100,6 +100,7 @@ public class LegacyQueryTest {
 	 * @throws UnsupportedEncodingException the unsupported encoding exception
 	 * @throws AAIException the AAI exception
 	 */
+	@Ignore
 	@Test
     public void childQuery() throws JAXBException, UnsupportedEncodingException, AAIException {
 		URI uri = UriBuilder.fromPath("cloud-infrastructure/pservers/pserver/key1/lag-interfaces/lag-interface/key2").build();
