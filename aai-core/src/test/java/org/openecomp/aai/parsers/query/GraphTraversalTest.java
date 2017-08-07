@@ -57,6 +57,7 @@ import org.openecomp.aai.serialization.queryformats.QueryFormatTestHelper;
 import org.openecomp.aai.util.AAIConstants;
 
 
+@Ignore
 public class GraphTraversalTest {
 
 	private static TransactionalGraphEngine dbEngine;

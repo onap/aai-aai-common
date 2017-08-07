@@ -29,15 +29,17 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collections;
 import java.util.Map;
 
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.apache.tinkerpop.gremlin.structure.Graph;
+import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-
 import org.openecomp.aai.dbmap.DBConnectionType;
 import org.openecomp.aai.exceptions.AAIException;
 import org.openecomp.aai.introspection.Introspector;
@@ -50,17 +52,12 @@ import org.openecomp.aai.schema.enums.PropertyMetadata;
 import org.openecomp.aai.serialization.engines.QueryStyle;
 import org.openecomp.aai.serialization.engines.TitanDBEngine;
 import org.openecomp.aai.serialization.engines.TransactionalGraphEngine;
+
 import com.thinkaurelius.titan.core.TitanFactory;
 import com.thinkaurelius.titan.core.TitanGraph;
-import com.thinkaurelius.titan.core.TitanTransaction;
-
-import java.util.Collections;
 
 @Ignore
 public class DbAliasTest {
-
-	
-	
 	private TitanGraph graph;
 	private final Version version = Version.v9;
 	private final ModelType introspectorFactoryType = ModelType.MOXY;
@@ -79,20 +76,20 @@ public class DbAliasTest {
 				type,
 				loader);
 	}
-	
+
 	@After
 	public void tearDown() {
 		graph.tx().rollback();
 		graph.close();
 	}
-	
+
 	@Test
 	public void checkOnWrite() throws AAIException, UnsupportedEncodingException, URISyntaxException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException, NoSuchMethodException, InterruptedException {
 		final String property = "persona-model-customization-id";
 		String dbPropertyName = property;
 		TransactionalGraphEngine spy = spy(this.dbEngine);
 		TransactionalGraphEngine.Admin adminSpy = spy(dbEngine.asAdmin());
-		TitanTransaction g = graph.newTransaction();
+		Graph g = graph.newTransaction();
 		GraphTraversalSource traversal = g.traversal();
 		when(spy.asAdmin()).thenReturn(adminSpy);
 		when(adminSpy.getTraversalSource()).thenReturn(traversal);
@@ -104,37 +101,38 @@ public class DbAliasTest {
 		obj.setValue("vnf-id", "key1");
 		obj.setValue(property, "hello");
 		serializer.serializeToDb(obj, v, uriQuery, "", "");
-		g.commit();
+		g.tx().commit();
 		v = graph.traversal().V(id).next();
 		Map<PropertyMetadata, String> map = obj.getPropertyMetadata(property);
 		if (map.containsKey(PropertyMetadata.DB_ALIAS)) {
 			dbPropertyName = map.get(PropertyMetadata.DB_ALIAS);
 		}
-		
+
 		assertEquals("dbAlias is ", "model-customization-id", dbPropertyName);
 		assertEquals("dbAlias property exists", "hello", v.property(dbPropertyName).orElse(""));
 		assertEquals("model property does not", "missing", v.property(property).orElse("missing"));
-	
+
 	}
-	
+
 	@Test
 	public void checkOnRead() throws AAIException, UnsupportedEncodingException, URISyntaxException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException, NoSuchMethodException, InterruptedException, MalformedURLException {
 		final String property = "persona-model-customization-id";
-		
+
 		TransactionalGraphEngine spy = spy(dbEngine);
 		TransactionalGraphEngine.Admin adminSpy = spy(dbEngine.asAdmin());
 		Vertex v = graph.traversal().addV("vnf-id", "key1", "model-customization-id", "hello").next();
 		graph.tx().commit();
-		TitanTransaction g = graph.newTransaction();
+		Graph g = graph.newTransaction();
 		GraphTraversalSource traversal = g.traversal();
 		when(spy.asAdmin()).thenReturn(adminSpy);
 		when(adminSpy.getTraversalSource()).thenReturn(traversal);
 		DBSerializer serializer = new DBSerializer(version, spy, introspectorFactoryType, "AAI_TEST");
 		Introspector obj = loader.introspectorFromName("generic-vnf");
 		serializer.dbToObject(Collections.singletonList(v), obj, 0, true, "false");
-		
+
 		assertEquals("dbAlias property exists", "hello", obj.getValue(property));
-		
+
 	}
-	
+
+
 }

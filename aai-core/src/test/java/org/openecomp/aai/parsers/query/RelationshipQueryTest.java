@@ -121,6 +121,7 @@ public class RelationshipQueryTest {
 	 * @throws UnsupportedEncodingException the unsupported encoding exception
 	 * @throws AAIException the AAI exception
 	 */
+	@Ignore
 	@Test
     public void childQuery() throws JAXBException, UnsupportedEncodingException, AAIException {
 		String content =

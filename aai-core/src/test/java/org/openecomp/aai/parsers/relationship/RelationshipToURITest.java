@@ -31,6 +31,7 @@ import java.net.URISyntaxException;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -170,7 +171,8 @@ public class RelationshipToURITest {
 
 		
 	}
-	
+
+	@Ignore
 	@Test
 	public void moreItemsThanRequired() throws AAIException, URISyntaxException, IOException {
 		Loader loader = LoaderFactory.createLoaderForVersion(modelType, version10);
