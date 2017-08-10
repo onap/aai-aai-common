@@ -397,6 +397,17 @@
 	"SVC-INFRA" : "false"
 },
 {
+	"from" : "vnfc",
+	"to" : "instance-group",
+	"label" : "isMemberOf",
+	"direction" : "OUT",
+	"multiplicity" : "Many2Many",
+	"isParent" : "false",
+	"usesResource" : "false",
+	"hasDelTarget" : "false",
+	"SVC-INFRA" : "false"
+},
+{
 	"from" : "l-interface",
 	"to" : "l3-interface-ipv4-address-list",
 	"label" : "hasIpAddress",
@@ -1962,6 +1973,28 @@
 	"from" : "allotted-resource",
 	"to" : "vpn-binding",
 	"label" : "belongsTo",
+	"direction" : "OUT",
+	"multiplicity" : "Many2Many",
+	"isParent" : "false",
+	"usesResource" : "false",
+	"hasDelTarget" : "false",
+	"SVC-INFRA" : "false"
+},
+{
+	"from" : "generic-vnf",
+	"to" : "complex",
+	"label" : "locatedIn",
+	"direction" : "OUT",
+	"multiplicity" : "Many2Many",
+	"isParent" : "false",
+	"usesResource" : "false",
+	"hasDelTarget" : "false",
+	"SVC-INFRA" : "false"
+},
+{
+	"from" : "generic-vnf",
+	"to" : "ctag-pool",
+	"label" : "usesCtagPool",
 	"direction" : "OUT",
 	"multiplicity" : "Many2Many",
 	"isParent" : "false",

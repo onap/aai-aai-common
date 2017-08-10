@@ -31,6 +31,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSo
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 
@@ -83,7 +84,8 @@ public class TraversalQueryTest {
 		assertEquals("container query object", containerExpected.toString(), builder.getContainerQuery().getQuery().toString());
 		
 	}
-	
+
+	@Ignore
 	@Test
 	public void nestedTraversalClones() throws UnsupportedEncodingException, AAIException, URISyntaxException {
 		

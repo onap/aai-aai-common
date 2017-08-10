@@ -400,7 +400,7 @@ public class DbEdgeRules {
 			.putAll("generic-vnf", "CASCADE_TO_CHILDREN")
 			.putAll("l3-network", "CASCADE_TO_CHILDREN")
 			.putAll("ctag-pool", "THIS_NODE_ONLY")
-			.putAll("subnet", "THIS_NODE_ONLY")
+			.putAll("subnet", "ERROR_IF_ANY_IN_EDGES")
 			.putAll("sriov-vf", "THIS_NODE_ONLY")
 			.putAll("vpn-binding", "ERROR_4_IN_EDGES_OR_CASCADE")
 			.putAll("vnf-image", "ERROR_IF_ANY_IN_EDGES")
