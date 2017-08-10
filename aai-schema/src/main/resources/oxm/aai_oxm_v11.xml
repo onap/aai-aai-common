@@ -3294,14 +3294,14 @@
 						<xml-property name="description" value="Unique ID of vnfc." />
 					</xml-properties>
 				</xml-element>
-				<xml-element java-attribute="vnfcFunctionCode" name="vnfc-function-code" required="true" type="java.lang.String">
+				<xml-element java-attribute="nfcNamingCode" name="nfc-naming-code" required="true" type="java.lang.String">
 					<xml-properties>
-						<xml-property name="description" value="function code" />
+						<xml-property name="description" value="Short code that is used in naming instances of the item being modeled" />
 					</xml-properties>
 				</xml-element>
-				<xml-element java-attribute="vnfcType" name="vnfc-type" required="true" type="java.lang.String">
+				<xml-element java-attribute="nfcFunction" name="nfc-function" required="true" type="java.lang.String">
 					<xml-properties>
-						<xml-property name="description" value="type" />
+						<xml-property name="description" value="English description of function that the specific resource deployment is providing. Assigned as part of the customization of a resource in a service" />
 					</xml-properties>
 				</xml-element>
 				<xml-element java-attribute="provStatus" name="prov-status" type="java.lang.String">
@@ -3336,6 +3336,20 @@
 						<xml-property name="description" value="Group notation of VNFC" />
 					</xml-properties>
 				</xml-element>
+				<xml-element java-attribute="modelInvariantId" name="model-invariant-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="the ASDC model id for this resource or service model." />
+						<xml-property name="visibility" value="deployment" />
+						<xml-property name="requires" value="model-version-id" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="modelVersionId" name="model-version-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="the ASDC model version for this resource or service model." />
+						<xml-property name="visibility" value="deployment" />
+						<xml-property name="requires" value="model-invariant-id" />
+					</xml-properties>
+				</xml-element>				
 				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
@@ -3344,7 +3358,7 @@
 				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v11.RelationshipList" />
 			</java-attributes>
 			<xml-properties>
-				<xml-property name="indexedProps" value="vnfc-name,prov-status,vnfc-type,vnfc-function-code,ipaddress-v4-oam-vip,in-maint,is-closed-loop-disabled,group-notation" />
+				<xml-property name="indexedProps" value="vnfc-name,prov-status,nfc-function,nfc-naming-code,ipaddress-v4-oam-vip,in-maint,is-closed-loop-disabled,group-notation,model-invariant-id,model-version-id" />
 				<xml-property name="searchable" value="vnfc-name" />
 				<xml-property name="container" value="vnfcs" />
 				<xml-property name="namespace" value="network" />
@@ -3657,6 +3671,11 @@
 						<xml-property name="description" value="the last address reserved for use by dhcp" />
 					</xml-properties>
 				</xml-element>
+					<xml-element java-attribute="subnetRole" name="subnet-role" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="role of the subnet, referenced when assigning IPs" />
+					</xml-properties>
+				</xml-element>			
 				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
