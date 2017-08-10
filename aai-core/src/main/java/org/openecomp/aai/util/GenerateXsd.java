@@ -24,15 +24,24 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.FileInputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -59,18 +68,26 @@ import org.w3c.dom.NodeList;
 import org.openecomp.aai.dbmodel.DbEdgeRules;
 import org.openecomp.aai.db.props.AAIProperties;
 import org.openecomp.aai.introspection.Version;
+import org.openecomp.aai.serialization.db.EdgeRule;
+import org.openecomp.aai.serialization.db.EdgeRules;
+
 import com.google.common.base.Joiner;
 import com.google.common.collect.Multimap;
+import com.jayway.jsonpath.Criteria;
+import com.jayway.jsonpath.DocumentContext;
+import com.jayway.jsonpath.JsonPath;
+
 
 
 public class GenerateXsd {
+	
 	static String apiVersion = null;
 	static String apiVersionFmt = null;
 	static boolean useAnnotationsInXsd = false;
 	static String responsesUrl = null;
 	static String responsesLabel = null;
-	//static Map<String, String> generatedJavaType = new HashMap<String, String>();
-	//static Map<String, String> appliedPaths = new HashMap<String, String>();
+	static String jsonEdges = null;
+
 	static Map<String, String> generatedJavaType;
 	static Map<String, String> appliedPaths;
 	static NodeList javaTypeNodes;
@@ -335,15 +352,19 @@ public class GenerateXsd {
 	        	System.out.println( "Exception creating output file " + outfileName);
 	        	e.printStackTrace();
 		    }
+		    BufferedWriter bw = null;
 	        try {
-	        	FileWriter fw = new FileWriter(outfile.getAbsoluteFile());
-	        	BufferedWriter bw = new BufferedWriter(fw);
+	        	Charset charset = Charset.forName("UTF-8");
+	        	Path path = Paths.get(outfileName);
+	        	bw = Files.newBufferedWriter(path, charset);
 	        	bw.write(fileContent);
-	        	bw.close();
-
 	        } catch ( IOException e) {
 	        	System.out.println( "Exception writing output file " + outfileName);
 	        	e.printStackTrace();
+	        } finally {
+	        	if ( bw != null ) {
+	        		bw.close();
+	        	}
 	        }
 			System.out.println( "GeneratedXSD successful, saved in " + outfileName);
 		}
@@ -806,73 +827,81 @@ public class GenerateXsd {
 			result = Class.forName("org.openecomp.aai.dbmodel.DbEdgeRules");
 		}
 		return result;
+	}	
+
+	/**
+	 * Guaranteed to at least return non null but empty collection of edge descriptions
+	 * @param nodeName name of the vertex whose edge relationships to return
+	 * @return collection of node neighbors based on DbEdgeRules
+	**/
+	private static Collection<EdgeDescription> getEdgeRulesFromJson( String path, boolean skipMatch ) 
+	{
+
+		ArrayList<EdgeDescription> result = new ArrayList<>();
+		Iterator<Map<String, Object>> edgeRulesIterator;
+		try {
+
+			GenerateXsd x = new GenerateXsd();
+			
+			List<Map<String, Object>> inEdges = JsonPath.parse(jsonEdges).read(path);
+			
+			edgeRulesIterator = inEdges.iterator();
+			Map<String, Object> edgeMap;
+			String fromNode;
+			String toNode;
+			String ruleKey;
+			String direction;
+			String multiplicity;
+			String isParent;
+			String hasDelTarget;
+			EdgeDescription edgeDes;
+			
+			while( edgeRulesIterator.hasNext() ){
+				edgeMap = edgeRulesIterator.next();
+				fromNode = (String)edgeMap.get("from");
+				toNode = (String)edgeMap.get("to");
+				if ( skipMatch ) { 
+					if ( fromNode.equals(toNode)) {
+						continue;
+					}
+				}
+				edgeDes = x.new EdgeDescription();
+				edgeDes.setRuleKey(fromNode + "|" + toNode);
+				direction = (String)edgeMap.get("direction");
+				edgeDes.setDirection(direction);
+				multiplicity = (String)edgeMap.get("multiplicity");
+				edgeDes.setMultiplicity(multiplicity);
+				isParent = (String)edgeMap.get("isParent");
+				if ( isParent != null && isParent.equals("true"))  {
+					edgeDes.setType(LineageType.PARENT);
+				} else {
+					edgeDes.setType(LineageType.UNRELATED);
+				}
+				hasDelTarget = (String)edgeMap.get("hasDelTarget");
+				edgeDes.setHasDelTarget(hasDelTarget);
+				result.add(edgeDes);
+				
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		return result;
+		
 	}
 	
 	/**
 	 * Guaranteed to at least return non null but empty collection of edge descriptions
 	 * @param nodeName name of the vertex whose edge relationships to return
 	 * @return collection of node neighbors based on DbEdgeRules
-	 */
+	**/
 	private static Collection<EdgeDescription> getEdgeRules( String nodeName ) 
-	{
-
-		ArrayList<EdgeDescription> result = new ArrayList<>();
-		Iterator<String> edgeRulesIterator;
-
-		try {
-
-			Field mapfield = versionedClass.getField("EdgeRules");
-			Object map = mapfield.get(null);
-			if (map instanceof Multimap<?,?>) {
-				edgeRulesIterator = ((Multimap<String,String>) map).keySet().iterator();
-			} else {
-				throw new NoSuchFieldException ("Didn't get back the multimap field expected");
-			}
-			GenerateXsd x = new GenerateXsd();
-
-			while( edgeRulesIterator.hasNext() ){
-				String ruleKey = edgeRulesIterator.next();
-				if ( ruleKey.startsWith(nodeName + "|" ) ||
-						ruleKey.endsWith("|" + nodeName)) {
-					Collection <String> edRuleColl = DbEdgeRules.EdgeRules.get(ruleKey);
-					Iterator <String> ruleItr = edRuleColl.iterator();
-					while( ruleItr.hasNext() ){		
-						EdgeDescription edgeDes = x.new EdgeDescription();
-						edgeDes.setRuleKey(ruleKey);
-						String fullRuleString = ruleItr.next();
-						String[] toks = fullRuleString.split(",");
-						if (toks != null) {
-							if (toks.length > 1) {
-								edgeDes.setDirection(toks[1]);
-							}
-							if (toks.length > 2) {
-								edgeDes.setMultiplicity(toks[2]);
-							}
-							if (toks.length > 3) {
-								if (toks[3].equals("true")) 
-									edgeDes.setType(LineageType.PARENT);
-								else if (toks[3].equals("parent")) 
-									edgeDes.setType(LineageType.PARENT);
-								else if (toks[3].equals("child")) 
-									edgeDes.setType(LineageType.CHILD);
-								else 
-									edgeDes.setType(LineageType.UNRELATED);
-							}
-							if (toks.length > 5) {
-								edgeDes.setHasDelTarget(toks[5]);;
-							}
-						}
-
-						//System.out.println( "nodeName " + nodeName + " ruleKey "  + ruleKey + " ruleString " + fullRuleString);
-						//result.add(ruleKey + "-" + fullRuleString);
-						result.add(edgeDes);
-					}
-				}
-			}
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-		return result;
+	{		
+		String fromRulesPath = "$['rules'][?(@['from']=='" + nodeName + "')]";
+		String toRulesPath = "$['rules'][?(@['to']=='" + nodeName + "')]";
+		Collection<EdgeDescription> fromEdges = getEdgeRulesFromJson( fromRulesPath, false );
+		Collection<EdgeDescription> edges = getEdgeRulesFromJson( toRulesPath, true );
+		edges.addAll(fromEdges);
+		return edges;
 	}
 	
 	/**
@@ -1653,9 +1682,15 @@ public class GenerateXsd {
 		sb.append("    description: bad request\n");
 		*/
 		try {
-			
 			versionedClass = getEdgeRulesClass();
-		    
+		    File initialFile = new File("src/main/resources/dbedgerules/DbEdgeRules_" + apiVersion + ".json");
+		    InputStream is = new FileInputStream(initialFile);
+
+			Scanner scanner = new Scanner(is);
+			jsonEdges = scanner.useDelimiter("\\Z").next();
+			scanner.close();
+			is.close();
+			
 		    DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 		    dbFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
 		    DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
