@@ -428,5 +428,6 @@ public class DbEdgeRules {
 			.putAll("entitlement","THIS_NODE_ONLY")
 			.putAll("license","THIS_NODE_ONLY")
 			.putAll("zone", "THIS_NODE_ONLY")
-			.putAll("route-target", "CASCADE_TO_CHILDREN").build();
+			.putAll("route-target", "CASCADE_TO_CHILDREN")
+			.putAll("sriov-pf", "THIS_NODE_ONLY").build();
 }

@@ -2001,6 +2001,28 @@
 	"usesResource" : "false",
 	"hasDelTarget" : "false",
 	"SVC-INFRA" : "false"
+},
+{
+	"from" : "p-interface",
+	"to" : "sriov-pf",
+	"label" : "has",
+	"direction" : "OUT",
+	"multiplicity" : "One2One",
+	"isParent" : "true",
+	"usesResource" : "false",
+	"hasDelTarget" : "false",
+	"SVC-INFRA" : "false"
+},
+{
+	"from" : "sriov-vf",
+	"to" : "sriov-pf",
+	"label" : "uses",
+	"direction" : "OUT",
+	"multiplicity" : "Many2One",
+	"isParent" : "false",
+	"usesResource" : "true",
+	"hasDelTarget" : "false",
+	"SVC-INFRA" : "false"
 }
 ]
 }
