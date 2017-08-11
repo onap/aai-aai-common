@@ -3934,6 +3934,7 @@
 				<xml-element java-attribute="nfType" name="nf-type" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Generic description of the type of NF" />
+						<xml-property name="suggestibleOnSearch" value="true"/>
 					</xml-properties>
 				</xml-element>
 				<xml-element java-attribute="nfFunction" name="nf-function" type="java.lang.String">
