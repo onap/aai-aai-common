@@ -31,7 +31,6 @@ import javax.ws.rs.core.MultivaluedMap;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
-
 import org.openecomp.aai.exceptions.AAIException;
 import org.openecomp.aai.introspection.Introspector;
 import org.openecomp.aai.introspection.Loader;
@@ -285,7 +284,22 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
 	public abstract QueryBuilder<E> union(QueryBuilder<E>... builder);
 	
 	public abstract QueryBuilder<E> where(QueryBuilder<E>... builder);
-	public abstract void markContainer();
+	
+	public abstract QueryBuilder<E> store(String name);
+	public abstract QueryBuilder<E> cap(String name);
+	public abstract QueryBuilder<E> unfold();
+	public abstract QueryBuilder<E> dedup();
+	public abstract QueryBuilder<E> emit();
+	public abstract QueryBuilder<E> repeat(QueryBuilder<E> builder);
+	public abstract QueryBuilder<Edge> outE();
+	public abstract QueryBuilder<Edge> inE();
+	public abstract QueryBuilder<Vertex> inV();
+	public abstract QueryBuilder<Vertex> outV();
+	public abstract QueryBuilder<E> not(QueryBuilder<E> builder);
+	public abstract QueryBuilder<E> as(String name);
+	public abstract QueryBuilder<E> select(String name);
+	
+ 	public abstract void markContainer();
 
 	public abstract QueryBuilder<E> getContainerQuery();
 

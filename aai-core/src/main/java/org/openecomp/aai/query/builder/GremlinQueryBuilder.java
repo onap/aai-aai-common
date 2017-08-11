@@ -32,7 +32,6 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSo
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
-
 import org.openecomp.aai.db.props.AAIProperties;
 import org.openecomp.aai.exceptions.AAIException;
 import org.openecomp.aai.introspection.Introspector;
@@ -43,6 +42,7 @@ import org.openecomp.aai.serialization.db.EdgeRule;
 import org.openecomp.aai.serialization.db.EdgeRules;
 import org.openecomp.aai.serialization.db.EdgeType;
 import org.openecomp.aai.serialization.db.exceptions.NoEdgeRuleFoundException;
+
 import com.google.common.base.Joiner;
 
 /**
@@ -345,6 +345,109 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
 		return this;
 	}
 	
+	@Override
+	public QueryBuilder<E> store(String name) {
+		this.list.add(".store('"+ name + "')");
+		stepIndex++;
+		
+		return this;
+	}
+	
+	@Override
+	public QueryBuilder<E> cap(String name) {
+		this.list.add(".cap('"+ name + "')");
+		stepIndex++;
+		
+		return this;
+	}
+	
+	@Override
+	public QueryBuilder<E> unfold() {
+		this.list.add(".unfold()");
+		stepIndex++;
+		
+		return this;
+	}
+	
+	@Override
+	public QueryBuilder<E> dedup() {
+		this.list.add(".dedup()");
+		stepIndex++;
+		
+		return this;
+	}
+	
+	@Override
+	public QueryBuilder<E> emit() {
+		this.list.add(".emit()");
+		stepIndex++;
+		
+		return this;
+	}
+	
+	@Override
+	public QueryBuilder<E> repeat(QueryBuilder<E> builder) {
+		this.list.add(".repeat(__" + builder.getQuery()  + ")");
+		stepIndex++;
+		
+		return this;
+	}
+	
+	@Override
+	public QueryBuilder<Edge> outE() {
+		this.list.add(".outE()");
+		stepIndex++;
+		
+		return (QueryBuilder<Edge>)this;
+	}
+	
+	@Override
+	public QueryBuilder<Edge> inE() {
+		this.list.add(".inE()");
+		stepIndex++;
+		
+		return (QueryBuilder<Edge>)this;
+	}
+	
+	@Override
+	public QueryBuilder<Vertex> outV() {
+		this.list.add(".outV()");
+		stepIndex++;
+		
+		return (QueryBuilder<Vertex>)this;
+	}
+	
+	@Override
+	public QueryBuilder<Vertex> inV() {
+		this.list.add(".inV()");
+		stepIndex++;
+		
+		return (QueryBuilder<Vertex>)this;
+	}
+	
+	@Override
+	public QueryBuilder<E> not(QueryBuilder<E> builder) {
+		this.list.add(".not(" + "__" + builder.getQuery() + ")");
+		stepIndex++;
+		
+		return this;
+	}
+	
+	@Override
+	public QueryBuilder<E> as(String name) {
+		this.list.add(".as('" + name + "')");
+		stepIndex++;
+		
+		return this;
+	}
+	
+	@Override
+	public QueryBuilder<E> select(String name) {
+		this.list.add(".select('" + name + "')");
+		stepIndex++;
+		
+		return this;
+	}
 	/**
 	 * @{inheritDoc}
 	 */

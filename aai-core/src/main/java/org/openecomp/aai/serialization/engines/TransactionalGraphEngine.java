@@ -145,7 +145,15 @@ public abstract class TransactionalGraphEngine {
 		return getQueryBuilder(this.loader);
 	}
 	
+	public QueryBuilder<Vertex> getQueryBuilder(QueryStyle style) {
+		return getQueryBuilder(style, this.loader);
+	}
+	
 	public QueryBuilder<Vertex> getQueryBuilder(Loader loader) {
+		return getQueryBuilder(this.style, loader);
+	}
+	
+	public  QueryBuilder<Vertex> getQueryBuilder(QueryStyle style, Loader loader) {
 		if (style.equals(QueryStyle.GREMLIN_TRAVERSAL)) {
 			return new GremlinTraversal<>(loader, this.asAdmin().getTraversalSource());
 		} else if (style.equals(QueryStyle.GREMLIN_UNIQUE)) {
@@ -170,6 +178,10 @@ public abstract class TransactionalGraphEngine {
 	}
 	
 	public QueryBuilder<Vertex> getQueryBuilder(Loader loader, Vertex start) {
+		return getQueryBuilder(this.style, loader, start);
+	}
+	
+	public QueryBuilder<Vertex> getQueryBuilder(QueryStyle style, Loader loader, Vertex start) {
 		if (style.equals(QueryStyle.GREMLIN_TRAVERSAL)) {
 			return new GremlinTraversal<>(loader, this.asAdmin().getTraversalSource(), start);
 		} else if (style.equals(QueryStyle.GREMLIN_UNIQUE)) {

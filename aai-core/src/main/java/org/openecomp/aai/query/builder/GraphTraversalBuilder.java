@@ -38,7 +38,6 @@ import org.apache.tinkerpop.gremlin.process.traversal.util.TraversalHelper;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
-
 import org.openecomp.aai.db.props.AAIProperties;
 import org.openecomp.aai.exceptions.AAIException;
 import org.openecomp.aai.introspection.Introspector;
@@ -347,6 +346,112 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
 			this.traversal.where((GraphTraversal<Vertex, Vertex>)builder[i].getQuery());
 			stepIndex++;
 		}
+		
+		return this;
+	}
+	
+	@Override
+	public QueryBuilder<E> store(String name) {
+		
+		this.traversal.store(name);
+		stepIndex++;
+		
+		return this;
+	}
+	
+	@Override
+	public QueryBuilder<E> cap(String name) {
+		this.traversal.cap(name);
+		stepIndex++;
+		
+		return this;
+	}
+	
+	@Override
+	public QueryBuilder<E> unfold() {
+		this.traversal.unfold();
+		stepIndex++;
+			
+		return this;
+	}
+	
+	@Override
+	public QueryBuilder<E> dedup() {
+		
+		this.traversal.dedup();
+		stepIndex++;
+		
+		return this;
+	}
+	
+	@Override
+	public QueryBuilder<E> emit() {
+		
+		this.traversal.emit();
+		stepIndex++;
+		
+		return this;
+		
+	}
+	
+	@Override
+	public QueryBuilder<E> repeat(QueryBuilder<E> builder) {
+		
+		this.traversal.repeat((GraphTraversal<Vertex, E>)builder.getQuery());
+		stepIndex++;
+
+		return this;
+	}
+	
+	@Override
+	public QueryBuilder<Edge> outE() {
+		this.traversal.outE();
+		stepIndex++;
+		return (QueryBuilder<Edge>)this;
+	}
+	
+	@Override
+	public QueryBuilder<Edge> inE() {
+		this.traversal.inE();
+		stepIndex++;
+		return (QueryBuilder<Edge>)this;
+	}
+	
+	@Override
+	public QueryBuilder<Vertex> outV() {
+		this.traversal.outV();
+		stepIndex++;
+		return (QueryBuilder<Vertex>)this;
+	}
+	
+	@Override
+	public QueryBuilder<Vertex> inV() {
+		this.traversal.inV();
+		stepIndex++;
+		return (QueryBuilder<Vertex>)this;
+	}
+	
+	@Override
+	public QueryBuilder<E> as(String name) {
+		this.traversal.as(name);
+		
+		stepIndex++;
+		return this;
+	}
+	
+	@Override
+	public QueryBuilder<E> not(QueryBuilder<E> builder) {
+		this.traversal.not(builder.getQuery());
+		
+		stepIndex++;
+		return this;
+	}
+	
+	@Override
+	public QueryBuilder<E> select(String name) {
+		this.traversal.select(name);
+		
+		stepIndex++;
 		
 		return this;
 	}
