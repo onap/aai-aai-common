@@ -29,16 +29,16 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.io.IoCore;
-
 import org.openecomp.aai.dbgen.SchemaGenerator;
 import org.openecomp.aai.exceptions.AAIException;
 import org.openecomp.aai.util.AAIConstants;
+
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 import com.thinkaurelius.titan.core.TitanFactory;
 import com.thinkaurelius.titan.core.TitanGraph;
-import com.thinkaurelius.titan.core.TitanTransaction;
 import com.thinkaurelius.titan.core.schema.TitanManagement;
 
 /**
@@ -110,9 +110,9 @@ public class AAIGraph {
 						try {
 							String location = System.getProperty("snapshot.location");
 							logAndPrint(logger, "Loading snapshot to inmemory graph.");
-							TitanTransaction transaction = graph.newTransaction();
+							Graph transaction = graph.newTransaction();
 							transaction.io(IoCore.graphson()).readGraph(location);
-							transaction.commit();
+							transaction.tx().commit();
 							logAndPrint(logger, "Snapshot loaded to inmemory graph.");
 						} catch (IOException e) {
 							graph.close();

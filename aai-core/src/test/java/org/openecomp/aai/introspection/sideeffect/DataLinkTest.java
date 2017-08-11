@@ -31,13 +31,13 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
 import org.openecomp.aai.db.props.AAIProperties;
 import org.openecomp.aai.dbmap.DBConnectionType;
 import org.openecomp.aai.exceptions.AAIException;
@@ -53,9 +53,9 @@ import org.openecomp.aai.serialization.engines.TitanDBEngine;
 import org.openecomp.aai.serialization.engines.TransactionalGraphEngine;
 import org.openecomp.aai.serialization.queryformats.QueryFormatTestHelper;
 import org.openecomp.aai.util.AAIConstants;
+
 import com.thinkaurelius.titan.core.TitanFactory;
 import com.thinkaurelius.titan.core.TitanGraph;
-import com.thinkaurelius.titan.core.TitanTransaction;
 
 @Ignore
 public class DataLinkTest {
@@ -120,7 +120,7 @@ public class DataLinkTest {
 		obj.setValue("route-target-role", "key2");
 		TransactionalGraphEngine spy = spy(dbEngine);
 		TransactionalGraphEngine.Admin adminSpy = spy(dbEngine.asAdmin());
-		TitanTransaction g = graph.newTransaction();
+		Graph g = graph.newTransaction();
 		GraphTraversalSource traversal = g.traversal();
 		when(spy.asAdmin()).thenReturn(adminSpy);
 		when(adminSpy.getTraversalSource()).thenReturn(traversal);
@@ -136,7 +136,7 @@ public class DataLinkTest {
 		assertEquals("route-target vertex found", true, traversal.V()
 				.has(AAIProperties.NODE_TYPE, "route-target").has("global-route-target", "key1").has("route-target-role", "key2").has("linked", true).hasNext());
 		
-		g.rollback();
+		g.tx().rollback();
 		
 	}
 	
@@ -150,7 +150,7 @@ public class DataLinkTest {
 		obj.setValue("route-target-role", "modifyRoleKey2");
 		TransactionalGraphEngine spy = spy(dbEngine);
 		TransactionalGraphEngine.Admin adminSpy = spy(dbEngine.asAdmin());
-		TitanTransaction g = graph.newTransaction();
+		Graph g = graph.newTransaction();
 		GraphTraversalSource traversal = g.traversal();
 		when(spy.asAdmin()).thenReturn(adminSpy);
 		when(adminSpy.getTraversalSource()).thenReturn(traversal);
@@ -167,7 +167,7 @@ public class DataLinkTest {
 				.has(AAIProperties.NODE_TYPE, "route-target").has("global-route-target", "modifyTargetKey2").has("route-target-role", "modifyRoleKey2").has("linked", true).hasNext());
 		assertEquals("previous link removed", true, traversal.V()
 				.has(AAIProperties.NODE_TYPE, "route-target").has("global-route-target", "modifyTargetKey").has("route-target-role", "modifyRoleKey").hasNot("linked").hasNext());
-		g.rollback();
+		g.tx().rollback();
 		
 	}
 	
@@ -179,7 +179,7 @@ public class DataLinkTest {
 		obj.setValue("vpn-id", "deleteKey");
 		TransactionalGraphEngine spy = spy(dbEngine);
 		TransactionalGraphEngine.Admin adminSpy = spy(dbEngine.asAdmin());
-		TitanTransaction g = graph.newTransaction();
+		Graph g = graph.newTransaction();
 		GraphTraversalSource traversal = g.traversal();
 		when(spy.asAdmin()).thenReturn(adminSpy);
 		when(adminSpy.getTraversalSource()).thenReturn(traversal);
@@ -194,7 +194,7 @@ public class DataLinkTest {
 
 		assertEquals("route-target vertex not found", false, traversal.V()
 				.has(AAIProperties.NODE_TYPE, "route-target").has("global-route-target", "deleteTargetKey").has("route-target-role", "deleteRoleKey").has("linked", true).hasNext());
-		g.rollback();
+		g.tx().rollback();
 		
 	}
 	
@@ -206,7 +206,7 @@ public class DataLinkTest {
 		obj.setValue("vpn-id", "getKey");
 		TransactionalGraphEngine spy = spy(dbEngine);
 		TransactionalGraphEngine.Admin adminSpy = spy(dbEngine.asAdmin());
-		TitanTransaction g = graph.newTransaction();
+		Graph g = graph.newTransaction();
 		GraphTraversalSource traversal = g.traversal();
 		when(spy.asAdmin()).thenReturn(adminSpy);
 		when(adminSpy.getTraversalSource()).thenReturn(traversal);
@@ -220,7 +220,7 @@ public class DataLinkTest {
 		runner.execute(obj, self);
 
 		assertEquals("both properties have been populated in target object", true, obj.getValue("global-route-target").equals("getTargetKey") && obj.getValue("route-target-role").equals("getRoleKey"));
-		g.rollback();
+		g.tx().rollback();
 		
 	}
 	
@@ -241,7 +241,7 @@ public class DataLinkTest {
 		targets.add(routeTargetTwo.getUnderlyingObject());
 		TransactionalGraphEngine spy = spy(dbEngine);
 		TransactionalGraphEngine.Admin adminSpy = spy(dbEngine.asAdmin());
-		TitanTransaction g = graph.newTransaction();
+		Graph g = graph.newTransaction();
 		GraphTraversalSource traversal = g.traversal();
 		when(spy.tx()).thenReturn(g);
 		when(spy.asAdmin()).thenReturn(adminSpy);
@@ -259,7 +259,7 @@ public class DataLinkTest {
 		assertEquals("first route target put has linked", true, routeTargetOneV.property(AAIProperties.LINKED).orElse(false));
 		assertEquals("second route target put does not have linked", false, routeTargetTwoV.property(AAIProperties.LINKED).orElse(false));
 
-		g.rollback();
+		g.tx().rollback();
 		
 	}
 }

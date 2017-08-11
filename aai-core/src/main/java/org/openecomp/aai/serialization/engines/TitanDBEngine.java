@@ -26,11 +26,9 @@ import java.util.List;
 
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
-
 import org.openecomp.aai.dbmap.DBConnectionType;
 import org.openecomp.aai.introspection.Loader;
 import org.openecomp.aai.serialization.db.TitanGraphSingleton;
-import com.thinkaurelius.titan.core.TitanVertex;
 
 public class TitanDBEngine extends TransactionalGraphEngine {
 

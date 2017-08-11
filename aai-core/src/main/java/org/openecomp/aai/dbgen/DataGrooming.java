@@ -43,6 +43,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSo
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Edge;
+import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Property;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
@@ -64,10 +65,8 @@ import org.openecomp.aai.util.FormatDate;
 import com.att.eelf.configuration.Configuration;
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
-import com.thinkaurelius.titan.core.TitanEdge;
 import com.thinkaurelius.titan.core.TitanFactory;
 import com.thinkaurelius.titan.core.TitanGraph;
-import com.thinkaurelius.titan.core.TitanTransaction;
 
 
 public class DataGrooming {
@@ -319,8 +318,8 @@ public class DataGrooming {
 		boolean executeFinalCommit = false;
 		Set<String> deleteCandidateList = new LinkedHashSet<>();
 		Set<String> processedVertices = new LinkedHashSet<>();
-		TitanTransaction g = null;
-		TitanTransaction g2 = null;
+		Graph g = null;
+		Graph g2 = null;
 		try {
 			AAIConfig.init();
 			String targetDir = AAIConstants.AAI_HOME + AAIConstants.AAI_FILESEP
@@ -612,7 +611,7 @@ public class DataGrooming {
 					
 					if ( (thisNtDeleteCount > 0) && singleCommits ) {
 						// NOTE - the singleCommits option is not used in normal processing
-						g.commit();
+						g.tx().commit();
 						g = AAIGraph.getInstance().getGraph().newTransaction();
 						
 					}
@@ -650,8 +649,7 @@ public class DataGrooming {
 			}
 			
 			ArrayList<Vertex> vertList = new ArrayList<>();
-			Iterable<? extends Vertex> vIt3 = g.query().vertices();
-			Iterator<? extends Vertex> vItor3 = vIt3.iterator();
+			Iterator<Vertex> vItor3 = g.traversal().V();
 			// Gotta hold these in a List - or else HBase times out as you cycle
 			// through these
 			while (vItor3.hasNext()) {
@@ -731,7 +729,7 @@ public class DataGrooming {
 								}
 								
 								if( ! ghost2CheckOff ){
-									Vertex connectedVert = g2.getVertex(vIdLong);
+									Vertex connectedVert = g2.traversal().V(vIdLong).next();
 									if( connectedVert == null ) {
 										LOGGER.warn( "GHOST2 -- got NULL when doing getVertex for vid = " + vIdLong);
 										cantGetUsingVid = true;
@@ -740,7 +738,7 @@ public class DataGrooming {
 										// it is still a ghost since even though we can get data about it using the FIRST graph 
 										// object.  
 										try {
-											 ghost2 = g.getVertex(vIdLong);
+											 ghost2 = g.traversal().V(vIdLong).next();
 										}
 										catch( Exception ex){
 											LOGGER.warn( "GHOST2 --  Could not get the ghost info for a bad edge for vtxId = " + vIdLong, ex);
@@ -773,7 +771,7 @@ public class DataGrooming {
 										}
 										if (singleCommits) {
 											// NOTE - the singleCommits option is not used in normal processing
-											g.commit();
+											g.tx().commit();
 											g = AAIGraph.getInstance().getGraph().newTransaction();
 										}
 										deleteCount++;
@@ -793,7 +791,7 @@ public class DataGrooming {
 										e.remove();
 										if (singleCommits) {
 											// NOTE - the singleCommits option is not used in normal processing
-											g.commit();
+											g.tx().commit();
 											g = AAIGraph.getInstance().getGraph().newTransaction();
 										}
 										deleteCount++;
@@ -844,13 +842,13 @@ public class DataGrooming {
 								}
 								
 								if( ! ghost2CheckOff ){
-									Vertex connectedVert = g2.getVertex(vIdLong);
+									Vertex connectedVert = g2.traversal().V(vIdLong).next();
 									if( connectedVert == null ) {
 										cantGetUsingVid = true;
 										LOGGER.info( "GHOST2 -- got NULL when doing getVertex for vid = " + vIdLong);
 										// If we can get this ghost with the other graph-object, then get it -- it's still a ghost
 										try {
-											 ghost2 = g.getVertex(vIdLong);
+											 ghost2 = g.traversal().V(vIdLong).next();
 										}
 										catch( Exception ex){
 											LOGGER.warn( "GHOST2 -- Could not get the ghost info for a bad edge for vtxId = " + vIdLong, ex);
@@ -882,7 +880,7 @@ public class DataGrooming {
 										}
 										if (singleCommits) {
 											// NOTE - the singleCommits option is not used in normal processing
-											g.commit();
+											g.tx().commit();
 											g = AAIGraph.getInstance().getGraph().newTransaction();
 										}
 										deleteCount++;
@@ -902,7 +900,7 @@ public class DataGrooming {
 										e.remove();
 										if (singleCommits) {
 											// NOTE - the singleCommits option is not used in normal processing
-											g.commit();
+											g.tx().commit();
 											g = AAIGraph.getInstance().getGraph().newTransaction();
 										}
 										deleteCount++;
@@ -1210,25 +1208,25 @@ public class DataGrooming {
 				}
 			}
 			
-			if (g != null && !g.isClosed()) {
+			if (g != null && g.tx().isOpen()) {
 				// Any changes that worked correctly should have already done
 				// their commits.
 				try {
 					if (executeFinalCommit) {
-						g.commit();
+						g.tx().commit();
 					}
-					g.rollback();
+					g.tx().rollback();
 				} catch (Exception ex) {
 					// Don't throw anything because Titan sometimes is just saying that the graph is already closed
 					LOGGER.warn("WARNING from final graphTransaction.rollback()", ex);
 				}
 			}
 			
-			if (g2 != null && !g2.isClosed()) {
+			if (g2 != null && g2.tx().isOpen()) {
 				// Any changes that worked correctly should have already done
 				// their commits.
 				try {
-					g2.rollback();
+					g2.tx().rollback();
 				} catch (Exception ex) {
 					// Don't throw anything because Titan sometimes is just saying that the graph is already closed
 					LOGGER.warn("WARNING from final graphTransaction2.rollback()", ex);
@@ -1665,7 +1663,7 @@ public class DataGrooming {
 	 * @return the array list
 	 */
 	private static List<String> checkAndProcessDupes(String transId,
-			String fromAppId, TitanTransaction g, GraphTraversalSource source, String version, String nType,
+			String fromAppId, Graph g, GraphTraversalSource source, String version, String nType,
 			List<Vertex> passedVertList, Boolean dupeFixOn,
 			Set<String> deleteCandidateList, Boolean singleCommits,
 			ArrayList<String> alreadyFoundDupeGroups, Loader loader ) {
@@ -1909,7 +1907,7 @@ public class DataGrooming {
 	 * @param singleCommits the single commits
 	 * @return the boolean
 	 */
-	private static Boolean deleteNonKeepersIfAppropriate(TitanTransaction g,
+	private static Boolean deleteNonKeepersIfAppropriate(Graph g,
 			String dupeInfoString, String vidToKeep,
 			Set<String> deleteCandidateList, Boolean singleCommits) {
 
@@ -1963,11 +1961,11 @@ public class DataGrooming {
 										long longVertId = Long
 												.parseLong(thisVid);
 										Vertex vtx = g
-												.getVertex(longVertId);
+												.traversal().V(longVertId).next();
 										vtx.remove();
 										if (singleCommits) {
 											// NOTE - the singleCommits option is not used in normal processing
-											g.commit();
+											g.tx().commit();
 											g = AAIGraph.getInstance().getGraph().newTransaction();
 										}
 									} catch (Exception e) {
@@ -2095,9 +2093,14 @@ public class DataGrooming {
 			retArr.add("No IN edges were found for this vertex. ");
 		}
 		while( eI.hasNext() ){
-			TitanEdge ed = (TitanEdge) eI.next();
+			Edge ed = eI.next();
 			String lab = ed.label();
-			Vertex vtx = ed.otherVertex(tVert);
+			Vertex vtx;
+			if (tVert.equals(ed.inVertex())) {
+				vtx = ed.outVertex();
+			} else {
+				vtx = ed.inVertex();
+			}
 			if( vtx == null ){
 				retArr.add(" >>> COULD NOT FIND VERTEX on the other side of this edge edgeId = " + ed.id() + " <<< ");
 			}
@@ -2114,9 +2117,14 @@ public class DataGrooming {
 			retArr.add("No OUT edges were found for this vertex. ");
 		}
 		while( eI.hasNext() ){
-			TitanEdge ed = (TitanEdge) eI.next();
+			Edge ed =  eI.next();
 			String lab = ed.label();
-			Vertex vtx = ed.otherVertex(tVert);
+			Vertex vtx;
+			if (tVert.equals(ed.inVertex())) {
+				vtx = ed.outVertex();
+			} else {
+				vtx = ed.inVertex();
+			}
 			if( vtx == null ){
 				retArr.add(" >>> COULD NOT FIND VERTEX on the other side of this edge edgeId = " + ed.id() + " <<< ");
 			}

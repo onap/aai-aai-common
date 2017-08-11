@@ -25,8 +25,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.strategy.verification.ReadOnlyStrategy;
+import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
-
 import org.openecomp.aai.dbmap.DBConnectionType;
 import org.openecomp.aai.introspection.Loader;
 import org.openecomp.aai.query.builder.GremlinTraversal;
@@ -36,8 +36,8 @@ import org.openecomp.aai.query.builder.TraversalQuery;
 import org.openecomp.aai.serialization.db.GraphSingleton;
 import org.openecomp.aai.serialization.engines.query.GraphTraversalQueryEngine;
 import org.openecomp.aai.serialization.engines.query.QueryEngine;
+
 import com.thinkaurelius.titan.core.TitanGraph;
-import com.thinkaurelius.titan.core.TitanTransaction;
 import com.thinkaurelius.titan.core.schema.TitanManagement;
 
 public abstract class TransactionalGraphEngine {
@@ -48,7 +48,7 @@ public abstract class TransactionalGraphEngine {
 	protected QueryStyle style = null;
 	protected final DBConnectionType connectionType;
 	protected final Loader loader;
-	protected TitanTransaction currentTx = null;
+	protected Graph currentTx = null;
 	protected GraphTraversalSource currentTraversal = null;
 	protected GraphTraversalSource readOnlyTraversal = null;
 	private final Admin admin;
@@ -184,7 +184,7 @@ public abstract class TransactionalGraphEngine {
 		return queryBuilder;
 	}
 	
-	public TitanTransaction startTransaction() {
+	public Graph startTransaction() {
 		if (this.tx() == null) {
 			this.currentTx = this.getGraph().newTransaction();
 			this.currentTraversal = this.tx().traversal();
@@ -195,7 +195,7 @@ public abstract class TransactionalGraphEngine {
 	
 	public void rollback() {
 		if (this.tx() != null) {
-			this.tx().rollback();
+			this.tx().tx().rollback();
 			this.currentTx = null;
 			this.currentTraversal = null;
 			this.readOnlyTraversal = null;
@@ -203,14 +203,14 @@ public abstract class TransactionalGraphEngine {
 	}
 	public void commit() {
 		if (this.tx() != null) {
-			this.tx().commit();
+			this.tx().tx().commit();
 			this.currentTx = null;
 			this.currentTraversal = null;
 			this.readOnlyTraversal = null;
 		}
 	}
 	
-	public TitanTransaction tx() {
+	public Graph tx() {
 		return this.currentTx;
 	}
 	

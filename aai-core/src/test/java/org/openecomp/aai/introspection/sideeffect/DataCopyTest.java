@@ -33,13 +33,13 @@ import java.net.URISyntaxException;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
 import org.openecomp.aai.db.props.AAIProperties;
 import org.openecomp.aai.dbmap.DBConnectionType;
 import org.openecomp.aai.exceptions.AAIException;
@@ -56,9 +56,9 @@ import org.openecomp.aai.serialization.engines.TitanDBEngine;
 import org.openecomp.aai.serialization.engines.TransactionalGraphEngine;
 import org.openecomp.aai.serialization.queryformats.QueryFormatTestHelper;
 import org.openecomp.aai.util.AAIConstants;
+
 import com.thinkaurelius.titan.core.TitanFactory;
 import com.thinkaurelius.titan.core.TitanGraph;
-import com.thinkaurelius.titan.core.TitanTransaction;
 
 @Ignore
 public class DataCopyTest {
@@ -118,7 +118,7 @@ public class DataCopyTest {
 		obj.setValue("model-version-id", "key2");
 		TransactionalGraphEngine spy = spy(dbEngine);
 		TransactionalGraphEngine.Admin adminSpy = spy(dbEngine.asAdmin());
-		TitanTransaction g = graph.newTransaction();
+		Graph g = graph.newTransaction();
 		GraphTraversalSource traversal = g.traversal();
 		when(spy.asAdmin()).thenReturn(adminSpy);
 		when(adminSpy.getTraversalSource()).thenReturn(traversal);
@@ -132,7 +132,7 @@ public class DataCopyTest {
 
 		assertEquals("value populated", "testValue", obj.getValue("persona-model-ver"));
 		
-		g.rollback();
+		g.tx().rollback();
 		
 		
 	}
@@ -147,7 +147,7 @@ public class DataCopyTest {
 		obj.setValue("persona-model-version", "testValue");
 		TransactionalGraphEngine spy = spy(dbEngine);
 		TransactionalGraphEngine.Admin adminSpy = spy(dbEngine.asAdmin());
-		TitanTransaction g = graph.newTransaction();
+		Graph g = graph.newTransaction();
 		GraphTraversalSource traversal = g.traversal();
 		when(spy.asAdmin()).thenReturn(adminSpy);
 		when(adminSpy.getTraversalSource()).thenReturn(traversal);
@@ -161,7 +161,7 @@ public class DataCopyTest {
 		
 		assertEquals("value populated", "key2", obj.getValue("model-version-id"));
 		
-		g.rollback();
+		g.tx().rollback();
 	}
 	
 	@Test
@@ -172,7 +172,7 @@ public class DataCopyTest {
 		System.out.println(obj.marshal(true));
 		TransactionalGraphEngine spy = spy(dbEngine);
 		TransactionalGraphEngine.Admin adminSpy = spy(dbEngine.asAdmin());
-		TitanTransaction g = graph.newTransaction();
+		Graph g = graph.newTransaction();
 		GraphTraversalSource traversal = g.traversal();
 		when(spy.tx()).thenReturn(g);
 		when(spy.asAdmin()).thenReturn(adminSpy);
@@ -186,7 +186,7 @@ public class DataCopyTest {
 		
 		assertEquals("nested value populated", "testValue", g.traversal().V().has("service-instance-id", "nested-instance-key").next().property("persona-model-version").orElse(""));
 
-		g.rollback();
+		g.tx().rollback();
 
 	}
 	
@@ -200,7 +200,7 @@ public class DataCopyTest {
 
 		TransactionalGraphEngine spy = spy(dbEngine);
 		TransactionalGraphEngine.Admin adminSpy = spy(dbEngine.asAdmin());
-		TitanTransaction g = graph.newTransaction();
+		Graph g = graph.newTransaction();
 		GraphTraversalSource traversal = g.traversal();
 		when(spy.asAdmin()).thenReturn(adminSpy);
 		when(adminSpy.getTraversalSource()).thenReturn(traversal);
@@ -224,7 +224,7 @@ public class DataCopyTest {
 
 		TransactionalGraphEngine spy = spy(dbEngine);
 		TransactionalGraphEngine.Admin adminSpy = spy(dbEngine.asAdmin());
-		TitanTransaction g = graph.newTransaction();
+		Graph g = graph.newTransaction();
 		GraphTraversalSource traversal = g.traversal();
 		when(spy.asAdmin()).thenReturn(adminSpy);
 		when(adminSpy.getTraversalSource()).thenReturn(traversal);
@@ -246,7 +246,7 @@ public class DataCopyTest {
 
 		TransactionalGraphEngine spy = spy(dbEngine);
 		TransactionalGraphEngine.Admin adminSpy = spy(dbEngine.asAdmin());
-		TitanTransaction g = graph.newTransaction();
+		Graph g = graph.newTransaction();
 		GraphTraversalSource traversal = g.traversal();
 		when(spy.asAdmin()).thenReturn(adminSpy);
 		when(adminSpy.getTraversalSource()).thenReturn(traversal);

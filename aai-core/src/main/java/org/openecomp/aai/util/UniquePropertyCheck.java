@@ -27,18 +27,17 @@ import java.util.UUID;
 
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Edge;
+import org.apache.tinkerpop.gremlin.structure.Graph;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
+import org.openecomp.aai.exceptions.AAIException;
 import org.slf4j.MDC;
 
-import org.openecomp.aai.exceptions.AAIException;
 import com.att.eelf.configuration.Configuration;
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
-import com.thinkaurelius.titan.core.TitanEdge;
 import com.thinkaurelius.titan.core.TitanFactory;
 import com.thinkaurelius.titan.core.TitanGraph;
-import com.thinkaurelius.titan.core.TitanTransaction;
-import com.thinkaurelius.titan.core.TitanVertex;
 
 
 
@@ -70,7 +69,7 @@ public class UniquePropertyCheck {
 				System.exit(1);
 		}
 	  	String propertyName = args[0];
-	  	TitanTransaction graph = null;
+	  	Graph graph = null;
 		
 		try {   
     		AAIConfig.init();
@@ -115,7 +114,7 @@ public class UniquePropertyCheck {
 	 * @param logger the logger
 	 * @return the boolean
 	 */
-	public static Boolean runTheCheckForUniqueness( String transId, String fromAppId, TitanTransaction graph, 
+	public static Boolean runTheCheckForUniqueness( String transId, String fromAppId, Graph graph, 
 			String propertyName, EELFLogger logger ){
 		
 		// Note - property can be found in more than one nodetype 
@@ -128,11 +127,10 @@ public class UniquePropertyCheck {
 	
 		int propCount = 0;
 		int dupeCount = 0;
-		Iterable <?> vertItr = graph.query().has(propertyName).vertices();
-		Iterator <?> vertItor = vertItr.iterator();
+		Iterator<Vertex> vertItor = graph.traversal().V().has(propertyName);
        	while( vertItor.hasNext() ){
        		propCount++;
-    		TitanVertex v = (TitanVertex)vertItor.next();
+    		Vertex v = vertItor.next();
     		String thisVid = v.id().toString();
     		Object val = (v.<Object>property(propertyName)).orElse(null);
     		if( valuesAndVidHash.containsKey(val) ){
@@ -174,7 +172,7 @@ public class UniquePropertyCheck {
 	    			for( int i = 0; i < vidArr.length; i++ ){
 	    				String vidString = vidArr[i];
 	    				Long idLong = Long.valueOf(vidString);
-	    				TitanVertex tvx = (TitanVertex)graph.getVertex(idLong);
+	    				Vertex tvx = graph.traversal().V(idLong).next();
 	    				showPropertiesAndEdges( TRANSID, FROMAPPID, tvx, logger );
 	    			}
 	    		}
@@ -185,7 +183,7 @@ public class UniquePropertyCheck {
     	} 
     	finally {
 	    	if( graph != null ){
-	    		graph.rollback();
+	    		graph.tx().rollback();
 	    	}
     	}
     	
@@ -202,7 +200,7 @@ public class UniquePropertyCheck {
 	 * @param tVert the t vert
 	 * @param logger the logger
 	 */
-	private static void showPropertiesAndEdges( String transId, String fromAppId, TitanVertex tVert,
+	private static void showPropertiesAndEdges( String transId, String fromAppId, Vertex tVert,
 			EELFLogger logger ){ 
 
 		if( tVert == null ){
@@ -232,9 +230,14 @@ public class UniquePropertyCheck {
 				logAndPrint(logger, "No edges were found for this vertex. ");
 			}
 			while( eI.hasNext() ){
-				TitanEdge ed = (TitanEdge) eI.next();
+				Edge ed = eI.next();
 				String lab = ed.label();
-				TitanVertex vtx = (TitanVertex) ed.otherVertex(tVert);
+				Vertex vtx;
+				if (tVert.equals(ed.inVertex())) {
+					vtx = ed.outVertex();
+				} else {
+					vtx = ed.inVertex();
+				}
 				if( vtx == null ){
 					logAndPrint(logger, " >>> COULD NOT FIND VERTEX on the other side of this edge edgeId = " + ed.id() + " <<< ");
 				}

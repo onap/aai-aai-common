@@ -28,9 +28,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.apache.tinkerpop.gremlin.structure.Vertex;
-
 import org.openecomp.aai.db.props.AAIProperties;
-import org.openecomp.aai.exceptions.AAIException;
 import org.openecomp.aai.introspection.Introspector;
 import org.openecomp.aai.introspection.Loader;
 import org.openecomp.aai.introspection.LoaderFactory;
@@ -39,6 +37,7 @@ import org.openecomp.aai.schema.enums.PropertyMetadata;
 import org.openecomp.aai.serialization.db.EdgeRule;
 import org.openecomp.aai.serialization.db.EdgeRules;
 import org.openecomp.aai.util.AAIConfig;
+
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 import com.google.common.collect.Multimap;
@@ -185,7 +184,7 @@ public class SchemaGenerator{
         String imsg = "-- About to call graphMgmt commit";
     	System.out.println(imsg);
     	LOGGER.info(imsg);
-
+    	
         graphMgmt.commit();
     }// End of loadSchemaIntoTitan()
 
