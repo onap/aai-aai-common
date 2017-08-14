@@ -1679,66 +1679,6 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  <xs:element name="vpe">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element name="vnf-id" type="xs:string">
-        </xs:element>
-        <xs:element name="vnf-name" type="xs:string">
-        </xs:element>
-        <xs:element name="vnf-name2" type="xs:string" minOccurs="0">
-        </xs:element>
-        <xs:element name="vnf-type" type="xs:string">
-        </xs:element>
-        <xs:element name="service-id" type="xs:string" minOccurs="0">
-        </xs:element>
-        <xs:element name="regional-resource-zone" type="xs:string" minOccurs="0">
-        </xs:element>
-        <xs:element name="prov-status" type="xs:string" minOccurs="0">
-        </xs:element>
-        <xs:element name="operational-state" type="xs:string" minOccurs="0">
-        </xs:element>
-        <xs:element name="license-key" type="xs:string" minOccurs="0">
-        </xs:element>
-        <xs:element name="equipment-role" type="xs:string" minOccurs="0">
-        </xs:element>
-        <xs:element name="orchestration-status" type="xs:string" minOccurs="0">
-        </xs:element>
-        <xs:element name="heat-stack-id" type="xs:string" minOccurs="0">
-        </xs:element>
-        <xs:element name="mso-catalog-key" type="xs:string" minOccurs="0">
-        </xs:element>
-        <xs:element name="ipv4-oam-address" type="xs:string" minOccurs="0">
-        </xs:element>
-        <xs:element name="ipv4-oam-gateway-address-prefix-length" type="xs:int" minOccurs="0">
-        </xs:element>
-        <xs:element name="ipv4-oam-gateway-address" type="xs:string" minOccurs="0">
-        </xs:element>
-        <xs:element name="v4-loopback0-ip-address" type="xs:string" minOccurs="0">
-        </xs:element>
-        <xs:element name="vlan-id-outer" type="xs:unsignedInt" minOccurs="0">
-        </xs:element>
-        <xs:element name="as-number" type="xs:string" minOccurs="0">
-        </xs:element>
-        <xs:element name="resource-version" type="xs:string" minOccurs="0">
-        </xs:element>
-        <xs:element name="summary-status" type="xs:string" minOccurs="0">
-        </xs:element>
-        <xs:element name="encrypted-access-flag" type="xs:boolean" minOccurs="0">
-        </xs:element>
-        <xs:element ref="tns:relationship-list" minOccurs="0"/>
-        <xs:element ref="tns:l-interfaces" minOccurs="0"/>
-        <xs:element ref="tns:lag-interfaces" minOccurs="0"/>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-  <xs:element name="vpes">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element ref="tns:vpe" minOccurs="0" maxOccurs="unbounded"/>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
   <xs:element name="vnfc">
     <xs:complexType>
       <xs:sequence>
@@ -2305,7 +2245,6 @@
         <xs:element ref="tns:vpls-pes" minOccurs="0"/>
         <xs:element ref="tns:multicast-configurations" minOccurs="0"/>
         <xs:element ref="tns:vces" minOccurs="0"/>
-        <xs:element ref="tns:vpes" minOccurs="0"/>
         <xs:element ref="tns:vnfcs" minOccurs="0"/>
         <xs:element ref="tns:l3-networks" minOccurs="0"/>
         <xs:element ref="tns:network-policies" minOccurs="0"/>

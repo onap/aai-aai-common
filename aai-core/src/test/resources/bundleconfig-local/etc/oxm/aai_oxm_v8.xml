@@ -553,7 +553,7 @@
 			<xml-properties>
 				<xml-property name="description" value="Logical interfaces, e.g., a vnic." />
 				<xml-property name="indexedProps" value="macaddr,interface-id,interface-name,network-name" />
-				<xml-property name="dependentOn" value="generic-vnf,p-interface,vserver,lag-interface" />
+				<xml-property name="dependentOn" value="generic-vnf,newvce,p-interface,vserver,lag-interface" />
 				<xml-property name="container" value="l-interfaces" />
 			</xml-properties>
 		</java-type>
@@ -915,7 +915,7 @@
 						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
 					</xml-properties>
 				</xml-element>
-				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.openecomp.org.v8.RelationshipList" />				
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.openecomp.org.v8.RelationshipList" />
 			</java-attributes>
 			<xml-properties>
 				<xml-property name="description" value="Openstack snapshot" />
@@ -1301,7 +1301,7 @@
 			<xml-properties>
 				<xml-property name="description" value="Link aggregate interface" />
 				<xml-property name="indexedProps" value="interface-name" />
-				<xml-property name="dependentOn" value="generic-vnf,pserver,pnf" />
+				<xml-property name="dependentOn" value="generic-vnf,pserver,vpls-pe,pnf" />
 				<xml-property name="container" value="lag-interfaces" />
 			</xml-properties>
 		</java-type>
@@ -1358,7 +1358,7 @@
 				<xml-element java-attribute="customers" name="customers" type="inventory.aai.openecomp.org.v8.Customers" />
 			</java-attributes>
 		</java-type>
-		
+
 		<java-type name="Customers">
 			<xml-properties>
 				<xml-property name="description" value="Collection of customer identifiers to provide linkage back to BSS information." />
@@ -1892,7 +1892,7 @@
 				<xml-property name="namespace" value="network" />
 			</xml-properties>
 		</java-type>
-		
+
 		<java-type name="CtagAssignments">
 			<xml-root-element name="ctag-assignments" />
 			<java-attributes>
@@ -2502,7 +2502,7 @@
 				<xml-element java-attribute="status" name="status" type="java.lang.String" />
 			</java-attributes>
 		</java-type>
-		
+
 		<java-type name="AaiInternal">
 			<xml-root-element name="aai-internal" />
 			<java-attributes>
@@ -2510,7 +2510,7 @@
 				<xml-element container-type="java.util.ArrayList" java-attribute="edgePropNames" name="edge-prop-names" type="inventory.aai.openecomp.org.v8.EdgePropNames" />
 			</java-attributes>
 		</java-type>
-		
+
 		<java-type name="ReservedPropNames">
 			<xml-properties>
 				<xml-property name="description" value="Internal map to define some reserved properties of a vertex" />
@@ -2527,7 +2527,7 @@
 				<xml-element java-attribute="sourceOfTruth" name="source-of-truth" type="java.lang.String" />
 			</java-attributes>
 		</java-type>
-		
+
 		<java-type name="EdgePropNames">
 			<!-- NOTE that the names of these properties are not consistent and are in mixed case and hyphen case for now -->
 			<xml-properties>
@@ -2546,7 +2546,7 @@
 				<xml-element java-attribute="SVC-INFRA-REV" name="SVC-INFRA-REV" type="java.lang.String" />
 			</java-attributes>
 		</java-type>
-		
+
 		<java-type name="Services">
 	   		<xml-properties>
 	               <xml-property name="description" value="Collection of service model definitions.  Likely to be deprecated in favor of models from SDC."/>
@@ -2556,7 +2556,7 @@
 	                <xml-element container-type="java.util.ArrayList" java-attribute="service" name="service" type="inventory.aai.openecomp.org.v8.Service" />
 	        </java-attributes>
         </java-type>
-		
+
 		<java-type name="Service">
 			<xml-root-element name="service" />
 			<java-attributes>
@@ -3038,7 +3038,7 @@
 				<xml-any-element java-attribute="propertyValue" lax="true" name="property-value" />
 			</java-attributes>
 		</java-type>
-		
+
 		<java-type name="SegmentationAssignments">
                         <xml-properties>
                                 <xml-property name="description" value="Collection of openstack segmentation assignments" />
@@ -3071,6 +3071,6 @@
                                 <xml-property name="container" value="segmentation-assignments" />
                         </xml-properties>
                 </java-type>
-		
+
 	</java-types>
 </xml-bindings>

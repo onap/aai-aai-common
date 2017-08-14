@@ -724,18 +724,18 @@
 					<xml-properties>
 						<xml-property name="description" value="Whether A&amp;AI should be managing this interface of not. Could have value like CUSTOMER" />
 					</xml-properties>
-				</xml-element>	
+				</xml-element>
 				<xml-element java-attribute="interfaceDescription" name="interface-description" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Human friendly text regarding this interface." />
 					</xml-properties>
-				</xml-element>			
+				</xml-element>
 				<xml-element java-attribute="isPortMirrored" name="is-port-mirrored" required="true" type="java.lang.Boolean">
 					<xml-properties>
 						<xml-property name="defaultValue" value="false"/>
 						<xml-property name="description" value="boolean indicatating whether or not port is a mirrored." />
 					</xml-properties>
-				</xml-element>					
+				</xml-element>
 				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
@@ -751,7 +751,7 @@
 					<xml-properties>
 						<xml-property name="description" value="Prov Status of the logical interface. Valid values [PREPROV/NVTPROV/PROV]." />
 					</xml-properties>
-				</xml-element>				
+				</xml-element>
 				<xml-element java-attribute="vlans" name="vlans" type="inventory.aai.onap.org.v11.Vlans" />
 				<xml-element java-attribute="sriovVfs" name="sriov-vfs" type="inventory.aai.onap.org.v11.SriovVfs" />
 				<xml-element java-attribute="lInterfaces" name="l-interfaces" type="inventory.aai.onap.org.v11.LInterfaces" />
@@ -762,7 +762,7 @@
 			<xml-properties>
 				<xml-property name="description" value="Logical interfaces, e.g., a vnic." />
 				<xml-property name="indexedProps" value="macaddr,interface-id,interface-name,network-name" />
-				<xml-property name="dependentOn" value="generic-vnf,newvce,vpe,p-interface,vserver,lag-interface" />
+				<xml-property name="dependentOn" value="generic-vnf,newvce,p-interface,vserver,lag-interface" />
 				<xml-property name="container" value="l-interfaces" />
 			</xml-properties>
 		</java-type>
@@ -960,7 +960,7 @@
 					<xml-properties>
 						<xml-property name="description" value="Whether customer is going to use this VLAN for backdoor connection to another customer premise device." />
 					</xml-properties>
-				</xml-element>					
+				</xml-element>
 				<xml-element java-attribute="vpnKey" name="vpn-key" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="This indicates the customers VPN ID associated with this vlan" />
@@ -981,7 +981,7 @@
 					<xml-properties>
 						<xml-property name="description" value="Prov Status of the VLAN configuration related to a logical interface. Valid values [PREPROV/NVTPROV/PROV]." />
 					</xml-properties>
-				</xml-element>			
+				</xml-element>
 				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v11.RelationshipList" />
 				<xml-element container-type="java.util.ArrayList" java-attribute="l3InterfaceIpv4AddressList" name="l3-interface-ipv4-address-list" type="inventory.aai.onap.org.v11.L3InterfaceIpv4AddressList" />
 				<xml-element container-type="java.util.ArrayList" java-attribute="l3InterfaceIpv6AddressList" name="l3-interface-ipv6-address-list" type="inventory.aai.onap.org.v11.L3InterfaceIpv6AddressList" />
@@ -1162,7 +1162,7 @@
 				<xml-property name="container" value="flavors" />
 			</xml-properties>
 		</java-type>
-		
+
 		<java-type name="Snapshots">
 			<xml-properties>
 				<xml-property name="description" value="Collection of openstack snapshots" />
@@ -1170,9 +1170,9 @@
 			<xml-root-element name="snapshots" />
 			<java-attributes>
 				<xml-element container-type="java.util.ArrayList" java-attribute="snapshot" name="snapshot" type="inventory.aai.onap.org.v11.Snapshot" />
-			</java-attributes>		
+			</java-attributes>
 		</java-type>
-		
+
 		<java-type name="Snapshot">
 			<xml-root-element name="snapshot" />
 			<java-attributes>
@@ -1240,9 +1240,9 @@
 				<xml-property name="indexedProps" value="application,snapshot-name,application-vendor,snapshot-id,application-version,prev-snapshot-id" />
 				<xml-property name="dependentOn" value="cloud-region" />
 				<xml-property name="container" value="snapshots" />
-			</xml-properties>	
+			</xml-properties>
 		</java-type>
-		
+
 		<java-type name="GroupAssignments">
 			<xml-properties>
 				<xml-property name="description" value="Collection of openstack group assignments" />
@@ -1252,7 +1252,7 @@
 				<xml-element container-type="java.util.ArrayList" java-attribute="groupAssignment" name="group-assignment" type="inventory.aai.onap.org.v11.GroupAssignment" />
 			</java-attributes>
 		</java-type>
-		
+
 		<java-type name="GroupAssignment">
 			<xml-root-element name="group-assignment" />
 			<java-attributes>
@@ -1265,7 +1265,7 @@
 					<xml-properties>
 						<xml-property name="description" value="Group type - the type of group this instance refers to" />
 					</xml-properties>
-				</xml-element>				
+				</xml-element>
 				<xml-element java-attribute="groupName" name="group-name" required="true" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Group name - name assigned to the group" />
@@ -1275,12 +1275,12 @@
 					<xml-properties>
 						<xml-property name="description" value="Group description - description of the group" />
 					</xml-properties>
-				</xml-element>	
+				</xml-element>
 				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
 					</xml-properties>
-				</xml-element>		
+				</xml-element>
 				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v11.RelationshipList" />
 			</java-attributes>
 			<xml-properties>
@@ -1291,7 +1291,7 @@
 				<xml-property name="dependentOn" value="cloud-region" />
 				<xml-property name="container" value="group-assignments" />
 			</xml-properties>
-		</java-type>			
+		</java-type>
 
 		<java-type name="Images">
 			<xml-properties>
@@ -1399,7 +1399,7 @@
 
 		<java-type name="DvsSwitches">
 			<xml-properties>
-				<xml-property name="description" value="Collection of digital virtual switch metadata used for vmWare VCEs and VPEs." />
+				<xml-property name="description" value="Collection of digital virtual switch metadata used for vmWare VCEs and GenericVnfs." />
 			</xml-properties>
 			<xml-root-element name="dvs-switches" />
 			<java-attributes>
@@ -1743,7 +1743,7 @@
 					<xml-properties>
 						<xml-property name="description" value="Human friendly text regarding this interface." />
 					</xml-properties>
-				</xml-element>	
+				</xml-element>
 				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
@@ -1785,8 +1785,8 @@
 			</java-attributes>
 			<xml-properties>
 				<xml-property name="description" value="Link aggregate interface" />
-				<xml-property name="indexedProps" value="interface-name,interface-id,interface-role" />
-				<xml-property name="dependentOn" value="generic-vnf,pserver,vpe,vpls-pe,pnf" />
+                <xml-property name="indexedProps" value="interface-name,interface-id,interface-role" />
+				<xml-property name="dependentOn" value="generic-vnf,pserver,vpls-pe" />
 				<xml-property name="container" value="lag-interfaces" />
 			</xml-properties>
 		</java-type>
@@ -2429,7 +2429,6 @@
 				<xml-element java-attribute="vplsPes" name="vpls-pes" type="inventory.aai.onap.org.v11.VplsPes" />
 				<xml-element java-attribute="multicastConfigurations" name="multicast-configurations" type="inventory.aai.onap.org.v11.MulticastConfigurations" />
 				<xml-element java-attribute="vces" name="vces" type="inventory.aai.onap.org.v11.Vces" />
-				<xml-element java-attribute="vpes" name="vpes" type="inventory.aai.onap.org.v11.Vpes" />
 				<xml-element java-attribute="vnfcs" name="vnfcs" type="inventory.aai.onap.org.v11.Vnfcs" />
 				<xml-element java-attribute="l3Networks" name="l3-networks" type="inventory.aai.onap.org.v11.L3Networks" />
 				<xml-element java-attribute="networkPolicies" name="network-policies" type="inventory.aai.onap.org.v11.NetworkPolicies" />
@@ -2439,9 +2438,6 @@
 				<xml-element java-attribute="pnfs" name="pnfs" type="inventory.aai.onap.org.v11.Pnfs" />
 				<xml-element java-attribute="physicalLinks" name="physical-links" type="inventory.aai.onap.org.v11.PhysicalLinks" />
 				<xml-element java-attribute="ipsecConfigurations" name="ipsec-configurations" type="inventory.aai.onap.org.v11.IpsecConfigurations" />
-				<xml-element java-attribute="routeTableReferences" name="route-table-references" type="inventory.aai.onap.org.v11.RouteTableReferences" />
-				<xml-element java-attribute="instanceGroups" name="instance-groups" type="inventory.aai.onap.org.v11.InstanceGroups" />
-				<xml-element java-attribute="zones" name="zones" type="inventory.aai.onap.org.v11.Zones" />
 			</java-attributes>
 		</java-type>
 
@@ -2689,7 +2685,7 @@
 					<xml-properties>
 						<xml-property name="description" value="The type of destinatination equipment. Could be Router, UCPE, etc." />
 					</xml-properties>
-				</xml-element>					
+				</xml-element>
 				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
@@ -2837,7 +2833,7 @@
 				</xml-element>
 				<xml-element java-attribute="ipv4OamAddress" name="ipv4-oam-address" type="java.lang.String">
 					<xml-properties>
-						<xml-property name="description" value="Address tail-f uses to configure vpe, also used for troubleshooting and is IP used for traps generated by VPE (v4-loopback0-ip-address)." />
+						<xml-property name="description" value="Address tail-f uses to configure generic-vnf, also used for troubleshooting and is IP used for traps generated by GenericVnf (v4-loopback0-ip-address)." />
 					</xml-properties>
 				</xml-element>
 				<xml-element java-attribute="equipmentRole" name="equipment-role" type="java.lang.String">
@@ -3141,146 +3137,7 @@
 			</xml-properties>
 		</java-type>
 
-		<java-type name="Vpes">
-			<xml-properties>
-				<xml-property name="description" value="Virtual provider edge router. In 1504, A&amp;AI will populate this object through an M&amp;P and tool provided to operations." />
-			</xml-properties>
-			<xml-root-element name="vpes" />
-			<java-attributes>
-				<xml-element container-type="java.util.ArrayList" java-attribute="vpe" name="vpe" type="inventory.aai.onap.org.v11.Vpe" />
-			</java-attributes>
-		</java-type>
 
-		<java-type name="Vpe">
-			<xml-root-element name="vpe" />
-			<java-attributes>
-				<xml-element java-attribute="vnfId" name="vnf-id" required="true" type="java.lang.String" xml-key="true">
-					<xml-properties>
-						<xml-property name="description" value="Unique id of VNF.  This is unique across the graph." />
-					</xml-properties>
-				</xml-element>
-				<xml-element java-attribute="vnfName" name="vnf-name" required="true" type="java.lang.String">
-					<xml-properties>
-						<xml-property name="description" value="Name of VNF." />
-					</xml-properties>
-				</xml-element>
-				<xml-element java-attribute="vnfName2" name="vnf-name2" type="java.lang.String">
-					<xml-properties>
-						<xml-property name="description" value="Alternate name of VNF." />
-					</xml-properties>
-				</xml-element>
-				<xml-element java-attribute="vnfType" name="vnf-type" required="true" type="java.lang.String">
-					<xml-properties>
-						<xml-property name="description" value="String capturing type of vnf, that was intended to identify the ASDC resource.  This field has been overloaded in service-specific ways and clients should expect changes to occur in the future to this field as ECOMP matures." />
-					</xml-properties>
-				</xml-element>
-				<xml-element java-attribute="serviceId" name="service-id" type="java.lang.String">
-					<xml-properties>
-						<xml-property name="description" value="Unique identifier of service.  Does not map strictly to ASDC services.  SOON TO BE DEPRECATED" />
-					</xml-properties>
-				</xml-element>
-				<xml-element java-attribute="regionalResourceZone" name="regional-resource-zone" type="java.lang.String">
-					<xml-properties>
-						<xml-property name="description" value="Regional way of organizing pservers, source of truth should define values" />
-					</xml-properties>
-				</xml-element>
-				<xml-element java-attribute="provStatus" name="prov-status" type="java.lang.String">
-					<xml-properties>
-						<xml-property name="description" value="Trigger for operational monitoring of this resource by Service Assurance systems." />
-					</xml-properties>
-				</xml-element>
-				<xml-element java-attribute="operationalStatus" name="operational-status" type="java.lang.String">
-					<xml-properties>
-						<xml-property name="description" value="Indicator for whether the resource is considered operational" />
-					</xml-properties>
-				</xml-element>
-				<xml-element java-attribute="licenseKey" name="license-key" type="java.lang.String">
-					<xml-properties>
-						<xml-property name="description" value="OBSOLETE -  do not use.  See child relationships." />
-					</xml-properties>
-				</xml-element>
-				<xml-element java-attribute="equipmentRole" name="equipment-role" type="java.lang.String">
-					<xml-properties>
-						<xml-property name="description" value="Client should send valid enumerated value" />
-					</xml-properties>
-				</xml-element>
-				<xml-element java-attribute="orchestrationStatus" name="orchestration-status" type="java.lang.String">
-					<xml-properties>
-						<xml-property name="description" value="Orchestration status of this VNF, mastered by MSO" />
-					</xml-properties>
-				</xml-element>
-				<xml-element java-attribute="heatStackId" name="heat-stack-id" type="java.lang.String">
-					<xml-properties>
-						<xml-property name="description" value="Heat stack id corresponding to this instance, managed by MSO" />
-					</xml-properties>
-				</xml-element>
-				<xml-element java-attribute="msoCatalogKey" name="mso-catalog-key" type="java.lang.String">
-					<xml-properties>
-						<xml-property name="description" value="Corresponds to the SDN-C catalog id used to configure this VCE" />
-					</xml-properties>
-				</xml-element>
-				<xml-element java-attribute="ipv4OamAddress" name="ipv4-oam-address" type="java.lang.String">
-					<xml-properties>
-						<xml-property name="description" value="Address tail-f uses to configure vpe, also used for troubleshooting and is IP used for traps generated by VPE (v4-loopback0-ip-address)." />
-					</xml-properties>
-				</xml-element>
-				<xml-element java-attribute="ipv4OamGatewayAddressPrefixLength" name="ipv4-oam-gateway-address-prefix-length" type="java.lang.Integer">
-					<xml-properties>
-						<xml-property name="description" value="Prefix length for oam-address" />
-					</xml-properties>
-				</xml-element>
-				<xml-element java-attribute="ipv4OamGatewayAddress" name="ipv4-oam-gateway-address" type="java.lang.String">
-					<xml-properties>
-						<xml-property name="description" value="Gateway address" />
-					</xml-properties>
-				</xml-element>
-				<xml-element java-attribute="v4Loopback0IpAddress" name="v4-loopback0-ip-address" type="java.lang.String">
-					<xml-properties>
-						<xml-property name="description" value="Loopback0 address" />
-					</xml-properties>
-				</xml-element>
-				<xml-element java-attribute="vlanIdOuter" name="vlan-id-outer" type="java.lang.Long">
-					<xml-properties>
-						<xml-property name="description" value="Temporary location for stag to get to VCE" />
-					</xml-properties>
-				</xml-element>
-				<xml-element java-attribute="asNumber" name="as-number" type="java.lang.String">
-					<xml-properties>
-						<xml-property name="description" value="as-number of the VPE" />
-					</xml-properties>
-				</xml-element>
-				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
-					<xml-properties>
-						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
-					</xml-properties>
-				</xml-element>
-				<xml-element java-attribute="summaryStatus" name="summary-status" type="java.lang.String">
-					<xml-properties>
-						<xml-property name="description" value="details regarding the vpe operation, PLEASE DISCONTINUE USE OF THIS FIELD." />
-					</xml-properties>
-				</xml-element>
-				<xml-element java-attribute="encryptedAccessFlag" name="encrypted-access-flag" type="java.lang.Boolean">
-					<xml-properties>
-						<xml-property name="description" value="indicates whether vpe access uses SSH" />
-					</xml-properties>
-				</xml-element>
-				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v11.RelationshipList" />
-				<xml-element java-attribute="lInterfaces" name="l-interfaces" type="inventory.aai.onap.org.v11.LInterfaces" />
-				<xml-element java-attribute="lagInterfaces" name="lag-interfaces" type="inventory.aai.onap.org.v11.LagInterfaces" />
-				<xml-element java-attribute="licenses" name="licenses" type="inventory.aai.onap.org.v11.Licenses" />
-				<xml-element java-attribute="entitlements" name="entitlements" type="inventory.aai.onap.org.v11.Entitlements" />
-			</java-attributes>
-			<xml-properties>
-				<xml-property name="description" value="Relationship-list must include related to info for complex." />
-				<xml-property name="nameProps" value="vnf-name" />
-				<xml-property name="indexedProps" value="vnf-name,vnf-name2,vnf-type,heat-stack-id,vnf-id,regional-resource-zone,prov-status,service-id" />
-				<xml-property name="searchable" value="vnf-id,vnf-name,vnf-name2" />
-				<xml-property name="uniqueProps" value="vnf-id" />
-				<xml-property name="container" value="vpes" />
-				<xml-property name="namespace" value="network" />
-				<xml-property name="extends" value="vnf" />
-			</xml-properties>
-		</java-type>
 
 		<java-type name="Vnfcs">
 			<xml-properties>
@@ -3681,7 +3538,7 @@
 					<xml-properties>
 						<xml-property name="description" value="role of the subnet, referenced when assigning IPs" />
 					</xml-properties>
-				</xml-element>			
+				</xml-element>
 				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
@@ -3941,17 +3798,17 @@
 					<xml-properties>
 						<xml-property name="description" value="English description of Network function that the specific VNF deployment is providing" />
 					</xml-properties>
-				</xml-element>	
+				</xml-element>
 				<xml-element java-attribute="nfRole" name="nf-role" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="role in the network that this model will be providing" />
 					</xml-properties>
-				</xml-element>	
+				</xml-element>
 				<xml-element java-attribute="nfNamingCode" name="nf-naming-code" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="string assigned to this model used for naming purposes" />
 					</xml-properties>
-				</xml-element>	
+				</xml-element>
 				<xml-element java-attribute="selflink" name="selflink" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Path to the controller object." />
@@ -4190,12 +4047,12 @@
 				</xml-element>
 				<xml-element java-attribute="ipv4OamAddress" name="ipv4-oam-address" type="java.lang.String">
 					<xml-properties>
-						<xml-property name="description" value="Address tail-f uses to configure vpe, also used for troubleshooting and is IP used for traps generated by VPE (v4-loopback0-ip-address)." />
+						<xml-property name="description" value="Address tail-f uses to configure generic-vnf, also used for troubleshooting and is IP used for traps generated by GenericVnf (v4-loopback0-ip-address)." />
 					</xml-properties>
 				</xml-element>
 				<xml-element java-attribute="equipmentRole" name="equipment-role" type="java.lang.String">
 					<xml-properties>
-						<xml-property name="description" value="Client should send valid enumerated value, e.g., VPE." />
+						<xml-property name="description" value="Client should send valid enumerated value." />
 					</xml-properties>
 				</xml-element>
 				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
@@ -4428,7 +4285,7 @@
 					<xml-properties>
 						<xml-property name="description" value="Name of the service Provider on this link." />
 					</xml-properties>
-				</xml-element>					
+				</xml-element>
 				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
@@ -4736,7 +4593,7 @@
 				<xml-element container-type="java.util.ArrayList" java-attribute="modelVer" name="model-ver" type="inventory.aai.onap.org.v11.ModelVer" />
 			</java-attributes>
 		</java-type>
-		
+
 		<java-type name="ModelVer">
 			<xml-root-element name="model-ver" />
 			<xml-properties>
@@ -5151,7 +5008,7 @@
 				<xml-any-element container-type="java.util.ArrayList" java-attribute="any" lax="true" name="any" />
 			</java-attributes>
 		</java-type>
-		
+
 		<java-type name="SecondaryFilts">
 			<xml-properties>
 				<xml-property name="description" value="SecondaryFilts for performing a named-query or model query" />
@@ -5161,7 +5018,7 @@
 				<xml-element container-type="java.util.ArrayList" java-attribute="secondaryFilt" name="secondary-filt" type="inventory.aai.onap.org.v11.SecondaryFilt" />
 			</java-attributes>
 		</java-type>
-		
+
 		<java-type name="SecondaryFilt">
 			<xml-properties>
 				<xml-property name="description" value="SecondaryFilt for performing a named-query or model query" />
@@ -5235,7 +5092,7 @@
 				<xml-element java-attribute="propertyValue" name="property-value" type="java.lang.String" />
 			</java-attributes>
 		</java-type>
-		
+
 		<java-type name="RouteTableReferences">
 			<xml-properties>
 				<xml-property name="description" value="Collection of openstack route table references" />
@@ -5245,7 +5102,7 @@
 				<xml-element container-type="java.util.ArrayList" java-attribute="routeTableReference" name="route-table-reference" type="inventory.aai.onap.org.v11.RouteTableReference" />
 			</java-attributes>
 		</java-type>
-		
+
 		<java-type name="RouteTableReference">
 			<xml-root-element name="route-table-reference" />
 			<java-attributes>
@@ -5266,7 +5123,7 @@
 				</xml-element>
 				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v11.RelationshipList" />
 			</java-attributes>
-			
+
 			<xml-properties>
 				<xml-property name="description" value="Openstack route table reference." />
 				<xml-property name="nameProps" value="route-table-reference-fqdn" />
@@ -5276,7 +5133,7 @@
 				<xml-property name="namespace" value="network" />
 			</xml-properties>
 		</java-type>
-		
+
 		<java-type name="InstanceGroups">
 			<xml-properties>
 				<xml-property name="description" value="Collection of openstack route table references" />
@@ -5286,7 +5143,7 @@
 				<xml-element container-type="java.util.ArrayList" java-attribute="instanceGroup" name="instance-group" type="inventory.aai.onap.org.v11.InstanceGroup" />
 			</java-attributes>
 		</java-type>
-		
+
 		<java-type name="InstanceGroup">
 			<xml-root-element name="instance-group" />
 			<java-attributes>
@@ -5334,7 +5191,7 @@
 				</xml-element>
 				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v11.RelationshipList" />
 			</java-attributes>
-			
+
 			<xml-properties>
 				<xml-property name="description" value="General mechanism for grouping instances" />
 				<xml-property name="nameProps" value="description" />
@@ -5345,7 +5202,7 @@
 				<xml-property name="namespace" value="network" />
 			</xml-properties>
 		</java-type>
-		
+
 
 		<java-type name="SegmentationAssignments">
 			<xml-properties>
@@ -5356,7 +5213,7 @@
 				<xml-element container-type="java.util.ArrayList" java-attribute="segmentationAssignment" name="segmentation-assignment" type="inventory.aai.onap.org.v11.SegmentationAssignment" />
 			</java-attributes>
 		</java-type>
-				
+
 		<java-type name="SegmentationAssignment">
 			<xml-root-element name="segmentation-assignment" />
 			<java-attributes>
@@ -5379,7 +5236,7 @@
 				<xml-property name="container" value="segmentation-assignments" />
 			</xml-properties>
 		</java-type>
-		
+
 		<java-type name="AllottedResources">
 			<xml-properties>
 				<xml-property name="description" value="This object is used to store slices of services being offered" />
@@ -5389,7 +5246,7 @@
 				<xml-element container-type="java.util.ArrayList" java-attribute="allottedResource" name="allotted-resource" type="inventory.aai.onap.org.v11.AllottedResource" />
 			</java-attributes>
 		</java-type>
-		
+
 		<java-type name="AllottedResource">
 			<xml-root-element name="allotted-resource" />
 			<java-attributes>
@@ -5459,7 +5316,7 @@
 				<xml-element java-attribute="tunnelXconnects" name="tunnel-xconnects" type="inventory.aai.onap.org.v11.TunnelXconnects" />
 				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v11.RelationshipList" />
 			</java-attributes>
-			
+
 			<xml-properties>
 				<xml-property name="description" value="Represents a slice or partial piece of a resource that gets separately allotted" />
 				<xml-property name="nameProps" value="description" />
@@ -5469,8 +5326,8 @@
 				<xml-property name="container" value="allotted-resources" />
 				<!--  <xml-property name="namespace" value="network" /> -->
 			</xml-properties>
-		</java-type>	
-		
+		</java-type>
+
 		<java-type name="TunnelXconnects">
 			<xml-properties>
 				<xml-property name="description" value="This object is used to store the specific tunnel cross connect aspects of an allotted resource" />
@@ -5480,7 +5337,7 @@
 				<xml-element container-type="java.util.ArrayList" java-attribute="tunnelXconnect" name="tunnel-xconnect" type="inventory.aai.onap.org.v11.TunnelXconnect" />
 			</java-attributes>
 		</java-type>
-		
+
 		<java-type name="TunnelXconnect">
 			<xml-root-element name="tunnel-xconnect" />
 			<java-attributes>
@@ -5516,7 +5373,7 @@
 				</xml-element>
 				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v11.RelationshipList" />
 			</java-attributes>
-			
+
 			<xml-properties>
 				<xml-property name="description" value="Represents the specifics of a tunnel cross connect piece of a resource that gets separately allotted" />
 				<xml-property name="uniqueProps" value="id" />
@@ -5526,7 +5383,7 @@
 				<!--  <xml-property name="namespace" value="network" /> -->
 			</xml-properties>
 		</java-type>
-		
+
 		<java-type name="Entitlements">
 			<xml-properties>
 				<xml-property name="description" value="Entitlements, keyed by group-uuid and resource-uuid, related to license management" />
@@ -5536,7 +5393,7 @@
 				<xml-element container-type="java.util.ArrayList" java-attribute="entitlement" name="entitlement" type="inventory.aai.onap.org.v11.Entitlement" />
 			</java-attributes>
 		</java-type>
-				
+
 		<java-type name="Entitlement">
 			<xml-root-element name="entitlement" />
 			<java-attributes>
@@ -5564,8 +5421,8 @@
 				<xml-property name="container" value="entitlements" />
 			</xml-properties>
 		</java-type>
-		
-		
+
+
 		<java-type name="Licenses">
 			<xml-properties>
 				<xml-property name="description" value="Licenses to be allocated across resources, keyed by group-uuid and resource-uuid, related to license management" />
@@ -5575,7 +5432,7 @@
 				<xml-element container-type="java.util.ArrayList" java-attribute="license" name="license" type="inventory.aai.onap.org.v11.License" />
 			</java-attributes>
 		</java-type>
-				
+
 		<java-type name="License">
 			<xml-root-element name="license" />
 			<java-attributes>
@@ -5603,7 +5460,7 @@
 				<xml-property name="container" value="licenses" />
 			</xml-properties>
 		</java-type>
-		
+
 		<java-type name="Vnf">
 			<xml-root-element name="vnf"/>
 			<java-attributes>
@@ -5617,11 +5474,11 @@
 				<xml-property name="description" value="Abstract vnf class" />
 				<xml-property name="indexedProps" value="vnf-id" />
 				<xml-property name="uniqueProps" value="vnf-id" />
-				<xml-property name="inheritors" value="vce,vpe,generic-vnf" />
+				<xml-property name="inheritors" value="vce,generic-vnf" />
 				<xml-property name="abstract" value="true" />
 			</xml-properties>
 		</java-type>
-		
+
 		<java-type name="Zones">
 			<xml-properties>
 				<xml-property name="description" value="Collection of zones" />
