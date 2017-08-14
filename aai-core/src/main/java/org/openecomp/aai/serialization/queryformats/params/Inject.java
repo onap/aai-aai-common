@@ -18,13 +18,17 @@
  * ============LICENSE_END=========================================================
  */
 
-package org.openecomp.aai.serialization.queryformats;
+package org.openecomp.aai.serialization.queryformats.params;
 
-public enum Format {
-	graphson,
-	pathed, id, resource,
-	simple,
-	resource_and_url,
-	console,
-	raw
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Inject {
+
+	/**
+	 * The way the query parameter appears in the URI
+	 * @return
+	 */
+	String name();
 }

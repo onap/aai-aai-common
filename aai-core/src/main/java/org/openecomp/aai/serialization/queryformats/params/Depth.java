@@ -18,13 +18,11 @@
  * ============LICENSE_END=========================================================
  */
 
-package org.openecomp.aai.serialization.queryformats;
+package org.openecomp.aai.serialization.queryformats.params;
 
-public enum Format {
-	graphson,
-	pathed, id, resource,
-	simple,
-	resource_and_url,
-	console,
-	raw
+@Inject(name = "depth")
+public interface Depth<T> {
+
+	@Setter
+	public T depth(Integer depth);
 }

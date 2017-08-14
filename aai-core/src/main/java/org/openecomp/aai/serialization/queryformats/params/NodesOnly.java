@@ -18,13 +18,11 @@
  * ============LICENSE_END=========================================================
  */
 
-package org.openecomp.aai.serialization.queryformats;
+package org.openecomp.aai.serialization.queryformats.params;
 
-public enum Format {
-	graphson,
-	pathed, id, resource,
-	simple,
-	resource_and_url,
-	console,
-	raw
+@Inject(name = "nodesOnly")
+public interface NodesOnly<T> {
+
+	@Setter
+	public T nodesOnly(Boolean nodesOnly);
 }

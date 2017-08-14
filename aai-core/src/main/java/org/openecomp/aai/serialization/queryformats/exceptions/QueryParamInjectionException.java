@@ -18,13 +18,23 @@
  * ============LICENSE_END=========================================================
  */
 
-package org.openecomp.aai.serialization.queryformats;
+package org.openecomp.aai.serialization.queryformats.exceptions;
 
-public enum Format {
-	graphson,
-	pathed, id, resource,
-	simple,
-	resource_and_url,
-	console,
-	raw
+import org.openecomp.aai.exceptions.AAIException;
+
+public class QueryParamInjectionException extends AAIException {
+
+	private static final long serialVersionUID = -5575661036426538012L;
+
+	public QueryParamInjectionException(String message) {
+		super("AAI_4017", message);
+	}
+
+	public QueryParamInjectionException(Throwable cause) {
+		super("AAI_4017",cause);
+	}
+
+	public QueryParamInjectionException(String message, Throwable cause) {
+		super("AAI_4017", cause, message);
+	}
 }
