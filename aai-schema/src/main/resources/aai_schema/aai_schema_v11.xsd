@@ -2897,11 +2897,11 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
     <xs:complexType>
       <xs:annotation>
         <xs:appinfo>
-          <annox:annotate target="class">@org.openecomp.aai.annotations.Metadata(description="Image object that pertain to a VNF that doesn't have associated vservers.  This is a kludge.",indexedProps="application,att-uuid,application-vendor,application-version",uniqueProps="att-uuid",container="vnf-images",namespace="service-design-and-creation")</annox:annotate>
+          <annox:annotate target="class">@org.openecomp.aai.annotations.Metadata(description="Image object that pertain to a VNF that doesn't have associated vservers.  This is a kludge.",indexedProps="application,vnf-image-uuid,application-vendor,application-version",uniqueProps="vnf-image-uuid",container="vnf-images",namespace="service-design-and-creation")</annox:annotate>
         </xs:appinfo>
       </xs:annotation>
       <xs:sequence>
-        <xs:element name="att-uuid" type="xs:string">
+        <xs:element name="vnf-image-uuid" type="xs:string">
           <xs:annotation>
             <xs:appinfo>
               <annox:annotate target="field">@org.openecomp.aai.annotations.Metadata(isKey=true,description="Unique ID of this asset")</annox:annotate>
@@ -5624,7 +5624,7 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
         <xs:element name="nf-type" type="xs:string" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
-              <annox:annotate target="field">@org.openecomp.aai.annotations.Metadata(description="Generic description of the type of NF")</annox:annotate>
+              <annox:annotate target="field">@org.openecomp.aai.annotations.Metadata(description="Generic description of the type of NF",suggestibleOnSearch="true")</annox:annotate>
             </xs:appinfo>
           </xs:annotation>
         </xs:element>

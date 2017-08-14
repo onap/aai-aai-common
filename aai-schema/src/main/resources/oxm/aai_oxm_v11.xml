@@ -2290,7 +2290,7 @@
 		<java-type name="VnfImage">
 			<xml-root-element name="vnf-image" />
 			<java-attributes>
-				<xml-element java-attribute="attUuid" name="att-uuid" required="true" type="java.lang.String" xml-key="true">
+				<xml-element java-attribute="vnfImageUuid" name="vnf-image-uuid" required="true" type="java.lang.String" xml-key="true">
 					<xml-properties>
 						<xml-property name="description" value="Unique ID of this asset" />
 					</xml-properties>
@@ -2324,8 +2324,8 @@
 			</java-attributes>
 			<xml-properties>
 				<xml-property name="description" value="Image object that pertain to a VNF that doesn't have associated vservers.  This is a kludge." />
-				<xml-property name="indexedProps" value="application,att-uuid,application-vendor,application-version" />
-				<xml-property name="uniqueProps" value="att-uuid" />
+				<xml-property name="indexedProps" value="application,vnf-image-uuid,application-vendor,application-version" />
+				<xml-property name="uniqueProps" value="vnf-image-uuid" />
 				<xml-property name="container" value="vnf-images" />
 				<xml-property name="namespace" value="service-design-and-creation" />
 			</xml-properties>
