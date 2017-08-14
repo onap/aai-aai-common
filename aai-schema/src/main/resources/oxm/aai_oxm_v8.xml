@@ -2073,6 +2073,7 @@
 				<xml-element java-attribute="vnfImageUuid" name="vnf-image-uuid" required="true" type="java.lang.String" xml-key="true">
 					<xml-properties>
 						<xml-property name="description" value="Unique ID of this asset" />
+						<xml-property name="dbAlias" value="vnf-image-uuid" />
 					</xml-properties>
 				</xml-element>
 				<xml-element java-attribute="application" name="application" required="true" type="java.lang.String">
