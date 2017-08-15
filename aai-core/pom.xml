@@ -439,7 +439,7 @@
 		<dependency>
 			<groupId>com.att.nsa</groupId>
 			<artifactId>dmaapClient</artifactId>
-			<version>0.2.12</version>
+			<version>0.2.13</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.camel</groupId>
