@@ -29,6 +29,7 @@ import javax.ws.rs.core.UriBuilder;
 import javax.xml.bind.JAXBException;
 
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import org.openecomp.aai.exceptions.AAIException;
@@ -38,7 +39,7 @@ import org.openecomp.aai.introspection.ModelType;
 import org.openecomp.aai.introspection.Version;
 import org.openecomp.aai.restcore.HttpMethod;
 
-
+@Ignore
 public class URIToExtensionInformationTest {
 
 	private Loader v8Loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.v8);

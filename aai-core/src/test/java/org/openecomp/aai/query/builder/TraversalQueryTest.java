@@ -72,7 +72,8 @@ public class TraversalQueryTest {
 		assertEquals("they are equal", expected, tQ.getQuery());
 		
 	}
-	
+
+	@Ignore
 	@Test
 	public void traversalClones() throws UnsupportedEncodingException, AAIException, URISyntaxException {
 		TraversalQuery<Vertex> tQ = new TraversalQuery<>(loader, g);

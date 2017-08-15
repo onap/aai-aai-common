@@ -47,7 +47,7 @@ import org.openecomp.aai.introspection.Version;
 import org.openecomp.aai.introspection.exceptions.AAIUnknownObjectException;
 
 
-
+@Ignore
 public class URIToObjectTest {
 
 	private Version version = Version.v8;

@@ -43,6 +43,7 @@ import org.openecomp.aai.serialization.engines.TitanDBEngine;
 import org.openecomp.aai.serialization.engines.TransactionalGraphEngine;
 
 
+@Ignore
 public class LegacyQueryTest {
 	private ModelInjestor injestor = ModelInjestor.getInstance();
 	private TransactionalGraphEngine dbEngine =
