@@ -2170,6 +2170,16 @@
 						<xml-property name="description" value="This field will store a name assigned to the service-instance." />
 					</xml-properties>
 				</xml-element>
+				<xml-element java-attribute="serviceType" name="service-type" required="false" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="String capturing type of service." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="serviceRole" name="service-role" required="false" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="String capturing the service role." />
+					</xml-properties>
+				</xml-element>
 				<xml-element java-attribute="environmentContext" name="environment-context" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="This field will store the environment context assigned to the service-instance." />
@@ -2474,6 +2484,12 @@
 						<xml-property name="description" value="e.g., evc-name, or vnf-nameA_interface-nameA_vnf-nameZ_interface-nameZ" />
 					</xml-properties>
 				</xml-element>
+				<xml-element default-value="false" required="true" java-attribute="inMaint" name="in-maint" type="java.lang.Boolean">
+					<xml-properties>
+						<xml-property name="defaultValue" value="false"/>
+						<xml-property name="description" value="used to indicate whether or not this object is in maintenance mode (maintenance mode = true). This field (in conjunction with prov-status) is used to suppress alarms and vSCL on VNFs/VMs." />
+					</xml-properties>
+				</xml-element>
 				<xml-element java-attribute="linkType" name="link-type" required="true" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Type of logical link, e.g., evc" />
@@ -2576,7 +2592,7 @@
 			</java-attributes>
 			<xml-properties>
 				<xml-property name="description" value="Logical links generally connect l-interfaces but are used to express logical connectivity between two points" />
-				<xml-property name="indexedProps" value="link-name,model-invariant-id,model-version-id,widget-model-id,widget-model-version,link-id,prov-status,circuit-id,purpose" />
+				<xml-property name="indexedProps" value="link-name,model-invariant-id,in-maint,model-version-id,widget-model-id,widget-model-version,link-id,prov-status,circuit-id,purpose" />
 				<xml-property name="uniqueProps" value="link-id" />
 				<xml-property name="container" value="logical-links" />
 				<xml-property name="namespace" value="network" />
