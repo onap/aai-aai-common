@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "9a437d4f_98ed99f2",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 317,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2017-08-15T14:29:49Z",
+      "side": 1,
+      "message": "We need some sort of containment here, like have AuthInfo as the outer container and AuthInfoItem as the actual widget type.",
+      "revId": "280055d271b78d476009c2037e159df2627dc841",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a437d4f_b58f4875",
         "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
         "patchSetId": 1
@@ -42,6 +59,23 @@
         "endLine": 422,
         "endChar": 105
       },
+      "revId": "280055d271b78d476009c2037e159df2627dc841",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_38dd8d43",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 436,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2017-08-15T14:29:49Z",
+      "side": 1,
+      "message": "The defaultTenant should not be a java-type, but a new edge which is allowed between the tenant and auth-info node types",
       "revId": "280055d271b78d476009c2037e159df2627dc841",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
