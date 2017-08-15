@@ -6,7 +6,7 @@
 			"label": "groupsResourcesIn",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "!${direction}"
@@ -17,7 +17,7 @@
 			"label": "uses",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "!${direction}"
@@ -28,7 +28,7 @@
 			"label": "supportsServiceCapability",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "!${direction}"
@@ -39,7 +39,7 @@
 			"label": "locatedIn",
 			"direction": "OUT",
 			"multiplicity": "Many2One",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "!${direction}"
@@ -50,7 +50,7 @@
 			"label": "uses",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -61,7 +61,7 @@
 			"label": "has",
 			"direction": "OUT",
 			"multiplicity": "One2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "!${direction}",
 			"prevent-delete": "${direction}"
@@ -72,7 +72,7 @@
 			"label": "has",
 			"direction": "OUT",
 			"multiplicity": "One2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "${direction}"
@@ -83,7 +83,7 @@
 			"label": "has",
 			"direction": "OUT",
 			"multiplicity": "One2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "${direction}"
@@ -94,7 +94,7 @@
 			"label": "has",
 			"direction": "OUT",
 			"multiplicity": "One2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "${direction}"
@@ -105,7 +105,7 @@
 			"label": "has",
 			"direction": "OUT",
 			"multiplicity": "One2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "${direction}"
@@ -116,7 +116,7 @@
 			"label": "has",
 			"direction": "OUT",
 			"multiplicity": "One2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "${direction}"
@@ -127,8 +127,7 @@
 			"label": "has",
 			"direction": "OUT",
 			"multiplicity": "One2Many",
-			"contains": "${direction}",
-			"uses-resource": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "${direction}"
@@ -139,7 +138,7 @@
 			"label": "has",
 			"direction": "OUT",
 			"multiplicity": "One2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "${direction}"
@@ -150,7 +149,7 @@
 			"label": "has",
 			"direction": "OUT",
 			"multiplicity": "One2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "${direction}"
@@ -161,7 +160,7 @@
 			"label": "isMemberOf",
 			"direction": "OUT",
 			"multiplicity": "Many2One",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -172,7 +171,7 @@
 			"label": "hasCtagPool",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -183,7 +182,7 @@
 			"label": "usesL3Network",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE"
@@ -194,7 +193,7 @@
 			"label": "supportsAvailabilityZone",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "!${direction}"
@@ -205,7 +204,7 @@
 			"label": "subscribesTo",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "!${direction}",
 			"prevent-delete": "NONE"
@@ -216,7 +215,7 @@
 			"label": "existsIn",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "!${direction}"
@@ -227,7 +226,7 @@
 			"label": "hasLInterface",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE"
@@ -238,7 +237,7 @@
 			"label": "hasAvailabilityZone",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "!${direction}"
@@ -249,7 +248,7 @@
 			"label": "hasLAGInterface",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE"
@@ -260,8 +259,7 @@
 			"label": "usesL3Network",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
-			"uses-resource": "${direction}",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE"
@@ -272,8 +270,7 @@
 			"label": "runsOnPserver",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
-			"uses-resource": "${direction}",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "!${direction}"
@@ -284,7 +281,7 @@
 			"label": "usesVnfImage",
 			"direction": "OUT",
 			"multiplicity": "Many2One",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "!${direction}"
@@ -295,8 +292,7 @@
 			"label": "runsOnVserver",
 			"direction": "OUT",
 			"multiplicity": "One2Many",
-			"contains": "NONE",
-			"uses-resource": "${direction}",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE"
@@ -307,8 +303,7 @@
 			"label": "hasInstance",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
-			"uses-resource": "${direction}",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE"
@@ -319,7 +314,7 @@
 			"label": "hasSitePairSet",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -330,7 +325,7 @@
 			"label": "hasNetworkProfile",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -341,7 +336,7 @@
 			"label": "has",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -352,21 +347,10 @@
 			"label": "has",
 			"direction": "OUT",
 			"multiplicity": "One2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "!${direction}"
-		},
-		{
-			"from": "image",
-			"to": "metadata",
-			"label": "hasMetaData",
-			"direction": "OUT",
-			"multiplicity": "Many2Many",
-			"contains": "${direction}",
-			"delete-other-v": "NONE",
-			"SVC-INFRA": "NONE",
-			"prevent-delete": "NONE"
 		},
 		{
 			"from": "image",
@@ -374,7 +358,7 @@
 			"label": "hasMetaDatum",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -385,7 +369,7 @@
 			"label": "hasIpAddress",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE"
@@ -396,7 +380,7 @@
 			"label": "hasIpAddress",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE"
@@ -407,7 +391,7 @@
 			"label": "usesLogicalLink",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "${direction}",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE"
@@ -418,7 +402,7 @@
 			"label": "hasVlan",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -429,7 +413,7 @@
 			"label": "has",
 			"direction": "OUT",
 			"multiplicity": "One2One",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -440,7 +424,7 @@
 			"label": "isMemberOf",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE"
@@ -451,7 +435,7 @@
 			"label": "isMemberOf",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE"
@@ -462,10 +446,10 @@
 			"label": "isMemberOf",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
-			"prevent-delete": "!${direction}"
+			"prevent-delete": "NONE"
 		},
 		{
 			"from": "l3-interface-ipv6-address-list",
@@ -473,10 +457,10 @@
 			"label": "isMemberOf",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
-			"prevent-delete": "!${direction}"
+			"prevent-delete": "NONE"
 		},
 		{
 			"from": "l3-network",
@@ -484,7 +468,7 @@
 			"label": "usesVpnBinding",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "!${direction}"
@@ -495,7 +479,7 @@
 			"label": "hasSubnet",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "!${direction}",
 			"prevent-delete": "NONE"
@@ -506,7 +490,7 @@
 			"label": "hasInstance",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "!${direction}",
 			"prevent-delete": "NONE"
@@ -517,7 +501,7 @@
 			"label": "hasCtagAssignment",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE"
@@ -528,7 +512,7 @@
 			"label": "uses",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE"
@@ -539,7 +523,7 @@
 			"label": "has",
 			"direction": "OUT",
 			"multiplicity": "One2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -550,7 +534,7 @@
 			"label": "uses",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -561,8 +545,7 @@
 			"label": "usesLAGLink",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
-			"uses-resource": "${direction}",
+			"contains-other-v": "NONE",
 			"delete-other-v": "${direction}",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE"
@@ -573,8 +556,7 @@
 			"label": "usesPInterface",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
-			"uses-resource": "${direction}",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE"
@@ -585,7 +567,7 @@
 			"label": "hasLInterface",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE"
@@ -596,8 +578,7 @@
 			"label": "usesLAGLink",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
-			"uses-resource": "${direction}",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE"
@@ -608,7 +589,7 @@
 			"label": "bridgedTo",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -619,7 +600,7 @@
 			"label": "uses",
 			"direction": "OUT",
 			"multiplicity": "One2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE"
@@ -630,7 +611,7 @@
 			"label": "has",
 			"direction": "OUT",
 			"multiplicity": "One2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -641,7 +622,7 @@
 			"label": "startsWith",
 			"direction": "OUT",
 			"multiplicity": "One2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -652,7 +633,7 @@
 			"label": "isA",
 			"direction": "OUT",
 			"multiplicity": "Many2One",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "!${direction}"
@@ -663,7 +644,7 @@
 			"label": "hasMetaData",
 			"direction": "OUT",
 			"multiplicity": "One2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -674,7 +655,7 @@
 			"label": "connectsTo",
 			"direction": "OUT",
 			"multiplicity": "One2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -685,7 +666,7 @@
 			"label": "uses",
 			"direction": "OUT",
 			"multiplicity": "One2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -696,7 +677,7 @@
 			"label": "connectsTo",
 			"direction": "OUT",
 			"multiplicity": "One2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -707,7 +688,7 @@
 			"label": "uses",
 			"direction": "OUT",
 			"multiplicity": "One2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -718,7 +699,7 @@
 			"label": "uses",
 			"direction": "OUT",
 			"multiplicity": "One2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -729,7 +710,7 @@
 			"label": "has",
 			"direction": "OUT",
 			"multiplicity": "One2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -740,7 +721,7 @@
 			"label": "relatedTo",
 			"direction": "OUT",
 			"multiplicity": "One2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "!${direction}"
@@ -751,7 +732,7 @@
 			"label": "startsWith",
 			"direction": "OUT",
 			"multiplicity": "One2One",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -762,7 +743,7 @@
 			"label": "connectsTo",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -773,7 +754,7 @@
 			"label": "isA",
 			"direction": "OUT",
 			"multiplicity": "Many2One",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "!${direction}"
@@ -784,7 +765,7 @@
 			"label": "uses",
 			"direction": "OUT",
 			"multiplicity": "One2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -795,7 +776,7 @@
 			"label": "uses",
 			"direction": "OUT",
 			"multiplicity": "One2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -806,7 +787,7 @@
 			"label": "targets",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "!${direction}"
@@ -817,7 +798,7 @@
 			"label": "hasLInterface",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -828,7 +809,7 @@
 			"label": "definedFor",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "!${direction}"
@@ -839,7 +820,7 @@
 			"label": "supportsServiceCapability",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "!${direction}"
@@ -850,7 +831,7 @@
 			"label": "hasLInterface",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE"
@@ -861,7 +842,7 @@
 			"label": "usesPhysicalLink",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "${direction}",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -872,7 +853,7 @@
 			"label": "usesLogicalLink",
 			"direction": "OUT",
 			"multiplicity": "Many2One",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE"
@@ -883,8 +864,7 @@
 			"label": "hasCTag",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "${direction}",
-			"uses-resource": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE"
@@ -895,7 +875,7 @@
 			"label": "locatedIn",
 			"direction": "OUT",
 			"multiplicity": "Many2One",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "!${direction}"
@@ -906,7 +886,7 @@
 			"label": "locatedIn",
 			"direction": "OUT",
 			"multiplicity": "Many2One",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE"
@@ -917,7 +897,7 @@
 			"label": "existsIn",
 			"direction": "OUT",
 			"multiplicity": "Many2One",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "!${direction}"
@@ -928,7 +908,7 @@
 			"label": "hasLAGInterface",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE"
@@ -939,8 +919,7 @@
 			"label": "hasPinterface",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "${direction}",
-			"uses-resource": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE"
@@ -951,7 +930,7 @@
 			"label": "isMemberOf",
 			"direction": "OUT",
 			"multiplicity": "Many2One",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -962,8 +941,7 @@
 			"label": "hasPinterface",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "${direction}",
-			"uses-resource": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE"
@@ -974,7 +952,7 @@
 			"label": "has",
 			"direction": "OUT",
 			"multiplicity": "One2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE"
@@ -985,7 +963,7 @@
 			"label": "locatedIn",
 			"direction": "OUT",
 			"multiplicity": "Many2One",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "!${direction}"
@@ -996,7 +974,7 @@
 			"label": "isMemberOf",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -1007,7 +985,7 @@
 			"label": "isMemberOf",
 			"direction": "OUT",
 			"multiplicity": "Many2One",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -1018,8 +996,7 @@
 			"label": "hasIPAGFacingVLAN",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
-			"uses-resource": "${direction}",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -1030,8 +1007,7 @@
 			"label": "uses",
 			"direction": "OUT",
 			"multiplicity": "One2Many",
-			"contains": "NONE",
-			"uses-resource": "${direction}",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -1042,7 +1018,7 @@
 			"label": "hasInstance",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "!${direction}",
 			"prevent-delete": "NONE"
@@ -1053,7 +1029,7 @@
 			"label": "hasRoutingInstance",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -1064,7 +1040,7 @@
 			"label": "hasSitePair",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -1075,7 +1051,7 @@
 			"label": "hasClassOfService",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -1086,7 +1062,7 @@
 			"label": "usesL3Network",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -1097,7 +1073,7 @@
 			"label": "relatedTo",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -1108,7 +1084,7 @@
 			"label": "owns",
 			"direction": "OUT",
 			"multiplicity": "One2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "!${direction}",
 			"prevent-delete": "${direction}"
@@ -1119,7 +1095,7 @@
 			"label": "hasAvailabilityZone",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "!${direction}"
@@ -1130,7 +1106,7 @@
 			"label": "locatedIn",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "!${direction}"
@@ -1141,8 +1117,7 @@
 			"label": "hasPortGroup",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "${direction}",
-			"uses-resource": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE"
@@ -1153,8 +1128,7 @@
 			"label": "runsOnVserver",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
-			"uses-resource": "${direction}",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE"
@@ -1165,7 +1139,7 @@
 			"label": "hasServiceInstance",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "!${direction}",
 			"prevent-delete": "NONE"
@@ -1176,7 +1150,7 @@
 			"label": "hasVNF",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "!${direction}",
 			"prevent-delete": "NONE"
@@ -1187,7 +1161,7 @@
 			"label": "hasIpAddress",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE"
@@ -1198,74 +1172,18 @@
 			"label": "hasIpAddress",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE"
 		},
 		{
-			"from": "vpe",
-			"to": "complex",
-			"label": "locatedIn",
-			"direction": "OUT",
-			"multiplicity": "Many2Many",
-			"contains": "NONE",
-			"delete-other-v": "NONE",
-			"SVC-INFRA": "NONE",
-			"prevent-delete": "!${direction}"
-		},
-		{
-			"from": "vpe",
-			"to": "ctag-pool",
-			"label": "usesCtagPool",
-			"direction": "OUT",
-			"multiplicity": "Many2Many",
-			"contains": "NONE",
-			"delete-other-v": "NONE",
-			"SVC-INFRA": "NONE",
-			"prevent-delete": "NONE"
-		},
-		{
-			"from": "vpe",
-			"to": "l-interface",
-			"label": "hasLInterface",
-			"direction": "OUT",
-			"multiplicity": "Many2Many",
-			"contains": "${direction}",
-			"delete-other-v": "NONE",
-			"SVC-INFRA": "NONE",
-			"prevent-delete": "NONE"
-		},
-		{
-			"from": "vpe",
-			"to": "lag-interface",
-			"label": "hasLAGInterface",
-			"direction": "OUT",
-			"multiplicity": "Many2Many",
-			"contains": "${direction}",
-			"delete-other-v": "NONE",
-			"SVC-INFRA": "NONE",
-			"prevent-delete": "NONE"
-		},
-		{
-			"from": "vpe",
-			"to": "vserver",
-			"label": "runsOnVserver",
-			"direction": "OUT",
-			"multiplicity": "Many2Many",
-			"contains": "NONE",
-			"uses-resource": "${direction}",
-			"delete-other-v": "NONE",
-			"SVC-INFRA": "NONE",
-			"prevent-delete": "NONE"
-		},
-		{
 			"from": "vpls-pe",
 			"to": "complex",
 			"label": "locatedIn",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "!${direction}"
@@ -1276,7 +1194,7 @@
 			"label": "usesCtagPool",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -1287,7 +1205,7 @@
 			"label": "hasPinterface",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -1298,7 +1216,7 @@
 			"label": "hasLAGinterface",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -1309,7 +1227,7 @@
 			"label": "hasFlavor",
 			"direction": "OUT",
 			"multiplicity": "Many2One",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "!${direction}"
@@ -1320,22 +1238,10 @@
 			"label": "hasImage",
 			"direction": "OUT",
 			"multiplicity": "Many2One",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "!${direction}"
-		},
-		{
-			"from": "vserver",
-			"to": "ipaddress",
-			"label": "hasIpAddress",
-			"direction": "OUT",
-			"multiplicity": "Many2Many",
-			"contains": "${direction}",
-			"uses-resource": "${direction}",
-			"delete-other-v": "NONE",
-			"SVC-INFRA": "NONE",
-			"prevent-delete": "NONE"
 		},
 		{
 			"from": "vserver",
@@ -1343,7 +1249,7 @@
 			"label": "hasLInterface",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE"
@@ -1354,8 +1260,7 @@
 			"label": "runsOnPserver",
 			"direction": "OUT",
 			"multiplicity": "Many2One",
-			"contains": "NONE",
-			"uses-resource": "${direction}",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "!${direction}"
@@ -1366,8 +1271,7 @@
 			"label": "hasVolume",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "${direction}",
-			"uses-resource": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE"
@@ -1378,8 +1282,7 @@
 			"label": "hosts",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
-			"uses-resource": "${direction}",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE"
@@ -1390,7 +1293,7 @@
 			"label": "uses",
 			"direction": "OUT",
 			"multiplicity": "One2One",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE"
@@ -1401,8 +1304,7 @@
 			"label": "uses",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
-			"uses-resource": "${direction}",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -1413,7 +1315,7 @@
 			"label": "hasMetaData",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -1424,7 +1326,7 @@
 			"label": "uses",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "${direction}",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -1435,8 +1337,7 @@
 			"label": "dependsOn",
 			"direction": "OUT",
 			"multiplicity": "One2Many",
-			"contains": "NONE",
-			"uses-resource": "${direction}",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -1447,8 +1348,7 @@
 			"label": "dependsOn",
 			"direction": "OUT",
 			"multiplicity": "One2Many",
-			"contains": "NONE",
-			"uses-resource": "${direction}",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -1459,7 +1359,7 @@
 			"label": "contains",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -1470,7 +1370,7 @@
 			"label": "hasMetaData",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -1481,8 +1381,7 @@
 			"label": "contains",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
-			"uses-resource": "${direction}",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -1493,7 +1392,7 @@
 			"label": "bridgedTo",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -1504,7 +1403,7 @@
 			"label": "bridgedTo",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "!${direction}"
@@ -1515,8 +1414,7 @@
 			"label": "uses",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
-			"uses-resource": "${direction}",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -1527,7 +1425,7 @@
 			"label": "existsIn",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "!${direction}"
@@ -1538,7 +1436,7 @@
 			"label": "belongsTo",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE"
@@ -1549,8 +1447,7 @@
 			"label": "hasVigServer",
 			"direction": "OUT",
 			"multiplicity": "One2Many",
-			"contains": "${direction}",
-			"uses-resource": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -1561,8 +1458,7 @@
 			"label": "uses",
 			"direction": "OUT",
 			"multiplicity": "Many2One",
-			"contains": "NONE",
-			"uses-resource": "${direction}",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -1573,7 +1469,7 @@
 			"label": "uses",
 			"direction": "OUT",
 			"multiplicity": "One2One",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE"
@@ -1584,7 +1480,7 @@
 			"label": "isPartOf",
 			"direction": "OUT",
 			"multiplicity": "Many2One",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE"
@@ -1595,7 +1491,7 @@
 			"label": "uses",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE"
@@ -1606,7 +1502,7 @@
 			"label": "uses",
 			"direction": "OUT",
 			"multiplicity": "One2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "${direction}",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "${direction}"
@@ -1617,7 +1513,7 @@
 			"label": "has",
 			"direction": "OUT",
 			"multiplicity": "One2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE"
@@ -1628,7 +1524,7 @@
 			"label": "uses",
 			"direction": "OUT",
 			"multiplicity": "One2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE"
@@ -1639,7 +1535,7 @@
 			"label": "uses",
 			"direction": "OUT",
 			"multiplicity": "One2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "${direction}",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE"
@@ -1650,7 +1546,7 @@
 			"label": "usesLogicalLink",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "${direction}",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE"
@@ -1661,7 +1557,7 @@
 			"label": "uses",
 			"direction": "OUT",
 			"multiplicity": "One2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -1672,7 +1568,7 @@
 			"label": "isPartOf",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -1683,7 +1579,7 @@
 			"label": "isPartOf",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -1694,7 +1590,7 @@
 			"label": "isMemberOf",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -1705,7 +1601,7 @@
 			"label": "isPartOf",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -1716,7 +1612,7 @@
 			"label": "isMemberOf",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -1727,7 +1623,7 @@
 			"label": "isMemberOf",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -1738,7 +1634,7 @@
 			"label": "has",
 			"direction": "OUT",
 			"multiplicity": "One2One",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -1749,7 +1645,7 @@
 			"label": "existsIn",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -1760,7 +1656,7 @@
 			"label": "uses",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "!${direction}"
@@ -1771,7 +1667,7 @@
 			"label": "has",
 			"direction": "OUT",
 			"multiplicity": "One2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -1782,7 +1678,7 @@
 			"label": "has",
 			"direction": "OUT",
 			"multiplicity": "One2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -1793,7 +1689,7 @@
 			"label": "has",
 			"direction": "OUT",
 			"multiplicity": "One2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -1804,29 +1700,7 @@
 			"label": "has",
 			"direction": "OUT",
 			"multiplicity": "One2Many",
-			"contains": "${direction}",
-			"delete-other-v": "NONE",
-			"SVC-INFRA": "NONE",
-			"prevent-delete": "NONE"
-		},
-		{
-			"from": "vpe",
-			"to": "entitlement",
-			"label": "has",
-			"direction": "OUT",
-			"multiplicity": "One2Many",
-			"contains": "${direction}",
-			"delete-other-v": "NONE",
-			"SVC-INFRA": "NONE",
-			"prevent-delete": "NONE"
-		},
-		{
-			"from": "vpe",
-			"to": "license",
-			"label": "has",
-			"direction": "OUT",
-			"multiplicity": "One2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -1837,7 +1711,7 @@
 			"label": "existsIn",
 			"direction": "OUT",
 			"multiplicity": "Many2One",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "!${direction}"
@@ -1848,7 +1722,7 @@
 			"label": "has",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "${direction}",
+			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
@@ -1859,7 +1733,7 @@
 			"label": "uses",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
-			"contains": "NONE",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
