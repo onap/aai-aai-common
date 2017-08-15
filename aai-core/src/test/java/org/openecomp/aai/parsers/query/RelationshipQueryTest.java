@@ -47,6 +47,7 @@ import org.openecomp.aai.serialization.engines.QueryStyle;
 import org.openecomp.aai.serialization.engines.TitanDBEngine;
 import org.openecomp.aai.serialization.engines.TransactionalGraphEngine;
 
+@Ignore
 public class RelationshipQueryTest {
 	private ModelInjestor injestor = ModelInjestor.getInstance();
 

@@ -30,6 +30,7 @@ import javax.ws.rs.core.UriBuilder;
 import javax.xml.bind.JAXBException;
 
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -40,7 +41,7 @@ import org.openecomp.aai.introspection.LoaderFactory;
 import org.openecomp.aai.introspection.ModelType;
 import org.openecomp.aai.introspection.Version;
 
-
+@Ignore
 public class URIParserTest {
 
 	private Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.v8);

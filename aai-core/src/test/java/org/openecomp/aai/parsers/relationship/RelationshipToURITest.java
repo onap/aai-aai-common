@@ -47,6 +47,7 @@ import org.openecomp.aai.parsers.exceptions.AmbiguousMapAAIException;
 import org.openecomp.aai.serialization.queryformats.QueryFormatTestHelper;
 import org.openecomp.aai.util.AAIConstants;
 
+@Ignore
 public class RelationshipToURITest {
 
 	

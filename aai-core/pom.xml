@@ -24,6 +24,7 @@
 		<sonar.projectVersion>${project.version}</sonar.projectVersion>
 		<gendoc.version>v11</gendoc.version>
 		<aai.wiki.link>https://wiki.onap.org/</aai.wiki.link>
+        <hbase.version>1.0.2</hbase.version>
 	</properties>
 	<profiles>		
 		<profile>
@@ -289,6 +290,11 @@
 			<version>1.18</version>
 		</dependency>
 		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-json</artifactId>
+			<version>1.18</version>
+		</dependency>
+		<dependency>
 			<groupId>javax.ws.rs</groupId>
 			<artifactId>javax.ws.rs-api</artifactId>
 			<version>2.0.1</version>
@@ -371,7 +377,7 @@
 		<dependency>
 			<groupId>org.apache.hbase</groupId>
 			<artifactId>hbase-client</artifactId>
-			<version>0.98.4-hadoop2</version>
+			<version>${hbase.version}</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.slf4j</groupId>
@@ -386,7 +392,7 @@
 		<dependency>
 			<groupId>org.apache.hbase</groupId>
 			<artifactId>hbase-protocol</artifactId>
-			<version>0.98.4-hadoop2</version>
+			<version>${hbase.version}</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>log4j</artifactId>
@@ -397,7 +403,7 @@
 		<dependency>
 			<groupId>org.apache.hbase</groupId>
 			<artifactId>hbase-common</artifactId>
-			<version>0.98.4-hadoop2</version>
+			<version>${hbase.version}</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>log4j</artifactId>
@@ -410,7 +416,6 @@
 			<artifactId>activemq-broker</artifactId>
 			<version>5.14.4</version>
 		</dependency>
-
 		<dependency>
 			<groupId>com.opencsv</groupId>
 			<artifactId>opencsv</artifactId>
@@ -425,6 +430,21 @@
 			<groupId>com.bazaarvoice.jolt</groupId>
 			<artifactId>jolt-complete</artifactId>
 			<version>0.0.24</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.fge</groupId>
+			<artifactId>json-patch</artifactId>
+			<version>1.9</version>
+		</dependency>
+		<dependency>
+			<groupId>com.att.nsa</groupId>
+			<artifactId>dmaapClient</artifactId>
+			<version>0.2.13</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-jms</artifactId>
+			<version>2.15.5</version>
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
