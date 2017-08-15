@@ -20,22 +20,25 @@
 
 package org.openecomp.aai.serialization.db;
 
-import java.io.File;
-import java.io.IOException;
+import static com.jayway.jsonpath.Criteria.where;
+import static com.jayway.jsonpath.Filter.filter;
+
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Scanner;
+import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
-
 import org.openecomp.aai.db.props.AAIProperties;
 import org.openecomp.aai.dbmodel.DbEdgeRules;
 import org.openecomp.aai.exceptions.AAIException;
@@ -47,15 +50,9 @@ import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import com.jayway.jsonpath.JsonPath;
-
-import static com.jayway.jsonpath.Filter.filter;
-import static com.jayway.jsonpath.Criteria.where;
-
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.Filter;
-
-import java.util.Scanner;
+import com.jayway.jsonpath.JsonPath;
 
 public class EdgeRules {
 	
@@ -72,16 +69,51 @@ public class EdgeRules {
 	 */
 	private EdgeRules() {
 
-		InputStream is = getClass().getResourceAsStream("/dbedgerules/DbEdgeRules_" + Version.getLatest().toString() + ".json");
+		String json = this.getEdgeRuleJson(Version.getLatest());
+		rulesDoc = JsonPath.parse(json);
+		
+	}
+	
+	/**
+	 * Loads the versioned DbEdgeRules json file for later parsing.
+	 */
+	@SuppressWarnings("unchecked")
+	private EdgeRules(Version version) {
+		
+		String json = this.getEdgeRuleJson(version);
+		rulesDoc = JsonPath.parse(json);
+		
+		if (!Version.isLatest(version)) {
+			try {
+				Class<?> dbEdgeRules = Class.forName("org.openecomp.aai.dbmodel." + version.toString() + ".gen.DbEdgeRules");
+				this.deleteScope = (Multimap<String, String>)dbEdgeRules.getDeclaredField("DefaultDeleteScope").get(null);	
+			} catch (Exception e) {
+			}
+		}
+	}
+	
+	private String getEdgeRuleJson(Version version) {
+		InputStream is = getClass().getResourceAsStream("/dbedgerules/DbEdgeRules_" + version.toString() + ".json");
 
 		Scanner scanner = new Scanner(is);
 		String json = scanner.useDelimiter("\\Z").next();
 		scanner.close();
-		rulesDoc = JsonPath.parse(json);
+		
+		return json;
 	}
 	
 	private static class Helper {
 		private static final EdgeRules INSTANCE = new EdgeRules();
+		private static final Map<Version, EdgeRules> INSTANCEMAP = new ConcurrentHashMap<>();
+		private static EdgeRules getVersionedEdgeRules(Version v) {
+			if (Version.isLatest(v)) {
+				return INSTANCE;
+			}
+			if (!INSTANCEMAP.containsKey(v)) {
+				INSTANCEMAP.put(v, new EdgeRules(v));
+			}
+			return INSTANCEMAP.get(v);
+		}
 	}
 	
 	/**
@@ -91,6 +123,16 @@ public class EdgeRules {
 	 */
 	public static EdgeRules getInstance() {
 		return Helper.INSTANCE;
+
+	}
+	
+	/**
+	 * Gets the versioned instance of EdgeRules.
+	 *
+	 * @return versioned instance of EdgeRules
+	 */
+	public static EdgeRules getInstance(Version v) {
+		return Helper.getVersionedEdgeRules(v);
 
 	}
 	
@@ -462,6 +504,10 @@ public class EdgeRules {
 		}
 		
 		return result;
+	}
+	
+	public Multimap<String, String> getDeleteSemantics() {
+		return this.deleteScope;
 	}
 	
 }
