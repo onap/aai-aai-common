@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a437d4f_b58f4875",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 417,
+      "author": {
+        "id": 399
+      },
+      "writtenOn": "2017-08-15T06:16:35Z",
+      "side": 1,
+      "message": "it\u0027s not a required field.",
+      "range": {
+        "startLine": 417,
+        "startChar": 62,
+        "endLine": 417,
+        "endChar": 77
+      },
+      "revId": "280055d271b78d476009c2037e159df2627dc841",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_958c4481",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 422,
+      "author": {
+        "id": 399
+      },
+      "writtenOn": "2017-08-15T06:16:35Z",
+      "side": 1,
+      "message": "It\u0027s not required\n\nadd default-value\u003d\"false\"\n\nit\u0027s a boolean type",
+      "range": {
+        "startLine": 422,
+        "startChar": 64,
+        "endLine": 422,
+        "endChar": 105
+      },
+      "revId": "280055d271b78d476009c2037e159df2627dc841",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
