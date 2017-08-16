@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a437d4f_69946937",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 317,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2017-08-16T15:01:12Z",
+      "side": 1,
+      "message": "I\u0027m still not seeing the containment.  Look at the example of how availablityZones works - the uri is /cloud-infrastructure/cloud-regions/cloud-region/{cloud-region-owner}/{cloud-region-id}/availablility-zones/availability-zone/{availability-zone-name}.  I think we want a similar thing: /cloud-infrastructure/cloud-regions/cloud-region/{cloud-region-owner}/{cloud-region-id}/auth-info/auth-info-item/{auth-info-key}",
+      "revId": "79c9217fafffec7197930bb3ff23283582acffbd",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_4999a56d",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 397,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2017-08-16T15:01:12Z",
+      "side": 1,
+      "message": "These can\u0027t all be keys",
+      "revId": "79c9217fafffec7197930bb3ff23283582acffbd",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_e978592d",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 428,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2017-08-16T15:01:12Z",
+      "side": 1,
+      "message": "Don\u0027t need to include this as an xml-element, the edge will be created when a client to a\u0026ai passes the identifiers of the tenant as part of the relationship-list when PUTting the auth-info node",
+      "revId": "79c9217fafffec7197930bb3ff23283582acffbd",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
