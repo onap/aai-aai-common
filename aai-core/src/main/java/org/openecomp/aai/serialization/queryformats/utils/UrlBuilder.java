@@ -25,7 +25,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.apache.tinkerpop.gremlin.structure.Vertex;
-
 import org.openecomp.aai.db.props.AAIProperties;
 import org.openecomp.aai.exceptions.AAIException;
 import org.openecomp.aai.introspection.Version;
@@ -43,7 +42,13 @@ public class UrlBuilder {
 	public UrlBuilder (Version version, DBSerializer serializer) throws AAIException {
 		this.serializer = serializer;
 		this.version = version;
-		this.serverBase = AAIApiServerURLBase.get(AAIProperties.LATEST);
+        this.serverBase = AAIApiServerURLBase.get(AAIProperties.LATEST);
+	}
+
+	public UrlBuilder (Version version, DBSerializer serializer, String serverBase) {
+		this.serializer = serializer;
+		this.version = version;
+		this.serverBase = serverBase;
 	}
 	
 	public String pathed(Vertex v) throws AAIFormatVertexException {
@@ -70,5 +75,9 @@ public class UrlBuilder {
 		result.insert(0, this.serverBase);
 
 		return result.toString();
+	}
+
+	protected String getServerBase(Version v) throws AAIException {
+		return AAIApiServerURLBase.get(v);
 	}
 }

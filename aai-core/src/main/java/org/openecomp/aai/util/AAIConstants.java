@@ -81,7 +81,8 @@ public final class AAIConstants {
 	public static final String AAI_OLDSERVER_URL = "aai.oldserver.url";
 	public static final String AAI_GLOBAL_CALLBACK_URL = "aai.global.callback.url";
 	public static final String AAI_LOCAL_REST = "https://localhost:%d/aai/" + AAIProperties.LATEST + "/";
-	
+    public static final String AAI_APP_ROOT = "/aai/";
+
 	public static final int AAI_RESOURCES_PORT = 8447;
 	public static final int AAI_QUERY_PORT = 8446;
 	public static final int AAI_LEGACY_PORT = 8443;
