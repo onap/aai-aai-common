@@ -20,21 +20,17 @@
 
 package org.openecomp.aai.serialization.db;
 
+import org.apache.tinkerpop.gremlin.structure.Direction;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.tinkerpop.gremlin.structure.Direction;
 
 public class EdgeRule {
 
 	private String label = "";
 	private MultiplicityRule multiplicityRule = null;
 	private Direction direction = null;
-	private Map<String, String> edgeProperties = null;
-	private final String IS_PARENT = "isParent";
-	private final String USES_RESOURCE  = "usesResource";
-	private final String HAS_DEL_TARGET = "hasDelTarget";
-	private final String SVC_INFRA = "SVC-INFRA";
+	private Map<EdgeProperty, String> edgeProperties = null;
 	
 	/**
 	 * Instantiates a new edge rule.
@@ -124,8 +120,8 @@ public class EdgeRule {
 	 *
 	 * @return the checks if is parent
 	 */
-	public String getIsParent() {
-		return this.getProp(this.IS_PARENT);
+	public String getContains() {
+		return this.getProp(EdgeProperty.CONTAINS);
 	}
 	
 	/**
@@ -133,26 +129,8 @@ public class EdgeRule {
 	 *
 	 * @param isParent the new checks if is parent
 	 */
-	public void setIsParent(String isParent) {
-		this.setProp(this.IS_PARENT, isParent);
-	}
-	
-	/**
-	 * Gets the uses resource.
-	 *
-	 * @return the uses resource
-	 */
-	public String getUsesResource() {
-		return this.getProp(this.USES_RESOURCE);
-	}
-	
-	/**
-	 * Sets the uses resource.
-	 *
-	 * @param usesResource the new uses resource
-	 */
-	public void setUsesResource(String usesResource) {
-		this.setProp(this.USES_RESOURCE, usesResource);
+	public void setContains(String isParent) {
+		this.setProp(EdgeProperty.CONTAINS, isParent);
 	}
 	
 	/**
@@ -160,8 +138,8 @@ public class EdgeRule {
 	 *
 	 * @return the checks for del target
 	 */
-	public String getHasDelTarget() {
-		return this.getProp(this.HAS_DEL_TARGET);
+	public String getDeleteOtherV() {
+		return this.getProp(EdgeProperty.DELETE_OTHER_V);
 	}
 	
 	/**
@@ -169,8 +147,8 @@ public class EdgeRule {
 	 *
 	 * @param hasDelTarget the new checks for del target
 	 */
-	public void setHasDelTarget(String hasDelTarget) {
-		this.setProp(this.HAS_DEL_TARGET, hasDelTarget);
+	public void setDeleteOtherV(String hasDelTarget) {
+		this.setProp(EdgeProperty.DELETE_OTHER_V, hasDelTarget);
 	}
 	
 	/**
@@ -179,7 +157,7 @@ public class EdgeRule {
 	 * @return the service infrastructure
 	 */
 	public String getServiceInfrastructure() {
-		return this.getProp(this.SVC_INFRA);
+		return this.getProp(EdgeProperty.SVC_INFRA);
 	}
 	
 	/**
@@ -188,7 +166,15 @@ public class EdgeRule {
 	 * @param serviceInfrastructure the new service infrastructure
 	 */
 	public void setServiceInfrastructure(String serviceInfrastructure) {
-		this.setProp(this.SVC_INFRA, serviceInfrastructure);
+		this.setProp(EdgeProperty.SVC_INFRA, serviceInfrastructure);
+	}
+	
+	public String getPreventDelete() {
+		return this.getProp(EdgeProperty.PREVENT_DELETE);
+	}
+	
+	public void setPreventDelete(String preventDelete) {
+		this.setProp(EdgeProperty.PREVENT_DELETE, preventDelete);
 	}
 	
 	/**
@@ -196,7 +182,7 @@ public class EdgeRule {
 	 *
 	 * @return the edge properties
 	 */
-	public Map<String, String> getEdgeProperties() {
+	public Map<EdgeProperty, String> getEdgeProperties() {
 		return this.edgeProperties;
 	}
 	
@@ -206,7 +192,7 @@ public class EdgeRule {
 	 * @param key the key
 	 * @param value the value
 	 */
-	private void setProp(String key, String value) {
+	private void setProp(EdgeProperty key, String value) {
 		this.edgeProperties.put(key, value);
 	}
 	
@@ -216,7 +202,7 @@ public class EdgeRule {
 	 * @param key the key
 	 * @return the prop
 	 */
-	private String getProp(String key) {
+	private String getProp(EdgeProperty key) {
 		return this.edgeProperties.get(key);
 	}
 	

@@ -36,6 +36,7 @@ import org.junit.Ignore;
 
 import org.openecomp.aai.serialization.engines.query.GraphTraversalQueryEngine;
 
+@Ignore
 public class TreeBackedVertexTest {
 
 	

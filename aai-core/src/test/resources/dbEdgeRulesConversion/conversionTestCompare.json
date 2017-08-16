@@ -6,9 +6,9 @@
 	"label" : "has",
 	"direction" : "OUT",
 	"multiplicity" : "Many2Many",
-	"isParent" : "false",
-	"usesResource" : "false",
-	"hasDelTarget" : "false",
+	"contains" : "false",
+	"uses-resource" : "false",
+	"delete-other-v" : "false",
 	"SVC-INFRA" : "false"
 },
 {
@@ -17,9 +17,9 @@
 	"label" : "treatsVeryKindly",
 	"direction" : "IN",
 	"multiplicity" : "One2One",
-	"isParent" : "true",
-	"usesResource" : "true",
-	"hasDelTarget" : "true",
+	"contains" : "true",
+	"uses-resource" : "true",
+	"delete-other-v" : "true",
 	"SVC-INFRA" : "true"
 }
 ]

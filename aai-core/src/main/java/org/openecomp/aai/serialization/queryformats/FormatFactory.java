@@ -30,6 +30,9 @@ import org.openecomp.aai.serialization.queryformats.exceptions.QueryParamInjecti
 import org.openecomp.aai.serialization.queryformats.utils.QueryParamInjector;
 import org.openecomp.aai.serialization.queryformats.utils.UrlBuilder;
 
+import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.MultivaluedMap;
+
 public class FormatFactory {
 
 	private final Loader loader;

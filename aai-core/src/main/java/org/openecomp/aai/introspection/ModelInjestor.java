@@ -20,6 +20,13 @@
 
 package org.openecomp.aai.introspection;
 
+import org.eclipse.persistence.dynamic.DynamicType;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
+import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
+import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
+import org.openecomp.aai.util.AAIConstants;
+
+import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -28,15 +35,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.xml.bind.JAXBException;
-
-import org.eclipse.persistence.dynamic.DynamicType;
-import org.eclipse.persistence.jaxb.JAXBContextProperties;
-import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
-import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
-
-import org.openecomp.aai.util.AAIConstants;
 
 public class ModelInjestor {
 	

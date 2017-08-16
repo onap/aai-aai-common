@@ -20,15 +20,15 @@
 
 package org.openecomp.aai.introspection;
 
+import com.att.eelf.configuration.EELFLogger;
+import com.att.eelf.configuration.EELFManager;
+import org.openecomp.aai.exceptions.AAIException;
+import org.openecomp.aai.introspection.exceptions.AAIUnknownObjectException;
+
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-
-import org.openecomp.aai.exceptions.AAIException;
-import org.openecomp.aai.introspection.exceptions.AAIUnknownObjectException;
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
 
 public class IntrospectorWalker {
 

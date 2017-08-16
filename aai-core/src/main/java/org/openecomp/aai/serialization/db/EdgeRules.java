@@ -20,20 +20,13 @@
 
 package org.openecomp.aai.serialization.db;
 
-import static com.jayway.jsonpath.Criteria.where;
-import static com.jayway.jsonpath.Filter.filter;
-
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Scanner;
-import java.util.concurrent.ConcurrentHashMap;
-
+import com.att.eelf.configuration.EELFLogger;
+import com.att.eelf.configuration.EELFManager;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
+import com.jayway.jsonpath.DocumentContext;
+import com.jayway.jsonpath.Filter;
+import com.jayway.jsonpath.JsonPath;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Direction;
@@ -46,13 +39,13 @@ import org.openecomp.aai.introspection.Version;
 import org.openecomp.aai.serialization.db.exceptions.EdgeMultiplicityException;
 import org.openecomp.aai.serialization.db.exceptions.NoEdgeRuleFoundException;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
-import com.jayway.jsonpath.DocumentContext;
-import com.jayway.jsonpath.Filter;
-import com.jayway.jsonpath.JsonPath;
+import java.io.InputStream;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+
+import static com.jayway.jsonpath.Criteria.where;
+import static com.jayway.jsonpath.Filter.filter;
 
 public class EdgeRules {
 	
@@ -230,21 +223,10 @@ public class EdgeRules {
 		// Items starting at "firstTagIndex" and up are all assumed to be booleans that map according to 
 		// tags as defined in EdgeInfoMap.
 		// Note - if they are tagged as 'reverse', that means they get the tag name with "-REV" on it
-		Map<String, String> propMap = rule.getEdgeProperties();
+		Map<EdgeProperty, String> propMap = rule.getEdgeProperties();
 		
-		for (String key : propMap.keySet()) {
-			String revKeyname = key + "-REV";
-			String triple = propMap.get(key);
-			if(triple.equals("true")){
-				edge.property(key, true);
-				edge.property(revKeyname,false);
-			} else if (triple.equals("false")) {
-				edge.property(key, false);
-				edge.property(revKeyname,false);
-			} else if (triple.equals("reverse")) {
-				edge.property(key, false);
-				edge.property(revKeyname,true);
-			}
+		for (Entry<EdgeProperty, String> entry : propMap.entrySet()) {
+			edge.property(entry.getKey().toString(), entry.getValue());
 		}
 	}
 	
@@ -355,12 +337,12 @@ public class EdgeRules {
 	private Filter buildFilter(EdgeType type, String nodeA, String nodeB) {
 		if (EdgeType.COUSIN.equals(type)) {
 			return filter(
-					where("from").is(nodeA).and("to").is(nodeB).and("isParent").is("false")
+					where("from").is(nodeA).and("to").is(nodeB).and(EdgeProperty.CONTAINS.toString()).is(AAIDirection.NONE.toString())
 					);
 		} else {
 			return filter(
-					where("from").is(nodeA).and("to").is(nodeB).and("isParent").is("true")).or(
-							where("from").is(nodeA).and("to").is(nodeB).and("isParent").is("reverse")	
+					where("from").is(nodeA).and("to").is(nodeB).and(EdgeProperty.CONTAINS.toString()).is("${direction}")).or(
+							where("from").is(nodeA).and("to").is(nodeB).and(EdgeProperty.CONTAINS.toString()).is("!${direction}")	
 					);
 		}
 	}
@@ -371,15 +353,19 @@ public class EdgeRules {
 	 * @param edge - the edge information returned from JsonPath
 	 * @return EdgeRule containing that information
 	 */
-	private EdgeRule buildRule(Map<String, String> edge) {
+	private EdgeRule buildRule(Map<String, String> map) {
+		Map<String, String> edge = new EdgePropertyMap<>();
+		edge.putAll(map);
+		
 		EdgeRule rule = new EdgeRule();
 		rule.setLabel(edge.get("label"));
 		rule.setDirection(edge.get("direction"));
 		rule.setMultiplicityRule(edge.get("multiplicity"));
-		rule.setIsParent(edge.get("isParent"));
-		rule.setUsesResource(edge.get("usesResource"));
-		rule.setHasDelTarget(edge.get("hasDelTarget"));
-		rule.setServiceInfrastructure(edge.get("SVC-INFRA"));
+		rule.setContains(edge.get(EdgeProperty.CONTAINS.toString()));
+		rule.setDeleteOtherV(edge.get(EdgeProperty.DELETE_OTHER_V.toString()));
+		rule.setServiceInfrastructure(edge.get(EdgeProperty.SVC_INFRA.toString()));
+		rule.setPreventDelete(edge.get(EdgeProperty.PREVENT_DELETE.toString()));
+		
 		return rule;
 	}
 	
@@ -420,20 +406,6 @@ public class EdgeRules {
 		
 		return this.getEdgeRule(type, outType, inType);
 
-		
-	}
-	
-	/**
-	 * Gets the delete semantic.
-	 *
-	 * @param nodeType the node type
-	 * @return the delete semantic
-	 */
-	public DeleteSemantic getDeleteSemantic(String nodeType) {
-		Collection<String> semanticCollection = deleteScope.get(nodeType);
-		String semantic = semanticCollection.iterator().next();
-		
-		return DeleteSemantic.valueOf(semantic);
 		
 	}
 	
@@ -510,4 +482,19 @@ public class EdgeRules {
 		return this.deleteScope;
 	}
 	
+	public Set<EdgeRule> getChildren(String nodeType) {
+		
+		final Filter filter = filter(
+				where("from").is(nodeType).and(EdgeProperty.CONTAINS.toString()).is("${direction}")
+				).or(where("to").is(nodeType).and(EdgeProperty.CONTAINS.toString()).is("!${direction}"));
+		
+		final List<Map<String, String>> rules = rulesDoc.read("$.rules.[?]", filter);
+		final Set<EdgeRule> result = new HashSet<>();
+		rules.forEach(item -> {
+			result.add(buildRule(item));
+		});
+	
+		return result;
+		
+	}
 }

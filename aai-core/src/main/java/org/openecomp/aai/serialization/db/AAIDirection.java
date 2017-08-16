@@ -20,19 +20,15 @@
 
 package org.openecomp.aai.serialization.db;
 
-public enum EdgeProperty {
-	CONTAINS("contains-other-v"),
-	DELETE_OTHER_V("delete-other-v"),
-	SVC_INFRA("SVC-INFRA"),
-	PREVENT_DELETE("prevent-delete");
-	private final String name;
+public enum AAIDirection {
+	IN, OUT, BOTH, NONE;
 
-	private EdgeProperty(String name) {
-		this.name = name;
-	}
-
-	@Override
-	public String toString() {
-		return name;
+	public AAIDirection opposite() {
+		if (this.equals(OUT))
+			return IN;
+		else if (this.equals(IN))
+			return OUT;
+		else
+			return BOTH;
 	}
 }

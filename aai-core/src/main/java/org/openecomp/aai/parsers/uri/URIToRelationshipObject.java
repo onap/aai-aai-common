@@ -20,14 +20,6 @@
 
 package org.openecomp.aai.parsers.uri;
 
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-
-import javax.ws.rs.core.MultivaluedMap;
-
 import org.openecomp.aai.exceptions.AAIException;
 import org.openecomp.aai.introspection.Introspector;
 import org.openecomp.aai.introspection.Loader;
@@ -36,6 +28,13 @@ import org.openecomp.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.openecomp.aai.serialization.db.EdgeType;
 import org.openecomp.aai.util.AAIApiServerURLBase;
 import org.openecomp.aai.workarounds.LegacyURITransformer;
+
+import javax.ws.rs.core.MultivaluedMap;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
 
 /**
  * Given a URI a Relationship Object is returned.
@@ -103,7 +102,7 @@ public class URIToRelationshipObject implements Parsable {
 	public String getCloudRegionTransform(){
 		return "remove";
 	}
-
+	
 	/**
 	 * @{inheritDoc}
 	 */
@@ -139,9 +138,9 @@ public class URIToRelationshipObject implements Parsable {
 			//only return the path section of the URI past v10
 			relatedLink = new URI(relatedLink.getRawPath());
 		}
-
+		
 		this.relationship.setValue("related-link", relatedLink.toString());
-
+		
 		this.result = relationship;
 		return this.result;
 	}
@@ -154,7 +153,7 @@ public class URIToRelationshipObject implements Parsable {
 				Introspector data = loader.introspectorFromName("relationship-data");
 				data.setValue("relationship-key", obj.getDbName() + "." + key);
 				data.setValue("relationship-value", obj.getValue(key));
-
+				
 				((List<Object>)relationship.getValue("relationship-data")).add(data.getUnderlyingObject());
 			} catch (AAIUnknownObjectException e) {
 				throw new RuntimeException("Fatal error - relationship-data object not found!");

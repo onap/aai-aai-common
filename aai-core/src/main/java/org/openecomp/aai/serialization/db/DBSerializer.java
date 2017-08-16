@@ -21,46 +21,19 @@
 package org.openecomp.aai.serialization.db;
 
 
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Array;
-import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
-
-import javax.ws.rs.core.UriBuilder;
-
+import com.att.eelf.configuration.EELFLogger;
+import com.att.eelf.configuration.EELFManager;
+import com.google.common.base.CaseFormat;
+import com.thinkaurelius.titan.core.SchemaViolationException;
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.Tree;
-import org.apache.tinkerpop.gremlin.structure.Direction;
-import org.apache.tinkerpop.gremlin.structure.Edge;
-import org.apache.tinkerpop.gremlin.structure.Element;
-import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.apache.tinkerpop.gremlin.structure.VertexProperty;
+import org.apache.tinkerpop.gremlin.structure.*;
 import org.javatuples.Pair;
 import org.openecomp.aai.db.props.AAIProperties;
 import org.openecomp.aai.exceptions.AAIException;
-import org.openecomp.aai.introspection.Introspector;
-import org.openecomp.aai.introspection.IntrospectorFactory;
-import org.openecomp.aai.introspection.Loader;
-import org.openecomp.aai.introspection.LoaderFactory;
-import org.openecomp.aai.introspection.ModelType;
-import org.openecomp.aai.introspection.PropertyPredicates;
-import org.openecomp.aai.introspection.Version;
+import org.openecomp.aai.introspection.*;
 import org.openecomp.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.openecomp.aai.introspection.sideeffect.DataCopy;
 import org.openecomp.aai.introspection.sideeffect.DataLinkReader;
@@ -81,10 +54,18 @@ import org.openecomp.aai.util.AAIConfig;
 import org.openecomp.aai.util.AAIConstants;
 import org.openecomp.aai.workarounds.NamingExceptions;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
-import com.google.common.base.CaseFormat;
-import com.thinkaurelius.titan.core.SchemaViolationException;
+import javax.ws.rs.core.UriBuilder;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Array;
+import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
 public class DBSerializer {
 	
@@ -125,9 +106,6 @@ public class DBSerializer {
 	 * @param v the v
 	 * @param isNewVertex the is new vertex
 	 */
-	/*
-	 * to be defined and expanded later
-	 */
 	public void touchStandardVertexProperties(Vertex v, boolean isNewVertex) {
 		
 		long unixTimeNow = System.currentTimeMillis();
@@ -143,12 +121,12 @@ public class DBSerializer {
 	}
 	
 	private void touchStandardVertexProperties(String nodeType, Vertex v, boolean isNewVertex) {
-
+		
 		v.property(AAIProperties.NODE_TYPE, nodeType);
 		touchStandardVertexProperties(v, isNewVertex);
 
 	}
-
+	
 	
 	
 	/**
@@ -434,6 +412,10 @@ public class DBSerializer {
 			
 			if (cousinVertex != null) {
 				try {
+					if (!edgeRules.hasEdgeRule(v, cousinVertex)) {
+						throw new AAIException("AAI_6120", "No EdgeRule found for passed nodeTypes: " + v.property(AAIProperties.NODE_TYPE).value().toString() + ", " 
+								+ cousinVertex.property(AAIProperties.NODE_TYPE).value().toString() + "."); 
+					}
 					e = this.getEdgeBetween(EdgeType.COUSIN, v, cousinVertex);
 
 					if (e == null) {
@@ -724,7 +706,7 @@ public class DBSerializer {
 						EdgeRule rule;
 						
 						rule = edgeRules.getEdgeRule(EdgeType.TREE, vType, childDbName);
-						if (rule.getIsParent().equals("true") || rule.getIsParent().equals("reverse")) {
+						if (!rule.getContains().equals(AAIDirection.NONE.toString())) {
 							//vertices = this.queryEngine.findRelatedVertices(v, Direction.OUT, rule.getLabel(), childDbName);
 							Direction ruleDirection = rule.getDirection();
 							Iterator<Vertex> itr = v.vertices(ruleDirection, rule.getLabel());
@@ -954,8 +936,8 @@ public class DBSerializer {
 		}
 
         if(list.size() > 0 && this.version.compareTo(Version.v8) >= 0){
-            this.addRelatedToProperty(result, list.get(0));
-        }
+			this.addRelatedToProperty(result, list.get(0));
+		}
 
 		return result.getUnderlyingObject();
 	}
@@ -1337,87 +1319,20 @@ public class DBSerializer {
 	 * @throws AAIException the AAI exception
 	 */
 	private boolean verifyDeleteSemantics(Vertex vertex, String resourceVersion, boolean enableResourceVersion) throws AAIException {
-		boolean result = false;
+		boolean result = true;
 		String nodeType = "";
-		DeleteSemantic semantic = null;
-		List<Edge> inEdges = null;
-		List<Edge> outEdges = null;
 		String errorDetail = " unknown delete semantic found";
 		String aaiExceptionCode = "";
 		nodeType = vertex.<String>property(AAIProperties.NODE_TYPE).orElse(null);
 		if (enableResourceVersion && !this.verifyResourceVersion("delete", nodeType, vertex.<String>property(AAIProperties.RESOURCE_VERSION).orElse(null), resourceVersion, nodeType)) {
 		}
-		semantic = edgeRules.getDeleteSemantic(nodeType);
-		inEdges = (List<Edge>)IteratorUtils.toList(vertex.edges(Direction.IN));
-		outEdges = (List<Edge>)IteratorUtils.toList(vertex.edges(Direction.OUT));
-		if (semantic.equals(DeleteSemantic.CASCADE_TO_CHILDREN)) {
-			result = true;
-		} else if (semantic.equals(DeleteSemantic.ERROR_IF_ANY_EDGES)) {
-			if (inEdges.isEmpty() && outEdges.isEmpty()) {
-				result = true;
-			} else {
-				errorDetail = " Node cannot be deleted because it still has Edges and the " + semantic + " scope was used.\n";
-				aaiExceptionCode = "AAI_6110";
-			}
-		} else if (semantic.equals(DeleteSemantic.ERROR_IF_ANY_IN_EDGES) || semantic.equals(DeleteSemantic.ERROR_4_IN_EDGES_OR_CASCADE)) {
-			
-			if (inEdges.isEmpty()) {
-				result = true;
-			} else {
-				//are there any cousin edges?
-				long children = 0;
-				for (Edge e : inEdges) {
-					if (e.<Boolean>property(EdgeProperties.out(EdgeProperty.IS_PARENT)).orElse(false)) {
-						children++;
-					}
-				}
-				for (Edge e : outEdges) {
-					if (e.<Boolean>property(EdgeProperties.in(EdgeProperty.IS_PARENT)).orElse(false)) {
-						children++;
-					}
-				}
-				
-				result = children == inEdges.size();
-			}
-			
-			if (!result) {
-				errorDetail = " Node cannot be deleted because it still has Edges and the " + semantic + " scope was used.\n";
-				aaiExceptionCode = "AAI_6110";
-			}
-		} else if (semantic.equals(DeleteSemantic.THIS_NODE_ONLY)) {
-			if (outEdges.isEmpty() && inEdges.isEmpty()) {
-				result = true;
-			} else {
-				result = true;
-				for (Edge edge : outEdges) {
-					Object property = edge.<Boolean>property(EdgeProperties.out(EdgeProperty.IS_PARENT)).orElse(null);
-					if (property != null && property.equals(Boolean.TRUE)) {
-						Vertex v = edge.inVertex();
-						String vType = v.<String>property(AAIProperties.NODE_TYPE).orElse(null);
-						errorDetail = " Node cannot be deleted using scope = " + semantic + 
-								" another node (type = " + vType + ") depends on it for uniqueness.";
-						aaiExceptionCode = "AAI_6110";
-						result = false;
-						break;
-					}
-				}
-				
-				for (Edge edge : inEdges) {
-					Object property = edge.<Boolean>property(EdgeProperties.in(EdgeProperty.IS_PARENT)).orElse(null);
-					if (property != null && property.equals(Boolean.TRUE)) {
-						Vertex v = edge.outVertex();
-						String vType = v.<String>property(AAIProperties.NODE_TYPE).orElse(null);
-						errorDetail = " Node cannot be deleted using scope = " + semantic + 
-								" another node (type = " + vType + ") depends on it for uniqueness.";
-						aaiExceptionCode = "AAI_6110";
-						result = false;
-						break;
-					}
-				}
-			}
+		List<Object> preventDeleteVertices = this.engine.asAdmin().getReadOnlyTraversalSource().V(vertex).union(__.inE().has(EdgeProperty.PREVENT_DELETE.toString(), AAIDirection.IN.toString()).outV().values(AAIProperties.NODE_TYPE), __.outE().has(EdgeProperty.PREVENT_DELETE.toString(), AAIDirection.OUT.toString()).inV().values(AAIProperties.NODE_TYPE)).dedup().toList();
+		
+		if (preventDeleteVertices.size() > 0) {
+			aaiExceptionCode = "AAI_6110";
+			errorDetail = String.format("Object is being reference by additional objects preventing it from being deleted. Please clean up references from the following types %s", preventDeleteVertices);
+			result = false;
 		}
-		
-		
 		if (!result) {
 			throw new AAIException(aaiExceptionCode, errorDetail); 
 		}

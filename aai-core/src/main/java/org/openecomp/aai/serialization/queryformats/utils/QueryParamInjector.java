@@ -20,16 +20,15 @@
 
 package org.openecomp.aai.serialization.queryformats.utils;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Set;
-
-import javax.ws.rs.core.MultivaluedMap;
-
 import org.openecomp.aai.serialization.queryformats.exceptions.QueryParamInjectionException;
 import org.openecomp.aai.serialization.queryformats.params.Inject;
 import org.openecomp.aai.serialization.queryformats.params.Setter;
 import org.reflections.Reflections;
+
+import javax.ws.rs.core.MultivaluedMap;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Set;
 
 public class QueryParamInjector {
 

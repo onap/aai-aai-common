@@ -20,8 +20,6 @@
 
 package org.openecomp.aai.serialization.engines.query;
 
-import java.util.List;
-import java.util.Set;
 
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
@@ -34,8 +32,13 @@ import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.openecomp.aai.db.props.AAIProperties;
 import org.openecomp.aai.introspection.Loader;
-import org.openecomp.aai.serialization.db.EdgeProperties;
-import org.openecomp.aai.serialization.db.EdgeProperty;
+
+import java.util.List;
+import java.util.Set;
+
+import static org.openecomp.aai.serialization.db.AAIDirection.*;
+import static org.openecomp.aai.serialization.db.EdgeProperty.CONTAINS;
+import static org.openecomp.aai.serialization.db.EdgeProperty.DELETE_OTHER_V;
 
 /*
  * This class needs some big explanation despite its compact size.
@@ -63,7 +66,7 @@ public class GraphTraversalQueryEngine extends QueryEngine {
 	@Override
 	public List<Vertex> findParents(Vertex start) {
 		
-		final GraphTraversal<Vertex, Vertex> pipe = this.g.V(start).emit(v -> true).repeat(__.union(__.inE().has(EdgeProperties.out(EdgeProperty.IS_PARENT), true).outV(), __.outE().has(EdgeProperties.in(EdgeProperty.IS_PARENT), true).inV()));
+		final GraphTraversal<Vertex, Vertex> pipe = this.g.V(start).emit(v -> true).repeat(__.union(__.inE().has(CONTAINS.toString(), OUT.toString()).outV(), __.outE().has(CONTAINS.toString(), IN.toString()).inV()));
 		return pipe.toList();
 	}
 
@@ -74,7 +77,7 @@ public class GraphTraversalQueryEngine extends QueryEngine {
 	public List<Vertex> findAllChildren(Vertex start) {
 		
 		GraphTraversal<Vertex, Vertex> pipe =  this.g
-				.V(start).emit(v -> true).repeat(__.union(__.outE().has(EdgeProperties.out(EdgeProperty.IS_PARENT), true).inV(), __.inE().has(EdgeProperties.in(EdgeProperty.IS_PARENT), true).outV()));
+				.V(start).emit(v -> true).repeat(__.union(__.outE().has(CONTAINS.toString(), OUT.toString()).inV(), __.inE().has(CONTAINS.toString(), IN.toString()).outV()));
 		
 
 		return pipe.toList();
@@ -83,8 +86,8 @@ public class GraphTraversalQueryEngine extends QueryEngine {
 
 	public List<Vertex> findChildrenOfType(Vertex start, String type) {
 		GraphTraversal<Vertex, Vertex> pipe =  this.g.V(start).union(
-					__.outE().has(EdgeProperties.out(EdgeProperty.IS_PARENT), true).inV(),
-					__.inE().has(EdgeProperties.in(EdgeProperty.IS_PARENT), true).outV()
+					__.outE().has(CONTAINS.toString(), OUT.toString()).inV(),
+					__.inE().has(CONTAINS.toString(), IN.toString()).outV()
 				).has(AAIProperties.NODE_TYPE, type).dedup();
  
 		return pipe.toList();
@@ -92,8 +95,8 @@ public class GraphTraversalQueryEngine extends QueryEngine {
 	
 	public List<Vertex> findChildren(Vertex start) {
 		GraphTraversal<Vertex, Vertex> pipe =  this.g.V(start).union(
-					__.outE().has(EdgeProperties.out(EdgeProperty.IS_PARENT), true),
-					__.inE().has(EdgeProperties.in(EdgeProperty.IS_PARENT), true)
+					__.outE().has(CONTAINS.toString(), OUT.toString()),
+					__.inE().has(CONTAINS.toString(), IN.toString())
 				).otherV().dedup();
  
 		return pipe.toList();
@@ -108,12 +111,12 @@ public class GraphTraversalQueryEngine extends QueryEngine {
 				.V(start).emit(v -> true).repeat(
 					__.union(
 						__.outE().or(
-							__.has(EdgeProperties.out(EdgeProperty.IS_PARENT), true),
-							__.has(EdgeProperties.out(EdgeProperty.HAS_DEL_TARGET), true)
+							__.has(CONTAINS.toString(), OUT.toString()),
+							__.has(DELETE_OTHER_V.toString(), OUT.toString())
 						).inV(),
 						__.inE().or(
-								__.has(EdgeProperties.in(EdgeProperty.IS_PARENT), true),
-								__.has(EdgeProperties.in(EdgeProperty.HAS_DEL_TARGET), true)
+								__.has(CONTAINS.toString(), IN.toString()),
+								__.has(DELETE_OTHER_V.toString(), IN.toString())
 						).outV()
 					)
 				);
@@ -149,14 +152,14 @@ public class GraphTraversalQueryEngine extends QueryEngine {
 	public Tree<Element> findSubGraph(Vertex start, int iterations, boolean nodeOnly) {
 		final GraphTraversal<Vertex, ?> t = this.g.V(start).emit(v -> true).times(iterations).repeat(
 				__.union(
-					__.outE().has(EdgeProperties.out(EdgeProperty.IS_PARENT), true).inV(),
-					__.inE().has(EdgeProperties.in(EdgeProperty.IS_PARENT), true).outV())
+					__.outE().has(CONTAINS.toString(), OUT.toString()).inV(),
+					__.inE().has(CONTAINS.toString(), IN.toString()).outV())
 				);
 			
 		if (!nodeOnly) {
 			t.union(
 					__.identity(),
-					__.bothE().and(__.has(EdgeProperties.out(EdgeProperty.IS_PARENT), false), __.has(EdgeProperties.in(EdgeProperty.IS_PARENT), false)).dedup().otherV()
+					__.bothE().has(CONTAINS.toString(), NONE.toString()).dedup().otherV()
 			);
 		}
 		t.tree();
@@ -171,8 +174,8 @@ public class GraphTraversalQueryEngine extends QueryEngine {
 	public List<Edge> findEdgesForVersion(Vertex start, Loader loader) {
 		final Set<String> objects = loader.getAllObjects().keySet();
 		GraphTraversal<Vertex, Edge> pipeline = this.g.V(start).union(
-				__.inE().has(EdgeProperties.out(EdgeProperty.IS_PARENT), false).has(EdgeProperties.in(EdgeProperty.IS_PARENT), false).where(__.outV().has(AAIProperties.NODE_TYPE, P.within(objects))),
-				__.outE().has(EdgeProperties.out(EdgeProperty.IS_PARENT), false).has(EdgeProperties.in(EdgeProperty.IS_PARENT), false).where(__.inV().has(AAIProperties.NODE_TYPE, P.within(objects)))
+				__.inE().has(CONTAINS.toString(), NONE.toString()).where(__.outV().has(AAIProperties.NODE_TYPE, P.within(objects))),
+				__.outE().has(CONTAINS.toString(), NONE.toString()).where(__.inV().has(AAIProperties.NODE_TYPE, P.within(objects)))
 			).dedup();
 		
 		return pipeline.toList();
@@ -182,8 +185,8 @@ public class GraphTraversalQueryEngine extends QueryEngine {
 	@Override
 	public List<Vertex> findCousinVertices(Vertex start) {
 		GraphTraversal<Vertex, Vertex> pipeline = this.g.V(start).union(
-				__.inE().has(EdgeProperties.out(EdgeProperty.IS_PARENT), false).has(EdgeProperties.in(EdgeProperty.IS_PARENT), false),
-				__.outE().has(EdgeProperties.out(EdgeProperty.IS_PARENT), false).has(EdgeProperties.in(EdgeProperty.IS_PARENT), false)).otherV().dedup();
+				__.inE().has(CONTAINS.toString(), NONE.toString()),
+				__.outE().has(CONTAINS.toString(), NONE.toString())).otherV().dedup();
 				
 		return pipeline.toList();
 	}
