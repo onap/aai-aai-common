@@ -314,6 +314,7 @@
 				<xml-element java-attribute="oamNetworks" name="oam-networks" type="inventory.aai.onap.org.v11.OamNetworks" />
 				<xml-element java-attribute="availabilityZones" name="availability-zones" type="inventory.aai.onap.org.v11.AvailabilityZones" />
 				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v11.RelationshipList" />
+				<xml-element java-attribute="authInfo" name="auth-info" type="inventory.aai.onap.org.v11.AuthInfo" />
 			</java-attributes>
 			<xml-properties>
 				<xml-property name="description" value="cloud-region designates an installation of a cloud cluster or region or instantiation. In AT&amp;Ts AIC cloud, this could be an LCP or DCP. Cloud regions are uniquely identified by a composite key, cloud-owner + cloud-region-id. The format of the cloud-owner is vendor-cloudname and we will use att-aic for AT&amp;T's AIC." />
@@ -386,6 +387,52 @@
 				<xml-property name="container" value="volume-groups" />
 			</xml-properties>
 		</java-type>
+		
+		<java-type name="AuthInfo">
+			<xml-properties>
+				<xml-property name="description" value="Collection of persistent auth information to access to VIM." />
+			</xml-properties>
+			<xml-root-element name="auth-info" />
+			<java-attributes>
+				<xml-element java-attribute="cloudDomain" name="cloud-domain" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="domain info for authentication." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="userName" name="username" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="user name of auth infomation to access VIM." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="password" name="password" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="password of auth infomation to access VIM." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="authUrl" name="auth-url" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="authentication url of the cloud." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="sslCacert" name="ssl-cacert" required="false" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="ca file content if enabled ssl on auth-url." />
+					</xml-properties>
+				</xml-element>
+				<xml-element default-value="false" java-attribute="sslInsecure" name="ssl-insecure" required="false" type="java.lang.Boolean" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="Whether to verify VIM's certificate." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="defaultTenant" name="default-tenant" required="true" type="inventory.aai.onap.org.v11.Tenant" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="edge to tenant with defaultTenant label." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v11.RelationshipList" />
+			</java-attributes>
+		</java-type>
+		
 
 		<java-type name="RelationshipList">
 			<xml-root-element name="relationship-list" />
