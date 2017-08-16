@@ -20,33 +20,15 @@
 
 package org.openecomp.aai.dbgen;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Properties;
-import java.util.Set;
-import java.util.UUID;
-
+import com.att.eelf.configuration.Configuration;
+import com.att.eelf.configuration.EELFLogger;
+import com.att.eelf.configuration.EELFManager;
+import com.thinkaurelius.titan.core.TitanFactory;
+import com.thinkaurelius.titan.core.TitanGraph;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
-import org.apache.tinkerpop.gremlin.structure.Direction;
-import org.apache.tinkerpop.gremlin.structure.Edge;
-import org.apache.tinkerpop.gremlin.structure.Graph;
-import org.apache.tinkerpop.gremlin.structure.Property;
-import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.apache.tinkerpop.gremlin.structure.VertexProperty;
+import org.apache.tinkerpop.gremlin.structure.*;
 import org.openecomp.aai.db.props.AAIProperties;
 import org.openecomp.aai.dbmap.AAIGraph;
 import org.openecomp.aai.exceptions.AAIException;
@@ -56,17 +38,15 @@ import org.openecomp.aai.introspection.LoaderFactory;
 import org.openecomp.aai.introspection.ModelType;
 import org.openecomp.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.openecomp.aai.logging.ErrorLogHelper;
-import org.openecomp.aai.serialization.db.EdgeProperties;
+import org.openecomp.aai.serialization.db.AAIDirection;
 import org.openecomp.aai.serialization.db.EdgeProperty;
 import org.openecomp.aai.util.AAIConfig;
 import org.openecomp.aai.util.AAIConstants;
 import org.openecomp.aai.util.FormatDate;
 
-import com.att.eelf.configuration.Configuration;
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
-import com.thinkaurelius.titan.core.TitanFactory;
-import com.thinkaurelius.titan.core.TitanGraph;
+import java.io.*;
+import java.util.*;
+import java.util.Map.Entry;
 
 
 public class DataGrooming {
@@ -99,6 +79,11 @@ public class DataGrooming {
 		Boolean ghost2CheckOff = false;
 		Boolean ghost2FixOn = false;
 		Boolean neverUseCache = false;
+		Boolean skipEdgeCheckFlag = false;
+		
+		int timeWindowMinutes = 0; // A value of 0 means that we will not have a time-window -- we will look
+                                   // at all nodes of the passed-in nodeType. 
+		long windowStartTime = 0; // Translation of the window into a starting timestamp 
 		
 		int maxRecordsToFix = AAIConstants.AAI_GROOMING_DEFAULT_MAX_FIX;
 		int sleepMinutes = AAIConstants.AAI_GROOMING_DEFAULT_SLEEP_MINUTES;
@@ -123,8 +108,15 @@ public class DataGrooming {
 		String dteStr = fd.getDateTime();
 		String groomOutFileName = "dataGrooming." + dteStr + ".out";
 
+		String argString = "";
+		for( int x = 0; x < args.length; x++ ) {
+			argString = argString + " " + args[x];
+		}
+		LOGGER.info(" DataGrooming called with these options: [" + argString + "]");
+		
 		if (args.length > 0) {
 			// They passed some arguments in that will affect processing
+			
 			for (int i = 0; i < args.length; i++) {
 				String thisArg = args[i];
 				if (thisArg.equals("-edgesOnly")) {
@@ -147,6 +139,8 @@ public class DataGrooming {
 					neverUseCache = true;
 				} else if (thisArg.equals("-ghost2FixOn")) {
 					ghost2FixOn = true;
+				} else if (thisArg.equals("-skipEdgeChecks")) {
+					skipEdgeCheckFlag = true;
 				} else if (thisArg.equals("-maxFix")) {
 					i++;
 					if (i >= args.length) {
@@ -175,6 +169,25 @@ public class DataGrooming {
 										+ nextArg + "]");
 						System.exit(0);
 					}
+				} else if (thisArg.equals("-timeWindowMinutes")) {
+					i++;
+					if (i >= args.length) {
+						LOGGER.error("No value passed with -timeWindowMinutes option.");
+						System.exit(0);
+					}
+					String nextArg = args[i];
+					try {
+						timeWindowMinutes = Integer.parseInt(nextArg);
+					} catch (Exception e) {
+						LOGGER.error("Bad value passed with -timeWindowMinutes option: ["
+										+ nextArg + "]");
+						System.exit(0);
+					}
+				  	if( timeWindowMinutes > 0 ){
+				  		// Translate the window value (ie. 30 minutes) into a unix timestamp like
+				  		//    we use in the db - so we can select data created after that time.
+				  		windowStartTime = figureWindowStartTime( timeWindowMinutes );
+				  	}
 				} else if (thisArg.equals("-f")) {
 					i++;
 					if (i >= args.length) {
@@ -213,7 +226,8 @@ public class DataGrooming {
 				doTheGrooming(prevFileName, edgesOnlyFlag, dontFixOrphansFlag,
 						maxRecordsToFix, groomOutFileName, ver, singleCommits,
 						dupeCheckOff, dupeFixOn, ghost2CheckOff, ghost2FixOn, 
-						finalShutdownFlag, cacheDbOkFlag);
+						finalShutdownFlag, cacheDbOkFlag, 
+						skipEdgeCheckFlag, windowStartTime);
 			} else if (doAutoFix) {
 				// They want us to run the processing twice -- first to look for
 				// delete candidates, then after
@@ -228,7 +242,8 @@ public class DataGrooming {
 				int fixCandCount = doTheGrooming("", edgesOnlyFlag,
 						dontFixOrphansFlag, maxRecordsToFix, groomOutFileName,
 						ver, singleCommits, dupeCheckOff, dupeFixOn, ghost2CheckOff, ghost2FixOn, 
-						finalShutdownFlag, cacheDbOkFlag);
+						finalShutdownFlag, cacheDbOkFlag, 
+						skipEdgeCheckFlag, windowStartTime);
 				if (fixCandCount == 0) {
 					LOGGER.info(" No fix-Candidates were found by the first pass, so no second/fix-pass is needed. ");
 				} else {
@@ -256,7 +271,8 @@ public class DataGrooming {
 							dontFixOrphansFlag, maxRecordsToFix,
 							secondGroomOutFileName, ver, singleCommits,
 							dupeCheckOff, dupeFixOn, ghost2CheckOff, ghost2FixOn, 
-							finalShutdownFlag, cacheDbOkFlag);
+							finalShutdownFlag, cacheDbOkFlag, 
+							skipEdgeCheckFlag, windowStartTime);
 				}
 			} else {
 				// Do the grooming - plain vanilla (no fix-it-file, no
@@ -271,7 +287,8 @@ public class DataGrooming {
 				doTheGrooming("", edgesOnlyFlag, dontFixOrphansFlag,
 						maxRecordsToFix, groomOutFileName, ver, singleCommits,
 						dupeCheckOff, dupeFixOn, ghost2CheckOff, ghost2FixOn, 
-						finalShutdownFlag, cacheDbOkFlag);
+						finalShutdownFlag, cacheDbOkFlag, 
+						skipEdgeCheckFlag, windowStartTime);
 			}
 		} catch (Exception ex) {
 			LOGGER.error("Exception while grooming data", ex);
@@ -306,7 +323,8 @@ public class DataGrooming {
 			Boolean singleCommits, 
 			Boolean dupeCheckOff, Boolean dupeFixOn,
 			Boolean ghost2CheckOff, Boolean ghost2FixOn, 
-			Boolean finalShutdownFlag, Boolean cacheDbOkFlag) {
+			Boolean finalShutdownFlag, Boolean cacheDbOkFlag,
+			Boolean skipEdgeCheckFlag, long windowStartTime) {
 
 		LOGGER.debug(" Entering doTheGrooming \n");
 
@@ -438,6 +456,18 @@ public class DataGrooming {
 								LOGGER.debug("count for " + nType + " so far = " + thisNtCount );
 							}
 							Vertex thisVtx = iter.next();
+							if( windowStartTime > 0 ){
+								// We only want nodes that are created after a passed-in timestamp
+								Object objTimeStamp = thisVtx.property("aai-created-ts").orElse(null);
+								if( objTimeStamp != null ){
+									long thisNodeCreateTime = (long)objTimeStamp;
+									if( thisNodeCreateTime < windowStartTime ){
+										// It is NOT in our window, so we can pass over it
+										continue;
+									}
+								}
+							}
+							
 							String thisVid = thisVtx.id().toString();
 							if (processedVertices.contains(thisVid)) {
 								LOGGER.debug("skipping already processed vertex: " + thisVid);
@@ -479,7 +509,7 @@ public class DataGrooming {
 									// This kind of node is dependent on another for uniqueness.  
 									// Start at it's parent (the dependent vertex) and make sure we can get it
 									// back using it's key properties and that we only get one.
-									Iterator <Vertex> vertI2 = source1.V(thisVtx).union(__.inE().has(EdgeProperties.out(EdgeProperty.IS_PARENT), true).outV(), __.outE().has(EdgeProperties.in(EdgeProperty.IS_PARENT)).inV());
+									Iterator <Vertex> vertI2 = source1.V(thisVtx).union(__.inE().has(EdgeProperty.CONTAINS.toString(), AAIDirection.OUT.toString()).outV(), __.outE().has(EdgeProperty.CONTAINS.toString(), AAIDirection.IN.toString()).inV());
 									Vertex parentVtx = null;
 									int pCount = 0;
 									while( vertI2 != null && vertI2.hasNext() ){
@@ -622,6 +652,7 @@ public class DataGrooming {
 			}// end of check to make sure we weren't only supposed to do edges
 
 		
+		  if( !skipEdgeCheckFlag ){
 			// --------------------------------------------------------------------------------------
 			// Now, we're going to look for one-armed-edges. Ie. an edge that
 			// should have
@@ -686,6 +717,19 @@ public class DataGrooming {
 										+ ", since that guy is a Phantom Node");
 						continue;
 					}
+					
+					if( windowStartTime > 0 ){
+						// We only want to look at nodes that are created after a passed-in timestamp
+						Object objTimeStamp = v.property("aai-created-ts").orElse(null);
+						if( objTimeStamp != null ){
+							long thisNodeCreateTime = (long)objTimeStamp;
+							if( thisNodeCreateTime < windowStartTime ){
+								// It is NOT in our window, so we can pass over it
+								continue;
+							}
+						}
+					}
+					
 					if (counter == lastShown + 250) {
 						lastShown = counter;
 						LOGGER.info("... Checking edges for vertex # "
@@ -928,7 +972,9 @@ public class DataGrooming {
 				} catch (Exception exx) {
 					LOGGER.warn("WARNING from in the while-verts-loop ", exx);
 				}
-			}// End of while-vertices-loop
+			}// End of while-vertices-loop (the edge-checking)
+		  }	// end of -- if we're not skipping the edge-checking 
+			
 
 			deleteCount = deleteCount + dupeGrpsDeleted;
 			if (!singleCommits && deleteCount > 0) {
@@ -972,13 +1018,13 @@ public class DataGrooming {
 					+ misMatchedHash.size() + "\n");
 
 			bw.write("\n ------------- Delete Candidates ---------\n");
-			for (Map.Entry<String, Vertex> entry : ghostNodeHash
+			for (Entry<String, Vertex> entry : ghostNodeHash
 					.entrySet()) {
 				String vid = entry.getKey();
 				bw.write("DeleteCandidate: Phantom Vid = [" + vid + "]\n");
 				cleanupCandidateCount++;
 			}
-			for (Map.Entry<String, Vertex> entry : orphanNodeHash
+			for (Entry<String, Vertex> entry : orphanNodeHash
 					.entrySet()) {
 				String vid = entry.getKey();
 				bw.write("DeleteCandidate: OrphanDepNode Vid = [" + vid + "]\n");
@@ -986,12 +1032,12 @@ public class DataGrooming {
 					cleanupCandidateCount++;
 				}
 			}
-			for (Map.Entry<String, Edge> entry : oneArmedEdgeHash.entrySet()) {
+			for (Entry<String, Edge> entry : oneArmedEdgeHash.entrySet()) {
 				String eid = entry.getKey();
 				bw.write("DeleteCandidate: Bad EDGE Edge-id = [" + eid + "]\n");
 				cleanupCandidateCount++;
 			}
-			for (Map.Entry<String, Vertex> entry : missingDepNodeHash
+			for (Entry<String, Vertex> entry : missingDepNodeHash
 					.entrySet()) {
 				String vid = entry.getKey();
 				bw.write("DeleteCandidate: (maybe) missingDepNode Vid = ["
@@ -1001,7 +1047,7 @@ public class DataGrooming {
 			bw.write("\n-- NOTE - To see DeleteCandidates for Duplicates, you need to look in the Duplicates Detail section below.\n");
 
 			bw.write("\n ------------- GHOST NODES - detail ");
-			for (Map.Entry<String, Vertex> entry : ghostNodeHash
+			for (Entry<String, Vertex> entry : ghostNodeHash
 					.entrySet()) {
 				try {
 					String vid = entry.getKey();
@@ -1023,7 +1069,7 @@ public class DataGrooming {
 			}
 
 			bw.write("\n ------------- Missing Dependent Edge ORPHAN NODES - detail: ");
-			for (Map.Entry<String, Vertex> entry : orphanNodeHash
+			for (Entry<String, Vertex> entry : orphanNodeHash
 					.entrySet()) {
 				try {
 					String vid = entry.getKey();
@@ -1045,7 +1091,7 @@ public class DataGrooming {
 			}
 
 			bw.write("\n ------------- Missing Dependent Edge (but not orphan) NODES: ");
-			for (Map.Entry<String, Vertex> entry : missingDepNodeHash
+			for (Entry<String, Vertex> entry : missingDepNodeHash
 					.entrySet()) {
 				try {
 					String vid = entry.getKey();
@@ -1068,7 +1114,7 @@ public class DataGrooming {
 			}
 
 			bw.write("\n ------------- EDGES pointing to empty/bad vertices: ");
-			for (Map.Entry<String, Edge> entry : oneArmedEdgeHash.entrySet()) {
+			for (Entry<String, Edge> entry : oneArmedEdgeHash.entrySet()) {
 				try {
 					String eid = entry.getKey();
 					Edge thisE = entry.getValue();
@@ -1168,7 +1214,7 @@ public class DataGrooming {
 			}// while - work on each group of dupes
 
 			bw.write("\n ------------- Mis-matched Label/aai-node-type Nodes: \n ");
-			for (Map.Entry<String, String> entry : misMatchedHash.entrySet()) {
+			for (Entry<String, String> entry : misMatchedHash.entrySet()) {
 				String msg = entry.getValue();
 				bw.write("MixedMsg = " + msg + "\n");
 			}
@@ -1274,7 +1320,7 @@ public class DataGrooming {
 		while( it.hasNext() ){
 			String propName = "";
 			String propVal = "";
-			Map.Entry <?,?>propEntry = (Map.Entry<?,?>)it.next();
+			Entry <?,?>propEntry = (Entry<?,?>)it.next();
 			Object propNameObj = propEntry.getKey();
 			if( propNameObj != null ){
 				propName = propNameObj.toString();
@@ -1770,7 +1816,7 @@ public class DataGrooming {
 				HashMap<String, ArrayList<Vertex>> vertsGroupedByParentHash = groupVertsByDepNodes(
 						transId, fromAppId, source, version, nType,
 						checkVertList, loader);
-				for (Map.Entry<String, ArrayList<Vertex>> entry : vertsGroupedByParentHash
+				for (Entry<String, ArrayList<Vertex>> entry : vertsGroupedByParentHash
 						.entrySet()) {
 					ArrayList<Vertex> thisParentsVertList = entry
 							.getValue();
@@ -2020,7 +2066,7 @@ public class DataGrooming {
 		}
 		
 		int i = -1;
-		for( Map.Entry<String, Object> entry : keyPropsHash.entrySet() ){
+		for( Entry<String, Object> entry : keyPropsHash.entrySet() ){
 			i++;
 			kName.add(i, entry.getKey());
 			kVal.add(i, entry.getValue());
@@ -2201,7 +2247,8 @@ public class DataGrooming {
 			Vertex startVtx, String childNType ) throws AAIException{
 		
 		ArrayList <Vertex> childList = new ArrayList <> ();
-		Iterator <Vertex> vertI = g.V(startVtx).union(__.outE().has(EdgeProperties.out(EdgeProperty.IS_PARENT), true), __.inE().has(EdgeProperties.in(EdgeProperty.IS_PARENT), true)).bothV();
+		Iterator <Vertex> vertI =  g.V(startVtx).union(__.outE().has(EdgeProperty.CONTAINS.toString(), AAIDirection.OUT.toString()).inV(), __.inE().has(EdgeProperty.CONTAINS.toString(), AAIDirection.IN.toString()).outV());
+		
 		Vertex tmpVtx = null;
 		while( vertI != null && vertI.hasNext() ){
 			tmpVtx = vertI.next();
@@ -2223,7 +2270,8 @@ public class DataGrooming {
 			Vertex startVtx ) throws AAIException{
 		
 		Vertex parentVtx = null;
-		Iterator <Vertex> vertI = g.V(startVtx).union(__.inE().has(EdgeProperties.out(EdgeProperty.IS_PARENT), true), __.outE().has(EdgeProperties.in(EdgeProperty.IS_PARENT), true)).bothV();
+		Iterator <Vertex> vertI = g.V(startVtx).union(__.inE().has(EdgeProperty.CONTAINS.toString(), AAIDirection.OUT.toString()).outV(), __.outE().has(EdgeProperty.CONTAINS.toString(), AAIDirection.IN.toString()).inV());
+				
 		while( vertI != null && vertI.hasNext() ){
 			// Note - there better only be one!
 			parentVtx = vertI.next();
@@ -2232,6 +2280,22 @@ public class DataGrooming {
 		return parentVtx;		
 
 	}// End of getConnectedParent()
+	
+	
+	private static long figureWindowStartTime( int timeWindowMinutes ){
+		// Given a window size, calculate what the start-timestamp would be.
+		
+		if( timeWindowMinutes <= 0 ){
+			// This just means that there is no window...
+			return 0;
+		}
+		long unixTimeNow = System.currentTimeMillis();
+		long windowInMillis = timeWindowMinutes * 60 * 1000;
+		
+		long startTimeStamp = unixTimeNow - windowInMillis;
+		
+		return startTimeStamp;
+	} // End of figureWindowStartTime()
 	
 	
 }

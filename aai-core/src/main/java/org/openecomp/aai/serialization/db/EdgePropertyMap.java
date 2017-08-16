@@ -20,19 +20,40 @@
 
 package org.openecomp.aai.serialization.db;
 
-public enum EdgeProperty {
-	CONTAINS("contains-other-v"),
-	DELETE_OTHER_V("delete-other-v"),
-	SVC_INFRA("SVC-INFRA"),
-	PREVENT_DELETE("prevent-delete");
-	private final String name;
+import org.apache.tinkerpop.gremlin.structure.Direction;
 
-	private EdgeProperty(String name) {
-		this.name = name;
+import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class EdgePropertyMap<K, V> extends HashMap<K, V> {
+
+	private static final long serialVersionUID = -8298355506617458683L;
+	
+	private static final Pattern variablePattern = Pattern.compile("(!)?\\$\\{(\\w+)\\}");
+	
+	@Override
+	public V get(Object arg0) {
+		
+		V value = super.get(arg0);
+		
+		Matcher m = variablePattern.matcher(value.toString());
+		if (m.find()) {
+			if (m.groupCount() == 2) {
+				if (m.group(1) == null) {
+					value = super.get(m.group(2));
+				} else {
+					value = reverse(super.get(m.group(2)));
+				}
+			}
+		}
+		
+		return value;
 	}
 
-	@Override
-	public String toString() {
-		return name;
+	
+	protected V reverse(V value) {
+		
+		return (V)Direction.valueOf(value.toString()).opposite().toString();
 	}
 }

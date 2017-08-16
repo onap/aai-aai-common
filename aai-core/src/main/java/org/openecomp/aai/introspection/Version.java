@@ -23,7 +23,7 @@ package org.openecomp.aai.introspection;
 public enum Version {
 	v8,
 	v9,
-	v10, 
+	v10,
 	v11;
 	
 	public static boolean isLatest(Version v) {

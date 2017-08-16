@@ -20,31 +20,31 @@
 
 package org.openecomp.aai.serialization.queryformats.utils;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.openecomp.aai.db.props.AAIProperties;
 import org.openecomp.aai.exceptions.AAIException;
 import org.openecomp.aai.introspection.Version;
 import org.openecomp.aai.serialization.db.DBSerializer;
 import org.openecomp.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
 import org.openecomp.aai.util.AAIApiServerURLBase;
+import org.openecomp.aai.util.AAIConstants;
 import org.openecomp.aai.workarounds.LegacyURITransformer;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 public class UrlBuilder {
 
 	private final DBSerializer serializer;
 	private final Version version;
 	private final String serverBase;
-
+	
 	public UrlBuilder (Version version, DBSerializer serializer) throws AAIException {
 		this.serializer = serializer;
 		this.version = version;
-        this.serverBase = AAIApiServerURLBase.get(AAIProperties.LATEST);
+		this.serverBase = this.getServerBase(version);
 	}
-
+	
 	public UrlBuilder (Version version, DBSerializer serializer, String serverBase) {
 		this.serializer = serializer;
 		this.version = version;
@@ -57,9 +57,13 @@ public class UrlBuilder {
 			final StringBuilder result = new StringBuilder();
 			final URI uri = this.serializer.getURIForVertex(v);
 
-			result.append(this.serverBase);
+			if (this.version.compareTo(Version.v11) >= 0) {
+				result.append(AAIConstants.AAI_APP_ROOT);
+			} else {
+				result.append(this.serverBase);
+			}
 			result.append(this.version);
-			result.append(uri.getRawPath());
+			result.append(uri);
 
 			return result.toString();
 		} catch (UnsupportedEncodingException | IllegalArgumentException | SecurityException e) {
@@ -72,11 +76,15 @@ public class UrlBuilder {
 
 		result.append("/resources/id/" + v.id());
 		result.insert(0, this.version);
-		result.insert(0, this.serverBase);
+		if (this.version.compareTo(Version.v11) >= 0) {
+			result.insert(0, AAIConstants.AAI_APP_ROOT);
+		} else {
+			result.insert(0, this.serverBase);
+		}
 
 		return result.toString();
 	}
-
+	
 	protected String getServerBase(Version v) throws AAIException {
 		return AAIApiServerURLBase.get(v);
 	}

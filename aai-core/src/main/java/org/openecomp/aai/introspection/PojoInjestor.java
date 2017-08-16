@@ -20,15 +20,13 @@
 
 package org.openecomp.aai.introspection;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.openecomp.aai.db.props.AAIProperties;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
-
-import org.openecomp.aai.db.props.AAIProperties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class PojoInjestor {
 	

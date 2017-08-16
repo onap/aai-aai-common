@@ -20,10 +20,7 @@
 
 package org.openecomp.aai.serialization.queryformats;
 
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.google.gson.JsonObject;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.openecomp.aai.db.props.AAIProperties;
 import org.openecomp.aai.exceptions.AAIException;
@@ -31,7 +28,9 @@ import org.openecomp.aai.introspection.Introspector;
 import org.openecomp.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.openecomp.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
 
-import com.google.gson.JsonObject;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SimpleFormat extends RawFormat {
 
@@ -59,7 +58,7 @@ public class SimpleFormat extends RawFormat {
 			wrapper.add(v);
 
 			try {
-				serializer.dbToObject(wrapper, obj, this.depth, false, "false");
+				serializer.dbToObject(wrapper, obj, this.depth, true, "false");
 			} catch (AAIException | UnsupportedEncodingException  e) {
 				throw new AAIFormatVertexException("Failed to format vertex - error while serializing: " + e.getMessage(), e);
 			}

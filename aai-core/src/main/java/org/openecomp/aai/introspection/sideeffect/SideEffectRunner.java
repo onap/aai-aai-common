@@ -20,18 +20,17 @@
 
 package org.openecomp.aai.introspection.sideeffect;
 
+import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.openecomp.aai.exceptions.AAIException;
+import org.openecomp.aai.introspection.Introspector;
+import org.openecomp.aai.serialization.db.DBSerializer;
+import org.openecomp.aai.serialization.engines.TransactionalGraphEngine;
+
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.util.LinkedHashSet;
 import java.util.Set;
-
-import org.apache.tinkerpop.gremlin.structure.Vertex;
-
-import org.openecomp.aai.exceptions.AAIException;
-import org.openecomp.aai.introspection.Introspector;
-import org.openecomp.aai.serialization.db.DBSerializer;
-import org.openecomp.aai.serialization.engines.TransactionalGraphEngine;
 
 public class SideEffectRunner {
 
