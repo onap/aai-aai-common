@@ -56,7 +56,6 @@ import org.openecomp.aai.serialization.engines.TransactionalGraphEngine;
 import org.openecomp.aai.serialization.queryformats.QueryFormatTestHelper;
 import org.openecomp.aai.util.AAIConstants;
 
-
 @Ignore
 public class GraphTraversalTest {
 
@@ -489,7 +488,7 @@ public class GraphTraversalTest {
 		QueryParser query = dbEngine.getQueryBuilder().createQueryFromURI(uri);
 		
 		GraphTraversal<Vertex, Vertex> expected = __.<Vertex>start()
-				.has("vnf-id", "key1").has(AAIProperties.NODE_TYPE, P.within("vce", "vpe", "generic-vnf"));
+				.has("vnf-id", "key1").has(AAIProperties.NODE_TYPE, P.within("vce", "generic-vnf"));
 			
 		GraphTraversal<Vertex, Vertex> expectedParent = expected;
 		assertEquals(
@@ -535,11 +534,11 @@ public class GraphTraversalTest {
 		QueryParser query = dbEngine.getQueryBuilder().createQueryFromURI(uri);
 		
 		GraphTraversal<Vertex, Vertex> expected = __.<Vertex>start()
-				.has("vnf-id", "key1").has(AAIProperties.NODE_TYPE, P.within("vce", "vpe", "generic-vnf"))
+				.has("vnf-id", "key1").has(AAIProperties.NODE_TYPE, P.within("vce", "generic-vnf"))
 				.union(__.out("has").has(AAIProperties.NODE_TYPE, "vf-module")).has("vf-module-id", "key2");
 		
 		GraphTraversal<Vertex, Vertex> expectedParent = __.<Vertex>start()
-				.has("vnf-id", "key1").has(AAIProperties.NODE_TYPE, P.within("vce", "vpe", "generic-vnf"));
+				.has("vnf-id", "key1").has(AAIProperties.NODE_TYPE, P.within("vce", "generic-vnf"));
 		assertEquals(
 				"gremlin query should be " + expected.toString(),
 				expected.toString(),

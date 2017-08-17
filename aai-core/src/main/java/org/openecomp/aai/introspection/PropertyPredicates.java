@@ -20,10 +20,10 @@
 
 package org.openecomp.aai.introspection;
 
-import org.openecomp.aai.schema.enums.PropertyMetadata;
-
 import java.util.Map;
 import java.util.Set;
+
+import org.openecomp.aai.schema.enums.PropertyMetadata;
 
 public final class PropertyPredicates {
 

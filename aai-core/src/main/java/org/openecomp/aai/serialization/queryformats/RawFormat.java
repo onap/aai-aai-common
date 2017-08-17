@@ -20,10 +20,9 @@
 
 package org.openecomp.aai.serialization.queryformats;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import java.util.Iterator;
+import java.util.List;
+
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
@@ -35,8 +34,10 @@ import org.openecomp.aai.serialization.queryformats.params.Depth;
 import org.openecomp.aai.serialization.queryformats.params.NodesOnly;
 import org.openecomp.aai.serialization.queryformats.utils.UrlBuilder;
 
-import java.util.Iterator;
-import java.util.List;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 
 public class RawFormat implements FormatMapper {

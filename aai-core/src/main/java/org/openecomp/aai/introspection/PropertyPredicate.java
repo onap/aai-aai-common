@@ -21,6 +21,7 @@
 package org.openecomp.aai.introspection;
 
 import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 
 public interface PropertyPredicate<T, U> extends BiPredicate<T, U> {
 

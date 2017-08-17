@@ -20,13 +20,14 @@
 
 package org.openecomp.aai.parsers.query;
 
+import java.net.URI;
+
 import org.apache.tinkerpop.gremlin.structure.Vertex;
+
 import org.openecomp.aai.db.props.AAIProperties;
 import org.openecomp.aai.introspection.Loader;
 import org.openecomp.aai.introspection.LoaderFactory;
 import org.openecomp.aai.query.builder.QueryBuilder;
-
-import java.net.URI;
 
 /**
  * The Class QueryParser.

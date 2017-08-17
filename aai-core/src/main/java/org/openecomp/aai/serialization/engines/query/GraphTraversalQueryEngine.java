@@ -21,6 +21,15 @@
 package org.openecomp.aai.serialization.engines.query;
 
 
+import static org.openecomp.aai.serialization.db.AAIDirection.IN;
+import static org.openecomp.aai.serialization.db.AAIDirection.NONE;
+import static org.openecomp.aai.serialization.db.AAIDirection.OUT;
+import static org.openecomp.aai.serialization.db.EdgeProperty.CONTAINS;
+import static org.openecomp.aai.serialization.db.EdgeProperty.DELETE_OTHER_V;
+
+import java.util.List;
+import java.util.Set;
+
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
@@ -32,13 +41,6 @@ import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.openecomp.aai.db.props.AAIProperties;
 import org.openecomp.aai.introspection.Loader;
-
-import java.util.List;
-import java.util.Set;
-
-import static org.openecomp.aai.serialization.db.AAIDirection.*;
-import static org.openecomp.aai.serialization.db.EdgeProperty.CONTAINS;
-import static org.openecomp.aai.serialization.db.EdgeProperty.DELETE_OTHER_V;
 
 /*
  * This class needs some big explanation despite its compact size.

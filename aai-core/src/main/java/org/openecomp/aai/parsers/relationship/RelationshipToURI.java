@@ -20,11 +20,23 @@
 
 package org.openecomp.aai.parsers.relationship;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
+
+import javax.ws.rs.core.UriBuilder;
+
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.openecomp.aai.exceptions.AAIException;
-import org.openecomp.aai.introspection.*;
+import org.openecomp.aai.introspection.Introspector;
+import org.openecomp.aai.introspection.IntrospectorFactory;
+import org.openecomp.aai.introspection.Loader;
+import org.openecomp.aai.introspection.ModelType;
+import org.openecomp.aai.introspection.Version;
 import org.openecomp.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.openecomp.aai.parsers.exceptions.AAIIdentityMapParseException;
 import org.openecomp.aai.parsers.exceptions.AmbiguousMapAAIException;
@@ -36,14 +48,8 @@ import org.openecomp.aai.serialization.db.EdgeRules;
 import org.openecomp.aai.serialization.db.EdgeType;
 import org.openecomp.aai.workarounds.LegacyURITransformer;
 
-import javax.ws.rs.core.UriBuilder;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import com.att.eelf.configuration.EELFLogger;
+import com.att.eelf.configuration.EELFManager;
 
 /**
  * The Class RelationshipToURI.

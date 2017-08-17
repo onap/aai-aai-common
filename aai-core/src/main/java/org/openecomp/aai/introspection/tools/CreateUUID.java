@@ -20,11 +20,11 @@
 
 package org.openecomp.aai.introspection.tools;
 
-import org.openecomp.aai.introspection.Introspector;
-import org.openecomp.aai.schema.enums.PropertyMetadata;
-
 import java.util.Map;
 import java.util.UUID;
+
+import org.openecomp.aai.introspection.Introspector;
+import org.openecomp.aai.schema.enums.PropertyMetadata;
 
 public class CreateUUID implements IssueResolver {
 

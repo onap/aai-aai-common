@@ -20,9 +20,17 @@
 
 package org.openecomp.aai.introspection;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
-import com.google.common.base.CaseFormat;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+
 import org.apache.commons.lang.ClassUtils;
 import org.eclipse.persistence.exceptions.DynamicException;
 import org.openecomp.aai.introspection.exceptions.AAIUnknownObjectException;
@@ -32,9 +40,9 @@ import org.openecomp.aai.schema.enums.ObjectMetadata;
 import org.openecomp.aai.schema.enums.PropertyMetadata;
 import org.openecomp.aai.workarounds.NamingExceptions;
 
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import com.att.eelf.configuration.EELFLogger;
+import com.att.eelf.configuration.EELFManager;
+import com.google.common.base.CaseFormat;
 
 public abstract class Introspector implements Cloneable {
 

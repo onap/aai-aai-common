@@ -20,19 +20,20 @@
 
 package org.openecomp.aai.parsers.uri;
 
-import com.google.common.base.CaseFormat;
-import com.google.common.base.Joiner;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.ws.rs.core.MultivaluedMap;
+
 import org.openecomp.aai.exceptions.AAIException;
 import org.openecomp.aai.introspection.Introspector;
 import org.openecomp.aai.introspection.Loader;
 import org.openecomp.aai.restcore.HttpMethod;
 import org.openecomp.aai.serialization.db.EdgeType;
-
-import javax.ws.rs.core.MultivaluedMap;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
+import com.google.common.base.CaseFormat;
+import com.google.common.base.Joiner;
 
 /**
  * The Class URIToExtensionInformation.

@@ -72,8 +72,8 @@ public class AAIApiServerURLBase {
 	 */
 	public static String get(Version v) throws AAIException {
 		String hostName = null;
-		hostName = AAIApiServerURLBase.get();
-
+	    hostName = AAIApiServerURLBase.get();
+		
 		return hostName;
 	}
 	

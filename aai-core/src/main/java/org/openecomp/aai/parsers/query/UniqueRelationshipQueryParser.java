@@ -20,13 +20,13 @@
 
 package org.openecomp.aai.parsers.query;
 
+import java.io.UnsupportedEncodingException;
+
 import org.openecomp.aai.exceptions.AAIException;
 import org.openecomp.aai.introspection.Introspector;
 import org.openecomp.aai.introspection.Loader;
 import org.openecomp.aai.parsers.relationship.RelationshipToURI;
 import org.openecomp.aai.query.builder.QueryBuilder;
-
-import java.io.UnsupportedEncodingException;
 
 /**
  * The Class UniqueRelationshipQueryParser.

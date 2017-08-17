@@ -34,6 +34,7 @@ import java.util.Map;
 
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Graph;
+import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.junit.After;
 import org.junit.Before;
@@ -57,9 +58,6 @@ import com.thinkaurelius.titan.core.TitanGraph;
 
 @Ignore
 public class DbAliasTest {
-
-	
-	
 	private TitanGraph graph;
 	private final Version version = Version.v9;
 	private final ModelType introspectorFactoryType = ModelType.MOXY;
@@ -78,13 +76,13 @@ public class DbAliasTest {
 				type,
 				loader);
 	}
-	
+
 	@After
 	public void tearDown() {
 		graph.tx().rollback();
 		graph.close();
 	}
-	
+
 	@Test
 	public void checkOnWrite() throws AAIException, UnsupportedEncodingException, URISyntaxException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException, NoSuchMethodException, InterruptedException {
 		final String property = "persona-model-customization-id";
@@ -109,17 +107,17 @@ public class DbAliasTest {
 		if (map.containsKey(PropertyMetadata.DB_ALIAS)) {
 			dbPropertyName = map.get(PropertyMetadata.DB_ALIAS);
 		}
-		
+
 		assertEquals("dbAlias is ", "model-customization-id", dbPropertyName);
 		assertEquals("dbAlias property exists", "hello", v.property(dbPropertyName).orElse(""));
 		assertEquals("model property does not", "missing", v.property(property).orElse("missing"));
-	
+
 	}
-	
+
 	@Test
 	public void checkOnRead() throws AAIException, UnsupportedEncodingException, URISyntaxException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException, NoSuchMethodException, InterruptedException, MalformedURLException {
 		final String property = "persona-model-customization-id";
-		
+
 		TransactionalGraphEngine spy = spy(dbEngine);
 		TransactionalGraphEngine.Admin adminSpy = spy(dbEngine.asAdmin());
 		Vertex v = graph.traversal().addV("vnf-id", "key1", "model-customization-id", "hello").next();
@@ -131,9 +129,10 @@ public class DbAliasTest {
 		DBSerializer serializer = new DBSerializer(version, spy, introspectorFactoryType, "AAI_TEST");
 		Introspector obj = loader.introspectorFromName("generic-vnf");
 		serializer.dbToObject(Collections.singletonList(v), obj, 0, true, "false");
-		
+
 		assertEquals("dbAlias property exists", "hello", obj.getValue(property));
-		
+
 	}
-	
+
+
 }

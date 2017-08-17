@@ -20,8 +20,10 @@
 
 package org.openecomp.aai.serialization.queryformats;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.openecomp.aai.db.props.AAIProperties;
 import org.openecomp.aai.exceptions.AAIException;
@@ -34,9 +36,8 @@ import org.openecomp.aai.serialization.queryformats.params.Depth;
 import org.openecomp.aai.serialization.queryformats.params.NodesOnly;
 import org.openecomp.aai.serialization.queryformats.utils.UrlBuilder;
 
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 public class Resource implements FormatMapper {
 

@@ -20,14 +20,15 @@
 
 package org.openecomp.aai.parsers.query;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+
+import javax.ws.rs.core.MultivaluedMap;
+
 import org.openecomp.aai.exceptions.AAIException;
 import org.openecomp.aai.introspection.Introspector;
 import org.openecomp.aai.introspection.Loader;
 import org.openecomp.aai.query.builder.QueryBuilder;
-
-import javax.ws.rs.core.MultivaluedMap;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
 
 /**
  * The Class QueryParserStrategy.

@@ -20,10 +20,10 @@
 
 package org.openecomp.aai.serialization.db;
 
-import org.apache.tinkerpop.gremlin.structure.Direction;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import org.apache.tinkerpop.gremlin.structure.Direction;
 
 public class EdgeRule {
 

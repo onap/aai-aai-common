@@ -20,17 +20,18 @@
 
 package org.openecomp.aai.serialization.queryformats;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.thinkaurelius.titan.graphdb.tinkerpop.TitanIoRegistry;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.io.graphson.GraphSONMapper;
 import org.apache.tinkerpop.gremlin.structure.io.graphson.GraphSONWriter;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.thinkaurelius.titan.graphdb.tinkerpop.TitanIoRegistry;
 
 public class GraphSON implements FormatMapper {
 

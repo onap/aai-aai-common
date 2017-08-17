@@ -20,8 +20,18 @@
 
 package org.openecomp.aai.parsers.query;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import javax.ws.rs.core.MultivaluedMap;
+
 import org.openecomp.aai.exceptions.AAIException;
 import org.openecomp.aai.introspection.Introspector;
 import org.openecomp.aai.introspection.Loader;
@@ -33,13 +43,8 @@ import org.openecomp.aai.query.builder.QueryBuilder;
 import org.openecomp.aai.restcore.util.URITools;
 import org.openecomp.aai.schema.enums.PropertyMetadata;
 import org.openecomp.aai.serialization.db.EdgeType;
-
-import javax.ws.rs.core.MultivaluedMap;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.*;
-import java.util.Map.Entry;
+import com.att.eelf.configuration.EELFLogger;
+import com.att.eelf.configuration.EELFManager;
 
 /**
  * The Class LegacyQueryParser.

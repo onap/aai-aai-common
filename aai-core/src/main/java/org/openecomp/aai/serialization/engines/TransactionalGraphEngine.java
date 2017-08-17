@@ -20,8 +20,9 @@
 
 package org.openecomp.aai.serialization.engines;
 
-import com.thinkaurelius.titan.core.TitanGraph;
-import com.thinkaurelius.titan.core.schema.TitanManagement;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.strategy.verification.ReadOnlyStrategy;
 import org.apache.tinkerpop.gremlin.structure.Graph;
@@ -36,8 +37,8 @@ import org.openecomp.aai.serialization.db.GraphSingleton;
 import org.openecomp.aai.serialization.engines.query.GraphTraversalQueryEngine;
 import org.openecomp.aai.serialization.engines.query.QueryEngine;
 
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+import com.thinkaurelius.titan.core.TitanGraph;
+import com.thinkaurelius.titan.core.schema.TitanManagement;
 
 public abstract class TransactionalGraphEngine {
 	

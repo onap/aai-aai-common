@@ -566,11 +566,11 @@ public class RelationshipGremlinQueryTest {
 
 		String expected = 
 				".has('vnf-id', 'key1')"
-				+ ".has('aai-node-type', P.within('vce','vpe','generic-vnf'))";
+				+ ".has('aai-node-type', P.within('vce','generic-vnf'))";
 				
 		String expectedParent = 
 				".has('vnf-id', 'key1')"
-						+ ".has('aai-node-type', P.within('vce','vpe','generic-vnf'))";
+						+ ".has('aai-node-type', P.within('vce','generic-vnf'))";
 						
 		assertEquals(
 				"gremlin query should be " + expected,

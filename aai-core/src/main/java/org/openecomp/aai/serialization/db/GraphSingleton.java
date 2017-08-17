@@ -20,11 +20,11 @@
 
 package org.openecomp.aai.serialization.db;
 
-import com.thinkaurelius.titan.core.TitanGraph;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.openecomp.aai.dbmap.AAIGraph;
 import org.openecomp.aai.dbmap.DBConnectionType;
-
-import java.util.concurrent.atomic.AtomicInteger;
+import com.thinkaurelius.titan.core.TitanGraph;
 
 /* This class simply calls AAIGraph under the covers for now */
 public class GraphSingleton {

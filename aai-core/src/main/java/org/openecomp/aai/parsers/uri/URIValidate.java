@@ -20,11 +20,11 @@
 
 package org.openecomp.aai.parsers.uri;
 
+import javax.ws.rs.core.MultivaluedMap;
+
 import org.openecomp.aai.exceptions.AAIException;
 import org.openecomp.aai.introspection.Introspector;
 import org.openecomp.aai.serialization.db.EdgeType;
-
-import javax.ws.rs.core.MultivaluedMap;
 
 class URIValidate implements Parsable {
 
