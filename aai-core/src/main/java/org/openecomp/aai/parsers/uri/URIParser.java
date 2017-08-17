@@ -20,6 +20,14 @@
 
 package org.openecomp.aai.parsers.uri;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.util.Set;
+
+import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.UriBuilder;
+
 import org.openecomp.aai.exceptions.AAIException;
 import org.openecomp.aai.introspection.Introspector;
 import org.openecomp.aai.introspection.Loader;
@@ -32,13 +40,6 @@ import org.openecomp.aai.schema.enums.ObjectMetadata;
 import org.openecomp.aai.serialization.db.EdgeType;
 import org.openecomp.aai.util.AAIConfig;
 import org.springframework.web.util.UriUtils;
-
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriBuilder;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.util.Set;
 
 
 /**
@@ -76,8 +77,8 @@ public class URIParser {
 
 		//Load the latest version because we need it for cloud region
 
-		this.loader = loader;
-	}
+			this.loader = loader;
+		}
 	
 	/**
 	 * Instantiates a new URI parser.
@@ -245,8 +246,8 @@ public class URIParser {
 	 * @return the uri
 	 */
 	protected URI handleCloudRegion(String action, URI uri) {
-		
-		return uri;
+
+			return uri;
 
 	}
 	

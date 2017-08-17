@@ -22,59 +22,46 @@ package org.openecomp.aai.util;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.FileInputStream;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.lang.reflect.Field;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.lang.reflect.Field;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
 import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.Result;
-import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.openecomp.aai.dbmodel.DbEdgeRules;
+import org.openecomp.aai.introspection.Version;
+import org.openecomp.aai.serialization.db.EdgeProperty;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.NodeList;
 
-import org.openecomp.aai.dbmodel.DbEdgeRules;
-import org.openecomp.aai.db.props.AAIProperties;
-import org.openecomp.aai.introspection.Version;
-import org.openecomp.aai.serialization.db.EdgeRule;
-import org.openecomp.aai.serialization.db.EdgeRules;
-
 import com.google.common.base.Joiner;
 import com.google.common.collect.Multimap;
-import com.jayway.jsonpath.Criteria;
-import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 
 
@@ -334,7 +321,7 @@ public class GenerateXsd {
 			if ( fileTypeToGen.equals(generateTypeXSD) ) {
 				useAnnotationsInXsd = versionUsesAnnotations(apiVersion);
 				outfileName = xsd_dir + "/aai_schema_" + apiVersion + "." + generateTypeXSD;
-				fileContent = processOxmFile( oxm_file);
+				fileContent = processOxmFile(oxm_file, v);
 			} else if ( versionSupportsSwagger(apiVersion )) {
 				outfileName = yaml_dir + "/aai_swagger_" + apiVersion + "." + generateTypeYAML;
 				fileContent = generateSwaggerFromOxmFile( oxm_file);
@@ -703,9 +690,9 @@ public class GenerateXsd {
 	}	
 	
 	
-	public static String processOxmFile( File oxmFile )
+	public static String processOxmFile( File oxmFile, Version v )
 	{
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n");
 		String namespace = "org.openecomp";
 		if ( useAnnotationsInXsd ) {
@@ -871,13 +858,13 @@ public class GenerateXsd {
 				edgeDes.setDirection(direction);
 				multiplicity = (String)edgeMap.get("multiplicity");
 				edgeDes.setMultiplicity(multiplicity);
-				isParent = (String)edgeMap.get("isParent");
-				if ( isParent != null && isParent.equals("true"))  {
+				isParent = (String)edgeMap.get(EdgeProperty.CONTAINS.toString());
+				if ( "${direction}".equals(isParent))  {
 					edgeDes.setType(LineageType.PARENT);
 				} else {
 					edgeDes.setType(LineageType.UNRELATED);
 				}
-				hasDelTarget = (String)edgeMap.get("hasDelTarget");
+				hasDelTarget = (String)edgeMap.get(EdgeProperty.DELETE_OTHER_V.toString());
 				edgeDes.setHasDelTarget(hasDelTarget);
 				result.add(edgeDes);
 				

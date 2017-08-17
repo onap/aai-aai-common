@@ -20,15 +20,16 @@
 
 package org.openecomp.aai.introspection;
 
-import org.json.simple.JSONObject;
-import org.openecomp.aai.schema.enums.ObjectMetadata;
-import org.openecomp.aai.schema.enums.PropertyMetadata;
-
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+
+import org.json.simple.JSONObject;
+
+import org.openecomp.aai.schema.enums.ObjectMetadata;
+import org.openecomp.aai.schema.enums.PropertyMetadata;
 
 public class JSONStrategy extends Introspector {
 

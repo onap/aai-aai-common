@@ -26,13 +26,11 @@ import java.util.Map;
 
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openecomp.aai.exceptions.AAIException;
 import org.openecomp.aai.introspection.Version;
 import org.openecomp.aai.serialization.db.exceptions.NoEdgeRuleFoundException;
 
-@Ignore
 public class EdgeRulesTest {
 
 	@BeforeClass
@@ -94,10 +92,5 @@ public class EdgeRulesTest {
 		assertEquals(true, EdgeRules.getInstance(Version.v8).hasEdgeRule("pserver", "complex"));
 		assertEquals(false, EdgeRules.getInstance(Version.v8).hasEdgeRule("model-element", "model-ver"));
 	}
-	
-	@Test
-	public void verifyOldEdgeDeleteSemantics() throws AAIException, ClassNotFoundException, IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
-//		assertEquals(DeleteSemantic.ERROR_4_IN_EDGES_OR_CASCADE, EdgeRules.getInstance().getDeleteSemantic("model"));
-//		assertEquals(DeleteSemantic.CASCADE_TO_CHILDREN, EdgeRules.getInstance(Version.v8).getDeleteSemantic("model"));
-	}
+
 }

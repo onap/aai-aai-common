@@ -20,6 +20,10 @@
 
 package org.openecomp.aai.serialization.queryformats.utils;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.openecomp.aai.exceptions.AAIException;
 import org.openecomp.aai.introspection.Version;
@@ -28,10 +32,6 @@ import org.openecomp.aai.serialization.queryformats.exceptions.AAIFormatVertexEx
 import org.openecomp.aai.util.AAIApiServerURLBase;
 import org.openecomp.aai.util.AAIConstants;
 import org.openecomp.aai.workarounds.LegacyURITransformer;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 public class UrlBuilder {
 
@@ -56,7 +56,7 @@ public class UrlBuilder {
 		try {
 			final StringBuilder result = new StringBuilder();
 			final URI uri = this.serializer.getURIForVertex(v);
-
+			
 			if (this.version.compareTo(Version.v11) >= 0) {
 				result.append(AAIConstants.AAI_APP_ROOT);
 			} else {
@@ -65,7 +65,7 @@ public class UrlBuilder {
 			result.append(this.version);
 			result.append(uri);
 
-			return result.toString();
+				return result.toString();
 		} catch (UnsupportedEncodingException | IllegalArgumentException | SecurityException e) {
 			throw new AAIFormatVertexException(e);
 		}

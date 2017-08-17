@@ -20,7 +20,10 @@
 
 package org.openecomp.aai.serialization.queryformats;
 
-import com.google.gson.JsonObject;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.openecomp.aai.db.props.AAIProperties;
 import org.openecomp.aai.exceptions.AAIException;
@@ -28,9 +31,7 @@ import org.openecomp.aai.introspection.Introspector;
 import org.openecomp.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.openecomp.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
 
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
+import com.google.gson.JsonObject;
 
 public class SimpleFormat extends RawFormat {
 

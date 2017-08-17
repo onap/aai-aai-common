@@ -51,6 +51,7 @@ import org.openecomp.aai.introspection.Version;
 import org.openecomp.aai.introspection.sideeffect.exceptions.AAIMissingRequiredPropertyException;
 import org.openecomp.aai.parsers.query.QueryParser;
 import org.openecomp.aai.serialization.db.DBSerializer;
+import org.openecomp.aai.serialization.db.EdgeProperty;
 import org.openecomp.aai.serialization.engines.QueryStyle;
 import org.openecomp.aai.serialization.engines.TitanDBEngine;
 import org.openecomp.aai.serialization.engines.TransactionalGraphEngine;
@@ -90,9 +91,9 @@ public class DataCopyTest {
 				loader);
 		
 		graph.traversal().addV("aai-node-type", "model", "model-invariant-id", "key1").as("v1")
-		.addV("aai-node-type", "model-ver", "model-ver", "myValue", "model-version-id", "key2", "model-version", "testValue").addInE("has", "v1", "isParent", true)
+		.addV("aai-node-type", "model-ver", "model-ver", "myValue", "model-version-id", "key2", "model-version", "testValue").addInE("has", "v1", EdgeProperty.CONTAINS.toString(), true)
 		.addV("aai-node-type", "model", "model-invariant-id", "key3").as("v2")
-		.addV("aai-node-type", "model-ver", "model-ver", "myValue", "model-version-id", "key4").addInE("has", "v2", "isParent", true)
+		.addV("aai-node-type", "model-ver", "model-ver", "myValue", "model-version-id", "key4").addInE("has", "v2", EdgeProperty.CONTAINS.toString(), true)
 		.next();
 		graph.tx().commit();
 	}

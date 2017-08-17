@@ -20,9 +20,9 @@
 
 package org.openecomp.aai.introspection;
 
-import org.openecomp.aai.exceptions.AAIException;
-
 import java.util.List;
+
+import org.openecomp.aai.exceptions.AAIException;
 
 public interface Wanderer {
 

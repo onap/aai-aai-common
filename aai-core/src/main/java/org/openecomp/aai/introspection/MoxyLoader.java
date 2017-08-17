@@ -20,10 +20,20 @@
 
 package org.openecomp.aai.introspection;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
-import com.google.common.base.CaseFormat;
-import com.google.common.collect.ImmutableMap;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import javax.xml.XMLConstants;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.stream.StreamSource;
+
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
@@ -37,18 +47,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.stream.StreamSource;
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import com.att.eelf.configuration.EELFLogger;
+import com.att.eelf.configuration.EELFManager;
+import com.google.common.base.CaseFormat;
+import com.google.common.collect.ImmutableMap;
 
 public class MoxyLoader extends Loader {
 

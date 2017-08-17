@@ -20,13 +20,20 @@
 
 package org.openecomp.aai.serialization.db;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
-import com.jayway.jsonpath.DocumentContext;
-import com.jayway.jsonpath.Filter;
-import com.jayway.jsonpath.JsonPath;
+import static com.jayway.jsonpath.Criteria.where;
+import static com.jayway.jsonpath.Filter.filter;
+
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Scanner;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Direction;
@@ -39,13 +46,13 @@ import org.openecomp.aai.introspection.Version;
 import org.openecomp.aai.serialization.db.exceptions.EdgeMultiplicityException;
 import org.openecomp.aai.serialization.db.exceptions.NoEdgeRuleFoundException;
 
-import java.io.InputStream;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
-
-import static com.jayway.jsonpath.Criteria.where;
-import static com.jayway.jsonpath.Filter.filter;
+import com.att.eelf.configuration.EELFLogger;
+import com.att.eelf.configuration.EELFManager;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
+import com.jayway.jsonpath.DocumentContext;
+import com.jayway.jsonpath.Filter;
+import com.jayway.jsonpath.JsonPath;
 
 public class EdgeRules {
 	

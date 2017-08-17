@@ -24,6 +24,7 @@ import org.openecomp.aai.exceptions.AAIException;
 import org.openecomp.aai.introspection.ModelType;
 import org.openecomp.aai.introspection.Version;
 import org.openecomp.aai.serialization.engines.TransactionalGraphEngine;
+import org.apache.tinkerpop.gremlin.structure.Graph;
 
 public class LegacyDBSerializer extends DBSerializer {
 

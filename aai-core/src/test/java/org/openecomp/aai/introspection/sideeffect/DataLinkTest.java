@@ -48,6 +48,7 @@ import org.openecomp.aai.introspection.ModelType;
 import org.openecomp.aai.introspection.Version;
 import org.openecomp.aai.parsers.query.QueryParser;
 import org.openecomp.aai.serialization.db.DBSerializer;
+import org.openecomp.aai.serialization.db.EdgeProperty;
 import org.openecomp.aai.serialization.engines.QueryStyle;
 import org.openecomp.aai.serialization.engines.TitanDBEngine;
 import org.openecomp.aai.serialization.engines.TransactionalGraphEngine;
@@ -88,13 +89,13 @@ public class DataLinkTest {
 		
 		graph.traversal().addV("aai-node-type", "vpn-binding", "vpn-id", "addKey").as("v1")
 		.addV("aai-node-type", "vpn-binding", "vpn-id", "modifyKey").as("v2")
-		.addV("aai-node-type", "route-target", "global-route-target", "modifyTargetKey", "route-target-role", "modifyRoleKey", "linked", true).addInE("has", "v2", "isParent", true)
+		.addV("aai-node-type", "route-target", "global-route-target", "modifyTargetKey", "route-target-role", "modifyRoleKey", "linked", true).addInE("has", "v2", EdgeProperty.CONTAINS.toString(), true)
 		.addV("aai-node-type", "vpn-binding", "vpn-id", "deleteKey").as("v3")
-		.addV("aai-node-type", "route-target", "global-route-target", "deleteTargetKey", "route-target-role", "deleteRoleKey", "linked", true).addInE("has", "v3", "isParent", true)
+		.addV("aai-node-type", "route-target", "global-route-target", "deleteTargetKey", "route-target-role", "deleteRoleKey", "linked", true).addInE("has", "v3", EdgeProperty.CONTAINS.toString(), true)
 		.addV("aai-node-type", "vpn-binding", "vpn-id", "getKey").as("v4")
-		.addV("aai-node-type", "route-target", "global-route-target", "getTargetKey", "route-target-role", "getRoleKey", "linked", true).addInE("has", "v4", "isParent", true)
+		.addV("aai-node-type", "route-target", "global-route-target", "getTargetKey", "route-target-role", "getRoleKey", "linked", true).addInE("has", "v4", EdgeProperty.CONTAINS.toString(), true)
 		.addV("aai-node-type", "vpn-binding", "vpn-id", "getKeyNoLink").as("v5")
-		.addV("aai-node-type", "route-target", "global-route-target", "getTargetKeyNoLink", "route-target-role", "getRoleKeyNoLink").addInE("has", "v5", "isParent", true)
+		.addV("aai-node-type", "route-target", "global-route-target", "getTargetKeyNoLink", "route-target-role", "getRoleKeyNoLink").addInE("has", "v5", EdgeProperty.CONTAINS.toString(), true)
 		.next();
 		graph.tx().commit();
 	}

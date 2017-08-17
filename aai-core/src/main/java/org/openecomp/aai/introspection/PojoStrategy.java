@@ -20,15 +20,21 @@
 
 package org.openecomp.aai.introspection;
 
-import com.google.common.base.CaseFormat;
-import com.google.common.base.Joiner;
-import com.google.common.collect.Multimap;
-import org.eclipse.persistence.jaxb.UnmarshallerProperties;
-import org.openecomp.aai.annotations.Metadata;
-import org.openecomp.aai.logging.ErrorLogHelper;
-import org.openecomp.aai.restcore.MediaType;
-import org.openecomp.aai.schema.enums.ObjectMetadata;
-import org.openecomp.aai.schema.enums.PropertyMetadata;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -36,10 +42,17 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.transform.stream.StreamSource;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.lang.reflect.*;
-import java.util.*;
+
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
+
+import org.openecomp.aai.annotations.Metadata;
+import org.openecomp.aai.logging.ErrorLogHelper;
+import org.openecomp.aai.restcore.MediaType;
+import org.openecomp.aai.schema.enums.ObjectMetadata;
+import org.openecomp.aai.schema.enums.PropertyMetadata;
+import com.google.common.base.CaseFormat;
+import com.google.common.base.Joiner;
+import com.google.common.collect.Multimap;
 
 public class PojoStrategy extends Introspector {
 

@@ -20,8 +20,8 @@
 
 package org.openecomp.aai.serialization.queryformats;
 
-import com.google.gson.JsonObject;
 import org.openecomp.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
+import com.google.gson.JsonObject;
 
 public class Console implements FormatMapper {
 

@@ -20,15 +20,33 @@
 
 package org.openecomp.aai.dbgen;
 
-import com.att.eelf.configuration.Configuration;
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
-import com.thinkaurelius.titan.core.TitanFactory;
-import com.thinkaurelius.titan.core.TitanGraph;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
+import java.util.Set;
+import java.util.UUID;
+
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
-import org.apache.tinkerpop.gremlin.structure.*;
+import org.apache.tinkerpop.gremlin.structure.Direction;
+import org.apache.tinkerpop.gremlin.structure.Edge;
+import org.apache.tinkerpop.gremlin.structure.Graph;
+import org.apache.tinkerpop.gremlin.structure.Property;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 import org.openecomp.aai.db.props.AAIProperties;
 import org.openecomp.aai.dbmap.AAIGraph;
 import org.openecomp.aai.exceptions.AAIException;
@@ -44,9 +62,11 @@ import org.openecomp.aai.util.AAIConfig;
 import org.openecomp.aai.util.AAIConstants;
 import org.openecomp.aai.util.FormatDate;
 
-import java.io.*;
-import java.util.*;
-import java.util.Map.Entry;
+import com.att.eelf.configuration.Configuration;
+import com.att.eelf.configuration.EELFLogger;
+import com.att.eelf.configuration.EELFManager;
+import com.thinkaurelius.titan.core.TitanFactory;
+import com.thinkaurelius.titan.core.TitanGraph;
 
 
 public class DataGrooming {
@@ -1018,13 +1038,13 @@ public class DataGrooming {
 					+ misMatchedHash.size() + "\n");
 
 			bw.write("\n ------------- Delete Candidates ---------\n");
-			for (Entry<String, Vertex> entry : ghostNodeHash
+			for (Map.Entry<String, Vertex> entry : ghostNodeHash
 					.entrySet()) {
 				String vid = entry.getKey();
 				bw.write("DeleteCandidate: Phantom Vid = [" + vid + "]\n");
 				cleanupCandidateCount++;
 			}
-			for (Entry<String, Vertex> entry : orphanNodeHash
+			for (Map.Entry<String, Vertex> entry : orphanNodeHash
 					.entrySet()) {
 				String vid = entry.getKey();
 				bw.write("DeleteCandidate: OrphanDepNode Vid = [" + vid + "]\n");
@@ -1032,12 +1052,12 @@ public class DataGrooming {
 					cleanupCandidateCount++;
 				}
 			}
-			for (Entry<String, Edge> entry : oneArmedEdgeHash.entrySet()) {
+			for (Map.Entry<String, Edge> entry : oneArmedEdgeHash.entrySet()) {
 				String eid = entry.getKey();
 				bw.write("DeleteCandidate: Bad EDGE Edge-id = [" + eid + "]\n");
 				cleanupCandidateCount++;
 			}
-			for (Entry<String, Vertex> entry : missingDepNodeHash
+			for (Map.Entry<String, Vertex> entry : missingDepNodeHash
 					.entrySet()) {
 				String vid = entry.getKey();
 				bw.write("DeleteCandidate: (maybe) missingDepNode Vid = ["
@@ -1047,7 +1067,7 @@ public class DataGrooming {
 			bw.write("\n-- NOTE - To see DeleteCandidates for Duplicates, you need to look in the Duplicates Detail section below.\n");
 
 			bw.write("\n ------------- GHOST NODES - detail ");
-			for (Entry<String, Vertex> entry : ghostNodeHash
+			for (Map.Entry<String, Vertex> entry : ghostNodeHash
 					.entrySet()) {
 				try {
 					String vid = entry.getKey();
@@ -1069,7 +1089,7 @@ public class DataGrooming {
 			}
 
 			bw.write("\n ------------- Missing Dependent Edge ORPHAN NODES - detail: ");
-			for (Entry<String, Vertex> entry : orphanNodeHash
+			for (Map.Entry<String, Vertex> entry : orphanNodeHash
 					.entrySet()) {
 				try {
 					String vid = entry.getKey();
@@ -1091,7 +1111,7 @@ public class DataGrooming {
 			}
 
 			bw.write("\n ------------- Missing Dependent Edge (but not orphan) NODES: ");
-			for (Entry<String, Vertex> entry : missingDepNodeHash
+			for (Map.Entry<String, Vertex> entry : missingDepNodeHash
 					.entrySet()) {
 				try {
 					String vid = entry.getKey();
@@ -1114,7 +1134,7 @@ public class DataGrooming {
 			}
 
 			bw.write("\n ------------- EDGES pointing to empty/bad vertices: ");
-			for (Entry<String, Edge> entry : oneArmedEdgeHash.entrySet()) {
+			for (Map.Entry<String, Edge> entry : oneArmedEdgeHash.entrySet()) {
 				try {
 					String eid = entry.getKey();
 					Edge thisE = entry.getValue();
@@ -1214,7 +1234,7 @@ public class DataGrooming {
 			}// while - work on each group of dupes
 
 			bw.write("\n ------------- Mis-matched Label/aai-node-type Nodes: \n ");
-			for (Entry<String, String> entry : misMatchedHash.entrySet()) {
+			for (Map.Entry<String, String> entry : misMatchedHash.entrySet()) {
 				String msg = entry.getValue();
 				bw.write("MixedMsg = " + msg + "\n");
 			}
@@ -1320,7 +1340,7 @@ public class DataGrooming {
 		while( it.hasNext() ){
 			String propName = "";
 			String propVal = "";
-			Entry <?,?>propEntry = (Entry<?,?>)it.next();
+			Map.Entry <?,?>propEntry = (Map.Entry<?,?>)it.next();
 			Object propNameObj = propEntry.getKey();
 			if( propNameObj != null ){
 				propName = propNameObj.toString();
@@ -1816,7 +1836,7 @@ public class DataGrooming {
 				HashMap<String, ArrayList<Vertex>> vertsGroupedByParentHash = groupVertsByDepNodes(
 						transId, fromAppId, source, version, nType,
 						checkVertList, loader);
-				for (Entry<String, ArrayList<Vertex>> entry : vertsGroupedByParentHash
+				for (Map.Entry<String, ArrayList<Vertex>> entry : vertsGroupedByParentHash
 						.entrySet()) {
 					ArrayList<Vertex> thisParentsVertList = entry
 							.getValue();
@@ -2066,7 +2086,7 @@ public class DataGrooming {
 		}
 		
 		int i = -1;
-		for( Entry<String, Object> entry : keyPropsHash.entrySet() ){
+		for( Map.Entry<String, Object> entry : keyPropsHash.entrySet() ){
 			i++;
 			kName.add(i, entry.getKey());
 			kVal.add(i, entry.getValue());

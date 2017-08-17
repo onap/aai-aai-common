@@ -20,11 +20,11 @@
 
 package org.openecomp.aai.introspection;
 
+import java.util.Map;
+
 import org.openecomp.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.openecomp.aai.introspection.exceptions.AAIUnmarshallingException;
 import org.openecomp.aai.restcore.MediaType;
-
-import java.util.Map;
 
 public abstract class Loader {
 

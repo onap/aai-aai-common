@@ -20,18 +20,19 @@
 
 package org.openecomp.aai.parsers.uri;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.List;
+
+import javax.ws.rs.core.MultivaluedMap;
+
 import org.openecomp.aai.exceptions.AAIException;
 import org.openecomp.aai.introspection.Introspector;
 import org.openecomp.aai.introspection.Loader;
 import org.openecomp.aai.introspection.Version;
 import org.openecomp.aai.schema.enums.ObjectMetadata;
 import org.openecomp.aai.serialization.db.EdgeType;
-
-import javax.ws.rs.core.MultivaluedMap;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.util.HashMap;
-import java.util.List;
 
 /**
  * Given a URI this class returns an object, or series of nested objects

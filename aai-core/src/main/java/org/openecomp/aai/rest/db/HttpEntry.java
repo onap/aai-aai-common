@@ -268,7 +268,7 @@ public class HttpEntry {
 								}
 								
 								break;
-							case PUT: 
+							case PUT:
 								if (isNewVertex) {
 									v = serializer.createNewVertex(obj);
 								}
@@ -469,8 +469,8 @@ public class HttpEntry {
         
         return obj;
 	}
-	
 
+	
 	/**
 	 * Creates the not found message.
 	 *
