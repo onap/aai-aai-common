@@ -304,6 +304,16 @@
 						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
 					</xml-properties>
 				</xml-element>
+				<xml-element java-attribute="cloudExtraInfo" name="cloud-extra-info" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="ESR inputs extra information about the VIM or Cloud which will be decoded by MultiVIM." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="cloudEpaCaps" name="cloud-epa-caps" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="MultiVIM will discover and expose EPA capabilities." />
+					</xml-properties>
+				</xml-element>
 				<xml-element java-attribute="volumeGroups" name="volume-groups" type="inventory.aai.onap.org.v11.VolumeGroups" />
 				<xml-element java-attribute="tenants" name="tenants" type="inventory.aai.onap.org.v11.Tenants" />
 				<xml-element java-attribute="flavors" name="flavors" type="inventory.aai.onap.org.v11.Flavors" />
