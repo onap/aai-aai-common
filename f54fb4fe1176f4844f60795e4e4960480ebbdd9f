@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a437d4f_b1a63352",
+        "filename": "aai-core/src/main/resources/dbedgerules/DbEdgeRules_v11.json",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2017-08-18T16:04:24Z",
+      "side": 1,
+      "message": "This looks good, I think we also need to add the parent/child edge rule between the cloud-region and the auth-info-item",
+      "revId": "f54fb4fe1176f4844f60795e4e4960480ebbdd9f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_8c943638",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 409,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2017-08-18T16:04:24Z",
+      "side": 1,
+      "message": "Is your intent to have a multivalued key?  so the URI would be auth-info-items/auth-info-item/{auth-info-item-id}/{cloud-domain}?",
+      "revId": "f54fb4fe1176f4844f60795e4e4960480ebbdd9f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
