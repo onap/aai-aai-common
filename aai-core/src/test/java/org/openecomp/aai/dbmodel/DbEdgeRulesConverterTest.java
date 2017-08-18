@@ -73,15 +73,18 @@ public class DbEdgeRulesConverterTest {
 				.putAll("baz|quux",
 						"treatsVeryKindly,IN,One2One,true,true,true,true")
 				.build();
-		
+
 		try {
 			dberCon.setup(dest);
 			File result = new File(outFile);
+			//Add delete hook to delete the temporary result file on exit/
+			result.deleteOnExit();
 			FileOutputStream writeStream = new FileOutputStream(result);
 			Writer writer = new OutputStreamWriter(writeStream);
 			dberCon.convert(EdgeRules, writer);
 			File compare = new File("src/test/resources/dbEdgeRulesConversion/conversionTestCompare.json");
 			assertTrue(FileUtils.contentEquals(result, compare));
+			writer.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 			fail("IOException on setup");
