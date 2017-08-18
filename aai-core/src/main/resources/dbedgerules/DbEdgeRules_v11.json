@@ -12,6 +12,17 @@
 			"prevent-delete": "!${direction}"
 		},
 		{
+			"from" : "auth-info-item",
+			"to" : "tenant",
+			"label" : "defaultTenant",
+			"direction" : "OUT",
+			"multiplicity" : "One2Many",
+			"isParent" : "false",
+			"usesResource" : "false",
+			"hasDelTarget" : "false",
+			"SVC-INFRA" : "false"
+		},
+		{
 			"from": "generic-vnf",
 			"to": "license-key-resource",
 			"label": "uses",
