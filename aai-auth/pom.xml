@@ -12,7 +12,6 @@
 
         <properties>
           <checkstyle.config.location>google_checks.xml</checkstyle.config.location>
-          <nexusproxy>https://nexus.onap.org</nexusproxy>
           <sitePath>/content/sites/site/${project.groupId}/${project.artifactId}/${project.version}</sitePath>
         </properties>
 
@@ -33,135 +32,61 @@
         </dependencies>
 
         <build>
-                <pluginManagement>
-                        <plugins>
-                                <plugin>
-                                        <groupId>org.apache.maven.plugins</groupId>
-                                        <artifactId>maven-compiler-plugin</artifactId>
-                                        <configuration>
-                                                <source>1.8</source>
-                                                <target>1.8</target>
-                                        </configuration>
-                                </plugin>
-                                <plugin>
-                                        <artifactId>maven-release-plugin</artifactId>
-                                        <version>2.4.2</version>
-                                        <dependencies>
-                                                <dependency>
-                                                        <groupId>org.apache.maven.scm</groupId>
-                                                        <artifactId>maven-scm-provider-gitexe</artifactId>
-                                                        <version>1.8.1</version>
-                                                </dependency>
-                                        </dependencies>
-                                </plugin>
-                        </plugins>
-                </pluginManagement>
-                <plugins>
-                  <!-- license plugin -->
-                  <plugin>
-                    <groupId>com.mycila</groupId>
-                    <artifactId>license-maven-plugin</artifactId>
-                    <version>3.0</version>
-                    <configuration>
-                      <header>License.txt</header>
-                      <includes>
-                        <include>src/main/java/**</include>
-                      </includes>
-                    </configuration>
-                    <executions>
-                      <execution>
-                        <goals>
-                          <goal>format</goal>
-                        </goals>
-                        <phase>process-sources</phase>
-                      </execution>
-                    </executions>
-                  </plugin>
+          <plugins>
+            <!-- license plugin -->
+            <plugin>
+              <groupId>com.mycila</groupId>
+              <artifactId>license-maven-plugin</artifactId>
+              <version>3.0</version>
+              <configuration>
+                <header>License.txt</header>
+                <includes>
+                  <include>src/main/java/**</include>
+                </includes>
+              </configuration>
+              <executions>
+                <execution>
+                  <goals>
+                    <goal>format</goal>
+                  </goals>
+                  <phase>process-sources</phase>
+                </execution>
+              </executions>
+            </plugin>
 
 
-                  <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-site-plugin</artifactId>
-                    <version>3.3</version>
-                    <configuration>
-                      <reportPlugins>
-                        <plugin>
-                          <groupId>org.apache.maven.plugins</groupId>
-                          <artifactId>maven-checkstyle-plugin</artifactId>
-                          <version>2.17</version>
-                          <reportSets>
-                            <reportSet>
-                              <reports>
-                                <report>checkstyle</report>
-                              </reports>
-                            </reportSet>
-                          </reportSets>
-                        </plugin>
-                      </reportPlugins>
-                    </configuration>
-                  </plugin>
-                  <plugin>
-                    <groupId>org.sonatype.plugins</groupId>
-                    <artifactId>nexus-staging-maven-plugin</artifactId>
-                    <version>1.6.7</version>
-                    <extensions>true</extensions>
-                    <configuration>
-                      <nexusUrl>${nexusproxy}</nexusUrl>
-                      <stagingProfileId>176c31dfe190a</stagingProfileId>
-                      <serverId>ecomp-staging</serverId>
-                    </configuration>
-                </plugin>
-              </plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-site-plugin</artifactId>
+              <version>3.3</version>
+            </plugin>
+            <plugin>
+              <groupId>org.sonatype.plugins</groupId>
+              <artifactId>nexus-staging-maven-plugin</artifactId>
+            </plugin>
+          </plugins>
         </build>
 
         <distributionManagement>
-          <repository>
-            <id>ecomp-releases</id>
-            <name>ECOMP Release Repository</name>
-            <url>${nexusproxy}/content/repositories/releases/</url>
-          </repository>
-          <snapshotRepository>
-            <id>ecomp-snapshots</id>
-            <name>ECOMP Snapshot Repository</name>
-            <url>${nexusproxy}/content/repositories/snapshots/</url>
-          </snapshotRepository>
           <site>
             <id>ecomp-site</id>
-            <url>dav:${nexusproxy}${sitePath}</url>
+            <url>dav:${onap.nexus.url}${sitePath}</url>
           </site>
         </distributionManagement>
-
-  <repositories>
-    <repository>
-      <id>AJSC</id>
-      <name>AJSC repository</name>
-      <url>https://mvnrepository.com/artifact/com.att.ajsc</url>
-    </repository>
-    <repository>
-      <id>restlet</id>
-      <name>maven reslet</name>
-      <url>https://maven.restlet.com/</url>
-    </repository>
-    
-    <repository>
-      <id>central</id>
-      <name>Maven 2 repository 2</name>
-      <url>http://repo2.maven.org/maven2/</url>
-    </repository>
-    <repository>
-      <id>ecomp-releases</id>
-      <name>ECOMP Release Repository</name>
-      <url>${nexusproxy}/content/repositories/releases/</url>
-    </repository>
-    <repository>
-      <id>ecomp-staging</id>
-      <name>ECOMP Staging Repository</name>
-      <url>${nexusproxy}/content/repositories/staging/</url>
-    </repository>
-    <repository>
-      <id>ecomp-snapshots</id>
-      <name>ECOMP Snapshot Repository</name>
-      <url>${nexusproxy}/content/repositories/snapshots/</url>
-    </repository>
-  </repositories>
+        <reporting>
+          <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-checkstyle-plugin</artifactId>
+              <version>2.17</version>
+              <reportSets>
+                <reportSet>
+                  <reports>
+                    <report>checkstyle</report>
+                  </reports>
+                </reportSet>
+              </reportSets>
+            </plugin>
+          </plugins>
+        </reporting>
 </project>
