@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a437d4f_cc723e49",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 307,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2017-08-18T15:59:51Z",
+      "side": 1,
+      "message": "Since this is a schema change, i want to be sure that you have verified this change by starting either the resources or traversal microservice; last time we changed the schema, we broke the build.",
+      "revId": "1f4cbbdf775bfcca1c46b80e54b4631713b3d172",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
