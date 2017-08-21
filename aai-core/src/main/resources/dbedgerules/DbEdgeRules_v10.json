@@ -504,7 +504,7 @@
 			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
-			"prevent-delete": "NONE"
+			"prevent-delete": "!${direction}"
 		},
 		{
 			"from": "l3-interface-ipv6-address-list",
@@ -515,7 +515,7 @@
 			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
-			"prevent-delete": "NONE"
+			"prevent-delete": "!${direction}"
 		},
 		{
 			"from": "l3-network",

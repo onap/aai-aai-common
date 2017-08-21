@@ -21,6 +21,6 @@
 public static final Multimap<String, String> EdgeRules = new ImmutableSetMultimap.Builder<String, String>()
 <#list edgeRules as edgeRule>
         .putAll("${edgeRule["nodes"]}",
-                "${edgeRule["edge"]},${edgeRule["direction"]},${edgeRule["multiplicity"]},${edgeRule["lineage"]},${edgeRule["usesResource"]},${edgeRule["hasDelTarget"]},${edgeRule["SVC-INFRA"]}")
+                "${edgeRule["edge"]},${edgeRule["direction"]},${edgeRule["multiplicity"]},${edgeRule["lineage"]},${edgeRule["uses-resource"]},${edgeRule["has-del-target"]},${edgeRule["SVC-INFRA"]}")
 </#list>
 .build();
