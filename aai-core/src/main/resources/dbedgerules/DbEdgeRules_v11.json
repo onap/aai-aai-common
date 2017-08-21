@@ -12,6 +12,17 @@
 			"prevent-delete": "!${direction}"
 		},
 		{
+			"from" : "auth-info-item",
+			"to" : "tenant",
+			"label" : "defaultTenant",
+			"direction" : "OUT",
+			"multiplicity" : "One2One",
+			"isParent" : "false",
+			"usesResource" : "false",
+			"hasDelTarget" : "false",
+			"SVC-INFRA" : "false"
+		},
+		{
 			"from": "generic-vnf",
 			"to": "license-key-resource",
 			"label": "uses",
@@ -58,6 +69,17 @@
 		{
 			"from": "cloud-region",
 			"to": "tenant",
+			"label": "has",
+			"direction": "OUT",
+			"multiplicity": "One2Many",
+			"contains-other-v": "${direction}",
+			"delete-other-v": "NONE",
+			"SVC-INFRA": "!${direction}",
+			"prevent-delete": "${direction}"
+		},
+		{
+			"from": "cloud-region",
+			"to": "auth-info-item",
 			"label": "has",
 			"direction": "OUT",
 			"multiplicity": "One2Many",
