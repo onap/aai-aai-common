@@ -30,7 +30,6 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 
-import org.openecomp.aai.domain.yang.Customers;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.config.ClientConfig;
@@ -61,10 +60,6 @@ public class HttpsAuthClient{
 			
 //			System.out.println("Jersey result: ");
 //			System.out.println(res.getEntity(String.class).toString());
-			
-			Customers customers = res.getEntity(Customers.class);
-			System.out.println("Jersey result: ");
-			System.out.println("Number of customers: " + customers.getCustomer().size());	
 			
 		} catch (KeyManagementException e) {
 			e.printStackTrace();
