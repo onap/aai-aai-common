@@ -1,92 +1,92 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-        <modelVersion>4.0.0</modelVersion>
-        <parent>
-          <groupId>org.onap.aai.aai-common</groupId>
-          <artifactId>aai-common</artifactId>
-          <version>1.1.0-SNAPSHOT</version>
-        </parent>
-        <artifactId>aai-auth</artifactId>
-        <name>aai-auth</name>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.onap.aai.aai-common</groupId>
+        <artifactId>aai-common</artifactId>
         <version>1.1.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>aai-auth</artifactId>
+    <name>aai-auth</name>
+    <version>1.1.0-SNAPSHOT</version>
 
-        <properties>
-          <checkstyle.config.location>google_checks.xml</checkstyle.config.location>
-          <sitePath>/content/sites/site/${project.groupId}/${project.artifactId}/${project.version}</sitePath>
-        </properties>
+    <properties>
+        <checkstyle.config.location>google_checks.xml</checkstyle.config.location>
+        <sitePath>/content/sites/site/${project.groupId}/${project.artifactId}/${project.version}</sitePath>
+    </properties>
 
 
-        <dependencies>
+    <dependencies>
 
-                <dependency>
-                        <groupId>com.fasterxml.jackson.core</groupId>
-                        <artifactId>jackson-databind</artifactId>
-                        <version>2.8.7</version>
-                </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.8.7</version>
+        </dependency>
 
-                <dependency>
-                        <groupId>org.apache.httpcomponents</groupId>
-                        <artifactId>httpclient</artifactId>
-                        <version>4.5.3</version>
-                </dependency>
-        </dependencies>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.3</version>
+        </dependency>
+    </dependencies>
 
-        <build>
-          <plugins>
+    <build>
+        <plugins>
             <!-- license plugin -->
             <plugin>
-              <groupId>com.mycila</groupId>
-              <artifactId>license-maven-plugin</artifactId>
-              <version>3.0</version>
-              <configuration>
-                <header>License.txt</header>
-                <includes>
-                  <include>src/main/java/**</include>
-                </includes>
-              </configuration>
-              <executions>
-                <execution>
-                  <goals>
-                    <goal>format</goal>
-                  </goals>
-                  <phase>process-sources</phase>
-                </execution>
-              </executions>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>3.0</version>
+                <configuration>
+                    <header>License.txt</header>
+                    <includes>
+                        <include>src/main/java/**</include>
+                    </includes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>format</goal>
+                        </goals>
+                        <phase>process-sources</phase>
+                    </execution>
+                </executions>
             </plugin>
 
 
             <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-site-plugin</artifactId>
-              <version>3.3</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.3</version>
             </plugin>
             <plugin>
-              <groupId>org.sonatype.plugins</groupId>
-              <artifactId>nexus-staging-maven-plugin</artifactId>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
             </plugin>
-          </plugins>
-        </build>
+        </plugins>
+    </build>
 
-        <distributionManagement>
-          <site>
+    <distributionManagement>
+        <site>
             <id>ecomp-site</id>
             <url>dav:${onap.nexus.url}${sitePath}</url>
-          </site>
-        </distributionManagement>
-        <reporting>
-          <plugins>
+        </site>
+    </distributionManagement>
+    <reporting>
+        <plugins>
             <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-checkstyle-plugin</artifactId>
-              <version>2.17</version>
-              <reportSets>
-                <reportSet>
-                  <reports>
-                    <report>checkstyle</report>
-                  </reports>
-                </reportSet>
-              </reportSets>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>2.17</version>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>checkstyle</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
             </plugin>
-          </plugins>
-        </reporting>
+        </plugins>
+    </reporting>
 </project>
