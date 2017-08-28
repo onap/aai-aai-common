@@ -62,47 +62,6 @@ public class URIToDBKeyTest {
 		System.setProperty("AJSC_HOME", ".");
 		System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
 	}
-	
-	/**
-	 * Uri.
-	 *
-	 * @throws JAXBException the JAXB exception
-	 * @throws AAIException the AAI exception
-	 * @throws IllegalArgumentException the illegal argument exception
-	 * @throws UnsupportedEncodingException the unsupported encoding exception
-	 */
-	@Test
-    public void uri() throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException {
-		URI uri = UriBuilder.fromPath("/aai/" + loader.getVersion() + "/cloud-infrastructure/tenants/tenant/key1/vservers/vserver/key2/l-interfaces/l-interface/key3").build();
-		URIToDBKey parse = new URIToDBKey(loader, uri);
-		Object result = parse.getResult();
-
-		String expected = "cloud-region/att-aic/AAIAIC25/tenant/key1/vserver/key2/l-interface/key3";
-		
-		assertEquals("blah", expected, result);
-		
-	}
-	
-	/**
-	 * Uri no version.
-	 *
-	 * @throws JAXBException the JAXB exception
-	 * @throws AAIException the AAI exception
-	 * @throws IllegalArgumentException the illegal argument exception
-	 * @throws UnsupportedEncodingException the unsupported encoding exception
-	 */
-	@Test
-    public void uriNoVersion() throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException {
-		URI uri = UriBuilder.fromPath("/cloud-infrastructure/tenants/tenant/key1/vservers/vserver/key2/l-interfaces/l-interface/key3").build();
-		URIToDBKey parse = new URIToDBKey(loader, uri);
-		Object result = parse.getResult();
-		
-		String expected = "cloud-region/att-aic/AAIAIC25/tenant/key1/vserver/key2/l-interface/key3";
-		
-		assertEquals("blah", expected, result);
-		
-	}
-	
 
 	/**
 	 * Bad URI.
@@ -148,17 +107,6 @@ public class URIToDBKeyTest {
 	 * @throws IllegalArgumentException the illegal argument exception
 	 * @throws UnsupportedEncodingException the unsupported encoding exception
 	 */
-	@Test
-    public void startsWithValidNamespace() throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException {
-		URI uri = UriBuilder.fromPath("/aai/" + loader.getVersion() + "/cloud-infrastructure/tenants/tenant/key1/vservers/vserver/key2/l-interfaces/l-interface/key3").build();
-		
-		URIToDBKey parse = new URIToDBKey(loader, uri);
-		Object result = parse.getResult();
-
-		String expected = "cloud-region/att-aic/AAIAIC25/tenant/key1/vserver/key2/l-interface/key3";
-		
-		assertEquals("blah", expected, result);
-	}
 	
 	/**
 	 * Naming exceptions.

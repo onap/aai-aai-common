@@ -30,7 +30,6 @@
 				<xml-element java-attribute="search" name="search" type="inventory.aai.onap.org.v11.Search" />
 				<xml-element java-attribute="actions" name="actions" type="inventory.aai.onap.org.v11.Actions" />
 				<xml-element java-attribute="cloudInfrastructure" name="cloud-infrastructure" type="inventory.aai.onap.org.v11.CloudInfrastructure" />
-				<xml-element java-attribute="licenseManagement" name="license-management" type="inventory.aai.onap.org.v11.LicenseManagement" />
 				<xml-element java-attribute="business" name="business" type="inventory.aai.onap.org.v11.Business" />
 				<xml-element java-attribute="serviceDesignAndCreation" name="service-design-and-creation" type="inventory.aai.onap.org.v11.ServiceDesignAndCreation" />
 				<xml-element java-attribute="network" name="network" type="inventory.aai.onap.org.v11.Network" />
@@ -255,7 +254,7 @@
 			<java-attributes>
 				<xml-element java-attribute="cloudOwner" name="cloud-owner" required="true" type="java.lang.String" xml-key="true">
 					<xml-properties>
-						<xml-property name="description" value="Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname" />
+						<xml-property name="description" value="Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname" />
 					</xml-properties>
 				</xml-element>
 				<xml-element java-attribute="cloudRegionId" name="cloud-region-id" required="true" type="java.lang.String" xml-key="true">
@@ -310,7 +309,7 @@
 				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v11.RelationshipList" />
 			</java-attributes>
 			<xml-properties>
-				<xml-property name="description" value="cloud-region designates an installation of a cloud cluster or region or instantiation. In AT&amp;Ts AIC cloud, this could be an LCP or DCP. Cloud regions are uniquely identified by a composite key, cloud-owner + cloud-region-id. The format of the cloud-owner is vendor-cloudname and we will use att-aic for AT&amp;T's AIC." />
+				<xml-property name="description" value="cloud-region designates an installation of a cloud cluster or region or instantiation." />
 				<xml-property name="indexedProps" value="cloud-owner,cloud-region-id,cloud-type,owner-defined-type" />
 				<xml-property name="nameProps" value="owner-defined-type" />
 				<xml-property name="container" value="cloud-regions" />
@@ -1864,51 +1863,6 @@
 			</xml-properties>
 		</java-type>
 
-		<java-type name="LicenseManagement">
-			<xml-root-element name="license-management" />
-			<java-attributes>
-				<xml-element java-attribute="licenseKeyResources" name="license-key-resources" type="inventory.aai.onap.org.v11.LicenseKeyResources" />
-			</java-attributes>
-		</java-type>
-
-		<java-type name="LicenseKeyResources">
-			<xml-root-element name="license-key-resources" />
-			<java-attributes>
-				<xml-element container-type="java.util.ArrayList" java-attribute="licenseKeyResource" name="license-key-resource" type="inventory.aai.onap.org.v11.LicenseKeyResource" />
-			</java-attributes>
-		</java-type>
-
-		<java-type name="LicenseKeyResource">
-			<xml-root-element name="license-key-resource" />
-			<java-attributes>
-				<xml-element java-attribute="attUuid" name="att-uuid" required="true" type="java.lang.String" xml-key="true" />
-				<xml-element java-attribute="assignmentType" name="assignment-type" type="java.lang.String" />
-				<xml-element java-attribute="assignmentStatus" name="assignment-status" type="java.lang.String" />
-				<xml-element java-attribute="assignmentGroupUuid" name="assignment-group-uuid" required="true" type="java.lang.String" />
-				<xml-element java-attribute="assignmentDate" name="assignment-date" type="java.lang.String" />
-				<xml-element java-attribute="name" name="name" type="java.lang.String" />
-				<xml-element java-attribute="modelUuid" name="model-uuid" type="java.lang.String" />
-				<xml-element java-attribute="modelVersion" name="model-version" type="java.lang.String" />
-				<xml-element java-attribute="licenseKey" name="license-key" type="java.lang.String" />
-				<xml-element java-attribute="licenseKeyFileUrl" name="license-key-file-url" type="java.lang.String" />
-				<xml-element container-type="java.util.ArrayList" java-attribute="supplierReleaseList" name="supplier-release-list" type="java.lang.String" />
-				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
-					<xml-properties>
-						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
-					</xml-properties>
-				</xml-element>
-				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v11.RelationshipList" />
-			</java-attributes>
-			<xml-properties>
-				<xml-property name="description" value="OBSOLETE OBJECT:  do not use" />
-				<xml-property name="nameProps" value="name" />
-				<xml-property name="indexedProps" value="assignment-group-uuid,att-uuid,name" />
-				<xml-property name="uniqueProps" value="att-uuid" />
-				<xml-property name="container" value="license-key-resources" />
-				<xml-property name="namespace" value="license-management" />
-			</xml-properties>
-		</java-type>
-
 		<java-type name="Business">
 			<xml-properties>
 				<xml-property name="description" value="Namespace for business related constructs" />
@@ -2206,7 +2160,7 @@
 		<java-type name="VnfImage">
 			<xml-root-element name="vnf-image" />
 			<java-attributes>
-				<xml-element java-attribute="attUuid" name="att-uuid" required="true" type="java.lang.String" xml-key="true">
+				<xml-element java-attribute="vnfImageUuid" name="vnf-image-uuid" required="true" type="java.lang.String" xml-key="true">
 					<xml-properties>
 						<xml-property name="description" value="Unique ID of this asset" />
 					</xml-properties>
@@ -2240,8 +2194,8 @@
 			</java-attributes>
 			<xml-properties>
 				<xml-property name="description" value="Image object that pertain to a VNF that doesn't have associated vservers.  This is a kludge." />
-				<xml-property name="indexedProps" value="application,att-uuid,application-vendor,application-version" />
-				<xml-property name="uniqueProps" value="att-uuid" />
+				<xml-property name="indexedProps" value="application,vnf-image-uuid,application-vendor,application-version" />
+				<xml-property name="uniqueProps" value="vnf-image-uuid" />
 				<xml-property name="container" value="vnf-images" />
 				<xml-property name="namespace" value="service-design-and-creation" />
 			</xml-properties>
@@ -2392,7 +2346,7 @@
 				</xml-element>
 				<xml-element java-attribute="ipVersion" name="ip-version" type="java.lang.String">
 					<xml-properties>
-						<xml-property name="description" value="v4, v6, or ds for dual stack (should be att-ip-version)" />
+						<xml-property name="description" value="v4, v6, or ds for dual stack" />
 					</xml-properties>
 				</xml-element>
 				<xml-element java-attribute="routingProtocol" name="routing-protocol" type="java.lang.String">

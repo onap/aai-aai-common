@@ -429,7 +429,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -466,7 +466,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -499,7 +499,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -555,7 +555,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -592,7 +592,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -630,7 +630,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -666,7 +666,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -713,7 +713,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -756,7 +756,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -840,7 +840,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -887,7 +887,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -935,7 +935,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -1014,7 +1014,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -1056,7 +1056,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -1092,7 +1092,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -1144,7 +1144,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -1190,7 +1190,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -1247,7 +1247,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -1300,7 +1300,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -1436,7 +1436,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -1493,7 +1493,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -1549,7 +1549,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -1606,7 +1606,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -1659,7 +1659,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -1795,7 +1795,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -1852,7 +1852,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -1910,7 +1910,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -2025,7 +2025,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -2077,7 +2077,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -2130,7 +2130,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -2229,7 +2229,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -2281,7 +2281,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -2329,7 +2329,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -2453,7 +2453,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -2505,7 +2505,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -2558,7 +2558,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -2657,7 +2657,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -2704,7 +2704,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -2745,7 +2745,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -2797,7 +2797,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -2845,7 +2845,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -2965,7 +2965,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -3017,7 +3017,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -3068,7 +3068,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -3120,7 +3120,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -3168,7 +3168,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -3288,7 +3288,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -3340,7 +3340,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -3393,7 +3393,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -3492,7 +3492,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -3539,7 +3539,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -3587,7 +3587,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -3668,7 +3668,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -3747,7 +3747,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -3789,7 +3789,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -3832,7 +3832,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -3883,7 +3883,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -3920,7 +3920,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -3953,7 +3953,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -4004,7 +4004,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -4041,7 +4041,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -4079,7 +4079,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -4115,7 +4115,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -4152,7 +4152,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -4185,7 +4185,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -4231,7 +4231,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -4268,7 +4268,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -4306,7 +4306,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -4342,7 +4342,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -4379,7 +4379,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -4412,7 +4412,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -4463,7 +4463,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -4500,7 +4500,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -4538,7 +4538,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -4574,7 +4574,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -4611,7 +4611,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -4644,7 +4644,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -4710,7 +4710,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -4747,7 +4747,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -4785,7 +4785,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -4821,7 +4821,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -4858,7 +4858,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -4891,7 +4891,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -4956,7 +4956,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -4997,7 +4997,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -5039,7 +5039,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -5102,7 +5102,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -5163,7 +5163,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -5200,7 +5200,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -5238,7 +5238,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -5274,7 +5274,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -5311,7 +5311,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -5344,7 +5344,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -5390,7 +5390,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -5427,7 +5427,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -5465,7 +5465,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -5501,7 +5501,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -5538,7 +5538,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -5571,7 +5571,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -5623,7 +5623,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -5660,7 +5660,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -5698,7 +5698,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -5734,7 +5734,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -5771,7 +5771,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -5804,7 +5804,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -5845,7 +5845,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -5882,7 +5882,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -5920,7 +5920,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -5956,7 +5956,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -5988,13 +5988,245 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
           in: path
           description: Identifier used by the vendor for the region. Second part of composite key
           required: true
+          type: string
+  /cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}/auth-info-items/auth-info-item/{auth-info-item-id}/relationship-list/relationship:
+    put:
+      tags:
+        - CloudInfrastructure
+      summary: see node definition for valid relationships
+      operationId: createOrUpdateCloudInfrastructureCloudRegionsCloudRegionAuthInfoItemsAuthInfoItemRelationshipListRelationship
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: cloud-owner
+          in: path
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
+          required: true
+          type: string
+        - name: cloud-region-id
+          in: path
+          description: Identifier used by the vendor for the region. Second part of composite key
+          required: true
+          type: string
+        - name: auth-info-item-id
+          in: path
+          description: Unique ID of auth-info-item.
+          required: true
+          type: string
+        - name: body
+          in: body
+          description: relationship object that needs to be created or updated
+          required: true
+          schema:
+            $ref: "#/definitions/relationship"
+    delete:
+      tags:
+        - CloudInfrastructure
+      summary: delete an existing relationship
+      description: delete an existing relationship
+      operationId: deleteCloudInfrastructureCloudRegionsCloudRegionAuthInfoItemsAuthInfoItemRelationshipListRelationship
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: cloud-owner
+          in: path
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
+          required: true
+          type: string
+        - name: cloud-region-id
+          in: path
+          description: Identifier used by the vendor for the region. Second part of composite key
+          required: true
+          type: string
+        - name: auth-info-item-id
+          in: path
+          description: Unique ID of auth-info-item.
+          required: true
+          type: string
+  /cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}/auth-info-items/auth-info-item/{auth-info-item-id}:
+    get:
+      tags:
+        - CloudInfrastructure
+      summary: returns auth-info-item
+      description: returns auth-info-item
+      operationId: getCloudInfrastructureCloudRegionsCloudRegionAuthInfoItemsAuthInfoItem
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "200":
+          description: successful operation
+          schema:
+              $ref: "#/definitions/auth-info-item"
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: cloud-owner
+          in: path
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
+          required: true
+          type: string
+        - name: cloud-region-id
+          in: path
+          description: Identifier used by the vendor for the region. Second part of composite key
+          required: true
+          type: string
+        - name: auth-info-item-id
+          in: path
+          description: Unique ID of auth-info-item.
+          required: true
+          type: string
+        - name: cloud-type
+          in: query
+          description: Type of the cloud (e.g., openstack)
+          required: false
+          type: string
+        - name: owner-defined-type
+          in: query
+          description: Cloud-owner defined type indicator (e.g., dcp, lcp)
+          required: false
+          type: string
+        - name: username
+          in: query
+          description: user name of auth infomation to access VIM.
+          required: false
+          type: string
+        - name: auth-url
+          in: query
+          description: authentication url of the cloud.
+          required: false
+          type: string
+    put:
+      tags:
+        - CloudInfrastructure
+      summary: create or update an existing auth-info-item
+      description: create or update an existing auth-info-item
+      operationId: createOrUpdateCloudInfrastructureCloudRegionsCloudRegionAuthInfoItemsAuthInfoItem
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: cloud-owner
+          in: path
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
+          required: true
+          type: string
+        - name: cloud-region-id
+          in: path
+          description: Identifier used by the vendor for the region. Second part of composite key
+          required: true
+          type: string
+        - name: auth-info-item-id
+          in: path
+          description: Unique ID of auth-info-item.
+          required: true
+          type: string
+        - name: body
+          in: body
+          description: auth-info-item object that needs to be created or updated
+          required: true
+          schema:
+            $ref: "#/definitions/auth-info-item"
+    delete:
+      tags:
+        - CloudInfrastructure
+      summary: delete an existing auth-info-item
+      description: delete an existing auth-info-item
+      operationId: deleteCloudInfrastructureCloudRegionsCloudRegionAuthInfoItemsAuthInfoItem
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: cloud-owner
+          in: path
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
+          required: true
+          type: string
+        - name: cloud-region-id
+          in: path
+          description: Identifier used by the vendor for the region. Second part of composite key
+          required: true
+          type: string
+        - name: auth-info-item-id
+          in: path
+          description: Unique ID of auth-info-item.
+          required: true
+          type: string
+        - name: resource-version
+          in: query
+          description: resource-version for concurrency
+          required: true
+          type: string
+  /cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}/auth-info-items:
+    get:
+      tags:
+        - CloudInfrastructure
+      summary: returns auth-info-items
+      description: returns auth-info-items
+      operationId: getCloudInfrastructureCloudRegionsCloudRegionAuthInfoItems
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "200":
+          description: successful operation
+          schema:
+              $ref: "#/definitions/auth-info-items"
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: cloud-owner
+          in: path
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
+          required: true
+          type: string
+        - name: cloud-region-id
+          in: path
+          description: Identifier used by the vendor for the region. Second part of composite key
+          required: true
+          type: string
+        - name: cloud-type
+          in: query
+          description: Type of the cloud (e.g., openstack)
+          required: false
+          type: string
+        - name: owner-defined-type
+          in: query
+          description: Cloud-owner defined type indicator (e.g., dcp, lcp)
+          required: false
           type: string
   /cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}:
     get:
@@ -6016,7 +6248,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -6052,7 +6284,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -6084,7 +6316,7 @@ paths:
       parameters:
         - name: cloud-owner
           in: path
-          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
           required: true
           type: string
         - name: cloud-region-id
@@ -11302,150 +11534,6 @@ paths:
           description: successful operation
           schema:
               $ref: "#/definitions/virtual-data-centers"
-        "default":
-          description: Response codes found in [response codes](https://wiki.onap.org/).
-  /license-management/license-key-resources/license-key-resource/{att-uuid}/relationship-list/relationship:
-    put:
-      tags:
-        - LicenseManagement
-      summary: see node definition for valid relationships
-      operationId: createOrUpdateLicenseManagementLicenseKeyResourcesLicenseKeyResourceRelationshipListRelationship
-      consumes:
-        - application/json
-        - application/xml
-      produces:
-        - application/json
-        - application/xml
-      responses:
-        "default":
-          description: Response codes found in [response codes](https://wiki.onap.org/).
-      parameters:
-        - name: att-uuid
-          in: path
-          required: true
-          type: string
-        - name: body
-          in: body
-          description: relationship object that needs to be created or updated
-          required: true
-          schema:
-            $ref: "#/definitions/relationship"
-    delete:
-      tags:
-        - LicenseManagement
-      summary: delete an existing relationship
-      description: delete an existing relationship
-      operationId: deleteLicenseManagementLicenseKeyResourcesLicenseKeyResourceRelationshipListRelationship
-      consumes:
-        - application/json
-        - application/xml
-      produces:
-        - application/json
-        - application/xml
-      responses:
-        "default":
-          description: Response codes found in [response codes](https://wiki.onap.org/).
-      parameters:
-        - name: att-uuid
-          in: path
-          required: true
-          type: string
-  /license-management/license-key-resources/license-key-resource/{att-uuid}:
-    get:
-      tags:
-        - LicenseManagement
-      summary: returns license-key-resource
-      description: returns license-key-resource
-      operationId: getLicenseManagementLicenseKeyResourcesLicenseKeyResource
-      produces:
-        - application/json
-        - application/xml
-      responses:
-        "200":
-          description: successful operation
-          schema:
-              $ref: "#/definitions/license-key-resource"
-        "default":
-          description: Response codes found in [response codes](https://wiki.onap.org/).
-      parameters:
-        - name: att-uuid
-          in: path
-          required: true
-          type: string
-        - name: assignment-group-uuid
-          in: query
-          required: false
-          type: string
-        - name: name
-          in: query
-          required: false
-          type: string
-    put:
-      tags:
-        - LicenseManagement
-      summary: create or update an existing license-key-resource
-      description: create or update an existing license-key-resource
-      operationId: createOrUpdateLicenseManagementLicenseKeyResourcesLicenseKeyResource
-      consumes:
-        - application/json
-        - application/xml
-      produces:
-        - application/json
-        - application/xml
-      responses:
-        "default":
-          description: Response codes found in [response codes](https://wiki.onap.org/).
-      parameters:
-        - name: att-uuid
-          in: path
-          required: true
-          type: string
-        - name: body
-          in: body
-          description: license-key-resource object that needs to be created or updated
-          required: true
-          schema:
-            $ref: "#/definitions/license-key-resource"
-    delete:
-      tags:
-        - LicenseManagement
-      summary: delete an existing license-key-resource
-      description: delete an existing license-key-resource
-      operationId: deleteLicenseManagementLicenseKeyResourcesLicenseKeyResource
-      consumes:
-        - application/json
-        - application/xml
-      produces:
-        - application/json
-        - application/xml
-      responses:
-        "default":
-          description: Response codes found in [response codes](https://wiki.onap.org/).
-      parameters:
-        - name: att-uuid
-          in: path
-          required: true
-          type: string
-        - name: resource-version
-          in: query
-          description: resource-version for concurrency
-          required: true
-          type: string
-  /license-management/license-key-resources:
-    get:
-      tags:
-        - LicenseManagement
-      summary: returns license-key-resources
-      description: returns license-key-resources
-      operationId: getLicenseManagementLicenseKeyResources
-      produces:
-        - application/json
-        - application/xml
-      responses:
-        "200":
-          description: successful operation
-          schema:
-              $ref: "#/definitions/license-key-resources"
         "default":
           description: Response codes found in [response codes](https://wiki.onap.org/).
   /business/connectors/connector/{resource-instance-id}/relationship-list/relationship:
@@ -39489,6 +39577,7 @@ definitions:
       - TO l3-network (Many2Many)
       - TO service-subscription (Many2Many)
       - TO vserver (comprises tenant, One2Many)
+      - FROM auth-info-item
       - FROM cloud-region (is composed of tenant)
       - FROM group-assignment
       - FROM volume-group
@@ -39897,15 +39986,64 @@ definitions:
         type: array
         items:          
           $ref: "#/definitions/availability-zone"
+  auth-info-item:
+    description: |
+      Persistent auth info.
+      ###### Related Nodes
+      - TO tenant (One2One)
+      - FROM cloud-region (is composed of auth-info-item)
+    required:
+    - auth-info-item-id
+    - cloud-domain
+    - username
+    - password
+    - auth-url
+    - ssl-cacert
+    - ssl-insecure
+    properties:
+      auth-info-item-id:
+        type: string
+        description: Unique ID of auth-info-item.
+      cloud-domain:
+        type: string
+        description: domain info for authentication.
+      username:
+        type: string
+        description: user name of auth infomation to access VIM.
+      password:
+        type: string
+        description: password of auth infomation to access VIM.
+      auth-url:
+        type: string
+        description: authentication url of the cloud.
+      ssl-cacert:
+        type: string
+        description: ca file content if enabled ssl on auth-url.
+      ssl-insecure:
+        type: boolean
+        description: Whether to verify VIM's certificate.
+      relationship-list:
+        type: array
+        items:
+          $ref: "#/definitions/relationship"
+  auth-info-items:
+    description: |
+      Collection of persistent auth information to access to VIM.
+    properties:
+      auth-info-item:
+        type: array
+        items:          
+          $ref: "#/definitions/auth-info-item"
   cloud-region:
     description: |
-      cloud-region designates an installation of a cloud cluster or region or instantiation. In AT&Ts AIC cloud, this could be an LCP or DCP. Cloud regions are uniquely identified by a composite key, cloud-owner + cloud-region-id. The format of the cloud-owner is vendor-cloudname and we will use att-aic for AT&T's AIC.
+      cloud-region designates an installation of a cloud cluster or region or instantiation.
       ###### Default Delete Scope
       THIS_NODE_ONLY
       ###### Related Nodes
       - TO complex (Many2One)
       - TO l3-network (Many2Many)
       - TO tenant (comprises cloud-region, One2Many)
+      - TO auth-info-item (comprises cloud-region, One2Many)
       - TO image (comprises cloud-region, One2Many)
       - TO flavor (comprises cloud-region, One2Many)
       - TO availability-zone (comprises cloud-region, One2Many)
@@ -39924,7 +40062,7 @@ definitions:
     properties:
       cloud-owner:
         type: string
-        description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname
+        description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
       cloud-region-id:
         type: string
         description: Identifier used by the vendor for the region. Second part of composite key
@@ -39991,6 +40129,10 @@ definitions:
         type: array
         items:
           $ref: "#/definitions/relationship"
+      auth-info-items:
+        type: array
+        items:
+          $ref: "#/definitions/auth-info-item"
   cloud-regions:
     properties:
       cloud-region:
@@ -40368,56 +40510,6 @@ definitions:
         type: array
         items:
           $ref: "#/definitions/virtual-data-center"
-  license-key-resource:
-    description: |
-      OBSOLETE OBJECT:  do not use
-      ###### Related Nodes
-      - FROM generic-vnf
-    required:
-    - att-uuid
-    - assignment-group-uuid
-    properties:
-      att-uuid:
-        type: string
-      assignment-type:
-        type: string
-      assignment-status:
-        type: string
-      assignment-group-uuid:
-        type: string
-      assignment-date:
-        type: string
-      name:
-        type: string
-      model-uuid:
-        type: string
-      model-version:
-        type: string
-      license-key:
-        type: string
-      license-key-file-url:
-        type: string
-      supplier-release-list:
-        type: string
-      resource-version:
-        type: string
-        description: Used for optimistic concurrency.  Must be empty on create, valid on update and delete.
-      relationship-list:
-        type: array
-        items:
-          $ref: "#/definitions/relationship"
-  license-key-resources:
-    properties:
-      license-key-resource:
-        type: array
-        items:          
-          $ref: "#/definitions/license-key-resource"
-  license-management:
-    properties:
-      license-key-resources:
-        type: array
-        items:
-          $ref: "#/definitions/license-key-resource"
   connector:
     description: |
       Collection of resource instances used to connect a variety of disparate inventory widgets
@@ -41347,7 +41439,7 @@ definitions:
         description: Captures the units corresponding to the speed
       ip-version:
         type: string
-        description: v4, v6, or ds for dual stack (should be att-ip-version)
+        description: v4, v6, or ds for dual stack
       routing-protocol:
         type: string
         description: For example, static or BGP
@@ -43194,9 +43286,6 @@ definitions:
       cloud-infrastructure:
         type: object
         $ref: "#/definitions/cloud-infrastructure"
-      license-management:
-        type: object
-        $ref: "#/definitions/license-management"
       business:
         type: object
         $ref: "#/definitions/business"

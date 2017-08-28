@@ -186,28 +186,6 @@ public class SchemaGenerator{
     	LOGGER.info(imsg);
     	
         graphMgmt.commit();
-        if (addDefaultCR) {
-		if (!graph.traversal().V().has("cloud-owner", "att-aic").has("cloud-region-id", "AAIAIC25").hasNext()) {
-	        imsg = "Adding default cloud region to graph...";
-        	System.out.println(imsg);
-        	LOGGER.info(imsg);
-			final Vertex cloudRegion = graph.addVertex();
-	
-			final String ts = String.valueOf(System.currentTimeMillis() / 1000L);
-	
-			cloudRegion.property("aai-node-type", "cloud-region");
-			cloudRegion.property("cloud-owner", "att-aic");
-			cloudRegion.property("cloud-region-id", "AAIAIC25");
-			cloudRegion.property("cloud-region-version", "2.5");
-			cloudRegion.property("complex-name", "AAIAIC25");
-			cloudRegion.property("aai-created-ts", ts);
-			cloudRegion.property("resource-version", ts);
-			cloudRegion.property("source-of-truth", "aai-schema-loader");
-			cloudRegion.property("last-mod-source-of-truth", "aai-schema-loader");
-			cloudRegion.property(AAIProperties.AAI_URI, "/cloud-infrastructure/cloud-regions/cloud-region/att-aic/AAIAIC25");
-			graph.tx().commit();
-		}
-		}
     }// End of loadSchemaIntoTitan()
 
 }

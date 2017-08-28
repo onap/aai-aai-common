@@ -147,7 +147,7 @@ public class StoreNotificationEvent {
 			throw new AAIException("AAI_7350");
 		}
 
-		DynamicEntity notificationEvent = notificationJaxbContext.getDynamicType("inventory.aai.att.com." + notificationVersion + ".NotificationEvent").newDynamicEntity();
+		DynamicEntity notificationEvent = notificationJaxbContext.getDynamicType("inventory.aai.onap.org." + notificationVersion + ".NotificationEvent").newDynamicEntity();
 
 		if (eventHeader.get("id") == null) {
 			eventHeader.set("id", genDate2() + "-" + UUID.randomUUID().toString());
