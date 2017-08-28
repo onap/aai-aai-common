@@ -930,6 +930,11 @@
 						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
 					</xml-properties>
 				</xml-element>
+				<xml-element java-attribute="vserverStatus" name="vserver-status" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="status of vserver" />
+					</xml-properties>
+				</xml-element>
 				<xml-element java-attribute="volumes" name="volumes" type="inventory.aai.onap.org.v11.Volumes" />
 				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v11.RelationshipList" />
 				<xml-element java-attribute="lInterfaces" name="l-interfaces" type="inventory.aai.onap.org.v11.LInterfaces" />
@@ -2404,6 +2409,8 @@
 						<xml-property name="description" value="Uniquely identifies this instance of a service" />
 					</xml-properties>
 				</xml-element>
+				<xml-element java-attribute="networkServices" name="network-services" type="inventory.aai.onap.org.v11.NetworkServices">
+				</xml-element>
 				<xml-element java-attribute="serviceInstanceName" name="service-instance-name" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="This field will store a name assigned to the service-instance." />
@@ -2527,6 +2534,64 @@
 			</xml-properties>
 		</java-type>
 
+		<java-type name="NetworkServices">
+			<xml-properties>
+				<xml-property name="description" value="Collection of network service instances" />
+			</xml-properties>
+			<xml-root-element name="network-services" />
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="networkService" name="network-service" type="inventory.aai.onap.org.v11.NetworkService" />
+			</java-attributes>
+		</java-type>
+
+		<java-type name="NetworkService">
+			<xml-root-element name="network-service" />
+			<java-attributes>
+				<xml-element java-attribute="networkServiceId" name="network-service-id" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="ID of Network Service." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="nsdId" name="nsd-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="ID of Network Service Descriptor." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="networkServiceName" name="network-service-name" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Name of Network Service." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="networkServiceStatus" name="network-service-status" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Status of Network Service." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="createdAt" name="created-at" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="create time of Network Service." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="updatedAt" name="updated-at" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="last update of Network Service." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
+					</xml-properties>
+				</xml-element>
+			</java-attributes>
+			<xml-properties>
+				<xml-property name="description" value="Network service, mainly used in virtual function controller."/>
+				<xml-property name="indexedProps" value="network-service-id" />
+				<xml-property name="uniqueProps" value="network-service-id" />
+				<xml-property name="container" value="network-services" />
+				<xml-property name="searchable" value="network-service-id,network-service-name" />
+				<xml-property name="nameProps" value="network-service-name" />
+			</xml-properties>
+		</java-type>
 		<java-type name="ServiceDesignAndCreation">
 			<xml-properties>
 				<xml-property name="description" value="Namespace for objects managed by ASDC" />
@@ -3871,6 +3936,11 @@
 				<xml-element java-attribute="vnfName2" name="vnf-name2" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Alternate name of VNF." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="vnfStatus" name="vnf-status" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Status of a VNF." />
 					</xml-properties>
 				</xml-element>
 				<xml-element java-attribute="vnfType" name="vnf-type" required="true" type="java.lang.String">
