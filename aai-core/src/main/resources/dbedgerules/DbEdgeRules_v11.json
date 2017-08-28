@@ -419,6 +419,17 @@
 			"prevent-delete": "NONE"
 		},
 		{
+			"from": "vnfc",
+			"to": "vserver",
+			"label": "has",
+			"direction": "OUT",
+			"multiplicity": "One2Many",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"SVC-INFRA": "NONE",
+			"prevent-delete": "NONE"
+		},
+		{
 			"from": "l-interface",
 			"to": "l3-interface-ipv4-address-list",
 			"label": "hasIpAddress",
@@ -1134,6 +1145,17 @@
 			"prevent-delete": "NONE"
 		},
 		{
+			"from": "service-instance",
+			"to": "network-service",
+			"label": "has",
+			"direction": "OUT",
+			"multiplicity": "One2Many",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"SVC-INFRA": "NONE",
+			"prevent-delete": "NONE"
+		},
+		{
 			"from": "service-subscription",
 			"to": "service-instance",
 			"label": "hasInstance",
@@ -1205,6 +1227,28 @@
 			"label": "owns",
 			"direction": "OUT",
 			"multiplicity": "One2Many",
+			"contains-other-v": "${direction}",
+			"delete-other-v": "NONE",
+			"SVC-INFRA": "!${direction}",
+			"prevent-delete": "${direction}"
+		},
+		{
+			"from": "vserver",
+			"to": "generic-vnf",
+			"label": "owns",
+			"direction": "OUT",
+			"multiplicity": "Many2one",
+			"contains-other-v": "${direction}",
+			"delete-other-v": "NONE",
+			"SVC-INFRA": "!${direction}",
+			"prevent-delete": "${direction}"
+		},
+		{
+			"from": "vserver",
+			"to": "pserver",
+			"label": "owns",
+			"direction": "OUT",
+			"multiplicity": "Many2One",
 			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "!${direction}",
@@ -1585,6 +1629,28 @@
 			"prevent-delete": "NONE"
 		},
 		{
+			"from": "generic-vnf",
+			"to": "cloud-region",
+			"label": "deployed-in",
+			"direction": "OUT",
+			"multiplicity": "Many2One",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"SVC-INFRA": "NONE",
+			"prevent-delete": "NONE"
+		},
+		{
+			"from": "generic-vnf",
+			"to": "vnfc",
+			"label": "has",
+			"direction": "OUT",
+			"multiplicity": "One2Many",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"SVC-INFRA": "NONE",
+			"prevent-delete": "NONE"
+		},
+		{
 			"from": "vf-module",
 			"to": "volume-group",
 			"label": "uses",
@@ -1700,6 +1766,17 @@
 			"label": "isPartOf",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"SVC-INFRA": "NONE",
+			"prevent-delete": "NONE"
+		},
+		{
+			"from": "network-service",
+			"to": "generic-vnf",
+			"label": "has",
+			"direction": "OUT",
+			"multiplicity": "One2Many",
 			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
