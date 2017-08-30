@@ -2,10 +2,11 @@
 .project
 target/
 **/logs/
+**/debug-logs/
 bundleconfig-local/etc/auth/aai-client-cert.p12
 bundleconfig-local/etc/auth/tomcat_keystore
 bundleconfig-local/etc/logback.xml
 /.pydevproject
 /bin/
-/.idea
+*/.idea
 *.iml
