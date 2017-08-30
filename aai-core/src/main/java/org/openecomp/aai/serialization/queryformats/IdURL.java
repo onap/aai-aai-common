@@ -20,8 +20,9 @@
 
 package org.openecomp.aai.serialization.queryformats;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
-
 import org.openecomp.aai.db.props.AAIProperties;
 import org.openecomp.aai.exceptions.AAIException;
 import org.openecomp.aai.introspection.Introspector;
@@ -29,8 +30,6 @@ import org.openecomp.aai.introspection.Loader;
 import org.openecomp.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.openecomp.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
 import org.openecomp.aai.serialization.queryformats.utils.UrlBuilder;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 public class IdURL implements FormatMapper {
 

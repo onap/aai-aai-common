@@ -20,14 +20,6 @@
 
 package org.openecomp.aai.parsers.uri;
 
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-
-import javax.ws.rs.core.MultivaluedMap;
-
 import org.openecomp.aai.exceptions.AAIException;
 import org.openecomp.aai.introspection.Introspector;
 import org.openecomp.aai.introspection.Loader;
@@ -36,6 +28,13 @@ import org.openecomp.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.openecomp.aai.serialization.db.EdgeType;
 import org.openecomp.aai.util.AAIApiServerURLBase;
 import org.openecomp.aai.workarounds.LegacyURITransformer;
+
+import javax.ws.rs.core.MultivaluedMap;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
 
 /**
  * Given a URI a Relationship Object is returned.

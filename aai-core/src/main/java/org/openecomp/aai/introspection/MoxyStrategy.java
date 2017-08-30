@@ -20,24 +20,8 @@
 
 package org.openecomp.aai.introspection;
 
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.stream.StreamSource;
-
+import com.google.common.base.CaseFormat;
+import com.google.common.base.Joiner;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.dynamic.DynamicType;
@@ -48,13 +32,20 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
-import org.springframework.web.util.UriUtils;
-
 import org.openecomp.aai.restcore.MediaType;
 import org.openecomp.aai.schema.enums.ObjectMetadata;
 import org.openecomp.aai.schema.enums.PropertyMetadata;
-import com.google.common.base.CaseFormat;
-import com.google.common.base.Joiner;
+import org.springframework.web.util.UriUtils;
+
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.stream.StreamSource;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.util.*;
+import java.util.Map.Entry;
 
 public class MoxyStrategy extends Introspector {
 	

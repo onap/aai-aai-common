@@ -20,17 +20,16 @@
 
 package org.openecomp.aai.serialization.engines.query;
 
-import java.util.List;
-
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.Tree;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
-
 import org.openecomp.aai.db.props.AAIProperties;
 import org.openecomp.aai.introspection.Loader;
+
+import java.util.List;
 
 public abstract class QueryEngine {
 

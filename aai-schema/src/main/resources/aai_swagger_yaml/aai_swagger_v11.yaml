@@ -42922,6 +42922,20 @@ definitions:
       service-provider-name:
         type: string
         description: Name of the service Provider on this link.
+      service-provider-bandwidth-up-value:
+        type: integer
+        format: int32
+        description: Upstream Bandwidth value agreed with the service provider
+      service-provider-bandwidth-up-units:
+        type: string
+        description: Units for the upstream BW value
+      service-provider-bandwidth-down-value:
+        type: integer
+        format: int32
+        description: Downstream Bandwidth value agreed with the service provider
+      service-provider-bandwidth-down-units:
+        type: string
+        description: Units for downstream BW value
       resource-version:
         type: string
         description: Used for optimistic concurrency.  Must be empty on create, valid on update and delete.
