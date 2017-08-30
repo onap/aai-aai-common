@@ -20,16 +20,12 @@
 
 package org.openecomp.aai.introspection.generator;
 
+import org.openecomp.aai.exceptions.AAIException;
+import org.openecomp.aai.introspection.*;
+
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.openecomp.aai.exceptions.AAIException;
-import org.openecomp.aai.introspection.Introspector;
-import org.openecomp.aai.introspection.IntrospectorWalker;
-import org.openecomp.aai.introspection.Loader;
-import org.openecomp.aai.introspection.PropertyPredicates;
-import org.openecomp.aai.introspection.Wanderer;
 
 public class CreateExample implements Wanderer {
 

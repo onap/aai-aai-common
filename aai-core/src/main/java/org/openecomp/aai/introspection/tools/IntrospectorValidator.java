@@ -20,12 +20,6 @@
 
 package org.openecomp.aai.introspection.tools;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-
 import org.openecomp.aai.db.props.AAIProperties;
 import org.openecomp.aai.exceptions.AAIException;
 import org.openecomp.aai.introspection.Introspector;
@@ -33,6 +27,8 @@ import org.openecomp.aai.introspection.IntrospectorWalker;
 import org.openecomp.aai.introspection.Visibility;
 import org.openecomp.aai.introspection.Wanderer;
 import org.openecomp.aai.schema.enums.PropertyMetadata;
+
+import java.util.*;
 
 public class IntrospectorValidator implements Wanderer {
 
@@ -49,7 +45,7 @@ public class IntrospectorValidator implements Wanderer {
 	 *
 	 * @param builder the builder
 	 */
-	private IntrospectorValidator(IntrospectorValidator.Builder builder) {
+	private IntrospectorValidator(Builder builder) {
 		this.validateRequired = builder.getValidateRequired();
 		this.issueResolvers = builder.getResolvers();
 		this.maximumDepth = builder.getMaximumDepth();

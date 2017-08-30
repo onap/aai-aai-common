@@ -20,11 +20,11 @@
 
 package org.openecomp.aai.introspection.tools;
 
-import java.net.URI;
-
 import org.openecomp.aai.introspection.Introspector;
 import org.openecomp.aai.introspection.Loader;
 import org.openecomp.aai.parsers.uri.URIToObject;
+
+import java.net.URI;
 
 public class InjectKeysFromURI  implements IssueResolver {
 
