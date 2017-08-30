@@ -69,6 +69,69 @@
       "revId": "a7ba6abfe60bba289a09dd8257d626b8f80a53de",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_7a79a92e",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 2246,
+      "author": {
+        "id": 373
+      },
+      "writtenOn": "2017-08-30T12:25:59Z",
+      "side": 1,
+      "message": "attribute name should start with small letter",
+      "revId": "a7ba6abfe60bba289a09dd8257d626b8f80a53de",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_3ae201a0",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 2382,
+      "author": {
+        "id": 373
+      },
+      "writtenOn": "2017-08-30T12:25:59Z",
+      "side": 1,
+      "message": "should add \"resourceVersion\" element ?",
+      "range": {
+        "startLine": 2382,
+        "startChar": 27,
+        "endLine": 2382,
+        "endChar": 42
+      },
+      "revId": "a7ba6abfe60bba289a09dd8257d626b8f80a53de",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_5adb851b",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 2385,
+      "author": {
+        "id": 373
+      },
+      "writtenOn": "2017-08-30T12:25:59Z",
+      "side": 1,
+      "message": "should add required\u003d\"true\" ?",
+      "range": {
+        "startLine": 2385,
+        "startChar": 33,
+        "endLine": 2385,
+        "endChar": 49
+      },
+      "revId": "a7ba6abfe60bba289a09dd8257d626b8f80a53de",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
