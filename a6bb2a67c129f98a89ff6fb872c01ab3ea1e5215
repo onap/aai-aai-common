@@ -1,0 +1,106 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a437d4f_f45ecde8",
+        "filename": "aai-utils/License.txt",
+        "patchSetId": 1
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 453
+      },
+      "writtenOn": "2017-08-30T15:38:29Z",
+      "side": 1,
+      "message": "Should be org.onap.aai",
+      "revId": "a6bb2a67c129f98a89ff6fb872c01ab3ea1e5215",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_546fd992",
+        "filename": "aai-utils/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 453
+      },
+      "writtenOn": "2017-08-30T15:38:29Z",
+      "side": 1,
+      "message": "aai-common should be set as parent.  can remove group-id",
+      "revId": "a6bb2a67c129f98a89ff6fb872c01ab3ea1e5215",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_140031a9",
+        "filename": "aai-utils/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 453
+      },
+      "writtenOn": "2017-08-30T15:38:29Z",
+      "side": 1,
+      "message": "I think you are missing the distributionManagement block",
+      "revId": "a6bb2a67c129f98a89ff6fb872c01ab3ea1e5215",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_541d990e",
+        "filename": "aai-utils/src/main/java/org/onap/aaiutils/logging/OxmModelLoaderMsgs.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 453
+      },
+      "writtenOn": "2017-08-30T15:38:29Z",
+      "side": 1,
+      "message": "I\u0027d prefer to move this file to the oxm directory",
+      "revId": "a6bb2a67c129f98a89ff6fb872c01ab3ea1e5215",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_341a1518",
+        "filename": "aai-utils/src/main/java/org/onap/aaiutils/util/OxmModelLoaderConstants.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 453
+      },
+      "writtenOn": "2017-08-30T15:38:29Z",
+      "side": 1,
+      "message": "I\u0027d prefer to move this to the oxm directory",
+      "revId": "a6bb2a67c129f98a89ff6fb872c01ab3ea1e5215",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_b4dde544",
+        "filename": "aai-utils/src/main/resources/logging/OxmModelLoaderMsgs.properties",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 453
+      },
+      "writtenOn": "2017-08-30T15:38:29Z",
+      "side": 1,
+      "message": "I\u0027d like to change this directory name from \"logging\" to \"oxm\"",
+      "revId": "a6bb2a67c129f98a89ff6fb872c01ab3ea1e5215",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
