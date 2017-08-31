@@ -4346,6 +4346,26 @@
 					<xml-properties>
 						<xml-property name="description" value="Name of the service Provider on this link." />
 					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="serviceProviderBandwidthUpValue" name="service-provider-bandwidth-up-value" type="java.lang.Integer">
+					<xml-properties>
+						<xml-property name="description" value="Upstream Bandwidth value agreed with the service provider" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="serviceProviderBandwidthUpUnits" name="service-provider-bandwidth-up-units" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Units for the upstream BW value" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="serviceProviderBandwidthDownValue" name="service-provider-bandwidth-down-value" type="java.lang.Integer">
+					<xml-properties>
+						<xml-property name="description" value="Downstream Bandwidth value agreed with the service provider" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="serviceProviderBandwidthDownUnits" name="service-provider-bandwidth-down-units" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Units for downstream BW value" />
+					</xml-properties>
 				</xml-element>					
 				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
 					<xml-properties>

@@ -20,10 +20,10 @@
 
 package org.openecomp.aai.introspection.tools;
 
-import java.util.Map;
-
 import org.openecomp.aai.introspection.Introspector;
 import org.openecomp.aai.schema.enums.PropertyMetadata;
+
+import java.util.Map;
 
 public class DefaultFields implements IssueResolver {
 

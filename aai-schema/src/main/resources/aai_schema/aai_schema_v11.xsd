@@ -6001,6 +6001,34 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
+        <xs:element name="service-provider-bandwidth-up-value" type="xs:int" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.openecomp.aai.annotations.Metadata(description="Upstream Bandwidth value agreed with the service provider")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="service-provider-bandwidth-up-units" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.openecomp.aai.annotations.Metadata(description="Units for the upstream BW value")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="service-provider-bandwidth-down-value" type="xs:int" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.openecomp.aai.annotations.Metadata(description="Downstream Bandwidth value agreed with the service provider")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="service-provider-bandwidth-down-units" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.openecomp.aai.annotations.Metadata(description="Units for downstream BW value")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
         <xs:element name="resource-version" type="xs:string" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>

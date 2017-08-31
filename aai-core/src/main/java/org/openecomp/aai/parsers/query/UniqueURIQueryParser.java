@@ -20,12 +20,6 @@
 
 package org.openecomp.aai.parsers.query;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriBuilder;
-
 import org.openecomp.aai.exceptions.AAIException;
 import org.openecomp.aai.introspection.Introspector;
 import org.openecomp.aai.introspection.Loader;
@@ -34,6 +28,11 @@ import org.openecomp.aai.parsers.uri.URIParser;
 import org.openecomp.aai.parsers.uri.URIToDBKey;
 import org.openecomp.aai.query.builder.QueryBuilder;
 import org.openecomp.aai.serialization.db.EdgeType;
+
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.UriBuilder;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
 
 
 /**

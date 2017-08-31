@@ -20,19 +20,7 @@
 
 package org.openecomp.aai.introspection.sideeffect;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.apache.tinkerpop.gremlin.structure.Vertex;
-
 import org.openecomp.aai.db.props.AAIProperties;
 import org.openecomp.aai.exceptions.AAIException;
 import org.openecomp.aai.introspection.Introspector;
@@ -43,6 +31,13 @@ import org.openecomp.aai.introspection.sideeffect.exceptions.AAIMissingRequiredP
 import org.openecomp.aai.schema.enums.PropertyMetadata;
 import org.openecomp.aai.serialization.db.DBSerializer;
 import org.openecomp.aai.serialization.engines.TransactionalGraphEngine;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public abstract class SideEffect {
 

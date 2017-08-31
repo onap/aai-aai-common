@@ -20,21 +20,16 @@
 
 package org.openecomp.aai.parsers.query;
 
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 import org.openecomp.aai.exceptions.AAIException;
 import org.openecomp.aai.introspection.Introspector;
-import org.openecomp.aai.introspection.IntrospectorFactory;
 import org.openecomp.aai.introspection.Loader;
 import org.openecomp.aai.introspection.ModelType;
 import org.openecomp.aai.parsers.relationship.RelationshipToURI;
 import org.openecomp.aai.parsers.uri.URIParser;
 import org.openecomp.aai.query.builder.QueryBuilder;
 import org.openecomp.aai.serialization.db.EdgeRules;
-import com.google.common.base.CaseFormat;
+
+import java.io.UnsupportedEncodingException;
 
 /**
  * The Class RelationshipQueryParser.

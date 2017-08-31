@@ -20,14 +20,9 @@
 
 package org.openecomp.aai.introspection;
 
-import java.io.StringReader;
-import java.util.Map;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.stream.StreamSource;
-
+import com.att.eelf.configuration.EELFLogger;
+import com.att.eelf.configuration.EELFManager;
+import com.google.common.base.CaseFormat;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.openecomp.aai.db.props.AAIProperties;
@@ -37,9 +32,12 @@ import org.openecomp.aai.logging.ErrorLogHelper;
 import org.openecomp.aai.restcore.MediaType;
 import org.openecomp.aai.workarounds.NamingExceptions;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
-import com.google.common.base.CaseFormat;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.stream.StreamSource;
+import java.io.StringReader;
+import java.util.Map;
 
 public class PojoLoader extends Loader {
 

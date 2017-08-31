@@ -21,46 +21,19 @@
 package org.openecomp.aai.serialization.db;
 
 
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Array;
-import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
-
-import javax.ws.rs.core.UriBuilder;
-
+import com.att.eelf.configuration.EELFLogger;
+import com.att.eelf.configuration.EELFManager;
+import com.google.common.base.CaseFormat;
+import com.thinkaurelius.titan.core.SchemaViolationException;
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.Tree;
-import org.apache.tinkerpop.gremlin.structure.Direction;
-import org.apache.tinkerpop.gremlin.structure.Edge;
-import org.apache.tinkerpop.gremlin.structure.Element;
-import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.apache.tinkerpop.gremlin.structure.VertexProperty;
+import org.apache.tinkerpop.gremlin.structure.*;
 import org.javatuples.Pair;
 import org.openecomp.aai.db.props.AAIProperties;
 import org.openecomp.aai.exceptions.AAIException;
-import org.openecomp.aai.introspection.Introspector;
-import org.openecomp.aai.introspection.IntrospectorFactory;
-import org.openecomp.aai.introspection.Loader;
-import org.openecomp.aai.introspection.LoaderFactory;
-import org.openecomp.aai.introspection.ModelType;
-import org.openecomp.aai.introspection.PropertyPredicates;
-import org.openecomp.aai.introspection.Version;
+import org.openecomp.aai.introspection.*;
 import org.openecomp.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.openecomp.aai.introspection.sideeffect.DataCopy;
 import org.openecomp.aai.introspection.sideeffect.DataLinkReader;
@@ -81,10 +54,18 @@ import org.openecomp.aai.util.AAIConfig;
 import org.openecomp.aai.util.AAIConstants;
 import org.openecomp.aai.workarounds.NamingExceptions;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
-import com.google.common.base.CaseFormat;
-import com.thinkaurelius.titan.core.SchemaViolationException;
+import javax.ws.rs.core.UriBuilder;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Array;
+import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
 public class DBSerializer {
 	

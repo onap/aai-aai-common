@@ -20,16 +20,16 @@
 
 package org.openecomp.aai.serialization.queryformats;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Stream;
-
-import org.openecomp.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import org.openecomp.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 public class Formatter {
 

@@ -20,19 +20,17 @@
 
 package org.openecomp.aai.dbgen;
 
-import java.util.Properties;
-
-import org.openecomp.aai.dbmap.AAIGraph;
-import org.openecomp.aai.logging.ErrorLogHelper;
-import org.openecomp.aai.util.AAIConfig;
-import org.openecomp.aai.util.AAIConstants;
 import com.att.eelf.configuration.Configuration;
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 import com.thinkaurelius.titan.core.TitanGraph;
 import com.thinkaurelius.titan.core.schema.TitanManagement;
+import org.openecomp.aai.dbmap.AAIGraph;
+import org.openecomp.aai.logging.ErrorLogHelper;
+import org.openecomp.aai.util.AAIConfig;
+import org.openecomp.aai.util.AAIConstants;
 
-
+import java.util.Properties;
 
 
 public class GenTester {
