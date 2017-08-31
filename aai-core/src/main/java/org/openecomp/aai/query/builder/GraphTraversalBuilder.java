@@ -30,7 +30,6 @@ import java.util.Set;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal.Admin;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.DefaultGraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
@@ -70,7 +69,7 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
 	public GraphTraversalBuilder(Loader loader, GraphTraversalSource source) {
 		super(loader, source);
 		
-		traversal = new DefaultGraphTraversal<>();
+		traversal = (GraphTraversal<Vertex, E>) __.<E>start();
 		
 	}
 	
@@ -83,7 +82,7 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
 	public GraphTraversalBuilder(Loader loader, GraphTraversalSource source, Vertex start) {
 		super(loader, source, start);
 		
-		traversal = new DefaultGraphTraversal<>();
+		traversal = (GraphTraversal<Vertex, E>) __.__(start);
 		
 	}
 
@@ -404,6 +403,24 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
 	}
 	
 	@Override
+	public QueryBuilder<E> until(QueryBuilder<E> builder) {
+		this.traversal.until((GraphTraversal<Vertex,E>)builder.getQuery());
+		stepIndex++;
+		
+		return this;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public QueryBuilder<E> simplePath(){
+		this.traversal.simplePath();
+		stepIndex++;
+		return this;
+	}
+	
+	@Override
 	public QueryBuilder<Edge> outE() {
 		this.traversal.outE();
 		stepIndex++;
@@ -594,17 +611,18 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
 	
 	private void executeQuery() {
 		
-		Admin<Vertex, Vertex> admin;
+		Admin admin;
 		if (start != null) {
-			admin = source.V(start).asAdmin();
+			this.completeTraversal = traversal.asAdmin();
 		} else {
 			admin = source.V().asAdmin();
+			TraversalHelper.insertTraversal(admin.getEndStep(), traversal.asAdmin(), admin);
+			
+			this.completeTraversal = (Admin<Vertex, E>) admin;
 
 		}
 		
-		TraversalHelper.insertTraversal(admin.getEndStep(), traversal.asAdmin(), admin);
 		
-		this.completeTraversal = (Admin<Vertex, E>) admin;
 	}
 	
 	@Override

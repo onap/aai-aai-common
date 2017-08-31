@@ -298,6 +298,15 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
 	public abstract QueryBuilder<E> not(QueryBuilder<E> builder);
 	public abstract QueryBuilder<E> as(String name);
 	public abstract QueryBuilder<E> select(String name);
+	public abstract QueryBuilder<E> until(QueryBuilder<E> builder);
+	
+	/**
+	 * Used to prevent the traversal from repeating its path through the graph.
+	 * See http://tinkerpop.apache.org/docs/3.0.1-incubating/#simplepath-step for more info.
+	 * 
+	 * @return a QueryBuilder with the simplePath step appended to its traversal
+	 */
+	public abstract QueryBuilder<E> simplePath();
 	
  	public abstract void markContainer();
 
