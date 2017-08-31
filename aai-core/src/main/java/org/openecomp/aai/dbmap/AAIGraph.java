@@ -54,11 +54,12 @@ import com.thinkaurelius.titan.core.schema.TitanManagement;
  */
 public class AAIGraph {
 
-	protected Map<String, TitanGraph> graphs = new HashMap<>();
+	private static final EELFLogger logger = EELFManager.getInstance().getLogger(AAIGraph.class);
 	protected static final String COMPONENT = "aaidbmap";
+	protected Map<String, TitanGraph> graphs = new HashMap<>();
 	private final String REALTIME_DB = "realtime";
 	private final String CACHED_DB = "cached";
-	private final EELFLogger logger = EELFManager.getInstance().getLogger(this.getClass().getSimpleName());
+
 
 
 	/**
@@ -95,38 +96,22 @@ public class AAIGraph {
 	}
 	
 	private void loadGraph(String name, String configPath) throws AAIException {
-		try {
-			final TitanGraph graph = TitanFactory.open(configPath);
-			InputStream is = new FileInputStream(configPath);
-	        Properties graphProps = new Properties();
-	        graphProps.load(is);
-	        
-			if (graphProps.get("storage.backend").equals("inmemory")) { 
+		try (TitanGraph graph = TitanFactory.open(configPath);
+			InputStream is = new FileInputStream(configPath)) {
+
+			Properties graphProps = new Properties();
+			graphProps.load(is);
+
+			if ("inmemory".equals(graphProps.get("storage.backend"))) {
 				// Load the propertyKeys, indexes and edge-Labels into the DB
 				loadSchema(graph);
-				if (graphProps.containsKey("load.snapshot.file")) {
-					String value = graphProps.getProperty("load.snapshot.file");
-					if ("true".equals(value)) {
-						try {
-							String location = System.getProperty("snapshot.location");
-							logAndPrint(logger, "Loading snapshot to inmemory graph.");
-							Graph transaction = graph.newTransaction();
-							transaction.io(IoCore.graphson()).readGraph(location);
-							transaction.tx().commit();
-							logAndPrint(logger, "Snapshot loaded to inmemory graph.");
-						} catch (IOException e) {
-							graph.close();
-							logAndPrint(logger, "ERROR: Could not load datasnapshot to in memory graph. \n" + ExceptionUtils.getFullStackTrace(e));
-							System.exit(0);
-						}
-					}
-				}
+				loadSnapShotToInMemoryGraph(graph, graphProps);
 			}
-			
+
 			if (graph == null) {
 				throw new AAIException("AAI_5102");
 			}
-			
+
 			graphs.put(name, graph);
 		} catch (FileNotFoundException fnfe) {
 			throw new AAIException("AAI_4001");
@@ -135,7 +120,30 @@ public class AAIGraph {
 
 	    }
 	}
-	
+
+	private void loadSnapShotToInMemoryGraph(TitanGraph graph, Properties graphProps) {
+		if (logger.isDebugEnabled()) {
+			logger.debug("Load Snapshot to InMemory Graph");
+		}
+		if (graphProps.containsKey("load.snapshot.file")) {
+			String value = graphProps.getProperty("load.snapshot.file");
+			if ("true".equals(value)) {
+				try (Graph transaction = graph.newTransaction()) {
+					String location = System.getProperty("snapshot.location");
+					logAndPrint(logger, "Loading snapshot to inmemory graph.");
+					transaction.io(IoCore.graphson()).readGraph(location);
+					transaction.tx().commit();
+					logAndPrint(logger, "Snapshot loaded to inmemory graph.");
+				} catch (Exception e) {
+					logAndPrint(logger,
+						"ERROR: Could not load datasnapshot to in memory graph. \n"
+							+ ExceptionUtils.getFullStackTrace(e));
+					System.exit(0);
+				}
+			}
+		}
+	}
+
 	private void loadSchema(TitanGraph graph) {
 		// Load the propertyKeys, indexes and edge-Labels into the DB
 		TitanManagement graphMgt = graph.openManagement();

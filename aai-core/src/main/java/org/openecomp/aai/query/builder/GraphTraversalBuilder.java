@@ -221,7 +221,7 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
 						prop = metadata.get();
 					}
 					//this is because the index is registered as an Integer
-					if (val != null && val.getClass().equals(Long.class)) {
+					if (val.getClass().equals(Long.class)) {
 						traversal.has(prop,new Integer(val.toString()));
 					} else {
 						traversal.has(prop, val);

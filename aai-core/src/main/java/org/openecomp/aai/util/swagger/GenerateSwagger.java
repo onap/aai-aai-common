@@ -76,6 +76,10 @@ public class GenerateSwagger {
             ex.printStackTrace();
         }
 
+        if(null == swaggerMap) {
+            throw new IOException();
+        }
+
         Map<String, Object> map = (Map<String, Object>) swaggerMap.get("paths");
         Map<String, Object> schemaDefinitionmap = (Map<String, Object>) swaggerMap.get("definitions");
         Map<String, Object> infoMap = (Map<String, Object>) swaggerMap.get("info");
