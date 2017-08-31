@@ -3608,13 +3608,19 @@
 					<xml-properties>
 						<xml-property name="description" value="role of the subnet, referenced when assigning IPs" />
 					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="ipAssignmentDirection" name="ip-assignment-direction" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="ip address assignment direction of the subnet" />
+					</xml-properties>
 				</xml-element>			
 				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
 					</xml-properties>
 				</xml-element>
-				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v11.RelationshipList" />
+				<xml-element java-attribute="hostRoutes" name="host-routes" type="inventory.aai.onap.org.v11.HostRoutes" />
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v11.RelationshipList" />				
 			</java-attributes>
 			<xml-properties>
 				<xml-property name="indexedProps" value="subnet-id,subnet-name" />
@@ -5689,6 +5695,49 @@
 				<xml-property name="indexedProps" value="pf-pci-id" />
 				<xml-property name="dependentOn" value="p-interface" />
 				<xml-property name="container" value="sriov-pfs" />
+			</xml-properties>
+		</java-type>
+		
+		<java-type name="HostRoutes">
+			<xml-root-element name="host-routes" />
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="hostRoute" name="host-route" type="inventory.aai.onap.org.v11.HostRoute" />
+			</java-attributes>
+		</java-type>
+		<java-type name="HostRoute">
+			<xml-root-element name="host-route" />
+			<java-attributes>
+				<xml-element java-attribute="hostRouteId" name="host-route-id" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="host-route id" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="routePrefix" name="route-prefix" required="true" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="subnet prefix" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="nextHop" name="next-hop" required="true" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Could be ip-address, hostname, or service-instance" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="nextHopType" name="next-hop-type" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Should be ip-address, hostname, or service-instance to match next-hop" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v11.RelationshipList" />
+			</java-attributes>
+			<xml-properties>
+				<xml-property name="indexedProps" value="host-route-id" />
+				<xml-property name="dependentOn" value="subnet" />
+				<xml-property name="container" value="host-routes" />
 			</xml-properties>
 		</java-type>
 	</java-types>

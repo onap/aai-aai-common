@@ -1957,6 +1957,17 @@
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
+		},
+		{
+			"from": "subnet",
+			"to": "host-route",
+			"label": "has",
+			"direction": "OUT",
+			"multiplicity": "One2Many",
+			"contains-other-v": "${direction}",
+			"delete-other-v": "NONE",
+			"SVC-INFRA": "NONE",
+			"prevent-delete": "NONE"
 		}
 	]
 }
