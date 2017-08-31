@@ -31,6 +31,7 @@ import org.openecomp.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.openecomp.aai.serialization.queryformats.QueryFormatTestHelper;
 import org.openecomp.aai.util.AAIConstants;
 
+@Ignore
 public class PropertyPredicatesTest {
 
 	

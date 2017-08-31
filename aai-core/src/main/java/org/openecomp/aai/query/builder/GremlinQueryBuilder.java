@@ -394,6 +394,24 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
 	}
 	
 	@Override
+	public QueryBuilder<E> until(QueryBuilder<E> builder) {
+		this.list.add(".until(__" + builder.getQuery() + ")");
+		stepIndex++;
+		
+		return this;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public QueryBuilder<E> simplePath(){
+		this.list.add(".simplePath()");
+		stepIndex++;
+		return this;
+	}
+	
+	@Override
 	public QueryBuilder<Edge> outE() {
 		this.list.add(".outE()");
 		stepIndex++;
