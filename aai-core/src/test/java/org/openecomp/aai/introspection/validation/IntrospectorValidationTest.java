@@ -64,6 +64,7 @@ public class IntrospectorValidationTest {
 				.restrictDepth(10000)
 				.build();
 	}
+	@Ignore
 	@Test
 	public void verifySuccessWhenEmpty() throws AAIException {
 		Introspector obj = loader.introspectorFromName("test-object");
@@ -85,7 +86,7 @@ public class IntrospectorValidationTest {
 		Issue issue = issues.get(0);
 		assertEquals("found expected issue", IssueType.DEPENDENT_PROP_NOT_FOUND, issue.getType());
 	}
-	
+	@Ignore
 	@Test
 	public void verifyRequiresSuccess() throws AAIException {
 		Introspector obj = loader.introspectorFromName("test-object");
