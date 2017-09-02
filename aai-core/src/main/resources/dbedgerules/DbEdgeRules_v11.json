@@ -12,17 +12,6 @@
 			"prevent-delete": "!${direction}"
 		},
 		{
-			"from" : "auth-info-item",
-			"to" : "tenant",
-			"label" : "defaultTenant",
-			"direction" : "OUT",
-			"multiplicity" : "One2One",
-			"isParent" : "false",
-			"usesResource" : "false",
-			"hasDelTarget" : "false",
-			"SVC-INFRA" : "false"
-		},
-		{
 			"from": "generic-vnf",
 			"to": "license-key-resource",
 			"label": "uses",
@@ -43,6 +32,61 @@
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "!${direction}"
+		},
+		{
+			"from": "esr-ems",
+			"to": "esr-system-info",
+			"label": "has",
+			"direction": "OUT",
+			"multiplicity": "One2Many",
+			"contains-other-v": "${direction}",
+			"delete-other-v": "${direction}",
+			"SVC-INFRA": "NONE",
+			"prevent-delete": "NONE"
+		},
+		{
+			"from": "esr-vnfm",
+			"to": "esr-system-info",
+			"label": "has",
+			"direction": "OUT",
+			"multiplicity": "One2One",
+			"contains-other-v": "${direction}",
+			"delete-other-v": "${direction}",
+			"SVC-INFRA": "NONE",
+			"prevent-delete": "NONE"
+		},
+		{
+			"from": "esr-thirdparty-sdnc",
+			"to": "esr-system-info",
+			"label": "has",
+			"direction": "OUT",
+			"multiplicity": "One2One",
+			"contains-other-v": "${direction}",
+			"delete-other-v": "${direction}",
+			"SVC-INFRA": "NONE",
+			"prevent-delete": "NONE"
+		},
+		{
+			"from": "esr-thirdparty-sdnc",
+			"to": "pnf",
+			"label": "has",
+			"direction": "OUT",
+			"multiplicity": "One2One",
+			"contains-other-v": "${direction}",
+			"delete-other-v": "NONE",
+			"SVC-INFRA": "NONE",
+			"prevent-delete": "NONE"
+		},
+		{
+			"from": "cloud-region",
+			"to": "esr-system-info",
+			"label": "has",
+			"direction": "OUT",
+			"multiplicity": "One2One",
+			"contains-other-v": "${direction}",
+			"delete-other-v": "${direction}",
+			"SVC-INFRA": "NONE",
+			"prevent-delete": "NONE"
 		},
 		{
 			"from": "cloud-region",
