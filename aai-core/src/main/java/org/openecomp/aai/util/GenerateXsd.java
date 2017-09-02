@@ -945,6 +945,7 @@ public class GenerateXsd {
 			case "Business":
 			case "LicenseManagement":
 			case "CloudInfrastructure":
+			case "ExternalSystem":
 				break;
 			default:
 				return null;
