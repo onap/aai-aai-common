@@ -116,6 +116,29 @@
       "revId": "7c3ccfdf901c34052480dd23d69c17bf00af1d66",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_8c4bed58",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 448,
+      "author": {
+        "id": 741
+      },
+      "writtenOn": "2017-09-04T06:18:04Z",
+      "side": 1,
+      "message": "won\u0027t this redundant of service-url?",
+      "range": {
+        "startLine": 439,
+        "startChar": 0,
+        "endLine": 448,
+        "endChar": 18
+      },
+      "revId": "7c3ccfdf901c34052480dd23d69c17bf00af1d66",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
