@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "9a437d4f_d1950e41",
+        "filename": "aai-core/src/main/resources/dbedgerules/DbEdgeRules_v11.json",
+        "patchSetId": 2
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 313
+      },
+      "writtenOn": "2017-09-04T05:56:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a437d4f_0618fe7f",
+      "range": {
+        "startLine": 74,
+        "startChar": 20,
+        "endLine": 74,
+        "endChar": 27
+      },
+      "revId": "7c3ccfdf901c34052480dd23d69c17bf00af1d66",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a437d4f_a606d21e",
         "filename": "aai-core/src/main/resources/dbedgerules/DbEdgeRules_v11.json",
         "patchSetId": 2
@@ -36,6 +60,30 @@
       "writtenOn": "2017-09-02T13:35:07Z",
       "side": 1,
       "message": "i think it should be \"NONE\" because this is not parent-child relationship.",
+      "range": {
+        "startLine": 75,
+        "startChar": 24,
+        "endLine": 75,
+        "endChar": 36
+      },
+      "revId": "7c3ccfdf901c34052480dd23d69c17bf00af1d66",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_b1928a55",
+        "filename": "aai-core/src/main/resources/dbedgerules/DbEdgeRules_v11.json",
+        "patchSetId": 2
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 313
+      },
+      "writtenOn": "2017-09-04T05:56:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a437d4f_a606d21e",
       "range": {
         "startLine": 75,
         "startChar": 24,
