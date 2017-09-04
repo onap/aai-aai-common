@@ -119,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "9a437d4f_ccafb5e2",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 254,
+      "author": {
+        "id": 313
+      },
+      "writtenOn": "2017-09-04T06:34:22Z",
+      "side": 1,
+      "message": "According to the suggestion from A\u0026AI, they hope me to change ip to ip-address, So I don\u0027t think the A\u0026AI team will agree us to change ems-id to id. Also, we can read from the existing schema of A\u0026AI, each node has its own special id name. They didn\u0027t use a property id. :)",
+      "parentUuid": "9a437d4f_0c581d31",
+      "range": {
+        "startLine": 254,
+        "startChar": 46,
+        "endLine": 254,
+        "endChar": 52
+      },
+      "revId": "7c3ccfdf901c34052480dd23d69c17bf00af1d66",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a437d4f_8c4bed58",
         "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
         "patchSetId": 2
@@ -130,6 +154,30 @@
       "writtenOn": "2017-09-04T06:18:04Z",
       "side": 1,
       "message": "won\u0027t this redundant of service-url?",
+      "range": {
+        "startLine": 439,
+        "startChar": 0,
+        "endLine": 448,
+        "endChar": 18
+      },
+      "revId": "7c3ccfdf901c34052480dd23d69c17bf00af1d66",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_6cb6893f",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 448,
+      "author": {
+        "id": 313
+      },
+      "writtenOn": "2017-09-04T06:34:22Z",
+      "side": 1,
+      "message": "The VF-C team will only use ip-address/port/username/password to for the alarm data address. the ip-address and port can not be a url. :)",
+      "parentUuid": "9a437d4f_8c4bed58",
       "range": {
         "startLine": 439,
         "startChar": 0,
