@@ -140,6 +140,30 @@
       "revId": "7c694af2f15ad62c2dc5b5f916e45de1ed9fddbf",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_694b16b1",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 5
+      },
+      "lineNbr": 573,
+      "author": {
+        "id": 313
+      },
+      "writtenOn": "2017-09-05T13:10:04Z",
+      "side": 1,
+      "message": "Hi, Kanagaraj, from the definition detail of esr-system-info, you may read that it is an object. And we put this object to a arraylist container. This property name is suggested by A\u0026AI team. If you think this is a list from the API document, I think we could invite A\u0026AI team to have a explanation.",
+      "parentUuid": "9a437d4f_e91146ad",
+      "range": {
+        "startLine": 573,
+        "startChar": 158,
+        "endLine": 573,
+        "endChar": 161
+      },
+      "revId": "7c694af2f15ad62c2dc5b5f916e45de1ed9fddbf",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
