@@ -94,6 +94,52 @@
       "revId": "7c694af2f15ad62c2dc5b5f916e45de1ed9fddbf",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_e91146ad",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 5
+      },
+      "lineNbr": 573,
+      "author": {
+        "id": 741
+      },
+      "writtenOn": "2017-09-05T12:38:53Z",
+      "side": 1,
+      "message": "esrSystemInfoList, for to be consistent with existing one",
+      "range": {
+        "startLine": 573,
+        "startChar": 158,
+        "endLine": 573,
+        "endChar": 161
+      },
+      "revId": "7c694af2f15ad62c2dc5b5f916e45de1ed9fddbf",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_090daa90",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 5
+      },
+      "lineNbr": 573,
+      "author": {
+        "id": 741
+      },
+      "writtenOn": "2017-09-05T12:38:53Z",
+      "side": 1,
+      "message": "it should be esr-system-info-list",
+      "range": {
+        "startLine": 573,
+        "startChar": 158,
+        "endLine": 573,
+        "endChar": 161
+      },
+      "revId": "7c694af2f15ad62c2dc5b5f916e45de1ed9fddbf",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
