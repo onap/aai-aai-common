@@ -1,0 +1,142 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a437d4f_e92b862e",
+        "filename": "aai-core/src/main/resources/dbedgerules/DbEdgeRules_v11.json",
+        "patchSetId": 7
+      },
+      "lineNbr": 1248,
+      "author": {
+        "id": 741
+      },
+      "writtenOn": "2017-09-05T11:04:25Z",
+      "side": 1,
+      "message": "pls check whether it already existing?",
+      "range": {
+        "startLine": 1247,
+        "startChar": 3,
+        "endLine": 1248,
+        "endChar": 19
+      },
+      "revId": "620cc3f0bebe0d6d3e454b52ef2e09b0ef7d3d4a",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_891aba15",
+        "filename": "aai-core/src/main/resources/dbedgerules/DbEdgeRules_v11.json",
+        "patchSetId": 7
+      },
+      "lineNbr": 1633,
+      "author": {
+        "id": 741
+      },
+      "writtenOn": "2017-09-05T11:04:25Z",
+      "side": 1,
+      "message": "this is not required i guess. it could derived from service-instances, pls check",
+      "range": {
+        "startLine": 1632,
+        "startChar": 3,
+        "endLine": 1633,
+        "endChar": 24
+      },
+      "revId": "620cc3f0bebe0d6d3e454b52ef2e09b0ef7d3d4a",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_6969d68a",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 7
+      },
+      "lineNbr": 2394,
+      "author": {
+        "id": 741
+      },
+      "writtenOn": "2017-09-05T11:04:25Z",
+      "side": 1,
+      "message": "make it lower case",
+      "range": {
+        "startLine": 2394,
+        "startChar": 75,
+        "endLine": 2394,
+        "endChar": 76
+      },
+      "revId": "620cc3f0bebe0d6d3e454b52ef2e09b0ef7d3d4a",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_490612d0",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 7
+      },
+      "lineNbr": 2404,
+      "author": {
+        "id": 741
+      },
+      "writtenOn": "2017-09-05T11:04:25Z",
+      "side": 1,
+      "message": "can you make it created-at",
+      "range": {
+        "startLine": 2404,
+        "startChar": 51,
+        "endLine": 2404,
+        "endChar": 62
+      },
+      "revId": "620cc3f0bebe0d6d3e454b52ef2e09b0ef7d3d4a",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_290bced7",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 7
+      },
+      "lineNbr": 2409,
+      "author": {
+        "id": 741
+      },
+      "writtenOn": "2017-09-05T11:04:25Z",
+      "side": 1,
+      "message": "updated-at",
+      "range": {
+        "startLine": 2409,
+        "startChar": 51,
+        "endLine": 2409,
+        "endChar": 62
+      },
+      "revId": "620cc3f0bebe0d6d3e454b52ef2e09b0ef7d3d4a",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_e914a6f6",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 7
+      },
+      "lineNbr": 3765,
+      "author": {
+        "id": 741
+      },
+      "writtenOn": "2017-09-05T11:04:25Z",
+      "side": 1,
+      "message": "is it integer, pls check the description",
+      "range": {
+        "startLine": 3765,
+        "startChar": 82,
+        "endLine": 3765,
+        "endChar": 89
+      },
+      "revId": "620cc3f0bebe0d6d3e454b52ef2e09b0ef7d3d4a",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
