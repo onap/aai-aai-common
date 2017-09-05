@@ -46,6 +46,30 @@
       "revId": "7c694af2f15ad62c2dc5b5f916e45de1ed9fddbf",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_e9b5c6cd",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 5
+      },
+      "lineNbr": 429,
+      "author": {
+        "id": 313
+      },
+      "writtenOn": "2017-09-05T12:21:13Z",
+      "side": 1,
+      "message": "Hi, this property will only use when register a VIM, and this property is provided by Multi-Cloud team. I think Ethan could answer your question",
+      "parentUuid": "9a437d4f_29950e33",
+      "range": {
+        "startLine": 429,
+        "startChar": 85,
+        "endLine": 429,
+        "endChar": 101
+      },
+      "revId": "7c694af2f15ad62c2dc5b5f916e45de1ed9fddbf",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
