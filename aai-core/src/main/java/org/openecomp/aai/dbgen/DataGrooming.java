@@ -395,8 +395,7 @@ public class DataGrooming {
 			}
 
 			LOGGER.info(" Will write to " + fullOutputFileName );
-			FileWriter fw = new FileWriter(groomOutFile.getAbsoluteFile());
-			bw = new BufferedWriter(fw);
+			bw = new BufferedWriter(new FileWriter(groomOutFile.getAbsoluteFile()));
 			ErrorLogHelper.loadProperties();
 			
 			LOGGER.info("    ---- NOTE --- about to open graph (takes a little while)--------\n");
@@ -1273,7 +1272,7 @@ public class DataGrooming {
 					LOGGER.warn("Got an IOException trying to close bufferedWriter() \n", iox);
 				}
 			}
-			
+
 			if (g != null && g.tx().isOpen()) {
 				// Any changes that worked correctly should have already done
 				// their commits.
@@ -1424,13 +1423,11 @@ public class DataGrooming {
 		// Vertex Id's to delete on this run
 		Set<String> delList = new LinkedHashSet<>();
 		String fullFileName = targetDir + AAIConstants.AAI_FILESEP + fileName;
-		BufferedReader br = null;
-		
-		try {
-			br = new BufferedReader(new FileReader(fullFileName));
+
+		try(BufferedReader br = new BufferedReader(new FileReader(fullFileName))) {
 			String line = br.readLine();
 			while (line != null) {
-				if (!line.equals("") && line.startsWith("DeleteCandidate")) {
+				if (!"".equals(line) && line.startsWith("DeleteCandidate")) {
 					if (edgesOnlyFlag && (!line.contains("Bad Edge"))) {
 						// We're not going to process edge guys
 					} else if (dontFixOrphans && line.contains("Orphan")) {
@@ -1554,7 +1551,8 @@ public class DataGrooming {
 		try {
 			keyProps = loader.introspectorFromName(vtxANodeType).getKeys();
 		} catch (AAIUnknownObjectException e) {
-			throw new AAIException("AAI_6105", "Required Property name(s) not found for nodeType = " + vtxANodeType + ")"); 
+			LOGGER.warn("Required property not found", e);
+			throw new AAIException("AAI_6105", "Required Property name(s) not found for nodeType = " + vtxANodeType + ")");
 		}
 		
 		Iterator<String> keyPropI = keyProps.iterator();
@@ -2310,7 +2308,7 @@ public class DataGrooming {
 			return 0;
 		}
 		long unixTimeNow = System.currentTimeMillis();
-		long windowInMillis = timeWindowMinutes * 60 * 1000;
+		long windowInMillis = timeWindowMinutes * 60L * 1000;
 		
 		long startTimeStamp = unixTimeNow - windowInMillis;
 		

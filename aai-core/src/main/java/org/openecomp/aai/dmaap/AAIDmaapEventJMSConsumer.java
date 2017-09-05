@@ -52,13 +52,11 @@ public class AAIDmaapEventJMSConsumer implements MessageListener {
 
 	public AAIDmaapEventJMSConsumer() throws org.apache.commons.configuration.ConfigurationException {
 		super();
-		try {
+		try(FileReader reader = new FileReader(new File(AAIConstants.AAI_EVENT_DMAAP_PROPS))) {
 
 			if (this.httpClient == null) {
-				FileReader reader = new FileReader(new File(AAIConstants.AAI_EVENT_DMAAP_PROPS));
 				aaiEventProps = new Properties();
 				aaiEventProps.load(reader);
-				reader.close();
 
 				String host = aaiEventProps.getProperty("host");
 				String topic = aaiEventProps.getProperty("topic");
@@ -70,6 +68,7 @@ public class AAIDmaapEventJMSConsumer implements MessageListener {
 
 		} catch (IOException e) {
 			ErrorLogHelper.logError("AAI_4000", "Error updating dmaap config file for aai event.");
+			LOGGER.error(e.getMessage(), e);
 		}
 
 	}

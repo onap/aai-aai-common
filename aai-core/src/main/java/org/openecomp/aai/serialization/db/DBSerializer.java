@@ -725,7 +725,7 @@ public class DBSerializer {
 									Introspector argumentObject = obj.newIntrospectorInstanceOfNestedProperty(property);
 									
 									Object result = dbToObject(argumentObject, childVertex, seen, depth, nodeOnly, cleanUp);
-									if (result != null) { 
+									if (result != null && getList != null) {
 										getList.add(argumentObject.getUnderlyingObject());
 									}
 									

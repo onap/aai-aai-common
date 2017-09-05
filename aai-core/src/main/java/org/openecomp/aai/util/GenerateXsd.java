@@ -1763,7 +1763,7 @@ public class GenerateXsd {
 				Object nodeset = expr.evaluate(element, XPathConstants.NODESET);
 				if (nodeset != null) {
 					NodeList nodes = (NodeList) nodeset;
-					if (nodes != null && nodes.getLength() > 0) {
+					if (nodes.getLength() > 0) {
 						Element xmlProperty = (Element)nodes.item(0);
 						result = xmlProperty.getElementsByTagName("xml-property");
 					}

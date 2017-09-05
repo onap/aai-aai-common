@@ -36,7 +36,7 @@ import com.thinkaurelius.titan.core.TitanGraph;
 
 public class ScriptDriver {
 
-	
+
 	/**
 	 * The main method.
 	 *
@@ -46,7 +46,7 @@ public class ScriptDriver {
 	 * @throws JsonMappingException the json mapping exception
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	public static void main (String[] args) throws AAIException, JsonGenerationException, JsonMappingException, IOException {
+	public static void main (String[] args) throws AAIException, IOException {
 		CommandLineArgs cArgs = new CommandLineArgs();
 		
 		new JCommander(cArgs, args);
@@ -56,26 +56,24 @@ public class ScriptDriver {
 		}
 		String config = cArgs.config;
 		AAIConfig.init();
-		TitanGraph graph = TitanFactory.open(config);
-		if (!(cArgs.type.equals("oxm") || cArgs.type.equals("graph"))) {
-			System.out.println("type: " + cArgs.type + " not recognized.");
-			System.exit(1);
+		try (TitanGraph graph = TitanFactory.open(config)) {
+			if (!("oxm".equals(cArgs.type) || "graph".equals(cArgs.type))) {
+				System.out.println("type: " + cArgs.type + " not recognized.");
+				System.exit(1);
+			}
+
+			AuditDoc doc = null;
+			if ("oxm".equals(cArgs.type)) {
+				doc = AuditorFactory.getOXMAuditor(Version.v8).getAuditDoc();
+			} else if ("graph".equals(cArgs.type)) {
+				doc = AuditorFactory.getGraphAuditor(graph).getAuditDoc();
+			}
+
+			ObjectMapper mapper = new ObjectMapper();
+
+			String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(doc);
+			System.out.println(json);
 		}
-		
-		Auditor a = null;
-		if (cArgs.type.equals("oxm")) {
-			a = AuditorFactory.getOXMAuditor(Version.v8);
-		} else if (cArgs.type.equals("graph")) {
-			a = AuditorFactory.getGraphAuditor(graph);
-		}
-		
-		AuditDoc doc = a.getAuditDoc();
-		
-		ObjectMapper mapper = new ObjectMapper();
-		
-		String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(doc);
-		System.out.println(json);
-		
 	}
 	
 }
