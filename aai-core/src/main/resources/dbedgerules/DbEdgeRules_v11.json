@@ -1968,6 +1968,50 @@
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
+		},
+		{
+			"from": "vnfc",
+			"to": "vip-ipv4-address-list",
+			"label": "uses",
+			"direction": "OUT",
+			"multiplicity": "Many2Many",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"SVC-INFRA": "NONE",
+			"prevent-delete": "NONE"
+		},
+		{
+			"from": "vnfc",
+			"to": "vip-ipv6-address-list",
+			"label": "uses",
+			"direction": "OUT",
+			"multiplicity": "Many2Many",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"SVC-INFRA": "NONE",
+			"prevent-delete": "NONE"
+		},
+		{
+			"from": "l3-interface-ipv4-address-list",
+			"to": "vnfc",
+			"label": "belongsTo",
+			"direction": "IN",
+			"multiplicity": "Many2One",
+			"contains-other-v": "${direction}",
+			"delete-other-v": "${direction}",
+			"SVC-INFRA": "NONE",
+			"prevent-delete": "NONE"
+		},
+		{
+			"from": "l3-interface-ipv6-address-list",
+			"to": "vnfc",
+			"label": "belongsTo",
+			"direction": "IN",
+			"multiplicity": "Many2One",
+			"contains-other-v": "${direction}",
+			"delete-other-v": "${direction}",
+			"SVC-INFRA": "NONE",
+			"prevent-delete": "NONE"
 		}
 	]
 }
