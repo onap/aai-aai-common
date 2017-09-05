@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a437d4f_dc251eac",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 6
+      },
+      "lineNbr": 376,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2017-09-05T15:16:03Z",
+      "side": 1,
+      "message": "I think there should be a containing element, esr-system-info-list.  I think you are basing this off the spreadsheet we worked on, which probably didn\u0027t include the container, but I think it should have.",
+      "revId": "4f46aef3c3ef425b171a63faec030e7ccedce46f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
