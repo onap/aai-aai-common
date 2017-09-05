@@ -117,6 +117,30 @@
     },
     {
       "key": {
+        "uuid": "9a437d4f_29662e52",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 7
+      },
+      "lineNbr": 2409,
+      "author": {
+        "id": 39
+      },
+      "writtenOn": "2017-09-05T13:07:58Z",
+      "side": 1,
+      "message": "agree",
+      "parentUuid": "9a437d4f_290bced7",
+      "range": {
+        "startLine": 2409,
+        "startChar": 51,
+        "endLine": 2409,
+        "endChar": 62
+      },
+      "revId": "620cc3f0bebe0d6d3e454b52ef2e09b0ef7d3d4a",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a437d4f_e914a6f6",
         "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
         "patchSetId": 7
@@ -128,6 +152,30 @@
       "writtenOn": "2017-09-05T11:04:25Z",
       "side": 1,
       "message": "is it integer, pls check the description",
+      "range": {
+        "startLine": 3765,
+        "startChar": 82,
+        "endLine": 3765,
+        "endChar": 89
+      },
+      "revId": "620cc3f0bebe0d6d3e454b52ef2e09b0ef7d3d4a",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_697436fd",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 7
+      },
+      "lineNbr": 3765,
+      "author": {
+        "id": 39
+      },
+      "writtenOn": "2017-09-05T13:07:58Z",
+      "side": 1,
+      "message": "vnfprogress is useless for other module, we can remove it",
+      "parentUuid": "9a437d4f_e914a6f6",
       "range": {
         "startLine": 3765,
         "startChar": 82,
