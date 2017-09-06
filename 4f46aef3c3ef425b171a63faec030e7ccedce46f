@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "9a437d4f_1ad96657",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 6
+      },
+      "lineNbr": 269,
+      "author": {
+        "id": 313
+      },
+      "writtenOn": "2017-09-06T06:18:07Z",
+      "side": 1,
+      "message": "I think Ethan has answered your question.",
+      "parentUuid": "9a437d4f_5a480e5b",
+      "range": {
+        "startLine": 269,
+        "startChar": 33,
+        "endLine": 269,
+        "endChar": 48
+      },
+      "revId": "4f46aef3c3ef425b171a63faec030e7ccedce46f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a437d4f_3a754a98",
         "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
         "patchSetId": 6
@@ -36,6 +60,30 @@
       "writtenOn": "2017-09-06T04:21:00Z",
       "side": 1,
       "message": "same here",
+      "range": {
+        "startLine": 274,
+        "startChar": 4,
+        "endLine": 275,
+        "endChar": 4
+      },
+      "revId": "4f46aef3c3ef425b171a63faec030e7ccedce46f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_1aa726bf",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 6
+      },
+      "lineNbr": 275,
+      "author": {
+        "id": 313
+      },
+      "writtenOn": "2017-09-06T06:18:07Z",
+      "side": 1,
+      "message": "The same as Ethan explained",
+      "parentUuid": "9a437d4f_3a754a98",
       "range": {
         "startLine": 274,
         "startChar": 4,
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "9a437d4f_fadd8243",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 6
+      },
+      "lineNbr": 280,
+      "author": {
+        "id": 313
+      },
+      "writtenOn": "2017-09-06T06:18:07Z",
+      "side": 1,
+      "message": "Thank you, I will. But I don\u0027t think that will have a big influnce about the schema",
+      "parentUuid": "9a437d4f_1a7a8688",
+      "range": {
+        "startLine": 280,
+        "startChar": 53,
+        "endLine": 280,
+        "endChar": 57
+      },
+      "revId": "4f46aef3c3ef425b171a63faec030e7ccedce46f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a437d4f_7a4bd259",
         "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
         "patchSetId": 6
@@ -94,6 +166,30 @@
     },
     {
       "key": {
+        "uuid": "9a437d4f_bae7fa11",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 6
+      },
+      "lineNbr": 314,
+      "author": {
+        "id": 313
+      },
+      "writtenOn": "2017-09-06T06:18:07Z",
+      "side": 1,
+      "message": "same as answared with Ethan.",
+      "parentUuid": "9a437d4f_7a4bd259",
+      "range": {
+        "startLine": 314,
+        "startChar": 33,
+        "endLine": 314,
+        "endChar": 48
+      },
+      "revId": "4f46aef3c3ef425b171a63faec030e7ccedce46f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a437d4f_ba413a3b",
         "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
         "patchSetId": 6
@@ -105,6 +201,30 @@
       "writtenOn": "2017-09-06T04:21:00Z",
       "side": 1,
       "message": "this is already captured in the esr-system-info and could be removed.",
+      "range": {
+        "startLine": 354,
+        "startChar": 32,
+        "endLine": 354,
+        "endChar": 43
+      },
+      "revId": "4f46aef3c3ef425b171a63faec030e7ccedce46f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_3aa2eaae",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 6
+      },
+      "lineNbr": 354,
+      "author": {
+        "id": 313
+      },
+      "writtenOn": "2017-09-06T06:18:07Z",
+      "side": 1,
+      "message": "This is required by Zhuoyao, the third party sdnc consummer. And also properties has been reviewed by SDNC team I think",
+      "parentUuid": "9a437d4f_ba413a3b",
       "range": {
         "startLine": 354,
         "startChar": 32,
@@ -335,6 +455,30 @@
     },
     {
       "key": {
+        "uuid": "9a437d4f_5ac5ae59",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 6
+      },
+      "lineNbr": 419,
+      "author": {
+        "id": 313
+      },
+      "writtenOn": "2017-09-06T06:18:07Z",
+      "side": 1,
+      "message": "For Ems, we still need to use it indicate the esr-system-info is resource/performance/alarm address. Thank you",
+      "parentUuid": "9a437d4f_1a53a618",
+      "range": {
+        "startLine": 419,
+        "startChar": 33,
+        "endLine": 419,
+        "endChar": 43
+      },
+      "revId": "4f46aef3c3ef425b171a63faec030e7ccedce46f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a437d4f_ba3a5acb",
         "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
         "patchSetId": 6
@@ -358,6 +502,30 @@
     },
     {
       "key": {
+        "uuid": "9a437d4f_3ade6a12",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 6
+      },
+      "lineNbr": 424,
+      "author": {
+        "id": 313
+      },
+      "writtenOn": "2017-09-06T06:18:07Z",
+      "side": 1,
+      "message": "I put the property here is according to the suggestion form Jimmy after we reviewed the schema before",
+      "parentUuid": "9a437d4f_ba3a5acb",
+      "range": {
+        "startLine": 424,
+        "startChar": 33,
+        "endLine": 424,
+        "endChar": 41
+      },
+      "revId": "4f46aef3c3ef425b171a63faec030e7ccedce46f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a437d4f_1a2cc698",
         "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
         "patchSetId": 6
@@ -369,6 +537,30 @@
       "writtenOn": "2017-09-06T04:21:00Z",
       "side": 1,
       "message": "Hi LiZi, I meant in the earlier comment that service-url would be having http://ip:port/ and this ipAddress and port will be redudant information of ip and port in service-url. so its better to avoid it here.",
+      "range": {
+        "startLine": 439,
+        "startChar": 0,
+        "endLine": 448,
+        "endChar": 18
+      },
+      "revId": "4f46aef3c3ef425b171a63faec030e7ccedce46f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_1a8e062f",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 6
+      },
+      "lineNbr": 448,
+      "author": {
+        "id": 313
+      },
+      "writtenOn": "2017-09-06T06:18:07Z",
+      "side": 1,
+      "message": "For EMS alarm address, the properties is provided by VFC team, in the alarm address there only be ip/port/username/password. They may not used it as http://ip:port/",
+      "parentUuid": "9a437d4f_1a2cc698",
       "range": {
         "startLine": 439,
         "startChar": 0,
