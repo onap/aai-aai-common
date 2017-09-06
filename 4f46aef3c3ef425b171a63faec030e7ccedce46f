@@ -16,6 +16,24 @@
       "revId": "4f46aef3c3ef425b171a63faec030e7ccedce46f",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_3f32dc10",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 6
+      },
+      "lineNbr": 376,
+      "author": {
+        "id": 313
+      },
+      "writtenOn": "2017-09-06T04:12:19Z",
+      "side": 1,
+      "message": "Hi,Jimmy,Actually,I tried as what you suggested before this submit. But I meet some problems while put/query esr-ems which will contains three esr-system-info objects in the esr-system-info-list. And this problem has been discussed with Harish, According to this issue, Harish suggest me to do like this schema did. And it works.I sent you an email to describe the details about this issue. please refer to the email topic \"FW: RE: [aai] Still have a problem about PUT/GET the EMS list\"",
+      "parentUuid": "9a437d4f_dc251eac",
+      "revId": "4f46aef3c3ef425b171a63faec030e7ccedce46f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
