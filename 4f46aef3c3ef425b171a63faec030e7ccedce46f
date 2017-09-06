@@ -140,6 +140,30 @@
     },
     {
       "key": {
+        "uuid": "9a437d4f_5a692e8a",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 6
+      },
+      "lineNbr": 359,
+      "author": {
+        "id": 399
+      },
+      "writtenOn": "2017-09-06T05:22:05Z",
+      "side": 1,
+      "message": "Hi Kanagaraj, resourceVersion is required by AAI in each structure for internal version storage, I don\u0027t think we could share it with other object.",
+      "parentUuid": "9a437d4f_9a3e76b7",
+      "range": {
+        "startLine": 359,
+        "startChar": 32,
+        "endLine": 359,
+        "endChar": 48
+      },
+      "revId": "4f46aef3c3ef425b171a63faec030e7ccedce46f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a437d4f_da5cfe27",
         "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
         "patchSetId": 6
@@ -151,6 +175,30 @@
       "writtenOn": "2017-09-06T04:21:00Z",
       "side": 1,
       "message": "this shuold not be list, as every EMS, VNFM, SDNC and VIM will have only one esr-system-info object in it.",
+      "range": {
+        "startLine": 364,
+        "startChar": 4,
+        "endLine": 365,
+        "endChar": 5
+      },
+      "revId": "4f46aef3c3ef425b171a63faec030e7ccedce46f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_3a066acf",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 6
+      },
+      "lineNbr": 365,
+      "author": {
+        "id": 399
+      },
+      "writtenOn": "2017-09-06T05:22:05Z",
+      "side": 1,
+      "message": "Hi Kanagaraj, this actually is a list, a VIM could have multiple user credentials, but in R1, we might only use one cause time limited.",
+      "parentUuid": "9a437d4f_da5cfe27",
       "range": {
         "startLine": 364,
         "startChar": 4,
@@ -192,6 +240,24 @@
       "side": 1,
       "message": "Hi,Jimmy,Actually,I tried as what you suggested before this submit. But I meet some problems while put/query esr-ems which will contains three esr-system-info objects in the esr-system-info-list. And this problem has been discussed with Harish, According to this issue, Harish suggest me to do like this schema did. And it works.I sent you an email to describe the details about this issue. please refer to the email topic \"FW: RE: [aai] Still have a problem about PUT/GET the EMS list\"",
       "parentUuid": "9a437d4f_dc251eac",
+      "revId": "4f46aef3c3ef425b171a63faec030e7ccedce46f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_1a0ba6d7",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 6
+      },
+      "lineNbr": 376,
+      "author": {
+        "id": 399
+      },
+      "writtenOn": "2017-09-06T05:22:05Z",
+      "side": 1,
+      "message": "I kind of agree with Jimmy, lizi you can refer to tenants or other structure.",
+      "parentUuid": "9a437d4f_3f32dc10",
       "revId": "4f46aef3c3ef425b171a63faec030e7ccedce46f",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
@@ -278,6 +344,30 @@
       "writtenOn": "2017-09-06T04:21:00Z",
       "side": 1,
       "message": "this two properties are specific to the VIM and are not applicable to other object EMS, VNFM, SDNC etc.\n\nso could we model VIM as separate java type and include in the cloud-region instead of directly including the esr-system-info in the cloud-region.",
+      "range": {
+        "startLine": 449,
+        "startChar": 4,
+        "endLine": 458,
+        "endChar": 18
+      },
+      "revId": "4f46aef3c3ef425b171a63faec030e7ccedce46f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_baf93aca",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 6
+      },
+      "lineNbr": 458,
+      "author": {
+        "id": 399
+      },
+      "writtenOn": "2017-09-06T05:22:05Z",
+      "side": 1,
+      "message": "Hi Kanagaraj, that will introduce too many levels for VIM, I agree that we could always improve this schema, but given for short time to develop code in R1, it\u0027s better to get it done quickly. And we already discuss this schema with other projects that might use it, if change it again, will raise another round of discussion with related projects.",
+      "parentUuid": "9a437d4f_5a312eeb",
       "range": {
         "startLine": 449,
         "startChar": 4,
