@@ -475,6 +475,30 @@
     },
     {
       "key": {
+        "uuid": "9a437d4f_f009232d",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 6
+      },
+      "lineNbr": 365,
+      "author": {
+        "id": 399
+      },
+      "writtenOn": "2017-09-06T11:14:16Z",
+      "side": 1,
+      "message": "Hi kanagaraj, VIM is not tenant. one VIM could contain multiple tenants and currently cloud-region schema could support it.",
+      "parentUuid": "9a437d4f_fa8222ff",
+      "range": {
+        "startLine": 364,
+        "startChar": 4,
+        "endLine": 365,
+        "endChar": 5
+      },
+      "revId": "4f46aef3c3ef425b171a63faec030e7ccedce46f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a437d4f_dc251eac",
         "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
         "patchSetId": 6
@@ -776,6 +800,30 @@
       "side": 1,
       "message": "Hi Ethan, it will be like other object EMS, VNFM.\n\nHere, esr-system-info is capturing the very specific attributes of SDNC (protocol), VIM (cloud-domain, default-tenant), system-type. IMO, it is not right model instead, esr-system-info should be having only connection details, which is common for all objects VIM, EMS, VNFM and SDNC. and those properties could be, as given below and rest of the properties should be part of respective objects.:\n\n                        \"esr-system-info-id\": \"example-esr-system-info-id-val-45019\",\n                        \"system-name\": \"example-system-name-val-68461\",\n                        \"type\": \"example-type-val-3825\",\n                        \"vendor\": \"example-vendor-val-76626\",\n                        \"version\": \"example-version-val-86321\",\n                        \"service-url\": \"example-service-url-val-55636\",\n                        \"user-name\": \"example-user-name-val-77528\",\n                        \"password\": \"example-password-val-40219\",\n                        \"ssl-cacert\": \"example-ssl-cacert-val-35157\",\n                        \"ssl-insecure\": true,\n\nHope it helps to clarify my point of view. please let me know if you need any other details. thanks.",
       "parentUuid": "9a437d4f_baf93aca",
+      "range": {
+        "startLine": 449,
+        "startChar": 4,
+        "endLine": 458,
+        "endChar": 18
+      },
+      "revId": "4f46aef3c3ef425b171a63faec030e7ccedce46f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_701d3366",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 6
+      },
+      "lineNbr": 458,
+      "author": {
+        "id": 399
+      },
+      "writtenOn": "2017-09-06T11:14:16Z",
+      "side": 1,
+      "message": "Hi Kanagaraj, it\u0027s hard to say which attributes are common in the future, for now this system-info is reviewed by the community and that\u0027s why lizi make it like this. Changing it will impact many related projects and it takes time, then it might impact the R1 release. thanks.",
+      "parentUuid": "9a437d4f_5a736e4d",
       "range": {
         "startLine": 449,
         "startChar": 4,
