@@ -96,8 +96,10 @@ public class AAIGraph {
 	}
 	
 	private void loadGraph(String name, String configPath) throws AAIException {
-		try (TitanGraph graph = TitanFactory.open(configPath);
-			InputStream is = new FileInputStream(configPath)) {
+	    // Graph being opened by TitanFactory is being placed in hashmap to be used later
+		// These graphs shouldn't be closed until the application shutdown
+	    TitanGraph graph = TitanFactory.open(configPath);
+		try (InputStream is = new FileInputStream(configPath)) {
 
 			Properties graphProps = new Properties();
 			graphProps.load(is);
@@ -117,7 +119,6 @@ public class AAIGraph {
 			throw new AAIException("AAI_4001");
 	    } catch (IOException e) {
 			throw new AAIException("AAI_4002");
-
 	    }
 	}
 
