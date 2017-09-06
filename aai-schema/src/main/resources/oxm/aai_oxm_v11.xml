@@ -30,6 +30,7 @@
 				<xml-element java-attribute="search" name="search" type="inventory.aai.onap.org.v11.Search" />
 				<xml-element java-attribute="actions" name="actions" type="inventory.aai.onap.org.v11.Actions" />
 				<xml-element java-attribute="cloudInfrastructure" name="cloud-infrastructure" type="inventory.aai.onap.org.v11.CloudInfrastructure" />
+				<xml-element java-attribute="externalSystem" name="external-system" type="inventory.aai.onap.org.v11.ExternalSystem" />
 				<xml-element java-attribute="business" name="business" type="inventory.aai.onap.org.v11.Business" />
 				<xml-element java-attribute="serviceDesignAndCreation" name="service-design-and-creation" type="inventory.aai.onap.org.v11.ServiceDesignAndCreation" />
 				<xml-element java-attribute="network" name="network" type="inventory.aai.onap.org.v11.Network" />
@@ -225,6 +226,262 @@
 			</java-attributes>
 		</java-type>
 
+		<java-type name="ExternalSystem">
+			<xml-properties>
+				<xml-property name="description" value="Namespace for external system." />
+			</xml-properties>
+			<xml-root-element name="external-system" />
+			<java-attributes>
+				<xml-element java-attribute="esrEmsList" name="esr-ems-list" type="inventory.aai.onap.org.v11.EsrEmsList" />
+				<xml-element java-attribute="esrVnfmList" name="esr-vnfm-list" type="inventory.aai.onap.org.v11.EsrVnfmList" />
+				<xml-element java-attribute="esrThirdpartySdncList" name="esr-thirdparty-sdnc-list" type="inventory.aai.onap.org.v11.EsrThirdpartySdncList" />				
+			</java-attributes>
+		</java-type>
+		
+		<java-type name="EsrEmsList">
+			<xml-root-element name="esr-ems-list" />
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="esrEms" name="esr-ems" type="inventory.aai.onap.org.v11.EsrEms" />
+			</java-attributes>
+            <xml-properties>
+				<xml-property name="maximumDepth" value="0" />
+			</xml-properties>
+		</java-type>
+		
+		<java-type name="EsrEms">
+			<xml-root-element name="esr-ems" />
+			<java-attributes>
+				<xml-element java-attribute="emsId" name="ems-id" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="Unique ID of EMS." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="passive" name="passive" type="java.lang.Boolean">
+					<xml-properties>
+						<xml-property name="description" value="ftp passive mode or not." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="remotepath" name="remote-path" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="resource or performance data file path." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="esrSystemInfoList" name="esr-system-info-list" type="inventory.aai.onap.org.v11.EsrSystemInfoList" />
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v11.RelationshipList" />
+			</java-attributes>
+			<xml-properties>
+				<xml-property name="description" value="Persist EMS address information used by EMS driver." />
+				<xml-property name="indexedProps" value="ems-id" />
+				<xml-property name="searchable" value="ems-id" />
+				<xml-property name="container" value="esr-ems-list" />
+				<xml-property name="namespace" value="external-system" />
+			</xml-properties>
+		</java-type>
+		
+		<java-type name="EsrVnfmList">
+			<xml-root-element name="esr-vnfm-list" />
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="esrVnfm" name="esr-vnfm" type="inventory.aai.onap.org.v11.EsrVnfm" />
+			</java-attributes>
+            <xml-properties>
+				<xml-property name="maximumDepth" value="0" />
+			</xml-properties>
+		</java-type>
+		
+		<java-type name="EsrVnfm">
+			<xml-root-element name="esr-vnfm" />
+			<java-attributes>
+				<xml-element java-attribute="vnfmId" name="vnfm-id" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="Unique ID of VNFM." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="vimId" name="vim-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="indecate the VIM to deploy VNF." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="certificateUrl" name="certificate-url" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="certificate url of VNFM." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="esrSystemInfoList" name="esr-system-info-list" type="inventory.aai.onap.org.v11.EsrSystemInfoList" />			
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v11.RelationshipList" />
+			</java-attributes>
+			<xml-properties>
+				<xml-property name="description" value="Persist VNFM address information used by VF-C." />
+				<xml-property name="indexedProps" value="vnfm-id" />
+				<xml-property name="searchable" value="vnfm-id" />
+				<xml-property name="container" value="esr-vnfm-list" />
+				<xml-property name="namespace" value="external-system" />
+			</xml-properties>
+		</java-type>
+		
+		<java-type name="EsrThirdpartySdncList">
+			<xml-root-element name="esr-thirdparty-sdnc-list" />
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="esrThirdpartySdnc" name="esr-thirdparty-sdnc" type="inventory.aai.onap.org.v11.EsrThirdpartySdnc" />
+			</java-attributes>
+            <xml-properties>
+				<xml-property name="maximumDepth" value="0" />
+			</xml-properties>
+		</java-type>
+		
+		<java-type name="EsrThirdpartySdnc">
+			<xml-root-element name="esr-thirdparty-sdnc" />
+			<java-attributes>
+				<xml-element java-attribute="thirdpartySdncId" name="thirdparty-sdnc-id" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="Unique ID of SDNC." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="location" name="location" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="used for DC type to indicate the location of SDNC, such as Core or Edge." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="productName" name="product-name" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="password used to access SDNC server." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="esrSystemInfoList" name="esr-system-info-list" type="inventory.aai.onap.org.v11.EsrSystemInfoList" />
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v11.RelationshipList" />
+			</java-attributes>
+			<xml-properties>
+				<xml-property name="description" value="Persist SDNC address information used by ONAP SDNC." />
+				<xml-property name="indexedProps" value="sdnc-id" />
+				<xml-property name="searchable" value="sdnc-id" />
+				<xml-property name="container" value="esr-thirdparty-sdnc-list" />
+				<xml-property name="namespace" value="external-system" />
+			</xml-properties>
+		</java-type>
+		
+		<java-type name="EsrSystemInfoList">
+			<xml-root-element name="esr-system-info-list" />
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="esrSystemInfo" name="esr-system-info" type="inventory.aai.onap.org.v11.EsrSystemInfo" />
+			</java-attributes>
+            <xml-properties>
+				<xml-property name="maximumDepth" value="0" />
+			</xml-properties>
+		</java-type>
+
+		<java-type name="EsrSystemInfo">
+			<xml-root-element name="esr-system-info" />
+			<java-attributes>
+				<xml-element java-attribute="esrSystemInfoId" name="esr-system-info-id" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="Unique ID of esr system info." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="systemName" name="system-name" required="true" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="name of external system." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="type" name="type" required="true" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="type of external systems." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="vendor" name="vendor" required="true" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="vendor of external systems." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="version" name="version" required="true" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="version of external systems." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="serviceUrl" name="service-url" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="url used to access external systems." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="userName" name="user-name" required="true" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="username used to access external systems." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="password" name="password" required="true" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="password used to access external systems." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="systemType" name="system-type" required="true" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="it could be vim/vnfm/thirdparty-sdnc/ems-resource/ems-performance/ems-alarm." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="protocal" name="protocal" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="protocal of third party SDNC, for example netconf/snmp." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="sslCacert" name="ssl-cacert" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="ca file content if enabled ssl on auth-url." />
+					</xml-properties>
+				</xml-element>
+				<xml-element default-value="false" java-attribute="sslInsecure" name="ssl-insecure" type="java.lang.Boolean">
+					<xml-properties>
+						<xml-property name="description" value="Whether to verify VIM's certificate." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="ipAddress" name="ip-address" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="service IP of ftp server." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="port" name="port" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="service port of ftp server." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="cloudDomain" name="cloud-domain" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="domain info for authentication." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="defaultTenant" name="default-tenant" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="default tenant of VIM." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v11.RelationshipList" />
+			</java-attributes>
+			<xml-properties>
+				<xml-property name="description" value="Persist common address information of external systems." />
+				<xml-property name="indexedProps" value="esr-system-info-id,system-name,system-type" />
+				<xml-property name="searchable" value="esr-system-info-id,system-name,system-type" />
+				<xml-property name="container" value="esr-system-infos" />
+				<xml-property name="namespace" value="external-system" />
+			</xml-properties>
+		</java-type>
+		
 		<java-type name="CloudInfrastructure">
 			<xml-properties>
 				<xml-property name="description" value="Namespace for cloud infrastructure." />
@@ -323,7 +580,7 @@
 				<xml-element java-attribute="oamNetworks" name="oam-networks" type="inventory.aai.onap.org.v11.OamNetworks" />
 				<xml-element java-attribute="availabilityZones" name="availability-zones" type="inventory.aai.onap.org.v11.AvailabilityZones" />
 				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v11.RelationshipList" />
-				<xml-element java-attribute="authInfoItems" name="auth-info-items" type="inventory.aai.onap.org.v11.AuthInfoItems" />
+				<xml-element java-attribute="esrSystemInfoList" name="esr-system-info-list" type="inventory.aai.onap.org.v11.EsrSystemInfoList" />
 			</java-attributes>
 			<xml-properties>
 				<xml-property name="description" value="cloud-region designates an installation of a cloud cluster or region or instantiation." />
@@ -396,66 +653,6 @@
 				<xml-property name="container" value="volume-groups" />
 			</xml-properties>
 		</java-type>
-		
-		<java-type name="AuthInfoItems">
-			<xml-properties>
-				<xml-property name="description" value="Collection of persistent auth information to access to VIM." />
-			</xml-properties>
-			<xml-root-element name="auth-info-items" />
-			<java-attributes>
-				<xml-element container-type="java.util.ArrayList" java-attribute="authInfoItem" name="auth-info-item" type="inventory.aai.onap.org.v11.AuthInfoItem" />
-			</java-attributes>
-		</java-type>
-		
-		<java-type name="AuthInfoItem">
-			<xml-root-element name="auth-info-item" />
-			<java-attributes>
-			<xml-element java-attribute="authInfoItemId" name="auth-info-item-id" required="true" type="java.lang.String" xml-key="true">
-					<xml-properties>
-						<xml-property name="description" value="Unique ID of auth-info-item." />
-					</xml-properties>
-				</xml-element>
-				<xml-element java-attribute="cloudDomain" name="cloud-domain" required="true" type="java.lang.String">
-					<xml-properties>
-						<xml-property name="description" value="domain info for authentication." />
-					</xml-properties>
-				</xml-element>
-				<xml-element java-attribute="userName" name="username" required="true" type="java.lang.String">
-					<xml-properties>
-						<xml-property name="description" value="user name of auth infomation to access VIM." />
-					</xml-properties>
-				</xml-element>
-				<xml-element java-attribute="password" name="password" required="true" type="java.lang.String">
-					<xml-properties>
-						<xml-property name="description" value="password of auth infomation to access VIM." />
-					</xml-properties>
-				</xml-element>
-				<xml-element java-attribute="authUrl" name="auth-url" required="true" type="java.lang.String">
-					<xml-properties>
-						<xml-property name="description" value="authentication url of the cloud." />
-					</xml-properties>
-				</xml-element>
-				<xml-element java-attribute="sslCacert" name="ssl-cacert" required="false" type="java.lang.String">
-					<xml-properties>
-						<xml-property name="description" value="ca file content if enabled ssl on auth-url." />
-					</xml-properties>
-				</xml-element>
-				<xml-element default-value="false" java-attribute="sslInsecure" name="ssl-insecure" required="false" type="java.lang.Boolean">
-					<xml-properties>
-						<xml-property name="description" value="Whether to verify VIM's certificate." />
-					</xml-properties>
-				</xml-element>
-				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v11.RelationshipList" />
-			</java-attributes>
-			<xml-properties>
-				<xml-property name="description" value="Persistent auth info." />
-				<xml-property name="indexedProps" value="auth-info-item-id,username,auth-url" />
-				<xml-property name="searchable" value="auth-info-item-id,username,auth-url" />
-				<xml-property name="dependentOn" value="cloud-region" />
-				<xml-property name="container" value="auth-info-items" />
-			</xml-properties>
-		</java-type>
-		
 
 		<java-type name="RelationshipList">
 			<xml-root-element name="relationship-list" />
