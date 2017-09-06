@@ -143,6 +143,30 @@
     },
     {
       "key": {
+        "uuid": "9a437d4f_1595b932",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 6
+      },
+      "lineNbr": 280,
+      "author": {
+        "id": 741
+      },
+      "writtenOn": "2017-09-06T09:24:51Z",
+      "side": 1,
+      "message": "Yes, I agree :) but its more of cleanliness. thanks",
+      "parentUuid": "9a437d4f_fadd8243",
+      "range": {
+        "startLine": 280,
+        "startChar": 53,
+        "endLine": 280,
+        "endChar": 57
+      },
+      "revId": "4f46aef3c3ef425b171a63faec030e7ccedce46f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a437d4f_7a4bd259",
         "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
         "patchSetId": 6
@@ -225,6 +249,30 @@
       "side": 1,
       "message": "This is required by Zhuoyao, the third party sdnc consummer. And also properties has been reviewed by SDNC team I think",
       "parentUuid": "9a437d4f_ba413a3b",
+      "range": {
+        "startLine": 354,
+        "startChar": 32,
+        "endLine": 354,
+        "endChar": 43
+      },
+      "revId": "4f46aef3c3ef425b171a63faec030e7ccedce46f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_b5a38d9d",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 6
+      },
+      "lineNbr": 354,
+      "author": {
+        "id": 741
+      },
+      "writtenOn": "2017-09-06T09:24:51Z",
+      "side": 1,
+      "message": "ok. from user side, when i try to enter the productName and esr-system-info-\u003esystem-name, I felt it will be same. so i have raised the concern.",
+      "parentUuid": "9a437d4f_3aa2eaae",
       "range": {
         "startLine": 354,
         "startChar": 32,
@@ -320,6 +368,30 @@
       "side": 1,
       "message": "I think according to the suggestion from A\u0026AI team, each node need a resouce-version. Otherwise there would be occur error while put/get data",
       "parentUuid": "9a437d4f_9a92f655",
+      "range": {
+        "startLine": 359,
+        "startChar": 32,
+        "endLine": 359,
+        "endChar": 48
+      },
+      "revId": "4f46aef3c3ef425b171a63faec030e7ccedce46f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_75ad2588",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 6
+      },
+      "lineNbr": 359,
+      "author": {
+        "id": 741
+      },
+      "writtenOn": "2017-09-06T09:24:51Z",
+      "side": 1,
+      "message": "Yes LiZi. should we remove from the esr-system-info ? i see resource-version in two places",
+      "parentUuid": "9a437d4f_5ad80e1d",
       "range": {
         "startLine": 359,
         "startChar": 32,
@@ -503,6 +575,30 @@
     },
     {
       "key": {
+        "uuid": "9a437d4f_f5b0f5de",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 6
+      },
+      "lineNbr": 419,
+      "author": {
+        "id": 741
+      },
+      "writtenOn": "2017-09-06T09:24:51Z",
+      "side": 1,
+      "message": "ok. i believe then its applicable only to ems, then why can\u0027t we keep it as part of ems object instead ?",
+      "parentUuid": "9a437d4f_5ac5ae59",
+      "range": {
+        "startLine": 419,
+        "startChar": 33,
+        "endLine": 419,
+        "endChar": 43
+      },
+      "revId": "4f46aef3c3ef425b171a63faec030e7ccedce46f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a437d4f_ba3a5acb",
         "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
         "patchSetId": 6
@@ -585,6 +681,30 @@
       "side": 1,
       "message": "For EMS alarm address, the properties is provided by VFC team, in the alarm address there only be ip/port/username/password. They may not used it as http://ip:port/",
       "parentUuid": "9a437d4f_1a2cc698",
+      "range": {
+        "startLine": 439,
+        "startChar": 0,
+        "endLine": 448,
+        "endChar": 18
+      },
+      "revId": "4f46aef3c3ef425b171a63faec030e7ccedce46f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_b5ca6d4d",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 6
+      },
+      "lineNbr": 448,
+      "author": {
+        "id": 741
+      },
+      "writtenOn": "2017-09-06T09:24:51Z",
+      "side": 1,
+      "message": "LiZi, please look at from user point of veiw. when i enter the values for this object, i have to provide the ip and port in these two properties as well in the service-url. IMO, i felt its redundant.",
+      "parentUuid": "9a437d4f_1a8e062f",
       "range": {
         "startLine": 439,
         "startChar": 0,
