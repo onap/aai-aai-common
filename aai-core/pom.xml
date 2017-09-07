@@ -19,6 +19,7 @@
         <sonar.jacoco.reportPath>${project.build.directory}/coverage-reports/jacoco.exec</sonar.jacoco.reportPath>
         <sonar.jacoco.reportMissing.force.zero>false</sonar.jacoco.reportMissing.force.zero>
         <sonar.projectVersion>${project.version}</sonar.projectVersion>
+        <sonar.exclusions>org/openecomp/aai/domain/**</sonar.exclusions>
         <gendoc.version>v11</gendoc.version>
         <aai.wiki.link>https://wiki.onap.org/</aai.wiki.link>
         <hbase.version>1.0.2</hbase.version>
