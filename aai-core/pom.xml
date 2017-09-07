@@ -455,6 +455,9 @@
                 <version>0.7.7.201606060606</version>
                 <configuration>
                     <dumpOnExit>true</dumpOnExit>
+                    <excludes>
+                        <exclude>**/domain/**</exclude>
+                    </excludes>
                 </configuration>
                 <executions>
                     <execution>
