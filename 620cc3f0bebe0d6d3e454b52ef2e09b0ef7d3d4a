@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "9a437d4f_8d64fd49",
+        "filename": "aai-core/src/main/resources/dbedgerules/DbEdgeRules_v11.json",
+        "patchSetId": 7
+      },
+      "lineNbr": 1248,
+      "author": {
+        "id": 879
+      },
+      "writtenOn": "2017-09-07T08:39:34Z",
+      "side": 1,
+      "message": "Thanks for finding it ... it is already available.",
+      "parentUuid": "9a437d4f_e92b862e",
+      "range": {
+        "startLine": 1247,
+        "startChar": 3,
+        "endLine": 1248,
+        "endChar": 19
+      },
+      "revId": "620cc3f0bebe0d6d3e454b52ef2e09b0ef7d3d4a",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a437d4f_891aba15",
         "filename": "aai-core/src/main/resources/dbedgerules/DbEdgeRules_v11.json",
         "patchSetId": 7
@@ -36,6 +60,30 @@
       "writtenOn": "2017-09-05T11:04:25Z",
       "side": 1,
       "message": "this is not required i guess. it could derived from service-instances, pls check",
+      "range": {
+        "startLine": 1632,
+        "startChar": 3,
+        "endLine": 1633,
+        "endChar": 24
+      },
+      "revId": "620cc3f0bebe0d6d3e454b52ef2e09b0ef7d3d4a",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_2d551150",
+        "filename": "aai-core/src/main/resources/dbedgerules/DbEdgeRules_v11.json",
+        "patchSetId": 7
+      },
+      "lineNbr": 1633,
+      "author": {
+        "id": 879
+      },
+      "writtenOn": "2017-09-07T08:39:34Z",
+      "side": 1,
+      "message": "I din\u0027t find any relation from cloud-region to service-instance. Could you please suggest the for retrieving cloud region.",
+      "parentUuid": "9a437d4f_891aba15",
       "range": {
         "startLine": 1632,
         "startChar": 3,
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "9a437d4f_ad7a21ef",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 7
+      },
+      "lineNbr": 2394,
+      "author": {
+        "id": 879
+      },
+      "writtenOn": "2017-09-07T08:39:34Z",
+      "side": 1,
+      "message": "thanks for finding it.",
+      "parentUuid": "9a437d4f_6969d68a",
+      "range": {
+        "startLine": 2394,
+        "startChar": 75,
+        "endLine": 2394,
+        "endChar": 76
+      },
+      "revId": "620cc3f0bebe0d6d3e454b52ef2e09b0ef7d3d4a",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a437d4f_490612d0",
         "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
         "patchSetId": 7
@@ -82,6 +154,30 @@
       "writtenOn": "2017-09-05T11:04:25Z",
       "side": 1,
       "message": "can you make it created-at",
+      "range": {
+        "startLine": 2404,
+        "startChar": 51,
+        "endLine": 2404,
+        "endChar": 62
+      },
+      "revId": "620cc3f0bebe0d6d3e454b52ef2e09b0ef7d3d4a",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_8d7d1dea",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 7
+      },
+      "lineNbr": 2404,
+      "author": {
+        "id": 879
+      },
+      "writtenOn": "2017-09-07T08:39:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a437d4f_490612d0",
       "range": {
         "startLine": 2404,
         "startChar": 51,
@@ -141,6 +237,54 @@
     },
     {
       "key": {
+        "uuid": "9a437d4f_ed4ee9c0",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 7
+      },
+      "lineNbr": 2409,
+      "author": {
+        "id": 879
+      },
+      "writtenOn": "2017-09-07T08:39:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a437d4f_290bced7",
+      "range": {
+        "startLine": 2409,
+        "startChar": 51,
+        "endLine": 2409,
+        "endChar": 62
+      },
+      "revId": "620cc3f0bebe0d6d3e454b52ef2e09b0ef7d3d4a",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_0d500d5d",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 7
+      },
+      "lineNbr": 2409,
+      "author": {
+        "id": 879
+      },
+      "writtenOn": "2017-09-07T08:39:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a437d4f_29662e52",
+      "range": {
+        "startLine": 2409,
+        "startChar": 51,
+        "endLine": 2409,
+        "endChar": 62
+      },
+      "revId": "620cc3f0bebe0d6d3e454b52ef2e09b0ef7d3d4a",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a437d4f_e914a6f6",
         "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
         "patchSetId": 7
@@ -176,6 +320,54 @@
       "side": 1,
       "message": "vnfprogress is useless for other module, we can remove it",
       "parentUuid": "9a437d4f_e914a6f6",
+      "range": {
+        "startLine": 3765,
+        "startChar": 82,
+        "endLine": 3765,
+        "endChar": 89
+      },
+      "revId": "620cc3f0bebe0d6d3e454b52ef2e09b0ef7d3d4a",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_ad1341b7",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 7
+      },
+      "lineNbr": 3765,
+      "author": {
+        "id": 879
+      },
+      "writtenOn": "2017-09-07T08:39:34Z",
+      "side": 1,
+      "message": "This is correct Integer.",
+      "parentUuid": "9a437d4f_e914a6f6",
+      "range": {
+        "startLine": 3765,
+        "startChar": 82,
+        "endLine": 3765,
+        "endChar": 89
+      },
+      "revId": "620cc3f0bebe0d6d3e454b52ef2e09b0ef7d3d4a",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_8d163da6",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 7
+      },
+      "lineNbr": 3765,
+      "author": {
+        "id": 879
+      },
+      "writtenOn": "2017-09-07T08:39:34Z",
+      "side": 1,
+      "message": "removed vnfprogress from schema.",
+      "parentUuid": "9a437d4f_697436fd",
       "range": {
         "startLine": 3765,
         "startChar": 82,
