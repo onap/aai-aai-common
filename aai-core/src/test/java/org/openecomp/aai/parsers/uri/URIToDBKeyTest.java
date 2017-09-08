@@ -20,34 +20,28 @@
 
 package org.openecomp.aai.parsers.uri;
 
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-
-import javax.ws.rs.core.UriBuilder;
-import javax.xml.bind.JAXBException;
-
-import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.openecomp.aai.AAISetup;
+import org.openecomp.aai.exceptions.AAIException;
+import org.openecomp.aai.introspection.*;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 
-import org.openecomp.aai.exceptions.AAIException;
-import org.openecomp.aai.introspection.Loader;
-import org.openecomp.aai.introspection.LoaderFactory;
-import org.openecomp.aai.introspection.ModelInjestor;
-import org.openecomp.aai.introspection.ModelType;
-import org.openecomp.aai.introspection.Version;
+import javax.ws.rs.core.UriBuilder;
+import javax.xml.bind.JAXBException;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
 
 
 @Ignore
 @PrepareForTest(ModelInjestor.class)
-public class URIToDBKeyTest {
+public class URIToDBKeyTest extends AAISetup {
 
 	private Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.v8);
 
@@ -55,13 +49,45 @@ public class URIToDBKeyTest {
 	public ExpectedException thrown = ExpectedException.none();
 	
 	/**
-	 * Configure.
+	 * Uri.
+	 *
+	 * @throws JAXBException the JAXB exception
+	 * @throws AAIException the AAI exception
+	 * @throws IllegalArgumentException the illegal argument exception
+	 * @throws UnsupportedEncodingException the unsupported encoding exception
 	 */
-	@BeforeClass
-	public static void configure() {
-		System.setProperty("AJSC_HOME", ".");
-		System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
+	@Test
+    public void uri() throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException {
+		URI uri = UriBuilder.fromPath("/aai/" + loader.getVersion() + "/cloud-infrastructure/tenants/tenant/key1/vservers/vserver/key2/l-interfaces/l-interface/key3").build();
+		URIToDBKey parse = new URIToDBKey(loader, uri);
+		Object result = parse.getResult();
+
+		String expected = "cloud-region/att-aic/AAIAIC25/tenant/key1/vserver/key2/l-interface/key3";
+		
+		assertEquals("blah", expected, result);
+		
 	}
+	
+	/**
+	 * Uri no version.
+	 *
+	 * @throws JAXBException the JAXB exception
+	 * @throws AAIException the AAI exception
+	 * @throws IllegalArgumentException the illegal argument exception
+	 * @throws UnsupportedEncodingException the unsupported encoding exception
+	 */
+	@Test
+    public void uriNoVersion() throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException {
+		URI uri = UriBuilder.fromPath("/cloud-infrastructure/tenants/tenant/key1/vservers/vserver/key2/l-interfaces/l-interface/key3").build();
+		URIToDBKey parse = new URIToDBKey(loader, uri);
+		Object result = parse.getResult();
+		
+		String expected = "cloud-region/att-aic/AAIAIC25/tenant/key1/vserver/key2/l-interface/key3";
+		
+		assertEquals("blah", expected, result);
+		
+	}
+	
 
 	/**
 	 * Bad URI.
@@ -76,7 +102,7 @@ public class URIToDBKeyTest {
 		URI uri = UriBuilder.fromPath("/aai/" + loader.getVersion() + "/cloud-infrastructure/tenants/tenant/key1/vservers/vserver/key2/l-interadsfaces/l-interface/key3").build();
 		
 		thrown.expect(AAIException.class);
-		thrown.expect(hasProperty("code",  is("AAI_3001")));
+		thrown.expect(hasProperty("code",  is("AAI_3000")));
 		
 		new URIToDBKey(loader, uri);
 	}
@@ -107,6 +133,17 @@ public class URIToDBKeyTest {
 	 * @throws IllegalArgumentException the illegal argument exception
 	 * @throws UnsupportedEncodingException the unsupported encoding exception
 	 */
+	@Test
+    public void startsWithValidNamespace() throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException {
+		URI uri = UriBuilder.fromPath("/aai/" + loader.getVersion() + "/cloud-infrastructure/tenants/tenant/key1/vservers/vserver/key2/l-interfaces/l-interface/key3").build();
+		
+		URIToDBKey parse = new URIToDBKey(loader, uri);
+		Object result = parse.getResult();
+
+		String expected = "cloud-region/att-aic/AAIAIC25/tenant/key1/vserver/key2/l-interface/key3";
+		
+		assertEquals("blah", expected, result);
+	}
 	
 	/**
 	 * Naming exceptions.

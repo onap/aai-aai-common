@@ -20,17 +20,8 @@
 
 package org.openecomp.aai.introspection.sideeffect;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-
+import com.thinkaurelius.titan.core.TitanFactory;
+import com.thinkaurelius.titan.core.TitanGraph;
 import org.apache.commons.io.IOUtils;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Graph;
@@ -43,11 +34,7 @@ import org.mockito.MockitoAnnotations;
 import org.openecomp.aai.db.props.AAIProperties;
 import org.openecomp.aai.dbmap.DBConnectionType;
 import org.openecomp.aai.exceptions.AAIException;
-import org.openecomp.aai.introspection.Introspector;
-import org.openecomp.aai.introspection.Loader;
-import org.openecomp.aai.introspection.LoaderFactory;
-import org.openecomp.aai.introspection.ModelType;
-import org.openecomp.aai.introspection.Version;
+import org.openecomp.aai.introspection.*;
 import org.openecomp.aai.introspection.sideeffect.exceptions.AAIMissingRequiredPropertyException;
 import org.openecomp.aai.parsers.query.QueryParser;
 import org.openecomp.aai.serialization.db.DBSerializer;
@@ -55,17 +42,22 @@ import org.openecomp.aai.serialization.db.EdgeProperty;
 import org.openecomp.aai.serialization.engines.QueryStyle;
 import org.openecomp.aai.serialization.engines.TitanDBEngine;
 import org.openecomp.aai.serialization.engines.TransactionalGraphEngine;
-import org.openecomp.aai.serialization.queryformats.QueryFormatTestHelper;
-import org.openecomp.aai.util.AAIConstants;
 
-import com.thinkaurelius.titan.core.TitanFactory;
-import com.thinkaurelius.titan.core.TitanGraph;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 
-@Ignore
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
+
 public class DataCopyTest {
 
 	private static TitanGraph graph;
-	private final static Version version = Version.v10;
+	private final static Version version = Version.getLatest();
 	private final static ModelType introspectorFactoryType = ModelType.MOXY;
 	private final static QueryStyle queryStyle = QueryStyle.TRAVERSAL;
 	private final static DBConnectionType type = DBConnectionType.REALTIME;
@@ -83,7 +75,6 @@ public class DataCopyTest {
 		graph = TitanFactory.build().set("storage.backend","inmemory").open();
 		System.setProperty("AJSC_HOME", ".");
 		System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
-		QueryFormatTestHelper.setFinalStatic(AAIConstants.class.getField("AAI_HOME_ETC_OXM"), "src/test/resources/org/openecomp/aai/introspection/");
 		loader = LoaderFactory.createLoaderForVersion(introspectorFactoryType, version);
 		dbEngine = new TitanDBEngine(
 				queryStyle,
@@ -112,7 +103,7 @@ public class DataCopyTest {
 	@Test
 	public void runPopulatePersonaModelVer() throws URISyntaxException, AAIException, UnsupportedEncodingException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, SecurityException, InstantiationException, NoSuchMethodException, MalformedURLException {
 		
-		final Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.v10);
+		final Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.getLatest());
 		final Introspector obj = loader.introspectorFromName("test-object");
 		obj.setValue("vnf-id", "myId");
 		obj.setValue("model-invariant-id", "key1");
@@ -168,7 +159,7 @@ public class DataCopyTest {
 	@Test
 	public void verifyNestedSideEffect() throws URISyntaxException, AAIException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, SecurityException, InstantiationException, NoSuchMethodException, IOException {
 		
-		final Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.v10);
+		final Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.getLatest());
 		final Introspector obj = loader.unmarshal("customer", this.getJsonString("nested-case.json"));
 		System.out.println(obj.marshal(true));
 		TransactionalGraphEngine spy = spy(dbEngine);
@@ -194,7 +185,7 @@ public class DataCopyTest {
 	@Test
 	public void expectedMissingPropertyExceptionInURI() throws AAIException, UnsupportedEncodingException {
 		
-		final Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.v10);
+		final Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.getLatest());
 		final Introspector obj = loader.introspectorFromName("test-object");
 		obj.setValue("vnf-id", "myId");
 		obj.setValue("model-invariant-id", "key1");
@@ -217,7 +208,7 @@ public class DataCopyTest {
 	
 	@Test
 	public void expectedMissingPropertyExceptionForResultingObject() throws AAIException, UnsupportedEncodingException {
-		final Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.v10);
+		final Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.getLatest());
 		final Introspector obj = loader.introspectorFromName("test-object");
 		obj.setValue("vnf-id", "myId");
 		obj.setValue("model-invariant-id", "key3");
@@ -241,7 +232,7 @@ public class DataCopyTest {
 	
 	@Test
 	public void expectNoProcessingWithNoProperties() throws AAIException, UnsupportedEncodingException {
-		final Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.v10);
+		final Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.getLatest());
 		final Introspector obj = loader.introspectorFromName("test-object");
 		obj.setValue("vnf-id", "myId");
 
@@ -267,7 +258,7 @@ public class DataCopyTest {
 	private String getJsonString(String filename) throws IOException {
 		
 		
-		FileInputStream is = new FileInputStream("src/test/resources/org/openecomp/aai/introspection/sideeffect/" + filename);
+		FileInputStream is = new FileInputStream("src/test/resources/bundleconfig-local/etc/oxm/sideeffect/" + filename);
 		String s =  IOUtils.toString(is, "UTF-8"); 
 		IOUtils.closeQuietly(is);
 		

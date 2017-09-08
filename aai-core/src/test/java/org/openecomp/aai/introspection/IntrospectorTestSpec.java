@@ -20,15 +20,12 @@
 
 package org.openecomp.aai.introspection;
 
+import org.openecomp.aai.AAISetup;
+import org.openecomp.aai.introspection.exceptions.AAIUnknownObjectException;
+
 import static org.junit.Assert.assertEquals;
 
-import java.util.Arrays;
-import java.util.Set;
-
-import org.openecomp.aai.introspection.exceptions.AAIUnknownObjectException;
-import com.google.common.collect.Sets;
-
-public class IntrospectorTestSpec {
+public class IntrospectorTestSpec extends AAISetup {
 
 	
 	

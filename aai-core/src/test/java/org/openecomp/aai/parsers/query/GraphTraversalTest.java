@@ -20,30 +20,15 @@
 
 package org.openecomp.aai.parsers.query;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriBuilder;
-
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
+import org.openecomp.aai.AAISetup;
 import org.openecomp.aai.db.props.AAIProperties;
 import org.openecomp.aai.exceptions.AAIException;
 import org.openecomp.aai.introspection.LoaderFactory;
@@ -53,15 +38,24 @@ import org.openecomp.aai.rest.RestTokens;
 import org.openecomp.aai.serialization.engines.QueryStyle;
 import org.openecomp.aai.serialization.engines.TitanDBEngine;
 import org.openecomp.aai.serialization.engines.TransactionalGraphEngine;
-import org.openecomp.aai.serialization.queryformats.QueryFormatTestHelper;
-import org.openecomp.aai.util.AAIConstants;
 
-@Ignore
-public class GraphTraversalTest {
+import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.UriBuilder;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
-	private static TransactionalGraphEngine dbEngine;
-		
-	private static TransactionalGraphEngine dbEnginev9;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
+
+public class GraphTraversalTest extends AAISetup {
+
+	private TransactionalGraphEngine dbEngine;
+	private TransactionalGraphEngine dbEnginev9;
 	
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -72,12 +66,9 @@ public class GraphTraversalTest {
 	 * @throws SecurityException 
 	 * @throws NoSuchFieldException 
 	 */
-	@BeforeClass
-	public static void configure() throws NoSuchFieldException, SecurityException, Exception {
-		System.setProperty("AJSC_HOME", ".");
-		System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
-		QueryFormatTestHelper.setFinalStatic(AAIConstants.class.getField("AAI_HOME_ETC_OXM"), "src/test/resources/org/openecomp/aai/introspection/");
-		dbEngine = 
+	@Before
+	public void configure() throws Exception {
+		dbEngine =
 				new TitanDBEngine(QueryStyle.TRAVERSAL, 
 					LoaderFactory.createLoaderForVersion(ModelType.MOXY, AAIProperties.LATEST),
 					false);
@@ -693,7 +684,6 @@ public class GraphTraversalTest {
 		assertEquals("dependent",true, query.isDependent());
 	}
 
-	@Ignore
 	@Test
 	public void pluralCousin() throws UnsupportedEncodingException, AAIException {
 		URI uri = UriBuilder.fromPath("cloud-infrastructure/complexes/complex/key1/related-to/pservers").build();
@@ -728,7 +718,6 @@ public class GraphTraversalTest {
 		assertEquals("dependent",true, query.isDependent());
 	}
 
-	@Ignore
 	@Test
 	public void specificCousin() throws UnsupportedEncodingException, AAIException {
 		URI uri = UriBuilder.fromPath("cloud-infrastructure/complexes/complex/key1/related-to/pservers/pserver/key2").build();
@@ -764,7 +753,6 @@ public class GraphTraversalTest {
 		assertEquals("dependent",true, query.isDependent());
 	}
 
-	@Ignore
 	@Test
 	public void doubleSpecificCousin() throws UnsupportedEncodingException, AAIException {
 		URI uri = UriBuilder.fromPath("cloud-infrastructure/complexes/complex/key1/related-to/pservers/pserver/key2/related-to/vservers/vserver/key3").build();
@@ -804,7 +792,6 @@ public class GraphTraversalTest {
 		assertEquals("dependent",true, query.isDependent());
 	}
 
-	@Ignore
 	@Test
 	public void traversalEndsInRelatedTo() throws UnsupportedEncodingException, AAIException {
 		URI uri = UriBuilder.fromPath("cloud-infrastructure/complexes/complex/key1/related-to").build();
@@ -815,7 +802,6 @@ public class GraphTraversalTest {
 
 	}
 
-	@Ignore
 	@Test
 	public void pluralCousinToPluralCousin() throws UnsupportedEncodingException, AAIException {
 		URI uri = UriBuilder.fromPath("cloud-infrastructure/complexes/related-to/pservers").build();

@@ -17,6 +17,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.openecomp.aai.annotations;
 
 import org.openecomp.aai.annotations.Metadata;

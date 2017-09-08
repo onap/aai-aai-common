@@ -20,26 +20,21 @@
 
 package org.openecomp.aai.introspection.validation;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-
 import org.openecomp.aai.exceptions.AAIException;
-import org.openecomp.aai.introspection.Introspector;
-import org.openecomp.aai.introspection.Loader;
-import org.openecomp.aai.introspection.LoaderFactory;
-import org.openecomp.aai.introspection.ModelType;
-import org.openecomp.aai.introspection.Version;
+import org.openecomp.aai.introspection.*;
 import org.openecomp.aai.introspection.tools.IntrospectorValidator;
 import org.openecomp.aai.introspection.tools.Issue;
 import org.openecomp.aai.introspection.tools.IssueType;
 import org.openecomp.aai.serialization.queryformats.QueryFormatTestHelper;
 import org.openecomp.aai.util.AAIConstants;
+
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 public class IntrospectorValidationTest {
 

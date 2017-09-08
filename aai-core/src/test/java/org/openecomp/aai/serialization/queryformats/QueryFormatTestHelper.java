@@ -20,23 +20,22 @@
 
 package org.openecomp.aai.serialization.queryformats;
 
-import static org.mockito.Matchers.isA;
-import static org.mockito.Mockito.when;
-
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.io.IoCore;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-
 import org.openecomp.aai.db.props.AAIProperties;
 import org.openecomp.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
 import org.openecomp.aai.serialization.queryformats.utils.UrlBuilder;
+
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.when;
 
 public class QueryFormatTestHelper {
 

@@ -18,26 +18,26 @@
  * ============LICENSE_END=========================================================
  */
 
-package org.openecomp.aai.introspection;
+package org.openecomp.aai.serialization.db;
 
 import org.junit.Test;
-import org.openecomp.aai.domain.yang.CloudRegion;
-import org.openecomp.aai.domain.yang.VolumeGroup;
-import org.openecomp.aai.schema.enums.ObjectMetadata;
+
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
-public class PojoStrategyTest {
+public class EdgePropertyMapTest {
 
 	@Test
-	public void getMetadataTest() {
-		Introspector cloudregion = IntrospectorFactory.newInstance(ModelType.POJO, new CloudRegion());
-		assertEquals("cloud-infrastructure", cloudregion.getMetadata(ObjectMetadata.NAMESPACE));
-		assertEquals("cloud-regions", cloudregion.getMetadata(ObjectMetadata.CONTAINER));
+	public void run() {
+		Map<String, String> map = new EdgePropertyMap<>();
+		map.put("direction", "OUT");
+		map.put("test", "hello");
+		map.put("isParent", "${direction}");
+		map.put("SVC-INFRA", "!${direction}");
 		
-		Introspector volumegroup = IntrospectorFactory.newInstance(ModelType.POJO, new VolumeGroup());
-		assertEquals("cloud-region", volumegroup.getMetadata(ObjectMetadata.DEPENDENT_ON));
-		assertEquals("", volumegroup.getMetadata(ObjectMetadata.NAMESPACE));
+		assertEquals("normal retrieval", "hello", map.get("test"));
+		assertEquals("variable retrieval", "OUT", map.get("isParent"));
+		assertEquals("negate variable retrieval", "IN", map.get("SVC-INFRA"));
 	}
-
 }

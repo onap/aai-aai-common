@@ -20,18 +20,11 @@
 
 package org.openecomp.aai.logging;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.util.Collections;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.UUID;
-
 import org.junit.Test;
+
+import java.util.*;
+
+import static org.junit.Assert.*;
 
 public class LoggingContextTest {
 

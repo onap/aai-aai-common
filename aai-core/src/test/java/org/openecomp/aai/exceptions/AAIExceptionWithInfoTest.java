@@ -20,16 +20,14 @@
 
 package org.openecomp.aai.exceptions;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.openecomp.aai.serialization.queryformats.QueryFormatTestHelper;
-import org.openecomp.aai.util.AAIConstants;
+import org.openecomp.aai.AAISetup;
 
 import java.util.HashMap;
 
 import static org.junit.Assert.assertEquals;
 
-public class AAIExceptionWithInfoTest {
+public class AAIExceptionWithInfoTest extends AAISetup {
 
 	
 	private static final HashMap<String, Object> map = new HashMap<String, Object>();
@@ -44,13 +42,6 @@ public class AAIExceptionWithInfoTest {
 	private static final String code = "AAI_4004";
 	private static final String details = "This is a detailed description of the exception.";
 	private static final Throwable cause = new RuntimeException("This is a runtime exception.");
-
-	@BeforeClass
-	public static void configure() throws NoSuchFieldException, SecurityException, Exception {
-		System.setProperty("AJSC_HOME", ".");
-		System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
-		QueryFormatTestHelper.setFinalStatic(AAIConstants.class.getField("AAI_HOME_ETC_OXM"), "src/test/resources/org/openecomp/aai/introspection/");
-	}
 
 	/**
 	 * Test constructor with 2 params.

@@ -20,52 +20,34 @@
 
 package org.openecomp.aai.parsers.relationship;
 
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
+import org.apache.commons.io.IOUtils;
+import org.junit.Ignore;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.openecomp.aai.AAISetup;
+import org.openecomp.aai.exceptions.AAIException;
+import org.openecomp.aai.introspection.*;
+import org.openecomp.aai.parsers.exceptions.AAIIdentityMapParseException;
+import org.openecomp.aai.parsers.exceptions.AmbiguousMapAAIException;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.apache.commons.io.IOUtils;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
 
-import org.openecomp.aai.exceptions.AAIException;
-import org.openecomp.aai.introspection.Introspector;
-import org.openecomp.aai.introspection.Loader;
-import org.openecomp.aai.introspection.LoaderFactory;
-import org.openecomp.aai.introspection.ModelType;
-import org.openecomp.aai.introspection.Version;
-import org.openecomp.aai.parsers.exceptions.AAIIdentityMapParseException;
-import org.openecomp.aai.parsers.exceptions.AmbiguousMapAAIException;
-import org.openecomp.aai.serialization.queryformats.QueryFormatTestHelper;
-import org.openecomp.aai.util.AAIConstants;
+public class RelationshipToURITest extends AAISetup {
 
-@Ignore
-public class RelationshipToURITest {
-
-	
-	
 	private final ModelType modelType = ModelType.MOXY;
 	private final Version version10 = Version.v10;
 	private final Version version9 = Version.v9;
 	
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
-	
-	@BeforeClass
-	public static void setup() throws NoSuchFieldException, SecurityException, Exception {
-		System.setProperty("AJSC_HOME", ".");
-		System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
-		QueryFormatTestHelper.setFinalStatic(AAIConstants.class.getField("AAI_HOME_ETC_OXM"), "src/test/resources/org/openecomp/aai/introspection/");
-
-	}
 	
 	@Test
 	public void onlyLink() throws AAIException, URISyntaxException, IOException {
@@ -223,7 +205,7 @@ public class RelationshipToURITest {
 	private String getJsonString(String filename) throws IOException {
 		
 		
-		FileInputStream is = new FileInputStream("src/test/resources/org/openecomp/aai/parsers/relationship/" + filename);
+		FileInputStream is = new FileInputStream("src/test/resources/bundleconfig-local/etc/relationship/" + filename);
 		String s =  IOUtils.toString(is, "UTF-8"); 
 		IOUtils.closeQuietly(is);
 		

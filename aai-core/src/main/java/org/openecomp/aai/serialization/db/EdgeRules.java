@@ -40,7 +40,6 @@ import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.openecomp.aai.db.props.AAIProperties;
-import org.openecomp.aai.dbmodel.DbEdgeRules;
 import org.openecomp.aai.exceptions.AAIException;
 import org.openecomp.aai.introspection.Version;
 import org.openecomp.aai.serialization.db.exceptions.EdgeMultiplicityException;
@@ -58,8 +57,6 @@ public class EdgeRules {
 	
 	private EELFLogger logger = EELFManager.getInstance().getLogger(EdgeRules.class);
 	
-	private Multimap<String, String> deleteScope = 	DbEdgeRules.DefaultDeleteScope;
-	
 	private DocumentContext rulesDoc;
 	
 	/**
@@ -74,22 +71,28 @@ public class EdgeRules {
 		
 	}
 	
+	private EdgeRules(String rulesFilename) {
+		String json = this.getEdgeRuleJson(rulesFilename);
+		rulesDoc = JsonPath.parse(json);
+	}
+	
+	private String getEdgeRuleJson(String rulesFilename) {
+		InputStream is = getClass().getResourceAsStream(rulesFilename);
+
+		Scanner scanner = new Scanner(is);
+		String json = scanner.useDelimiter("\\Z").next();
+		scanner.close();
+		
+		return json;
+	}
+	
 	/**
 	 * Loads the versioned DbEdgeRules json file for later parsing.
 	 */
 	@SuppressWarnings("unchecked")
 	private EdgeRules(Version version) {
-		
 		String json = this.getEdgeRuleJson(version);
 		rulesDoc = JsonPath.parse(json);
-		
-		if (!Version.isLatest(version)) {
-			try {
-				Class<?> dbEdgeRules = Class.forName("org.openecomp.aai.dbmodel." + version.toString() + ".gen.DbEdgeRules");
-				this.deleteScope = (Multimap<String, String>)dbEdgeRules.getDeclaredField("DefaultDeleteScope").get(null);	
-			} catch (Exception e) {
-			}
-		}
 	}
 	
 	private String getEdgeRuleJson(Version version) {
@@ -105,6 +108,11 @@ public class EdgeRules {
 	private static class Helper {
 		private static final EdgeRules INSTANCE = new EdgeRules();
 		private static final Map<Version, EdgeRules> INSTANCEMAP = new ConcurrentHashMap<>();
+		
+		private static EdgeRules getEdgeRulesByFilename(String rulesFilename) {
+			return new EdgeRules(rulesFilename);
+		}
+		
 		private static EdgeRules getVersionedEdgeRules(Version v) {
 			if (Version.isLatest(v)) {
 				return INSTANCE;
@@ -134,6 +142,16 @@ public class EdgeRules {
 	public static EdgeRules getInstance(Version v) {
 		return Helper.getVersionedEdgeRules(v);
 
+	}
+	
+	/**
+	 * Loads edge rules from the given file.
+	 * 
+	 * @param rulesFilename - name of the file to load rules from
+	 * @return the EdgeRules instance
+	 */
+	public static EdgeRules getInstance(String rulesFilename) {
+		return Helper.getEdgeRulesByFilename(rulesFilename);
 	}
 	
 	/**
@@ -252,8 +270,8 @@ public class EdgeRules {
 				where("from").is(nodeB).and("to").is(nodeA)
 				);
 		
-		List<Object> results = rulesDoc.read("$.rules.[?]", aToB);
-		results.addAll(rulesDoc.read("$.rules.[?]", bToA));
+		List<Map<String, String>> results = readRules(aToB);
+		results.addAll(readRules(bToA));
 
 		return !results.isEmpty();
 		
@@ -300,6 +318,8 @@ public class EdgeRules {
 		return result;
 	}
 	
+	
+	
 	/**
 	 * Gets the edge rule of the given type that exists between A and B.
 	 * Will check B|A as well, and flips the direction accordingly if that succeeds
@@ -313,19 +333,21 @@ public class EdgeRules {
 	 */
 	public EdgeRule getEdgeRule(EdgeType type, String nodeA, String nodeB) throws AAIException {
 		//try A to B
-		List<Map<String, String>> aToBEdges = rulesDoc.read("$.rules.[?]", buildFilter(type, nodeA, nodeB));
+		List<Map<String, String>> aToBEdges = readRules(buildFilter(type, nodeA, nodeB));
 		if (!aToBEdges.isEmpty()) {
 			//lazily stop iterating if we find a match
 			//should there be a mismatch between type and isParent,
 			//the caller will receive something.
 			//this operates on the assumption that there are at most two rules
 			//for a given vertex pair
+			verifyRule(aToBEdges.get(0));
 			return buildRule(aToBEdges.get(0));
 		}
 		
 		//we get here if there was nothing for A to B, so let's try B to A
-		List<Map<String, String>> bToAEdges = rulesDoc.read("$.rules.[?]", buildFilter(type, nodeB, nodeA));
+		List<Map<String, String>> bToAEdges = readRules(buildFilter(type, nodeB, nodeA));
 		if (!bToAEdges.isEmpty()) {
+			verifyRule(bToAEdges.get(0));
 			return flipDirection(buildRule(bToAEdges.get(0))); //bc we need to return as A|B, so flip the direction to match
 		}
 		
@@ -468,6 +490,61 @@ public class EdgeRules {
 	}
 	
 	/**
+	 * Verifies that all required properties are defined in the given edge rule.
+	 * If they are not, throws a RuntimeException.
+	 * 
+	 * @param rule - Map<String edge property, String edge property value> representing
+	 * an edge rule
+	 */
+	private void verifyRule(Map<String, String> rule) {
+		for (EdgeProperty prop : EdgeProperty.values()) {
+			if (!rule.containsKey(prop.toString())) {
+				/* Throws RuntimeException as rule definition errors
+				 * cannot be recovered from, and should never happen anyway
+				 * because these are configuration files, so requiring all
+				 * downstream code to check for this exception seems inappropriate.
+				 * It's instantiated with an AAIException to make sure all
+				 * relevant information is present in the error message.
+				 */
+				throw new RuntimeException(new AAIException("AAI_4005",
+						"Rule between " + rule.get("from") + " and " + rule.get("to") +
+						" is missing property " + prop + "."));
+			}
+		}
+	}
+	
+	/**
+	 * Reads all the edge rules from the loaded json file.
+	 * 
+	 * @return List<Map<String edge property, String edge property value>>
+	 *  Each map represents a rule read from the json.
+	 */
+	private List<Map<String, String>> readRules() {
+		return readRules(null);
+	}
+	
+	/**
+	 * Reads the edge rules from the loaded json file, using the given filter
+	 * to get specific rules. If filter is null, will get all rules.
+	 * 
+	 * @param filter - may be null to indicate get all
+	 * @return List<Map<String edge property, String edge property value>>
+	 *  Each map represents a rule read from the json.
+	 */
+	private List<Map<String, String>> readRules(Filter filter) {
+		List<Map<String, String>> results;
+		if (filter == null) { //no filter means get all
+			results = rulesDoc.read("$.rules.*");
+		} else {
+			results = rulesDoc.read("$.rules.[?]", filter);
+		}
+		for (Map<String, String> result : results) {
+			verifyRule(result);
+		}
+		return results;
+	}
+	
+	/**
 	 * Gets all the edge rules we define.
 	 * 
 	 * @return Multimap<String "from|to", EdgeRule rule>
@@ -475,7 +552,7 @@ public class EdgeRules {
 	public Multimap<String, EdgeRule> getAllRules() {
 		Multimap<String, EdgeRule> result = ArrayListMultimap.create();
 		
-		List<Map<String, String>> rules = rulesDoc.read("$.rules.*");
+		List<Map<String, String>> rules = readRules();
 		for (Map<String, String> rule : rules) {
 			EdgeRule er = buildRule(rule);
 			String name = rule.get("from") + "|" + rule.get("to");
@@ -485,19 +562,23 @@ public class EdgeRules {
 		return result;
 	}
 	
-	public Multimap<String, String> getDeleteSemantics() {
-		return this.deleteScope;
-	}
-	
+	/** 
+	 * Gets all edge rules that define a child relationship from
+	 * the given node type.
+	 * 
+	 * @param nodeType
+	 * @return
+	 */
 	public Set<EdgeRule> getChildren(String nodeType) {
 		
 		final Filter filter = filter(
 				where("from").is(nodeType).and(EdgeProperty.CONTAINS.toString()).is("${direction}")
 				).or(where("to").is(nodeType).and(EdgeProperty.CONTAINS.toString()).is("!${direction}"));
 		
-		final List<Map<String, String>> rules = rulesDoc.read("$.rules.[?]", filter);
+		final List<Map<String, String>> rules = readRules(filter);
 		final Set<EdgeRule> result = new HashSet<>();
 		rules.forEach(item -> {
+			verifyRule(item);
 			result.add(buildRule(item));
 		});
 	

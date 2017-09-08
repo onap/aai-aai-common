@@ -20,21 +20,13 @@
 
 package org.openecomp.aai.parsers.query;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-
-import javax.ws.rs.core.UriBuilder;
-
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
-import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-
+import org.openecomp.aai.AAISetup;
 import org.openecomp.aai.exceptions.AAIException;
 import org.openecomp.aai.introspection.LoaderFactory;
 import org.openecomp.aai.introspection.ModelInjestor;
@@ -44,8 +36,15 @@ import org.openecomp.aai.serialization.engines.QueryStyle;
 import org.openecomp.aai.serialization.engines.TitanDBEngine;
 import org.openecomp.aai.serialization.engines.TransactionalGraphEngine;
 
+import javax.ws.rs.core.UriBuilder;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+
+import static org.junit.Assert.assertEquals;
+
 @Ignore
-public class UniqueURIQueryTest {
+public class UniqueURIQueryTest extends AAISetup {
+
 	private ModelInjestor injestor = ModelInjestor.getInstance();
 	private TransactionalGraphEngine dbEngine = 
 			new TitanDBEngine(QueryStyle.GREMLIN_UNIQUE, 
@@ -53,16 +52,6 @@ public class UniqueURIQueryTest {
 				false);
 	private final Version version = Version.v8;
 	private DynamicJAXBContext context = injestor.getContextForVersion(version);
-	
-	/**
-	 * Configure.
-	 */
-	@BeforeClass
-	public static void configure() {
-		System.setProperty("AJSC_HOME", ".");
-		System.setProperty("BUNDLECONFIG_DIR", "bundleconfig-local");
-	}
-	
 	
 	/**
 	 * Parent query.

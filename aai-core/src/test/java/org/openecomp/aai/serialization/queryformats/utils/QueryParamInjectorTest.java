@@ -20,11 +20,6 @@
 
 package org.openecomp.aai.serialization.queryformats.utils;
 
-import static org.junit.Assert.assertEquals;
-
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
-
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -33,6 +28,11 @@ import org.openecomp.aai.introspection.Loader;
 import org.openecomp.aai.serialization.db.DBSerializer;
 import org.openecomp.aai.serialization.queryformats.Resource;
 import org.openecomp.aai.serialization.queryformats.Resource.Builder;
+
+import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.MultivaluedMap;
+
+import static org.junit.Assert.assertEquals;
 
 public class QueryParamInjectorTest {
 

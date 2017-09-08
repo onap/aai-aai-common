@@ -20,25 +20,17 @@
 
 package org.openecomp.aai.introspection;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
+import org.openecomp.aai.db.props.AAIProperties;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import org.openecomp.aai.db.props.AAIProperties;
+import static org.junit.Assert.*;
 
 public class PojoInjestorTest {
 
-	@BeforeClass
-	public static void configure() {
-		System.setProperty("AJSC_HOME", ".");
-		System.setProperty("BUNDLECONFIG_DIR", "bundleconfig-local");
-	}
-	
 	@Test
 	public void getVersionTest() {
 		String latestVersion = "org.openecomp.aai.yang.VnfImage";

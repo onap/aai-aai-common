@@ -20,17 +20,14 @@
 
 package org.openecomp.aai.serialization.db;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
-
+import com.thinkaurelius.titan.core.TitanFactory;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.openecomp.aai.AAISetup;
 import org.openecomp.aai.dbmap.DBConnectionType;
 import org.openecomp.aai.exceptions.AAIException;
 import org.openecomp.aai.introspection.Loader;
@@ -41,10 +38,12 @@ import org.openecomp.aai.serialization.engines.QueryStyle;
 import org.openecomp.aai.serialization.engines.TitanDBEngine;
 import org.openecomp.aai.serialization.engines.TransactionalGraphEngine;
 
-import com.thinkaurelius.titan.core.TitanFactory;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
-@Ignore
-public class DbSerializerTest {
+public class DbSerializerTest extends AAISetup {
+
 	protected Graph graph;
 	protected final EdgeRules rules = EdgeRules.getInstance();
 
@@ -58,10 +57,8 @@ public class DbSerializerTest {
 	TransactionalGraphEngine.Admin adminSpy;
 
 	@Before
-	public void setup() throws NoSuchFieldException, SecurityException, Exception {
+	public void setup() throws Exception {
 		graph = TitanFactory.build().set("storage.backend", "inmemory").open();
-		System.setProperty("AJSC_HOME", ".");
-		System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
 		loader = LoaderFactory.createLoaderForVersion(introspectorFactoryType, version);
 		dbEngine = new TitanDBEngine(queryStyle, type, loader);
 		spy = spy(dbEngine);

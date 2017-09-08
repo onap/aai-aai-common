@@ -20,43 +20,30 @@
 
 package org.openecomp.aai.parsers.uri;
 
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.is;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-
-import javax.ws.rs.core.UriBuilder;
-import javax.xml.bind.JAXBException;
-
-import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
+import org.openecomp.aai.AAISetup;
 import org.openecomp.aai.exceptions.AAIException;
 import org.openecomp.aai.introspection.Loader;
 import org.openecomp.aai.introspection.LoaderFactory;
 import org.openecomp.aai.introspection.ModelType;
 import org.openecomp.aai.introspection.Version;
 
-@Ignore
-public class URIParserTest {
+import javax.ws.rs.core.UriBuilder;
+import javax.xml.bind.JAXBException;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.is;
+
+public class URIParserTest extends AAISetup {
 
 	private Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.v8);
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
-	
-	/**
-	 * Configure.
-	 */
-	@BeforeClass
-	public static void configure() {
-		System.setProperty("AJSC_HOME", ".");
-		System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
-	}
 	
 	/**
 	 * Invalid path.
@@ -71,7 +58,7 @@ public class URIParserTest {
 		URI uri = UriBuilder.fromPath("/aai/" + loader.getVersion() + "/network/tenants/tenant/key1/vservers/vserver/key2/l-interfaces/l-interface/key3").build();
 		
 		thrown.expect(AAIException.class);
-		thrown.expect(hasProperty("code",  is("AAI_3001")));
+		thrown.expect(hasProperty("code",  is("AAI_3000")));
 		
 		new URIToDBKey(loader, uri);
 	}

@@ -21,10 +21,16 @@
 package org.openecomp.aai.serialization.db;
 
 public enum EdgeProperty {
+	FROM("from"),
+	TO("to"),
+	LABEL("label"),
+	DIRECTION("direction"),
+	MULTIPLICITY("multiplicity"),
 	CONTAINS("contains-other-v"),
 	DELETE_OTHER_V("delete-other-v"),
 	SVC_INFRA("SVC-INFRA"),
 	PREVENT_DELETE("prevent-delete");
+	
 	private final String name;
 
 	private EdgeProperty(String name) {

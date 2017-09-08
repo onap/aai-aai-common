@@ -20,24 +20,18 @@
 
 package org.openecomp.aai.introspection;
 
-import static org.junit.Assert.*;
-
-import org.junit.BeforeClass;
 import org.junit.Test;
-
+import org.openecomp.aai.AAISetup;
 import org.openecomp.aai.domain.yang.v9.VnfImage;
 import org.openecomp.aai.introspection.exceptions.AAIUnmarshallingException;
 import org.openecomp.aai.restcore.MediaType;
 
-public class PojoLoaderTest {
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-	
-	@BeforeClass
-	public static void configure() {
-		System.setProperty("AJSC_HOME", ".");
-		System.setProperty("BUNDLECONFIG_DIR", "bundleconfig-local");
-	}
-	
+public class PojoLoaderTest extends AAISetup {
+
+
 	@Test
 	public void test() {
 		Loader pojoLoader = LoaderFactory.createLoaderForVersion(ModelType.POJO, Version.v9);

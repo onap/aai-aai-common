@@ -17,27 +17,18 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+package org.openecomp.aai;
 
-package org.openecomp.aai.introspection;
+import org.junit.BeforeClass;
+import org.openecomp.aai.serialization.queryformats.QueryFormatTestHelper;
+import org.openecomp.aai.util.AAIConstants;
 
-import org.junit.Test;
-import org.openecomp.aai.domain.yang.CloudRegion;
-import org.openecomp.aai.domain.yang.VolumeGroup;
-import org.openecomp.aai.schema.enums.ObjectMetadata;
+public abstract class AAISetup {
 
-import static org.junit.Assert.assertEquals;
-
-public class PojoStrategyTest {
-
-	@Test
-	public void getMetadataTest() {
-		Introspector cloudregion = IntrospectorFactory.newInstance(ModelType.POJO, new CloudRegion());
-		assertEquals("cloud-infrastructure", cloudregion.getMetadata(ObjectMetadata.NAMESPACE));
-		assertEquals("cloud-regions", cloudregion.getMetadata(ObjectMetadata.CONTAINER));
-		
-		Introspector volumegroup = IntrospectorFactory.newInstance(ModelType.POJO, new VolumeGroup());
-		assertEquals("cloud-region", volumegroup.getMetadata(ObjectMetadata.DEPENDENT_ON));
-		assertEquals("", volumegroup.getMetadata(ObjectMetadata.NAMESPACE));
-	}
-
+    @BeforeClass
+    public static void setupBundleconfig() throws Exception {
+        System.setProperty("AJSC_HOME", ".");
+        System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
+        QueryFormatTestHelper.setFinalStatic(AAIConstants.class.getField("AAI_HOME_ETC_OXM"), "src/test/resources/bundleconfig-local/etc/oxm/");
+    }
 }

@@ -21,11 +21,11 @@
 package org.openecomp.aai.util;
 
 import ch.qos.logback.access.spi.IAccessEvent;
-import org.openecomp.aai.logging.CNName;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.openecomp.aai.logging.CNName;
+import org.openecomp.aai.serialization.queryformats.QueryFormatTestHelper;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.agent.PowerMockAgent;
@@ -55,9 +55,10 @@ public class CNNameTest {
 	 * Initialize.
 	 */
 	@Before
-	public void initialize(){
+	public void initialize() throws Exception {
 		System.setProperty("AJSC_HOME", ".");
 		System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
+		QueryFormatTestHelper.setFinalStatic(AAIConstants.class.getField("AAI_HOME_ETC_OXM"), "src/test/resources/bundleconfig-local/etc/oxm/");
 		mockAccEvent = Mockito.mock(IAccessEvent.class);
 		mockHttpServletRequest = Mockito.mock(HttpServletRequest.class);
 		cert = Mockito.mock(X509Certificate.class);

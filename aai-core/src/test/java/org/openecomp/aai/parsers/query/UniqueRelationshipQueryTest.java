@@ -20,15 +20,6 @@
 
 package org.openecomp.aai.parsers.query;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.stream.StreamSource;
-
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
@@ -36,22 +27,26 @@ import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-
+import org.openecomp.aai.AAISetup;
 import org.openecomp.aai.exceptions.AAIException;
-import org.openecomp.aai.introspection.Introspector;
-import org.openecomp.aai.introspection.IntrospectorFactory;
-import org.openecomp.aai.introspection.LoaderFactory;
-import org.openecomp.aai.introspection.ModelInjestor;
-import org.openecomp.aai.introspection.ModelType;
-import org.openecomp.aai.introspection.Version;
+import org.openecomp.aai.introspection.*;
 import org.openecomp.aai.serialization.engines.QueryStyle;
 import org.openecomp.aai.serialization.engines.TitanDBEngine;
 import org.openecomp.aai.serialization.engines.TransactionalGraphEngine;
+
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.stream.StreamSource;
+import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+
+import static org.junit.Assert.assertEquals;
+
 @Ignore
-public class UniqueRelationshipQueryTest {
+public class UniqueRelationshipQueryTest extends AAISetup {
+
 	private ModelInjestor injestor = ModelInjestor.getInstance();
 	private TransactionalGraphEngine dbEngine = 
 			new TitanDBEngine(QueryStyle.GREMLIN_UNIQUE, 
@@ -60,16 +55,6 @@ public class UniqueRelationshipQueryTest {
 	private final Version version = Version.v8;
 	private DynamicJAXBContext context = injestor.getContextForVersion(version);
 	private Unmarshaller unmarshaller = null;
-	
-	/**
-	 * Configure.
-	 */
-	@BeforeClass
-	public static void configure() {
-		System.setProperty("AJSC_HOME", ".");
-		System.setProperty("BUNDLECONFIG_DIR", "bundleconfig-local");
-	}
-	
 	
 	/**
 	 * Setup.

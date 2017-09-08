@@ -20,36 +20,11 @@
 
 package org.openecomp.aai.introspection;
 
-import java.io.StringReader;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-
-import org.eclipse.persistence.dynamic.DynamicEntity;
-import org.eclipse.persistence.jaxb.UnmarshallerProperties;
-import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
-import org.junit.BeforeClass;
 import org.junit.Test;
-
 import org.openecomp.aai.introspection.exceptions.AAIUnknownObjectException;
-import org.openecomp.aai.serialization.queryformats.QueryFormatTestHelper;
-import org.openecomp.aai.util.AAIConstants;
 
 public class MoxyEngineTest extends IntrospectorTestSpec {
 
-	/**
-	 * Configure.
-	 * @throws Exception 
-	 * @throws SecurityException 
-	 * @throws NoSuchFieldException 
-	 */
-	@BeforeClass
-	public static void configure() throws NoSuchFieldException, SecurityException, Exception {
-		System.setProperty("AJSC_HOME", ".");
-		System.setProperty("BUNDLECONFIG_DIR", "bundleconfig-local");
-		QueryFormatTestHelper.setFinalStatic(AAIConstants.class.getField("AAI_HOME_ETC_OXM"), "src/test/resources/org/openecomp/aai/introspection/");
-	}
-	
 	/**
 	 * Container object.
 	 * @throws AAIUnknownObjectException 

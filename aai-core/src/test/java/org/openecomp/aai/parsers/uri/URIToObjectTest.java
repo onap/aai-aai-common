@@ -20,52 +20,37 @@
 
 package org.openecomp.aai.parsers.uri;
 
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.util.HashMap;
-
-import javax.ws.rs.core.UriBuilder;
-import javax.xml.bind.JAXBException;
-
-import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
+import org.openecomp.aai.AAISetup;
 import org.openecomp.aai.db.props.AAIProperties;
 import org.openecomp.aai.exceptions.AAIException;
-import org.openecomp.aai.introspection.Introspector;
-import org.openecomp.aai.introspection.Loader;
-import org.openecomp.aai.introspection.LoaderFactory;
-import org.openecomp.aai.introspection.ModelType;
-import org.openecomp.aai.introspection.Version;
+import org.openecomp.aai.introspection.*;
 import org.openecomp.aai.introspection.exceptions.AAIUnknownObjectException;
+
+import javax.ws.rs.core.UriBuilder;
+import javax.xml.bind.JAXBException;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.util.HashMap;
+
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
 
 
 @Ignore
-public class URIToObjectTest {
+public class URIToObjectTest extends AAISetup {
 
 	private Version version = Version.v8;
 	private Version currentVersion = AAIProperties.LATEST;
 	private Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, version);
+
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
-	
-	/**
-	 * Configure.
-	 */
-	@BeforeClass
-	public static void configure() {
-		System.setProperty("AJSC_HOME", ".");
-		System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
-	}
-	
-	
+
 	/**
 	 * Uri.
 	 *

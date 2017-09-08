@@ -20,30 +20,11 @@
 
 package org.openecomp.aai.introspection;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-
-import javax.xml.bind.JAXBException;
-
-import org.junit.BeforeClass;
 import org.junit.Test;
-
 import org.openecomp.aai.introspection.exceptions.AAIUnknownObjectException;
-import org.openecomp.aai.restcore.CustomJacksonJaxBJsonProvider;
 
 public class ReflectionEngineTest extends IntrospectorTestSpec {
 
-	/**
-	 * Configure.
-	 */
-	@BeforeClass
-	public static void configure() {
-		System.setProperty("AJSC_HOME", "./src/test/resources");
-		System.setProperty("BUNDLECONFIG_DIR", "bundleconfig-local");
-	}
-	
 	/**
 	 * Container object.
 	 *

@@ -20,16 +20,8 @@
 
 package org.openecomp.aai.introspection.sideeffect;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
-
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.util.List;
-
+import com.thinkaurelius.titan.core.TitanFactory;
+import com.thinkaurelius.titan.core.TitanGraph;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
@@ -41,28 +33,28 @@ import org.mockito.MockitoAnnotations;
 import org.openecomp.aai.db.props.AAIProperties;
 import org.openecomp.aai.dbmap.DBConnectionType;
 import org.openecomp.aai.exceptions.AAIException;
-import org.openecomp.aai.introspection.Introspector;
-import org.openecomp.aai.introspection.Loader;
-import org.openecomp.aai.introspection.LoaderFactory;
-import org.openecomp.aai.introspection.ModelType;
-import org.openecomp.aai.introspection.Version;
+import org.openecomp.aai.introspection.*;
 import org.openecomp.aai.parsers.query.QueryParser;
 import org.openecomp.aai.serialization.db.DBSerializer;
 import org.openecomp.aai.serialization.db.EdgeProperty;
 import org.openecomp.aai.serialization.engines.QueryStyle;
 import org.openecomp.aai.serialization.engines.TitanDBEngine;
 import org.openecomp.aai.serialization.engines.TransactionalGraphEngine;
-import org.openecomp.aai.serialization.queryformats.QueryFormatTestHelper;
-import org.openecomp.aai.util.AAIConstants;
 
-import com.thinkaurelius.titan.core.TitanFactory;
-import com.thinkaurelius.titan.core.TitanGraph;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.util.List;
 
-@Ignore
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
+
 public class DataLinkTest {
 
 	private static TitanGraph graph;
-	private final static Version version = Version.v10;
+	private final static Version version = Version.getLatest();
 	private final static ModelType introspectorFactoryType = ModelType.MOXY;
 	private final static QueryStyle queryStyle = QueryStyle.TRAVERSAL;
 	private final static DBConnectionType type = DBConnectionType.REALTIME;
@@ -80,7 +72,6 @@ public class DataLinkTest {
 		graph = TitanFactory.build().set("storage.backend","inmemory").open();
 		System.setProperty("AJSC_HOME", ".");
 		System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
-		QueryFormatTestHelper.setFinalStatic(AAIConstants.class.getField("AAI_HOME_ETC_OXM"), "src/test/resources/org/openecomp/aai/introspection/");
 		loader = LoaderFactory.createLoaderForVersion(introspectorFactoryType, version);
 		dbEngine = new TitanDBEngine(
 				queryStyle,
@@ -184,6 +175,7 @@ public class DataLinkTest {
 		GraphTraversalSource traversal = g.traversal();
 		when(spy.asAdmin()).thenReturn(adminSpy);
 		when(adminSpy.getTraversalSource()).thenReturn(traversal);
+		when(adminSpy.getReadOnlyTraversalSource()).thenReturn(traversal);
 		when(spy.tx()).thenReturn(g);
 		when(self.<String>property(AAIProperties.AAI_URI)).thenReturn(prop);
 		when(prop.orElse(null)).thenReturn(obj.getURI());

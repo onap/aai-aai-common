@@ -20,40 +20,36 @@
 
 package org.openecomp.aai.query.builder;
 
-import static org.junit.Assert.assertEquals;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.openecomp.aai.AAISetup;
+import org.openecomp.aai.db.props.AAIProperties;
+import org.openecomp.aai.exceptions.AAIException;
+import org.openecomp.aai.introspection.Loader;
+import org.openecomp.aai.introspection.LoaderFactory;
+import org.openecomp.aai.introspection.ModelType;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
-import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.mockito.Mock;
+import static org.junit.Assert.assertEquals;
 
-import org.openecomp.aai.db.props.AAIProperties;
-import org.openecomp.aai.exceptions.AAIException;
-import org.openecomp.aai.introspection.Introspector;
-import org.openecomp.aai.introspection.Loader;
-import org.openecomp.aai.introspection.LoaderFactory;
-import org.openecomp.aai.introspection.ModelType;
-import org.openecomp.aai.serialization.queryformats.QueryFormatTestHelper;
-import org.openecomp.aai.util.AAIConstants;
+public class TraversalQueryTest extends AAISetup {
 
-public class TraversalQueryTest {
+	private Loader loader;
 
-	public static Loader loader;
-	@Mock public GraphTraversalSource g;
-	@BeforeClass
-	public static void configure() throws NoSuchFieldException, SecurityException, Exception {
-		
-		System.setProperty("AJSC_HOME", ".");
-		System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
-		QueryFormatTestHelper.setFinalStatic(AAIConstants.class.getField("AAI_HOME_ETC_OXM"), "src/test/resources/org/openecomp/aai/introspection/");
+	@Mock
+	private GraphTraversalSource g;
+
+	@Before
+	public void configure() throws Exception {
 		loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, AAIProperties.LATEST);
 	}
 	

@@ -20,19 +20,7 @@
 
 package org.openecomp.aai.serialization.queryformats;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
-
-import java.io.UnsupportedEncodingException;
-
+import com.google.gson.JsonObject;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.strategy.verification.ReadOnlyStrategy;
 import org.apache.tinkerpop.gremlin.structure.Graph;
@@ -57,9 +45,15 @@ import org.openecomp.aai.serialization.engines.TitanDBEngine;
 import org.openecomp.aai.serialization.engines.TransactionalGraphEngine;
 import org.openecomp.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
 import org.openecomp.aai.serialization.queryformats.utils.UrlBuilder;
-import org.openecomp.aai.util.AAIConstants;
 
-import com.google.gson.JsonObject;
+import java.io.UnsupportedEncodingException;
+
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.*;
 
 public class SimpleFormatTest {
 
@@ -72,20 +66,12 @@ public class SimpleFormatTest {
 	private DBSerializer serializer;
 	private RawFormat simpleFormat;
 	private Vertex vfModule;
-
-
-
 	private final ModelType factoryType = ModelType.MOXY;
 
 	@Before
 	public void setUp() throws Exception {
 
 		MockitoAnnotations.initMocks(this);
-
-		System.setProperty("AJSC_HOME", "src/test/resources");
-		System.setProperty("BUNDLECONFIG_DIR", "bundleconfig-local");
-		QueryFormatTestHelper.setFinalStatic(AAIConstants.class.getField("AAI_HOME_ETC_OXM"),
-				"src/test/resources/org/openecomp/aai/introspection/");
 
 		graph = TinkerGraph.open();
 

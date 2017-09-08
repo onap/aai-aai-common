@@ -20,34 +20,29 @@
 
 package org.openecomp.aai.introspection;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
+import org.openecomp.aai.AAISetup;
+import org.openecomp.aai.introspection.exceptions.AAIUnknownObjectException;
+
 import java.util.Set;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.Ignore;
-import org.openecomp.aai.introspection.exceptions.AAIUnknownObjectException;
-import org.openecomp.aai.serialization.queryformats.QueryFormatTestHelper;
-import org.openecomp.aai.util.AAIConstants;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertThat;
 
-@Ignore
-public class PropertyPredicatesTest {
+public class PropertyPredicatesTest extends AAISetup {
 
+	private final Version version = Version.getLatest();
+
+	private Loader loader;
+	private ModelType introspectorFactoryType = ModelType.MOXY;
+	private Introspector obj;
 	
-	private final static Version version = Version.v10;
-	private static Loader loader;
-	private final static ModelType introspectorFactoryType = ModelType.MOXY;
-	private static Introspector obj;
-	
-	@BeforeClass
-	public static void setup() throws NoSuchFieldException, SecurityException, Exception {
-		System.setProperty("AJSC_HOME", "./src/test/resources/");
-		System.setProperty("BUNDLECONFIG_DIR", "bundleconfig-local");
-		QueryFormatTestHelper.setFinalStatic(AAIConstants.class.getField("AAI_HOME_ETC_OXM"), "src/test/resources/org/openecomp/aai/introspection/");
+	@Before
+	public void setup() throws Exception {
 		loader = LoaderFactory.createLoaderForVersion(introspectorFactoryType, version);
 		obj = loader.introspectorFromName("test-object");
-
 	}
 	
 	@Test

@@ -17,20 +17,17 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.openecomp.aai.query.builder;
 
-import static org.junit.Assert.*;
-
-import java.util.List;
-
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
 import org.junit.Before;
 import org.junit.Test;
+import org.openecomp.aai.AAISetup;
 import org.openecomp.aai.exceptions.AAIException;
 import org.openecomp.aai.introspection.Loader;
 import org.openecomp.aai.introspection.LoaderFactory;
@@ -38,15 +35,17 @@ import org.openecomp.aai.introspection.ModelType;
 import org.openecomp.aai.introspection.Version;
 import org.openecomp.aai.serialization.db.EdgeRules;
 import org.openecomp.aai.serialization.db.EdgeType;
-import org.openecomp.aai.serialization.db.exceptions.NoEdgeRuleFoundException;
 
-public class SimplePathTest {
+import java.util.List;
+
+import static org.junit.Assert.assertTrue;
+
+public class SimplePathTest extends AAISetup {
+
 	public Loader loader;
 	
 	@Before
-	public void setup() {
-		System.setProperty("AJSC_HOME", ".");
-		System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
+	public void setup() throws Exception {
 		loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.getLatest());
 	}
 

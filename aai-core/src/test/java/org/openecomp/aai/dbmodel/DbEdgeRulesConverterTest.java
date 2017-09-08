@@ -20,22 +20,15 @@
 
 package org.openecomp.aai.dbmodel;
 
-import static org.junit.Assert.*;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.util.Map.Entry;
-
+import com.google.common.collect.ImmutableSetMultimap;
+import com.google.common.collect.Multimap;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
-import com.google.common.collect.ImmutableSetMultimap;
-import com.google.common.collect.Multimap;
+import java.io.*;
+import java.util.Map.Entry;
 
-import freemarker.template.TemplateException;
+import static org.junit.Assert.*;
 
 public class DbEdgeRulesConverterTest {
 	

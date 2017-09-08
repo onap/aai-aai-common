@@ -20,33 +20,29 @@
 
 package org.openecomp.aai.serialization.tinkerpop;
 
-import static org.junit.Assert.assertEquals;
-
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.Tree;
-import org.apache.tinkerpop.gremlin.structure.Direction;
-import org.apache.tinkerpop.gremlin.structure.Element;
-import org.apache.tinkerpop.gremlin.structure.Graph;
-import org.apache.tinkerpop.gremlin.structure.T;
-import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.apache.tinkerpop.gremlin.structure.*;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openecomp.aai.serialization.db.EdgeProperty;
 import org.openecomp.aai.serialization.engines.query.GraphTraversalQueryEngine;
 
+import static org.junit.Assert.assertEquals;
+
 @Ignore
 public class TreeBackedVertexTest {
 
-	
-	private static Graph graph = TinkerGraph.open();
-	private static Object startKey = null;
-	private static Tree<Element> tree = null;
-	private static Tree<Element> treeDepth1 = null;
-	private static Tree<Element> treeDepth0NodeOnly = null;
-	@BeforeClass
-	public static void configure() {
+	private Graph graph = TinkerGraph.open();
+	private Object startKey = null;
+	private Tree<Element> tree = null;
+	private Tree<Element> treeDepth1 = null;
+	private Tree<Element> treeDepth0NodeOnly = null;
+
+	@Before
+	public void configure() {
 		GraphTraversalSource g = graph.traversal();
 		
 		startKey = g.addV(T.label, "vserver").as("v1").property("test", "hello")
