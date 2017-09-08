@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a437d4f_7fa972de",
+        "filename": "aai-core/src/test/resources/dbedgerules/DbEdgeRules_test.json",
+        "patchSetId": 1
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2017-09-08T21:30:40Z",
+      "side": 1,
+      "message": "i can\u0027t decide if i like \"isVeryHappyAbout\" or \"dancesWith\" better :)",
+      "revId": "f94c995d4d2b5ffd7f7fa7cf6ec10cdcbf4932a7",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
