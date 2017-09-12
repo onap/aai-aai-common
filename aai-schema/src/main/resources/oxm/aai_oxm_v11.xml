@@ -256,16 +256,6 @@
 						<xml-property name="description" value="Unique ID of EMS." />
 					</xml-properties>
 				</xml-element>
-				<xml-element java-attribute="passive" name="passive" type="java.lang.Boolean">
-					<xml-properties>
-						<xml-property name="description" value="ftp passive mode or not." />
-					</xml-properties>
-				</xml-element>
-				<xml-element java-attribute="remotepath" name="remote-path" type="java.lang.String">
-					<xml-properties>
-						<xml-property name="description" value="resource or performance data file path." />
-					</xml-properties>
-				</xml-element>
 				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
@@ -375,10 +365,13 @@
 		
 		<java-type name="EsrSystemInfoList">
 			<xml-root-element name="esr-system-info-list" />
+			<xml-properties>
+				<xml-property name="description" value="Collection of persistent block-level external system auth info." />
+			</xml-properties>
 			<java-attributes>
 				<xml-element container-type="java.util.ArrayList" java-attribute="esrSystemInfo" name="esr-system-info" type="inventory.aai.onap.org.v11.EsrSystemInfo" />
 			</java-attributes>
-            <xml-properties>
+			<xml-properties>
 				<xml-property name="maximumDepth" value="0" />
 			</xml-properties>
 		</java-type>
@@ -391,22 +384,22 @@
 						<xml-property name="description" value="Unique ID of esr system info." />
 					</xml-properties>
 				</xml-element>
-				<xml-element java-attribute="systemName" name="system-name" required="true" type="java.lang.String">
+				<xml-element java-attribute="systemName" name="system-name" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="name of external system." />
 					</xml-properties>
 				</xml-element>
-				<xml-element java-attribute="type" name="type" required="true" type="java.lang.String">
+				<xml-element java-attribute="type" name="type" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="type of external systems." />
 					</xml-properties>
 				</xml-element>
-				<xml-element java-attribute="vendor" name="vendor" required="true" type="java.lang.String">
+				<xml-element java-attribute="vendor" name="vendor" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="vendor of external systems." />
 					</xml-properties>
 				</xml-element>
-				<xml-element java-attribute="version" name="version" required="true" type="java.lang.String">
+				<xml-element java-attribute="version" name="version" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="version of external systems." />
 					</xml-properties>
@@ -431,9 +424,9 @@
 						<xml-property name="description" value="it could be vim/vnfm/thirdparty-sdnc/ems-resource/ems-performance/ems-alarm." />
 					</xml-properties>
 				</xml-element>
-				<xml-element java-attribute="protocal" name="protocal" type="java.lang.String">
+				<xml-element java-attribute="protocol" name="protocol" type="java.lang.String">
 					<xml-properties>
-						<xml-property name="description" value="protocal of third party SDNC, for example netconf/snmp." />
+						<xml-property name="description" value="protocol of third party SDNC, for example netconf/snmp." />
 					</xml-properties>
 				</xml-element>
 				<xml-element java-attribute="sslCacert" name="ssl-cacert" type="java.lang.String">
@@ -466,6 +459,21 @@
 						<xml-property name="description" value="default tenant of VIM." />
 					</xml-properties>
 				</xml-element>
+				<xml-element java-attribute="passive" name="passive" type="java.lang.Boolean">
+					<xml-properties>
+						<xml-property name="description" value="ftp passive mode or not." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="remotepath" name="remote-path" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="resource or performance data file path." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="systemStatus" name="system-status" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="the status of external system." />
+					</xml-properties>
+				</xml-element>
 				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
@@ -477,7 +485,7 @@
 				<xml-property name="description" value="Persist common address information of external systems." />
 				<xml-property name="indexedProps" value="esr-system-info-id,system-name,system-type" />
 				<xml-property name="searchable" value="esr-system-info-id,system-name,system-type" />
-				<xml-property name="container" value="esr-system-infos" />
+				<xml-property name="container" value="esr-system-info-list" />
 				<xml-property name="namespace" value="external-system" />
 			</xml-properties>
 		</java-type>
