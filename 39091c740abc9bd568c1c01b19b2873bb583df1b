@@ -22,6 +22,30 @@
       "revId": "39091c740abc9bd568c1c01b19b2873bb583df1b",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_6221d19e",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 412,
+      "author": {
+        "id": 313
+      },
+      "writtenOn": "2017-09-12T07:52:38Z",
+      "side": 1,
+      "message": "Actually, they are required",
+      "parentUuid": "9a437d4f_0e5eb176",
+      "range": {
+        "startLine": 412,
+        "startChar": 33,
+        "endLine": 412,
+        "endChar": 41
+      },
+      "revId": "39091c740abc9bd568c1c01b19b2873bb583df1b",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
