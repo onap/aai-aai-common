@@ -12,6 +12,7 @@
     <name>aai-schema</name>
     <properties>
         <sitePath>/content/sites/site/${project.groupId}/${project.artifactId}/${project.version}</sitePath>
+	<onap.nexus.url>https://nexus.onap.org</onap.nexus.url>
     </properties>
     <dependencies>
         <dependency>

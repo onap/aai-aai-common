@@ -13,6 +13,7 @@
     <packaging>jar</packaging>
     <properties>
         <sitePath>/content/sites/site/${project.groupId}/${project.artifactId}/${project.version}</sitePath>
+	<onap.nexus.url>https://nexus.onap.org</onap.nexus.url>
         <sonar.language>java</sonar.language>
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <sonar.surefire.reportsPath>${project.build.directory}/surefire-reports</sonar.surefire.reportsPath>

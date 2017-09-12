@@ -12,6 +12,7 @@
     <name>aai-annotations</name>
     <packaging>jar</packaging>
     <properties>
+	<onap.nexus.url>https://nexus.onap.org</onap.nexus.url>
         <sitePath>/content/sites/site/${project.groupId}/${project.artifactId}/${project.version}</sitePath>
     </properties>
     <dependencies>
