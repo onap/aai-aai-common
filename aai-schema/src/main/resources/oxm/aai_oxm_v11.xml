@@ -1989,6 +1989,11 @@
 						<xml-property name="description" value="Trigger for operational monitoring of this resource by Service Assurance systems." />
 					</xml-properties>
 				</xml-element>
+				<xml-element java-attribute="macAddress" name="mac-addresss" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="MAC Address of the p-interface." />
+					</xml-properties>
+				</xml-element>
 				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
