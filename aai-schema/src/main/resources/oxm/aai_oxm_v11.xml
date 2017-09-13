@@ -486,7 +486,7 @@
 				<xml-property name="indexedProps" value="esr-system-info-id,system-name,system-type" />
 				<xml-property name="searchable" value="esr-system-info-id,system-name,system-type" />
 				<xml-property name="container" value="esr-system-info-list" />
-				<xml-property name="namespace" value="external-system" />
+				<xml-property name="dependentOn" value="cloud-region,esr-ems,esr-vnfm,esr-thirdparty-sdnc" />
 			</xml-properties>
 		</java-type>
 		
