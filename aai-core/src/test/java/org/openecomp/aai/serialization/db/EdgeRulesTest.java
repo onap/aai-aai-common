@@ -111,7 +111,7 @@ public class EdgeRulesTest extends AAISetup {
 		Vertex v2 = graph.addVertex("aai-node-type", "tenant");
 		assertEquals(true, EdgeRules.getInstance().hasEdgeRule(v1, v2));
 	}
-	
+
 	@Test
 	public void getEdgeRuleByTypeAndVertices() throws AAIException {
 		Graph graph = TinkerGraph.open();
@@ -125,7 +125,7 @@ public class EdgeRulesTest extends AAISetup {
 		assertEquals(true,  "IN".equalsIgnoreCase(rule.getServiceInfrastructure()));
 		assertEquals(true, "OUT".equalsIgnoreCase(rule.getPreventDelete()));
 	}
-	
+
 	@Test
 	public void addTreeEdgeTest() throws AAIException {
 		Graph graph = TinkerGraph.open();
@@ -135,11 +135,11 @@ public class EdgeRulesTest extends AAISetup {
 		GraphTraversalSource g = graph.traversal();
 		rules.addTreeEdge(g, v1, v2);
 		assertEquals(true, g.V(v1).out("has").has("aai-node-type", "tenant").hasNext());
-		
+
 		Vertex v3 = graph.addVertex(T.id, "2", "aai-node-type", "cloud-region");
 		assertEquals(null, rules.addTreeEdgeIfPossible(g, v3, v2));
 	}
-	
+
 	@Test
 	public void addCousinEdgeTest() throws AAIException {
 		Graph graph = TinkerGraph.open();
@@ -149,27 +149,27 @@ public class EdgeRulesTest extends AAISetup {
 		GraphTraversalSource g = graph.traversal();
 		rules.addEdge(g, v1, v2);
 		assertEquals(true, g.V(v2).out("hasFlavor").has("aai-node-type", "flavor").hasNext());
-		
+
 		Vertex v3 = graph.addVertex(T.id, "2", "aai-node-type", "flavor");
 		assertEquals(null, rules.addEdgeIfPossible(g, v3, v2));
 	}
-	
+
 	@Test
 	public void multiplicityViolationTest() throws AAIException {
 		thrown.expect(EdgeMultiplicityException.class);
 		thrown.expectMessage("multiplicity rule violated: only one edge can exist with label: uses between vf-module and volume-group");
-		
+
 		Graph graph = TinkerGraph.open();
 		Vertex v1 = graph.addVertex(T.id, "1", "aai-node-type", "vf-module");
 		Vertex v2 = graph.addVertex(T.id, "10", "aai-node-type", "volume-group");
 		EdgeRules rules = EdgeRules.getInstance(Version.getLatest());
 		GraphTraversalSource g = graph.traversal();
-		
+
 		rules.addEdge(g, v2, v1);
 		Vertex v3 = graph.addVertex(T.id, "3", "aai-node-type", "vf-module");
 		rules.addEdge(g, v2, v3);
 	}
-	
+
 	@Test
 	public void getChildrenTest() {
 		EdgeRules rules = EdgeRules.getInstance("/dbedgerules/DbEdgeRules_test.json");
@@ -178,15 +178,15 @@ public class EdgeRulesTest extends AAISetup {
 		boolean sawBazRule = false;
 		boolean sawQuuxRule = false;
 		for (EdgeRule r : children) {
-			if ("isVeryHappyAbout".equals(r.getLabel())) { 
-				sawBazRule = true; 
+			if ("isVeryHappyAbout".equals(r.getLabel())) {
+				sawBazRule = true;
 			} else if ("dancesWith".equals(r.getLabel())) {
 				sawQuuxRule = true;
 			}
 		}
 		assertEquals(true, sawBazRule && sawQuuxRule);
 	}
-	
+
 	@Test
 	public void getAllRulesTest() {
 		EdgeRules rules = EdgeRules.getInstance("/dbedgerules/DbEdgeRules_test.json");
@@ -196,34 +196,34 @@ public class EdgeRulesTest extends AAISetup {
 		assertEquals(true, allRules.containsKey("foo|bar"));
 		assertEquals(true, allRules.containsKey("quux|foo"));
 	}
-	
+
 	@Test
 	public void getAllRulesMissingPropertyTest() {
 		EdgeRules rules = EdgeRules.getInstance("/dbedgerules/DbEdgeRules_test_broken.json");
-		
+
 		thrown.expect(RuntimeException.class);
 		thrown.expectMessage("org.openecomp.aai.exceptions.AAIException: Rule between foo and bar is missing property delete-other-v.");
 		rules.getAllRules();
 	}
-	
+
 	@Test
 	public void getChildrenMissingPropertyTest() {
 		EdgeRules rules = EdgeRules.getInstance("/dbedgerules/DbEdgeRules_test_broken.json");
-		
+
 		thrown.expect(RuntimeException.class);
 		thrown.expectMessage("org.openecomp.aai.exceptions.AAIException: Rule between quux and foo is missing property SVC-INFRA.");
 		rules.getChildren("foo");
 	}
-	
+
 	@Test
 	public void getEdgeRuleMissingPropertyTest() throws AAIException {
 		EdgeRules rules = EdgeRules.getInstance("/dbedgerules/DbEdgeRules_test_broken.json");
-		
+
 		thrown.expect(RuntimeException.class);
 		thrown.expectMessage("org.openecomp.aai.exceptions.AAIException: Rule between quux and foo is missing property SVC-INFRA.");
 		rules.getEdgeRules("foo", "quux");
 	}
-	
+
 	@Test
 	public void verifyAllRules() {
 		// This will cause every rule in the real json files to be verified

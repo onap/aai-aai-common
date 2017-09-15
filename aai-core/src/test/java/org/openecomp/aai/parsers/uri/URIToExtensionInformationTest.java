@@ -37,10 +37,10 @@ import java.net.URI;
 
 import static org.junit.Assert.assertEquals;
 
-@Ignore
+
 public class URIToExtensionInformationTest extends AAISetup {
 
-	private Loader v8Loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.v8);
+	private Loader v8Loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.v10);
 	
 	/**
 	 * Vservers V 7.

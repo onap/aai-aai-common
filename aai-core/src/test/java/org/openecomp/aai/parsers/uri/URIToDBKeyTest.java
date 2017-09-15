@@ -26,6 +26,8 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.openecomp.aai.AAISetup;
 import org.openecomp.aai.exceptions.AAIException;
+import org.openecomp.aai.parsers.exceptions.DoesNotStartWithValidNamespaceException;
+import org.openecomp.aai.db.props.AAIProperties;
 import org.openecomp.aai.introspection.*;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 
@@ -39,11 +41,11 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 
 
-@Ignore
+
 @PrepareForTest(ModelInjestor.class)
 public class URIToDBKeyTest extends AAISetup {
 
-	private Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.v8);
+	private Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, AAIProperties.LATEST);
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -58,11 +60,11 @@ public class URIToDBKeyTest extends AAISetup {
 	 */
 	@Test
     public void uri() throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException {
-		URI uri = UriBuilder.fromPath("/aai/" + loader.getVersion() + "/cloud-infrastructure/tenants/tenant/key1/vservers/vserver/key2/l-interfaces/l-interface/key3").build();
+		URI uri = UriBuilder.fromPath("/aai/" + loader.getVersion() + "/cloud-infrastructure/cloud-regions/cloud-region/cloudOwner-key/cloudRegion-key/tenants/tenant/tenantId-key/vservers/vserver/vserverId-key/l-interfaces/l-interface/key3").build();
 		URIToDBKey parse = new URIToDBKey(loader, uri);
 		Object result = parse.getResult();
 
-		String expected = "cloud-region/att-aic/AAIAIC25/tenant/key1/vserver/key2/l-interface/key3";
+		String expected = "cloud-region/tenant/vserver/l-interface";
 		
 		assertEquals("blah", expected, result);
 		
@@ -78,11 +80,11 @@ public class URIToDBKeyTest extends AAISetup {
 	 */
 	@Test
     public void uriNoVersion() throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException {
-		URI uri = UriBuilder.fromPath("/cloud-infrastructure/tenants/tenant/key1/vservers/vserver/key2/l-interfaces/l-interface/key3").build();
+		URI uri = UriBuilder.fromPath("/cloud-infrastructure/cloud-regions/cloud-region/cloudOwner-key/cloudRegion-key/tenants/tenant/tenantId-key/vservers/vserver/vserverId-key/l-interfaces/l-interface/key3").build();
 		URIToDBKey parse = new URIToDBKey(loader, uri);
 		Object result = parse.getResult();
 		
-		String expected = "cloud-region/att-aic/AAIAIC25/tenant/key1/vserver/key2/l-interface/key3";
+		String expected = "cloud-region/tenant/vserver/l-interface";
 		
 		assertEquals("blah", expected, result);
 		
@@ -102,10 +104,26 @@ public class URIToDBKeyTest extends AAISetup {
 		URI uri = UriBuilder.fromPath("/aai/" + loader.getVersion() + "/cloud-infrastructure/tenants/tenant/key1/vservers/vserver/key2/l-interadsfaces/l-interface/key3").build();
 		
 		thrown.expect(AAIException.class);
-		thrown.expect(hasProperty("code",  is("AAI_3000")));
+		thrown.expect(hasProperty("code",  is("AAI_3001")));
 		
 		new URIToDBKey(loader, uri);
 	}
+	
+	/**
+	 * NotValid namespace.
+	 *
+	 * @throws JAXBException the JAXB exception
+	 * @throws DoesNotStartWithValidNamespaceException the AAI exception
+	 * @throws IllegalArgumentException the illegal argument exception
+	 * @throws UnsupportedEncodingException the unsupported encoding exception
+	 */
+	@Test
+    public void notValidNamespace() throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException {
+		URI uri = UriBuilder.fromPath("/cloud-region/cloud-regions/cloud-region/cloudOwner-key/cloudRegion-key/tenants/tenant/tenantId-key/vservers/vserver/vserverId-key/l-interfaces/l-interface/key3").build();
+		thrown.expect(DoesNotStartWithValidNamespaceException.class);
+		URIToDBKey parse = new URIToDBKey(loader, uri);
+	}
+	
 	
 	/**
 	 * No valid tokens.
@@ -120,7 +138,7 @@ public class URIToDBKeyTest extends AAISetup {
 		URI uri = UriBuilder.fromPath("/aai/" + loader.getVersion() + "/cloud/blah/blah").build();
 		
 		thrown.expect(AAIException.class);
-		thrown.expect(hasProperty("code",  is("AAI_3001")));
+		thrown.expect(hasProperty("code",  is("AAI_3000")));
 		
 		new URIToDBKey(loader, uri);
 	}
@@ -135,12 +153,12 @@ public class URIToDBKeyTest extends AAISetup {
 	 */
 	@Test
     public void startsWithValidNamespace() throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException {
-		URI uri = UriBuilder.fromPath("/aai/" + loader.getVersion() + "/cloud-infrastructure/tenants/tenant/key1/vservers/vserver/key2/l-interfaces/l-interface/key3").build();
+		URI uri = UriBuilder.fromPath("/aai/" + loader.getVersion() + "/cloud-infrastructure/cloud-regions/cloud-region/cloudOwner-key/cloudRegion-key/tenants/tenant/tenantId-key/vservers/vserver/vserverId-key/l-interfaces/l-interface/key3").build();
 		
 		URIToDBKey parse = new URIToDBKey(loader, uri);
 		Object result = parse.getResult();
 
-		String expected = "cloud-region/att-aic/AAIAIC25/tenant/key1/vserver/key2/l-interface/key3";
+		String expected = "cloud-region/tenant/vserver/l-interface";
 		
 		assertEquals("blah", expected, result);
 	}
@@ -158,7 +176,7 @@ public class URIToDBKeyTest extends AAISetup {
 		URIToDBKey parse = new URIToDBKey(loader, uri);
 		Object result = parse.getResult();
 
-		String expected = "vce/key1/port-group/key2/cvlan-tag/655";
+		String expected = "vce/port-group/cvlan-tag";
 		
 		assertEquals("blah", expected, result);
 		

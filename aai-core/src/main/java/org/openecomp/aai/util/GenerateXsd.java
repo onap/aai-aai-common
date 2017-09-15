@@ -20,49 +20,22 @@
 
 package org.openecomp.aai.util;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Field;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.StringTokenizer;
-import java.util.Vector;
+import com.google.common.base.Joiner;
+import com.jayway.jsonpath.JsonPath;
+import org.openecomp.aai.introspection.Version;
+import org.openecomp.aai.serialization.db.EdgeProperty;
+import org.w3c.dom.*;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-
-import org.openecomp.aai.dbmodel.DbEdgeRules;
-import org.openecomp.aai.introspection.Version;
-import org.openecomp.aai.serialization.db.EdgeProperty;
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.NodeList;
-
-import com.google.common.base.Joiner;
-import com.google.common.collect.Multimap;
-import com.jayway.jsonpath.JsonPath;
+import javax.xml.xpath.*;
+import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 
 
 
@@ -78,7 +51,6 @@ public class GenerateXsd {
 	static Map<String, String> generatedJavaType;
 	static Map<String, String> appliedPaths;
 	static NodeList javaTypeNodes;
-	static Class<?> versionedClass;
 
 	
 	public static final int VALUE_NONE = 0;
@@ -803,19 +775,6 @@ public class GenerateXsd {
 		return result;
 	}
 	
-	private static Class<?> getEdgeRulesClass() throws ClassNotFoundException {
-		Class<?> result = null;
-		
-		// If a class matching the apiVersion exists, we are generating documentation for a prior release
-		// Otherwise, we're generated documentation for the current release.
-		try {
-			result = Class.forName("org.openecomp.aai.dbmodel." + apiVersion +".gen.DbEdgeRules");
-		} catch (ClassNotFoundException  ex) {
-			result = Class.forName("org.openecomp.aai.dbmodel.DbEdgeRules");
-		}
-		return result;
-	}	
-
 	/**
 	 * Guaranteed to at least return non null but empty collection of edge descriptions
 	 * @param nodeName name of the vertex whose edge relationships to return
@@ -891,44 +850,7 @@ public class GenerateXsd {
 		return edges;
 	}
 	
-	/**
-	 * Finds the default delete scope from DBEdgeRules
-	 * @param nodeName name of vertex whose delete scope to return
-	 * @return default delete scope of the input nodeName, null if none.
-	 */
-	private static String getDeleteRules( String nodeName )
-	{
-		String result = null;
-		Iterator<String> delRulesIterator;
-
-		try {
-
-			Field mapfield = versionedClass.getField("DefaultDeleteScope");
-			Object map = mapfield.get(null);
-			if (map instanceof Multimap<?,?>) {
-				delRulesIterator = ((Multimap<String,String>) map).keySet().iterator();
-			} else {
-				throw new NoSuchFieldException ("Didn't get back the multimap field expected");
-			}
-
-			while( delRulesIterator.hasNext() ){
-				String ruleKey = delRulesIterator.next();
-				if ( ruleKey.equals(nodeName)) {
-					Collection <String> deRuleColl = DbEdgeRules.DefaultDeleteScope.get(ruleKey);
-					Iterator <String> ruleItr = deRuleColl.iterator();
-					if( ruleItr.hasNext() ){		
-						result = ruleItr.next();
-					}
-				}
-			}
-
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-		return result;
-	}
-	
-	public static String processJavaTypeElementSwagger( String javaTypeName, Element javaTypeElement, 
+	public static String processJavaTypeElementSwagger( String javaTypeName, Element javaTypeElement,
 			StringBuffer pathSb, StringBuffer definitionsSb, String path, String tag, String opId,
 			String getItemName, StringBuffer pathParams, String queryParams, String validEdges) {
 		
@@ -1626,17 +1548,14 @@ public class GenerateXsd {
 			validEdges = sbEdge.toString();
 		}
 
-		String deleteRule = getDeleteRules(xmlRootElementName);
 		// Handle description property.  Might have a description OR valid edges OR both OR neither.
 		// Only put a description: tag if there is at least one.
-		if (pathDescriptionProperty != null || deleteRule != null || validEdges != null) {
+		if (pathDescriptionProperty != null || validEdges != null) {
 			definitionsSb.append("    description: |\n");      
 
 			if ( pathDescriptionProperty != null ) 
 				definitionsSb.append("      " + pathDescriptionProperty	+ "\n" );
-			if (deleteRule != null) 
-				definitionsSb.append("      ###### Default Delete Scope\n      ").append(deleteRule).append("\n");
-			if (validEdges != null) 
+			if (validEdges != null)
 				definitionsSb.append(validEdges);
 		}
 		
@@ -1670,7 +1589,6 @@ public class GenerateXsd {
 		sb.append("    description: bad request\n");
 		*/
 		try {
-			versionedClass = getEdgeRulesClass();
 		    File initialFile = new File("src/main/resources/dbedgerules/DbEdgeRules_" + apiVersion + ".json");
 		    InputStream is = new FileInputStream(initialFile);
 

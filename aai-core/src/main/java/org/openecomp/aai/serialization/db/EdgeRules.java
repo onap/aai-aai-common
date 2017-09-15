@@ -56,7 +56,7 @@ import com.jayway.jsonpath.JsonPath;
 public class EdgeRules {
 	
 	private EELFLogger logger = EELFManager.getInstance().getLogger(EdgeRules.class);
-	
+
 	private DocumentContext rulesDoc;
 	
 	/**
@@ -75,17 +75,17 @@ public class EdgeRules {
 		String json = this.getEdgeRuleJson(rulesFilename);
 		rulesDoc = JsonPath.parse(json);
 	}
-	
+
 	private String getEdgeRuleJson(String rulesFilename) {
 		InputStream is = getClass().getResourceAsStream(rulesFilename);
 
 		Scanner scanner = new Scanner(is);
 		String json = scanner.useDelimiter("\\Z").next();
 		scanner.close();
-		
+
 		return json;
 	}
-	
+
 	/**
 	 * Loads the versioned DbEdgeRules json file for later parsing.
 	 */
@@ -93,6 +93,13 @@ public class EdgeRules {
 	private EdgeRules(Version version) {
 		String json = this.getEdgeRuleJson(version);
 		rulesDoc = JsonPath.parse(json);
+		
+		if (!Version.isLatest(version)) {
+			try {
+				Class<?> dbEdgeRules = Class.forName("org.openecomp.aai.dbmodel." + version.toString() + ".gen.DbEdgeRules");
+			} catch (Exception e) {
+			}
+		}
 	}
 	
 	private String getEdgeRuleJson(Version version) {
@@ -108,11 +115,11 @@ public class EdgeRules {
 	private static class Helper {
 		private static final EdgeRules INSTANCE = new EdgeRules();
 		private static final Map<Version, EdgeRules> INSTANCEMAP = new ConcurrentHashMap<>();
-		
+
 		private static EdgeRules getEdgeRulesByFilename(String rulesFilename) {
 			return new EdgeRules(rulesFilename);
 		}
-		
+
 		private static EdgeRules getVersionedEdgeRules(Version v) {
 			if (Version.isLatest(v)) {
 				return INSTANCE;
@@ -146,14 +153,14 @@ public class EdgeRules {
 	
 	/**
 	 * Loads edge rules from the given file.
-	 * 
+	 *
 	 * @param rulesFilename - name of the file to load rules from
 	 * @return the EdgeRules instance
 	 */
 	public static EdgeRules getInstance(String rulesFilename) {
 		return Helper.getEdgeRulesByFilename(rulesFilename);
 	}
-	
+
 	/**
 	 * Adds the tree edge.
 	 *
@@ -318,8 +325,8 @@ public class EdgeRules {
 		return result;
 	}
 	
-	
-	
+
+
 	/**
 	 * Gets the edge rule of the given type that exists between A and B.
 	 * Will check B|A as well, and flips the direction accordingly if that succeeds
@@ -492,7 +499,7 @@ public class EdgeRules {
 	/**
 	 * Verifies that all required properties are defined in the given edge rule.
 	 * If they are not, throws a RuntimeException.
-	 * 
+	 *
 	 * @param rule - Map<String edge property, String edge property value> representing
 	 * an edge rule
 	 */
@@ -512,21 +519,21 @@ public class EdgeRules {
 			}
 		}
 	}
-	
+
 	/**
 	 * Reads all the edge rules from the loaded json file.
-	 * 
+	 *
 	 * @return List<Map<String edge property, String edge property value>>
 	 *  Each map represents a rule read from the json.
 	 */
 	private List<Map<String, String>> readRules() {
 		return readRules(null);
 	}
-	
+
 	/**
 	 * Reads the edge rules from the loaded json file, using the given filter
 	 * to get specific rules. If filter is null, will get all rules.
-	 * 
+	 *
 	 * @param filter - may be null to indicate get all
 	 * @return List<Map<String edge property, String edge property value>>
 	 *  Each map represents a rule read from the json.
@@ -543,7 +550,7 @@ public class EdgeRules {
 		}
 		return results;
 	}
-	
+
 	/**
 	 * Gets all the edge rules we define.
 	 * 
@@ -562,10 +569,10 @@ public class EdgeRules {
 		return result;
 	}
 	
-	/** 
+	/**
 	 * Gets all edge rules that define a child relationship from
 	 * the given node type.
-	 * 
+	 *
 	 * @param nodeType
 	 * @return
 	 */

@@ -33,12 +33,13 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.openecomp.aai.serialization.db.EdgeRule;
+import org.openecomp.aai.serialization.db.EdgeRules;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import org.openecomp.aai.db.props.AAIProperties;
-import org.openecomp.aai.dbmodel.DbEdgeRules;
 import org.openecomp.aai.introspection.Introspector;
 import org.openecomp.aai.introspection.Loader;
 import org.openecomp.aai.introspection.LoaderFactory;
@@ -221,14 +222,14 @@ public class AuditOXM extends Auditor {
 	 * Creates the edge labels.
 	 */
 	private void createEdgeLabels() {
-		Multimap<String, String> edgeRules = DbEdgeRules.EdgeRules;
+		Multimap<String, EdgeRule> edgeRules = EdgeRules.getInstance().getAllRules();
 		for (String key : edgeRules.keySet()) {
-			Collection<String> collection = edgeRules.get(key);
+			Collection<EdgeRule> collection = edgeRules.get(key);
 			EdgeProperty prop = new EdgeProperty();
 			//there is only ever one, they used the wrong type for EdgeRules
 			String label = "";
-			for (String item : collection) {
-				label = item.split(",")[0];
+			for (EdgeRule item : collection) {
+				label = item.getLabel();
 			}
 			prop.setName(label);
 			prop.setMultiplicity(Multiplicity.MULTI);

@@ -40,10 +40,10 @@ import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertTrue;
 
-@Ignore
+
 public class URIToRelationshipObjectTest extends AAISetup {
 
-	private Version latest = AAIProperties.LATEST;
+	private Version latest = Version.v10;
 	private Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, latest);
 
 	@Rule
@@ -61,10 +61,11 @@ public class URIToRelationshipObjectTest extends AAISetup {
 	 */
 	@Test
     public void uri() throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException, URISyntaxException {
+		
 		URI uri = UriBuilder.fromPath("/aai/" + loader.getVersion() + "/cloud-infrastructure/cloud-regions/cloud-region/mycloudregionowner/mycloudregionid/tenants/tenant/key1/vservers/vserver/key2/l-interfaces/l-interface/key3").build();
 		URIToRelationshipObject parse = new URIToRelationshipObject(loader, uri);
 		Introspector result = parse.getResult();
-		String expected = "\\{\"related-to\":\"l-interface\",\"related-link\":\".*?:8443/aai/" + latest + "/cloud-infrastructure/cloud-regions/cloud-region/mycloudregionowner/mycloudregionid/tenants/tenant/key1/vservers/vserver/key2/l-interfaces/l-interface/key3\",\"relationship-data\":\\[\\{\"relationship-key\":\"cloud-region.cloud-owner\",\"relationship-value\":\"mycloudregionowner\"\\},\\{\"relationship-key\":\"cloud-region.cloud-region-id\",\"relationship-value\":\"mycloudregionid\"\\},\\{\"relationship-key\":\"tenant.tenant-id\",\"relationship-value\":\"key1\"\\},\\{\"relationship-key\":\"vserver.vserver-id\",\"relationship-value\":\"key2\"\\},\\{\"relationship-key\":\"l-interface.interface-name\",\"relationship-value\":\"key3\"\\}\\]\\}";
+		String expected = "\\{\"related-to\":\"l-interface\",\"related-link\":\"/aai/" + latest + "/cloud-infrastructure/cloud-regions/cloud-region/mycloudregionowner/mycloudregionid/tenants/tenant/key1/vservers/vserver/key2/l-interfaces/l-interface/key3\",\"relationship-data\":\\[\\{\"relationship-key\":\"cloud-region.cloud-owner\",\"relationship-value\":\"mycloudregionowner\"\\},\\{\"relationship-key\":\"cloud-region.cloud-region-id\",\"relationship-value\":\"mycloudregionid\"\\},\\{\"relationship-key\":\"tenant.tenant-id\",\"relationship-value\":\"key1\"\\},\\{\"relationship-key\":\"vserver.vserver-id\",\"relationship-value\":\"key2\"\\},\\{\"relationship-key\":\"l-interface.interface-name\",\"relationship-value\":\"key3\"\\}\\]\\}";
 		assertTrue("blah", result.marshal(false).matches(expected));
 		
 	}
@@ -84,7 +85,7 @@ public class URIToRelationshipObjectTest extends AAISetup {
 		URI uri = UriBuilder.fromPath("/cloud-infrastructure/cloud-regions/cloud-region/mycloudregionowner/mycloudregionid/tenants/tenant/key1/vservers/vserver/key2/l-interfaces/l-interface/key3").build();
 		URIToRelationshipObject parse = new URIToRelationshipObject(loader, uri);
 		Introspector result = parse.getResult();
-		String expected = "\\{\"related-to\":\"l-interface\",\"related-link\":\".*?:8443/aai/" + latest + "/cloud-infrastructure/cloud-regions/cloud-region/mycloudregionowner/mycloudregionid/tenants/tenant/key1/vservers/vserver/key2/l-interfaces/l-interface/key3\",\"relationship-data\":\\[\\{\"relationship-key\":\"cloud-region.cloud-owner\",\"relationship-value\":\"mycloudregionowner\"\\},\\{\"relationship-key\":\"cloud-region.cloud-region-id\",\"relationship-value\":\"mycloudregionid\"\\},\\{\"relationship-key\":\"tenant.tenant-id\",\"relationship-value\":\"key1\"\\},\\{\"relationship-key\":\"vserver.vserver-id\",\"relationship-value\":\"key2\"\\},\\{\"relationship-key\":\"l-interface.interface-name\",\"relationship-value\":\"key3\"\\}\\]\\}";
+		String expected = "\\{\"related-to\":\"l-interface\",\"related-link\":\"/aai/" + latest + "/cloud-infrastructure/cloud-regions/cloud-region/mycloudregionowner/mycloudregionid/tenants/tenant/key1/vservers/vserver/key2/l-interfaces/l-interface/key3\",\"relationship-data\":\\[\\{\"relationship-key\":\"cloud-region.cloud-owner\",\"relationship-value\":\"mycloudregionowner\"\\},\\{\"relationship-key\":\"cloud-region.cloud-region-id\",\"relationship-value\":\"mycloudregionid\"\\},\\{\"relationship-key\":\"tenant.tenant-id\",\"relationship-value\":\"key1\"\\},\\{\"relationship-key\":\"vserver.vserver-id\",\"relationship-value\":\"key2\"\\},\\{\"relationship-key\":\"l-interface.interface-name\",\"relationship-value\":\"key3\"\\}\\]\\}";
 		assertTrue("blah", result.marshal(false).matches(expected));
 
 		
@@ -105,7 +106,7 @@ public class URIToRelationshipObjectTest extends AAISetup {
 		URI uri = UriBuilder.fromPath("/aai/" + latest + "/cloud-infrastructure/complexes/complex/key1/ctag-pools/ctag-pool/key2/key3/").build();
 		URIToRelationshipObject parse = new URIToRelationshipObject(loader, uri);
 		Introspector result = parse.getResult();
-		String expected = "\\{\"related-to\":\"ctag-pool\",\"related-link\":\".*?:8443/aai/" + latest + "/cloud-infrastructure/complexes/complex/key1/ctag-pools/ctag-pool/key2/key3\",\"relationship-data\":\\[\\{\"relationship-key\":\"complex.physical-location-id\",\"relationship-value\":\"key1\"\\},\\{\"relationship-key\":\"ctag-pool.target-pe\",\"relationship-value\":\"key2\"\\},\\{\"relationship-key\":\"ctag-pool.availability-zone-name\",\"relationship-value\":\"key3\"\\}\\]\\}";
+		String expected = "\\{\"related-to\":\"ctag-pool\",\"related-link\":\"/aai/" + latest + "/cloud-infrastructure/complexes/complex/key1/ctag-pools/ctag-pool/key2/key3\",\"relationship-data\":\\[\\{\"relationship-key\":\"complex.physical-location-id\",\"relationship-value\":\"key1\"\\},\\{\"relationship-key\":\"ctag-pool.target-pe\",\"relationship-value\":\"key2\"\\},\\{\"relationship-key\":\"ctag-pool.availability-zone-name\",\"relationship-value\":\"key3\"\\}\\]\\}";
 		assertTrue("blah", result.marshal(false).matches(expected));
 
 	}
@@ -125,7 +126,7 @@ public class URIToRelationshipObjectTest extends AAISetup {
 		URI uri = UriBuilder.fromPath("/aai/" + latest + "/network/vces/vce/key1/port-groups/port-group/key2/cvlan-tags/cvlan-tag/144").build();
 		URIToRelationshipObject parse = new URIToRelationshipObject(loader, uri);
 		Introspector result = parse.getResult();
-		String expected = "\\{\"related-to\":\"cvlan-tag\",\"related-link\":\".*?:8443/aai/" + latest + "/network/vces/vce/key1/port-groups/port-group/key2/cvlan-tags/cvlan-tag/144\",\"relationship-data\":\\[\\{\"relationship-key\":\"vce.vnf-id\",\"relationship-value\":\"key1\"\\},\\{\"relationship-key\":\"port-group.interface-id\",\"relationship-value\":\"key2\"\\},\\{\"relationship-key\":\"cvlan-tag.cvlan-tag\",\"relationship-value\":\"144\"\\}\\]\\}";
+		String expected = "\\{\"related-to\":\"cvlan-tag\",\"related-link\":\"/aai/" + latest + "/network/vces/vce/key1/port-groups/port-group/key2/cvlan-tags/cvlan-tag/144\",\"relationship-data\":\\[\\{\"relationship-key\":\"vce.vnf-id\",\"relationship-value\":\"key1\"\\},\\{\"relationship-key\":\"port-group.interface-id\",\"relationship-value\":\"key2\"\\},\\{\"relationship-key\":\"cvlan-tag.cvlan-tag\",\"relationship-value\":\"144\"\\}\\]\\}";
 		assertTrue("blah", result.marshal(false).matches(expected));
 	}
 	/**

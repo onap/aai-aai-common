@@ -41,10 +41,10 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 
 
-@Ignore
+
 public class URIToObjectTest extends AAISetup {
 
-	private Version version = Version.v8;
+	private Version version = Version.v10;
 	private Version currentVersion = AAIProperties.LATEST;
 	private Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, version);
 

@@ -84,8 +84,6 @@ public class RelationshipToURITest extends AAISetup {
 		thrown.expect(AAIIdentityMapParseException.class);
 		thrown.expect(hasProperty("code", is("AAI_3000")));
 		RelationshipToURI parse = new RelationshipToURI(loader, obj);
-		
-
 		URI uri = parse.getUri();
 		
 	}
@@ -97,8 +95,6 @@ public class RelationshipToURITest extends AAISetup {
 		URI expected = new URI("/network/test-objects/test-object/key2");
 		
 		RelationshipToURI parse = new RelationshipToURI(loader, obj);
-		
-
 		URI uri = parse.getUri();
 		
 		assertEquals("related-link is equal", expected, uri);
@@ -117,6 +113,20 @@ public class RelationshipToURITest extends AAISetup {
 		RelationshipToURI parse = new RelationshipToURI(loader, obj);
 		
 
+		URI uri = parse.getUri();
+		
+	}
+	
+	@Test
+	public void failNothingToParse() throws AAIException, URISyntaxException, IOException {
+		Loader loader = LoaderFactory.createLoaderForVersion(modelType, version10);
+		Introspector obj = loader.unmarshal("relationship", this.getJsonString("nothing-to-parse.json"));
+		URI expected = new URI("/aai/v10/network/test-objects/test-object/key1");
+		
+		thrown.expect(AAIIdentityMapParseException.class);
+		thrown.expect(hasProperty("code", is("AAI_3000")));
+		RelationshipToURI parse = new RelationshipToURI(loader, obj);
+		
 		URI uri = parse.getUri();
 		
 	}

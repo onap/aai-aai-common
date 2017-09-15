@@ -92,7 +92,6 @@ public class LegacyQueryTest extends AAISetup {
 	 * @throws UnsupportedEncodingException the unsupported encoding exception
 	 * @throws AAIException the AAI exception
 	 */
-	@Ignore
 	@Test
     public void childQuery() throws JAXBException, UnsupportedEncodingException, AAIException {
 		URI uri = UriBuilder.fromPath("cloud-infrastructure/pservers/pserver/key1/lag-interfaces/lag-interface/key2").build();
@@ -125,7 +124,6 @@ public class LegacyQueryTest extends AAISetup {
 	 * @throws UnsupportedEncodingException the unsupported encoding exception
 	 * @throws AAIException the AAI exception
 	 */
-	@Ignore
 	@Test
     public void namingExceptions() throws JAXBException, UnsupportedEncodingException, AAIException {
 		URI uri = UriBuilder.fromPath("network/vces/vce/key1/port-groups/port-group/key2/cvlan-tags/cvlan-tag/655").build();
