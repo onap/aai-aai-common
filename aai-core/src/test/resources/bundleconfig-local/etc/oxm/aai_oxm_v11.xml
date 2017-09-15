@@ -4497,8 +4497,8 @@
 				<xml-element java-attribute="isParent" name="isParent" type="java.lang.Boolean" />
 				<xml-element java-attribute="usesResource" name="usesResource" type="java.lang.Boolean" />
 				<xml-element java-attribute="hasDelTarget" name="hasDelTarget" type="java.lang.Boolean" />
-				<xml-element java-attribute="SVC-INFRA" name="SVC-INFRA" type="java.lang.String" />
-				<xml-element java-attribute="SVC-INFRA-REV" name="SVC-INFRA-REV" type="java.lang.String" />
+				<xml-element java-attribute="svcInfra" name="svcInfra" type="java.lang.String" />
+				<xml-element java-attribute="svcInfraRev" name="svcInfraRev" type="java.lang.String" />
 			</java-attributes>
 		</java-type>
 
