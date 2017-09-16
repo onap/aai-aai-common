@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a437d4f_705bee87",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 8
+      },
+      "lineNbr": 2584,
+      "author": {
+        "id": 879
+      },
+      "writtenOn": "2017-09-16T12:00:04Z",
+      "side": 1,
+      "message": "include relationship list attribute.",
+      "revId": "e5d7f7c3684009c2145aa4ccf0e8773343d89627",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
