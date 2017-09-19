@@ -2395,7 +2395,7 @@
 				<xml-property name="namespace" value="business" />
 			</xml-properties>
 		</java-type>
-		
+
 		<java-type name="LinesOfBusiness">
 			<xml-properties>
 				<xml-property name="description" value="Collection of lines-of-business" />
@@ -2405,7 +2405,7 @@
 				<xml-element container-type="java.util.ArrayList" java-attribute="lineOfBusiness" name="line-of-business" type="inventory.aai.onap.org.v11.LineOfBusiness" />
 			</java-attributes>
 		</java-type>
-		
+
 		<java-type name="LineOfBusiness">
 			<xml-root-element name="line-of-business" />
 			<java-attributes>
@@ -2429,7 +2429,7 @@
 				<xml-property name="namespace" value="business" />
 			</xml-properties>
 		</java-type>
-		
+
 		<java-type name="OwningEntities">
 			<xml-properties>
 				<xml-property name="description" value="Collection of owning-entities" />
@@ -2469,7 +2469,7 @@
 				<xml-property name="namespace" value="business" />
 			</xml-properties>
 		</java-type>
-		
+
 		<java-type name="Platforms">
 			<xml-properties>
 				<xml-property name="description" value="Collection of platforms" />
@@ -2479,7 +2479,7 @@
 				<xml-element container-type="java.util.ArrayList" java-attribute="platform" name="platform" type="inventory.aai.onap.org.v11.Platform" />
 			</java-attributes>
 		</java-type>
-		
+
 		<java-type name="Platform">
 			<xml-root-element name="platform" />
 			<java-attributes>
@@ -2503,7 +2503,7 @@
 				<xml-property name="namespace" value="business" />
 			</xml-properties>
 		</java-type>
-		
+
 		<java-type name="ServiceSubscriptions">
 			<xml-properties>
 				<xml-property name="description" value="Collection of objects that group service instances." />
@@ -2867,6 +2867,96 @@
 				<xml-element java-attribute="vipIpv4AddressList" name="vip-ipv4-address-list" type="inventory.aai.onap.org.v11.VipIpv4AddressList" />
 				<xml-element java-attribute="vipIpv6AddressList" name="vip-ipv6-address-list" type="inventory.aai.onap.org.v11.VipIpv6AddressList" />
 			</java-attributes>
+		</java-type>
+        <java-type name="Configurations">
+			<xml-properties>
+				<xml-property name="description" value="Collection of configurations" />
+			</xml-properties>
+			<xml-root-element name="configurations" />
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="configuration" name="configurations" type="inventory.aai.onap.org.v11.Configuration" />
+			</java-attributes>
+		</java-type>
+
+		<java-type name="Configuration">
+			<xml-root-element name="configuration" />
+			<java-attributes>
+				<xml-element java-attribute="managementOption" name="management-option" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Indicates the entity that will manage this feature. Could be an organization or the name of the application as well." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="configurationId" name="configuration-id" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="UUID assigned to configuration." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="configurationName" name="configuration-name" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Name of the configuration." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="configurationType" name="configuration-type" required="true" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="port-mirroring-configuration." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="configurationSubType" name="configuration-sub-type" required="true" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="vprobe, pprobe." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="modelInvariantId" name="model-invariant-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="the ASDC model id for this resource or service model." />
+						<xml-property name="visibility" value="deployment" />
+						<xml-property name="requires" value="model-version-id" />
+						<xml-property name="dbAlias" value="model-invariant-id-local" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="modelVersionId" name="model-version-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="the ASDC model version for this resource or service model." />
+						<xml-property name="visibility" value="deployment" />
+						<xml-property name="requires" value="model-invariant-id" />
+						<xml-property name="dbAlias" value="model-version-id-local" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="orchestrationStatus" name="orchestration-status" required="true" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Orchestration status of the configuration." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="operationalStatus" name="operational-status" required="true" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Indicator for whether the resource is considered operational." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="configurationSelflink" name="configuration-selflink" required="true" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="URL to endpoint where AAI can get more details from SDN-GC." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="modelCustomizationId" name="model-customization-id" required="true" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="id of  the configuration used to customize the resource" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v11.RelationshipList" />
+				<xml-element java-attribute="metadata" name="metadata" type="inventory.aai.onap.org.v11.Metadata" />
+			</java-attributes>
+			<xml-properties>
+				<xml-property name="description" value="Port Mirror Configuration." />
+				<xml-property name="indexedProps" value="configuration-id,model-invariant-id,model-version-id" />
+				<xml-property name="uniqueProps" value="configuration-id" />
+				<xml-property name="container" value="configurations" />
+				<xml-property name="namespace" value="network" />
+			</xml-properties>
 		</java-type>
 
 		<java-type name="LogicalLinks">

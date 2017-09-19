@@ -1,6 +1,50 @@
 {
 	"rules": [
 		{
+			"from": "configuration",
+			"to": "logical-link",
+			"label": "has",
+			"direction": "OUT",
+			"multiplicity": "One2Many",
+			"contains-other-v": "NONE",
+			"delete-other-v": "${direction}",
+			"SVC-INFRA": "NONE",
+			"prevent-delete": "NONE"
+		},
+		{
+			"from": "configuration",
+			"to": "metadatum",
+			"label": "owns",
+			"direction": "OUT",
+			"multiplicity": "One2Many",
+			"contains-other-v": "${direction}",
+			"delete-other-v": "NONE",
+			"SVC-INFRA": "NONE",
+			"prevent-delete": "NONE"
+		},
+		{
+			"from": "configuration",
+			"to": "allotted-resource",
+			"label": "uses",
+			"direction": "OUT",
+			"multiplicity": "One2One",
+			"contains-other-v": "NONE",
+			"delete-other-v": "${direction}",
+			"SVC-INFRA": "NONE",
+			"prevent-delete": "NONE"
+		},
+		{
+			"from": "service-instance",
+			"to": "configuration",
+			"label": "has",
+			"direction": "OUT",
+			"multiplicity": "One2Many",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"SVC-INFRA": "NONE",
+			"prevent-delete": "NONE"
+		},
+		{
 			"from": "availability-zone",
 			"to": "complex",
 			"label": "groupsResourcesIn",
@@ -1026,7 +1070,7 @@
 		{
 			"from": "platform",
 			"to": "generic-vnf",
-			"label": "Uses",
+			"label": "uses",
 			"direction": "OUT",
 			"multiplicity": "Many2Many",
 			"contains-other-v": "NONE",
@@ -1661,7 +1705,18 @@
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
 		},
-		{
+        {
+            "from": "generic-vnf",
+            "to": "configuration",
+            "label": "uses",
+            "direction": "OUT",
+            "multiplicity": "One2Many",
+            "contains-other-v": "NONE",
+            "delete-other-v": "${direction}",
+            "SVC-INFRA": "NONE",
+            "prevent-delete": "NONE"
+        },
+      	{
 			"from": "vf-module",
 			"to": "volume-group",
 			"label": "uses",
