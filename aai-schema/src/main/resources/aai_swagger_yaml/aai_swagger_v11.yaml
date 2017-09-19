@@ -6228,6 +6228,406 @@ paths:
           description: Cloud-owner defined type indicator (e.g., dcp, lcp)
           required: false
           type: string
+  /cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}/vip-ipv4-address-list/{vip-ipv4-address}/relationship-list/relationship:
+    put:
+      tags:
+        - CloudInfrastructure
+      summary: see node definition for valid relationships
+      operationId: createOrUpdateCloudInfrastructureCloudRegionsCloudRegionVipIpv4AddressListRelationshipListRelationship
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: cloud-owner
+          in: path
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
+          required: true
+          type: string
+        - name: cloud-region-id
+          in: path
+          description: Identifier used by the vendor for the region. Second part of composite key
+          required: true
+          type: string
+        - name: vip-ipv4-address
+          in: path
+          description: IP address
+          required: true
+          type: string
+        - name: body
+          in: body
+          description: relationship object that needs to be created or updated
+          required: true
+          schema:
+            $ref: "#/definitions/relationship"
+    delete:
+      tags:
+        - CloudInfrastructure
+      summary: delete an existing relationship
+      description: delete an existing relationship
+      operationId: deleteCloudInfrastructureCloudRegionsCloudRegionVipIpv4AddressListRelationshipListRelationship
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: cloud-owner
+          in: path
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
+          required: true
+          type: string
+        - name: cloud-region-id
+          in: path
+          description: Identifier used by the vendor for the region. Second part of composite key
+          required: true
+          type: string
+        - name: vip-ipv4-address
+          in: path
+          description: IP address
+          required: true
+          type: string
+  /cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}/vip-ipv4-address-list/{vip-ipv4-address}:
+    get:
+      tags:
+        - CloudInfrastructure
+      summary: returns vip-ipv4-address-list
+      description: returns vip-ipv4-address-list
+      operationId: getCloudInfrastructureCloudRegionsCloudRegionVipIpv4AddressList
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "200":
+          description: successful operation
+          schema:
+              $ref: "#/definitions/vip-ipv4-address-list"
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: cloud-owner
+          in: path
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
+          required: true
+          type: string
+        - name: cloud-region-id
+          in: path
+          description: Identifier used by the vendor for the region. Second part of composite key
+          required: true
+          type: string
+        - name: vip-ipv4-address
+          in: path
+          description: IP address
+          required: true
+          type: string
+        - name: cloud-type
+          in: query
+          description: Type of the cloud (e.g., openstack)
+          required: false
+          type: string
+        - name: owner-defined-type
+          in: query
+          description: Cloud-owner defined type indicator (e.g., dcp, lcp)
+          required: false
+          type: string
+        - name: vlan-id-inner
+          in: query
+          description: Inner VLAN tag
+          required: false
+          type: integer
+          format: int64
+        - name: neutron-network-id
+          in: query
+          description: Neutron network id of the interface that address belongs to
+          required: false
+          type: string
+        - name: neutron-subnet-id
+          in: query
+          description: Neutron id of subnet that address belongs to
+          required: false
+          type: string
+    put:
+      tags:
+        - CloudInfrastructure
+      summary: create or update an existing vip-ipv4-address-list
+      description: create or update an existing vip-ipv4-address-list
+      operationId: createOrUpdateCloudInfrastructureCloudRegionsCloudRegionVipIpv4AddressList
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: cloud-owner
+          in: path
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
+          required: true
+          type: string
+        - name: cloud-region-id
+          in: path
+          description: Identifier used by the vendor for the region. Second part of composite key
+          required: true
+          type: string
+        - name: vip-ipv4-address
+          in: path
+          description: IP address
+          required: true
+          type: string
+        - name: body
+          in: body
+          description: vip-ipv4-address-list object that needs to be created or updated
+          required: true
+          schema:
+            $ref: "#/definitions/vip-ipv4-address-list"
+    delete:
+      tags:
+        - CloudInfrastructure
+      summary: delete an existing vip-ipv4-address-list
+      description: delete an existing vip-ipv4-address-list
+      operationId: deleteCloudInfrastructureCloudRegionsCloudRegionVipIpv4AddressList
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: cloud-owner
+          in: path
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
+          required: true
+          type: string
+        - name: cloud-region-id
+          in: path
+          description: Identifier used by the vendor for the region. Second part of composite key
+          required: true
+          type: string
+        - name: vip-ipv4-address
+          in: path
+          description: IP address
+          required: true
+          type: string
+        - name: resource-version
+          in: query
+          description: resource-version for concurrency
+          required: true
+          type: string
+  /cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}/vip-ipv6-address-list/{vip-ipv6-address}/relationship-list/relationship:
+    put:
+      tags:
+        - CloudInfrastructure
+      summary: see node definition for valid relationships
+      operationId: createOrUpdateCloudInfrastructureCloudRegionsCloudRegionVipIpv6AddressListRelationshipListRelationship
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: cloud-owner
+          in: path
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
+          required: true
+          type: string
+        - name: cloud-region-id
+          in: path
+          description: Identifier used by the vendor for the region. Second part of composite key
+          required: true
+          type: string
+        - name: vip-ipv6-address
+          in: path
+          description: IP address
+          required: true
+          type: string
+        - name: body
+          in: body
+          description: relationship object that needs to be created or updated
+          required: true
+          schema:
+            $ref: "#/definitions/relationship"
+    delete:
+      tags:
+        - CloudInfrastructure
+      summary: delete an existing relationship
+      description: delete an existing relationship
+      operationId: deleteCloudInfrastructureCloudRegionsCloudRegionVipIpv6AddressListRelationshipListRelationship
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: cloud-owner
+          in: path
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
+          required: true
+          type: string
+        - name: cloud-region-id
+          in: path
+          description: Identifier used by the vendor for the region. Second part of composite key
+          required: true
+          type: string
+        - name: vip-ipv6-address
+          in: path
+          description: IP address
+          required: true
+          type: string
+  /cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}/vip-ipv6-address-list/{vip-ipv6-address}:
+    get:
+      tags:
+        - CloudInfrastructure
+      summary: returns vip-ipv6-address-list
+      description: returns vip-ipv6-address-list
+      operationId: getCloudInfrastructureCloudRegionsCloudRegionVipIpv6AddressList
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "200":
+          description: successful operation
+          schema:
+              $ref: "#/definitions/vip-ipv6-address-list"
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: cloud-owner
+          in: path
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
+          required: true
+          type: string
+        - name: cloud-region-id
+          in: path
+          description: Identifier used by the vendor for the region. Second part of composite key
+          required: true
+          type: string
+        - name: vip-ipv6-address
+          in: path
+          description: IP address
+          required: true
+          type: string
+        - name: cloud-type
+          in: query
+          description: Type of the cloud (e.g., openstack)
+          required: false
+          type: string
+        - name: owner-defined-type
+          in: query
+          description: Cloud-owner defined type indicator (e.g., dcp, lcp)
+          required: false
+          type: string
+        - name: vlan-id-inner
+          in: query
+          description: Inner VLAN tag
+          required: false
+          type: integer
+          format: int64
+        - name: neutron-network-id
+          in: query
+          description: Neutron network id of the interface that address belongs to
+          required: false
+          type: string
+        - name: neutron-subnet-id
+          in: query
+          description: Neutron id of subnet that address belongs to
+          required: false
+          type: string
+    put:
+      tags:
+        - CloudInfrastructure
+      summary: create or update an existing vip-ipv6-address-list
+      description: create or update an existing vip-ipv6-address-list
+      operationId: createOrUpdateCloudInfrastructureCloudRegionsCloudRegionVipIpv6AddressList
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: cloud-owner
+          in: path
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
+          required: true
+          type: string
+        - name: cloud-region-id
+          in: path
+          description: Identifier used by the vendor for the region. Second part of composite key
+          required: true
+          type: string
+        - name: vip-ipv6-address
+          in: path
+          description: IP address
+          required: true
+          type: string
+        - name: body
+          in: body
+          description: vip-ipv6-address-list object that needs to be created or updated
+          required: true
+          schema:
+            $ref: "#/definitions/vip-ipv6-address-list"
+    delete:
+      tags:
+        - CloudInfrastructure
+      summary: delete an existing vip-ipv6-address-list
+      description: delete an existing vip-ipv6-address-list
+      operationId: deleteCloudInfrastructureCloudRegionsCloudRegionVipIpv6AddressList
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: cloud-owner
+          in: path
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
+          required: true
+          type: string
+        - name: cloud-region-id
+          in: path
+          description: Identifier used by the vendor for the region. Second part of composite key
+          required: true
+          type: string
+        - name: vip-ipv6-address
+          in: path
+          description: IP address
+          required: true
+          type: string
+        - name: resource-version
+          in: query
+          description: resource-version for concurrency
+          required: true
+          type: string
   /cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}:
     get:
       tags:
@@ -41153,286 +41553,6 @@ paths:
               $ref: "#/definitions/zones"
         "default":
           description: Response codes found in [response codes](https://wiki.onap.org/).
-  /network/vip-ipv4-address-list/{vip-ipv4-address}/relationship-list/relationship:
-    put:
-      tags:
-        - Network
-      summary: see node definition for valid relationships
-      operationId: createOrUpdateNetworkVipIpv4AddressListRelationshipListRelationship
-      consumes:
-        - application/json
-        - application/xml
-      produces:
-        - application/json
-        - application/xml
-      responses:
-        "default":
-          description: Response codes found in [response codes](https://wiki.onap.org/).
-      parameters:
-        - name: vip-ipv4-address
-          in: path
-          description: IP address
-          required: true
-          type: string
-        - name: body
-          in: body
-          description: relationship object that needs to be created or updated
-          required: true
-          schema:
-            $ref: "#/definitions/relationship"
-    delete:
-      tags:
-        - Network
-      summary: delete an existing relationship
-      description: delete an existing relationship
-      operationId: deleteNetworkVipIpv4AddressListRelationshipListRelationship
-      consumes:
-        - application/json
-        - application/xml
-      produces:
-        - application/json
-        - application/xml
-      responses:
-        "default":
-          description: Response codes found in [response codes](https://wiki.onap.org/).
-      parameters:
-        - name: vip-ipv4-address
-          in: path
-          description: IP address
-          required: true
-          type: string
-  /network/vip-ipv4-address-list/{vip-ipv4-address}:
-    get:
-      tags:
-        - Network
-      summary: returns vip-ipv4-address-list
-      description: returns vip-ipv4-address-list
-      operationId: getNetworkVipIpv4AddressList
-      produces:
-        - application/json
-        - application/xml
-      responses:
-        "200":
-          description: successful operation
-          schema:
-              $ref: "#/definitions/vip-ipv4-address-list"
-        "default":
-          description: Response codes found in [response codes](https://wiki.onap.org/).
-      parameters:
-        - name: vip-ipv4-address
-          in: path
-          description: IP address
-          required: true
-          type: string
-        - name: vlan-id-inner
-          in: query
-          description: Inner VLAN tag
-          required: false
-          type: integer
-          format: int64
-        - name: neutron-network-id
-          in: query
-          description: Neutron network id of the interface that address belongs to
-          required: false
-          type: string
-        - name: neutron-subnet-id
-          in: query
-          description: Neutron id of subnet that address belongs to
-          required: false
-          type: string
-    put:
-      tags:
-        - Network
-      summary: create or update an existing vip-ipv4-address-list
-      description: create or update an existing vip-ipv4-address-list
-      operationId: createOrUpdateNetworkVipIpv4AddressList
-      consumes:
-        - application/json
-        - application/xml
-      produces:
-        - application/json
-        - application/xml
-      responses:
-        "default":
-          description: Response codes found in [response codes](https://wiki.onap.org/).
-      parameters:
-        - name: vip-ipv4-address
-          in: path
-          description: IP address
-          required: true
-          type: string
-        - name: body
-          in: body
-          description: vip-ipv4-address-list object that needs to be created or updated
-          required: true
-          schema:
-            $ref: "#/definitions/vip-ipv4-address-list"
-    delete:
-      tags:
-        - Network
-      summary: delete an existing vip-ipv4-address-list
-      description: delete an existing vip-ipv4-address-list
-      operationId: deleteNetworkVipIpv4AddressList
-      consumes:
-        - application/json
-        - application/xml
-      produces:
-        - application/json
-        - application/xml
-      responses:
-        "default":
-          description: Response codes found in [response codes](https://wiki.onap.org/).
-      parameters:
-        - name: vip-ipv4-address
-          in: path
-          description: IP address
-          required: true
-          type: string
-        - name: resource-version
-          in: query
-          description: resource-version for concurrency
-          required: true
-          type: string
-  /network/vip-ipv6-address-list/{vip-ipv6-address}/relationship-list/relationship:
-    put:
-      tags:
-        - Network
-      summary: see node definition for valid relationships
-      operationId: createOrUpdateNetworkVipIpv6AddressListRelationshipListRelationship
-      consumes:
-        - application/json
-        - application/xml
-      produces:
-        - application/json
-        - application/xml
-      responses:
-        "default":
-          description: Response codes found in [response codes](https://wiki.onap.org/).
-      parameters:
-        - name: vip-ipv6-address
-          in: path
-          description: IP address
-          required: true
-          type: string
-        - name: body
-          in: body
-          description: relationship object that needs to be created or updated
-          required: true
-          schema:
-            $ref: "#/definitions/relationship"
-    delete:
-      tags:
-        - Network
-      summary: delete an existing relationship
-      description: delete an existing relationship
-      operationId: deleteNetworkVipIpv6AddressListRelationshipListRelationship
-      consumes:
-        - application/json
-        - application/xml
-      produces:
-        - application/json
-        - application/xml
-      responses:
-        "default":
-          description: Response codes found in [response codes](https://wiki.onap.org/).
-      parameters:
-        - name: vip-ipv6-address
-          in: path
-          description: IP address
-          required: true
-          type: string
-  /network/vip-ipv6-address-list/{vip-ipv6-address}:
-    get:
-      tags:
-        - Network
-      summary: returns vip-ipv6-address-list
-      description: returns vip-ipv6-address-list
-      operationId: getNetworkVipIpv6AddressList
-      produces:
-        - application/json
-        - application/xml
-      responses:
-        "200":
-          description: successful operation
-          schema:
-              $ref: "#/definitions/vip-ipv6-address-list"
-        "default":
-          description: Response codes found in [response codes](https://wiki.onap.org/).
-      parameters:
-        - name: vip-ipv6-address
-          in: path
-          description: IP address
-          required: true
-          type: string
-        - name: vlan-id-inner
-          in: query
-          description: Inner VLAN tag
-          required: false
-          type: integer
-          format: int64
-        - name: neutron-network-id
-          in: query
-          description: Neutron network id of the interface that address belongs to
-          required: false
-          type: string
-        - name: neutron-subnet-id
-          in: query
-          description: Neutron id of subnet that address belongs to
-          required: false
-          type: string
-    put:
-      tags:
-        - Network
-      summary: create or update an existing vip-ipv6-address-list
-      description: create or update an existing vip-ipv6-address-list
-      operationId: createOrUpdateNetworkVipIpv6AddressList
-      consumes:
-        - application/json
-        - application/xml
-      produces:
-        - application/json
-        - application/xml
-      responses:
-        "default":
-          description: Response codes found in [response codes](https://wiki.onap.org/).
-      parameters:
-        - name: vip-ipv6-address
-          in: path
-          description: IP address
-          required: true
-          type: string
-        - name: body
-          in: body
-          description: vip-ipv6-address-list object that needs to be created or updated
-          required: true
-          schema:
-            $ref: "#/definitions/vip-ipv6-address-list"
-    delete:
-      tags:
-        - Network
-      summary: delete an existing vip-ipv6-address-list
-      description: delete an existing vip-ipv6-address-list
-      operationId: deleteNetworkVipIpv6AddressList
-      consumes:
-        - application/json
-        - application/xml
-      produces:
-        - application/json
-        - application/xml
-      responses:
-        "default":
-          description: Response codes found in [response codes](https://wiki.onap.org/).
-      parameters:
-        - name: vip-ipv6-address
-          in: path
-          description: IP address
-          required: true
-          type: string
-        - name: resource-version
-          in: query
-          description: resource-version for concurrency
-          required: true
-          type: string
 definitions:
   search:
     properties:
@@ -42568,6 +42688,90 @@ definitions:
         type: array
         items:          
           $ref: "#/definitions/esr-system-info"
+  vip-ipv4-address-list:
+    description: |
+      IPv4 Address Range
+      ###### Related Nodes
+      - TO instance-group (Many2Many)
+      - TO subnet (Many2Many)
+      - FROM vnfc
+      - FROM cloud-region (is composed of vip-ipv4-address-list)
+    required:
+    - vip-ipv4-address
+    properties:
+      vip-ipv4-address:
+        type: string
+        description: IP address
+      vip-ipv4-prefix-length:
+        type: integer
+        format: int64
+        description: Prefix length, 32 for single address
+      vlan-id-inner:
+        type: integer
+        format: int64
+        description: Inner VLAN tag
+      vlan-id-outer:
+        type: integer
+        format: int64
+        description: Outer VLAN tag
+      is-floating:
+        type: boolean
+        description: Indicator of fixed or floating address
+      resource-version:
+        type: string
+        description: Used for optimistic concurrency.  Must be empty on create, valid on update and delete.
+      neutron-network-id:
+        type: string
+        description: Neutron network id of the interface that address belongs to
+      neutron-subnet-id:
+        type: string
+        description: Neutron id of subnet that address belongs to
+      relationship-list:
+        type: array
+        items:
+          $ref: "#/definitions/relationship"
+  vip-ipv6-address-list:
+    description: |
+      IPv6 Address Range
+      ###### Related Nodes
+      - TO instance-group (Many2Many)
+      - TO subnet (Many2Many)
+      - FROM vnfc
+      - FROM cloud-region (is composed of vip-ipv6-address-list)
+    required:
+    - vip-ipv6-address
+    properties:
+      vip-ipv6-address:
+        type: string
+        description: IP address
+      vip-ipv6-prefix-length:
+        type: integer
+        format: int64
+        description: Prefix length, 128 for single address
+      vlan-id-inner:
+        type: integer
+        format: int64
+        description: Inner VLAN tag
+      vlan-id-outer:
+        type: integer
+        format: int64
+        description: Outer VLAN tag
+      is-floating:
+        type: boolean
+        description: Indicator of fixed or floating address
+      resource-version:
+        type: string
+        description: Used for optimistic concurrency.  Must be empty on create, valid on update and delete.
+      neutron-network-id:
+        type: string
+        description: Neutron network id of the interface that address belongs to
+      neutron-subnet-id:
+        type: string
+        description: Neutron id of subnet that address belongs to
+      relationship-list:
+        type: array
+        items:
+          $ref: "#/definitions/relationship"
   cloud-region:
     description: |
       cloud-region designates an installation of a cloud cluster or region or instantiation.
@@ -42585,6 +42789,8 @@ definitions:
       - TO group-assignment (comprises cloud-region, One2Many)
       - TO snapshot (comprises cloud-region, One2Many)
       - TO zone (Many2One)
+      - TO vip-ipv4-address-list (comprises cloud-region, One2Many)
+      - TO vip-ipv6-address-list (comprises cloud-region, One2Many)
       - FROM pserver
       - FROM logical-link
     required:
@@ -42671,6 +42877,14 @@ definitions:
         type: array
         items:
           $ref: "#/definitions/esr-system-info"
+      vip-ipv4-address-list:
+        type: array
+        items:          
+          $ref: "#/definitions/vip-ipv4-address-list"
+      vip-ipv6-address-list:
+        type: array
+        items:          
+          $ref: "#/definitions/vip-ipv6-address-list"
   cloud-regions:
     properties:
       cloud-region:
@@ -44878,6 +45092,8 @@ definitions:
       - FROM l3-interface-ipv4-address-list
       - FROM l3-interface-ipv6-address-list
       - FROM l3-network (is composed of subnet)
+      - FROM vip-ipv4-address-list
+      - FROM vip-ipv6-address-list
     required:
     - subnet-id
     - dhcp-enabled
@@ -45859,6 +46075,8 @@ definitions:
       - FROM allotted-resource
       - FROM generic-vnf
       - FROM service-instance
+      - FROM vip-ipv4-address-list
+      - FROM vip-ipv6-address-list
     required:
     - instance-group-role
     - model-invariant-id
@@ -45948,84 +46166,6 @@ definitions:
         type: array
         items:          
           $ref: "#/definitions/zone"
-  vip-ipv4-address-list:
-    description: |
-      IPv4 Address Range
-      ###### Related Nodes
-      - FROM vnfc
-    required:
-    - vip-ipv4-address
-    properties:
-      vip-ipv4-address:
-        type: string
-        description: IP address
-      vip-ipv4-prefix-length:
-        type: integer
-        format: int64
-        description: Prefix length, 32 for single address
-      vlan-id-inner:
-        type: integer
-        format: int64
-        description: Inner VLAN tag
-      vlan-id-outer:
-        type: integer
-        format: int64
-        description: Outer VLAN tag
-      is-floating:
-        type: boolean
-        description: Indicator of fixed or floating address
-      resource-version:
-        type: string
-        description: Used for optimistic concurrency.  Must be empty on create, valid on update and delete.
-      neutron-network-id:
-        type: string
-        description: Neutron network id of the interface that address belongs to
-      neutron-subnet-id:
-        type: string
-        description: Neutron id of subnet that address belongs to
-      relationship-list:
-        type: array
-        items:
-          $ref: "#/definitions/relationship"
-  vip-ipv6-address-list:
-    description: |
-      IPv6 Address Range
-      ###### Related Nodes
-      - FROM vnfc
-    required:
-    - vip-ipv6-address
-    properties:
-      vip-ipv6-address:
-        type: string
-        description: IP address
-      vip-ipv6-prefix-length:
-        type: integer
-        format: int64
-        description: Prefix length, 128 for single address
-      vlan-id-inner:
-        type: integer
-        format: int64
-        description: Inner VLAN tag
-      vlan-id-outer:
-        type: integer
-        format: int64
-        description: Outer VLAN tag
-      is-floating:
-        type: boolean
-        description: Indicator of fixed or floating address
-      resource-version:
-        type: string
-        description: Used for optimistic concurrency.  Must be empty on create, valid on update and delete.
-      neutron-network-id:
-        type: string
-        description: Neutron network id of the interface that address belongs to
-      neutron-subnet-id:
-        type: string
-        description: Neutron id of subnet that address belongs to
-      relationship-list:
-        type: array
-        items:
-          $ref: "#/definitions/relationship"
   network:
     description: |
       Namespace for network inventory resources.
@@ -46102,12 +46242,6 @@ definitions:
         type: array
         items:
           $ref: "#/definitions/zone"
-      vip-ipv4-address-list:
-        type: object
-        $ref: "#/definitions/vip-ipv4-address-list"
-      vip-ipv6-address-list:
-        type: object
-        $ref: "#/definitions/vip-ipv6-address-list"
   inventory:
     properties:
       search:
