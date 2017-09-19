@@ -56,7 +56,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class DbSerializerTest extends AAISetup {
-
+	
 	//to use, set thrown.expect to whatever your test needs
 	//this line establishes default of expecting no exception to be thrown
 	@Rule
@@ -85,7 +85,7 @@ public class DbSerializerTest extends AAISetup {
 		adminSpy = spy(dbEngine.asAdmin());
 
 		createGraph();
-
+		
 		engine = new TitanDBEngine(queryStyle, type, loader);
 		dbser = new DBSerializer(Version.getLatest(), engine, introspectorFactoryType, "AAI-TEST");
 	}
@@ -179,13 +179,13 @@ public class DbSerializerTest extends AAISetup {
 		return exceptionMessage;
 
 	}
-
+	
 	@Test
 	public void createNewVertexTest() throws AAIException {
 		engine.startTransaction();
-
+		
 		Introspector testObj = loader.introspectorFromName("generic-vnf");
-
+		
 		Vertex testVertex = dbser.createNewVertex(testObj);
 		Vertex fromGraph = engine.tx().traversal().V().has("aai-node-type","generic-vnf").toList().get(0);
 		assertEquals(testVertex.id(), fromGraph.id());
@@ -197,37 +197,37 @@ public class DbSerializerTest extends AAISetup {
 	public void touchStandardVertexPropertiesTest() throws AAIException, InterruptedException {
 		engine.startTransaction();
 		DBSerializer dbser2 = new DBSerializer(Version.getLatest(), engine, introspectorFactoryType, "AAI-TEST-2");
-
+		
 		Graph graph = TinkerGraph.open();
 		Vertex vert = graph.addVertex("aai-node-type", "generic-vnf");
-
+		
 		dbser.touchStandardVertexProperties(vert, true);
 		String resverStart = (String)vert.property(AAIProperties.RESOURCE_VERSION.toString()).value();
 		String lastModTimeStart = (String)vert.property(AAIProperties.LAST_MOD_TS.toString()).value();
-
+		
 		Thread.sleep(10); //bc the resource version is set based on current time in milliseconds,
 							//if this test runs through too fast the value may not change
 							//causing the test to fail. sleeping ensures a different value
-
+		
 		dbser2.touchStandardVertexProperties(vert, false);
 		assertFalse(resverStart.equals((String)vert.property(AAIProperties.RESOURCE_VERSION.toString()).value()));
 		assertFalse(lastModTimeStart.equals((String)vert.property(AAIProperties.LAST_MOD_TS.toString()).value()));
 		assertEquals("AAI-TEST-2", (String)vert.property(AAIProperties.LAST_MOD_SOURCE_OF_TRUTH.toString()).value());
 		engine.rollback();
 	}
-
+	
 	@Test
 	public void verifyResourceVersion_SunnyDayTest() throws AAIException {
 		engine.startTransaction();
-
+		
 		assertTrue(dbser.verifyResourceVersion("delete", "vnfc", "abc", "abc", "vnfcs/vnfc/vnfcId"));
 		engine.rollback();
 	}
-
+	
 	@Test
 	public void verifyResourceVersion_CreateWithRVTest() throws AAIException {
 		engine.startTransaction();
-
+		
 		thrown.expect(AAIException.class);
 		thrown.expectMessage("resource-version passed for create of generic-vnfs/generic-vnf/myid");
 		try {
@@ -236,11 +236,11 @@ public class DbSerializerTest extends AAISetup {
 			engine.rollback();
 		}
 	}
-
+	
 	@Test
 	public void verifyResourceVersion_MissingRVTest() throws AAIException {
 		engine.startTransaction();
-
+		
 		thrown.expect(AAIException.class);
 		thrown.expectMessage("resource-version not passed for update of generic-vnfs/generic-vnf/myid");
 		try {
@@ -249,11 +249,11 @@ public class DbSerializerTest extends AAISetup {
 			engine.rollback();
 		}
 	}
-
+	
 	@Test
 	public void verifyResourceVersion_MismatchRVTest() throws AAIException {
 		engine.startTransaction();
-
+		
 		thrown.expect(AAIException.class);
 		thrown.expectMessage("resource-version MISMATCH for update of generic-vnfs/generic-vnf/myid");
 		try {
@@ -262,97 +262,97 @@ public class DbSerializerTest extends AAISetup {
 			engine.rollback();
 		}
 	}
-
+	
 	@Test
 	public void trimClassNameTest() throws AAIException {
 		assertEquals("GenericVnf", dbser.trimClassName("GenericVnf"));
 		assertEquals("GenericVnf", dbser.trimClassName("org.onap.aai.GenericVnf"));
 	}
-
+	
 	@Test
 	public void getURIForVertexTest() throws AAIException, URISyntaxException, UnsupportedEncodingException {
 		engine.startTransaction();
-
+		
 		Vertex cr = engine.tx().addVertex("aai-node-type", "cloud-region", "cloud-owner", "me", "cloud-region-id", "123");
 		Vertex ten = engine.tx().addVertex("aai-node-type", "tenant", "tenant-id", "453");
 		EdgeRules rules = EdgeRules.getInstance();
 		rules.addTreeEdge(engine.tx().traversal(), cr, ten);
-
+		
 		URI compare = new URI("/cloud-infrastructure/cloud-regions/cloud-region/me/123/tenants/tenant/453");
 		assertEquals(compare, dbser.getURIForVertex(ten));
-
+		
 		cr.property("aai-node-type").remove();
 		URI compareFailure = new URI("/unknown-uri");
 		assertEquals(compareFailure, dbser.getURIForVertex(ten));
 		engine.rollback();
 	}
-
+	
 	@Test
 	public void getVertexPropertiesTest() throws AAIException, UnsupportedEncodingException {
 		engine.startTransaction();
-
+		
 		Vertex cr = engine.tx().addVertex("aai-node-type", "cloud-region", "cloud-owner", "me", "cloud-region-id", "123");
-
+		
 		Introspector crIntro = dbser.getVertexProperties(cr);
 		assertEquals("cloud-region", crIntro.getDbName());
 		assertEquals("me", crIntro.getValue("cloud-owner"));
 		assertEquals("123", crIntro.getValue("cloud-region-id"));
 		engine.rollback();
 	}
-
+	
 	@Test
 	public void setCachedURIsTest() throws AAIException, UnsupportedEncodingException, URISyntaxException {
 		engine.startTransaction();
-
+		
 		Vertex cr = engine.tx().addVertex("aai-node-type", "cloud-region", "cloud-owner", "me", "cloud-region-id", "123");
 		Vertex ten = engine.tx().addVertex("aai-node-type", "tenant", "tenant-id", "453");
-		Vertex vs = engine.tx().addVertex("aai-node-type", "vserver", "vserver-id", "vs1",
-												AAIProperties.AAI_URI.toString(),
+		Vertex vs = engine.tx().addVertex("aai-node-type", "vserver", "vserver-id", "vs1", 
+												AAIProperties.AAI_URI.toString(), 
 													"/cloud-infrastructure/cloud-regions/cloud-region/me/123/tenants/tenant/453/vservers/vserver/vs1");
 		EdgeRules rules = EdgeRules.getInstance();
 		rules.addTreeEdge(engine.tx().traversal(), cr, ten);
 		rules.addTreeEdge(engine.tx().traversal(), ten, vs);
-
+		
 		List<Vertex> vertices = new ArrayList<Vertex>(Arrays.asList(cr, ten, vs));
 		Introspector crIn = dbser.getVertexProperties(cr);
 		Introspector tenIn = dbser.getVertexProperties(ten);
 		Introspector vsIn = dbser.getVertexProperties(vs);
 		List<Introspector> intros = new ArrayList<Introspector>(Arrays.asList(crIn, tenIn, vsIn));
-
+		
 		dbser.setCachedURIs(vertices, intros);
-
-		assertEquals("/cloud-infrastructure/cloud-regions/cloud-region/me/123",
+		
+		assertEquals("/cloud-infrastructure/cloud-regions/cloud-region/me/123", 
 					(String)cr.property(AAIProperties.AAI_URI.toString()).value());
-		assertEquals("/cloud-infrastructure/cloud-regions/cloud-region/me/123/tenants/tenant/453",
+		assertEquals("/cloud-infrastructure/cloud-regions/cloud-region/me/123/tenants/tenant/453", 
 				(String)ten.property(AAIProperties.AAI_URI.toString()).value());
 		assertEquals("/cloud-infrastructure/cloud-regions/cloud-region/me/123/tenants/tenant/453/vservers/vserver/vs1",
 				(String)vs.property(AAIProperties.AAI_URI.toString()).value());
 		engine.rollback();
 	}
-
+	
 	@Test
 	public void getEdgeBetweenTest() throws AAIException {
 		engine.startTransaction();
-
+		
 		Vertex cr = engine.tx().addVertex("aai-node-type", "cloud-region", "cloud-owner", "me", "cloud-region-id", "123");
 		Vertex ten = engine.tx().addVertex("aai-node-type", "tenant", "tenant-id", "453");
 		EdgeRules rules = EdgeRules.getInstance();
 		rules.addTreeEdge(engine.tx().traversal(), cr, ten);
-
+		
 		Edge e = dbser.getEdgeBetween(EdgeType.TREE, ten, cr);
 		assertEquals("has", e.label());
 		engine.rollback();
 	}
-
+	
 	@Test
 	public void deleteEdgeTest() throws AAIException, UnsupportedEncodingException {
 		engine.startTransaction();
-
+		
 		Vertex gvnf = engine.tx().addVertex("aai-node-type","generic-vnf","vnf-id","myvnf");
 		Vertex vnfc = engine.tx().addVertex("aai-node-type","vnfc","vnfc-name","a-name");
 		EdgeRules rules = EdgeRules.getInstance();
 		rules.addEdge(engine.tx().traversal(), gvnf, vnfc);
-
+		
 		Introspector relData = loader.introspectorFromName("relationship-data");
 		relData.setValue("relationship-key", "vnfc.vnfc-name");
 		relData.setValue("relationship-value", "a-name");
@@ -360,21 +360,21 @@ public class DbSerializerTest extends AAISetup {
 		relationship.setValue("related-to", "vnfc");
 		relationship.setValue("related-link", "/network/vnfcs/vnfc/a-name");
 		relationship.setValue("relationship-data",relData);
-
+		
 		assertTrue(dbser.deleteEdge(relationship, gvnf));
-
+		
 		assertFalse(engine.tx().traversal().V(gvnf).both("uses").hasNext());
 		assertFalse(engine.tx().traversal().V(vnfc).both("uses").hasNext());
 		engine.rollback();
 	}
-
+	
 	@Test
 	public void createEdgeTest() throws AAIException, UnsupportedEncodingException {
 		engine.startTransaction();
-
+		
 		Vertex gvnf = engine.tx().addVertex("aai-node-type","generic-vnf","vnf-id","myvnf");
 		Vertex vnfc = engine.tx().addVertex("aai-node-type","vnfc","vnfc-name","a-name");
-
+		
 		//sunny day case
 		Introspector relData = loader.introspectorFromName("relationship-data");
 		relData.setValue("relationship-key", "vnfc.vnfc-name");
@@ -383,11 +383,11 @@ public class DbSerializerTest extends AAISetup {
 		relationship.setValue("related-to", "vnfc");
 		relationship.setValue("related-link", "/network/vnfcs/vnfc/a-name");
 		relationship.setValue("relationship-data",relData);
-
+		
 		assertTrue(dbser.createEdge(relationship, gvnf));
 		assertTrue(engine.tx().traversal().V(gvnf).both("uses").hasNext());
 		assertTrue(engine.tx().traversal().V(vnfc).both("uses").hasNext());
-
+	
 		//rainy day case, edge to nonexistant object
 		Introspector relData2 = loader.introspectorFromName("relationship-data");
 		relData2.setValue("relationship-key", "vnfc.vnfc-name");
@@ -396,7 +396,7 @@ public class DbSerializerTest extends AAISetup {
 		relationship2.setValue("related-to", "vnfc");
 		relationship2.setValue("related-link", "/network/vnfcs/vnfc/b-name");
 		relationship2.setValue("relationship-data",relData2);
-
+		
 		thrown.expect(AAIException.class);
 		thrown.expectMessage("Node of type vnfc. Could not find object at: /network/vnfcs/vnfc/b-name");
 		try {
@@ -405,35 +405,35 @@ public class DbSerializerTest extends AAISetup {
 			engine.rollback();
 		}
 	}
-
+	
 	@Test
 	public void serializeSingleVertexTopLevelTest() throws AAIException, UnsupportedEncodingException {
 		engine.startTransaction();
-
+		
 		Introspector gvnf = loader.introspectorFromName("generic-vnf");
 		Vertex gvnfVert = dbser.createNewVertex(gvnf);
-
+		
 		gvnf.setValue("vnf-id", "myvnf");
 		dbser.serializeSingleVertex(gvnfVert, gvnf, "test");
 		assertTrue(engine.tx().traversal().V().has("aai-node-type","generic-vnf").has("vnf-id","myvnf").hasNext());
 		engine.rollback();
 	}
-
+	
 	@Test
 	public void serializeSingleVertexChildTest() throws AAIException, UnsupportedEncodingException {
 		engine.startTransaction();
-
+		
 		Vertex cr = engine.tx().addVertex("aai-node-type", "cloud-region", "cloud-owner", "me", "cloud-region-id", "123");
 		Introspector tenIn = loader.introspectorFromName("tenant");
 		Vertex ten = dbser.createNewVertex(tenIn);
 		EdgeRules rules = EdgeRules.getInstance();
 		rules.addTreeEdge(engine.tx().traversal(), cr, ten);
-
+		
 		tenIn.setValue("tenant-id", "453");
 		tenIn.setValue("tenant-name", "mytenant");
 
 		dbser.serializeSingleVertex(ten, tenIn, "test");
-
+		
 		assertTrue(engine.tx().traversal().V().has("aai-node-type","tenant").has("tenant-id","453").has("tenant-name","mytenant").hasNext());
 		engine.rollback();
 	}
