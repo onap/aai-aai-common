@@ -93,13 +93,6 @@ public class EdgeRules {
 	private EdgeRules(Version version) {
 		String json = this.getEdgeRuleJson(version);
 		rulesDoc = JsonPath.parse(json);
-		
-		if (!Version.isLatest(version)) {
-			try {
-				Class<?> dbEdgeRules = Class.forName("org.openecomp.aai.dbmodel." + version.toString() + ".gen.DbEdgeRules");
-			} catch (Exception e) {
-			}
-		}
 	}
 	
 	private String getEdgeRuleJson(Version version) {
