@@ -42283,6 +42283,7 @@ definitions:
     description: |
       Key/value pairs
       ###### Related Nodes
+      - FROM configuration (is composed of metadatum)
       - FROM image (is composed of metadatum)
       - FROM model-ver (is composed of metadatum)
       - FROM service-instance (is composed of metadatum)
@@ -43253,6 +43254,7 @@ definitions:
       - TO tunnel-xconnect (comprises allotted-resource, One2One)
       - TO vpn-binding (Many2Many)
       - TO allotted-resource (One2One)
+      - FROM configuration
       - FROM service-instance (is composed of allotted-resource)
       - FROM service-instance
       - FROM allotted-resource
@@ -43312,6 +43314,7 @@ definitions:
     description: |
       Instance of a service
       ###### Related Nodes
+      - TO configuration (One2Many)
       - TO zone (Many2One)
       - TO cvlan-tag (Many2Many)
       - TO pnf (One2Many)
@@ -44138,6 +44141,7 @@ definitions:
       - TO pserver (Many2Many)
       - TO cloud-region (Many2Many)
       - TO vpn-binding (Many2Many)
+      - FROM configuration
       - FROM l-interface
       - FROM lag-interface
       - FROM p-interface
@@ -45231,6 +45235,7 @@ definitions:
       - TO network-profile (Many2Many)
       - TO pnf (Many2Many)
       - TO ipsec-configuration (Many2One)
+      - TO configuration (One2Many)
       - TO vf-module (comprises generic-vnf, One2Many)
       - TO volume-group (One2Many)
       - TO vnfc (One2Many)
@@ -46294,6 +46299,74 @@ definitions:
         type: string
       key-value:
         type: string
+  configurations:
+    description: |
+      Collection of configurations
+    properties:
+      configuration:
+        type: array
+        items:          
+          $ref: "#/definitions/configuration"
+  configuration:
+    description: |
+      Port Mirror Configuration.
+      ###### Related Nodes
+      - TO logical-link (One2Many)
+      - TO metadatum (comprises configuration, One2Many)
+      - TO allotted-resource (One2One)
+      - FROM service-instance
+      - FROM generic-vnf
+    required:
+    - configuration-id
+    - configuration-type
+    - configuration-sub-type
+    - orchestration-status
+    - operational-status
+    - configuration-selflink
+    - model-customization-id
+    properties:
+      management-option:
+        type: string
+        description: Indicates the entity that will manage this feature. Could be an organization or the name of the application as well.
+      configuration-id:
+        type: string
+        description: UUID assigned to configuration.
+      configuration-name:
+        type: string
+        description: Name of the configuration.
+      configuration-type:
+        type: string
+        description: port-mirroring-configuration.
+      configuration-sub-type:
+        type: string
+        description: vprobe, pprobe.
+      model-invariant-id:
+        type: string
+        description: the ASDC model id for this resource or service model.
+      model-version-id:
+        type: string
+        description: the ASDC model version for this resource or service model.
+      orchestration-status:
+        type: string
+        description: Orchestration status of the configuration.
+      operational-status:
+        type: string
+        description: Indicator for whether the resource is considered operational.
+      configuration-selflink:
+        type: string
+        description: URL to endpoint where AAI can get more details from SDN-GC.
+      model-customization-id:
+        type: string
+        description: id of  the configuration used to customize the resource
+      resource-version:
+        type: string
+        description: Used for optimistic concurrency.  Must be empty on create, valid on update and delete.
+      relationship-list:
+        type: object
+        $ref: "#/definitions/relationship-list"
+      metadata:
+        type: object
+        $ref: "#/definitions/metadata"
   notification-event:
     properties:
       cambria.partition:
