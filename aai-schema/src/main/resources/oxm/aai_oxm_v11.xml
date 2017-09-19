@@ -589,6 +589,8 @@
 				<xml-element java-attribute="availabilityZones" name="availability-zones" type="inventory.aai.onap.org.v11.AvailabilityZones" />
 				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v11.RelationshipList" />
 				<xml-element java-attribute="esrSystemInfoList" name="esr-system-info-list" type="inventory.aai.onap.org.v11.EsrSystemInfoList" />
+				<xml-element container-type="java.util.ArrayList" java-attribute="vipIpv4AddressList" name="vip-ipv4-address-list" type="inventory.aai.onap.org.v11.VipIpv4AddressList" />
+				<xml-element container-type="java.util.ArrayList" java-attribute="vipIpv6AddressList" name="vip-ipv6-address-list" type="inventory.aai.onap.org.v11.VipIpv6AddressList" />
 			</java-attributes>
 			<xml-properties>
 				<xml-property name="description" value="cloud-region designates an installation of a cloud cluster or region or instantiation." />
@@ -1339,7 +1341,7 @@
 			<xml-properties>
 				<xml-property name="description" value="IPv6 Address Range" />
 				<xml-property name="indexedProps" value="l3-interface-ipv6-address,vlan-id-inner,neutron-network-id,neutron-subnet-id" />
-				<xml-property name="dependentOn" value="vlan,l-interface" />
+				<xml-property name="dependentOn" value="vlan,l-interface,vnfc" />
 			</xml-properties>
 		</java-type>
 
@@ -2864,8 +2866,6 @@
 				<xml-element java-attribute="routeTableReferences" name="route-table-references" type="inventory.aai.onap.org.v11.RouteTableReferences" />
 				<xml-element java-attribute="instanceGroups" name="instance-groups" type="inventory.aai.onap.org.v11.InstanceGroups" />
 				<xml-element java-attribute="zones" name="zones" type="inventory.aai.onap.org.v11.Zones" />
-				<xml-element java-attribute="vipIpv4AddressList" name="vip-ipv4-address-list" type="inventory.aai.onap.org.v11.VipIpv4AddressList" />
-				<xml-element java-attribute="vipIpv6AddressList" name="vip-ipv6-address-list" type="inventory.aai.onap.org.v11.VipIpv6AddressList" />
 			</java-attributes>
 		</java-type>
         <java-type name="Configurations">
@@ -6248,6 +6248,7 @@
 			<xml-properties>
 				<xml-property name="description" value="IPv4 Address Range" />
 				<xml-property name="indexedProps" value="vip-ipv4-address,vlan-id-inner,neutron-network-id,neutron-subnet-id" />
+				<xml-property name="dependentOn" value="cloud-region" />
 			</xml-properties>
 		</java-type>
 
@@ -6299,6 +6300,7 @@
 			<xml-properties>
 				<xml-property name="description" value="IPv6 Address Range" />
 				<xml-property name="indexedProps" value="vip-ipv6-address,vlan-id-inner,neutron-network-id,neutron-subnet-id" />
+				<xml-property name="dependentOn" value="cloud-region" />
 			</xml-properties>
 		</java-type>
 	</java-types>
