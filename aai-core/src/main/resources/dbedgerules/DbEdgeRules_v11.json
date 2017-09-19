@@ -2124,6 +2124,72 @@
 			"prevent-delete": "NONE"
 		},
 		{
+			"from": "cloud-region",
+			"to": "vip-ipv4-address-list",
+			"label": "hasIpAddress",
+			"direction": "OUT",
+			"multiplicity": "One2Many",
+			"contains-other-v": "${direction}",
+			"delete-other-v": "NONE",
+			"SVC-INFRA": "${direction}",
+			"prevent-delete": "NONE"
+		},
+		{
+			"from": "cloud-region",
+			"to": "vip-ipv6-address-list",
+			"label": "hasIpAddress",
+			"direction": "OUT",
+			"multiplicity": "One2Many",
+			"contains-other-v": "${direction}",
+			"delete-other-v": "NONE",
+			"SVC-INFRA": "${direction}",
+			"prevent-delete": "NONE"
+		},
+		{
+			"from": "vip-ipv4-address-list",
+			"to": "instance-group",
+			"label": "isMemberOf",
+			"direction": "OUT",
+			"multiplicity": "Many2Many",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"SVC-INFRA": "NONE",
+			"prevent-delete": "NONE"
+		},
+		{
+			"from": "vip-ipv6-address-list",
+			"to": "instance-group",
+			"label": "isMemberOf",
+			"direction": "OUT",
+			"multiplicity": "Many2Many",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"SVC-INFRA": "NONE",
+			"prevent-delete": "NONE"
+		},
+		{
+			"from": "vip-ipv4-address-list",
+			"to": "subnet",
+			"label": "isMemberOf",
+			"direction": "OUT",
+			"multiplicity": "Many2Many",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"SVC-INFRA": "${direction}",
+			"prevent-delete": "!${direction}"
+		},
+		{
+			"from": "vip-ipv6-address-list",
+			"to": "subnet",
+			"label": "isMemberOf",
+			"direction": "OUT",
+			"multiplicity": "Many2Many",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"SVC-INFRA": "${direction}",
+			"prevent-delete": "!${direction}"
+		},
+		{
 			"from": "l3-interface-ipv4-address-list",
 			"to": "vnfc",
 			"label": "belongsTo",
