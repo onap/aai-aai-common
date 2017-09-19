@@ -716,6 +716,17 @@
 			"prevent-delete": "NONE"
 		},
 		{
+			"from": "line-of-business",
+			"to": "generic-vnf",
+			"label": "realizedBy",
+			"direction": "OUT",
+			"multiplicity": "Many2Many",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"SVC-INFRA": "NONE",
+			"prevent-delete": "NONE"
+		},
+		{
 			"from": "logical-link",
 			"to": "lag-link",
 			"label": "usesLAGLink",
@@ -969,6 +980,17 @@
 			"prevent-delete": "!${direction}"
 		},
 		{
+			"from": "owning-entity",
+			"to": "service-instance",
+			"label": "owns",
+			"direction": "OUT",
+			"multiplicity": "One2Many",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"SVC-INFRA": "NONE",
+			"prevent-delete": "NONE"
+		},
+		{
 			"from": "p-interface",
 			"to": "l-interface",
 			"label": "hasLInterface",
@@ -999,6 +1021,17 @@
 			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
+			"prevent-delete": "NONE"
+		},
+		{
+			"from": "platform",
+			"to": "generic-vnf",
+			"label": "Uses",
+			"direction": "OUT",
+			"multiplicity": "Many2Many",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
 		},
 		{
@@ -1142,6 +1175,17 @@
 			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
+			"prevent-delete": "NONE"
+		},
+			{
+			"from": "project",
+			"to": "service-instance",
+			"label": "created",
+			"direction": "OUT",
+			"multiplicity": "One2Many",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
 		},
 		{

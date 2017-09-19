@@ -577,7 +577,7 @@
 					<xml-properties>
 						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
 					</xml-properties>
-				</xml-element>		
+				</xml-element>
 				<xml-element java-attribute="volumeGroups" name="volume-groups" type="inventory.aai.onap.org.v11.VolumeGroups" />
 				<xml-element java-attribute="tenants" name="tenants" type="inventory.aai.onap.org.v11.Tenants" />
 				<xml-element java-attribute="flavors" name="flavors" type="inventory.aai.onap.org.v11.Flavors" />
@@ -2237,7 +2237,45 @@
 			<java-attributes>
 				<xml-element java-attribute="connectors" name="connectors" type="inventory.aai.onap.org.v11.Connectors" />
 				<xml-element java-attribute="customers" name="customers" type="inventory.aai.onap.org.v11.Customers" />
+				<xml-element java-attribute="linesOfBusiness" name="lines-of-business" type="inventory.aai.onap.org.v11.LinesOfBusiness" />
+				<xml-element java-attribute="owningEntities" name="owning-entities" type="inventory.aai.onap.org.v11.OwningEntities" />
+				<xml-element java-attribute="platforms" name="platforms" type="inventory.aai.onap.org.v11.Platforms" />
+				<xml-element java-attribute="projects" name="projects" type="inventory.aai.onap.org.v11.Projects" />
 			</java-attributes>
+		</java-type>
+
+		<java-type name="Projects">
+			<xml-properties>
+				<xml-property name="description" value="Collection of projects" />
+			</xml-properties>
+			<xml-root-element name="projects" />
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="project" name="project" type="inventory.aai.onap.org.v11.Project" />
+			</java-attributes>
+		</java-type>
+
+		<java-type name="Project">
+			<xml-root-element name="project" />
+			<java-attributes>
+				<xml-element java-attribute="projectName" name="project-name" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="Name of the project deploying a service" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v11.RelationshipList" />
+			</java-attributes>
+			<xml-properties>
+				<xml-property name="description" value="describes the project" />
+				<xml-property name="indexedProps" value="project-name" />
+				<xml-property name="uniqueProps" value="project-name" />
+				<xml-property name="container" value="projects" />
+				<xml-property name="namespace" value="business" />
+			</xml-properties>
 		</java-type>
 
 		<java-type name="Connectors">
@@ -2357,7 +2395,115 @@
 				<xml-property name="namespace" value="business" />
 			</xml-properties>
 		</java-type>
+		
+		<java-type name="LinesOfBusiness">
+			<xml-properties>
+				<xml-property name="description" value="Collection of lines-of-business" />
+			</xml-properties>
+			<xml-root-element name="lines-of-business" />
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="lineOfBusiness" name="line-of-business" type="inventory.aai.onap.org.v11.LineOfBusiness" />
+			</java-attributes>
+		</java-type>
+		
+		<java-type name="LineOfBusiness">
+			<xml-root-element name="line-of-business" />
+			<java-attributes>
+				<xml-element java-attribute="lineOfBusinessName" name="line-of-business-name" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="Name of the line-of-business (product)" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v11.RelationshipList" />
+			</java-attributes>
+			<xml-properties>
+				<xml-property name="description" value="describes a line-of-business" />
+				<xml-property name="indexedProps" value="line-of-business-name" />
+				<xml-property name="uniqueProps" value="line-of-business-name" />
+				<xml-property name="container" value="lines-of-business" />
+				<xml-property name="namespace" value="business" />
+			</xml-properties>
+		</java-type>
+		
+		<java-type name="OwningEntities">
+			<xml-properties>
+				<xml-property name="description" value="Collection of owning-entities" />
+			</xml-properties>
+			<xml-root-element name="owning-entities" />
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="owningEntity" name="owning-entity" type="inventory.aai.onap.org.v11.OwningEntity" />
+			</java-attributes>
+		</java-type>
 
+		<java-type name="OwningEntity">
+			<xml-root-element name="owning-entity" />
+			<java-attributes>
+				<xml-element java-attribute="owningEntityId" name="owning-entity-id" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="UUID of an owning entity" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="owningEntityName" name="owning-entity-name" required="true" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Owning entity name" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v11.RelationshipList" />
+			</java-attributes>
+			<xml-properties>
+				<xml-property name="description" value="describes an owning-entity" />
+				<xml-property name="indexedProps" value="owning-entity-id, owning-entity-name" />
+				<xml-property name="searchable" value="owning-entity-id" />
+				<xml-property name="uniqueProps" value="owning-entity-id, owning-entity-name" />
+				<xml-property name="container" value="owning-entities" />
+				<xml-property name="namespace" value="business" />
+			</xml-properties>
+		</java-type>
+		
+		<java-type name="Platforms">
+			<xml-properties>
+				<xml-property name="description" value="Collection of platforms" />
+			</xml-properties>
+			<xml-root-element name="platforms" />
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="platform" name="platform" type="inventory.aai.onap.org.v11.Platform" />
+			</java-attributes>
+		</java-type>
+		
+		<java-type name="Platform">
+			<xml-root-element name="platform" />
+			<java-attributes>
+				<xml-element java-attribute="platformName" name="platform-name" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="Name of the platform" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v11.RelationshipList" />
+			</java-attributes>
+			<xml-properties>
+				<xml-property name="description" value="describes a platform" />
+				<xml-property name="indexedProps" value="platform-name" />
+				<xml-property name="uniqueProps" value="platform-name" />
+				<xml-property name="container" value="platforms" />
+				<xml-property name="namespace" value="business" />
+			</xml-properties>
+		</java-type>
+		
 		<java-type name="ServiceSubscriptions">
 			<xml-properties>
 				<xml-property name="description" value="Collection of objects that group service instances." />
