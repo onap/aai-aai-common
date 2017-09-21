@@ -16,7 +16,6 @@
     <properties>
         <checkstyle.config.location>google_checks.xml</checkstyle.config.location>
 	<onap.nexus.url>https://nexus.onap.org</onap.nexus.url>
-        <sitePath>/content/sites/site/${project.groupId}/${project.artifactId}/${project.version}</sitePath>
     </properties>
 
 
@@ -110,13 +109,6 @@
             </plugin>
         </plugins>
     </build>
-
-    <distributionManagement>
-        <site>
-            <id>ecomp-site</id>
-            <url>dav:${onap.nexus.url}${sitePath}</url>
-        </site>
-    </distributionManagement>
 
     <reporting>
         <plugins>
