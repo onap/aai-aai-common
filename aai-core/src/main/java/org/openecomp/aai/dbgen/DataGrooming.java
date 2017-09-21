@@ -938,7 +938,7 @@ public class DataGrooming {
 										if( (ghost2 != null) && ghost2FixOn ){
 											ghost2.remove();
 										}
-										else {
+										else if (vOut != null) {
 											vOut.remove();
 										}
 										if (singleCommits) {
