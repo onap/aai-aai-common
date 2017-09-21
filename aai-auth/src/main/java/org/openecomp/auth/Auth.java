@@ -28,36 +28,29 @@ package org.openecomp.auth;
 import org.apache.http.cookie.Cookie;
 
 public class Auth {
-  private AuthCore authCore;
 
-  public Auth(String filename) throws Exception {
-    this.authCore = new AuthCore(filename);
-  }
+    private AuthCore authCore;
 
-  public boolean auth_basic(String username, String authFunction) throws Exception {
-    return authCore.authorize(username, authFunction);
-  }
-
-  public boolean auth_cookie(Cookie cookie, String authFunction, StringBuilder username)
-    throws Exception {
-    if (cookie == null) {
-      return false;
+    public Auth(String filename) throws Exception {
+        this.authCore = new AuthCore(filename);
     }
-    return authCore.authorize(username.toString(), authFunction);
-  }
 
-  /**
-   *  Returns true if the user is allowed to access a function.
-   * @param authUser
-   *        - String value of the user.
-   * @param authAction
-   *        - String value of the function.
-   */
-  public boolean validateRequest(String authUser, String authAction) throws Exception {
-
-    if (authUser == null || authAction == null) {
-      return false;
+    public boolean authBasic(String username, String authFunction) throws Exception {
+        return authCore.authorize(username, authFunction);
     }
-    return authCore.authorize(authUser, authAction);
-  }
+
+    public boolean authCookie(Cookie cookie, String authFunction, StringBuilder username) throws Exception {
+        return cookie != null && authCore.authorize(username.toString(), authFunction);
+    }
+
+    /**
+     *  Returns true if the user is allowed to access a function.
+     * @param authUser
+     *        - String value of the user.
+     * @param authAction
+     *        - String value of the function.
+     */
+    public boolean validateRequest(String authUser, String authAction) throws Exception {
+        return authUser != null && authAction != null && authCore.authorize(authUser, authAction);
+    }
 }
