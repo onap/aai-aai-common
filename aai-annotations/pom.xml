@@ -11,9 +11,9 @@
     <artifactId>aai-annotations</artifactId>
     <name>aai-annotations</name>
     <packaging>jar</packaging>
+    <version>1.1.0-SNAPSHOT</version>
     <properties>
 	<onap.nexus.url>https://nexus.onap.org</onap.nexus.url>
-        <sitePath>/content/sites/site/${project.groupId}/${project.artifactId}/${project.version}</sitePath>
     </properties>
     <dependencies>
         <dependency>
@@ -36,13 +36,6 @@
             </plugin>
         </plugins>
     </build>
-
-    <distributionManagement>
-        <site>
-            <id>ecomp-site</id>
-            <url>dav:${onap.nexus.url}${sitePath}</url>
-        </site>
-    </distributionManagement>
 
     <!-- Plugins and repositories -->
     <pluginRepositories>
