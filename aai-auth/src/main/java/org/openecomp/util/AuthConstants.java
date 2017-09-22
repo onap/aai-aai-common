@@ -26,19 +26,19 @@ package org.openecomp.util;
 
 public class AuthConstants {
 
-  public static final String rolesNodePath = "roles";
+    public static final String ROLES_NODE_PATH = "roles";
 
-  public static final String roleNamePath = "name";
+    public static final String ROLE_NAME_PATH = "name";
 
-  public static final String usersNodePath = "users";
+    public static final String USERS_NODE_PATH = "users";
 
-  public static final String functionsNodePath = "functions";
+    public static final String FUNCTIONS_NODE_PATH = "functions";
 
-  public static final String functionNamePath = "name";
+    public static final String FUNCTION_NAME_PATH = "name";
 
-  public static final String methodsNodePath = "methods";
+    public static final String METHODS_NODE_PATH = "methods";
 
-  public static final String methodNamePath = "name";
+    public static final String METHOD_NAME_PATH = "name";
 
-  public static final String userNodePath = "username";
+    public static final String USER_NODE_PATH = "username";
 }
