@@ -940,6 +940,13 @@
 						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
 					</xml-properties>
 				</xml-element>
+
+				<xml-element java-attribute="vnfInstanceID" name="vnf-instance-id" required="false" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="instance id of vnf where vm belongs" />
+					</xml-properties>
+				</xml-element>
+
 				<xml-element java-attribute="volumes" name="volumes" type="inventory.aai.onap.org.v11.Volumes" />
 				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v11.RelationshipList" />
 				<xml-element java-attribute="lInterfaces" name="l-interfaces" type="inventory.aai.onap.org.v11.LInterfaces" />
@@ -2590,6 +2597,22 @@
 						<xml-property name="description" value="This field will store the workload context assigned to the service-instance." />
 					</xml-properties>
 				</xml-element>
+				<xml-element java-attribute="createdAt" name="created-at" required="false" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="create time of Network Service." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="updatedAt" name="updated-at" required="false" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="last update of Network Service." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="description" name="description" required="false" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="short description for service-instance." />
+					</xml-properties>
+				</xml-element>
+				<!-- for storing the nsd_id create edge between services -->
 				<xml-element java-attribute="modelInvariantId" name="model-invariant-id" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="the ASDC model id for this resource or service model." />
@@ -4113,6 +4136,11 @@
 						<xml-property name="description" value="Unique id of VNF.  This is unique across the graph." />
 					</xml-properties>
 				</xml-element>
+				<xml-element java-attribute="vnfInstnaceId" name="vnf-instanceId" required="false" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="vnf instance id." />
+					</xml-properties>
+				</xml-element>
 				<xml-element java-attribute="vnfName" name="vnf-name" required="true" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Name of VNF." />
@@ -4163,6 +4191,46 @@
 					<xml-properties>
 						<xml-property name="description" value="Orchestration status of this VNF, used by MSO." />
 						<xml-property name="suggestibleOnSearch" value="true"/>
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="vnfmId" name="vnfm-id" required="false" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="vnfm id"/>
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="vnfmName" name="vnfm-name" required="false" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Name of vnf manager"/>
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="vnfPackageName" name="vnf-package-name" required="false" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value=""/>
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="vnfDiscriptorName" name="vnf-discriptor-name" required="false" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="vnf discriptor name"/>
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="vimId" name="vim-id" required="false" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="id of vim"/>
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="vimName" name="vim-name" required="false" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="name for vim"/>
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="vimTenant" name="vim-tenant" required="false" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="tenanat id"/>
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="jobId" name="job-id" required="false" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="job id corresponding to vnf"/>
 					</xml-properties>
 				</xml-element>
 				<xml-element java-attribute="heatStackId" name="heat-stack-id" type="java.lang.String">
@@ -4228,6 +4296,21 @@
 				<xml-element java-attribute="vdiskUnits" name="vdisk-units" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="units associated with vdisk, used for VNFs with no vservers/flavors, to be used only by uCPE" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="nshd" name="nshd" type="java.lang.Long">
+					<xml-properties>
+						<xml-property name="description" value="number of associated SHD in vnf." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="nvm" name="nvm" type="java.lang.Long">
+					<xml-properties>
+						<xml-property name="description" value="number of vms in vnf." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="nnet" name="nnet" type="java.lang.Long">
+					<xml-properties>
+						<xml-property name="description" value="number of network in vnf." />
 					</xml-properties>
 				</xml-element>
 				<xml-element default-value="false" required="true" java-attribute="inMaint" name="in-maint" type="java.lang.Boolean">
