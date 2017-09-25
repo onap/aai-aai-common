@@ -441,6 +441,28 @@
 			"prevent-delete": "NONE"
 		},
 		{
+			"from": "generic-vnf",
+			"to": "esr-vnfm",
+			"label": "uses",
+			"direction": "OUT",
+			"multiplicity": "Many2Many",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"SVC-INFRA": "NONE",
+			"prevent-delete": "!${direction}"
+		},
+		{
+			"from": "generic-vnf",
+			"to": "tenant",
+			"label": "uses",
+			"direction": "OUT",
+			"multiplicity": "Many2Many",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"SVC-INFRA": "NONE",
+			"prevent-delete": "!${direction}"
+		},
+		{
 			"from": "group-assignment",
 			"to": "tenant",
 			"label": "has",
