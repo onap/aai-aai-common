@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a437d4f_bd4798bb",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 4301,
+      "author": {
+        "id": 39
+      },
+      "writtenOn": "2017-09-25T12:38:28Z",
+      "side": 1,
+      "message": "what\u0027s the nvm/nnet usage ?",
+      "revId": "13b38e2126ca93e7051285a830ed0638fff8e144",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
