@@ -16,6 +16,24 @@
       "revId": "13b38e2126ca93e7051285a830ed0638fff8e144",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_3d59688e",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 4301,
+      "author": {
+        "id": 879
+      },
+      "writtenOn": "2017-09-25T12:41:58Z",
+      "side": 1,
+      "message": "number of vm\u0027s in vnf to represent the \"maxVm\" (from VnfEntity) and nnet to represent \"maxnet\".",
+      "parentUuid": "9a437d4f_bd4798bb",
+      "revId": "13b38e2126ca93e7051285a830ed0638fff8e144",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
