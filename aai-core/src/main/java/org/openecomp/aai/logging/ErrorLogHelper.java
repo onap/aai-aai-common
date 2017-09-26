@@ -581,7 +581,7 @@ public class ErrorLogHelper {
 											.append(e.getMessage())
 											.toString();
 
-		LoggingContext.responseCode(errorObject.getErrorCodeString());
+		LoggingContext.responseCode(Integer.toString(errorObject.getHTTPResponseCode().getStatusCode()));
 		LoggingContext.responseDescription(errorMessage);
 		LoggingContext.statusCode(StatusCode.ERROR);
 

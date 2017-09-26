@@ -30,6 +30,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.openecomp.aai.logging.ErrorLogHelper;
 import org.openecomp.aai.util.AAIConstants;
+import org.openecomp.aai.logging.LoggingContext;
+import org.openecomp.aai.logging.LoggingContext.LoggingField;
+import org.openecomp.aai.logging.LoggingContext.StatusCode;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -103,6 +106,9 @@ public class AAIDmaapEventJMSConsumer implements MessageListener {
 				LOGGER.info(eventName + "|" + aaiEvent);
 				if ("AAI-EVENT".equals(eventName)) {
 					this.sentWithHttp(this.httpClient, this.aaiEventUrl, aaiEvent);
+				} else {
+					LoggingContext.statusCode(StatusCode.ERROR);
+					LOGGER.error(eventName + "|Event Topic invalid.");
 				}
 			} catch (java.net.SocketException e) {
 				if (!e.getMessage().contains("Connection reset")) {
