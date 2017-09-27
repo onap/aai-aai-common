@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "9a437d4f_7a4c849e",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 943,
+      "author": {
+        "id": 879
+      },
+      "writtenOn": "2017-09-27T11:40:51Z",
+      "side": 1,
+      "message": "Yes this edge already exist.\n\n\"from\": \"generic-vnf\",\n\"to\": \"vserver\",\n\nI will try to use it.\n\nI have another question, when we are placing the vm(vSservier) node in AAI, we don\u0027t have information for cloud-region and tenant which is required info for AAI.\n\nSo, is it possible to map cloud-region and tenant from vnf-instance-id, please suggest.",
+      "parentUuid": "9a437d4f_043e4828",
+      "revId": "13b38e2126ca93e7051285a830ed0638fff8e144",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a437d4f_840b588d",
         "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
         "patchSetId": 1
@@ -30,6 +48,24 @@
       "writtenOn": "2017-09-27T10:49:35Z",
       "side": 1,
       "message": "vnfInstnaceId is spelled wrong.  vnf-instanceId doesn\u0027t conform to usual hyphencase style, needs to be vnf-instance-id",
+      "revId": "13b38e2126ca93e7051285a830ed0638fff8e144",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_5a51c034",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 4139,
+      "author": {
+        "id": 879
+      },
+      "writtenOn": "2017-09-27T11:40:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a437d4f_840b588d",
       "revId": "13b38e2126ca93e7051285a830ed0638fff8e144",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "9a437d4f_1a47b878",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 4196,
+      "author": {
+        "id": 879
+      },
+      "writtenOn": "2017-09-27T11:40:51Z",
+      "side": 1,
+      "message": "Currently this edge is not available between generic-vnf and esr-vnfm. I think we can introduce it.",
+      "parentUuid": "9a437d4f_24fa6c75",
+      "revId": "13b38e2126ca93e7051285a830ed0638fff8e144",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a437d4f_e4efc4af",
         "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
         "patchSetId": 1
@@ -64,6 +118,24 @@
       "writtenOn": "2017-09-27T10:49:35Z",
       "side": 1,
       "message": "if we define vnfmName as a naming attribute, vnfmName would be returned in the relationshipList",
+      "revId": "13b38e2126ca93e7051285a830ed0638fff8e144",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_7a336414",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 4201,
+      "author": {
+        "id": 879
+      },
+      "writtenOn": "2017-09-27T11:40:51Z",
+      "side": 1,
+      "message": "Could you please share example.\n\nIn the esf-vnfm node, we don\u0027t have attribute for vnf-name.",
+      "parentUuid": "9a437d4f_e4efc4af",
       "revId": "13b38e2126ca93e7051285a830ed0638fff8e144",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
@@ -87,6 +159,24 @@
     },
     {
       "key": {
+        "uuid": "9a437d4f_5a38a0ee",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 4216,
+      "author": {
+        "id": 879
+      },
+      "writtenOn": "2017-09-27T11:40:51Z",
+      "side": 1,
+      "message": "I think you are suggesting us to first create the esr-vnfm node then create edge between generic-vnf and esr-vnfm.\n\nplease correct me if I am wrong.",
+      "parentUuid": "9a437d4f_6433d462",
+      "revId": "13b38e2126ca93e7051285a830ed0638fff8e144",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a437d4f_c4ecc0bd",
         "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
         "patchSetId": 1
@@ -98,6 +188,24 @@
       "writtenOn": "2017-09-27T10:49:35Z",
       "side": 1,
       "message": "seems like this would be an edge to the tenant, not modelled like a foreign key?",
+      "revId": "13b38e2126ca93e7051285a830ed0638fff8e144",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_ba2c2cad",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 4226,
+      "author": {
+        "id": 879
+      },
+      "writtenOn": "2017-09-27T11:40:51Z",
+      "side": 1,
+      "message": "generic-vnf doesn\u0027t have any edge to tenant. Could you please suggest how to relate generic-vnf and tenant.",
+      "parentUuid": "9a437d4f_c4ecc0bd",
       "revId": "13b38e2126ca93e7051285a830ed0638fff8e144",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
@@ -150,6 +258,24 @@
       "writtenOn": "2017-09-27T10:49:35Z",
       "side": 1,
       "message": "wouldn\u0027t it be better to traverse the edges and count them rather than storing in an attribute that can go out of sync?",
+      "revId": "13b38e2126ca93e7051285a830ed0638fff8e144",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_9a29689d",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 4306,
+      "author": {
+        "id": 879
+      },
+      "writtenOn": "2017-09-27T11:40:51Z",
+      "side": 1,
+      "message": "In this attribute we would like to keep \"max vm\" required for vnf.\n\ne.g.\nprivate Integer maxVm;\n\n    /**  */\n    private Integer maxCpu;\n\n    /**  */\n    private Integer maxDisk;\n\n    /**  */\n    private Integer maxRam;\n\n    /**  */\n    private Integer maxShd;\n\n    /**  */\n    private Integer maxNet;",
+      "parentUuid": "9a437d4f_4438d03c",
       "revId": "13b38e2126ca93e7051285a830ed0638fff8e144",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
