@@ -136,7 +136,7 @@
                         <version>5.6</version>
                     </docletArtifact>
                     <additionalparam>-views -Xdoclint:none</additionalparam>
-                    <excludePackageNames>org.openecomp.aai.domain.yang.*:org.openecomp.aai.util.*</excludePackageNames>
+                    <excludePackageNames>org.onap.aai.domain.yang.*:org.onap.aai.util.*</excludePackageNames>
                     <useStandardDocletOptions>true</useStandardDocletOptions>
                 </configuration>
             </plugin>
