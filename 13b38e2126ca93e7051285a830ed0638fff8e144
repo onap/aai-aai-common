@@ -2,6 +2,108 @@
   "comments": [
     {
       "key": {
+        "uuid": "9a437d4f_043e4828",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 943,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2017-09-27T10:49:35Z",
+      "side": 1,
+      "message": "Couldn\u0027t this be modeled as a cousin edge to the vnf?  Maybe that edge already exists?",
+      "revId": "13b38e2126ca93e7051285a830ed0638fff8e144",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_840b588d",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 4139,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2017-09-27T10:49:35Z",
+      "side": 1,
+      "message": "vnfInstnaceId is spelled wrong.  vnf-instanceId doesn\u0027t conform to usual hyphencase style, needs to be vnf-instance-id",
+      "revId": "13b38e2126ca93e7051285a830ed0638fff8e144",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_24fa6c75",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 4196,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2017-09-27T10:49:35Z",
+      "side": 1,
+      "message": "shouldn\u0027t this be an edge to the vnfm, not a foreign key like this?",
+      "revId": "13b38e2126ca93e7051285a830ed0638fff8e144",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_e4efc4af",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 4201,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2017-09-27T10:49:35Z",
+      "side": 1,
+      "message": "if we define vnfmName as a naming attribute, vnfmName would be returned in the relationshipList",
+      "revId": "13b38e2126ca93e7051285a830ed0638fff8e144",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_6433d462",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 4216,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2017-09-27T10:49:35Z",
+      "side": 1,
+      "message": "See comments above about vnfmId and vnfmName, maybe this is better served by an edge",
+      "revId": "13b38e2126ca93e7051285a830ed0638fff8e144",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_c4ecc0bd",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 4226,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2017-09-27T10:49:35Z",
+      "side": 1,
+      "message": "seems like this would be an edge to the tenant, not modelled like a foreign key?",
+      "revId": "13b38e2126ca93e7051285a830ed0638fff8e144",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a437d4f_bd4798bb",
         "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
         "patchSetId": 1
@@ -31,6 +133,23 @@
       "side": 1,
       "message": "number of vm\u0027s in vnf to represent the \"maxVm\" (from VnfEntity) and nnet to represent \"maxnet\".",
       "parentUuid": "9a437d4f_bd4798bb",
+      "revId": "13b38e2126ca93e7051285a830ed0638fff8e144",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_4438d03c",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 4306,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2017-09-27T10:49:35Z",
+      "side": 1,
+      "message": "wouldn\u0027t it be better to traverse the edges and count them rather than storing in an attribute that can go out of sync?",
       "revId": "13b38e2126ca93e7051285a830ed0638fff8e144",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
