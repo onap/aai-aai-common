@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "9a437d4f_9de1622c",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 943,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2017-09-27T12:50:02Z",
+      "side": 1,
+      "message": "generic-vnf should have a relationship to the vserver, which has a parent tenant and a grandparent cloud-region",
+      "parentUuid": "9a437d4f_7a4c849e",
+      "revId": "13b38e2126ca93e7051285a830ed0638fff8e144",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a437d4f_840b588d",
         "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
         "patchSetId": 1
@@ -107,6 +125,24 @@
     },
     {
       "key": {
+        "uuid": "9a437d4f_dddb6a7a",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 4196,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2017-09-27T12:50:02Z",
+      "side": 1,
+      "message": "Sounds like the edge rule should be added",
+      "parentUuid": "9a437d4f_24fa6c75",
+      "revId": "13b38e2126ca93e7051285a830ed0638fff8e144",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a437d4f_e4efc4af",
         "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
         "patchSetId": 1
@@ -136,6 +172,24 @@
       "side": 1,
       "message": "Could you please share example.\n\nIn the esf-vnfm node, we don\u0027t have attribute for vnf-name.",
       "parentUuid": "9a437d4f_e4efc4af",
+      "revId": "13b38e2126ca93e7051285a830ed0638fff8e144",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_7d4fde6b",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 4201,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2017-09-27T12:50:02Z",
+      "side": 1,
+      "message": "mayve it should have vnfm-name?",
+      "parentUuid": "9a437d4f_7a336414",
       "revId": "13b38e2126ca93e7051285a830ed0638fff8e144",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
@@ -177,6 +231,24 @@
     },
     {
       "key": {
+        "uuid": "9a437d4f_5d541afe",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 4216,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2017-09-27T12:50:02Z",
+      "side": 1,
+      "message": "that\u0027s correct",
+      "parentUuid": "9a437d4f_5a38a0ee",
+      "revId": "13b38e2126ca93e7051285a830ed0638fff8e144",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a437d4f_c4ecc0bd",
         "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
         "patchSetId": 1
@@ -206,6 +278,24 @@
       "side": 1,
       "message": "generic-vnf doesn\u0027t have any edge to tenant. Could you please suggest how to relate generic-vnf and tenant.",
       "parentUuid": "9a437d4f_c4ecc0bd",
+      "revId": "13b38e2126ca93e7051285a830ed0638fff8e144",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_3d55d6f9",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 4226,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2017-09-27T12:50:02Z",
+      "side": 1,
+      "message": "Sounds like maybe it needs an edge rule?  Point is to not store relationships to other objects in attributes, but use edges.",
+      "parentUuid": "9a437d4f_ba2c2cad",
       "revId": "13b38e2126ca93e7051285a830ed0638fff8e144",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
@@ -276,6 +366,24 @@
       "side": 1,
       "message": "In this attribute we would like to keep \"max vm\" required for vnf.\n\ne.g.\nprivate Integer maxVm;\n\n    /**  */\n    private Integer maxCpu;\n\n    /**  */\n    private Integer maxDisk;\n\n    /**  */\n    private Integer maxRam;\n\n    /**  */\n    private Integer maxShd;\n\n    /**  */\n    private Integer maxNet;",
       "parentUuid": "9a437d4f_4438d03c",
+      "revId": "13b38e2126ca93e7051285a830ed0638fff8e144",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_1df692f9",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 4306,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2017-09-27T12:50:02Z",
+      "side": 1,
+      "message": "ok, got it",
+      "parentUuid": "9a437d4f_9a29689d",
       "revId": "13b38e2126ca93e7051285a830ed0638fff8e144",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
