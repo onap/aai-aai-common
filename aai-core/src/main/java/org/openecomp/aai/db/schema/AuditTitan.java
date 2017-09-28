@@ -20,13 +20,9 @@
 
 package org.openecomp.aai.db.schema;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
+
 import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
 
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 
@@ -66,7 +62,7 @@ public class AuditTitan extends Auditor {
 		TitanManagement mgmt = graph.openManagement();
 		Iterable<PropertyKey> iterable = mgmt.getRelationTypes(PropertyKey.class);
 		Iterator<PropertyKey> titanProperties = iterable.iterator();
-		PropertyKey propKey = null;
+		PropertyKey propKey;
 		while (titanProperties.hasNext()) {
 			propKey = titanProperties.next();
 			DBProperty prop = new DBProperty();
@@ -86,7 +82,7 @@ public class AuditTitan extends Auditor {
 		TitanManagement mgmt = graph.openManagement();
 		Iterable<TitanGraphIndex> iterable = mgmt.getGraphIndexes(Vertex.class);
 		Iterator<TitanGraphIndex> titanIndexes = iterable.iterator();
-		TitanGraphIndex titanIndex = null;
+		TitanGraphIndex titanIndex;
 		while (titanIndexes.hasNext()) {
 			titanIndex = titanIndexes.next();
 			if (titanIndex.isCompositeIndex()) {
@@ -112,7 +108,7 @@ public class AuditTitan extends Auditor {
 		TitanManagement mgmt = graph.openManagement();
 		Iterable<EdgeLabel> iterable = mgmt.getRelationTypes(EdgeLabel.class);
 		Iterator<EdgeLabel> titanEdgeLabels = iterable.iterator();
-		EdgeLabel edgeLabel = null;
+		EdgeLabel edgeLabel;
 		while (titanEdgeLabels.hasNext()) {
 			edgeLabel = titanEdgeLabels.next();
 			EdgeProperty edgeProperty = new EdgeProperty();
