@@ -1,23 +1,28 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!--
-  ============LICENSE_START=======================================================
-  org.openecomp.aai
-  ================================================================================
-  Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
-  ================================================================================
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-     http://www.apache.org/licenses/LICENSE-2.0
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
-  ============LICENSE_END=========================================================
-  -->
 
-<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm" package-name="inventory.aai.openecomp.org.v9" xml-mapping-metadata-complete="true">
+    ============LICENSE_START=======================================================
+    org.onap.aai
+    ================================================================================
+    Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+    ================================================================================
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+    ============LICENSE_END=========================================================
+
+    ECOMP is a trademark and service mark of AT&T Intellectual Property.
+
+-->
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm" package-name="inventory.aai.onap.org.v9" xml-mapping-metadata-complete="true">
 	<xml-schema element-form-default="QUALIFIED">
 		<xml-ns namespace-uri="http://org.openecomp.aai.inventory/v9" />
 	</xml-schema>
@@ -25,7 +30,7 @@
 	<java-type name="Inventory">
 			<xml-root-element name="inventory" />
 			<java-attributes>
-				<xml-element java-attribute="network" name="network" type="inventory.aai.openecomp.org.v9.Network" />
+				<xml-element java-attribute="network" name="network" type="inventory.aai.onap.org.v9.Network" />
 			</java-attributes>
 		</java-type>
 		<java-type name="Network">
@@ -34,8 +39,8 @@
 			</xml-properties>
 			<xml-root-element name="network" />
 			<java-attributes>
-				<xml-element java-attribute="testObjects" name="test-objects" type="inventory.aai.openecomp.org.v9.TestObjects" />
-				<xml-element java-attribute="vpnBindings" name="vpn-bindings" type="inventory.aai.openecomp.org.v9.VpnBindings" />
+				<xml-element java-attribute="testObjects" name="test-objects" type="inventory.aai.onap.org.v9.TestObjects" />
+				<xml-element java-attribute="vpnBindings" name="vpn-bindings" type="inventory.aai.onap.org.v9.VpnBindings" />
 			</java-attributes>
 		</java-type>
 		<java-type name="ServiceDesignAndCreation">
@@ -44,7 +49,7 @@
 			</xml-properties>
 			<xml-root-element name="service-design-and-creation" />
 			<java-attributes>
-				<xml-element java-attribute="models" name="models" type="inventory.aai.openecomp.org.v9.Models" />
+				<xml-element java-attribute="models" name="models" type="inventory.aai.onap.org.v9.Models" />
 			</java-attributes>
 		</java-type>
 		<java-type name="Models">
@@ -53,7 +58,7 @@
 			</xml-properties>
 			<xml-root-element name="models" />
 			<java-attributes>
-				<xml-element container-type="java.util.ArrayList" java-attribute="model" name="model" type="inventory.aai.openecomp.org.v9.Model" />
+				<xml-element container-type="java.util.ArrayList" java-attribute="model" name="model" type="inventory.aai.onap.org.v9.Model" />
 			</java-attributes>
 		</java-type>
 
@@ -83,7 +88,7 @@
 						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
 					</xml-properties>
 				</xml-element>
-				<xml-element java-attribute="modelVers" name="model-vers" type="inventory.aai.openecomp.org.v9.ModelVers" />
+				<xml-element java-attribute="modelVers" name="model-vers" type="inventory.aai.onap.org.v9.ModelVers" />
 			</java-attributes>
 		</java-type>
 
@@ -91,7 +96,7 @@
 		<java-type name="ModelVers">
 			<xml-root-element name="model-vers" />
 			<java-attributes>
-				<xml-element container-type="java.util.ArrayList" java-attribute="modelVer" name="model-ver" type="inventory.aai.openecomp.org.v9.ModelVer" />
+				<xml-element container-type="java.util.ArrayList" java-attribute="modelVer" name="model-ver" type="inventory.aai.onap.org.v9.ModelVer" />
 			</java-attributes>
 		</java-type>
 		
@@ -135,7 +140,7 @@
 		<java-type name="TestObjects">
 			<xml-root-element name="test-objects" />
 			<java-attributes>
-				<xml-element container-type="java.util.ArrayList" java-attribute="testObject" name="test-object" type="inventory.aai.openecomp.org.v9.TestObject" />
+				<xml-element container-type="java.util.ArrayList" java-attribute="testObject" name="test-object" type="inventory.aai.onap.org.v9.TestObject" />
 			</java-attributes>
 			<xml-properties>
 				<xml-property name="maximumDepth" value="0" />
@@ -363,7 +368,7 @@
 						<xml-property name="description" value="Path to the controller object." />
 					</xml-properties>
 				</xml-element>				
-				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.openecomp.org.v9.RelationshipList" />
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v9.RelationshipList" />
 			</java-attributes>
 			<xml-properties>
 				<xml-property name="description" value="General purpose VNF" />
@@ -380,7 +385,7 @@
 		<java-type name="PortGroups">
 			<xml-root-element name="port-groups" />
 			<java-attributes>
-				<xml-element container-type="java.util.ArrayList" java-attribute="portGroup" name="port-group" type="inventory.aai.openecomp.org.v9.PortGroup" />
+				<xml-element container-type="java.util.ArrayList" java-attribute="portGroup" name="port-group" type="inventory.aai.onap.org.v9.PortGroup" />
 			</java-attributes>
 		</java-type>
 
@@ -454,7 +459,7 @@
 		<java-type name="RelationshipList">
 			<xml-root-element name="relationship-list" />
 			<java-attributes>
-				<xml-element container-type="java.util.ArrayList" java-attribute="relationship" name="relationship" type="inventory.aai.openecomp.org.v9.Relationship" />
+				<xml-element container-type="java.util.ArrayList" java-attribute="relationship" name="relationship" type="inventory.aai.onap.org.v9.Relationship" />
 			</java-attributes>
 		</java-type>
 
@@ -471,8 +476,8 @@
 						<xml-property name="description" value="URL to the object in A&amp;AI." />
 					</xml-properties>
 				</xml-element>
-				<xml-element container-type="java.util.ArrayList" java-attribute="relationshipData" name="relationship-data" type="inventory.aai.openecomp.org.v9.RelationshipData" />
-				<xml-element container-type="java.util.ArrayList" java-attribute="relatedToProperty" name="related-to-property" type="inventory.aai.openecomp.org.v9.RelatedToProperty" />
+				<xml-element container-type="java.util.ArrayList" java-attribute="relationshipData" name="relationship-data" type="inventory.aai.onap.org.v9.RelationshipData" />
+				<xml-element container-type="java.util.ArrayList" java-attribute="relatedToProperty" name="related-to-property" type="inventory.aai.onap.org.v9.RelatedToProperty" />
 			</java-attributes>
 		</java-type>
 
@@ -525,7 +530,7 @@
 		<java-type name="VpnBindings">
 			<xml-root-element name="vpn-bindings" />
 			<java-attributes>
-				<xml-element container-type="java.util.ArrayList" java-attribute="vpnBinding" name="vpn-binding" type="inventory.aai.openecomp.org.v9.VpnBinding" />
+				<xml-element container-type="java.util.ArrayList" java-attribute="vpnBinding" name="vpn-binding" type="inventory.aai.onap.org.v9.VpnBinding" />
 			</java-attributes>
 		</java-type>
 
@@ -574,7 +579,7 @@
 						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
 					</xml-properties>
 				</xml-element>
-				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.openecomp.org.v9.RelationshipList">
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v9.RelationshipList">
 					<xml-properties>
 						<xml-property name="description" value="l3-networks relate to vpn-bindings" />
 					</xml-properties>
