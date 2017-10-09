@@ -55,6 +55,24 @@
     },
     {
       "key": {
+        "uuid": "5a2585a7_d39f8c4f",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 943,
+      "author": {
+        "id": 879
+      },
+      "writtenOn": "2017-10-09T13:48:11Z",
+      "side": 1,
+      "message": "Removed this attribute and using the existing relationship.",
+      "parentUuid": "9a437d4f_9de1622c",
+      "revId": "13b38e2126ca93e7051285a830ed0638fff8e144",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a437d4f_840b588d",
         "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
         "patchSetId": 1
@@ -143,6 +161,24 @@
     },
     {
       "key": {
+        "uuid": "9a437d4f_6bbee1af",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 4196,
+      "author": {
+        "id": 879
+      },
+      "writtenOn": "2017-10-09T13:48:11Z",
+      "side": 1,
+      "message": "Added new edge:\n{\n\"from\": \"generic-vnf\",\n\"to\": \"esr-vnfm\",\n}",
+      "parentUuid": "9a437d4f_dddb6a7a",
+      "revId": "13b38e2126ca93e7051285a830ed0638fff8e144",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a437d4f_e4efc4af",
         "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
         "patchSetId": 1
@@ -190,6 +226,24 @@
       "side": 1,
       "message": "mayve it should have vnfm-name?",
       "parentUuid": "9a437d4f_7a336414",
+      "revId": "13b38e2126ca93e7051285a830ed0638fff8e144",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_4be1ddcf",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 4201,
+      "author": {
+        "id": 879
+      },
+      "writtenOn": "2017-10-09T13:48:11Z",
+      "side": 1,
+      "message": "Added new attribute in \"esr-vnfm\" node.",
+      "parentUuid": "9a437d4f_7d4fde6b",
       "revId": "13b38e2126ca93e7051285a830ed0638fff8e144",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
@@ -296,6 +350,24 @@
       "side": 1,
       "message": "Sounds like maybe it needs an edge rule?  Point is to not store relationships to other objects in attributes, but use edges.",
       "parentUuid": "9a437d4f_ba2c2cad",
+      "revId": "13b38e2126ca93e7051285a830ed0638fff8e144",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a437d4f_2be459df",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 4226,
+      "author": {
+        "id": 879
+      },
+      "writtenOn": "2017-10-09T13:48:11Z",
+      "side": 1,
+      "message": "Added new edge rule:\n{\n \"from\": \"generic-vnf\",\n \"to\" :  \"tenant\"\n}",
+      "parentUuid": "9a437d4f_3d55d6f9",
       "revId": "13b38e2126ca93e7051285a830ed0638fff8e144",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
