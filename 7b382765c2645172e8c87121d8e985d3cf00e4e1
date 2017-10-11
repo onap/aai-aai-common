@@ -34,6 +34,24 @@
       "revId": "7b382765c2645172e8c87121d8e985d3cf00e4e1",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a2f8d8d_14a3b59f",
+        "filename": "aai-core/src/main/resources/dbedgerules/DbEdgeRules_v11.json",
+        "patchSetId": 2
+      },
+      "lineNbr": 455,
+      "author": {
+        "id": 879
+      },
+      "writtenOn": "2017-10-11T07:12:22Z",
+      "side": 1,
+      "message": "Hello Jimmy,\nAs per our discussion we can retrieve the vim (esr-system-info) using vim-id from esr-vnfm.\n\nNow the relationship will look like this:\ngeneric-vnf -\u003e esr-vnfm -\u003e esr-system-info (vim which has attribute default-tenant).\n\nNow we can remove this relationship.",
+      "parentUuid": "1a2f8d8d_5436e204",
+      "revId": "7b382765c2645172e8c87121d8e985d3cf00e4e1",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
