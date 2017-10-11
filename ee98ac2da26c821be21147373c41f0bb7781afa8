@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a2f8d8d_9779e7fe",
+        "filename": "aai-core/src/main/resources/dbedgerules/DbEdgeRules_v11.json",
+        "patchSetId": 4
+      },
+      "lineNbr": 448,
+      "author": {
+        "id": 741
+      },
+      "writtenOn": "2017-10-11T09:50:48Z",
+      "side": 1,
+      "message": "is it not many2one",
+      "range": {
+        "startLine": 448,
+        "startChar": 19,
+        "endLine": 448,
+        "endChar": 29
+      },
+      "revId": "ee98ac2da26c821be21147373c41f0bb7781afa8",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
