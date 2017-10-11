@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "1a2f8d8d_140cd541",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 298,
+      "author": {
+        "id": 879
+      },
+      "writtenOn": "2017-10-11T08:24:08Z",
+      "side": 1,
+      "message": "I will remove it and use esr-system-info.system-name.",
+      "parentUuid": "1a2f8d8d_d44d2dc6",
+      "range": {
+        "startLine": 294,
+        "startChar": 4,
+        "endLine": 298,
+        "endChar": 18
+      },
+      "revId": "b62302e98fecb3f7c934d1227dd7cf8341450f16",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a2f8d8d_34ed918c",
         "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
         "patchSetId": 3
@@ -36,6 +60,30 @@
       "writtenOn": "2017-10-11T07:56:17Z",
       "side": 1,
       "message": "According to the discussion result with Multicloud team. There will not be a vim-name when register a VIM. The cloud-owner and cloud-region-id will be a readable message, so they use the two item to indicate a VIM. Anyway, ESR portal does not provide a box for users to input the vim-name either register a VIM or VNFM.",
+      "range": {
+        "startLine": 304,
+        "startChar": 4,
+        "endLine": 306,
+        "endChar": 72
+      },
+      "revId": "b62302e98fecb3f7c934d1227dd7cf8341450f16",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a2f8d8d_d4052d15",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v11.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 306,
+      "author": {
+        "id": 879
+      },
+      "writtenOn": "2017-10-11T08:24:08Z",
+      "side": 1,
+      "message": "thanks for the information, I will remove it as well.",
+      "parentUuid": "1a2f8d8d_34ed918c",
       "range": {
         "startLine": 304,
         "startChar": 4,
