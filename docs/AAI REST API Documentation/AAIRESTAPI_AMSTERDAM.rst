@@ -2,8 +2,6 @@
    :depth: 3
 ..
 
-AAI REST API
-
 | Copyright © 2017 AT&T Intellectual Property.
 | All rights reserved.
 | Licensed under the Creative Commons License, Attribution 4.0 Intl. 
@@ -20,6 +18,9 @@ AAI REST API
   Intellectual Property.
 
 \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+
+AAI REST API
+++++++++++++
 
 Overview
 ========
