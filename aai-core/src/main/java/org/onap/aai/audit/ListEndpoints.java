@@ -51,11 +51,11 @@ public class ListEndpoints {
 
 	private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(ListEndpoints.class);
 
-	private final String start = "inventory";
+	private static final String start = "inventory";
 	private final String[] blacklist = { "search", "aai-internal" };
 
 	private List<String> endpoints = new ArrayList<>();
-	private Map<String, String> endpointToLogicalName = new HashMap<String, String>();
+	private Map<String, String> endpointToLogicalName = new HashMap<>();
 
 	/**
 	 * The main method.
@@ -95,7 +95,7 @@ public class ListEndpoints {
 	 */
 	private void beginAudit(Introspector obj, String uri, Set<String> visited) {
 
-		String currentUri = "";
+		String currentUri;
 
 		if (!obj.getDbName().equals("inventory")) {
 			currentUri = uri + obj.getGenericURI();
@@ -185,7 +185,7 @@ public class ListEndpoints {
 			uri = uri.substring(0, uri.lastIndexOf("/"));
 		}
 
-		String logicalName = "";
+		String logicalName;
 		String keys = "";
 		
 
@@ -248,10 +248,10 @@ public class ListEndpoints {
 	public List<String> getEndpoints(String filterOut) {
 		List<String> result = new ArrayList<>();
 		Pattern p = null;
-		Matcher m = null;
+		Matcher m;
 		if (!filterOut.equals("")) {
 			p = Pattern.compile(filterOut);
-			m = null;
+			m;
 		}
 		for (String s : endpoints) {
 			if (p != null) {
@@ -290,7 +290,7 @@ public class ListEndpoints {
 	public String toString(String filterOut) {
 		StringBuilder sb = new StringBuilder();
 		Pattern p = Pattern.compile(filterOut);
-		Matcher m = null;
+		Matcher m;
 		for (String s : endpoints) {
 			m = p.matcher(s);
 			if (!m.find()) {
