@@ -425,12 +425,12 @@ public class DataGrooming {
 			
 			ArrayList<String> errArr = new ArrayList<>();
 			int totalNodeCount = 0;
-			HashMap<String, String> misMatchedHash = new HashMap<String, String>();
-			HashMap<String, Vertex> orphanNodeHash = new HashMap<String, Vertex>();
-			HashMap<String, Vertex> missingDepNodeHash = new HashMap<String, Vertex>();
-			HashMap<String, Edge> oneArmedEdgeHash = new HashMap<String, Edge>();
-			HashMap<String, String> emptyVertexHash = new HashMap<String, String>();
-			HashMap<String, Vertex> ghostNodeHash = new HashMap<String, Vertex>();
+			HashMap<String, String> misMatchedHash = new HashMap<>();
+			HashMap<String, Vertex> orphanNodeHash = new HashMap<>();
+			HashMap<String, Vertex> missingDepNodeHash = new HashMap<>();
+			HashMap<String, Edge> oneArmedEdgeHash = new HashMap<>();
+			HashMap<String, String> emptyVertexHash = new HashMap<>();
+			HashMap<String, Vertex> ghostNodeHash = new HashMap<>();
 			ArrayList<String> dupeGroups = new ArrayList<>();
 			
 			Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, AAIProperties.LATEST);
