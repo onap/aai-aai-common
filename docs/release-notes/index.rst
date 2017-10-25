@@ -19,11 +19,11 @@
 
 
 
-		    **New Features**
+    **New Features**
 
 		    Initial release of Active and Available Inventory (AAI) for Open Network Automation Platform (ONAP)
 
-		    **Bug Fixes**
+    **Bug Fixes**
 	- `CIMAN-65 <https://jira.onap.org/browse/CIMAN-65>`_ and a sentence explaining what this defect is addressing.
 	**Known Issues**
 

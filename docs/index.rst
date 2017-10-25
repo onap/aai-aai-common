@@ -11,9 +11,9 @@ The key AAI repos for running the AAI REST APIs:
 - aai/resources: AAI Resources Micro Service providing CRUD REST APIs for inventory resources
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 2
 
-   AAI REST API Documentation/AAIRESTAPI_AMSTERDAM 
    platform/index.rst
    release-notes/index.rst
+   AAI REST API Documentation/AAIRESTAPI_AMSTERDAM 
    
