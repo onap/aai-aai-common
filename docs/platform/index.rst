@@ -11,4 +11,3 @@ AAI is the central inventory system for ONAP. AAI collects network, vnf, service
    architecture.rst
    offeredapis.rst
    installation.rst
-   

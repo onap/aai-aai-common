@@ -14,6 +14,6 @@ The key AAI repos for running the AAI REST APIs:
    :maxdepth: 2
 
    platform/index.rst
-   release-notes/index.rst
+   release-notes.rst
    AAI REST API Documentation/AAIRESTAPI_AMSTERDAM 
    
