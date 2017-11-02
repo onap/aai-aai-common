@@ -146,7 +146,7 @@
         <dependency>
             <groupId>org.onap.aai.aai-common</groupId>
             <artifactId>aai-schema</artifactId>
-            <version>${aai.schema.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-lang</groupId>

@@ -25,9 +25,6 @@
     <properties>
         <sitePath>/content/sites/site/org/onap/aai/aai-common/${project.artifactId}/${project.version}</sitePath>
 	<onap.nexus.url>https://nexus.onap.org</onap.nexus.url>
-        <aai.annotations.version>1.1.0-SNAPSHOT</aai.annotations.version>
-        <aai.schema.version>1.1.0-SNAPSHOT</aai.schema.version>
-        <aai.core.version>1.1.0-SNAPSHOT</aai.core.version>
     </properties>
 
     <build>
