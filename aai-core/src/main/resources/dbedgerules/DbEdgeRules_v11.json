@@ -1259,7 +1259,7 @@
 			"to": "pnf",
 			"label": "uses",
 			"direction": "OUT",
-			"multiplicity": "One2Many",
+			"multiplicity": "Many2Many",
 			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
