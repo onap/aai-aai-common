@@ -1,25 +1,3 @@
-#
-# ============LICENSE_START=======================================================
-# org.onap.aai
-# ================================================================================
-# Copyright © 2017 AT&T Intellectual Property. All rights reserved.
-# ================================================================================
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#    http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-# ============LICENSE_END=========================================================
-#
-# ECOMP is a trademark and service mark of AT&T Intellectual Property.
-#
-
 swagger: "2.0"
 info:
   description: |
@@ -41575,6 +41553,288 @@ paths:
               $ref: "#/definitions/zones"
         "default":
           description: Response codes found in [response codes](https://wiki.onap.org/).
+  /network/configurations/configuration/{configuration-id}/relationship-list/relationship:
+    put:
+      tags:
+        - Network
+      summary: see node definition for valid relationships
+      operationId: createOrUpdateNetworkConfigurationsConfigurationRelationshipListRelationship
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: configuration-id
+          in: path
+          description: UUID assigned to configuration.
+          required: true
+          type: string
+        - name: body
+          in: body
+          description: relationship object that needs to be created or updated
+          required: true
+          schema:
+            $ref: "#/definitions/relationship"
+    delete:
+      tags:
+        - Network
+      summary: delete an existing relationship
+      description: delete an existing relationship
+      operationId: deleteNetworkConfigurationsConfigurationRelationshipListRelationship
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: configuration-id
+          in: path
+          description: UUID assigned to configuration.
+          required: true
+          type: string
+  /network/configurations/configuration/{configuration-id}/metadata/metadatum/{metaname}:
+    get:
+      tags:
+        - Network
+      summary: returns metadatum
+      description: returns metadatum
+      operationId: getNetworkConfigurationsConfigurationMetadataMetadatum
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "200":
+          description: successful operation
+          schema:
+              $ref: "#/definitions/metadatum"
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: configuration-id
+          in: path
+          description: UUID assigned to configuration.
+          required: true
+          type: string
+        - name: metaname
+          in: path
+          required: true
+          type: string
+        - name: model-invariant-id
+          in: query
+          description: the ASDC model id for this resource or service model.
+          required: false
+          type: string
+        - name: model-version-id
+          in: query
+          description: the ASDC model version for this resource or service model.
+          required: false
+          type: string
+    put:
+      tags:
+        - Network
+      summary: create or update an existing metadatum
+      description: create or update an existing metadatum
+      operationId: createOrUpdateNetworkConfigurationsConfigurationMetadataMetadatum
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: configuration-id
+          in: path
+          description: UUID assigned to configuration.
+          required: true
+          type: string
+        - name: metaname
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          description: metadatum object that needs to be created or updated
+          required: true
+          schema:
+            $ref: "#/definitions/metadatum"
+    delete:
+      tags:
+        - Network
+      summary: delete an existing metadatum
+      description: delete an existing metadatum
+      operationId: deleteNetworkConfigurationsConfigurationMetadataMetadatum
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: configuration-id
+          in: path
+          description: UUID assigned to configuration.
+          required: true
+          type: string
+        - name: metaname
+          in: path
+          required: true
+          type: string
+        - name: resource-version
+          in: query
+          description: resource-version for concurrency
+          required: true
+          type: string
+  /network/configurations/configuration/{configuration-id}/metadata:
+    get:
+      tags:
+        - Network
+      summary: returns metadata
+      description: returns metadata
+      operationId: getNetworkConfigurationsConfigurationMetadata
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "200":
+          description: successful operation
+          schema:
+              $ref: "#/definitions/metadata"
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: configuration-id
+          in: path
+          description: UUID assigned to configuration.
+          required: true
+          type: string
+        - name: model-invariant-id
+          in: query
+          description: the ASDC model id for this resource or service model.
+          required: false
+          type: string
+        - name: model-version-id
+          in: query
+          description: the ASDC model version for this resource or service model.
+          required: false
+          type: string
+  /network/configurations/configuration/{configuration-id}:
+    get:
+      tags:
+        - Network
+      summary: returns configuration
+      description: returns configuration
+      operationId: getNetworkConfigurationsConfiguration
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "200":
+          description: successful operation
+          schema:
+              $ref: "#/definitions/configuration"
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: configuration-id
+          in: path
+          description: UUID assigned to configuration.
+          required: true
+          type: string
+        - name: model-invariant-id
+          in: query
+          description: the ASDC model id for this resource or service model.
+          required: false
+          type: string
+        - name: model-version-id
+          in: query
+          description: the ASDC model version for this resource or service model.
+          required: false
+          type: string
+    put:
+      tags:
+        - Network
+      summary: create or update an existing configuration
+      description: create or update an existing configuration
+      operationId: createOrUpdateNetworkConfigurationsConfiguration
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: configuration-id
+          in: path
+          description: UUID assigned to configuration.
+          required: true
+          type: string
+        - name: body
+          in: body
+          description: configuration object that needs to be created or updated
+          required: true
+          schema:
+            $ref: "#/definitions/configuration"
+    delete:
+      tags:
+        - Network
+      summary: delete an existing configuration
+      description: delete an existing configuration
+      operationId: deleteNetworkConfigurationsConfiguration
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: configuration-id
+          in: path
+          description: UUID assigned to configuration.
+          required: true
+          type: string
+        - name: resource-version
+          in: query
+          description: resource-version for concurrency
+          required: true
+          type: string
+  /network/configurations:
+    get:
+      tags:
+        - Network
+      summary: returns configurations
+      description: returns configurations
+      operationId: getNetworkConfigurations
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "200":
+          description: successful operation
+          schema:
+              $ref: "#/definitions/configurations"
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
 definitions:
   search:
     properties:
@@ -43308,6 +43568,7 @@ definitions:
       Persist VNFM address information used by VF-C.
       ###### Related Nodes
       - TO esr-system-info (comprises esr-vnfm, One2One)
+      - FROM generic-vnf
     required:
     - vnfm-id
     properties:
@@ -43574,6 +43835,9 @@ definitions:
     - service-instance-id
     - service-type
     - service-role
+    - created-at
+    - updated-at
+    - description
     properties:
       service-instance-id:
         type: string
@@ -43593,6 +43857,15 @@ definitions:
       workload-context:
         type: string
         description: This field will store the workload context assigned to the service-instance.
+      created-at:
+        type: string
+        description: create time of Network Service.
+      updated-at:
+        type: string
+        description: last update of Network Service.
+      description:
+        type: string
+        description: short description for service-instance.
       model-invariant-id:
         type: string
         description: the ASDC model id for this resource or service model.
@@ -45472,6 +45745,7 @@ definitions:
       - TO site-pair-set (Many2Many)
       - TO network-profile (Many2Many)
       - TO pnf (Many2Many)
+      - TO esr-vnfm (Many2One)
       - TO ipsec-configuration (Many2One)
       - TO configuration (One2Many)
       - TO vf-module (comprises generic-vnf, One2Many)
@@ -45489,14 +45763,21 @@ definitions:
       - FROM allotted-resource
     required:
     - vnf-id
+    - vnf-instance-id
     - vnf-name
     - vnf-type
+    - vnf-package-name
+    - vnf-discriptor-name
+    - job-id
     - in-maint
     - is-closed-loop-disabled
     properties:
       vnf-id:
         type: string
         description: Unique id of VNF.  This is unique across the graph.
+      vnf-instance-id:
+        type: string
+        description: vnf instance id.
       vnf-name:
         type: string
         description: Name of VNF.
@@ -45527,6 +45808,14 @@ definitions:
       orchestration-status:
         type: string
         description: Orchestration status of this VNF, used by MSO.
+      vnf-package-name:
+        type: string
+      vnf-discriptor-name:
+        type: string
+        description: vnf discriptor name
+      job-id:
+        type: string
+        description: job id corresponding to vnf
       heat-stack-id:
         type: string
         description: Heat stack id corresponding to this instance, managed by MSO
@@ -45569,6 +45858,18 @@ definitions:
       vdisk-units:
         type: string
         description: units associated with vdisk, used for VNFs with no vservers/flavors, to be used only by uCPE
+      nshd:
+        type: integer
+        format: int64
+        description: number of associated SHD in vnf.
+      nvm:
+        type: integer
+        format: int64
+        description: number of vms in vnf.
+      nnet:
+        type: integer
+        format: int64
+        description: number of network in vnf.
       in-maint:
         type: boolean
       is-closed-loop-disabled:
@@ -46188,6 +46489,76 @@ definitions:
         type: array
         items:          
           $ref: "#/definitions/zone"
+  configuration:
+    description: |
+      Port Mirror Configuration.
+      ###### Related Nodes
+      - TO logical-link (One2Many)
+      - TO metadatum (comprises configuration, One2Many)
+      - TO allotted-resource (One2One)
+      - FROM service-instance
+      - FROM generic-vnf
+    required:
+    - configuration-id
+    - configuration-type
+    - configuration-sub-type
+    - orchestration-status
+    - operational-status
+    - configuration-selflink
+    - model-customization-id
+    properties:
+      configuration-id:
+        type: string
+        description: UUID assigned to configuration.
+      management-option:
+        type: string
+        description: Indicates the entity that will manage this feature. Could be an organization or the name of the application as well.
+      configuration-name:
+        type: string
+        description: Name of the configuration.
+      configuration-type:
+        type: string
+        description: port-mirroring-configuration.
+      configuration-sub-type:
+        type: string
+        description: vprobe, pprobe.
+      model-invariant-id:
+        type: string
+        description: the ASDC model id for this resource or service model.
+      model-version-id:
+        type: string
+        description: the ASDC model version for this resource or service model.
+      orchestration-status:
+        type: string
+        description: Orchestration status of the configuration.
+      operational-status:
+        type: string
+        description: Indicator for whether the resource is considered operational.
+      configuration-selflink:
+        type: string
+        description: URL to endpoint where AAI can get more details from SDN-GC.
+      model-customization-id:
+        type: string
+        description: id of  the configuration used to customize the resource
+      resource-version:
+        type: string
+        description: Used for optimistic concurrency.  Must be empty on create, valid on update and delete.
+      relationship-list:
+        type: array
+        items:
+          $ref: "#/definitions/relationship"
+      metadata:
+        type: array
+        items:
+          $ref: "#/definitions/metadatum"
+  configurations:
+    description: |
+      Collection of configurations
+    properties:
+      configuration:
+        type: array
+        items:          
+          $ref: "#/definitions/configuration"
   network:
     description: |
       Namespace for network inventory resources.
@@ -46264,6 +46635,10 @@ definitions:
         type: array
         items:
           $ref: "#/definitions/zone"
+      configurations:
+        type: array
+        items:
+          $ref: "#/definitions/configurations"
   inventory:
     properties:
       search:
@@ -46455,74 +46830,6 @@ definitions:
         type: string
       key-value:
         type: string
-  configurations:
-    description: |
-      Collection of configurations
-    properties:
-      configuration:
-        type: array
-        items:          
-          $ref: "#/definitions/configuration"
-  configuration:
-    description: |
-      Port Mirror Configuration.
-      ###### Related Nodes
-      - TO logical-link (One2Many)
-      - TO metadatum (comprises configuration, One2Many)
-      - TO allotted-resource (One2One)
-      - FROM service-instance
-      - FROM generic-vnf
-    required:
-    - configuration-id
-    - configuration-type
-    - configuration-sub-type
-    - orchestration-status
-    - operational-status
-    - configuration-selflink
-    - model-customization-id
-    properties:
-      management-option:
-        type: string
-        description: Indicates the entity that will manage this feature. Could be an organization or the name of the application as well.
-      configuration-id:
-        type: string
-        description: UUID assigned to configuration.
-      configuration-name:
-        type: string
-        description: Name of the configuration.
-      configuration-type:
-        type: string
-        description: port-mirroring-configuration.
-      configuration-sub-type:
-        type: string
-        description: vprobe, pprobe.
-      model-invariant-id:
-        type: string
-        description: the ASDC model id for this resource or service model.
-      model-version-id:
-        type: string
-        description: the ASDC model version for this resource or service model.
-      orchestration-status:
-        type: string
-        description: Orchestration status of the configuration.
-      operational-status:
-        type: string
-        description: Indicator for whether the resource is considered operational.
-      configuration-selflink:
-        type: string
-        description: URL to endpoint where AAI can get more details from SDN-GC.
-      model-customization-id:
-        type: string
-        description: id of  the configuration used to customize the resource
-      resource-version:
-        type: string
-        description: Used for optimistic concurrency.  Must be empty on create, valid on update and delete.
-      relationship-list:
-        type: object
-        $ref: "#/definitions/relationship-list"
-      metadata:
-        type: object
-        $ref: "#/definitions/metadata"
   notification-event:
     properties:
       cambria.partition:
