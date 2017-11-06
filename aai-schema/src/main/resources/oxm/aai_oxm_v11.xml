@@ -2976,6 +2976,7 @@
 				<xml-property name="uniqueProps" value="configuration-id" />
 				<xml-property name="container" value="configurations" />
 				<xml-property name="namespace" value="network" />
+				<xml-property name="nameProps" value="configuration-type" />
 			</xml-properties>
 		</java-type>
 
