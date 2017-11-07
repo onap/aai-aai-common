@@ -32,6 +32,7 @@ import java.util.concurrent.TimeUnit;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.onap.aai.exceptions.AAIException;
 import org.slf4j.MDC;
 
 import com.att.eelf.configuration.EELFLogger;
@@ -114,7 +115,12 @@ public class LoggingContext {
 		MDC.put(LoggingField.REQUEST_ID.toString(), requestId.toString());
 	}
 
-	public static void requestId(String requestId) {
+	public static void requestId(String requestId) throws AAIException {
+
+		if(requestId == null){
+			throw new AAIException("AAI_4010");
+		}
+
 		try {
 			if (requestId.contains(":")) {
 				String[] uuidParts = requestId.split(":");
