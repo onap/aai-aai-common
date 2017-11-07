@@ -53,7 +53,7 @@ public class LoggingContextTest {
 	}
 
 	@Test
-	public void testRequestId() { //AKA Transaction ID
+	public void testRequestId() throws Exception { //AKA Transaction ID
 		final String sUuid = "57d51eaa-edc6-4f50-a69d-f2d4d2445120";
 
 		LoggingContext.requestId(sUuid);
