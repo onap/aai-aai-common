@@ -117,11 +117,10 @@ public class LoggingContext {
 
 	public static void requestId(String requestId) throws AAIException {
 
-		if(requestId == null){
-			throw new AAIException("AAI_4010");
-		}
-
 		try {
+			if(requestId == null){
+				throw new IllegalArgumentException();
+			}
 			if (requestId.contains(":")) {
 				String[] uuidParts = requestId.split(":");
 				requestId = uuidParts[0];
