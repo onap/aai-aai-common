@@ -101,18 +101,6 @@
             </plugin>
         </plugins>
     </build>
-
-    <distributionManagement>
-        <snapshotRepository>
-            <id>ecomp-snapshots</id>
-            <name>ECOMP Snapshot Repository</name>
-            <url>${onap.nexus.url}/content/repositories/snapshots/</url>
-        </snapshotRepository>
-        <site>
-            <id>ecomp-site</id>
-            <url>dav:${onap.nexus.url}${sitePath}</url>
-        </site>
-    </distributionManagement>
     <reporting>
         <plugins>
             <plugin>
