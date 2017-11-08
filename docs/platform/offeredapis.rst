@@ -1,10 +1,8 @@
 ========================================
-Active and Available Inventory REST API.
+Offered APIs
 ========================================
 
 .. This work is licensed under a Creative Commons Attribution 4.0 International License.
 
-Outgoing APIs
--------------
+- `API Doc on ONAP Wiki <https://wiki.onap.org/download/attachments/13598793/aai_rest_api_doc_v11.html?api=v2>`_
 
-.. _AAI APIs on ONAP wiki: https://wiki.onap.org/download/attachments/13598793/aai_rest_api_doc_v11.html?api=v2
