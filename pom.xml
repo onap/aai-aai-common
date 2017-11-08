@@ -103,11 +103,6 @@
     </build>
 
     <distributionManagement>
-        <repository>
-            <id>ecomp-releases</id>
-            <name>ECOMP Release Repository</name>
-            <url>${onap.nexus.url}/content/repositories/releases/</url>
-        </repository>
         <snapshotRepository>
             <id>ecomp-snapshots</id>
             <name>ECOMP Snapshot Repository</name>
