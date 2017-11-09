@@ -43,7 +43,7 @@
         <dependency>
             <groupId>org.openecomp.aai.logging-service</groupId>
             <artifactId>common-logging</artifactId>
-            <version>1.0.0</version>
+            <version>${project.version}</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.springframework/spring-core -->
