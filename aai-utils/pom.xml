@@ -41,9 +41,9 @@
 
         <!-- Common logging framework -->
         <dependency>
-            <groupId>org.openecomp.aai.logging-service</groupId>
+            <groupId>org.onap.aai.logging-service</groupId>
             <artifactId>common-logging</artifactId>
-            <version>1.0.0</version>
+            <version>1.1.0</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.springframework/spring-core -->
