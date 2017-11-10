@@ -1,0 +1,8 @@
+Code-Review+1: Gregory Glover <gg2147@att.com>
+Verified+1: ONAP Jobbuilder <onap-jobbuilder@jenkins.onap.org>
+Code-Review+2: James Forsyth <jf2512@att.com>
+Submitted-by: James Forsyth <jf2512@att.com>
+Submitted-at: Fri, 10 Nov 2017 19:18:37 +0000
+Reviewed-on: http://gerrit.onap.org/r/23131
+Project: aai/aai-common
+Branch: refs/heads/master
