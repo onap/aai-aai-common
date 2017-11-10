@@ -101,6 +101,13 @@
             </plugin>
         </plugins>
     </build>
+
+    <distributionManagement>
+        <site>
+            <id>ecomp-site</id>
+            <url>dav:${onap.nexus.url}${sitePath}</url>
+        </site>
+    </distributionManagement>
     <reporting>
         <plugins>
             <plugin>
