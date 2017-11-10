@@ -41,7 +41,7 @@
 
         <!-- Common logging framework -->
         <dependency>
-            <groupId>org.openecomp.aai.logging-service</groupId>
+            <groupId>org.onap.aai.logging-service</groupId>
             <artifactId>common-logging</artifactId>
             <version>${project.version}</version>
         </dependency>
