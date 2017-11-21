@@ -1,56 +1,71 @@
+
 .. contents::
    :depth: 3
-..
+.. _dev-setup:
 
 How to Docker setup on Single VM
 ================================
 
+Prerequisites
+-------------
+1.  Linux distribution Ubuntu is assumed (version 16.04 preferred)
+
+2.  Make sure that git, docker and docker-compose are installed
+
 Step-by-step guide
 ------------------
 
-1.  You would need to have root access to the vm
+1.  You would need to have a root access to the vm
+  .. code-block:: bash
 
-2.  sudo su - root
+   sudo su - root
 
-3.  cd /opt
+2.  Navigate to /opt directory
+  .. code-block:: bash
 
-4.  git clone http://gerrit.onap.org/r/aai/test-config
+   cd /opt
 
-5.  cd test-config
+3.  Clone the test-config git project
+  .. code-block:: bash
 
-6.  In deploy\_vm1.sh comment out the lines 89-94 which should be an if
-    statement checking for the /opt/message-router folder
+   git clone http://gerrit.onap.org/r/aai/test-config
 
-7.  Create a directory called /opt/config
+4.  Navigate to /opt/test-config directory
+  .. code-block:: bash
 
-    1. mkdir /opt/config/
+   cd test-config
 
-8.  Create a file called /opt/config/nexus\_username.txt containing the
-    text: docker
+5.  Create a directory called /opt/config
+  .. code-block:: bash
 
-    1. echo "docker" > /opt/config/nexus\_username.txt
+   mkdir /opt/config/
 
-9.  Create a file called /opt/config/nexus\_password.txt containing the
-    text: docker
+6.  Create a file called /opt/config/nexus\_username.txt containing the text: docker
+  .. code-block:: bash
 
-    1. echo "docker" > /opt/config/nexus\_password.txt
+    echo "docker" > /opt/config/nexus_username.txt
 
-10. Create a file called /opt/config/dmaap\_topic.txt containing the
-    text: AAI-EVENT
+7.  Create a file called /opt/config/nexus\_password.txt containing the text: docker
+  .. code-block:: bash
 
-    1. echo " AAI-EVENT" > /opt/config/dmaap\_topic.txt
+    echo "docker" > /opt/config/nexus_password.txt
 
-11. Create a file called /opt/config/nexus\_docker\_repo.txt containing
-    text: nexus3.onap.org:10001
+8. Create a file called /opt/config/dmaap\_topic.txt containing the text: AAI-EVENT
+  .. code-block:: bash
 
-    echo "nexus3.onap.org:10001" > /opt/config/nexus\_docker\_repo.txt
+    echo "AAI-EVENT" > /opt/config/dmaap_topic.txt
 
-1. Create a file called /opt/config/docker\_version.txt containing text:
-   1.1-STAGING-latest
+9. Create a file called /opt/config/nexus\_docker\_repo.txt containing text: nexus3.onap.org:10001
+  .. code-block:: bash
 
-    echo "1.1-STAGING-latest" > /opt/config/docker\_version.txt
+    echo "nexus3.onap.org:10001" > /opt/config/nexus_docker_repo.txt
 
-1. Please note that in the previous step, docker version is currently
-   1.1-STAGING-latest and this will be changed later
+10. Create a file called /opt/config/docker\_version.txt containing text: 1.1-STAGING-latest
+  .. code-block:: bash
 
-    ./deploy\_vm2.sh && ./deploy\_vm1.sh
+    echo "1.1-STAGING-latest" > /opt/config/docker_version.txt
+
+11. Please note that in the previous step, docker version is currently 1.1-STAGING-latest and this will be changed later. Finally, run the installation scripts
+  .. code-block:: bash
+
+    ./deploy_vm2.sh && ./deploy_vm1.sh
