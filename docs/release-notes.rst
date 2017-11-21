@@ -4,39 +4,29 @@
 
 
 AAI Release Notes
-==================
+==================		   
 
-.. note::
-	* This Release Notes must be updated each time the team decides to Release new artifacts.
-	* The scope of this Release Notes is for this particular component. In other words, each ONAP component has its Release Notes.
-	* This Release Notes is cumulative, the most recently Released artifact is made visible in the top of this Release Notes.
-	* Except the date and the version number, all the other sections are optional but there must be at least one section describing the purpose of this new release.
-	* This note must be removed after content has been added.
-		   
-
-Version: 1.1.0-AMSTERDAM
+Version: 1.1.0
 --------------
 
-
-:Release Date: 2017-11-17
-
+:Release Date: 2017-11-16
 
 **New Features**
-	Initial release of Active and Available Inventory (AAI) for Open Network Automation Platform (ONAP).  AAI provides ONAP with its logically centralized view of inventory data, taking in updates from orchestrators, controllers, and assurance systems.  AAI provides core REST services for 
 
-	ONAP AAI R1 includes the following components:
+Initial release of Active and Available Inventory (AAI) for Open Network Automation Platform (ONAP).  AAI provides ONAP with its logically centralized view of inventory data, taking in updates from orchestrators, controllers, and assurance systems.  AAI provides core REST services. 
+
+ONAP AAI R1 includes the following components:
 
 - AAI Data Management
-  - Resources (CRUD operations)
-  - Traversal (Advanced search operations)
-  - Data Router (Route/persist AAI event data for consumption by the UI)
-  - Model Loader (Obtains SDC artifacts and loads them into the A&AI Resources service for storage)
-  - Search Data SErvice (Abstraction layer for searchengine, supporting queries and updates)
-    
+- Resources (CRUD operations)
+- Traversal (Advanced search operations)
+- Data Router (Route/persist AAI event data for consumption by the UI)
+- Model Loader (Obtains SDC artifacts and loads them into the A&AI Resources service for storage)
+- Search Data SErvice (Abstraction layer for searchengine, supporting queries and updates)
 - Applications
-  - Sparky (AAI User Interface)
+- Sparky (AAI User Interface)
 
-Source code of AAI is released under the following repositories on gerrit.onap.org
+Source code of AAI is released under the following repositories at https://gerrit.onap.org .
 
 - aai/aai-common
 - aai/aai-config
@@ -59,24 +49,16 @@ Source code of AAI is released under the following repositories on gerrit.onap.o
 - aai/test-config
 - aai/traversal
 
-Epic
-^^^^
-	- `AAI-17 <https://jira.onap.org/browse/AAI-17>`_
-	  Seed code stabilization
-	- `AAI-20 <https://jira.onap.org/browse/AAI-20>`_
-	  Champ Library
-	- `AAI-22 <https://jira.onap.org/browse/AAI-22>`_
-	  Amsterdam User Case Schema Updates
-	- `AAI-23 <https://jira.onap.org/browse/AAI-23>`_
-	  Model Loader Support for R1
-	- `AAI-58 <https://jira.onap.org/browse/AAI-58>`_
-	  Define and build functional test cases for CSIT
-	- `AAI-72 <https://jira.onap.org/browse/AAI-72>`_
-	  External System Register
-	- `AAI-254 <https://jira.onap.org/browse/AAI-254>`_
-	  Documentation of REST APIs, dev guides, onboarding, etc.
-	- `AAI-280 <https://jira.onap.org/browse/AAI-280>`_
-	  Confguration enhancements
+**Epic**
+
+- `AAI-17 <https://jira.onap.org/browse/AAI-17>`_ Seed code stabilization
+- `AAI-20 <https://jira.onap.org/browse/AAI-20>`_ Champ Library
+- `AAI-22 <https://jira.onap.org/browse/AAI-22>`_ Amsterdam User Case Schema Updates
+- `AAI-23 <https://jira.onap.org/browse/AAI-23>`_ Model Loader Support for R1
+- `AAI-58 <https://jira.onap.org/browse/AAI-58>`_ Define and build functional test cases for CSIT
+- `AAI-72 <https://jira.onap.org/browse/AAI-72>`_ External System Register
+- `AAI-254 <https://jira.onap.org/browse/AAI-254>`_ Documentation of REST APIs, dev guides, onboarding, etc.
+- `AAI-280 <https://jira.onap.org/browse/AAI-280>`_ Confguration enhancements
 
 **Bug Fixes**
 
@@ -93,13 +75,13 @@ Compilation failure in aai-traversal
 AAI Common REST Client returns an error on a 204 (No Content) server response
 
 `AAI-49 <https://jira.onap.org/browse/AAI-49>`_
-Health check is failing in DFW 1.1 RS. Connection refused.
+Health check is failing in DFW 1.1 RS. Connection refused
 
 `AAI-62 <https://jira.onap.org/browse/AAI-62>`_
-Search Data Service should not implicitly create indexes on document write...
+Search Data Service should not implicitly create indexes on document write
 
 `AAI-63 <https://jira.onap.org/browse/AAI-63>`_
-Data Router must handle Search Service document create failures if index does not exit.
+Data Router must handle Search Service document create failures if index does not exit
 
 `AAI-73 <https://jira.onap.org/browse/AAI-73>`_
 Sparky sync issues
@@ -168,7 +150,7 @@ Remove DMaaP router duplication
 There is an error to startup esr-gui docker
 
 `AAI-412 <https://jira.onap.org/browse/AAI-412>`_
-Replace the type specification in this constructor call with the diamond operator ("<>").
+Replace the type specification in this constructor call with the diamond operator ("<>")
 
 `AAI-417 <https://jira.onap.org/browse/AAI-417>`_
 Rackspace 20170928 fails to authenticate nexus3 on 10003 during *_init.sh (sdnc for example)
@@ -231,24 +213,26 @@ Fix stage-site jenkins job for aai-common
 LoggingContext.requestId required NULL handling in aai/aai-common (20170607) - during demo.sh init_customer
 
 **Known Issues**
-	- `AAI-61 <https://jira.onap.org/browse/AAI-61>`_ 
-	AAI cleaned up references to OpenECOMP but in order to keep the release stable for R1, the XML namespace still contains openecomp.
+
+- `AAI-61 <https://jira.onap.org/browse/AAI-61>`_ AAI cleaned up references to OpenECOMP but in order to keep the release stable for R1, the XML namespace still contains openecomp.
 	  
-	Client systems should use http://org.openecomp.aai.inventory/v11 as the XML namespace for ONAP AAI R1
+Client systems should use http://org.openecomp.aai.inventory/v11 as the XML namespace for ONAP AAI R1.
 
 **Security Issues**
-	See Common Vulnerabilities and Exposures `CVE <https://cve.mitre.org>`
 
-	ONAP docker images and repos include demo TLS server certificates that are signed by a demo Certificate Authority. DO NOT use the demo certificates in a production environment.
+See Common Vulnerabilities and Exposures `CVE <https://cve.mitre.org>`
 
-	AAI uses HTTPS Basic Authentication
+ONAP docker images and repos include demo TLS server certificates that are signed by a demo Certificate Authority. DO NOT use the demo certificates in a production environment.
+
+AAI uses HTTPS Basic Authentication.
 
 **Upgrade Notes**
 
-        This is an initial release
+This is an initial release
 
 **Deprecation Notes**
-	AAI Amsterdam provides support for legacy versions of the API, v8 and v11 in this release.  v11 is the latest and preferred version.
+
+AAI Amsterdam provides support for legacy versions of the API, v8 and v11 in this release.  v11 is the latest and preferred version.
 
 **Other**
 
