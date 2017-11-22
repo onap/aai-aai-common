@@ -249,17 +249,18 @@ public class RESTAPI {
         	throw new AAIException("AAI_3000", "uri and payload keys don't match");
         }
 	}
-	
-	protected DBConnectionType determineConnectionType(String fromAppId, String realTime) {
-		DBConnectionType type = DBConnectionType.REALTIME;
+
+	protected DBConnectionType determineConnectionType(String fromAppId, String realTime) throws AAIException {
+		if (fromAppId == null) {
+			throw new AAIException("AAI_4009", "X-FromAppId is not set");
+		}
+
 		boolean isRealTimeClient = AAIConfig.get("aai.realtime.clients", "").contains(fromAppId);
 		if (isRealTimeClient || realTime != null) {
-			type = DBConnectionType.REALTIME;
+			return DBConnectionType.REALTIME;
 		} else {
-			type = DBConnectionType.CACHED;
+			return DBConnectionType.CACHED;
 		}
-		
-		return type;
 	}
 	
 	/**
