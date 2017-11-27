@@ -25,13 +25,14 @@ public enum Version {
 	v8,
 	v9,
 	v10,
-	v11;
+	v11,
+	v12;
 	
 	public static boolean isLatest(Version v) {
-		return (Version.v11.equals(v)); //TODO update when we increment the version, or find a better way of doing this
+		return (Version.v12.equals(v)); //TODO update when we increment the version, or find a better way of doing this
 	}
 	
 	public static Version getLatest(){
-		return Version.v11; //TODO update when we increment the version, or find a better way of doing this
+		return Version.v12; //TODO update when we increment the version, or find a better way of doing this
 	}
 }

@@ -6,11 +6,11 @@
     <parent>
         <groupId>org.onap.aai.aai-common</groupId>
         <artifactId>aai-common</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
+        <version>1.2.0-SNAPSHOT</version>
     </parent>
     <artifactId>aai-core</artifactId>
     <name>aai-core</name>
-    <version>1.1.0-SNAPSHOT</version>
+    <version>1.2.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <properties>
 	<onap.nexus.url>https://nexus.onap.org</onap.nexus.url>
@@ -21,7 +21,7 @@
         <sonar.jacoco.reportMissing.force.zero>false</sonar.jacoco.reportMissing.force.zero>
         <sonar.projectVersion>${project.version}</sonar.projectVersion>
         <sonar.exclusions>org/onap/aai/domain/**</sonar.exclusions>
-        <gendoc.version>v11</gendoc.version>
+        <gendoc.version>v12</gendoc.version>
         <aai.wiki.link>https://wiki.onap.org/</aai.wiki.link>
         <hbase.version>1.0.2</hbase.version>
     </properties>

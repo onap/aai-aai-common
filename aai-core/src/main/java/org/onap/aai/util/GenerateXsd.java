@@ -64,7 +64,7 @@ public class GenerateXsd {
 	private static final String root = "../aai-schema/src/main/resources";
 	private static final String xsd_dir = root + "/aai_schema";
 	private static final String yaml_dir = root + "/aai_swagger_yaml";
-	
+
 	private static int annotationsStartVersion = 9; // minimum version to support annotations in xsd
 	private static int swaggerSupportStartsVersion = 7; // minimum version to support swagger documentation
 	
@@ -582,7 +582,7 @@ public class GenerateXsd {
 			}
 			sb1.append(
 					indentation + "  <xs:appinfo>\r\n" + 
-							indentation + "    <annox:annotate target=\""+target+"\">@org.onap.aai.annotations.Metadata(" + Joiner.on(",").join(metadata) + ")</annox:annotate>\r\n" + 
+							indentation + "    <annox:annotate target=\""+target+"\">@org.onap.aai.annotations.Metadata(" + Joiner.on(",").join(metadata) + ")</annox:annotate>\r\n" +
 							indentation + "  </xs:appinfo>\r\n");
 		}
 
@@ -667,7 +667,10 @@ public class GenerateXsd {
 	{
 		StringBuilder sb = new StringBuilder();
 		sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n");
-		String namespace = "org.openecomp";
+		String namespace = "org.onap";
+		if (v.compareTo(Version.v11) < 0 || v.compareTo(Version.v12) < 0) {
+			namespace = "org.openecomp";
+		}
 		if ( useAnnotationsInXsd ) {
 			sb.append("<xs:schema elementFormDefault=\"qualified\" version=\"1.0\" targetNamespace=\"http://" + namespace + ".aai.inventory/" 
 				+ apiVersion + "\" xmlns:tns=\"http://" + namespace + ".aai.inventory/" + apiVersion + "\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\""
@@ -677,7 +680,7 @@ public class GenerateXsd {
 						"    xmlns:annox=\"http://annox.dev.java.net\" \r\n" + 
 						"    jaxb:extensionBindingPrefixes=\"annox\">\n\n");
 		} else {
-			sb.append("<xs:schema elementFormDefault=\"qualified\" version=\"1.0\" targetNamespace=\"http://" + namespace + ".aai.inventory/" 
+			sb.append("<xs:schema elementFormDefault=\"qualified\" version=\"1.0\" targetNamespace=\"http://" + namespace + ".aai.inventory/"
 					+ apiVersion + "\" xmlns:tns=\"http://" + namespace + ".aai.inventory/" + apiVersion + "\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\">\n\n");
 		}
 
@@ -775,7 +778,7 @@ public class GenerateXsd {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Guaranteed to at least return non null but empty collection of edge descriptions
 	 * @param nodeName name of the vertex whose edge relationships to return
