@@ -48,7 +48,16 @@ public class LoggingContext {
 	private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(LoggingContext.class);
 
 	private static final String PREVIOUS_CONTEXTS_KEY = "_PREVIOUS_CONTEXTS";
-
+	
+	//Response codes from ECOMP Logging Guidelines
+	public static final String SUCCESS = "0";
+	public static final String PERMISSION_ERROR = "100";
+	public static final String AVAILABILITY_TIMEOUT_ERROR = "200";
+	public static final String DATA_ERROR = "200";
+	public static final String SCHEMA_ERROR = "400";
+	public static final String BUSINESS_PROCESS_ERROR = "500";
+	public static final String UNKNOWN_ERROR = "900";
+	
 	//ECOMP Specific Log Event Fields
 	public static enum LoggingField {
 		START_TIME("startTime"),
@@ -75,7 +84,7 @@ public class LoggingContext {
 		
 		//ECOMP Specific Metric Log Event Fields
 		TARGET_ENTITY("targetEntity"),
-
+		TARGET_SERVICE_NAME("targetServiceName"),
 		//A&AI Specific Log Event Fields
 		COMPONENT("component"),
 		STOP_WATCH_START("stopWatchStart");
@@ -99,7 +108,7 @@ public class LoggingContext {
 		LoggingContext.serverIpAddress();
 	}
 
-	private static void startTime() {
+	public static void startTime() {
 		MDC.put(LoggingField.START_TIME.toString(), LogFormatTools.getCurrentDateTime());
 	}
 
@@ -115,8 +124,7 @@ public class LoggingContext {
 		MDC.put(LoggingField.REQUEST_ID.toString(), requestId.toString());
 	}
 
-	public static void requestId(String requestId) throws AAIException {
-
+	public static void requestId(String requestId) {
 		try {
 			if(requestId == null){
 				throw new IllegalArgumentException();
@@ -129,7 +137,15 @@ public class LoggingContext {
 		} catch (IllegalArgumentException e) {
 			final UUID generatedRequestUuid = UUID.randomUUID();
 			MDC.put(LoggingField.REQUEST_ID.toString(), generatedRequestUuid.toString());
-			LOGGER.warn("Unable to use UUID " + requestId + " (Not formatted properly). Using generated UUID=" + generatedRequestUuid);
+			LoggingContext.save();
+			AAIException ex = new AAIException("AAI_7405", e);
+			String responseCode = Integer.toString(ex.getErrorObject().getHTTPResponseCode().getStatusCode());
+			LoggingContext.responseCode(responseCode);
+
+			LOGGER.warn("Unable to use UUID " + requestId + " (Not formatted properly). Using generated UUID="
+					+ generatedRequestUuid);
+			LoggingContext.restore();
+
 		}
 	}
 
@@ -177,6 +193,10 @@ public class LoggingContext {
 		MDC.put(LoggingField.SEVERITY.toString(), String.valueOf(severity));
 	}
 
+	public static void successStatusFields() {
+		responseCode(SUCCESS);
+		statusCode(LoggingContext.StatusCode.COMPLETE);
+	}
 	private static void serverIpAddress() {
 		try {
 			MDC.put(LoggingField.SERVER_IP_ADDRESS.toString(), InetAddress.getLocalHost().getHostAddress());
@@ -247,6 +267,17 @@ public class LoggingContext {
 		MDC.put(LoggingField.TARGET_ENTITY.toString(), targetEntity);
 	}
 
+	public static void targetServiceName(String targetServiceName) {
+		MDC.put(LoggingField.TARGET_SERVICE_NAME.toString(), targetServiceName);
+	}
+
+	public static boolean isStopWatchStarted() {
+		final String rawStopWatchStart = MDC.get(LoggingField.STOP_WATCH_START.toString());
+		if (rawStopWatchStart == null) {
+			return false;
+		}
+		return true;
+	}
 	public static void stopWatchStart() {
 		MDC.put(LoggingField.STOP_WATCH_START.toString(), String.valueOf(System.nanoTime()));
 	}
@@ -328,10 +359,12 @@ public class LoggingContext {
 
 			@SuppressWarnings("unchecked")
 			final Iterator<String> keys = previousContext.keys();
-	
+			boolean foundElapsedTime = false;
 			while (keys.hasNext()) {
 				final String key = keys.next();
-
+				if (LoggingField.ELAPSED_TIME.toString().equals(key)) {
+					foundElapsedTime = true;
+				}
 				try {
 					MDC.put(key, previousContext.getString(key));
 				} catch (JSONException e) {
@@ -339,10 +372,20 @@ public class LoggingContext {
 					//			or the value is invalid (they are all strings)
 				}
 			}
-
+			if ( !foundElapsedTime ) {
+				MDC.remove(LoggingField.ELAPSED_TIME.toString());
+			}
 			MDC.put(PREVIOUS_CONTEXTS_KEY, removeLast(previousContexts).toString());
 		} catch (JSONException e) {
 			//Ignore, the previousContext is serialized from a JSONObject
+		}
+	}
+	public static void restoreIfPossible() {
+		try {
+			restore();
+		}
+		catch (LoggingContextNotExistsException e) {
+			//Ignore
 		}
 	}
 

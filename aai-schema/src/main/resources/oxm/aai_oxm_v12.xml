@@ -2942,7 +2942,17 @@
 					<xml-properties>
 						<xml-property name="description" value="id of  the configuration used to customize the resource" />
 					</xml-properties>
+				</xml-element>				
+				<xml-element java-attribute="tunnelBandwidth" name="tunnel-bandwidth" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="DHV Site Effective Bandwidth" />
+					</xml-properties>
 				</xml-element>
+				<xml-element java-attribute="vendorAllowedMaxBandwidth" name="vendor-allowed-max-bandwidth" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Velocloud Nominal Throughput - VNT" />
+					</xml-properties>
+				</xml-element>				
 				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
