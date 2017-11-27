@@ -38,7 +38,6 @@ public final class AAIConstants {
 	/** etc directory, relative to AAI_HOME */
 	public static final String AAI_HOME_ETC = AAI_HOME_BUNDLECONFIG + AAI_FILESEP + "etc" + AAI_FILESEP;
 	public static final String AAI_HOME_ETC_APP_PROPERTIES = AAI_HOME_ETC + "appprops" + AAI_FILESEP;
-	public static final String AAI_V2_OUTPUT_TRANSFORMS = AAIConstants.AAI_HOME_ETC_APP_PROPERTIES + AAIConstants.AAI_FILESEP + "output" + AAIConstants.AAI_FILESEP;
 	public static final String AAI_HOME_ETC_AUTH = AAI_HOME_ETC + "auth" + AAI_FILESEP;
 	public static final String AAI_CONFIG_FILENAME = AAI_HOME_ETC_APP_PROPERTIES + "aaiconfig.properties";
 	public static final String AAI_AUTH_CONFIG_FILENAME = AAI_HOME_ETC_AUTH + "aai_policy.json";
@@ -142,6 +141,9 @@ public final class AAIConstants {
 	/** Service description for LRSI */
 	public static final String AAI_SERVICEDESCRIPTION_LRSI = "aai.servicedescription.lrsi";
 	
+	/** Micro-service Names */
+	public static final String AAI_TRAVERSAL_MS = "aai-traversal";
+	public static final String AAI_RESOURCES_MS = "aai-resources";
 	/**
 	 * Instantiates a new AAI constants.
 	 */
