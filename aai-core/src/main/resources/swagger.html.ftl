@@ -37,7 +37,7 @@
 <body>
 <div class="container">
     <h1>Active and Available Inventory REST API.</h1>
-    <p class="sw-info-version">Version: <span>v11</span></p>
+    <p class="sw-info-version">Version: <span>v12</span></p>
     <p><p>${description}</p>
     </p>
     
