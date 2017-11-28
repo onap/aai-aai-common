@@ -113,14 +113,8 @@ public class GraphTraversalQueryEngine extends QueryEngine {
 		GraphTraversal<Vertex, Vertex> pipe = this.g
 				.V(start).emit(v -> true).repeat(
 					__.union(
-						__.outE().or(
-							__.has(CONTAINS.toString(), OUT.toString()),
-							__.has(DELETE_OTHER_V.toString(), OUT.toString())
-						).inV(),
-						__.inE().or(
-								__.has(CONTAINS.toString(), IN.toString()),
-								__.has(DELETE_OTHER_V.toString(), IN.toString())
-						).outV()
+						__.outE().has(DELETE_OTHER_V.toString(), OUT.toString()).inV(),
+						__.inE().has(DELETE_OTHER_V.toString(), IN.toString()).outV()
 					)
 				);
 		

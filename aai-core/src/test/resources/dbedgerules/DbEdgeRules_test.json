@@ -32,6 +32,39 @@
 			"delete-other-v": "${direction}",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE"
+		},
+		{
+			"from": "test-parent",
+			"to": "test-child",
+			"label": "has",
+			"direction": "OUT",
+			"multiplicity": "One2Many",
+			"contains-other-v": "${direction}",
+			"delete-other-v": "NONE",
+			"SVC-INFRA": "NONE",
+			"prevent-delete": "NONE"
+		},
+		{
+			"from": "test-cousin",
+			"to": "test-child",
+			"label": "annoys",
+			"direction": "OUT",
+			"multiplicity": "One2Many",
+			"contains-other-v": "NONE",
+			"delete-other-v": "${direction}",
+			"SVC-INFRA": "NONE",
+			"prevent-delete": "NONE"
+		},
+		{
+			"from": "test-child",
+			"to": "test-grandchild",
+			"label": "has",
+			"direction": "OUT",
+			"multiplicity": "One2Many",
+			"contains-other-v": "${direction}",
+			"delete-other-v": "${direction}",
+			"SVC-INFRA": "NONE",
+			"prevent-delete": "NONE"
 		}
 	]
 }
