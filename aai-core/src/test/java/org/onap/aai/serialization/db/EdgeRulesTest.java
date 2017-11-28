@@ -121,7 +121,7 @@ public class EdgeRulesTest extends AAISetup {
 		EdgeRules rules = EdgeRules.getInstance();
 		EdgeRule rule = rules.getEdgeRule(EdgeType.TREE, v1, v2);
 		assertEquals(true, "OUT".equalsIgnoreCase(rule.getContains()));
-		assertEquals(true, "NONE".equalsIgnoreCase(rule.getDeleteOtherV()));
+		assertEquals(true, "OUT".equalsIgnoreCase(rule.getDeleteOtherV()));
 		assertEquals(true, MultiplicityRule.ONE2MANY.equals(rule.getMultiplicityRule()));
 		assertEquals(true,  "IN".equalsIgnoreCase(rule.getServiceInfrastructure()));
 		assertEquals(true, "OUT".equalsIgnoreCase(rule.getPreventDelete()));
@@ -192,7 +192,7 @@ public class EdgeRulesTest extends AAISetup {
 	public void getAllRulesTest() {
 		EdgeRules rules = EdgeRules.getInstance("/dbedgerules/DbEdgeRules_test.json");
 		Multimap<String, EdgeRule> allRules = rules.getAllRules();
-		assertEquals(3, allRules.size());
+		assertEquals(6, allRules.size());
 		assertEquals(true, allRules.containsKey("foo|bar"));
 		assertEquals(true, allRules.containsKey("foo|bar"));
 		assertEquals(true, allRules.containsKey("quux|foo"));
