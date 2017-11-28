@@ -121,7 +121,7 @@ public class EdgeRulesTest extends AAISetup {
 		EdgeRules rules = EdgeRules.getInstance();
 		EdgeRule rule = rules.getEdgeRule(EdgeType.TREE, v1, v2);
 		assertEquals(true, "OUT".equalsIgnoreCase(rule.getContains()));
-		assertEquals(true, "NONE".equalsIgnoreCase(rule.getDeleteOtherV()));
+		assertEquals(true, "OUT".equalsIgnoreCase(rule.getDeleteOtherV()));
 		assertEquals(true, MultiplicityRule.ONE2MANY.equals(rule.getMultiplicityRule()));
 		assertEquals(true,  "IN".equalsIgnoreCase(rule.getServiceInfrastructure()));
 		assertEquals(true, "OUT".equalsIgnoreCase(rule.getPreventDelete()));
