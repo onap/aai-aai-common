@@ -668,6 +668,11 @@
 						<xml-property name="description" value="A keyword provided by A&amp;AI to indicate type of node." />
 					</xml-properties>
 				</xml-element>
+				<xml-element java-attribute="relationshipLabel" name="relationship-label" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="The edge lable for this relationship." />
+					</xml-properties>
+				</xml-element>
 				<xml-element java-attribute="relatedLink" name="related-link" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="URL to the object in A&amp;AI." />

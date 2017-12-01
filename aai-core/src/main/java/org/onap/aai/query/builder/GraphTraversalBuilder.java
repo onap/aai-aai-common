@@ -22,9 +22,8 @@
 package org.onap.aai.query.builder;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -78,6 +77,18 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
 	 * Instantiates a new graph traversal builder.
 	 *
 	 * @param loader the loader
+	 */
+	public GraphTraversalBuilder(Loader loader, GraphTraversalSource source, EdgeRules edgeRules) {
+		super(loader, source);
+		this.edgeRules = edgeRules;
+		traversal = (GraphTraversal<Vertex, E>) __.<E>start();
+		
+	}
+	
+	/**
+	 * Instantiates a new graph traversal builder.
+	 *
+	 * @param loader the loader
 	 * @param start the start
 	 */
 	public GraphTraversalBuilder(Loader loader, GraphTraversalSource source, Vertex start) {
@@ -86,34 +97,28 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
 		traversal = (GraphTraversal<Vertex, E>) __.__(start);
 		
 	}
-
-	/**
-	 * @{inheritDoc}
-	 */
-	@Override
-	public QueryBuilder<Vertex> getVerticesByIndexedProperty(String key, Object value) {
 	
-		return this.getVerticesByProperty(key, value);
+	/**
+	 * Instantiates a new graph traversal builder.
+	 *
+	 * @param loader the loader
+	 * @param start the start
+	 */
+	public GraphTraversalBuilder(Loader loader, GraphTraversalSource source, Vertex start, EdgeRules edgeRules) {
+		super(loader, source, start);
+		this.edgeRules = edgeRules;
+		traversal = (GraphTraversal<Vertex, E>) __.__(start);
+		
 	}
 
-	/**
-	 * @{inheritDoc}
-	 */
-	@Override
-	public QueryBuilder<Vertex> getVerticesByIndexedProperty(String key, List<?> values) {
-		return this.getVerticesByProperty(key, values);
-	}
-	
 	/**
 	 * @{inheritDoc}
 	 */
 	@Override
 	public QueryBuilder<Vertex> getVerticesByProperty(String key, Object value) {
 		
-		//this is because the index is registered as an Integer
-		value = this.correctObjectType(value);
-		
-		traversal.has(key, value);
+		// correct value call because the index is registered as an Integer
+		traversal.has(key, this.correctObjectType(value));
 		
 		stepIndex++;
 		return (QueryBuilder<Vertex>) this;
@@ -151,24 +156,14 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
 	 * @{inheritDoc}
 	 */
 	@Override
-	public QueryBuilder<Vertex> getTypedVerticesByMap(String type, LinkedHashMap<String, String> map) {
+	public QueryBuilder<Vertex> getTypedVerticesByMap(String type, Map<String, String> map) {
 		
-		for (String key : map.keySet()) {
-			traversal.has(key, map.get(key));
+		for (Map.Entry<String, String> es : map.entrySet()) {
+			traversal.has(es.getKey(), es.getValue());
 			stepIndex++;
 		}
 		traversal.has(AAIProperties.NODE_TYPE, type);
 		stepIndex++;
-		return (QueryBuilder<Vertex>) this;
-	}
-
-	/**
-	 * @{inheritDoc}
-	 */
-	@Override
-	public QueryBuilder<Vertex> createDBQuery(Introspector obj) {
-		this.createKeyQuery(obj);
-		this.createContainerQuery(obj);
 		return (QueryBuilder<Vertex>) this;
 	}
 
@@ -257,70 +252,78 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
 	 * @{inheritDoc}
 	 */
 	@Override
-	public QueryBuilder<Vertex> createEdgeTraversal(EdgeType type, Introspector parent, Introspector child) throws AAIException, NoEdgeRuleFoundException {
+	public QueryBuilder<Vertex> createEdgeTraversal(EdgeType type, Introspector parent, Introspector child) throws AAIException {
 		String isAbstractType = parent.getMetadata(ObjectMetadata.ABSTRACT);
 		if ("true".equals(isAbstractType)) {
 			markParentBoundary();
 			traversal.union(handleAbstractEdge(type, parent, child));
-			stepIndex += 1;
+			stepIndex++;
 		} else {
-			this.edgeQueryToVertex(type, parent, child);
+			this.edgeQueryToVertex(type, parent, child, null);
 		}
 		return (QueryBuilder<Vertex>) this;
 			
 	}
-	
+
+	/**
+	 *
+	 * @{inheritDoc}
+	 */
+	@Override
+	public QueryBuilder<Vertex> createEdgeTraversalWithLabels(EdgeType type, Introspector out, Introspector in, List<String> labels) throws AAIException {
+		this.edgeQueryToVertex(type, out, in, labels);
+		return (QueryBuilder<Vertex>) this;
+	}
+
+
 	private Traversal<Vertex, Vertex>[] handleAbstractEdge(EdgeType type, Introspector abstractParent, Introspector child) throws AAIException, NoEdgeRuleFoundException {
 		String childName = child.getDbName();
 		String inheritorMetadata = abstractParent.getMetadata(ObjectMetadata.INHERITORS);
 		String[] inheritors = inheritorMetadata.split(",");
-		Traversal<Vertex, Vertex>[] unionTraversals = new Traversal[inheritors.length];
-		int traversalIndex = 0;
+		List<Traversal<Vertex, Vertex>> unionTraversals = new ArrayList<>(inheritors.length);
+
 		for (int i = 0; i < inheritors.length; i++) {
 			String inheritor = inheritors[i];
 			if (edgeRules.hasEdgeRule(inheritor, childName) || edgeRules.hasEdgeRule(childName, inheritor)) {
-				EdgeRule rule = edgeRules.getEdgeRule(type, inheritor, childName);
+				Map<String, EdgeRule> rules = edgeRules.getEdgeRules(type, inheritor, childName);
 				GraphTraversal<Vertex, Vertex> innerTraversal = __.start();
-				if (rule.getDirection().equals(Direction.OUT)) {
-					innerTraversal.out(rule.getLabel());
-				} else {
-					innerTraversal.in(rule.getLabel());
+				
+				final List<String> inLabels = new ArrayList<>();
+				final List<String> outLabels = new ArrayList<>();
+
+				rules.forEach((k,v) -> {
+					if (v.getDirection().equals(Direction.IN)) {
+						inLabels.add(k);
+					} else {
+						outLabels.add(k);
+					}
+				} );
+		
+				if (inLabels.isEmpty() && !outLabels.isEmpty()) {
+					innerTraversal.out(outLabels.toArray(new String[outLabels.size()]));
+				} else if (outLabels.isEmpty() && !inLabels.isEmpty()) {
+					innerTraversal.in(inLabels.toArray(new String[inLabels.size()]));
+				} else {				
+					innerTraversal.union(__.out(outLabels.toArray(new String[outLabels.size()])), __.in(inLabels.toArray(new String[inLabels.size()])));
 				}
+				
 				innerTraversal.has(AAIProperties.NODE_TYPE, childName);
-				unionTraversals[traversalIndex] = innerTraversal;
-				traversalIndex++;
+				unionTraversals.add(innerTraversal);
 			}
 		}
-		if (traversalIndex < inheritors.length) {
-			Traversal<Vertex, Vertex>[] temp = Arrays.copyOfRange(unionTraversals, 0, traversalIndex);
-			unionTraversals = temp;
-		}
-		return unionTraversals;
-	}
-	/**
-	 * @throws NoEdgeRuleFoundException 
-	 * @throws AAIException 
-	 * @{inheritDoc}
-	 */
-	@Override
-	public QueryBuilder<Vertex> createEdgeTraversal(EdgeType type, Vertex parent, Introspector child) throws AAIException, NoEdgeRuleFoundException {
 		
-		String nodeType = parent.<String>property(AAIProperties.NODE_TYPE).orElse(null);
-		Introspector parentObj = loader.introspectorFromName(nodeType);
-		this.edgeQueryToVertex(type, parentObj, child);
-		return (QueryBuilder<Vertex>) this;
-			
+		return unionTraversals.toArray(new Traversal[unionTraversals.size()]);
 	}
-	
-	@Override
-	public QueryBuilder<Edge> getEdgesBetween(EdgeType type, String outNodeType, String inNodeType) throws AAIException {
+
+	public QueryBuilder<Edge> getEdgesBetweenWithLabels(EdgeType type, String outNodeType, String inNodeType, List<String> labels) throws AAIException {
 		Introspector outObj = loader.introspectorFromName(outNodeType);
 		Introspector inObj = loader.introspectorFromName(inNodeType);
-		this.edgeQuery(type, outObj, inObj);
-		
-		return (QueryBuilder<Edge>)this;
+		this.edgeQuery(type, outObj, inObj, labels);
 
+		return (QueryBuilder<Edge>)this;
 	}
+
+
 	/**
 	 * @{inheritDoc}
 	 */
@@ -477,12 +480,12 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
 	/**
 	 * Edge query.
 	 *
-	 * @param outType the out type
-	 * @param inType the in type
+	 * @param outObj the out type
+	 * @param inObj the in type
 	 * @throws NoEdgeRuleFoundException 
 	 * @throws AAIException 
 	 */
-	private void edgeQueryToVertex(EdgeType type, Introspector outObj, Introspector inObj) throws AAIException, NoEdgeRuleFoundException {
+	private void edgeQueryToVertex(EdgeType type, Introspector outObj, Introspector inObj, List<String> labels) throws AAIException {
 		String outType = outObj.getDbName();
 		String inType = inObj.getDbName();
 		
@@ -493,13 +496,38 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
 			inType = inObj.getChildDBName();
 		}
 		markParentBoundary();
-		EdgeRule rule = edgeRules.getEdgeRule(type, outType, inType);
-		if (rule.getDirection().equals(Direction.OUT)) {
-			traversal.out(rule.getLabel());
+		Map<String, EdgeRule> rules;
+		if (labels == null) {
+			rules = edgeRules.getEdgeRules(type, outType, inType);
 		} else {
-			traversal.in(rule.getLabel());
+			rules = edgeRules.getEdgeRulesWithLabels(type, outType, inType, labels);
 		}
+		
+		final List<String> inLabels = new ArrayList<>();
+		final List<String> outLabels = new ArrayList<>();
+
+		rules.forEach((k, edgeRule) -> {
+			if (labels != null && !labels.contains(k)) {
+				return;
+			} else {
+				if (edgeRule.getDirection().equals(Direction.IN)) {
+					inLabels.add(edgeRule.getLabel());
+				} else {
+					outLabels.add(edgeRule.getLabel());
+				}
+			}
+		});
+
+		if (inLabels.isEmpty() && !outLabels.isEmpty()) {
+			traversal.out(outLabels.toArray(new String[outLabels.size()]));
+		} else if (outLabels.isEmpty() && !inLabels.isEmpty()) {
+			traversal.in(inLabels.toArray(new String[inLabels.size()]));
+		} else {				
+			traversal.union(__.out(outLabels.toArray(new String[outLabels.size()])), __.in(inLabels.toArray(new String[inLabels.size()])));
+		}
+		
 		stepIndex++;
+
 		this.createContainerQuery(inObj);
 		
 	}
@@ -507,12 +535,12 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
 	/**
 	 * Edge query.
 	 *
-	 * @param outType the out type
-	 * @param inType the in type
+	 * @param outObj the out type
+	 * @param inObj the in type
 	 * @throws NoEdgeRuleFoundException 
 	 * @throws AAIException 
 	 */
-	private void edgeQuery(EdgeType type, Introspector outObj, Introspector inObj) throws AAIException, NoEdgeRuleFoundException {
+	private void edgeQuery(EdgeType type, Introspector outObj, Introspector inObj, List<String> labels) throws AAIException {
 		String outType = outObj.getDbName();
 		String inType = inObj.getDbName();
 		
@@ -522,15 +550,37 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
 		if (inObj.isContainer()) {
 			inType = inObj.getChildDBName();
 		}
-		markParentBoundary();
-		EdgeRule rule = edgeRules.getEdgeRule(type, outType, inType);
-		if (rule.getDirection().equals(Direction.OUT)) {
-			traversal.outE(rule.getLabel());
-		} else {
-			traversal.inE(rule.getLabel());
-		}
-		stepIndex++;
 		
+		markParentBoundary();
+		Map<String, EdgeRule> rules;
+		if (labels == null) {
+			rules = edgeRules.getEdgeRules(type, outType, inType);
+		} else {
+			rules = edgeRules.getEdgeRulesWithLabels(type, outType, inType, labels);
+		}
+		
+		final List<String> inLabels = new ArrayList<>();
+		final List<String> outLabels = new ArrayList<>();
+
+		rules.forEach((k, edgeRule) -> {
+			if (labels != null && !labels.contains(k)) {
+				return;
+			} else {
+				if (edgeRule.getDirection().equals(Direction.IN)) {
+					inLabels.add(edgeRule.getLabel());
+				} else {
+					outLabels.add(edgeRule.getLabel());
+				}
+			}
+		});
+
+		if (inLabels.isEmpty() && !outLabels.isEmpty()) {
+			traversal.outE(outLabels.toArray(new String[outLabels.size()]));
+		} else if (outLabels.isEmpty() && !inLabels.isEmpty()) {
+			traversal.inE(inLabels.toArray(new String[inLabels.size()]));
+		} else {				
+			traversal.union(__.outE(outLabels.toArray(new String[outLabels.size()])), __.inE(inLabels.toArray(new String[inLabels.size()])));
+		}
 	}
 	
 	@Override

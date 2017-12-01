@@ -24,35 +24,32 @@ package org.onap.aai.query.builder;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.parsers.query.QueryParser;
 import org.onap.aai.parsers.query.QueryParserStrategy;
 import org.onap.aai.serialization.db.EdgeType;
-import org.onap.aai.serialization.db.exceptions.NoEdgeRuleFoundException;
 
 /**
  * The Class QueryBuilder.
  */
 public abstract class QueryBuilder<E> implements Iterator<E> {
 
-	protected QueryParserStrategy factory = null;
-	
-	protected Loader loader = null;
-	
-	protected boolean optimize = false;
-	
-	protected Vertex start = null;
 	protected final GraphTraversalSource source;
+	protected QueryParserStrategy factory = null;
+	protected Loader loader = null;
+	protected boolean optimize = false;
+	protected Vertex start = null;
 	
 	/**
 	 * Instantiates a new query builder.
@@ -83,7 +80,9 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
 	 * @param value the value
 	 * @return the vertices by indexed property
 	 */
-	public abstract QueryBuilder<Vertex> getVerticesByIndexedProperty(String key, Object value);
+	public QueryBuilder<Vertex> getVerticesByIndexedProperty(String key, Object value) {
+		return this.getVerticesByProperty(key, value);
+	}
 	
 	/**
 	 * Gets the vertices by property.
@@ -100,7 +99,9 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
 	 * @param values
 	 * @return vertices that match these values
 	 */
-	public abstract QueryBuilder<Vertex> getVerticesByIndexedProperty(String key, List<?> values);
+	public QueryBuilder<Vertex> getVerticesByIndexedProperty(String key, List<?> values) {
+		return this.getVerticesByProperty(key, values);
+	}
 
 	/**
 	 * filters by all the values for this property
@@ -127,7 +128,7 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
 	 * @param map the map
 	 * @return the typed vertices by map
 	 */
-	public abstract QueryBuilder<Vertex> getTypedVerticesByMap(String type, LinkedHashMap<String, String> map);
+	public abstract QueryBuilder<Vertex> getTypedVerticesByMap(String type, Map<String, String> map);
 
 	/**
 	 * Creates the DB query.
@@ -135,7 +136,11 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
 	 * @param obj the obj
 	 * @return the query builder
 	 */
-	public abstract QueryBuilder<Vertex> createDBQuery(Introspector obj);
+	public QueryBuilder<Vertex> createDBQuery(Introspector obj) {
+		this.createKeyQuery(obj);
+		this.createContainerQuery(obj);
+		return (QueryBuilder<Vertex>) this;
+	}
 	
 	/**
 	 * Creates the key query.
@@ -169,16 +174,79 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
 	 * @param child the child
 	 * @return the query builder
 	 */
-	public abstract QueryBuilder<Vertex> createEdgeTraversal(EdgeType type, Vertex parent, Introspector child) throws AAIException;
+	public QueryBuilder<Vertex> createEdgeTraversal(EdgeType type, Vertex parent, Introspector child) throws AAIException {
+		String nodeType = parent.<String>property(AAIProperties.NODE_TYPE).orElse(null);
+		this.createEdgeTraversal(type, nodeType, child.getDbName());
+		return (QueryBuilder<Vertex>) this;
 
-	public QueryBuilder<Vertex> createEdgeTraversal(EdgeType type, String outNodeType, String inNodeType) throws NoEdgeRuleFoundException, AAIException {
+	}
+
+	/**
+	 *
+	 * @param type
+	 * @param outNodeType
+	 * @param inNodeType
+	 * @return
+	 * @throws AAIException
+	 */
+	public QueryBuilder<Vertex> createEdgeTraversal(EdgeType type, String outNodeType, String inNodeType) throws AAIException {
 		Introspector out = loader.introspectorFromName(outNodeType);
 		Introspector in = loader.introspectorFromName(inNodeType);
-		
+
 		return createEdgeTraversal(type, out, in);
 	}
-	
-	public abstract QueryBuilder<Edge> getEdgesBetween(EdgeType type, String outNodeType, String inNodeType) throws AAIException;
+
+	/**
+	 *
+	 * @param type
+	 * @param outNodeType
+	 * @param inNodeType
+	 * @param labels
+	 * @return
+	 * @throws AAIException
+	 */
+	public QueryBuilder<Vertex> createEdgeTraversalWithLabels(EdgeType type, String outNodeType, String inNodeType, List<String> labels) throws AAIException {
+		Introspector out = loader.introspectorFromName(outNodeType);
+		Introspector in = loader.introspectorFromName(inNodeType);
+
+		return createEdgeTraversalWithLabels(type, out, in, labels);
+	}
+
+	/**
+	 *
+	 * @param type
+	 * @param out
+	 * @param in
+	 * @param labels
+	 * @return
+	 */
+	public abstract QueryBuilder<Vertex> createEdgeTraversalWithLabels(EdgeType type, Introspector out, Introspector in, List<String> labels) throws AAIException;
+
+	/**
+	 *
+	 * @param type
+	 * @param outNodeType
+	 * @param inNodeType
+	 * @return
+	 * @throws AAIException
+	 */
+	public QueryBuilder<Edge> getEdgesBetween(EdgeType type, String outNodeType, String inNodeType) throws AAIException {
+		this.getEdgesBetweenWithLabels(type, outNodeType, inNodeType, null);
+
+		return (QueryBuilder<Edge>)this;
+
+	}
+	/**
+	 *
+	 * @param type
+	 * @param outNodeType
+	 * @param inNodeType
+	 * @param labels
+	 * @return
+	 * @throws AAIException
+	 */
+	public abstract QueryBuilder<Edge> getEdgesBetweenWithLabels(EdgeType type, String outNodeType, String inNodeType, List<String> labels) throws AAIException;
+
 	/**
 	 * Creates the query from URI.
 	 *
@@ -238,6 +306,7 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
 	public abstract void markParentBoundary();
 	
 	public abstract QueryBuilder<E> limit(long amount);
+
 	/**
 	 * New instance.
 	 *

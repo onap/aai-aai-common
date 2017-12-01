@@ -1,40 +1,67 @@
-/**
+/*-
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
- * Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  * ============LICENSE_END=========================================================
- *
- * ECOMP is a trademark and service mark of AT&T Intellectual Property.
  */
+
 package org.onap.aai.serialization.db;
 
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
-import com.google.common.base.CaseFormat;
-import com.thinkaurelius.titan.core.SchemaViolationException;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Array;
+import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+
+import javax.ws.rs.core.UriBuilder;
+
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.Tree;
-import org.apache.tinkerpop.gremlin.structure.*;
+import org.apache.tinkerpop.gremlin.structure.Direction;
+import org.apache.tinkerpop.gremlin.structure.Edge;
+import org.apache.tinkerpop.gremlin.structure.Element;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 import org.javatuples.Pair;
+import org.javatuples.Triplet;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.exceptions.AAIException;
-import org.onap.aai.introspection.*;
+import org.onap.aai.introspection.Introspector;
+import org.onap.aai.introspection.IntrospectorFactory;
+import org.onap.aai.introspection.Loader;
+import org.onap.aai.introspection.LoaderFactory;
+import org.onap.aai.introspection.ModelType;
+import org.onap.aai.introspection.PropertyPredicates;
+import org.onap.aai.introspection.Version;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.onap.aai.introspection.sideeffect.DataCopy;
 import org.onap.aai.introspection.sideeffect.DataLinkReader;
@@ -48,6 +75,7 @@ import org.onap.aai.query.builder.QueryBuilder;
 import org.onap.aai.schema.enums.ObjectMetadata;
 import org.onap.aai.schema.enums.PropertyMetadata;
 import org.onap.aai.serialization.db.exceptions.NoEdgeRuleFoundException;
+import org.onap.aai.serialization.db.util.VersionChecker;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 import org.onap.aai.serialization.tinkerpop.TreeBackedVertex;
 import org.onap.aai.util.AAIApiServerURLBase;
@@ -55,18 +83,10 @@ import org.onap.aai.util.AAIConfig;
 import org.onap.aai.util.AAIConstants;
 import org.onap.aai.workarounds.NamingExceptions;
 
-import javax.ws.rs.core.UriBuilder;
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Array;
-import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
+import com.att.eelf.configuration.EELFLogger;
+import com.att.eelf.configuration.EELFManager;
+import com.google.common.base.CaseFormat;
+import com.thinkaurelius.titan.core.SchemaViolationException;
 
 public class DBSerializer {
 	
@@ -109,8 +129,7 @@ public class DBSerializer {
 	 */
 	public void touchStandardVertexProperties(Vertex v, boolean isNewVertex) {
 		
-		long unixTimeNow = System.currentTimeMillis();
-		String timeNowInSec = "" + unixTimeNow;
+		String timeNowInSec = Long.toString(System.currentTimeMillis());
 		if (isNewVertex) {
 			v.property(AAIProperties.SOURCE_OF_TRUTH, this.sourceOfTruth);
 			v.property(AAIProperties.CREATED_TS, timeNowInSec);
@@ -391,14 +410,19 @@ public class DBSerializer {
 				
 		List<Object> relationships = (List<Object>)wrapped.getValue("relationship");
 		
-		List<Pair<Vertex, Vertex>> addEdges = new ArrayList<>();
+		List<Triplet<Vertex, Vertex, String>> addEdges = new ArrayList<>();
 		List<Edge> existingEdges = this.engine.getQueryEngine().findEdgesForVersion(v, wrapped.getLoader());
 		
 		for (Object relationship : relationships) {
 			Edge e = null;
 			Vertex cousinVertex = null;
+			String label = null;
 			Introspector wrappedRel = IntrospectorFactory.newInstance(this.introspectionType, relationship);
 			QueryParser parser = engine.getQueryBuilder().createQueryFromRelationship(wrappedRel);
+			
+			if (wrappedRel.hasProperty("relationship-label")) {
+				label = wrappedRel.getValue("relationship-label");
+			}
 			
 			List<Vertex> results = parser.getQueryBuilder().toList();
 			if (results.isEmpty()) {
@@ -412,20 +436,20 @@ public class DBSerializer {
 			}
 			
 			if (cousinVertex != null) {
-				try {
-					if (!edgeRules.hasEdgeRule(v, cousinVertex)) {
-						throw new AAIException("AAI_6120", "No EdgeRule found for passed nodeTypes: " + v.property(AAIProperties.NODE_TYPE).value().toString() + ", " 
-								+ cousinVertex.property(AAIProperties.NODE_TYPE).value().toString() + "."); 
-					}
-					e = this.getEdgeBetween(EdgeType.COUSIN, v, cousinVertex);
-
-					if (e == null) {
-						addEdges.add(new Pair<>(v, cousinVertex));
-					} else { 
-						existingEdges.remove(e);
-					}
-				} catch (NoEdgeRuleFoundException e1) {
+					
+				if (!edgeRules.hasEdgeRule(v, cousinVertex, label)) {
+					throw new AAIException("AAI_6120", "No EdgeRule found for passed nodeTypes: " + v.property(AAIProperties.NODE_TYPE).value().toString() + ", " 
+							+ cousinVertex.property(AAIProperties.NODE_TYPE).value().toString() + (label != null ? (" with label " + label):"")  +"."); 
+				} else if (edgeRules.hasTreeEdgeRule(v, cousinVertex) && !edgeRules.hasCousinEdgeRule(v, cousinVertex, label)) {
 					throw new AAIException("AAI_6145");
+				}
+				
+				e = this.getEdgeBetween(EdgeType.COUSIN, v, cousinVertex, label);
+
+				if (e == null) {
+					addEdges.add(new Triplet<>(v, cousinVertex, label));
+				} else { 
+					existingEdges.remove(e);
 				}
 			}
 		}
@@ -433,9 +457,9 @@ public class DBSerializer {
 		for (Edge edge : existingEdges) {
 			edge.remove();
 		}
-		for (Pair<Vertex, Vertex> pair : addEdges) {
+		for (Triplet<Vertex, Vertex, String> triplet : addEdges) {
 			 try {
-				edgeRules.addEdge(this.engine.asAdmin().getTraversalSource(), pair.getValue0(), pair.getValue1());
+				edgeRules.addEdge(this.engine.asAdmin().getTraversalSource(), triplet.getValue0(), triplet.getValue1(), triplet.getValue2());
 			} catch (NoEdgeRuleFoundException e) {
 				throw new AAIException("AAI_6129", e);
 			}			
@@ -491,7 +515,7 @@ public class DBSerializer {
 		
  		//QueryParser p = this.engine.getQueryBuilder().createQueryFromURI(obj.getURI());
  		//List<Vertex> items = p.getQuery().toList();
- 		QueryBuilder query = this.engine.getQueryBuilder(v);
+ 		QueryBuilder<Vertex> query = this.engine.getQueryBuilder(v);
  		query.createEdgeTraversal(EdgeType.TREE, v, dependentObj);
  		query.createKeyQuery(dependentObj);
  		
@@ -531,14 +555,13 @@ public class DBSerializer {
 		
 		String parentUri = parent.<String>property(AAIProperties.AAI_URI).orElse(null);
 		if (parentUri != null) {
-			String uri;
-				uri = obj.getURI();
+			String uri = obj.getURI();
 			child.property(AAIProperties.AAI_URI, parentUri + uri);
 		}
 		processObject(obj, child, requestContext);
 		
 		Edge e;
-		e = this.getEdgeBetween(EdgeType.TREE, parent, child);
+		e = this.getEdgeBetween(EdgeType.TREE, parent, child, null);
 		if (e == null) {
 			String canBeLinked = obj.getMetadata(ObjectMetadata.CAN_BE_LINKED);
 			if (canBeLinked != null && canBeLinked.equals("true")) {
@@ -617,9 +640,7 @@ public class DBSerializer {
 			for (Future<Object> future : futures) {
 				try {
 					getList.add(future.get());
-				} catch (ExecutionException e) {
-					throw new AAIException("AAI_4000", e);
-				} catch (InterruptedException e) {
+				} catch (ExecutionException | InterruptedException e) {
 					throw new AAIException("AAI_4000", e);
 				}
 			}
@@ -726,7 +747,7 @@ public class DBSerializer {
 									Introspector argumentObject = obj.newIntrospectorInstanceOfNestedProperty(property);
 									
 									Object result = dbToObject(argumentObject, childVertex, seen, depth, nodeOnly, cleanUp);
-									if (result != null && getList != null) {
+									if (result != null) { 
 										getList.add(argumentObject.getUnderlyingObject());
 									}
 									
@@ -868,19 +889,28 @@ public class DBSerializer {
 	 */
 	private Introspector createRelationshipList(Vertex v, Introspector obj, String cleanUp) throws UnsupportedEncodingException, AAIException {
 		
-
 		List<Vertex> cousins = this.engine.getQueryEngine().findCousinVertices(v);
 
 		List<Object> relationshipObjList = obj.getValue("relationship");
 		
 		for (Vertex cousin : cousins) {
-		
+			if (VersionChecker.apiVersionNeedsEdgeLabel(obj.getVersion())) {
+				List<Edge> edges = this.getEdgesBetween(EdgeType.COUSIN, v, cousin);
+				for (Edge e : edges) {
+					Introspector relationshipObj = obj.newIntrospectorInstanceOfNestedProperty("relationship");
+					Object result = processEdgeRelationship(relationshipObj, cousin, cleanUp, e);
+					if (result != null) {
+						relationshipObjList.add(result);
+					}
+				}
+			} else {
 				Introspector relationshipObj = obj.newIntrospectorInstanceOfNestedProperty("relationship");
-			Object result = processEdgeRelationship(relationshipObj, cousin, cleanUp);
+				Object result = processEdgeRelationship(relationshipObj, cousin, cleanUp, null);
 				if (result != null) {
 					relationshipObjList.add(result);
 				}
-		
+			}
+
 		}
 		
 		if (relationshipObjList.isEmpty()) {
@@ -910,7 +940,7 @@ public class DBSerializer {
 	 * @throws AAIUnknownObjectException 
 	 * @throws URISyntaxException 
 	 */
-		private Object processEdgeRelationship(Introspector relationshipObj, Vertex cousin, String cleanUp) throws UnsupportedEncodingException, AAIUnknownObjectException {
+	private Object processEdgeRelationship(Introspector relationshipObj, Vertex cousin, String cleanUp, Edge edge) throws UnsupportedEncodingException, AAIUnknownObjectException {
 
 
 		//we must look up all parents in this case because we need to compute name-properties
@@ -935,11 +965,14 @@ public class DBSerializer {
 			}
 			return null;
 		}
-
-        if(list.size() > 0 && this.version.compareTo(Version.v8) >= 0){
+		if (!list.isEmpty()) {
 			this.addRelatedToProperty(result, list.get(0));
 		}
-
+		
+		if (edge != null && result.hasProperty("relationship-label")) {
+			result.setValue("relationship-label", edge.label());
+		}
+		
 		return result.getUnderlyingObject();
 	}
 	
@@ -993,8 +1026,7 @@ public class DBSerializer {
 		}
 		
 		uri = sb.toString();
-		URI result = UriBuilder.fromPath(uri).build();
-		return result;
+		return UriBuilder.fromPath(uri).build();
 	}
 	
 	/**
@@ -1063,19 +1095,19 @@ public class DBSerializer {
 	 */
 	public void setCachedURIs(List<Vertex> vertices, List<Introspector> objs) throws UnsupportedEncodingException, URISyntaxException {
 		
-		String uriChain = "";
+		StringBuilder uriChain = new StringBuilder();
 		for (int i = 0; i < vertices.size(); i++) {
 			String aaiUri = "";
 			Vertex v = null;
 			v = vertices.get(i);
 			aaiUri = v.<String>property(AAIProperties.AAI_URI).orElse(null);
 			if (aaiUri != null) {
-				uriChain += aaiUri;
+				uriChain.append(aaiUri);
 			} else {
 				URI uri = UriBuilder.fromPath(objs.get(i).getURI()).build();
 				aaiUri = uri.toString();
-				uriChain += aaiUri;
-				v.property(AAIProperties.AAI_URI, uriChain);
+				uriChain.append(aaiUri);
+				v.property(AAIProperties.AAI_URI, uriChain.toString());
 			}
 		}
 		
@@ -1106,7 +1138,7 @@ public class DBSerializer {
 			}
 		}
 		
-		if (relatedToProperties.size() > 0) {
+		if (!relatedToProperties.isEmpty()) {
 			List relatedToList = (List)relationship.getValue("related-to-property");
 			for (Introspector obj : relatedToProperties) {
 				relatedToList.add(obj.getUnderlyingObject());
@@ -1130,8 +1162,13 @@ public class DBSerializer {
 		
 		QueryParser parser = engine.getQueryBuilder().createQueryFromRelationship(relationship);
 		
+		String label = null;
+		if (relationship.hasProperty("relationship-label")) {
+			label = relationship.getValue("relationship-label");
+		}
+		
 		List<Vertex> results = parser.getQueryBuilder().toList();
-		if (results.size() == 0) {
+		if (results.isEmpty()) {
 			AAIException e = new AAIException("AAI_6129", "Node of type " + parser.getResultType() + ". Could not find object at: " + parser.getUri());
 			e.getTemplateVars().add(parser.getResultType());
 			e.getTemplateVars().add(parser.getUri().toString());
@@ -1143,29 +1180,19 @@ public class DBSerializer {
 
 		if (relatedVertex != null) {
 
-			Edge e;
-			try {
-				e = this.getEdgeBetween(EdgeType.COUSIN, inputVertex, relatedVertex);
-				if (e == null) {				
-					edgeRules.addEdge(this.engine.asAdmin().getTraversalSource(), inputVertex, relatedVertex);
-
-				} else {
-					//attempted to link two vertexes already linked
-				}
-			} catch (NoEdgeRuleFoundException e1) {
-				throw new AAIException("AAI_6129", e1);
+			Edge e = this.getEdgeBetween(EdgeType.COUSIN, inputVertex, relatedVertex, label);
+			if (e == null) {				
+				edgeRules.addEdge(this.engine.asAdmin().getTraversalSource(), inputVertex, relatedVertex, label);
+			} else {
+				//attempted to link two vertexes already linked
 			}
-			
-			
-			
-
 		}
 		
 		return true;
 	}
 	
 	/**
-	 * Gets the edges between.
+	 * Gets all the edges between of the type.
 	 *
 	 * @param aVertex the out vertex
 	 * @param bVertex the in vertex
@@ -1173,50 +1200,76 @@ public class DBSerializer {
 	 * @throws AAIException the AAI exception
 	 * @throws NoEdgeRuleFoundException 
 	 */
-	private List<Edge> getEdgesBetween(EdgeType type, Vertex aVertex, Vertex bVertex) throws AAIException, NoEdgeRuleFoundException {
+	private List<Edge> getEdgesBetween(EdgeType type, Vertex aVertex, Vertex bVertex) {
 		
 		List<Edge> result = new ArrayList<>();
 		
 		if (bVertex != null) {
-				EdgeRule rule = edgeRules.getEdgeRule(type, aVertex, bVertex);
-				GraphTraversal<Vertex, Edge> findEdgesBetween = null;
-				findEdgesBetween = this.engine.asAdmin().getTraversalSource().V(aVertex).bothE(rule.getLabel()).filter(__.otherV().hasId(bVertex.id()));
-				List<Edge> edges = findEdgesBetween.toList();
-				for (Edge edge : edges) {
-					if (edge.label().equals(rule.getLabel())) {
-						result.add(edge);
-					}
+			GraphTraversal<Vertex, Edge> findEdgesBetween = null;
+			findEdgesBetween = this.engine.asAdmin().getTraversalSource().V(aVertex).bothE();
+			if (EdgeType.TREE.equals(type)) {
+				findEdgesBetween = findEdgesBetween.not(__.has(EdgeProperty.CONTAINS.toString(), "NONE"));
+			} else {
+				findEdgesBetween = findEdgesBetween.has(EdgeProperty.CONTAINS.toString(), "NONE");
+			}
+			findEdgesBetween = findEdgesBetween.filter(__.otherV().hasId(bVertex.id()));
+			result = findEdgesBetween.toList();
+		}
+		
+		return result;
+	}
+	/**
+	 * Gets all the edges between the vertexes with the label and type.
+	 *
+	 * @param aVertex the out vertex
+	 * @param bVertex the in vertex
+	 * @param label 
+	 * @return the edges between
+	 * @throws AAIException the AAI exception
+	 */
+	private List<Edge> getEdgesBetween(EdgeType type, Vertex aVertex, Vertex bVertex, String label) throws AAIException {
+		
+		List<Edge> result = new ArrayList<>();
+		
+		if (bVertex != null) {
+			EdgeRule rule = edgeRules.getEdgeRule(type, aVertex, bVertex, label);
+			List<Edge> edges = this.getEdgesBetween(type, aVertex, bVertex);
+			for (Edge edge : edges) {
+				if (edge.label().equals(rule.getLabel())) {
+					result.add(edge);
 				}
-
+			}		
 		}
 		
 		return result;
 	}
 	
 	/**
-	 * Gets the edge between.
+	 * Gets the edge between with the label and edge type.
 	 *
 	 * @param aVertex the out vertex
 	 * @param bVertex the in vertex
+	 * @param label 
 	 * @return the edge between
 	 * @throws AAIException the AAI exception
 	 * @throws NoEdgeRuleFoundException 
 	 */
-	public Edge getEdgeBetween(EdgeType type, Vertex aVertex, Vertex bVertex) throws AAIException {
-		
-		
-		
+	public Edge getEdgeBetween(EdgeType type, Vertex aVertex, Vertex bVertex, String label) throws AAIException {
+	
 		if (bVertex != null) {
 
-				List<Edge> edges = this.getEdgesBetween(type, aVertex, bVertex);
+				List<Edge> edges = this.getEdgesBetween(type, aVertex, bVertex, label);
 				
-				if (edges.size() > 0) {
+				if (!edges.isEmpty()) {
 					return edges.get(0);
 				}
 
 		}
 		
 		return null;
+	}
+	public Edge getEdgeBetween(EdgeType type, Vertex aVertex, Vertex bVertex) throws AAIException {
+		return this.getEdgeBetween(type, aVertex, bVertex, null);
 	}
 	
 
@@ -1236,15 +1289,20 @@ public class DBSerializer {
 		QueryParser parser = engine.getQueryBuilder().createQueryFromRelationship(relationship);
 		
 		List<Vertex> results = parser.getQueryBuilder().toList();
+		
+		String label = null;
+		if (relationship.hasProperty("relationship-label")) {
+			label = relationship.getValue("relationship-label");
+		}
 
-		if (results.size() == 0) {
+		if (results.isEmpty()) {
 			return false;
 		}
 		
 		relatedVertex = results.get(0);
 		Edge edge;
 		try {
-			edge = this.getEdgeBetween(EdgeType.COUSIN, inputVertex, relatedVertex);
+			edge = this.getEdgeBetween(EdgeType.COUSIN, inputVertex, relatedVertex, label);
 		} catch (NoEdgeRuleFoundException e) {
 			throw new AAIException("AAI_6129", e);
 		}
@@ -1329,7 +1387,7 @@ public class DBSerializer {
 		}
 		List<Object> preventDeleteVertices = this.engine.asAdmin().getReadOnlyTraversalSource().V(vertex).union(__.inE().has(EdgeProperty.PREVENT_DELETE.toString(), AAIDirection.IN.toString()).outV().values(AAIProperties.NODE_TYPE), __.outE().has(EdgeProperty.PREVENT_DELETE.toString(), AAIDirection.OUT.toString()).inV().values(AAIProperties.NODE_TYPE)).dedup().toList();
 		
-		if (preventDeleteVertices.size() > 0) {
+		if (!preventDeleteVertices.isEmpty()) {
 			aaiExceptionCode = "AAI_6110";
 			errorDetail = String.format("Object is being reference by additional objects preventing it from being deleted. Please clean up references from the following types %s", preventDeleteVertices);
 			result = false;
@@ -1368,7 +1426,7 @@ public class DBSerializer {
 			ErrorLogHelper.logException(e);
 		}
 		// We're only doing the resource version checks for v5 and later
-		if (enabled.equals("true") && this.version.compareTo(Version.v8) > 0) {
+		if (enabled.equals("true")) {
 			if (!currentResourceVersion.equals(resourceVersion)) {
 				if (action.equals("create") && !resourceVersion.equals("")) {
 					errorDetail = "resource-version passed for " + action + " of " + uri;

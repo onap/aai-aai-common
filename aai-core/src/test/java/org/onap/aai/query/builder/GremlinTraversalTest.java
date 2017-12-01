@@ -19,23 +19,32 @@
  *
  * ECOMP is a trademark and service mark of AT&T Intellectual Property.
  */
-package org.onap.aai.serialization.db.exceptions;
+package org.onap.aai.query.builder;
 
-import org.onap.aai.exceptions.AAIException;
+import org.apache.tinkerpop.gremlin.structure.Edge;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
 
-public class NoEdgeRuleFoundException extends AAIException {
-
-	private static final long serialVersionUID = -906843868234976763L;
+public class GremlinTraversalTest extends QueryBuilderTestAbstraction {
 	
-	public NoEdgeRuleFoundException(String message) {
-		super("AAI_6107", message);
+	@Override
+	protected QueryBuilder<Edge> getNewEdgeTraversal(Vertex v) {
+		return new GremlinTraversal<>(loader, g, v, testEdgeRules);
+	}
+	
+	@Override
+	protected QueryBuilder<Edge> getNewEdgeTraversal() {
+		return new GremlinTraversal<>(loader, g, testEdgeRules);
+	}
+	
+	@Override
+	protected QueryBuilder<Vertex> getNewVertexTraversal(Vertex v) {
+		return new GremlinTraversal<>(loader, g, v, testEdgeRules);
+	}
+	
+	@Override
+	protected QueryBuilder<Vertex> getNewVertexTraversal() {
+		return new GremlinTraversal<>(loader, g, testEdgeRules);
 	}
 
-	public NoEdgeRuleFoundException(Throwable cause) {
-		super("AAI_6107",cause);
-	}
-
-	public NoEdgeRuleFoundException(String message, Throwable cause) {
-		super("AAI_6107", cause, message);
-	}
+		
 }

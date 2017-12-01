@@ -31,12 +31,12 @@ import org.apache.tinkerpop.gremlin.process.traversal.Step;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
-
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.parsers.query.QueryParser;
 import org.onap.aai.parsers.query.TraversalStrategy;
+import org.onap.aai.serialization.db.EdgeRules;
 
 /**
  * The Class TraversalQuery.
@@ -57,10 +57,34 @@ public class TraversalQuery<E> extends GraphTraversalBuilder<E> {
 	 * Instantiates a new traversal query.
 	 *
 	 * @param loader the loader
+	 * @param source graph traversal source
+	 * @param edgeRules the edgeRules to use
+	 */
+	public TraversalQuery(Loader loader, GraphTraversalSource source, EdgeRules edgeRules) {
+		super(loader, source, edgeRules);
+		this.factory = new TraversalStrategy(this.loader, this);
+	
+	}
+	
+	/**
+	 * Instantiates a new traversal query.
+	 *
+	 * @param loader the loader
 	 * @param start the start
 	 */
 	public TraversalQuery(Loader loader, GraphTraversalSource source, Vertex start) {
 		super(loader, source, start);
+		this.factory = new TraversalStrategy(this.loader, this);
+	}
+	
+	/**
+	 * Instantiates a new traversal query.
+	 *
+	 * @param loader the loader
+	 * @param start the start
+	 */
+	public TraversalQuery(Loader loader, GraphTraversalSource source, Vertex start, EdgeRules edgeRules) {
+		super(loader, source, start, edgeRules);
 		this.factory = new TraversalStrategy(this.loader, this);
 	}
 	
@@ -125,14 +149,17 @@ public class TraversalQuery<E> extends GraphTraversalBuilder<E> {
 	
 	@Override
 	protected QueryBuilder<E> cloneQueryAtStep(int index) {
-		if (index == 0) {
-			index = stepIndex;
+		int idx = index;
+		
+		if (idx == 0) {
+			idx = stepIndex;
 		}
+
 		GraphTraversal<Vertex, E> clone = this.traversal.asAdmin().clone();
 		GraphTraversal.Admin<Vertex, E> cloneAdmin = clone.asAdmin();
 		List<Step> steps = cloneAdmin.getSteps();
 
-		for (int i = steps.size()-1; i >= index; i--) {
+		for (int i = steps.size()-1; i >= idx; i--) {
 			cloneAdmin.removeStep(i);
 		}
 		return new TraversalQuery<>(cloneAdmin, loader, source, this);

@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.tinkerpop.gremlin.structure.Direction;
+import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 import org.onap.aai.db.props.AAIProperties;
@@ -101,21 +102,33 @@ public class RawFormat implements FormatMapper {
 
 		return json;
 	}
+	
 	protected JsonArray createRelationshipObject(Vertex v) throws AAIFormatVertexException {
 		JsonArray jarray = new JsonArray();
-		Iterator<Vertex> iter = v.vertices(Direction.BOTH);
+		Iterator<Edge> inIter = v.edges(Direction.IN);
+		Iterator<Edge> outIter = v.edges(Direction.OUT);
 
-		while (iter.hasNext()) {
-			Vertex related = iter.next();
-
-			JsonObject json = new JsonObject();
-			json.addProperty("id", related.id().toString());
-			json.addProperty("node-type", related.<String>value(AAIProperties.NODE_TYPE));
-			json.addProperty("url", this.urlBuilder.pathed(related));
-			jarray.add(json);
+		while (inIter.hasNext()) {
+			Edge e = inIter.next();
+			jarray.add(this.getRelatedObject(e.label(), e.outVertex()));
+		}
+		
+		while (outIter.hasNext()) {
+			Edge e = outIter.next();
+			jarray.add(this.getRelatedObject(e.label(), e.inVertex()));
 		}
 
 		return jarray;
+	}
+	
+	private JsonObject getRelatedObject(String label, Vertex related) throws AAIFormatVertexException {
+		JsonObject json = new JsonObject();
+		json.addProperty("id", related.id().toString());
+		json.addProperty("relationship-label", label);
+		json.addProperty("node-type", related.<String>value(AAIProperties.NODE_TYPE));
+		json.addProperty("url", this.urlBuilder.pathed(related));
+		
+		return json;
 	}
 	
 	public static class Builder implements NodesOnly<Builder>, Depth<Builder> {

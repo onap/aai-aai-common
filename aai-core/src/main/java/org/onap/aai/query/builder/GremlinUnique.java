@@ -125,11 +125,15 @@ public class GremlinUnique<E> extends GremlinQueryBuilder<E> {
 	
 	@Override
 	protected QueryBuilder<E> cloneQueryAtStep(int index) {
-		if (index == 0) {
-			index = stepIndex;
+		
+		int idx = index;
+		
+		if (idx == 0) {
+			idx = stepIndex;
 		}
+		
 		List<String> newList = new ArrayList<>();
-		for (int i = 0; i < index; i++) {
+		for (int i = 0; i < idx; i++) {
 			newList.add(this.list.get(i));
 		}
 		

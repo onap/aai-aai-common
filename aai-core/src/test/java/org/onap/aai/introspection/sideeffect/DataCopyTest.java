@@ -162,7 +162,7 @@ public class DataCopyTest {
 		
 		final Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.getLatest());
 		final Introspector obj = loader.unmarshal("customer", this.getJsonString("nested-case.json"));
-		System.out.println(obj.marshal(true));
+		//System.out.println(obj.marshal(true));
 		TransactionalGraphEngine spy = spy(dbEngine);
 		TransactionalGraphEngine.Admin adminSpy = spy(dbEngine.asAdmin());
 		Graph g = graph.newTransaction();

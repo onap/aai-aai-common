@@ -10,3 +10,4 @@ bundleconfig-local/etc/logback.xml
 /bin/
 */.idea
 *.iml
+.idea/

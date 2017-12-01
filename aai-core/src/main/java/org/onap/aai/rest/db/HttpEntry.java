@@ -461,14 +461,13 @@ public class HttpEntry {
 	private Introspector getObjectFromDb(List<Vertex> results, DBSerializer serializer, QueryParser query, Introspector obj, URI uri, int depth, boolean nodeOnly, String cleanUp) throws AAIException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, SecurityException, InstantiationException, NoSuchMethodException, UnsupportedEncodingException, AAIUnknownObjectException, URISyntaxException {
         
         //nothing found
-        if (results.size() == 0) {
+        if (results.isEmpty()) {
         	String msg = createNotFoundMessage(query.getResultType(), uri);
 			throw new AAIException("AAI_6114", msg);
         }
 
-        obj = serializer.dbToObject(results, obj, depth, nodeOnly, cleanUp);
+        return serializer.dbToObject(results, obj, depth, nodeOnly, cleanUp);
         
-        return obj;
 	}
 
 	

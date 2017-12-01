@@ -23,7 +23,6 @@ package org.onap.aai.query.builder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -67,7 +66,19 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
 	 */
 	public GremlinQueryBuilder(Loader loader, GraphTraversalSource source) {
 		super(loader, source);
-		list = new ArrayList<String>();
+		list = new ArrayList<>();
+	}
+	
+	/**
+	 * Instantiates a new graph gremlin builder.
+	 *
+	 * @param loader the loader
+	 */
+	public GremlinQueryBuilder(Loader loader, GraphTraversalSource source, EdgeRules edgeRules) {
+		super(loader, source);
+		this.edgeRules = edgeRules;
+		list = new ArrayList<>();
+		
 	}
 	
 	/**
@@ -78,42 +89,28 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
 	 */
 	public GremlinQueryBuilder(Loader loader, GraphTraversalSource source, Vertex start) {
 		super(loader, source, start);
-		list = new ArrayList<String>();
+		list = new ArrayList<>();
 	}
 	
 	/**
-	 * @{inheritDoc}
+	 * Instantiates a new graph gremlin builder.
+	 *
+	 * @param loader the loader
+	 * @param start the start
 	 */
-	@Override
-	public QueryBuilder<Vertex> createDBQuery(Introspector obj) {
-		this.createKeyQuery(obj);
-		this.createContainerQuery(obj);
-		return (QueryBuilder<Vertex>) this;
+	public GremlinQueryBuilder(Loader loader, GraphTraversalSource source, Vertex start, EdgeRules edgeRules) {
+		super(loader, source, start);
+		this.edgeRules = edgeRules;
+		list = new ArrayList<>();
+		
 	}
 	
 	@Override
 	public QueryBuilder<Vertex> exactMatchQuery(Introspector obj) {
 		// TODO not implemented because this is implementation is no longer used
 		this.createKeyQuery(obj);
-		//allPropertiesQuery(obj);
 		this.createContainerQuery(obj);
 		return (QueryBuilder<Vertex>) this;
-	}
-	
-	/**
-	 * @{inheritDoc}
-	 */
-	@Override
-	public QueryBuilder<Vertex> getVerticesByIndexedProperty(String key, Object value) {
-		return this.getVerticesByProperty(key, value);
-	}
-	
-	/**
-	 * @{inheritDoc}
-	 */
-	@Override
-	public QueryBuilder<Vertex> getVerticesByIndexedProperty(String key, List<?> values) {
-		return this.getVerticesByProperty(key, values);
 	}
 
 	/**
@@ -123,7 +120,7 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
 	public QueryBuilder<Vertex> getVerticesByProperty(String key, Object value) {
 
 		String term = "";
-		if (value != null && !value.getClass().getName().equals("java.lang.String")) {
+		if (value != null && !(value instanceof String) ) {
 			term = value.toString();
 		} else {
 			term = "'" + value + "'";
@@ -143,7 +140,7 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
 		String predicate = "P.within(#!#argument#!#)";
 		List<String> arguments = new ArrayList<>();
 		for (Object item : values) {
-			if (item != null && !item.getClass().getName().equals("java.lang.String")) {
+			if (item != null && !(item instanceof String)) {
 				arguments.add(item.toString());
 			} else {
 				arguments.add("'" + item + "'");
@@ -175,10 +172,10 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
 	 * @{inheritDoc}
 	 */
 	@Override
-	public QueryBuilder<Vertex> getTypedVerticesByMap(String type, LinkedHashMap<String, String> map) {
+	public QueryBuilder<Vertex> getTypedVerticesByMap(String type, Map<String, String> map) {
 		
-		for (String key : map.keySet()) {
-			list.add(".has('" + key + "', '" + map.get(key) + "')");
+		for (Map.Entry<String, String> es : map.entrySet()) {
+			list.add(".has('" + es.getKey() + "', '" + es.getValue() + "')");
 			stepIndex++;
 		}
 		list.add(".has('aai-node-type', '" + type + "')");
@@ -207,7 +204,7 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
 	 * @{inheritDoc}
 	 */
 	@Override
-	public QueryBuilder createEdgeTraversal(EdgeType type, Introspector parent, Introspector child) throws AAIException, NoEdgeRuleFoundException {
+	public QueryBuilder createEdgeTraversal(EdgeType type, Introspector parent, Introspector child) throws AAIException {
 		String parentName = parent.getDbName();
 		String childName = child.getDbName();
 		if (parent.isContainer()) {
@@ -216,47 +213,73 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
 		if (child.isContainer()) {
 			childName = child.getChildDBName();
 		}
-		this.edgeQueryToVertex(type, parentName, childName);
+		this.edgeQueryToVertex(type, parentName, childName, null);
 		return this;
 			
 	}
-	
+
 	/**
-	 * @throws NoEdgeRuleFoundException 
-	 * @throws AAIException 
+	 *
 	 * @{inheritDoc}
 	 */
 	@Override
-	public QueryBuilder<Vertex> createEdgeTraversal(EdgeType type, Vertex parent, Introspector child) throws AAIException, NoEdgeRuleFoundException {
-		String nodeType = parent.<String>property(AAIProperties.NODE_TYPE).orElse(null);
-		this.edgeQueryToVertex(type, nodeType, child.getDbName());
-		
+	public QueryBuilder<Vertex> createEdgeTraversalWithLabels(EdgeType type, Introspector out, Introspector in, List<String> labels) throws AAIException {
+		String parentName = out.getDbName();
+		String childName = in.getDbName();
+		if (out.isContainer()) {
+			parentName = out.getChildDBName();
+		}
+		if (in.isContainer()) {
+			childName = in.getChildDBName();
+		}
+		this.edgeQueryToVertex(type, parentName, childName, labels);
 		return (QueryBuilder<Vertex>) this;
-			
 	}
-	
-	@Override
-	public QueryBuilder<Edge> getEdgesBetween(EdgeType type, String outNodeType, String inNodeType) throws AAIException {
-		this.edgeQuery(type, outNodeType, inNodeType);
-		
-		return (QueryBuilder<Edge>)this;
 
+
+	public QueryBuilder<Edge> getEdgesBetweenWithLabels(EdgeType type, String outNodeType, String inNodeType, List<String> labels) throws AAIException {
+		this.edgeQuery(type, outNodeType, inNodeType, labels);
+		return (QueryBuilder<Edge>)this;
 	}
+
 	/**
 	 * Edge query.
 	 *
 	 * @param outType the out type
 	 * @param inType the in type
-	 * @throws NoEdgeRuleFoundException 
-	 * @throws AAIException 
+	 * @throws NoEdgeRuleFoundException
+	 * @throws AAIException
 	 */
-	private void edgeQueryToVertex(EdgeType type, String outType, String inType) throws AAIException, NoEdgeRuleFoundException {
+	private void edgeQueryToVertex(EdgeType type, String outType, String inType, List<String> labels) throws AAIException {
 		markParentBoundary();
-		EdgeRule rule = edgeRules.getEdgeRule(type, outType, inType);
-		if (rule.getDirection().equals(Direction.OUT)) {
-			list.add(".out('" + rule.getLabel() + "')");
+		Map<String, EdgeRule> rules;
+		if (labels == null) {
+			rules = edgeRules.getEdgeRules(type, outType, inType);
 		} else {
-			list.add(".in('" + rule.getLabel() + "')");
+			rules = edgeRules.getEdgeRulesWithLabels(type, outType, inType, labels);
+		}
+
+		final List<String> inLabels = new ArrayList<>();
+		final List<String> outLabels = new ArrayList<>();
+
+		rules.forEach((k, edgeRule) -> {
+			if (labels != null && !labels.contains(k)) {
+				return;
+			} else {
+				if (edgeRule.getDirection().equals(Direction.IN)) {
+					inLabels.add(edgeRule.getLabel());
+				} else {
+					outLabels.add(edgeRule.getLabel());
+				}
+			}
+		});
+
+		if (inLabels.isEmpty() && !outLabels.isEmpty()) {
+			list.add(".out('" + String.join("','", outLabels) + "')");
+		} else if (outLabels.isEmpty() && !inLabels.isEmpty()) {
+			list.add(".in('" + String.join("','", inLabels) + "')");
+		} else {
+			list.add(".union(__.in('" + String.join("','", inLabels) + "')" + ", __.out('" + String.join("','", outLabels) + "'))");
 		}
 		stepIndex++;
 		list.add(".has('" + AAIProperties.NODE_TYPE + "', '" + inType + "')");
@@ -272,14 +295,38 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
 	 * @throws NoEdgeRuleFoundException 
 	 * @throws AAIException 
 	 */
-	private void edgeQuery(EdgeType type, String outType, String inType) throws AAIException, NoEdgeRuleFoundException {
+	private void edgeQuery(EdgeType type, String outType, String inType, List<String> labels) throws AAIException {
 		markParentBoundary();
-		EdgeRule rule = edgeRules.getEdgeRule(type, outType, inType);
-		if (rule.getDirection().equals(Direction.OUT)) {
-			list.add(".outE('" + rule.getLabel() + "')");
+		Map<String, EdgeRule> rules;
+		if (labels == null) {
+			rules = edgeRules.getEdgeRules(type, outType, inType);
 		} else {
-			list.add(".inV('" + rule.getLabel() + "')");
+			rules = edgeRules.getEdgeRulesWithLabels(type, outType, inType, labels);
 		}
+		
+		final List<String> inLabels = new ArrayList<>();
+		final List<String> outLabels = new ArrayList<>();
+
+		rules.forEach((k, edgeRule) -> {
+			if (labels != null && !labels.contains(k)) {
+				return;
+			} else {
+				if (edgeRule.getDirection().equals(Direction.IN)) {
+					inLabels.add(edgeRule.getLabel());
+				} else {
+					outLabels.add(edgeRule.getLabel());
+				}
+			}
+		});
+
+		if (inLabels.isEmpty() && !outLabels.isEmpty()) {
+			list.add(".outE('" + String.join("','", outLabels) + "')");
+		} else if (outLabels.isEmpty() && !inLabels.isEmpty()) {
+			list.add(".inE('" + String.join("','", inLabels) + "')");
+		} else {
+			list.add(".union(__.inE('" + String.join("','", inLabels) + "')" + ", __.outE('" + String.join("','", outLabels) + "'))");
+		}
+		
 		stepIndex++;
 		
 	}

@@ -26,7 +26,10 @@ import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.junit.Test;
 import org.onap.aai.AAISetup;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -41,6 +44,7 @@ import org.junit.rules.ExpectedException;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Version;
 import org.onap.aai.serialization.db.exceptions.EdgeMultiplicityException;
+import org.onap.aai.serialization.db.exceptions.MultipleEdgeRuleFoundException;
 import org.onap.aai.serialization.db.exceptions.NoEdgeRuleFoundException;
 
 import com.google.common.collect.Multimap;
@@ -105,6 +109,35 @@ public class EdgeRulesTest extends AAISetup {
 		assertEquals(false, EdgeRules.getInstance(Version.v8).hasEdgeRule("model-element", "model-ver"));
 	}
 
+	@Test
+	public void hasEdgeRuleTest() {
+		assertEquals("true: cloud-region | tenant", true, EdgeRules.getInstance().hasEdgeRule("cloud-region", "tenant"));
+		assertEquals("true: tenant | cloud-region", true, EdgeRules.getInstance().hasEdgeRule("tenant", "cloud-region"));
+		assertEquals("true: pserver | complex", true, EdgeRules.getInstance().hasEdgeRule("pserver", "complex"));
+		assertEquals("false: pserver | service", false, EdgeRules.getInstance().hasEdgeRule("pserver", "service"));
+	}
+	
+	@Test
+	public void hasTreeEdgeRuleTest() {
+		assertEquals("true: cloud-region | tenant", true, EdgeRules.getInstance().hasTreeEdgeRule("cloud-region", "tenant"));
+		assertEquals("true: tenant | cloud-region", true, EdgeRules.getInstance().hasTreeEdgeRule("tenant", "cloud-region"));
+		assertEquals("false: pserver | complex", false, EdgeRules.getInstance().hasTreeEdgeRule("pserver", "complex"));
+		assertEquals("true: service-instance | allotted-resource", true, EdgeRules.getInstance().hasTreeEdgeRule("service-instance", "allotted-resource"));
+
+	}
+	
+	@Test
+	public void hasCousinEdgeRuleTest() {
+		assertEquals("false: cloud-region | tenant", false, EdgeRules.getInstance().hasCousinEdgeRule("cloud-region", "tenant", null));
+		assertEquals("false: tenant | cloud-region", false, EdgeRules.getInstance().hasCousinEdgeRule("tenant", "cloud-region", null));
+		assertEquals("true: pserver | complex", true, EdgeRules.getInstance().hasCousinEdgeRule("pserver", "complex", null));
+		assertEquals("true: service-instance | allotted-resource", true, EdgeRules.getInstance().hasCousinEdgeRule("service-instance", "allotted-resource", null));
+		assertEquals("true: logical-link | l-interface", true, EdgeRules.getInstance().hasCousinEdgeRule("logical-link", "l-interface", null));
+		assertEquals("true: logical-link | l-interface : sourceLInterface", true, EdgeRules.getInstance().hasCousinEdgeRule("logical-link", "l-interface", "sourceLInterface"));
+		assertEquals("true: logical-link | l-interface : targetLInterface", true, EdgeRules.getInstance().hasCousinEdgeRule("logical-link", "l-interface", "targetLInterface"));
+		assertEquals("false: logical-link | l-interface : blah", false, EdgeRules.getInstance().hasCousinEdgeRule("logical-link", "l-interface", "blah"));
+	}
+	
 	@Test
 	public void hasEdgeRuleVertexTest() {
 		Graph graph = TinkerGraph.open();
@@ -192,7 +225,7 @@ public class EdgeRulesTest extends AAISetup {
 	public void getAllRulesTest() {
 		EdgeRules rules = EdgeRules.getInstance("/dbedgerules/DbEdgeRules_test.json");
 		Multimap<String, EdgeRule> allRules = rules.getAllRules();
-		assertEquals(6, allRules.size());
+		assertEquals(14, allRules.size());
 		assertEquals(true, allRules.containsKey("foo|bar"));
 		assertEquals(true, allRules.containsKey("foo|bar"));
 		assertEquals(true, allRules.containsKey("quux|foo"));
@@ -221,7 +254,6 @@ public class EdgeRulesTest extends AAISetup {
 		EdgeRules rules = EdgeRules.getInstance("/dbedgerules/DbEdgeRules_test_broken.json");
 
 		thrown.expect(RuntimeException.class);
-		thrown.expectMessage("org.onap.aai.exceptions.AAIException: Rule between quux and foo is missing property SVC-INFRA.");
 		rules.getEdgeRules("foo", "quux");
 	}
 
@@ -235,4 +267,85 @@ public class EdgeRulesTest extends AAISetup {
 			rules.getAllRules();
 		}
 	}
+
+    @Test(expected = NoEdgeRuleFoundException.class)
+    public void noEdgeRuleFoundTest() throws AAIException {
+        EdgeRules rules = EdgeRules.getInstance();
+        rules.getEdgeRule(EdgeType.TREE, "a", "b");
+    }
+
+    @Test
+    public void verifyOutDirectionUsingLabel() throws AAIException, NoEdgeRuleFoundException {
+        EdgeRules rules = EdgeRules.getInstance();
+        EdgeRule rule = rules.getEdgeRule(EdgeType.COUSIN, "generic-vnf", "l3-network", "usesL3Network");
+
+        assertEquals("out direction", rule.getDirection(), Direction.OUT);
+    }
+
+    @Test
+    public void verifyOutDirectionLinterfaceToLinterfaceUsingLabel() throws AAIException, NoEdgeRuleFoundException {
+        EdgeRules rules = EdgeRules.getInstance();
+        EdgeRule rule = rules.getEdgeRule(EdgeType.TREE, "l-interface", "l-interface");
+
+        assertEquals("out direction", rule.getDirection(), Direction.OUT);
+    }
+
+    @Test
+    public void verifyOutFlippedDirectionUsingLabel() throws AAIException, NoEdgeRuleFoundException {
+        EdgeRules rules = EdgeRules.getInstance();
+        EdgeRule rule = rules.getEdgeRule(EdgeType.COUSIN, "l3-network", "generic-vnf", "usesL3Network");
+
+        assertEquals("in direction", rule.getDirection(), Direction.IN);
+    }
+
+    @Test(expected = MultipleEdgeRuleFoundException.class)
+    public void multipleEdgeRulesVerifyMultipleEdgeRuleException() throws AAIException {
+        EdgeRules rules = EdgeRules.getInstance("/dbedgerules/DbEdgeRules_test.json");
+        rules.getEdgeRule(EdgeType.COUSIN, "foo", "bar");
+    }
+
+    @Test
+    public void multipleEdgeRulesVerifyGetRuleWithLabel() throws AAIException {
+        EdgeRules rules = EdgeRules.getInstance("/dbedgerules/DbEdgeRules_test.json");
+        EdgeRule rule = rules.getEdgeRule(EdgeType.COUSIN, "foo", "bar", "eatz");
+        assertEquals("in direction", rule.getDirection(), Direction.IN);
+    }
+
+    @Test
+    public void multipleEdgeRulesVerifyGetRuleWithOutLabelDefaults() throws AAIException {
+        EdgeRules rules = EdgeRules.getInstance("/dbedgerules/DbEdgeRules_test.json");
+        EdgeRule rule = rules.getEdgeRule(EdgeType.COUSIN, "a", "b");
+        assertEquals("in direction", rule.getLabel(), "d");
+    }
+
+    @Test
+    public void multipleEdgeRulesRevVerifyGetRuleWithOutLabelDefaults() throws AAIException {
+        EdgeRules rules = EdgeRules.getInstance("/dbedgerules/DbEdgeRules_test.json");
+        EdgeRule rule = rules.getEdgeRule(EdgeType.COUSIN, "z", "y");
+        assertEquals("in direction", rule.getLabel(), "w");
+    }
+
+    @Test
+    public void multipleEdgeRulesRevRevVerifyGetRuleWithOutLabelDefaults() throws AAIException {
+        EdgeRules rules = EdgeRules.getInstance("/dbedgerules/DbEdgeRules_test.json");
+        EdgeRule rule = rules.getEdgeRule(EdgeType.COUSIN, "y", "z");
+        assertEquals("in direction", rule.getLabel(), "w");
+    }
+
+	@Test
+	public void getEdgeRulesWithLabelsTest() throws AAIException {
+		EdgeRules rules = EdgeRules.getInstance("/dbedgerules/DbEdgeRules_test.json");
+		List<String> labels = Arrays.asList("uses","re-uses","over-uses");
+		Map<String, EdgeRule> edgeRules = rules.getEdgeRulesWithLabels(EdgeType.COUSIN, "generic-vnf", "vnfc", labels);
+		assertEquals("Found 3 edge rules", 3, edgeRules.size());
+		assertTrue("Rules for each edge label found", edgeRules.keySet().containsAll(labels));
+	}
+
+	@Test(expected = NoEdgeRuleFoundException.class)
+	public void getEdgeRulesWithLabelsBadLabelTest() throws AAIException {
+		EdgeRules rules = EdgeRules.getInstance("/dbedgerules/DbEdgeRules_test.json");
+		List<String> labels = Arrays.asList("bad","re-uses","over-uses");
+		Map<String, EdgeRule> edgeRules = rules.getEdgeRulesWithLabels(EdgeType.COUSIN, "generic-vnf", "vnfc", labels);
+	}
+
 }

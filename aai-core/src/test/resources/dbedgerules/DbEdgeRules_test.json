@@ -13,6 +13,17 @@
 		},
 		{
 			"from": "foo",
+			"to": "bar",
+			"label": "eatz",
+			"direction": "IN",
+			"multiplicity": "One2Many",
+			"contains-other-v": "NONE",
+			"delete-other-v": "${direction}",
+			"SVC-INFRA": "NONE",
+			"prevent-delete": "NONE"
+		},
+		{
+			"from": "foo",
 			"to": "baz",
 			"label": "isVeryHappyAbout",
 			"direction": "OUT",
@@ -64,6 +75,87 @@
 			"contains-other-v": "${direction}",
 			"delete-other-v": "${direction}",
 			"SVC-INFRA": "NONE",
+			"prevent-delete": "NONE"
+		},		
+		{
+			"from": "a",
+			"to": "b",
+			"label": "c",
+			"direction": "OUT",
+			"multiplicity": "One2Many",
+			"contains-other-v": "NONE",
+			"delete-other-v": "${direction}",
+			"SVC-INFRA": "NONE",
+			"prevent-delete": "NONE",
+			"default": "false"
+		},
+		{
+			"from": "a",
+			"to": "b",
+			"label": "d",
+			"direction": "IN",
+			"multiplicity": "One2Many",
+			"contains-other-v": "NONE",
+			"delete-other-v": "${direction}",
+			"SVC-INFRA": "NONE",
+			"prevent-delete": "NONE",
+			"default" : "true"
+		},
+				{
+			"from": "z",
+			"to": "y",
+			"label": "x",
+			"direction": "OUT",
+			"multiplicity": "One2Many",
+			"contains-other-v": "NONE",
+			"delete-other-v": "${direction}",
+			"SVC-INFRA": "NONE",
+			"prevent-delete": "NONE"
+		},
+		{
+			"from": "y",
+			"to": "z",
+			"label": "w",
+			"direction": "IN",
+			"multiplicity": "One2Many",
+			"contains-other-v": "NONE",
+			"delete-other-v": "${direction}",
+			"SVC-INFRA": "NONE",
+			"prevent-delete": "NONE",
+			"default" : "true"
+		},
+		{
+			"from": "generic-vnf",
+			"to": "vnfc",
+			"label": "uses",
+			"direction": "OUT",
+			"multiplicity": "ONE2MANY",
+			"contains-other-v": "NONE",
+			"delete-other-v": "${direction}",
+			"SVC-INFRA": "${direction}",
+			"prevent-delete": "NONE",
+			"default": "true"
+		},
+		{
+			"from": "generic-vnf",
+			"to": "vnfc",
+			"label": "re-uses",
+			"direction": "OUT",
+			"multiplicity": "ONE2MANY",
+			"contains-other-v": "NONE",
+			"delete-other-v": "${direction}",
+			"SVC-INFRA": "${direction}",
+			"prevent-delete": "NONE"
+		},
+		{
+			"from": "generic-vnf",
+			"to": "vnfc",
+			"label": "over-uses",
+			"direction": "OUT",
+			"multiplicity": "ONE2MANY",
+			"contains-other-v": "NONE",
+			"delete-other-v": "${direction}",
+			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE"
 		}
 	]

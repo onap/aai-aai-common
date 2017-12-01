@@ -1,0 +1,145 @@
+{
+	"rules": [
+		{
+			"from": "generic-vnf",
+			"to": "vnfc",
+			"label": "uses",
+			"direction": "OUT",
+			"multiplicity": "ONE2MANY",
+			"contains-other-v": "NONE",
+			"delete-other-v": "${direction}",
+			"SVC-INFRA": "${direction}",
+			"prevent-delete": "NONE",
+			"default": "true"
+		},
+		{
+			"from": "vnfc",
+			"to": "generic-vnf",
+			"label": "re-uses",
+			"direction": "OUT",
+			"multiplicity": "ONE2MANY",
+			"contains-other-v": "NONE",
+			"delete-other-v": "${direction}",
+			"SVC-INFRA": "${direction}",
+			"prevent-delete": "NONE"
+		},
+		{
+			"from": "vce",
+			"to": "vnfc",
+			"label": "vce-vnfc",
+			"direction": "OUT",
+			"multiplicity": "ONE2MANY",
+			"contains-other-v": "NONE",
+			"delete-other-v": "${direction}",
+			"SVC-INFRA": "${direction}",
+			"prevent-delete": "NONE",
+			"default": "true"
+		},
+		{
+			"from": "pserver",
+			"to": "vce",
+			"label": "pserver-vce",
+			"direction": "OUT",
+			"multiplicity": "ONE2MANY",
+			"contains-other-v": "NONE",
+			"delete-other-v": "${direction}",
+			"SVC-INFRA": "${direction}",
+			"prevent-delete": "NONE",
+			"default": "true"
+		},
+		{
+			"from": "generic-vnf",
+			"to": "pserver",
+			"label": "generic-vnf-pserver-A",
+			"direction": "OUT",
+			"multiplicity": "ONE2MANY",
+			"contains-other-v": "NONE",
+			"delete-other-v": "${direction}",
+			"SVC-INFRA": "${direction}",
+			"prevent-delete": "NONE",
+			"default": "true"
+		},
+		{
+			"from": "generic-vnf",
+			"to": "pserver",
+			"label": "generic-vnf-pserver-B",
+			"direction": "OUT",
+			"multiplicity": "ONE2MANY",
+			"contains-other-v": "NONE",
+			"delete-other-v": "${direction}",
+			"SVC-INFRA": "${direction}",
+			"prevent-delete": "NONE"
+		},
+		{
+			"from": "complex",
+			"to": "generic-vnf",
+			"label": "complex-generic-vnf-A",
+			"direction": "OUT",
+			"multiplicity": "ONE2MANY",
+			"contains-other-v": "NONE",
+			"delete-other-v": "${direction}",
+			"SVC-INFRA": "${direction}",
+			"prevent-delete": "NONE",
+			"default": "true"
+		},
+		{
+			"from": "complex",
+			"to": "generic-vnf",
+			"label": "complex-generic-vnf-B",
+			"direction": "OUT",
+			"multiplicity": "ONE2MANY",
+			"contains-other-v": "NONE",
+			"delete-other-v": "${direction}",
+			"SVC-INFRA": "${direction}",
+			"prevent-delete": "NONE"
+		},
+		{
+			"from": "l-interface",
+			"to": "logical-link",
+			"label": "usesLogicalLink",
+			"direction": "OUT",
+			"multiplicity": "MANY2MANY",
+			"contains-other-v": "NONE",
+			"delete-other-v": "${direction}",
+			"SVC-INFRA": "${direction}",
+			"prevent-delete": "NONE",
+			"default": "true"
+		},
+		{
+			"from": "l-interface",
+			"to": "logical-link",
+			"label": "sourceLInterface",
+			"direction": "OUT",
+			"multiplicity": "MANY2MANY",
+			"contains-other-v": "NONE",
+			"delete-other-v": "${direction}",
+			"SVC-INFRA": "${direction}",
+			"prevent-delete": "NONE",
+			"default": "false"
+		},
+		{
+			"from": "l-interface",
+			"to": "logical-link",
+			"label": "targetLInterface",
+			"direction": "OUT",
+			"multiplicity": "MANY2MANY",
+			"contains-other-v": "NONE",
+			"delete-other-v": "${direction}",
+			"SVC-INFRA": "${direction}",
+			"prevent-delete": "NONE",
+			"default": "false"
+		},	
+		{
+			"from": "pserver",
+			"to": "vnfc",
+			"label": "uses",
+			"direction": "OUT",
+			"multiplicity": "ONE2MANY",
+			"contains-other-v": "NONE",
+			"delete-other-v": "${direction}",
+			"SVC-INFRA": "${direction}",
+			"prevent-delete": "NONE",
+			"default": "true"
+		}
+	]
+}

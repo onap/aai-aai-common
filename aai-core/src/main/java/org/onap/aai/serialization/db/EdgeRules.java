@@ -44,6 +44,7 @@ import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Version;
 import org.onap.aai.serialization.db.exceptions.EdgeMultiplicityException;
+import org.onap.aai.serialization.db.exceptions.MultipleEdgeRuleFoundException;
 import org.onap.aai.serialization.db.exceptions.NoEdgeRuleFoundException;
 
 import com.att.eelf.configuration.EELFLogger;
@@ -56,6 +57,12 @@ import com.jayway.jsonpath.JsonPath;
 
 public class EdgeRules {
 	
+	private static final String LABEL = "label";
+
+	private static final String NOT_DIRECTION_NOTATION = "!${direction}";
+
+	private static final String DIRECTION_NOTATION = "${direction}";
+
 	private EELFLogger logger = EELFManager.getInstance().getLogger(EdgeRules.class);
 
 	private DocumentContext rulesDoc;
@@ -77,54 +84,14 @@ public class EdgeRules {
 		rulesDoc = JsonPath.parse(json);
 	}
 
-	private String getEdgeRuleJson(String rulesFilename) {
-		InputStream is = getClass().getResourceAsStream(rulesFilename);
-
-		Scanner scanner = new Scanner(is);
-		String json = scanner.useDelimiter("\\Z").next();
-		scanner.close();
-
-		return json;
-	}
-
 	/**
 	 * Loads the versioned DbEdgeRules json file for later parsing.
 	 */
-	@SuppressWarnings("unchecked")
 	private EdgeRules(Version version) {
 		String json = this.getEdgeRuleJson(version);
 		rulesDoc = JsonPath.parse(json);
 	}
-	
-	private String getEdgeRuleJson(Version version) {
-		InputStream is = getClass().getResourceAsStream("/dbedgerules/DbEdgeRules_" + version.toString() + ".json");
 
-		Scanner scanner = new Scanner(is);
-		String json = scanner.useDelimiter("\\Z").next();
-		scanner.close();
-		
-		return json;
-	}
-	
-	private static class Helper {
-		private static final EdgeRules INSTANCE = new EdgeRules();
-		private static final Map<Version, EdgeRules> INSTANCEMAP = new ConcurrentHashMap<>();
-
-		private static EdgeRules getEdgeRulesByFilename(String rulesFilename) {
-			return new EdgeRules(rulesFilename);
-		}
-
-		private static EdgeRules getVersionedEdgeRules(Version v) {
-			if (Version.isLatest(v)) {
-				return INSTANCE;
-			}
-			if (!INSTANCEMAP.containsKey(v)) {
-				INSTANCEMAP.put(v, new EdgeRules(v));
-			}
-			return INSTANCEMAP.get(v);
-		}
-	}
-	
 	/**
 	 * Gets the single instance of EdgeRules.
 	 *
@@ -154,7 +121,21 @@ public class EdgeRules {
 	public static EdgeRules getInstance(String rulesFilename) {
 		return Helper.getEdgeRulesByFilename(rulesFilename);
 	}
+	
+	private String getEdgeRuleJson(String rulesFilename) {
+		InputStream is = getClass().getResourceAsStream(rulesFilename);
 
+		Scanner scanner = new Scanner(is);
+		String json = scanner.useDelimiter("\\Z").next();
+		scanner.close();
+
+		return json;
+	}
+	
+	private String getEdgeRuleJson(Version version) {
+		return this.getEdgeRuleJson("/dbedgerules/DbEdgeRules_" + version.toString() + ".json");
+	}
+	
 	/**
 	 * Adds the tree edge.
 	 *
@@ -164,9 +145,9 @@ public class EdgeRules {
 	 * @throws AAIException the AAI exception
 	 */
 	public Edge addTreeEdge(GraphTraversalSource traversalSource, Vertex aVertex, Vertex bVertex) throws AAIException {
-		return this.addEdge(EdgeType.TREE, traversalSource, aVertex, bVertex, false);
+		return this.addEdge(EdgeType.TREE, traversalSource, aVertex, bVertex, false, null);
 	}
-	
+
 	/**
 	 * Adds the edge.
 	 *
@@ -176,9 +157,13 @@ public class EdgeRules {
 	 * @throws AAIException the AAI exception
 	 */
 	public Edge addEdge(GraphTraversalSource traversalSource, Vertex aVertex, Vertex bVertex) throws AAIException {
-		return this.addEdge(EdgeType.COUSIN, traversalSource, aVertex, bVertex, false);
+		return this.addEdge(traversalSource, aVertex, bVertex, null);
 	}
-	
+
+	public Edge addEdge(GraphTraversalSource traversalSource, Vertex aVertex, Vertex bVertex, String label) throws AAIException {
+		return this.addEdge(EdgeType.COUSIN, traversalSource, aVertex, bVertex, false, label);
+	}
+
 	/**
 	 * Adds the tree edge.
 	 *
@@ -188,9 +173,9 @@ public class EdgeRules {
 	 * @throws AAIException the AAI exception
 	 */
 	public Edge addTreeEdgeIfPossible(GraphTraversalSource traversalSource, Vertex aVertex, Vertex bVertex) throws AAIException {
-		return this.addEdge(EdgeType.TREE, traversalSource, aVertex, bVertex, true);
+		return this.addEdge(EdgeType.TREE, traversalSource, aVertex, bVertex, true, null);
 	}
-	
+
 	/**
 	 * Adds the edge.
 	 *
@@ -200,9 +185,13 @@ public class EdgeRules {
 	 * @throws AAIException the AAI exception
 	 */
 	public Edge addEdgeIfPossible(GraphTraversalSource traversalSource, Vertex aVertex, Vertex bVertex) throws AAIException {
-		return this.addEdge(EdgeType.COUSIN, traversalSource, aVertex, bVertex, true);
+		return this.addEdgeIfPossible(traversalSource, aVertex, bVertex, null);
 	}
 	
+	public Edge addEdgeIfPossible(GraphTraversalSource traversalSource, Vertex aVertex, Vertex bVertex, String label) throws AAIException {
+		return this.addEdge(EdgeType.COUSIN, traversalSource, aVertex, bVertex, true, label);
+	}
+
 	/**
 	 * Adds the edge.
 	 *
@@ -212,14 +201,14 @@ public class EdgeRules {
 	 * @return the edge
 	 * @throws AAIException the AAI exception
 	 */
-	private Edge addEdge(EdgeType type, GraphTraversalSource traversalSource, Vertex aVertex, Vertex bVertex, boolean isBestEffort) throws AAIException {
+	private Edge addEdge(EdgeType type, GraphTraversalSource traversalSource, Vertex aVertex, Vertex bVertex, boolean isBestEffort, String label) throws AAIException {
 
-		EdgeRule rule = this.getEdgeRule(type, aVertex, bVertex);
+		EdgeRule rule = this.getEdgeRule(type, aVertex, bVertex, label);
 
 		Edge e = null;
-		
+
 		Optional<String> message = this.validateMultiplicity(rule, traversalSource, aVertex, bVertex);
-		
+
 		if (message.isPresent() && !isBestEffort) {
 			throw new EdgeMultiplicityException(message.get());
 		}
@@ -229,12 +218,12 @@ public class EdgeRules {
 			} else if (rule.getDirection().equals(Direction.IN)) {
 				e = bVertex.addEdge(rule.getLabel(), aVertex);
 			}
-			
+
 			this.addProperties(e, rule);
 		}
 		return e;
 	}
-
+	
 	/**
 	 * Adds the properties.
 	 *
@@ -242,40 +231,91 @@ public class EdgeRules {
 	 * @param rule the rule
 	 */
 	public void addProperties(Edge edge, EdgeRule rule) {
-		
+
 		// In DbEdgeRules.EdgeRules -- What we have as "edgeRule" is a comma-delimited set of strings.
 		// The first item is the edgeLabel.
 		// The second in the list is always "direction" which is always OUT for the way we've implemented it.
-		// Items starting at "firstTagIndex" and up are all assumed to be booleans that map according to 
+		// Items starting at "firstTagIndex" and up are all assumed to be booleans that map according to
 		// tags as defined in EdgeInfoMap.
 		// Note - if they are tagged as 'reverse', that means they get the tag name with "-REV" on it
 		Map<EdgeProperty, String> propMap = rule.getEdgeProperties();
-		
+
 		for (Entry<EdgeProperty, String> entry : propMap.entrySet()) {
 			edge.property(entry.getKey().toString(), entry.getValue());
 		}
 	}
-	
+
 	/**
-	 * Checks if any edge rules exist between the two given nodes, in either A|B or B|A order.
+	 * Checks if any edge rules exist between the two given node types, in either A|B or B|A order.
 	 *
 	 * @param nodeA - node at one end of the edge
 	 * @param nodeB - node at the other end
 	 * @return true, if any such rules exist
 	 */
 	public boolean hasEdgeRule(String nodeA, String nodeB) {
-		Filter aToB = filter(
-				where("from").is(nodeA).and("to").is(nodeB)
-				);
-		Filter bToA = filter(
-				where("from").is(nodeB).and("to").is(nodeA)
-				);
-		
-		List<Map<String, String>> results = readRules(aToB);
-		results.addAll(readRules(bToA));
+		return this.hasEdgeRule(nodeA, nodeB, null);
+	}
+	
+	/**
+	 * Checks if any edge rules exist between the two given node types with contains-other-v !NONE, in either A|B or B|A order.
+	 *
+	 * @param nodeA - node at one end of the edge
+	 * @param nodeB - node at the other end
+	 * @return true, if any such rules exist
+	 */
+	public boolean hasTreeEdgeRule(String nodeA, String nodeB) {
+		return this.hasEdgeRule(EdgeType.TREE, nodeA, nodeB, null);
+	}
 
-		return !results.isEmpty();
-		
+	/**
+	 * Checks if any edge rules exist between the two given node types with contains-other-v NONE, in either A|B or B|A order.
+	 *
+	 * @param nodeA - node at one end of the edge
+	 * @param nodeB - node at the other end
+	 * @param label - edge label
+	 * @return true, if any such rules exist
+	 */
+	public boolean hasCousinEdgeRule(String nodeA, String nodeB, String label) {
+		return this.hasEdgeRule(EdgeType.COUSIN, nodeA, nodeB, label);
+	}
+	
+	/**
+	 * Checks if any edge rules exist between the two given nodes with contains-other-v !NONE, in either A|B or B|A order.
+	 *
+	 * @param aVertex - node at one end of the edge
+	 * @param bVertex - node at the other end
+	 * @return true, if any such rules exist
+	 */
+	public boolean hasTreeEdgeRule(Vertex aVertex, Vertex bVertex) {
+		String outType = aVertex.<String>property(AAIProperties.NODE_TYPE).orElse(null);
+		String inType = bVertex.<String>property(AAIProperties.NODE_TYPE).orElse(null);
+		return this.hasTreeEdgeRule(outType, inType);
+	}
+	
+	/**
+	 * Checks if any edge rules exist between the two given nodes with contains-other-v NONE with edge label, in either A|B or B|A order.
+	 *
+	 * @param aVertex - node at one end of the edge
+	 * @param bVertex - node at the other end
+	 * @param label - edge label
+	 * @return true, if any such rules exist
+	 */
+	public boolean hasCousinEdgeRule(Vertex aVertex, Vertex bVertex, String label) {
+		String outType = aVertex.<String>property(AAIProperties.NODE_TYPE).orElse(null);
+		String inType = bVertex.<String>property(AAIProperties.NODE_TYPE).orElse(null);
+		return this.hasCousinEdgeRule(outType, inType, label);
+	}
+
+	/**
+	 * Checks if any edge rules exist between the two given nodes w/ edge label, in either A|B or B|A order.
+	 *
+	 * @param nodeA - node at one end of the edge
+	 * @param nodeB - node at the other end
+	 * @param label - edge label
+	 * @return true, if any such rules exist
+	 */
+	public boolean hasEdgeRule(String nodeA, String nodeB, String label) {
+		return this.hasEdgeRule(null, nodeA, nodeB, label);
 	}
 	
 	/**
@@ -286,11 +326,65 @@ public class EdgeRules {
 	 * @return true, if any such rules exist
 	 */
 	public boolean hasEdgeRule(Vertex aVertex, Vertex bVertex) {
-		String outType = aVertex.<String>property("aai-node-type").orElse(null);
-		String inType = bVertex.<String>property("aai-node-type").orElse(null);
-		
-		return this.hasEdgeRule(outType, inType);
-		
+		return this.hasEdgeRule(aVertex, bVertex, null);
+
+	}
+	
+	/**
+	 * Checks if any edge rules exist between the two given nodes with label, in either A|B or B|A order with edge label.
+	 *
+	 * @param aVertex - node at one end of the edge
+	 * @param bVertex - node at the other end
+	 * @param label - edge label
+	 * @return true, if any such rules exist
+	 */
+	public boolean hasEdgeRule(Vertex aVertex, Vertex bVertex, String label) {
+		String outType = aVertex.<String>property(AAIProperties.NODE_TYPE).orElse(null);
+		String inType = bVertex.<String>property(AAIProperties.NODE_TYPE).orElse(null);
+
+		if (label == null) {
+			return this.hasEdgeRule(outType, inType);
+		} else {
+			return this.hasEdgeRule(outType, inType, label);
+		}
+	}
+
+	/**
+	 * Checks if any edge rules exist between the two given node types, in either A|B or B|A order with edge label and edge type.
+	 *
+	 * @param type - type of edge EdgeType.COUSIN | EdgeType.TREE
+	 * @param nodeA - node at one end of the edge
+	 * @param nodeB - node at the other end
+	 * @param label - edge label
+	 * @return true, if any such rules exist
+	 */
+	public boolean hasEdgeRule(EdgeType type, String nodeA, String nodeB, String label) {
+		Filter aToB = filter(
+				where("from").is(nodeA)
+					.and("to").is(nodeB)
+				);
+		Filter bToA = filter(
+				where("from").is(nodeB)
+				.and("to").is(nodeA)
+			);
+
+		if (EdgeType.TREE.equals(type)) {
+			aToB = aToB.and(where(EdgeProperty.CONTAINS.toString()).ne(AAIDirection.NONE.toString()));
+			bToA = bToA.and(where(EdgeProperty.CONTAINS.toString()).ne(AAIDirection.NONE.toString()));
+		} else if (EdgeType.COUSIN.equals(type)) {
+			aToB = aToB.and(where(EdgeProperty.CONTAINS.toString()).is(AAIDirection.NONE.toString()));
+			bToA = bToA.and(where(EdgeProperty.CONTAINS.toString()).is(AAIDirection.NONE.toString()));
+		}
+
+		if (label != null) {
+			aToB = aToB.and(where(LABEL).is(label));
+			bToA = bToA.and(where(LABEL).is(label));
+		}
+
+		List<Object> results = rulesDoc.read("$.rules.[?]", aToB);
+		results.addAll(rulesDoc.read("$.rules.[?]", bToA));
+
+		return !results.isEmpty();
 	}
 	
 	/**
@@ -298,29 +392,109 @@ public class EdgeRules {
 	 * The rules will be phrased in terms of out|in, though this will
 	 * also find rules defined as in|out (it will flip the direction in
 	 * the EdgeRule object returned accordingly to match out|in).
-	 * 
-	 * @param outType 
+	 *
+	 * @param outType
 	 * @param inType
 	 * @return Map<String edgeLabel, EdgeRule rule> where edgeLabel is the label name
 	 * @throws AAIException
 	 */
-	public Map<String, EdgeRule> getEdgeRules(String outType, String inType) throws AAIException {
-		Map<String, EdgeRule> result = new HashMap<>();
-		EdgeRule rule = null;
+	public Map<String, EdgeRule> getEdgeRules(String outType, String inType) {
+		return this.getEdgeRules(outType, inType, null);
+	}
+	
+	/**
+	 * Gets all the edge rules that exist between the given node types with given label.
+	 * The rules will be phrased in terms of out|in, though this will
+	 * also find rules defined as in|out (it will flip the direction in
+	 * the EdgeRule object returned accordingly to match out|in).
+	 *
+	 * @param outType
+	 * @param inType
+	 * @param label
+	 * @return Map<String edgeLabel, EdgeRule rule> where edgeLabel is the label name
+	 * @throws AAIException
+	 */
+	public Map<String, EdgeRule> getEdgeRules(String outType, String inType, String label) {
+		final Map<String, EdgeRule> result = new HashMap<>();
+
 		for (EdgeType type : EdgeType.values()) {
-			try {
-				rule = this.getEdgeRule(type, outType, inType);
-				result.put(rule.getLabel(), rule);
-			} catch (NoEdgeRuleFoundException e) {
-				continue;
-			}
+			result.putAll(this.getEdgeRules(type, outType, inType, label));
 		}
-		
+
+		return result;
+	}
+
+	/**
+	 * Looks up edge rules for the given node types and the labels specified
+	 * @param type
+	 * @param outType
+	 * @param inType
+	 * @param labels
+	 * @return
+	 * @throws NoEdgeRuleFoundException
+	 * @throws MultipleEdgeRuleFoundException
+	 */
+	public Map<String, EdgeRule> getEdgeRulesWithLabels(EdgeType type, String outType, String inType, List<String> labels) throws NoEdgeRuleFoundException, MultipleEdgeRuleFoundException {
+		final Map<String, EdgeRule> result = new HashMap<>();
+
+		if (labels == null || labels.isEmpty()) {
+			throw new NoEdgeRuleFoundException("No labels specified");
+		}
+		for (String label : labels) {
+			EdgeRule er = this.getEdgeRule(type, outType, inType, label);
+			result.put(er.getLabel(), er);
+		}
+
+		return result;
+	}
+
+	/**
+	 * Gets all the edge rules of that edge type that exist between the given node types with given label.
+	 * The rules will be phrased in terms of out|in, though this will
+	 * also find rules defined as in|out (it will flip the direction in
+	 * the EdgeRule object returned accordingly to match out|in).
+	 *
+	 * @param type
+	 * @param outType
+	 * @param inType
+	 * @param label
+	 * @return
+	 * @throws AAIException
+	 */
+	public Map<String, EdgeRule> getEdgeRules(EdgeType type, String outType, String inType, String label) {
+		final Map<String, EdgeRule> result = new HashMap<>();
+
+		this.getEdgeRulesFromJson(type, outType, inType, label).forEach(edgeRuleJson -> {
+				EdgeRule edgeRule = this.buildRule(edgeRuleJson);
+				result.put(edgeRule.getLabel(), edgeRule);
+			});
+		this.getEdgeRulesFromJson(type, inType, outType, label).forEach(erj -> {
+			EdgeRule edgeRule = this.flipDirection(this.buildRule(erj));
+			if (!result.containsKey(edgeRule.getLabel())) {
+				result.put(edgeRule.getLabel(), edgeRule);
+			}
+		});
+
+
 		return result;
 	}
 	
-
-
+	/**
+	 * Gets all the edge rules of that edge type that exist between the given node types.
+	 * The rules will be phrased in terms of out|in, though this will
+	 * also find rules defined as in|out (it will flip the direction in
+	 * the EdgeRule object returned accordingly to match out|in).
+	 *
+	 * @param type
+	 * @param outType
+	 * @param inType
+	 * @return
+	 * @throws AAIException
+	 */
+	public Map<String, EdgeRule> getEdgeRules(EdgeType type, String outType, String inType) {
+		return this.getEdgeRules(type, outType, inType, null);
+	}
+	
 	/**
 	 * Gets the edge rule of the given type that exists between A and B.
 	 * Will check B|A as well, and flips the direction accordingly if that succeeds
@@ -333,69 +507,155 @@ public class EdgeRules {
 	 * @throws AAIException if no such edge exists
 	 */
 	public EdgeRule getEdgeRule(EdgeType type, String nodeA, String nodeB) throws AAIException {
-		//try A to B
-		List<Map<String, String>> aToBEdges = readRules(buildFilter(type, nodeA, nodeB));
-		if (!aToBEdges.isEmpty()) {
-			//lazily stop iterating if we find a match
-			//should there be a mismatch between type and isParent,
-			//the caller will receive something.
-			//this operates on the assumption that there are at most two rules
-			//for a given vertex pair
-			verifyRule(aToBEdges.get(0));
-			return buildRule(aToBEdges.get(0));
-		}
-		
-		//we get here if there was nothing for A to B, so let's try B to A
-		List<Map<String, String>> bToAEdges = readRules(buildFilter(type, nodeB, nodeA));
-		if (!bToAEdges.isEmpty()) {
-			verifyRule(bToAEdges.get(0));
-			return flipDirection(buildRule(bToAEdges.get(0))); //bc we need to return as A|B, so flip the direction to match
-		}
-		
-		//found none
-		throw new NoEdgeRuleFoundException("no " + type.toString() + " edge between " + nodeA + " and " + nodeB);
+		return this.getEdgeRule(type, nodeA, nodeB, null);
 	}
-	
+
+	/**
+	 * Gets the edge rule of the given type that exists between A and B with edge label.
+	 * Will check B|A as well, and flips the direction accordingly if that succeeds
+	 * to match the expected A|B return.
+	 *
+	 * @param type - the type of edge you're looking for
+	 * @param nodeA - first node type
+	 * @param nodeB - second node type
+	 * @param label - edge label
+	 * @return EdgeRule describing the rule in terms of A|B, if there is any such rule
+	 * @throws MultipleEdgeRuleFoundException
+	 * @throws AAIException if no such edge exists
+	 */
+	public EdgeRule getEdgeRule(EdgeType type, String nodeA, String nodeB, String label) throws NoEdgeRuleFoundException, MultipleEdgeRuleFoundException {
+
+		final StringBuilder errorMsg = new StringBuilder();
+		errorMsg.append(type.toString())
+			.append(" edge rule between ")
+			.append(nodeA).append(" and ").append(nodeB);
+		if (label != null) {
+			errorMsg.append(" with label ").append(label);
+		}
+
+		EdgeRule edgeRule;
+		Map<String, EdgeRule> edgeRules = this.getEdgeRules(type, nodeA, nodeB, label);
+
+		//found none
+		if (edgeRules.isEmpty()) {
+
+			throw new NoEdgeRuleFoundException("no " + errorMsg);
+
+		} else if (edgeRules.size() == 1) {
+
+			edgeRule = edgeRules.values().iterator().next();
+
+		} else {
+
+			Optional<EdgeRule> optionalEdgeRule = Optional.empty();
+
+			try {
+				optionalEdgeRule = this.getDefaultEdgeRule(edgeRules);
+			} catch (MultipleEdgeRuleFoundException e) {
+				throw new MultipleEdgeRuleFoundException("multiple default edge rule exists " + errorMsg);
+			}
+
+			edgeRule = optionalEdgeRule.orElseThrow(() -> new MultipleEdgeRuleFoundException("multiple edge rule exists with no default " + errorMsg));
+
+		}
+
+		return edgeRule;
+	}
+
+	private Optional<EdgeRule> getDefaultEdgeRule(Map<String, EdgeRule> edgeRules) throws MultipleEdgeRuleFoundException {
+
+		EdgeRule edgeRule = null;
+		int numDefaults = 0;
+
+		for (Map.Entry<String, EdgeRule> entry : edgeRules.entrySet()) {
+			if (entry.getValue().isDefault()) {
+				edgeRule  = entry.getValue();
+				numDefaults++;
+			}
+		}
+
+		if (numDefaults > 1) {
+			throw new MultipleEdgeRuleFoundException("");
+		}
+
+		if (edgeRule == null) {
+			return Optional.empty();
+		} else {
+			return Optional.of(edgeRule);
+		}
+	}
+
+	/**
+	 * Gets the rules from the edge rules Json
+	 *
+	 * @param type - type
+	 * @param nodeA - start node
+	 * @param nodeB - end node
+	 * @param label - edge label to filter on
+	 * @return
+	 */
+	private List<Map<String, String>> getEdgeRulesFromJson(EdgeType type, String nodeA, String nodeB, String label) {
+		if (label == null) {
+			return rulesDoc.read("$.rules.[?]", buildFilter(type, nodeA, nodeB));
+		} else {
+			return rulesDoc.read("$.rules.[?]", buildFilter(type, nodeA, nodeB, label));
+		}
+	}
+
 	/**
 	 * Builds a JsonPath filter to search for an edge from nodeA to nodeB with the given edge type (cousin or parent/child)
-	 * 
+	 *
 	 * @param type
 	 * @param nodeA - start node
 	 * @param nodeB - end node
 	 * @return
 	 */
 	private Filter buildFilter(EdgeType type, String nodeA, String nodeB) {
+		return this.buildFilter(type, nodeA, nodeB, null);
+	}
+	
+	private Filter buildFilter(EdgeType type, String nodeA, String nodeB, String label) {
 		if (EdgeType.COUSIN.equals(type)) {
-			return filter(
-					where("from").is(nodeA).and("to").is(nodeB).and(EdgeProperty.CONTAINS.toString()).is(AAIDirection.NONE.toString())
+			Filter f = filter(
+					where("from").is(nodeA)
+						.and("to").is(nodeB)
+						.and(EdgeProperty.CONTAINS.toString()).is(AAIDirection.NONE.toString())
 					);
+			if (label != null) {
+				f = f.and(where(LABEL).is(label));
+			}
+
+			return f;
 		} else {
 			return filter(
-					where("from").is(nodeA).and("to").is(nodeB).and(EdgeProperty.CONTAINS.toString()).is("${direction}")).or(
-							where("from").is(nodeA).and("to").is(nodeB).and(EdgeProperty.CONTAINS.toString()).is("!${direction}")	
+					where("from").is(nodeA).and("to").is(nodeB).and(EdgeProperty.CONTAINS.toString()).is(DIRECTION_NOTATION)).or(
+							where("from").is(nodeA).and("to").is(nodeB).and(EdgeProperty.CONTAINS.toString()).is(NOT_DIRECTION_NOTATION)
 					);
 		}
 	}
-	
+
 	/**
-	 * Puts the give edge rule information into an EdgeRule object. 
-	 * 
-	 * @param edge - the edge information returned from JsonPath
+	 * Puts the give edge rule information into an EdgeRule object.
+	 *
+	 * @param map edge rule property map
 	 * @return EdgeRule containing that information
 	 */
 	private EdgeRule buildRule(Map<String, String> map) {
 		Map<String, String> edge = new EdgePropertyMap<>();
 		edge.putAll(map);
-		
+
 		EdgeRule rule = new EdgeRule();
-		rule.setLabel(edge.get("label"));
+		rule.setLabel(edge.get(LABEL));
 		rule.setDirection(edge.get("direction"));
 		rule.setMultiplicityRule(edge.get("multiplicity"));
 		rule.setContains(edge.get(EdgeProperty.CONTAINS.toString()));
 		rule.setDeleteOtherV(edge.get(EdgeProperty.DELETE_OTHER_V.toString()));
 		rule.setServiceInfrastructure(edge.get(EdgeProperty.SVC_INFRA.toString()));
 		rule.setPreventDelete(edge.get(EdgeProperty.PREVENT_DELETE.toString()));
-		
+		if (edge.containsKey("default")) {
+			rule.setIsDefault(edge.get("default"));
+		}
+
 		return rule;
 	}
 	
@@ -403,7 +663,7 @@ public class EdgeRules {
 	 * If getEdgeRule gets a request for A|B, and it finds something as B|A, the caller still expects
 	 * the returned EdgeRule to reflect A|B directionality. This helper method flips B|A direction to
 	 * match this expectation.
-	 * 
+	 *
 	 * @param rule whose direction needs flipped
 	 * @return the updated rule
 	 */
@@ -415,7 +675,7 @@ public class EdgeRules {
 			rule.setDirection(Direction.IN);
 			return rule;
 		} else { //direction is BOTH, flipping both is still both
-			return rule; 
+			return rule;
 		}
 	}
 	
@@ -431,14 +691,30 @@ public class EdgeRules {
 	 * @throws AAIException if no such edge exists
 	 */
 	public EdgeRule getEdgeRule(EdgeType type, Vertex aVertex, Vertex bVertex) throws AAIException {
-		String outType = aVertex.<String>property(AAIProperties.NODE_TYPE).orElse(null);
-		String inType = bVertex.<String>property(AAIProperties.NODE_TYPE).orElse(null);
-		
-		return this.getEdgeRule(type, outType, inType);
-
-		
+		return this.getEdgeRule(type, aVertex, bVertex, null);
 	}
 	
+	/**
+	 * Gets the edge rule of the given type that exists between A and B with label.
+	 * Will check B|A as well, and flips the direction accordingly if that succeeds
+	 * to match the expected A|B return.
+	 *
+	 * @param type - the type of edge you're looking for
+	 * @param aVertex - first node type
+	 * @param bVertex - second node type
+	 * @param label - edge label
+	 * @return EdgeRule describing the rule in terms of A|B, if there is any such rule
+	 * @throws AAIException if no such edge exists
+	 */
+	public EdgeRule getEdgeRule(EdgeType type, Vertex aVertex, Vertex bVertex, String label) throws AAIException {
+		String outType = aVertex.<String>property(AAIProperties.NODE_TYPE).orElse(null);
+		String inType = bVertex.<String>property(AAIProperties.NODE_TYPE).orElse(null);
+
+		return this.getEdgeRule(type, outType, inType, label);
+
+
+	}
+
 	/**
 	 * Validate multiplicity.
 	 *
@@ -450,44 +726,46 @@ public class EdgeRules {
 	 */
 	private Optional<String> validateMultiplicity(EdgeRule rule, GraphTraversalSource traversalSource, Vertex aVertex, Vertex bVertex) {
 
+		Vertex a = aVertex;
+		Vertex b = bVertex;
+
 		if (rule.getDirection().equals(Direction.OUT)) {
-			
+			a = aVertex;
+			b = bVertex;
 		} else if (rule.getDirection().equals(Direction.IN)) {
-			Vertex tempV = bVertex;
-			bVertex = aVertex;
-			aVertex = tempV;
+			a = bVertex;
+			b = aVertex;
 		}
-				
-		String aVertexType = aVertex.<String>property(AAIProperties.NODE_TYPE).orElse(null);
-		String bVertexType =  bVertex.<String>property(AAIProperties.NODE_TYPE).orElse(null);
+
+		String aVertexType = a.<String>property(AAIProperties.NODE_TYPE).orElse(null);
+		String bVertexType =  b.<String>property(AAIProperties.NODE_TYPE).orElse(null);
 		String label = rule.getLabel();
 		MultiplicityRule multiplicityRule = rule.getMultiplicityRule();
-		List<Edge> outEdges = traversalSource.V(aVertex).outE(label).where(__.inV().has(AAIProperties.NODE_TYPE, bVertexType)).toList();
-		List<Edge> inEdges = traversalSource.V(bVertex).inE(label).where(__.outV().has(AAIProperties.NODE_TYPE, aVertexType)).toList();
+		List<Edge> outEdges = traversalSource.V(a).outE(label).where(__.inV().has(AAIProperties.NODE_TYPE, bVertexType)).toList();
+		List<Edge> inEdges = traversalSource.V(b).inE(label).where(__.outV().has(AAIProperties.NODE_TYPE, aVertexType)).toList();
 		String detail = "";
+		final String msg = "multiplicity rule violated: only one edge can exist with label: ";
 		if (multiplicityRule.equals(MultiplicityRule.ONE2ONE)) {
-			if (inEdges.size() >= 1 || outEdges.size() >= 1 ) {
-				detail = "multiplicity rule violated: only one edge can exist with label: " + label + " between " + aVertexType + " and " + bVertexType;
+			if (!inEdges.isEmpty() || !outEdges.isEmpty() ) {
+				detail = msg + label + " between " + aVertexType + " and " + bVertexType;
 			}
 		} else if (multiplicityRule.equals(MultiplicityRule.ONE2MANY)) {
-			if (inEdges.size() >= 1) {
-				detail = "multiplicity rule violated: only one edge can exist with label: " + label + " between " + aVertexType + " and " + bVertexType;
+			if (!inEdges.isEmpty()) {
+				detail = msg + label + " between " + aVertexType + " and " + bVertexType;
 			}
 		} else if (multiplicityRule.equals(MultiplicityRule.MANY2ONE)) {
-			if (outEdges.size() >= 1) {
-				detail = "multiplicity rule violated: only one edge can exist with label: " + label + " between " + aVertexType + " and " + bVertexType;
+			if (!outEdges.isEmpty()) {
+				detail = msg + label + " between " + aVertexType + " and " + bVertexType;
 			}
-		} else {
-			
 		}
-		
+
 		if (!"".equals(detail)) {
 			return Optional.of(detail);
 		} else  {
 			return Optional.empty();
 		}
-		
-				
+
+
 	}
 	
 	/**
@@ -513,7 +791,7 @@ public class EdgeRules {
 			}
 		}
 	}
-
+	
 	/**
 	 * Reads all the edge rules from the loaded json file.
 	 *
@@ -547,22 +825,22 @@ public class EdgeRules {
 
 	/**
 	 * Gets all the edge rules we define.
-	 * 
+	 *
 	 * @return Multimap<String "from|to", EdgeRule rule>
 	 */
 	public Multimap<String, EdgeRule> getAllRules() {
 		Multimap<String, EdgeRule> result = ArrayListMultimap.create();
-		
+
 		List<Map<String, String>> rules = readRules();
 		for (Map<String, String> rule : rules) {
 			EdgeRule er = buildRule(rule);
 			String name = rule.get("from") + "|" + rule.get("to");
 			result.put(name, er);
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	 * Gets all edge rules that define a child relationship from
 	 * the given node type.
@@ -571,19 +849,40 @@ public class EdgeRules {
 	 * @return
 	 */
 	public Set<EdgeRule> getChildren(String nodeType) {
-		
+
 		final Filter filter = filter(
-				where("from").is(nodeType).and(EdgeProperty.CONTAINS.toString()).is("${direction}")
-				).or(where("to").is(nodeType).and(EdgeProperty.CONTAINS.toString()).is("!${direction}"));
-		
+				where("from").is(nodeType).and(EdgeProperty.CONTAINS.toString()).is(DIRECTION_NOTATION)
+				).or(where("to").is(nodeType).and(EdgeProperty.CONTAINS.toString()).is(NOT_DIRECTION_NOTATION));
+
 		final List<Map<String, String>> rules = readRules(filter);
 		final Set<EdgeRule> result = new HashSet<>();
 		rules.forEach(item -> {
 			verifyRule(item);
 			result.add(buildRule(item));
 		});
-	
+
 		return result;
-		
+
+	}
+
+	private static class Helper {
+		private static final EdgeRules INSTANCE = new EdgeRules();
+		private static final Map<Version, EdgeRules> INSTANCEMAP = new ConcurrentHashMap<>();
+
+		private Helper() {}
+
+		private static EdgeRules getEdgeRulesByFilename(String rulesFilename) {
+			return new EdgeRules(rulesFilename);
+		}
+
+		private static EdgeRules getVersionedEdgeRules(Version v) {
+			if (Version.isLatest(v)) {
+				return INSTANCE;
+			}
+			if (!INSTANCEMAP.containsKey(v)) {
+				INSTANCEMAP.put(v, new EdgeRules(v));
+			}
+			return INSTANCEMAP.get(v);
+		}
 	}
 }
