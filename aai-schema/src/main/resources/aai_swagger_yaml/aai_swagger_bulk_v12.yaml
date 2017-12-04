@@ -1,0 +1,244 @@
+swagger: "2.0"
+info:
+  description: |
+    Copyright &copy; 2017 AT&amp;T Intellectual Property. All rights reserved.
+
+    Licensed under the Creative Commons License, Attribution 4.0 Intl. (the &quot;License&quot;); you may not use this documentation except in compliance with the License.
+
+    You may obtain a copy of the License at
+
+    (https://creativecommons.org/licenses/by/4.0/)
+
+    Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+    ECOMP and OpenECOMP are trademarks and service marks of AT&amp;T Intellectual Property.
+
+    This document is best viewed with Firefox or Chrome. Nodes can be found by appending /#/definitions/node-type-to-find to the path to this document. Edge definitions can be found with the node definitions.
+  version: "v12"
+  title: Active and Available Inventory Bulk REST APIs
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  contact:
+    name:
+    url:
+    email:
+host:
+basePath: /aai/v12
+schemes:
+  - https
+paths:
+  /bulkadd:
+    put:
+      tags:
+        - BulkAdd
+      summary: Bulk add interface for multiple PUT operations in a single call with potentially multiple transactions
+      operationId: bulkAdd
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "default":
+          description: Response codes found in [response codes](https://wiki.web.att.com/display/UAAI/Alarm+Log).
+        "all success":
+          description: Below is the response for three sucessful transactions, each operation performed gets a status code
+          schema:
+            example:
+              transaction:
+                - put:
+                    - uri: /network/pnfs/pnf/CGCIL21CRS-wr148d
+                      body:
+                        '201': null
+                - put:
+                    - uri: /network/pnfs/pnf/CHCGILCLW6013000707--wr148d
+                      body:
+                        '201': null
+                - put:
+                    - uri: /network/pnfs/pnf/CGCIL21CRS-wr148d/p-interfaces/p-interface/0-04-0-0-wr148d
+                      body:
+                        '201': null
+                    - uri: /network/pnfs/pnf/CHCGILCLW6013000707--wr148d/p-interfaces/p-interface/9-2-7-1-wr148d
+                      body:
+                        '201': null
+                    - uri: /network/pnfs/pnf/CHCGILCLW6013000707--wr148d/p-interfaces/p-interface/02-03-01-wr148d
+                      body:
+                        '201': null
+                    - uri: /network/logical-links/logical-link/3001-S100EL-CHCGILCL08WCHCGILCLW60-wr148d
+                      body:
+                        '201': null
+        "failures":
+          description: Below is the response for a single put transaction with two operations that failed, each operation gets its own status code and error message
+          schema:
+            example:
+              transaction:
+                - put:
+                    - uri: /network/pnfs/pnf/CGCIL21CRS
+                      body:
+                        '412': '{"requestError":{"serviceException":{"messageId":"SVC3000","text":"Invalid input performing %1 on %2 (msg=%3) (ec=%4)","variables":["PUT","/network/pnfs/pnf/CGCIL21CRS","Precondition Required:resource-version not passed for update of /network/pnfs/pnf/CGCIL21CRS","ERR.5.4.6130"]}}}'
+                    - uri: /network/pnfs/pnf/CHCGILCLW6013000707-
+                      body:
+                        '412': '{"requestError":{"serviceException":{"messageId":"SVC3000","text":"Invalid input performing %1 on %2 (msg=%3) (ec=%4)","variables":["PUT","/network/pnfs/pnf/CHCGILCLW6013000707-","Precondition Required:resource-version not passed for update of /network/pnfs/pnf/CHCGILCLW6013000707-","ERR.5.4.6130"]}}}'
+
+        "limit exceeded":
+          description: Below is the response for when too many operations were attempted according to our limit
+          schema:
+              example:
+                requestError:
+                  serviceException:
+                    messageId: SVC3000
+                    text: Invalid input performing %1 on %2 (msg=%3) (ec=%4)
+                    variables:
+                      - PUT
+                      - v11/bulkadd
+                      - 'Payload Limit Reached, reduce payload:Payload limit of 30 reached, please reduce payload.'
+                      - ERR.5.4.6147
+      parameters:
+        - name: transactions
+          in: body
+          description: an array of multiple "put" operations that include the associated A&AI URI for the put operation and corresponding body payload. Multiple PUT operations can be done within a single transaction or can be split into multiple transactions. A transaction's changes will not be committed to the database unless all operations within a single transaction succeed. Each transaction must include a "put" array including at least one set of "uri" and "body" parameters. The "uri" parameter designates the endpoint of the A&AI (C)RUD operation that will add the node/relationship, the "body" designates the payload that URI accepts to do so.
+          required: true
+          schema:
+            type: array
+            items:
+            example:
+              transactions:
+                - put:
+                  - uri: "/network/pnfs/pnf/CGCIL21CRS"
+                    body:
+                     pnf-name: "CGCIL21CRS"
+                     pnf-name2: "CHCGILCL08W13010309-"
+                     equip-model: "CISCO_CRS1_C"
+                     frame-id: "130103.09"
+                     equip-type: "router"
+                  - uri: "/network/pnfs/pnf/CHCGILCLW6013000707-"
+                    body:
+                        pnf-name: "CHCGILCLW6013000707-"
+                        equip-model: "NSN_HIT7300_ROADM_C"
+                        frame-id: "130007.07"
+                        equip-type: "roadm"
+                - put:
+                  - uri: "/cloud-infrastructure/pservers/pserver/pserver-9876543210-111-wr148d"
+                    body:
+                      hostname: "pserver-9876543210-111-wr148d"
+                      fqdn: "pserver-9876543210-111-wr148d-fqdn"
+                  - uri: "/cloud-infrastructure/pservers/pserver/pserver-9876543210-112-wr148d"
+                    body:
+                     hostname: "pserver-9876543210-112-wr148d"
+                     fqdn: "pserver-9876543210-112-wr148d-fqdn"
+  /bulkprocess:
+    put:
+      tags:
+        - BulkProcess
+      summary: Bulk process interface for multiple PUT, PATCH, and DELETE operations in a single call with potentially multiple transactions ( you cannot delete a node put or patched in the same request )
+      operationId: bulkProcess
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "default":
+          description: Response codes found in [response codes](https://wiki.web.att.com/display/UAAI/Alarm+Log).
+        "all success":
+          description: Below is the response for three different transactions, a put transaction that had two operations within it, a patch transaction with two operations in it, and a delete transaction with two operations within it, all of these operation were successfully completed, each operation get a status code
+          schema:
+            example:
+              transaction:
+                - put:
+                    - uri: /cloud-infrastructure/pservers/pserver/pserver5
+                      body:
+                        '201': null
+                    - uri: /cloud-infrastructure/pservers/pserver/pserver6
+                      body:
+                        '201': null
+                - patch:
+                    - uri: /cloud-infrastructure/pservers/pserver/pserver6
+                      body:
+                        '200': null
+                    - uri: /cloud-infrastructure/pservers/pserver/pserver5
+                      body:
+                        '200': null
+                - delete:
+                    - uri: /cloud-infrastructure/pservers/pserver/pserver3
+                      body:
+                        '204': null
+                    - uri: /cloud-infrastructure/pservers/pserver/pserver4
+                      body:
+                        '204': null
+        "failures":
+          description: Below is the response for a three different transactions, a put transaction that failed because the nodes were already there and no resource version was passed, patch succeeded for the two operations, delete failed as the nodes were already deleted so they couldn't be found. Each operation gets its own status code.
+          schema:
+            example:
+              transaction:
+                - put:
+                    - uri: /cloud-infrastructure/pservers/pserver/pserver5
+                      body:
+                        '412': '{"requestError":{"serviceException":{"messageId":"SVC3000","text":"Invalid inputperforming %1 on %2 (msg=%3) (ec=%4)","variables":["PUT","/cloud-infrastructure/pserver/pserver/pserver5","Precondition Required:resource-version not passed for update of/cloud-infrastructure/pservers/pserver/pserver5","ERR.5.4.6130"]}}}'
+                    - uri: /cloud-infrastructure/pservers/pserver/pserver6
+                      body:
+                        '412': '{"requestError":{"serviceException":{"messageId":"SVC3000","text":"Invalid inputperforming %1 on %2 (msg=%3) (ec=%4)","variables":["PUT","/cloud-infrastructure/pserver/pserver/pserver6","Precondition Required:resource-version not passed for update of/cloud-infrastructure/pservers/pserver/pserver6","ERR.5.4.6130"]}}}'
+                - patch:
+                    - uri: /cloud-infrastructure/pservers/pserver/pserver6
+                      body:
+                        '200': null
+                    - uri: /cloud-infrastructure/pservers/pserver/pserver5
+                      body:
+                        '200': null
+                - delete:
+                    - uri: /cloud-infrastructure/pservers/pserver/pserver3
+                      body:
+                        '404': '{"requestError":{"serviceException":{"messageId":"SVC3001","text":"Resource notfound for %1 using id %2 (msg=%3) (ec=%4)","variables":["DELETE","/cloud-infrastructur/pservers/pserver/pserver3","Node Not Found:No Node of type pserver found at: /clou-infrastructure/pservers/pserver/pserver3","ERR.5.4.6114"]}}}'
+                    - uri: /cloud-infrastructure/pservers/pserver/pserver4
+                      body:
+                        '404': '{"requestError":{"serviceException":{"messageId":"SVC3001","text":"Resource notfound for %1 using id %2 (msg=%3) (ec=%4)","variables":["DELETE","/cloud-infrastructur/pservers/pserver/pserver4","Node Not Found:No Node of type pserver found at: /clou-infrastructure/pservers/pserver/pserver4","ERR.5.4.6114"]}}}'
+
+        "limit exceeded":
+          description: Below is the response for when too many operations were attempted according to our limit
+          schema:
+              example:
+                requestError:
+                  serviceException:
+                    messageId: SVC3000
+                    text: Invalid input performing %1 on %2 (msg=%3) (ec=%4)
+                    variables:
+                      - PUT
+                      - v11/bulkprocess
+                      - 'Payload Limit Reached, reduce payload:Payload limit of 30 reached, please reduce payload.'
+                      - ERR.5.4.6147
+      parameters:
+        - name: transactions
+          in: body
+          description: an array of multiple "put", "delete", and "patch" operations that include the associated A&AI URI for the operations and corresponding body payload. Multiple operations can be done within a single transaction or can be split into multiple transactions. A transaction's changes will not be committed to the database unless all operations within a single transaction succeed. Each transaction must include a "put", "patch", or "delete" array including at least one set of "uri" and "body" parameters. The "uri" parameter designates the endpoint of the A&AI CRUD operation that will update/delete the node/relationship, the "body" designates the payload that URI accepts to do so.
+          required: true
+          schema:
+            type: array
+            items:
+            example:
+              transactions:
+                - put:
+                    - uri: /cloud-infrastructure/pservers/pserver/pserver5
+                      body:
+                        hostname: pserver5
+                    - uri: /cloud-infrastructure/pservers/pserver/pserver6
+                      body:
+                        hostname: pserver6
+                        fqdn: pserver6
+                - patch:
+                    - uri: /cloud-infrastructure/pservers/pserver/pserver6
+                      body:
+                        hostname: pserver6
+                        fqdn: pserver6-fqdn
+                    - uri: /cloud-infrastructure/pservers/pserver/pserver5
+                      body:
+                        hostname: pserver5
+                        fqdn: pserver5
+                - delete:
+                    - uri: /cloud-infrastructure/pservers/pserver/pserver3?resource-version=1510168241235
+                      body: {}
+                    - uri: /cloud-infrastructure/pservers/pserver/pserver4?resource-version=1510168252491
+                      body: {}
+
