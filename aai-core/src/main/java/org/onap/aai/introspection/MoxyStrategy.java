@@ -292,14 +292,8 @@ public class MoxyStrategy extends Introspector {
 		keys = this.getKeys();
 		List<String> results = new ArrayList<>();
 		for (String key : keys) {
-			if (this.getType(key).toLowerCase().contains("long")) {
-				key = ((Long)this.getValue(key)).toString();
-			} else {
-				key = (String)this.getValue(key);
-			}
-			key = UriUtils.encode(key, "UTF-8");
-
-			results.add(key);
+			String value = UriUtils.encode(this.getValue(key).toString(), "UTF-8");
+			results.add(value);
 		}
 		
 		return Joiner.on("/").join(results);

@@ -2459,6 +2459,78 @@
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE",
 			"default": "true"
+		},
+		{
+			"from": "configuration",
+			"to": "l-interface",
+			"label": "has",
+			"direction": "OUT",
+			"multiplicity": "ONE2MANY",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"SVC-INFRA": "NONE",
+			"prevent-delete": "NONE",
+			"default": "true"
+		},
+		{
+			"from": "configuration",
+			"to": "pnf",
+			"label": "uses",
+			"direction": "OUT",
+			"multiplicity": "ONE2MANY",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"SVC-INFRA": "NONE",
+			"prevent-delete": "NONE",
+			"default": "true"
+		},
+		{
+			"from": "forwarder",
+			"to": "p-interface",
+			"label": "forwardsTo",
+			"direction": "OUT",
+			"multiplicity": "ONE2ONE",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"SVC-INFRA": "NONE",
+			"prevent-delete": "NONE",
+			"default": "true"
+		},
+		{
+			"from": "forwarder",
+			"to": "l-interface",
+			"label": "forwardsTo",
+			"direction": "OUT",
+			"multiplicity": "ONE2ONE",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"SVC-INFRA": "NONE",
+			"prevent-delete": "NONE",
+			"default": "true"
+		},
+		{
+			"from": "forwarder",
+			"to": "forwarding-path",
+			"label": "belongsTo",
+			"direction": "OUT",
+			"multiplicity": "MANY2ONE",
+			"contains-other-v": "!${direction}",
+			"delete-other-v": "!${direction}",
+			"SVC-INFRA": "NONE",
+			"prevent-delete": "NONE",
+			"default": "true"
+		},
+		{
+			"from": "forwarding-path",
+			"to": "service-instance",
+			"label": "implements",
+			"direction": "OUT",
+			"multiplicity": "MANY2ONE",
+			"contains-other-v": "NONE",
+			"delete-other-v": "!${direction}",
+			"SVC-INFRA": "NONE",
+			"prevent-delete": "NONE",
+			"default": "true"
 		}
 	]
 }

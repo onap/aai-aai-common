@@ -2872,6 +2872,7 @@
 				<xml-element java-attribute="instanceGroups" name="instance-groups" type="inventory.aai.onap.org.v12.InstanceGroups" />
 				<xml-element java-attribute="zones" name="zones" type="inventory.aai.onap.org.v12.Zones" />
 				<xml-element java-attribute="configurations" name="configurations" type="inventory.aai.onap.org.v12.Configurations" />
+				<xml-element java-attribute="forwardingPaths" name="forwarding-paths" type="inventory.aai.onap.org.v12.ForwardingPaths" />
 			</java-attributes>
 		</java-type>
         <java-type name="Configurations">
@@ -6355,6 +6356,141 @@
 				<xml-property name="indexedProps" value="vip-ipv6-address,vlan-id-inner,neutron-network-id,neutron-subnet-id" />
 				<xml-property name="dependentOn" value="cloud-region" />
 			</xml-properties>
+		</java-type>
+		
+		<java-type name="OperationalEnvironments">
+			<xml-properties>
+				<xml-property name="description" value="a logical partition of the cloud which allows to have multiple environments in the production AIC." />
+			</xml-properties>
+			<xml-root-element name="operational-environments" />
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="operationalEnvironment" name="operational-environment" type="inventory.aai.onap.org.v12.OperationalEnvironment" />
+			</java-attributes>
+			<xml-properties>
+				<xml-property name="maximumDepth" value="0" />
+			</xml-properties>
+		</java-type>
+
+		<java-type name="OperationalEnvironment">
+			<xml-root-element name="operational-environment" />
+			<java-attributes>
+				<xml-element java-attribute="operationalEnvironmentId" name="operational-environment-id" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="UUID of an operational environment" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="operationalEnvironmentName" name="operational-environment-name" required="true" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Operational Environment name" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="operationalEnvironmentType" name="operational-environment-type" required="true" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Operational Environment Type." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="operationalEnvironmentStatus" name="operational-environment-status" required="true" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Status" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="tenantContext" name="tenant-context" required="true" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Tenant Context." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="workloadContext" name="workload-context" required="true" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Workload Context." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v12.RelationshipList" />
+			</java-attributes>
+			<xml-properties>
+				<xml-property name="description" value="It is a logical partition of the cloud which allows to have multiple environments in the production AIC." />
+				<xml-property name="indexedProps" value="operational-environment-id" />
+				<xml-property name="uniqueProps" value="operational-environment-id" />
+				<xml-property name="container" value="operational-environments" />
+				<xml-property name="namespace" value="cloud-infrastructure" />
+			</xml-properties>
+		</java-type>
+		
+		<java-type name="ForwardingPaths">
+			<xml-root-element name="forwarding-paths" />
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="forwardingPath" name="forwarding-path" type="inventory.aai.onap.org.v12.ForwardingPath" />
+			</java-attributes>
+		</java-type>
+		
+		<java-type name="ForwardingPath">
+			<xml-root-element name="forwarding-path"/>
+			<xml-properties>
+				<xml-property name="namespace" value="network"/>
+				<xml-property name="indexedProps" value="forwarding-path-id,forwarding-path-name"/>
+				<xml-property name="description" value="Entity that describes the sequenced forwarding path between interfaces of services or resources"/>
+			  <xml-property name="container" value="forwarding-paths" />
+			  <xml-property name="nameProps" value="forwarding-path-name" />
+			  <xml-property name="uniqueProps" value="forwarding-path-id" />
+			</xml-properties>
+			<java-attributes>
+				<xml-element java-attribute="forwardingPathId" name="forwarding-path-id" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="Unique ID of this FP"/>
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="forwardingPathName" name="forwarding-path-name" required="true" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Name of the FP"/>
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v12.RelationshipList"/>
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Used for optimistic concurrency. Must be empty on create, valid on update and delete."/>
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="selflink" name="selflink" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="the self link for this FP"/>
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="forwarders" name="forwarders" type="inventory.aai.onap.org.v12.Forwarders" />
+			</java-attributes>
+		</java-type>
+		
+		<java-type name="Forwarders">
+			<xml-root-element name="forwarders" />
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="forwarder" name="forwarder" type="inventory.aai.onap.org.v12.Forwarder" />
+			</java-attributes>
+		</java-type>
+		
+		<java-type name="Forwarder">
+			<xml-root-element name="forwarder"/>
+			<xml-properties>
+				<xml-property name="indexedProps" value="sequence"/>
+				<xml-property name="description" value="Entity describing a sequenced segment of forwarding path"/>
+				<xml-property name="container" value="forwarders" />
+				<xml-property name="dependentOn" value="forwarding-path" />
+			</xml-properties>
+			<java-attributes>
+				<xml-element java-attribute="sequence" name="sequence" required="true" type="java.lang.Integer" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="Unique ID of this segmentation"/>
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v12.RelationshipList"/>
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Used for optimistic concurrency. Must be empty on create, valid on update and delete."/>
+					</xml-properties>
+				</xml-element>
+			</java-attributes>
 		</java-type>
 	</java-types>
 </xml-bindings>
