@@ -2065,6 +2065,13 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
+        <xs:element name="selflink" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="URL to endpoint where AAI can get more details.")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
         <xs:element name="speed-value" type="xs:string" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
@@ -6491,6 +6498,13 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
+        <xs:element name="selflink" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="URL to endpoint where AAI can get more details.")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
         <xs:element name="pnf-name2-source" type="xs:string" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
@@ -7177,17 +7191,17 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
         </xs:appinfo>
       </xs:annotation>
       <xs:sequence>
-        <xs:element name="management-option" type="xs:string" minOccurs="0">
-          <xs:annotation>
-            <xs:appinfo>
-              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="Indicates the entity that will manage this feature. Could be an organization or the name of the application as well.")</annox:annotate>
-            </xs:appinfo>
-          </xs:annotation>
-        </xs:element>
         <xs:element name="configuration-id" type="xs:string">
           <xs:annotation>
             <xs:appinfo>
               <annox:annotate target="field">@org.onap.aai.annotations.Metadata(isKey=true,description="UUID assigned to configuration.")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="management-option" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="Indicates the entity that will manage this feature. Could be an organization or the name of the application as well.")</annox:annotate>
             </xs:appinfo>
           </xs:annotation>
         </xs:element>

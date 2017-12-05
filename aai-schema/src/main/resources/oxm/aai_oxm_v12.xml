@@ -1950,6 +1950,11 @@
 						<xml-property name="description" value="Name that identifies the physical interface" />
 					</xml-properties>
 				</xml-element>
+				<xml-element java-attribute="selflink" name="selflink" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="URL to endpoint where AAI can get more details." />
+					</xml-properties>
+				</xml-element>
 				<xml-element java-attribute="speedValue" name="speed-value" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Captures the numeric part of the speed" />
@@ -2888,14 +2893,14 @@
 		<java-type name="Configuration">
 			<xml-root-element name="configuration" />
 			<java-attributes>
-				<xml-element java-attribute="managementOption" name="management-option" type="java.lang.String">
-					<xml-properties>
-						<xml-property name="description" value="Indicates the entity that will manage this feature. Could be an organization or the name of the application as well." />
-					</xml-properties>
-				</xml-element>
 				<xml-element java-attribute="configurationId" name="configuration-id" required="true" type="java.lang.String" xml-key="true">
 					<xml-properties>
 						<xml-property name="description" value="UUID assigned to configuration." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="managementOption" name="management-option" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Indicates the entity that will manage this feature. Could be an organization or the name of the application as well." />
 					</xml-properties>
 				</xml-element>
 				<xml-element java-attribute="configurationName" name="configuration-name" type="java.lang.String">
@@ -4708,6 +4713,11 @@
 				<xml-element java-attribute="pnfName2" name="pnf-name2" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="name of Physical Network Function." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="selflink" name="selflink" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="URL to endpoint where AAI can get more details." />
 					</xml-properties>
 				</xml-element>
 				<xml-element java-attribute="pnfName2Source" name="pnf-name2-source" type="java.lang.String">
