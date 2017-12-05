@@ -1792,6 +1792,11 @@
 						<xml-property name="description" value="PTNII name" />
 					</xml-properties>
 				</xml-element>
+				<xml-element java-attribute="selflink" name="selflink" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Node URL in CANOPI/MINT." />
+					</xml-properties>
+				</xml-element>
 				<xml-element java-attribute="numberOfCpus" name="number-of-cpus" type="java.lang.Integer">
 					<xml-properties>
 						<xml-property name="description" value="Number of cpus" />
@@ -1973,6 +1978,11 @@
 				<xml-element java-attribute="interfaceRole" name="interface-role" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Role specification for p-interface hardware." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="selflink" name="selflink" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Node URL in CANOPI/MINT." />
 					</xml-properties>
 				</xml-element>
 				<xml-element java-attribute="interfaceType" name="interface-type" type="java.lang.String">
@@ -4718,6 +4728,11 @@
 				<xml-element java-attribute="pnfId" name="pnf-id" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="id of pnf" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="selflink" name="selflink" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Node URL in CANOPI/MINT." />
 					</xml-properties>
 				</xml-element>
 				<xml-element java-attribute="equipType" name="equip-type" type="java.lang.String">
