@@ -22,7 +22,7 @@
  * ECOMP and OpenECOMP are trademarks
  * and service marks of AT&T Intellectual Property.
  */
-package org.openecomp.auth;
+package org.onap.auth;
 
 import org.apache.http.cookie.Cookie;
 

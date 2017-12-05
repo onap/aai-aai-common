@@ -14,7 +14,6 @@
     <version>1.2.0-SNAPSHOT</version>
 
     <properties>
-        <checkstyle.config.location>google_checks.xml</checkstyle.config.location>
         <onap.nexus.url>https://nexus.onap.org</onap.nexus.url>
     </properties>
 
@@ -106,22 +105,5 @@
             </plugin>
         </plugins>
     </build>
-
-    <reporting>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>2.17</version>
-                <reportSets>
-                    <reportSet>
-                        <reports>
-                            <report>checkstyle</report>
-                        </reports>
-                    </reportSet>
-                </reportSets>
-            </plugin>
-        </plugins>
-    </reporting>
 
 </project>

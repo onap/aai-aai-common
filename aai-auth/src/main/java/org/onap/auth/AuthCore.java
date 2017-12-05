@@ -22,7 +22,7 @@
  * ECOMP and OpenECOMP are trademarks
  * and service marks of AT&T Intellectual Property.
  */
-package org.openecomp.auth;
+package org.onap.auth;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.openecomp.util.AuthConstants;
+import org.onap.util.AuthConstants;
 
 
 public class AuthCore {
