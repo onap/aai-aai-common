@@ -94,6 +94,7 @@ public final class AAIConstants {
     public static final String AAI_NODENAME = "aai.config.nodename";
 
 	public static final String AAI_BULKCONSUMER_LIMIT = "aai.bulkconsumer.payloadlimit";
+	public static final String AAI_BULKCONSUMER_OVERRIDE_LIMIT = "aai.bulkconsumer.payloadoverride";
 
     public static final String AAI_LOGGING_HBASE_INTERCEPTOR = "aai.logging.hbase.interceptor";
     public static final String AAI_LOGGING_HBASE_ENABLED = "aai.logging.hbase.enabled";
