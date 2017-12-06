@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_34c47891",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v12.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 1797,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2017-12-06T21:40:38Z",
+      "side": 1,
+      "message": "i think this one needs to be fixed.",
+      "revId": "afddb64ba8e267a737985fe44948be96354ed1b5",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
