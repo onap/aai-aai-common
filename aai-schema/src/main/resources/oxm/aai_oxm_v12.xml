@@ -501,6 +501,7 @@
 				<xml-element java-attribute="networkProfiles" name="network-profiles" type="inventory.aai.onap.org.v12.NetworkProfiles" />
 				<xml-element java-attribute="pservers" name="pservers" type="inventory.aai.onap.org.v12.Pservers" />
 				<xml-element java-attribute="virtualDataCenters" name="virtual-data-centers" type="inventory.aai.onap.org.v12.VirtualDataCenters" />
+				<xml-element java-attribute="operationalEnvironments" name="operational-environments" type="inventory.aai.onap.org.v12.OperationalEnvironments" />
 			</java-attributes>
 		</java-type>
 
@@ -1792,6 +1793,11 @@
 						<xml-property name="description" value="PTNII name" />
 					</xml-properties>
 				</xml-element>
+				<xml-element java-attribute="selflink" name="selflink" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Node URL in CANOPI/MINT." />
+					</xml-properties>
+				</xml-element>
 				<xml-element java-attribute="numberOfCpus" name="number-of-cpus" type="java.lang.Integer">
 					<xml-properties>
 						<xml-property name="description" value="Number of cpus" />
@@ -1950,11 +1956,6 @@
 						<xml-property name="description" value="Name that identifies the physical interface" />
 					</xml-properties>
 				</xml-element>
-				<xml-element java-attribute="selflink" name="selflink" type="java.lang.String">
-					<xml-properties>
-						<xml-property name="description" value="URL to endpoint where AAI can get more details." />
-					</xml-properties>
-				</xml-element>
 				<xml-element java-attribute="speedValue" name="speed-value" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Captures the numeric part of the speed" />
@@ -1978,6 +1979,11 @@
 				<xml-element java-attribute="interfaceRole" name="interface-role" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Role specification for p-interface hardware." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="selflink" name="selflink" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Node URL in CANOPI/MINT." />
 					</xml-properties>
 				</xml-element>
 				<xml-element java-attribute="interfaceType" name="interface-type" type="java.lang.String">
@@ -2893,14 +2899,14 @@
 		<java-type name="Configuration">
 			<xml-root-element name="configuration" />
 			<java-attributes>
-				<xml-element java-attribute="configurationId" name="configuration-id" required="true" type="java.lang.String" xml-key="true">
-					<xml-properties>
-						<xml-property name="description" value="UUID assigned to configuration." />
-					</xml-properties>
-				</xml-element>
 				<xml-element java-attribute="managementOption" name="management-option" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Indicates the entity that will manage this feature. Could be an organization or the name of the application as well." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="configurationId" name="configuration-id" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="UUID assigned to configuration." />
 					</xml-properties>
 				</xml-element>
 				<xml-element java-attribute="configurationName" name="configuration-name" type="java.lang.String">
@@ -4715,11 +4721,6 @@
 						<xml-property name="description" value="name of Physical Network Function." />
 					</xml-properties>
 				</xml-element>
-				<xml-element java-attribute="selflink" name="selflink" type="java.lang.String">
-					<xml-properties>
-						<xml-property name="description" value="URL to endpoint where AAI can get more details." />
-					</xml-properties>
-				</xml-element>
 				<xml-element java-attribute="pnfName2Source" name="pnf-name2-source" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="source of name2" />
@@ -4728,6 +4729,11 @@
 				<xml-element java-attribute="pnfId" name="pnf-id" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="id of pnf" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="selflink" name="selflink" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Node URL in CANOPI/MINT." />
 					</xml-properties>
 				</xml-element>
 				<xml-element java-attribute="equipType" name="equip-type" type="java.lang.String">
@@ -5218,7 +5224,7 @@
 			<xml-properties>
 				<xml-property name="description" value="Subgraph definition provided by ASDC to describe a specific version of an inventory asset and its connections related to ASDC models" />
 				<xml-property name="nameProps" value="model-name" />
-				<xml-property name="indexedProps" value="model-version-id,model-name,model-version" />
+				<xml-property name="indexedProps" value="model-version-id,model-name,model-version,distribution-status" />
 				<xml-property name="uniqueProps" value="model-version-id" />
 				<xml-property name="container" value="model-vers" />
 			</xml-properties>
@@ -5236,6 +5242,11 @@
 				<xml-element java-attribute="modelVersion" name="model-version" required="true" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Version" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="distributionStatus" name="distribution-status" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Distribution Status" />
 					</xml-properties>
 				</xml-element>
 				<xml-element java-attribute="modelDescription" name="model-description" type="java.lang.String">
@@ -6424,6 +6435,7 @@
 			<xml-properties>
 				<xml-property name="description" value="It is a logical partition of the cloud which allows to have multiple environments in the production AIC." />
 				<xml-property name="indexedProps" value="operational-environment-id" />
+				<xml-property name="nameProps" value="operational-environment-name" />
 				<xml-property name="uniqueProps" value="operational-environment-id" />
 				<xml-property name="container" value="operational-environments" />
 				<xml-property name="namespace" value="cloud-infrastructure" />
