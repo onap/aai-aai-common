@@ -53,39 +53,42 @@ public class FormatFactory {
 	
 	public Formatter get(Format format, MultivaluedMap<String, String> params) throws AAIException {
 		
-		Formatter formattter = null;
+		Formatter formatter = null;
 
 		switch (format) {
 			case graphson :
-				formattter = new Formatter(inject(new GraphSON(), params));
+				formatter = new Formatter(inject(new GraphSON(), params));
 				break;
 			case pathed :
-				formattter = new Formatter(inject(new PathedURL(loader, urlBuilder), params));
+				formatter = new Formatter(inject(new PathedURL(loader, urlBuilder), params));
 				break;
 			case id :
-				formattter = new Formatter(inject(new IdURL(loader, urlBuilder), params));
+				formatter = new Formatter(inject(new IdURL(loader, urlBuilder), params));
 				break;
 			case resource :
-				formattter = new Formatter(inject(new Resource.Builder(loader, serializer, urlBuilder), params).build());
+				formatter = new Formatter(inject(new Resource.Builder(loader, serializer, urlBuilder), params).build());
 				break;
 			case resource_and_url :
-				formattter = new Formatter(inject(new Resource.Builder(loader, serializer, urlBuilder).includeUrl(), params).build());
+				formatter = new Formatter(inject(new Resource.Builder(loader, serializer, urlBuilder).includeUrl(), params).build());
 				break;
 			case raw :
-				formattter = new Formatter(inject(new RawFormat.Builder(loader, serializer, urlBuilder), params).build());
+				formatter = new Formatter(inject(new RawFormat.Builder(loader, serializer, urlBuilder), params).build());
 				break;
 			case simple :
-				formattter = new Formatter(inject(new RawFormat.Builder(loader, serializer, urlBuilder).depth(0).modelDriven(), params).build());
+				formatter = new Formatter(inject(new RawFormat.Builder(loader, serializer, urlBuilder).depth(0).modelDriven(), params).build());
 				break;
 			case console :
-				formattter = new Formatter(inject(new Console(), params));
+				formatter = new Formatter(inject(new Console(), params));
+				break;
+			case count :
+				formatter = new Formatter(inject(new Count(), params));
 				break;
 			default :
 				break;
 
 		}
 		
-		return formattter;
+		return formatter;
 	}
 	
 	private <T> T inject (T obj, MultivaluedMap<String, String> params) throws QueryParamInjectionException {

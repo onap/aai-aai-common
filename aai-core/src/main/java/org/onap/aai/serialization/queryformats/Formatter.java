@@ -21,16 +21,18 @@
  */
 package org.onap.aai.serialization.queryformats;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
+
+import org.onap.aai.serialization.queryformats.exceptions.AAIFormatQueryResultFormatNotSupported;
+import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
+
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Stream;
 
 public class Formatter {
 
@@ -38,43 +40,60 @@ public class Formatter {
 
 	protected JsonParser parser = new JsonParser();
 	protected final FormatMapper format;
-	public Formatter (FormatMapper format) {
+
+	public Formatter(FormatMapper format) {
 		this.format = format;
 	}
-	
-	public JsonObject output(List<Object> vertices) {
+
+	public JsonObject output(List<Object> queryResults) {
+
 		Stream<Object> stream = null;
 		JsonObject result = new JsonObject();
 		JsonArray body = new JsonArray();
-		if (vertices.size() >= format.parallelThreshold()) {
-			stream = vertices.parallelStream();
-		} else {
-			stream = vertices.stream();
-		}
-		final boolean isParallel = stream.isParallel();
-		stream.map(v -> {
+		
+		if (this.format instanceof Count) {
+			JsonObject countResult;
 			try {
-				return Optional.<JsonObject>of(format.formatObject(v));
-			} catch (AAIFormatVertexException e) {
-				LOGGER.warn("Failed to format vertex, returning a partial list", e);
+				countResult = format.formatObject(queryResults);
+				body.add(countResult);			
+			} catch (Exception e) {
+				LOGGER.warn("Failed to format result type of the query", e);
 			}
-
-			return Optional.<JsonObject>empty();
-		}).forEach(obj -> {
-			if (obj.isPresent()) {
-				if (isParallel) {
-					synchronized (body) {
-						body.add(obj.get());
-					}
-				} else {
-					body.add(obj.get());
+		} else {
+			if (queryResults.size() >= format.parallelThreshold()) {
+				stream = queryResults.parallelStream();
+			} else {
+				stream = queryResults.stream();
+			}
+			
+			final boolean isParallel = stream.isParallel();
+			
+			stream.map(o -> {
+				try {
+					return Optional.<JsonObject>of(format.formatObject(o));
+				} catch (AAIFormatVertexException e) {
+					LOGGER.warn("Failed to format vertex, returning a partial list", e);
+				} catch (AAIFormatQueryResultFormatNotSupported e) {
+					LOGGER.warn("Failed to format result type of the query", e);
 				}
-			}
-		});
-		
+
+				return Optional.<JsonObject>empty();
+			})
+			.filter(Optional<JsonObject>::isPresent)
+			.map(Optional<JsonObject>::get)
+			.forEach(json -> {
+					if (isParallel) {
+						synchronized (body) {
+							body.add(json);
+						}
+					} else {
+						body.add(json);
+					}
+			});
+
+		}
 		result.add("results", body);
-		
 		return result.getAsJsonObject();
 	}
-	
+
 }

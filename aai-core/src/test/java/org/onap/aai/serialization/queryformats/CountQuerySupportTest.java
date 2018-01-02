@@ -21,9 +21,12 @@
  */
 package org.onap.aai.serialization.queryformats;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+import java.util.List;
 
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.strategy.verification.ReadOnlyStrategy;
@@ -31,6 +34,7 @@ import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -51,7 +55,9 @@ import org.onap.aai.serialization.queryformats.exceptions.AAIFormatQueryResultFo
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
 import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
 
-public class RawFormatTest extends AAISetup {
+import com.google.gson.JsonObject;
+
+public class CountQuerySupportTest extends AAISetup {
 
 	@Mock
 	private UrlBuilder urlBuilder;
@@ -59,14 +65,17 @@ public class RawFormatTest extends AAISetup {
 	private Graph graph;
 	private TransactionalGraphEngine dbEngine;
 	private Loader loader;
-	private RawFormat rawFormat;
 	private final ModelType factoryType = ModelType.MOXY;
 	private final EdgeRules rules = EdgeRules.getInstance();
 	private Version version = Version.getLatest();
-	private Vertex pserver;
-	private Vertex complex;
+	Vertex pserver1;
+	Vertex complex1;
+	Vertex complex2;
 
 	private DBSerializer serializer;
+	
+	private FormatFactory ff;
+	private Formatter formatter;
 
 	@Before
 	public void setUp() throws Exception {
@@ -75,40 +84,61 @@ public class RawFormatTest extends AAISetup {
 
 		graph = TinkerGraph.open();
 
-		Vertex pserver1 = graph.addVertex(T.label, "pserver", T.id, "2", "aai-node-type", "pserver", "hostname",
+		pserver1 = graph.addVertex(T.label, "pserver", T.id, "2", "aai-node-type", "pserver", "hostname",
 				"hostname-1");
-		Vertex complex1 = graph.addVertex(T.label, "complex", T.id, "3", "aai-node-type", "complex",
+		complex1 = graph.addVertex(T.label, "complex", T.id, "3", "aai-node-type", "complex",
 				"physical-location-id", "physical-location-id-1", "country", "US");
+		
+		complex2 = graph.addVertex(T.label, "complex", T.id, "4", "aai-node-type", "complex",
+				"physical-location-id", "physical-location-id-2", "country", "US");
 
 		GraphTraversalSource g = graph.traversal();
 		rules.addEdge(g, pserver1, complex1);
 		
-		pserver = pserver1;
-		complex = complex1;
-		
 		createLoaderEngineSetup();
 
 	}
+	
+	@After
+	public void tearDown() throws Exception {
+		graph.close();
+	}
 
 	@Test
-	public void verifyPserverRelatedToHasEdgeLabel () throws AAIFormatVertexException, AAIException, AAIFormatQueryResultFormatNotSupported {
-		assertTrue(rawFormat.createRelationshipObject(pserver).get(0).getAsJsonObject().get("relationship-label").getAsString().equals("locatedIn"));
+	public void verifyComplexVertexCountTest1() throws AAIFormatVertexException, AAIException, AAIFormatQueryResultFormatNotSupported {
+		List<Object> complexList = Arrays.asList(this.complex1, this.complex2 );
+		JsonObject jo = this.formatter.output(complexList);
+		assertEquals(2, jo.get("results").getAsJsonArray().get(0).getAsJsonObject().get("complex").getAsInt());
 	}
 	
 	@Test
-	public void verifyPserverRelatedToComplexLabel () throws AAIFormatVertexException, AAIException, AAIFormatQueryResultFormatNotSupported {
-		assertTrue(rawFormat.createRelationshipObject(pserver).get(0).getAsJsonObject().get("node-type").getAsString().equals("complex"));
+	public void verifyPserverVertexCountTest1() throws AAIFormatVertexException, AAIException, AAIFormatQueryResultFormatNotSupported {
+		List<Object> pserverList = Arrays.asList(this.pserver1 );
+		JsonObject jo = this.formatter.output(pserverList);
+		assertEquals(1, jo.get("results").getAsJsonArray().get(0).getAsJsonObject().get("pserver").getAsInt());
 	}
 	
 	@Test
-	public void verifyComplexRelatedToHasEdgeLabel () throws AAIFormatVertexException, AAIException, AAIFormatQueryResultFormatNotSupported {
-		assertTrue(rawFormat.createRelationshipObject(complex).get(0).getAsJsonObject().get("relationship-label").getAsString().equals("locatedIn"));
+	public void verifyComplexVertexCountTest2() throws AAIFormatVertexException, AAIException, AAIFormatQueryResultFormatNotSupported {
+		List<Object> list = Arrays.asList(this.complex1, this.pserver1, this.complex2 );
+		JsonObject jo = this.formatter.output(list);
+		assertEquals(2, jo.get("results").getAsJsonArray().get(0).getAsJsonObject().get("complex").getAsInt());
 	}
 	
 	@Test
-	public void verifyComplexRelatedToPserverLabel () throws AAIFormatVertexException, AAIException, AAIFormatQueryResultFormatNotSupported {
-		assertTrue(rawFormat.createRelationshipObject(complex).get(0).getAsJsonObject().get("node-type").getAsString().equals("pserver"));
+	public void verifyPserverVertexCountTest2() throws AAIFormatVertexException, AAIException, AAIFormatQueryResultFormatNotSupported {
+		List<Object> list = Arrays.asList(this.complex1, this.pserver1, this.complex2 );
+		JsonObject jo = this.formatter.output(list);
+		assertEquals(1, jo.get("results").getAsJsonArray().get(0).getAsJsonObject().get("pserver").getAsInt());
 	}
+	
+	@Test
+	public void verifyLongTest() throws AAIFormatVertexException, AAIException, AAIFormatQueryResultFormatNotSupported {
+		List<Object> complexList = Arrays.asList(Long.valueOf(22L) );
+		JsonObject jo = this.formatter.output(complexList);
+		assertEquals(22, jo.get("results").getAsJsonArray().get(0).getAsJsonObject().get("count").getAsInt());
+	}
+
 
 	public void createLoaderEngineSetup() throws AAIException {
 
@@ -116,8 +146,11 @@ public class RawFormatTest extends AAISetup {
 			loader = LoaderFactory.createLoaderForVersion(factoryType, version);
 			dbEngine = spy(new TitanDBEngine(QueryStyle.TRAVERSAL, DBConnectionType.CACHED, loader));
 			serializer = new DBSerializer(version, dbEngine, factoryType, "Junit");
-			rawFormat = new RawFormat.Builder(loader, serializer, urlBuilder).build();
+			
+			ff = new FormatFactory(loader, serializer);
+			formatter = ff.get(Format.count);
 
+			
 			TransactionalGraphEngine.Admin spyAdmin = spy(dbEngine.asAdmin());
 
 			when(dbEngine.tx()).thenReturn(graph);

@@ -32,7 +32,7 @@ import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
 import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
 
-public final class PathedURL implements FormatMapper {
+public final class PathedURL extends MultiFormatMapper {
 
 	private final UrlBuilder urlBuilder;
 	private final JsonParser parser;
@@ -50,8 +50,8 @@ public final class PathedURL implements FormatMapper {
 	}
 
 	@Override
-	public JsonObject formatObject(Object input) throws AAIFormatVertexException {
-		Vertex v = (Vertex)input;
+	protected JsonObject getJsonFromVertex(Vertex v) throws AAIFormatVertexException {
+
 		try {
 			final Introspector searchResult = this.loader.introspectorFromName("result-data");
 
