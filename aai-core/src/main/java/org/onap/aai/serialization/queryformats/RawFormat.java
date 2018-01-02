@@ -42,7 +42,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 
-public class RawFormat implements FormatMapper {
+public class RawFormat extends MultiFormatMapper {
 	protected JsonParser parser = new JsonParser();
 	protected final DBSerializer serializer;
 	protected final Loader loader;
@@ -57,20 +57,6 @@ public class RawFormat implements FormatMapper {
 		this.nodesOnly = builder.isNodesOnly();
 	}
 	
-	@Override
-	public JsonObject formatObject(Object input) throws AAIFormatVertexException {
-		Vertex v = (Vertex)input;
-		JsonObject json = new JsonObject();
-		json.addProperty("id", v.id().toString());
-		json.addProperty("node-type", v.<String>value(AAIProperties.NODE_TYPE));
-		json.addProperty("url", this.urlBuilder.pathed(v));
-		json.add("properties", this.createPropertiesObject(v));
-		if (!nodesOnly) {
-			json.add("related-to", this.createRelationshipObject(v));
-		}
-		return json;
-	}
-
 	@Override
 	public int parallelThreshold() {
 		return 100;
@@ -199,5 +185,19 @@ public class RawFormat implements FormatMapper {
 				return new RawFormat(this);
 			}
 		}
+	}
+
+	@Override
+	protected JsonObject getJsonFromVertex(Vertex v) throws AAIFormatVertexException {
+
+		JsonObject json = new JsonObject();
+		json.addProperty("id", v.id().toString());
+		json.addProperty("node-type", v.<String>value(AAIProperties.NODE_TYPE));
+		json.addProperty("url", this.urlBuilder.pathed(v));
+		json.add("properties", this.createPropertiesObject(v));
+		if (!nodesOnly) {
+			json.add("related-to", this.createRelationshipObject(v));
+		}
+		return json;
 	}
 }

@@ -40,7 +40,7 @@ import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-public class Resource implements FormatMapper {
+public class Resource extends MultiFormatMapper {
 
 	private final Loader loader;
 	private final DBSerializer serializer;
@@ -60,8 +60,8 @@ public class Resource implements FormatMapper {
 	}
 
 	@Override
-	public JsonObject formatObject(Object input) throws AAIFormatVertexException {
-		Vertex v = (Vertex)input;
+	protected JsonObject getJsonFromVertex(Vertex v) throws AAIFormatVertexException {
+
 		JsonObject json = new JsonObject();
 		
 		if (this.includeUrl) {

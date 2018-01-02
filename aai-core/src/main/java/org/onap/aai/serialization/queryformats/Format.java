@@ -23,9 +23,12 @@ package org.onap.aai.serialization.queryformats;
 
 public enum Format {
 	graphson,
-	pathed, id, resource,
+	pathed, 
+	id, 
+	resource,
 	simple,
 	resource_and_url,
 	console,
-	raw
+	raw,
+	count
 }

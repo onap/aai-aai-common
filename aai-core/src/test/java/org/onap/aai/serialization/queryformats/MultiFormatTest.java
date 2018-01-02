@@ -21,11 +21,17 @@
  */
 package org.onap.aai.serialization.queryformats;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
+import java.io.UnsupportedEncodingException;
+
+import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.apache.tinkerpop.gremlin.process.traversal.step.util.Tree;
 import org.apache.tinkerpop.gremlin.process.traversal.strategy.verification.ReadOnlyStrategy;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.T;
@@ -51,7 +57,10 @@ import org.onap.aai.serialization.queryformats.exceptions.AAIFormatQueryResultFo
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
 import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
 
-public class RawFormatTest extends AAISetup {
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+public class MultiFormatTest extends AAISetup {
 
 	@Mock
 	private UrlBuilder urlBuilder;
@@ -59,14 +68,16 @@ public class RawFormatTest extends AAISetup {
 	private Graph graph;
 	private TransactionalGraphEngine dbEngine;
 	private Loader loader;
-	private RawFormat rawFormat;
+	private IdURL idFormat;
 	private final ModelType factoryType = ModelType.MOXY;
 	private final EdgeRules rules = EdgeRules.getInstance();
-	private Version version = Version.getLatest();
-	private Vertex pserver;
-	private Vertex complex;
-
-	private DBSerializer serializer;
+	private Tree<?> resultTree;
+	private Path resultPath;
+	private Version version = Version.v11;
+	private JsonObject expectedTreeIdFormat = new JsonParser()
+			.parse("{\"nodes\":[{\"resource-type\":\"generic-vnf\",\"nodes\":[{\"resource-type\":\"vserver\",\"nodes\":[{\"resource-type\":\"pserver\"}]},{\"resource-type\":\"pserver\",\"nodes\":[{\"resource-type\":\"complex\"}]}]}]}").getAsJsonObject();
+	private JsonObject expectedPathIdFormat = new JsonParser()
+			.parse("{\"path\":[{\"resource-type\":\"generic-vnf\"},{\"resource-type\":\"vserver\"},{\"resource-type\":\"pserver\"},{\"resource-type\":\"complex\"}]}").getAsJsonObject();
 
 	@Before
 	public void setUp() throws Exception {
@@ -75,48 +86,78 @@ public class RawFormatTest extends AAISetup {
 
 		graph = TinkerGraph.open();
 
+		Vertex gnvf1 = graph.addVertex(T.label, "generic-vnf", T.id, "0", "aai-node-type", "generic-vnf", "vnf-id",
+				"vnf-id-1", "vnf-name", "vnf-name-1");
+		Vertex vserver1 = graph.addVertex(T.label, "vserver", T.id, "1", "aai-node-type", "vserver", "vserver-id",
+				"vserver-id-1", "vserver-name", "vserver-name-1");
 		Vertex pserver1 = graph.addVertex(T.label, "pserver", T.id, "2", "aai-node-type", "pserver", "hostname",
 				"hostname-1");
 		Vertex complex1 = graph.addVertex(T.label, "complex", T.id, "3", "aai-node-type", "complex",
 				"physical-location-id", "physical-location-id-1", "country", "US");
 
+		Vertex pserver2 = graph.addVertex(T.label, "pserver", T.id, "5", "aai-node-type", "pserver", "hostname",
+				"hostname-2");
+		Vertex complex2 = graph.addVertex(T.label, "complex", T.id, "6", "aai-node-type", "complex",
+				"physical-location-id", "physical-location-id-2", "country", "US");
+
 		GraphTraversalSource g = graph.traversal();
+		rules.addEdge(g, gnvf1, vserver1);
+		rules.addEdge(g, vserver1, pserver1);
 		rules.addEdge(g, pserver1, complex1);
-		
-		pserver = pserver1;
-		complex = complex1;
-		
+		rules.addEdge(g, gnvf1, pserver2);
+		rules.addEdge(g, pserver2, complex2);
+
+		resultTree = graph.traversal().V("0").out().out().tree().next();
+		resultPath = graph.traversal().V("0").out().hasId("1").out().hasId("2").out().hasId("3").path().next();
+	}
+
+	@Test
+	public void testTreeResultQueryIdFormat()
+			throws AAIFormatVertexException, AAIException, AAIFormatQueryResultFormatNotSupported {
+
 		createLoaderEngineSetup();
+		idFormat = new IdURL(loader, urlBuilder);
 
-	}
+		assertNotNull(dbEngine.tx());
+		assertNotNull(dbEngine.asAdmin());
 
-	@Test
-	public void verifyPserverRelatedToHasEdgeLabel () throws AAIFormatVertexException, AAIException, AAIFormatQueryResultFormatNotSupported {
-		assertTrue(rawFormat.createRelationshipObject(pserver).get(0).getAsJsonObject().get("relationship-label").getAsString().equals("locatedIn"));
+		JsonObject json = idFormat.formatObject(resultTree);
+		
+		assertEquals(this.expectedTreeIdFormat, json);
+
 	}
 	
 	@Test
-	public void verifyPserverRelatedToComplexLabel () throws AAIFormatVertexException, AAIException, AAIFormatQueryResultFormatNotSupported {
-		assertTrue(rawFormat.createRelationshipObject(pserver).get(0).getAsJsonObject().get("node-type").getAsString().equals("complex"));
-	}
-	
-	@Test
-	public void verifyComplexRelatedToHasEdgeLabel () throws AAIFormatVertexException, AAIException, AAIFormatQueryResultFormatNotSupported {
-		assertTrue(rawFormat.createRelationshipObject(complex).get(0).getAsJsonObject().get("relationship-label").getAsString().equals("locatedIn"));
-	}
-	
-	@Test
-	public void verifyComplexRelatedToPserverLabel () throws AAIFormatVertexException, AAIException, AAIFormatQueryResultFormatNotSupported {
-		assertTrue(rawFormat.createRelationshipObject(complex).get(0).getAsJsonObject().get("node-type").getAsString().equals("pserver"));
+	public void testPathResultQueryIdFormat()
+			throws AAIFormatVertexException, AAIException, AAIFormatQueryResultFormatNotSupported {
+
+		createLoaderEngineSetup();
+		idFormat = new IdURL(loader, urlBuilder);
+
+		assertNotNull(dbEngine.tx());
+		assertNotNull(dbEngine.asAdmin());
+
+		JsonObject json = idFormat.formatObject(resultPath);
+		
+		assertEquals(this.expectedPathIdFormat, json);
+
 	}
 
-	public void createLoaderEngineSetup() throws AAIException {
+	
+	@Test(expected = AAIFormatQueryResultFormatNotSupported.class)
+	public void testThrowsExceptionIfObjectNotSupported() throws AAIFormatVertexException,
+			AAIException, UnsupportedEncodingException, AAIFormatQueryResultFormatNotSupported {
+
+		loader = mock(Loader.class);
+		idFormat = new IdURL(loader, urlBuilder);
+		idFormat.formatObject(new String());
+	}
+
+	public void createLoaderEngineSetup() {
 
 		if (loader == null) {
 			loader = LoaderFactory.createLoaderForVersion(factoryType, version);
 			dbEngine = spy(new TitanDBEngine(QueryStyle.TRAVERSAL, DBConnectionType.CACHED, loader));
-			serializer = new DBSerializer(version, dbEngine, factoryType, "Junit");
-			rawFormat = new RawFormat.Builder(loader, serializer, urlBuilder).build();
 
 			TransactionalGraphEngine.Admin spyAdmin = spy(dbEngine.asAdmin());
 

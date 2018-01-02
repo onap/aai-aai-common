@@ -19,6 +19,7 @@
  *
  * ECOMP is a trademark and service mark of AT&T Intellectual Property.
  */
+
 package org.onap.aai.serialization.queryformats;
 
 import com.google.gson.JsonObject;
@@ -33,6 +34,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.onap.aai.AAISetup;
 import org.onap.aai.dbmap.DBConnectionType;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Loader;
@@ -56,7 +58,7 @@ import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
-public class SimpleFormatTest {
+public class SimpleFormatTest extends AAISetup {
 
 	@Mock
 	private UrlBuilder urlBuilder;
