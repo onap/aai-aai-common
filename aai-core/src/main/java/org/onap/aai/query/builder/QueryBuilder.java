@@ -384,5 +384,9 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
 
 	public abstract List<E> toList();
 	
+	public QueryBuilder<Vertex> getVerticesByProperty(String key, MissingOptionalParameter value) {
+		return (QueryBuilder<Vertex>) this;
+	}
+
 		
 }
