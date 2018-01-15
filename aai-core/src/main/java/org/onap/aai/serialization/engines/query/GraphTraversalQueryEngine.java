@@ -69,6 +69,7 @@ public class GraphTraversalQueryEngine extends QueryEngine {
 	@Override
 	public List<Vertex> findParents(Vertex start) {
 		
+		@SuppressWarnings("unchecked")
 		final GraphTraversal<Vertex, Vertex> pipe = this.g.V(start).emit(v -> true).repeat(__.union(__.inE().has(CONTAINS.toString(), OUT.toString()).outV(), __.outE().has(CONTAINS.toString(), IN.toString()).inV()));
 		return pipe.toList();
 	}
@@ -79,6 +80,7 @@ public class GraphTraversalQueryEngine extends QueryEngine {
 	@Override
 	public List<Vertex> findAllChildren(Vertex start) {
 		
+		@SuppressWarnings("unchecked")
 		GraphTraversal<Vertex, Vertex> pipe =  this.g
 				.V(start).emit(v -> true).repeat(__.union(__.outE().has(CONTAINS.toString(), OUT.toString()).inV(), __.inE().has(CONTAINS.toString(), IN.toString()).outV()));
 		
@@ -87,7 +89,12 @@ public class GraphTraversalQueryEngine extends QueryEngine {
 		
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public List<Vertex> findChildrenOfType(Vertex start, String type) {
+		@SuppressWarnings("unchecked")
 		GraphTraversal<Vertex, Vertex> pipe =  this.g.V(start).union(
 					__.outE().has(CONTAINS.toString(), OUT.toString()).inV(),
 					__.inE().has(CONTAINS.toString(), IN.toString()).outV()
@@ -96,7 +103,12 @@ public class GraphTraversalQueryEngine extends QueryEngine {
 		return pipe.toList();
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public List<Vertex> findChildren(Vertex start) {
+		@SuppressWarnings("unchecked")
 		GraphTraversal<Vertex, Vertex> pipe =  this.g.V(start).union(
 					__.outE().has(CONTAINS.toString(), OUT.toString()),
 					__.inE().has(CONTAINS.toString(), IN.toString())
@@ -110,6 +122,7 @@ public class GraphTraversalQueryEngine extends QueryEngine {
 	 */
 	@Override
 	public List<Vertex> findDeletable(Vertex start) {
+		@SuppressWarnings("unchecked")
 		GraphTraversal<Vertex, Vertex> pipe = this.g
 				.V(start).emit(v -> true).repeat(
 					__.union(

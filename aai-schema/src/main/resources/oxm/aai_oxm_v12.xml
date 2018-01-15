@@ -2644,22 +2644,22 @@
 						<xml-property name="description" value="Indicates the total bandwidth to be used for this service." />
 					</xml-properties>
 				</xml-element>
-				<xml-element java-attribute="bandwidthUpWan1" name="bandwidth-up-wan1" required="true" type="java.lang.String">
+				<xml-element java-attribute="bandwidthUpWan1" name="bandwidth-up-wan1" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="indicates the upstream bandwidth this service will use on the WAN1 port of the physical device." />
 					</xml-properties>
 				</xml-element>
-				<xml-element java-attribute="bandwidthDownWan1" name="bandwidth-down-wan1" required="true" type="java.lang.String">
+				<xml-element java-attribute="bandwidthDownWan1" name="bandwidth-down-wan1" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="indicates the downstream bandwidth this service will use on the WAN1 port of the physical device." />
 					</xml-properties>
 				</xml-element>
-				<xml-element java-attribute="bandwidthUpWan2" name="bandwidth-up-wan2" required="true" type="java.lang.String">
+				<xml-element java-attribute="bandwidthUpWan2" name="bandwidth-up-wan2" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="indicates the upstream bandwidth this service will use on the WAN2 port of the physical device." />
 					</xml-properties>
 				</xml-element>
-				<xml-element java-attribute="bandwidthDownWan2" name="bandwidth-down-wan2" required="true" type="java.lang.String">
+				<xml-element java-attribute="bandwidthDownWan2" name="bandwidth-down-wan2" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="indicates the downstream bandwidth this service will use on the WAN2 port of the physical device." />
 					</xml-properties>

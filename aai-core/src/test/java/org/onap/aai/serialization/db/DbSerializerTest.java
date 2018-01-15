@@ -38,6 +38,7 @@ import java.util.List;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Graph;
+import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
 import org.junit.After;
@@ -319,11 +320,11 @@ public class DbSerializerTest extends AAISetup {
 		rules.addTreeEdge(engine.tx().traversal(), cr, ten);
 		rules.addTreeEdge(engine.tx().traversal(), ten, vs);
 
-		List<Vertex> vertices = new ArrayList<Vertex>(Arrays.asList(cr, ten, vs));
+		List<Vertex> vertices = Arrays.asList(cr, ten, vs);
 		Introspector crIn = dbser.getVertexProperties(cr);
 		Introspector tenIn = dbser.getVertexProperties(ten);
 		Introspector vsIn = dbser.getVertexProperties(vs);
-		List<Introspector> intros = new ArrayList<Introspector>(Arrays.asList(crIn, tenIn, vsIn));
+		List<Introspector> intros = Arrays.asList(crIn, tenIn, vsIn);
 
 		dbser.setCachedURIs(vertices, intros);
 
@@ -1009,4 +1010,135 @@ public class DbSerializerTest extends AAISetup {
 		return localDbser;
 	}
 
+	@Test
+	public void addRelatedToPropertyTest() throws AAIException {
+		Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.v11);
+		Introspector gv = loader.introspectorFromName("generic-vnf");
+		gv.setValue("vnf-name", "myname");
+		Introspector rel = loader.introspectorFromName("relationship");
+		DBSerializer dbser = new DBSerializer(Version.v11, dbEngine, 
+												ModelType.MOXY, "AAI-TEST");
+		
+		dbser.addRelatedToProperty(rel, gv);
+		List<Introspector> relToProps = rel.getWrappedListValue("related-to-property");
+		assertTrue(relToProps.size() == 1);
+		Introspector relToProp = relToProps.get(0);
+		assertTrue("generic-vnf.vnf-name".equals(relToProp.getValue("property-key")));
+		assertTrue("myname".equals(relToProp.getValue("property-value")));
+	}
+	
+	@Test
+	public void dbToObjectContainerMismatchTest() throws AAIException, UnsupportedEncodingException {
+		DBSerializer dbser = new DBSerializer(Version.v11, dbEngine, 
+				ModelType.MOXY, "AAI-TEST");
+		
+		Graph vertexMaker = TinkerGraph.open();
+		Vertex a = vertexMaker.addVertex(T.id, "0");
+		Vertex b = vertexMaker.addVertex(T.id, "1");
+		List<Vertex> vertices = Arrays.asList(a,b);
+		
+		Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.v11);
+		Introspector intro = loader.introspectorFromName("image"); //just need any non-container object
+		
+		thrown.expect(AAIException.class);
+		thrown.expectMessage("query object mismatch: this object cannot hold multiple items.");
+		
+		dbser.dbToObject(vertices, intro, Integer.MAX_VALUE, true, "doesn't matter");
+	}
+	
+	@Test
+	public void dbToObjectTest() throws AAIException, UnsupportedEncodingException {
+		engine.startTransaction();
+		
+		DBSerializer dbser = new DBSerializer(Version.getLatest(), engine, 
+				ModelType.MOXY, "AAI-TEST");
+		
+		Vertex gv1 = engine.tx().addVertex("aai-node-type", "generic-vnf", "vnf-id", "id1");
+		Vertex gv2 = engine.tx().addVertex("aai-node-type", "generic-vnf", "vnf-id", "id2");
+		List<Vertex> vertices = Arrays.asList(gv1, gv2);
+		
+		Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.getLatest());
+		Introspector gvContainer = loader.introspectorFromName("generic-vnfs");
+		
+		Introspector res = dbser.dbToObject(vertices, gvContainer, 0, true, "true");
+		List<Introspector> gvs = res.getWrappedListValue("generic-vnf");
+		assertTrue(gvs.size() == 2);
+		for (Introspector i : gvs) {
+			String vnfId = i.getValue("vnf-id");
+			assertTrue("id1".equals(vnfId) || "id2".equals(vnfId));
+		}
+		
+		engine.rollback();
+	}
+	
+	@Test
+	public void getEdgeBetweenNoLabelTest() throws AAIException {
+		DBSerializer dbser = new DBSerializer(Version.getLatest(), engine, 
+				ModelType.MOXY, "AAI-TEST");
+		
+		engine.startTransaction();
+		Vertex gv = engine.tx().addVertex("aai-node-type", "generic-vnf", "vnf-id", "id1");
+		Vertex lint = engine.tx().addVertex("aai-node-type", "l-interface", "interface-name", "name1");
+		rules.addTreeEdge(engine.tx().traversal(), gv, lint);
+		
+		Edge res = dbser.getEdgeBetween(EdgeType.TREE, gv, lint);
+		assertTrue("hasLInterface".equals(res.label()));
+		engine.rollback();
+	}
+
+	@Test
+	public void deleteItemsWithTraversal() throws AAIException {
+		DBSerializer dbser = new DBSerializer(Version.getLatest(), engine, 
+				ModelType.MOXY, "AAI-TEST");
+		
+		engine.startTransaction();
+		Vertex gv = engine.tx().addVertex("aai-node-type", "generic-vnf", "vnf-id", "id1");
+		Vertex lint = engine.tx().addVertex("aai-node-type", "l-interface", "interface-name", "name1");
+		
+		assertTrue(engine.tx().traversal().V().has("vnf-id", "id1").hasNext());
+		assertTrue(engine.tx().traversal().V().has("interface-name", "name1").hasNext());
+		
+		dbser.deleteItemsWithTraversal(Arrays.asList(gv, lint));
+		
+		assertTrue(!engine.tx().traversal().V().has("vnf-id", "id1").hasNext());
+		assertTrue(!engine.tx().traversal().V().has("interface-name", "name1").hasNext());
+		
+		engine.rollback();
+	}
+	
+	@Test
+	public void serializeToDbWithParentTest() throws AAIException, UnsupportedEncodingException, URISyntaxException {
+		DBSerializer dbser = new DBSerializer(Version.getLatest(), engine, 
+				ModelType.MOXY, "AAI-TEST");
+		
+		engine.startTransaction();
+		Vertex gv = engine.tx().addVertex("aai-node-type", "generic-vnf", "vnf-id", "id1");
+		Vertex lint = engine.tx().addVertex("aai-node-type", "l-interface", "interface-name", "name1");
+		rules.addTreeEdge(engine.tx().traversal(), gv, lint);
+		
+		Introspector lintIntro = loader.introspectorFromName("l-interface");
+		lintIntro.setValue("interface-role", "actor");
+		URI lintURI = new URI("/network/generic-vnfs/generic-vnf/id1/l-interfaces/l-interface/name1");
+		QueryParser uriQuery = dbEngine.getQueryBuilder(gv).createQueryFromURI(lintURI);
+		dbser.serializeToDb(lintIntro, lint, uriQuery, "test-identifier", "AAI-TEST");
+		
+		assertTrue(engine.tx().traversal().V(lint).has("interface-role", "actor").hasNext());
+		
+		engine.rollback();
+	}
+	
+	@Test
+	public void getLatestVersionViewTest() throws AAIException, UnsupportedEncodingException {
+		DBSerializer dbser = new DBSerializer(Version.getLatest(), engine, 
+				ModelType.MOXY, "AAI-TEST");
+		
+		engine.startTransaction();
+		Vertex phys = engine.tx().addVertex("aai-node-type", "physical-link", "link-name", "zaldo", 
+												"speed-value", "very-fast", "service-provider-bandwidth-up-units", "things");
+		
+		Introspector res = dbser.getLatestVersionView(phys);
+		assertTrue("zaldo".equals(res.getValue("link-name")));
+		assertTrue("very-fast".equals(res.getValue("speed-value")));
+		assertTrue("things".equals(res.getValue("service-provider-bandwidth-up-units")));
+	}
 }
