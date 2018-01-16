@@ -236,7 +236,7 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
 		return (QueryBuilder<Vertex>) this;
 	}
 
-
+    @Override
 	public QueryBuilder<Edge> getEdgesBetweenWithLabels(EdgeType type, String outNodeType, String inNodeType, List<String> labels) throws AAIException {
 		this.edgeQuery(type, outNodeType, inNodeType, labels);
 		return (QueryBuilder<Edge>)this;
