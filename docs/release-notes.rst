@@ -6,6 +6,40 @@
 AAI Release Notes
 ==================		   
 
+Version: 1.1.1
+--------------
+
+:Release Date: 2018-01-18
+
+**Bug Fixes**
+
+`AAI-456 <https://jira.onap.org/browse/AAI-456>`_
+AAI named-query for policy not returning extra-properties
+
+`AAI-458 <https://jira.onap.org/browse/AAI-458>`_
+[aai] ML, Search, DR, and Sparky Jenkins jobs not creating autorelease repo
+
+`AAI-459 <https://jira.onap.org/browse/AAI-459>`_
+aai-common child pom still depends on openecomp artifacts
+
+`AAI-461 <https://jira.onap.org/browse/AAI-461>`_
+AAI mS configuration files are using old openecomp params in test-config
+
+`AAI-462 <https://jira.onap.org/browse/AAI-462>`_
+Fix the resources junit tests broken in windows environment
+
+`AAI-558 <https://jira.onap.org/browse/AAI-558>`_
+aai-resources java daily jenkins job is failing
+
+`AAI-561 <https://jira.onap.org/browse/AAI-561>`_
+aai-traversal java daily jenkins job is failing
+
+`AAI-566 <https://jira.onap.org/browse/AAI-566>`_
+AAI Eclipse build failure - aai-traversal pom as hardcoded 1.8.0_101 jdk.tools version
+
+`AAI-621 <https://jira.onap.org/browse/AAI-621>`_
+Update the snapshot in test-config for v1.1.1-SNAPSHOT
+	       
 Version: 1.1.0
 --------------
 
