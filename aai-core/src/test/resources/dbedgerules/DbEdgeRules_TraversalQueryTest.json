@@ -10,7 +10,8 @@
 			"delete-other-v": "${direction}",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE",
-			"default": "true"
+			"default": "true",
+			"description": "Hard to describe"
 		},
 		{
 			"from": "vnfc",
@@ -21,7 +22,8 @@
 			"contains-other-v": "NONE",
 			"delete-other-v": "${direction}",
 			"SVC-INFRA": "${direction}",
-			"prevent-delete": "NONE"
+			"prevent-delete": "NONE",
+			"description": "Hard to describe"
 		},
 		{
 			"from": "vce",
@@ -33,7 +35,8 @@
 			"delete-other-v": "${direction}",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE",
-			"default": "true"
+			"default": "true",
+			"description": "Hard to describe"
 		},
 		{
 			"from": "pserver",
@@ -45,7 +48,8 @@
 			"delete-other-v": "${direction}",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE",
-			"default": "true"
+			"default": "true",
+			"description": "Hard to describe"
 		},
 		{
 			"from": "generic-vnf",
@@ -57,7 +61,8 @@
 			"delete-other-v": "${direction}",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE",
-			"default": "true"
+			"default": "true",
+			"description": "Hard to describe"
 		},
 		{
 			"from": "generic-vnf",
@@ -68,7 +73,8 @@
 			"contains-other-v": "NONE",
 			"delete-other-v": "${direction}",
 			"SVC-INFRA": "${direction}",
-			"prevent-delete": "NONE"
+			"prevent-delete": "NONE",
+			"description": "Hard to describe"
 		},
 		{
 			"from": "complex",
@@ -80,7 +86,8 @@
 			"delete-other-v": "${direction}",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE",
-			"default": "true"
+			"default": "true",
+			"description": "Hard to describe"
 		},
 		{
 			"from": "complex",
@@ -91,7 +98,8 @@
 			"contains-other-v": "NONE",
 			"delete-other-v": "${direction}",
 			"SVC-INFRA": "${direction}",
-			"prevent-delete": "NONE"
+			"prevent-delete": "NONE",
+			"description": "Hard to describe"
 		},
 		{
 			"from": "l-interface",
@@ -103,7 +111,8 @@
 			"delete-other-v": "${direction}",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE",
-			"default": "true"
+			"default": "true",
+			"description": "Hard to describe"
 		},
 		{
 			"from": "l-interface",
@@ -115,7 +124,8 @@
 			"delete-other-v": "${direction}",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE",
-			"default": "false"
+			"default": "false",
+			"description": "Hard to describe"
 		},
 		{
 			"from": "l-interface",
@@ -127,7 +137,8 @@
 			"delete-other-v": "${direction}",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE",
-			"default": "false"
+			"default": "false",
+			"description": "Hard to describe"
 		},	
 		{
 			"from": "pserver",
@@ -139,7 +150,8 @@
 			"delete-other-v": "${direction}",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE",
-			"default": "true"
+			"default": "true",
+			"description": "Hard to describe"
 		}
 	]
 }

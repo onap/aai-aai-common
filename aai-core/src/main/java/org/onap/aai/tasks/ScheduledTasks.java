@@ -32,6 +32,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import org.onap.aai.logging.LoggingContext;
+import org.onap.aai.logging.LoggingContext.StatusCode;
 import org.onap.aai.util.AAIConfig;
 import org.onap.aai.util.AAIConstants;
 import com.att.eelf.configuration.EELFLogger;
@@ -57,9 +58,15 @@ public class ScheduledTasks {
 	public void loadAAIProperties() {
 		final UUID transId = UUID.randomUUID();
 
+		LoggingContext.init();
 		LoggingContext.requestId(transId);
 		LoggingContext.partnerName(FROM_APP_ID);
 		LoggingContext.component(COMPONENT);
+		LoggingContext.targetEntity("AAI");
+		LoggingContext.targetServiceName("loadAAIProperties");
+		LoggingContext.serviceName("AAI");
+		LoggingContext.statusCode(StatusCode.COMPLETE);
+		LoggingContext.responseCode(LoggingContext.SUCCESS);
 
 		String dir = FilenameUtils.getFullPathNoEndSeparator(GlobalPropFileName);
 		if (dir == null || dir.length() < 3) {
@@ -82,7 +89,7 @@ public class ScheduledTasks {
 				long curTSTm = curTS.getTime();
 				if (curTSTm - lastModTm < PROPERTY_READ_INTERVAL + 1000) {
 					AAIConfig.reloadConfig();
-					LOGGER.info("reloaded from aaiconfig.properties");
+					LOGGER.debug("reloaded from aaiconfig.properties");
 				}
 				break;
 			}

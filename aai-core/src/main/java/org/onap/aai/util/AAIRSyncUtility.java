@@ -35,7 +35,7 @@ import java.util.StringTokenizer;
 import org.onap.aai.exceptions.AAIException;
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
-
+import org.onap.aai.logging.ErrorLogHelper;
 
 public class AAIRSyncUtility {
 
@@ -145,7 +145,7 @@ public class AAIRSyncUtility {
 				}
 			} 
     	} catch ( Exception e) {
-    		LOGGER.error("no server found processing serverList for host " + host + ": " + e.getMessage() + " (AAI_4000)");
+    		ErrorLogHelper.logError("AAI_4000", "no server found processing serverList for host " + host + ": " + e.getMessage());
 		}
 	}
 

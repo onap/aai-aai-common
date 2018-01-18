@@ -414,6 +414,30 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
 		return this;
 	}
 	
+	@Override
+	public QueryBuilder<E> groupCount() {
+		this.traversal.groupCount();
+		stepIndex++;
+
+		return this;
+	}
+
+	@Override
+	public QueryBuilder<E> both() {
+		this.traversal.both();
+		stepIndex++;
+
+		return this;
+	}
+
+	@Override
+	public QueryBuilder<E> by(String name) {
+		this.traversal.by(name);
+		stepIndex++;
+
+		return this;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */

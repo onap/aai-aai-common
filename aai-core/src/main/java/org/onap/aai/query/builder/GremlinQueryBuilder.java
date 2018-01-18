@@ -274,7 +274,9 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
 			}
 		});
 
-		if (inLabels.isEmpty() && !outLabels.isEmpty()) {
+		if(inLabels.isEmpty() && outLabels.isEmpty()) {
+			throw new NoEdgeRuleFoundException("no " + type.toString() + " edge rule between " + outType + " and " + inType );
+		} else if (inLabels.isEmpty() && !outLabels.isEmpty()) {
 			list.add(".out('" + String.join("','", outLabels) + "')");
 		} else if (outLabels.isEmpty() && !inLabels.isEmpty()) {
 			list.add(".in('" + String.join("','", inLabels) + "')");
@@ -319,7 +321,9 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
 			}
 		});
 
-		if (inLabels.isEmpty() && !outLabels.isEmpty()) {
+		if(inLabels.isEmpty() && outLabels.isEmpty()) {
+			throw new NoEdgeRuleFoundException("no " + type.toString() + " edge rule between " + outType + " and " + inType );
+		} else if (inLabels.isEmpty() && !outLabels.isEmpty()) {
 			list.add(".outE('" + String.join("','", outLabels) + "')");
 		} else if (outLabels.isEmpty() && !inLabels.isEmpty()) {
 			list.add(".inE('" + String.join("','", inLabels) + "')");
@@ -449,6 +453,30 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
 		return this;
 	}
 	
+	@Override
+	public QueryBuilder<E> groupCount() {
+		this.list.add(".groupCount()");
+		stepIndex++;
+
+		return this;
+	}
+
+	@Override
+	public QueryBuilder<E> both() {
+		this.list.add(".both()");
+		stepIndex++;
+
+		return this;
+	}
+
+	@Override
+	public QueryBuilder<E> by(String name) {
+		this.list.add(".by('"+ name + "')");
+		stepIndex++;
+
+		return this;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */

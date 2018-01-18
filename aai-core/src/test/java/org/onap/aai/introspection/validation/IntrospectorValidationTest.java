@@ -63,7 +63,7 @@ public class IntrospectorValidationTest {
 	@Ignore
 	@Test
 	public void verifySuccessWhenEmpty() throws AAIException {
-		Introspector obj = loader.introspectorFromName("test-object");
+		Introspector obj = loader.introspectorFromName("generic-vnf");
 		obj.setValue("vnf-id", "key1");
 		validator.validate(obj);
 		List<Issue> issues = validator.getIssues();
@@ -73,7 +73,7 @@ public class IntrospectorValidationTest {
 	@Ignore
 	@Test
 	public void verifyRequiresSingleFieldFailure() throws AAIException {
-		Introspector obj = loader.introspectorFromName("test-object");
+		Introspector obj = loader.introspectorFromName("generic-vnf");
 		obj.setValue("vnf-id", "key1");
 		obj.setValue("model-invariant-id", "id1");
 		validator.validate(obj);
@@ -85,7 +85,7 @@ public class IntrospectorValidationTest {
 	@Ignore
 	@Test
 	public void verifyRequiresSuccess() throws AAIException {
-		Introspector obj = loader.introspectorFromName("test-object");
+		Introspector obj = loader.introspectorFromName("generic-vnf");
 		obj.setValue("vnf-id", "key1");
 		obj.setValue("model-invariant-id", "id1");
 		obj.setValue("model-version-id", "version-id1");

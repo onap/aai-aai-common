@@ -61,7 +61,7 @@ public class HttpsAuthClient{
 			
 //			System.out.println("Jersey result: ");
 //			System.out.println(res.getEntity(String.class).toString());
-			
+
 		} catch (KeyManagementException e) {
 			e.printStackTrace();
 		} catch (Exception e) {

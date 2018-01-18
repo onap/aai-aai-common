@@ -28,5 +28,8 @@ public class EcompPatternLayout extends PatternLayout {
 		PatternLayout.defaultConverterMap.put("ecompStartTime", EcompStartTime.class.getName());
 		PatternLayout.defaultConverterMap.put("ecompElapsedTime", EcompElapsedTime.class.getName());
 		PatternLayout.defaultConverterMap.put("eelfClassOfCaller", EelfClassOfCaller.class.getName());
+		PatternLayout.defaultConverterMap.put("ecompErrorCategory", EcompErrorCategory.class.getName());
+		PatternLayout.defaultConverterMap.put("ecompResponseCode", EcompResponseCode.class.getName());
+		PatternLayout.defaultConverterMap.put("ecompResponseDescription", EcompResponseDescription.class.getName());
 	}
 }

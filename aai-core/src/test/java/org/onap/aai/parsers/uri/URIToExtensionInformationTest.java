@@ -53,7 +53,7 @@ public class URIToExtensionInformationTest extends AAISetup {
 	 */
 	@Test
     public void vserversV8() throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException {
-		URI uri = UriBuilder.fromPath("/aai/" + v8Loader.getVersion() + "/cloud-infrastructure/cloud-regions/cloud-region/att-aic/AAIAIC25/tenants/tenant/key1/vservers/vserver/key2").build();
+		URI uri = UriBuilder.fromPath("/aai/" + v8Loader.getVersion() + "/cloud-infrastructure/cloud-regions/cloud-region/testOwner1/testRegion1/tenants/tenant/key1/vservers/vserver/key2").build();
 		URIToExtensionInformation parse = new URIToExtensionInformation(v8Loader, uri);
 		
 		String namespace = "cloudInfrastructure";

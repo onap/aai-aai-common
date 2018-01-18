@@ -75,20 +75,20 @@ public class TraversalQueryTest extends QueryBuilderTestAbstraction {
 		
 		assertEquals("they are equal", expected, tQ.getQuery());
 		
-		g.tx().rollback();
+
 	}
 
 	@Test
 	public void traversalClones() throws UnsupportedEncodingException, AAIException, URISyntaxException {
 		QueryBuilder<Vertex> tQ = new TraversalQuery<>(loader, g);
-		QueryBuilder<Vertex> builder = tQ.createQueryFromURI(new URI("network/test-objects/test-object/key1")).getQueryBuilder();
-		GraphTraversal<Vertex, Vertex> expected = __.<Vertex>start().has("vnf-id", "key1").has("aai-node-type", "test-object");
-		GraphTraversal<Vertex, Vertex> containerExpected = __.<Vertex>start().has("aai-node-type", "test-object");
+		QueryBuilder<Vertex> builder = tQ.createQueryFromURI(new URI("network/generic-vnfs/generic-vnf/key1")).getQueryBuilder();
+		GraphTraversal<Vertex, Vertex> expected = __.<Vertex>start().has("vnf-id", "key1").has("aai-node-type", "generic-vnf");
+		GraphTraversal<Vertex, Vertex> containerExpected = __.<Vertex>start().has("aai-node-type", "generic-vnf");
 		
 		assertEquals("query object", expected.toString(), builder.getQuery().toString());
 		assertEquals("container query object", containerExpected.toString(), builder.getContainerQuery().getQuery().toString());
 		
-		g.tx().rollback();
+
 	}
 
 	@Test
@@ -96,13 +96,21 @@ public class TraversalQueryTest extends QueryBuilderTestAbstraction {
 		
 		QueryBuilder<Vertex> tQ = new TraversalQuery<>(loader, g);
 		QueryBuilder<Vertex> builder = tQ.createQueryFromURI(new URI("network/generic-vnfs/generic-vnf/key1/l-interfaces/l-interface/key2")).getQueryBuilder();
-		GraphTraversal<Vertex, Vertex> expected = __.<Vertex>start().has("vnf-id", "key1").has("aai-node-type", "generic-vnf").out("hasLInterface").has(AAIProperties.NODE_TYPE, "l-interface").has("interface-name", "key2");
-		GraphTraversal<Vertex, Vertex> containerExpected = __.<Vertex>start().has("vnf-id", "key1").has("aai-node-type", "generic-vnf").out("hasLInterface").has(AAIProperties.NODE_TYPE, "l-interface");
+		GraphTraversal<Vertex, Vertex> expected = __.<Vertex>start()
+				.has("vnf-id", "key1")
+				.has("aai-node-type", "generic-vnf")
+				.in("org.onap.relationships.inventory.BelongsTo").has(AAIProperties.NODE_TYPE, "l-interface")
+				.has("interface-name", "key2");
+		GraphTraversal<Vertex, Vertex> containerExpected = __.<Vertex>start()
+				.has("vnf-id", "key1")
+				.has("aai-node-type", "generic-vnf")
+				.in("org.onap.relationships.inventory.BelongsTo")
+				.has(AAIProperties.NODE_TYPE, "l-interface");
 		
 		assertEquals("query object", expected.toString(), builder.getQuery().toString());
 		assertEquals("container query object", containerExpected.toString(), builder.getContainerQuery().getQuery().toString());
 		
-		g.tx().rollback();
+
 	}
 	
 	@Test
@@ -121,7 +129,7 @@ public class TraversalQueryTest extends QueryBuilderTestAbstraction {
 		assertEquals("Has 1 vertexes ", 1, list.size());
 		assertTrue("Has vertex on the default edge ", list.contains(vnfc1));
 		
-		g.tx().rollback();
+
 	}
 	
 	@Test
@@ -146,7 +154,7 @@ public class TraversalQueryTest extends QueryBuilderTestAbstraction {
 		assertEquals("2 - Has 1 vertexes ", 1, list2.size());
 		assertTrue("2 - traversal results in vce ", list2.contains(vce));
 		
-		g.tx().rollback();
+
 	}
 	
 	@Test
@@ -165,7 +173,7 @@ public class TraversalQueryTest extends QueryBuilderTestAbstraction {
 		assertEquals("1 - Has 1 vertexes ", 1, list.size());
 		assertTrue("1 - traversal results in vnfc ", list.contains(pserver));
 		
-		g.tx().rollback();
+
 	}
 	
 	@Test
@@ -187,7 +195,7 @@ public class TraversalQueryTest extends QueryBuilderTestAbstraction {
 		assertTrue("Has vertex on the default edge ", list.contains(vnfc1));
 		assertTrue("Has vertex on the re-uses edge ", list.contains(vnfc2));
 		
-		g.tx().rollback();
+
 	}
 	
 	@Test
@@ -207,7 +215,7 @@ public class TraversalQueryTest extends QueryBuilderTestAbstraction {
 		assertEquals("Has 2 vertexes ", 2, list.size());
 		assertTrue("result has pserver ", list.contains(pserver));
 		
-		g.tx().rollback();
+
 	}
 	
 	@Test
@@ -227,7 +235,7 @@ public class TraversalQueryTest extends QueryBuilderTestAbstraction {
 		assertEquals("Has 2 vertexes ", 2, list.size());
 		assertTrue("result has pserver ", list.contains(complex));
 		
-		g.tx().rollback();
+
 	}
 	
 	

@@ -1,29 +1,30 @@
-/*-
+/**
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright © 2017 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  * ============LICENSE_END=========================================================
+ *
+ * ECOMP is a trademark and service mark of AT&T Intellectual Property.
  */
-
 package org.onap.aai.serialization.db;
+
+import org.apache.tinkerpop.gremlin.structure.Direction;
 
 import java.util.EnumMap;
 import java.util.Map;
-
-import org.apache.tinkerpop.gremlin.structure.Direction;
 
 public class EdgeRule {
 
@@ -32,14 +33,32 @@ public class EdgeRule {
 	private Direction direction = null;
 	private Map<EdgeProperty, String> edgeProperties = null;
 	private boolean isDefaultEdge = false;
-	
+	private String from;
+	private String to;
+
 	/**
 	 * Instantiates a new edge rule.
 	 */
 	public EdgeRule() {
 		edgeProperties = new EnumMap<>(EdgeProperty.class);
 	}
-	
+
+	public String getFrom() {
+		return from;
+	}
+
+	public void setFrom(String from) {
+		this.from = from;
+	}
+
+	public String getTo() {
+		return to;
+	}
+
+	public void setTo(String to) {
+		this.to = to;
+	}
+
 	/**
 	 * Gets the label.
 	 *
@@ -210,14 +229,14 @@ public class EdgeRule {
 	public boolean isDefault() {
 		return isDefaultEdge;
 	}
-	
+
 	public void setIsDefault(boolean isDefault) {
 		this.isDefaultEdge = isDefault;
 	}
-	
+
 	public void setIsDefault(String isDefault) {
 		this.isDefaultEdge = "true".equals(isDefault);
 	}
-	
-	
+
+
 }
