@@ -30,6 +30,7 @@ import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.onap.aai.introspection.exceptions.AAIUnmarshallingException;
 import org.onap.aai.logging.ErrorLogHelper;
+import org.onap.aai.logging.LogFormatTools;
 import org.onap.aai.restcore.MediaType;
 import org.onap.aai.workarounds.NamingExceptions;
 
@@ -60,7 +61,7 @@ public class PojoLoader extends Loader {
 		try {
 			context = JAXBContextFactory.createContext(pojoPackageName, this.getClass().getClassLoader());
 		} catch (JAXBException e) {
-			LOGGER.error("JAXBException while instantiation contect for PojoLoader", e);
+			LOGGER.error("JAXBException while instantiation contect for PojoLoader " + LogFormatTools.getStackTop(e));
 		}
 	}
 

@@ -9,7 +9,8 @@
 			"contains-other-v": "NONE",
 			"delete-other-v": "${direction}",
 			"SVC-INFRA": "NONE",
-			"prevent-delete": "NONE"
+			"prevent-delete": "NONE",
+			"description": "Hard to describe"
 		},
 		{
 			"from": "foo",
@@ -20,7 +21,8 @@
 			"contains-other-v": "NONE",
 			"delete-other-v": "${direction}",
 			"SVC-INFRA": "NONE",
-			"prevent-delete": "NONE"
+			"prevent-delete": "NONE",
+			"description": "Hard to describe"
 		},
 		{
 			"from": "foo",
@@ -31,7 +33,8 @@
 			"contains-other-v": "${direction}",
 			"delete-other-v": "${direction}",
 			"SVC-INFRA": "NONE",
-			"prevent-delete": "NONE"
+			"prevent-delete": "NONE",
+			"description": "Hard to describe"
 		},
 		{
 			"from": "quux",
@@ -42,7 +45,8 @@
 			"contains-other-v": "!${direction}",
 			"delete-other-v": "${direction}",
 			"SVC-INFRA": "NONE",
-			"prevent-delete": "NONE"
+			"prevent-delete": "NONE",
+			"description": "Hard to describe"
 		},
 		{
 			"from": "test-parent",
@@ -53,7 +57,8 @@
 			"contains-other-v": "${direction}",
 			"delete-other-v": "NONE",
 			"SVC-INFRA": "NONE",
-			"prevent-delete": "NONE"
+			"prevent-delete": "NONE",
+			"description": "Hard to describe"
 		},
 		{
 			"from": "test-cousin",
@@ -64,7 +69,8 @@
 			"contains-other-v": "NONE",
 			"delete-other-v": "${direction}",
 			"SVC-INFRA": "NONE",
-			"prevent-delete": "NONE"
+			"prevent-delete": "NONE",
+			"description": "Hard to describe"
 		},
 		{
 			"from": "test-child",
@@ -75,8 +81,9 @@
 			"contains-other-v": "${direction}",
 			"delete-other-v": "${direction}",
 			"SVC-INFRA": "NONE",
-			"prevent-delete": "NONE"
-		},		
+			"prevent-delete": "NONE",
+			"description": "Hard to describe"
+		},
 		{
 			"from": "a",
 			"to": "b",
@@ -87,7 +94,8 @@
 			"delete-other-v": "${direction}",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE",
-			"default": "false"
+			"default": "false",
+			"description": "Hard to describe"
 		},
 		{
 			"from": "a",
@@ -99,7 +107,8 @@
 			"delete-other-v": "${direction}",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE",
-			"default" : "true"
+			"default" : "true",
+			"description": "Hard to describe"
 		},
 				{
 			"from": "z",
@@ -110,7 +119,8 @@
 			"contains-other-v": "NONE",
 			"delete-other-v": "${direction}",
 			"SVC-INFRA": "NONE",
-			"prevent-delete": "NONE"
+			"prevent-delete": "NONE",
+			"description": "Hard to describe"
 		},
 		{
 			"from": "y",
@@ -122,7 +132,8 @@
 			"delete-other-v": "${direction}",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE",
-			"default" : "true"
+			"default" : "true",
+			"description": "Hard to describe"
 		},
 		{
 			"from": "generic-vnf",
@@ -134,7 +145,8 @@
 			"delete-other-v": "${direction}",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE",
-			"default": "true"
+			"default": "true",
+			"description": "Hard to describe"
 		},
 		{
 			"from": "generic-vnf",
@@ -145,7 +157,8 @@
 			"contains-other-v": "NONE",
 			"delete-other-v": "${direction}",
 			"SVC-INFRA": "${direction}",
-			"prevent-delete": "NONE"
+			"prevent-delete": "NONE",
+			"description": "Hard to describe"
 		},
 		{
 			"from": "generic-vnf",
@@ -155,6 +168,30 @@
 			"multiplicity": "ONE2MANY",
 			"contains-other-v": "NONE",
 			"delete-other-v": "${direction}",
+			"SVC-INFRA": "${direction}",
+			"prevent-delete": "NONE",
+			"description": "Hard to describe",
+			"prevent-delete": "NONE"
+		},
+		{
+			"from": "l-interface",
+			"to": "logical-link",
+			"label": "usesLogicalLink",
+			"direction": "OUT",
+			"multiplicity": "Many2Many",
+			"contains-other-v": "NONE",
+			"delete-other-v": "${direction}",
+			"SVC-INFRA": "${direction}",
+			"prevent-delete": "NONE"
+		},
+		{
+			"from": "generic-vnf",
+			"to": "l-interface",
+			"label": "hasLInterface",
+			"direction": "OUT",
+			"multiplicity": "Many2Many",
+			"contains-other-v": "${direction}",
+			"delete-other-v": "NONE",
 			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE"
 		}

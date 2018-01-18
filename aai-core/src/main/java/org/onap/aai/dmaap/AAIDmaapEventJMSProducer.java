@@ -35,7 +35,8 @@ public class AAIDmaapEventJMSProducer {
 	public AAIDmaapEventJMSProducer() {
 		if(AAIConfig.get("aai.jms.enable", "true").equals("true")){
 			this.jmsTemplate = new JmsTemplate();
-            this.jmsTemplate.setConnectionFactory(new CachingConnectionFactory(new ActiveMQConnectionFactory("tcp://localhost:61447")));
+			String activeMqTcpUrl = System.getProperty("activemq.tcp.url", "tcp://localhost:61447");
+			this.jmsTemplate.setConnectionFactory(new CachingConnectionFactory(new ActiveMQConnectionFactory(activeMqTcpUrl)));
 			this.jmsTemplate.setDefaultDestination(new ActiveMQQueue("IN_QUEUE"));
 		}
 	}

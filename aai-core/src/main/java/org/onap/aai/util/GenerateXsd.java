@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,13 +19,18 @@
  *
  * ECOMP is a trademark and service mark of AT&T Intellectual Property.
  */
+
 package org.onap.aai.util;
 
 import com.google.common.base.Joiner;
 import com.jayway.jsonpath.JsonPath;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.similarity.LevenshteinDistance;
+
 import org.onap.aai.introspection.Version;
 import org.onap.aai.serialization.db.EdgeProperty;
 import org.w3c.dom.*;
+import org.xml.sax.InputSource;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -38,9 +43,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GenerateXsd {
+	
+	private static final Logger logger = LoggerFactory.getLogger("GenerateXsd.class");
 	
 	static String apiVersion = null;
 	static String apiVersionFmt = null;
@@ -51,9 +59,24 @@ public class GenerateXsd {
 
 	static Map<String, String> generatedJavaType;
 	static Map<String, String> appliedPaths;
+	static Map<String, String> deletePaths;
+	static Map<String, String> putRelationPaths;
 	static NodeList javaTypeNodes;
+	static Map<String,String> javaTypeDefinitions = createJavaTypeDefinitions();
+    private static Map<String, String> createJavaTypeDefinitions()
+    {
+    	StringBuffer aaiInternal = new StringBuffer();
+    	Map<String,String> javaTypeDefinitions = new HashMap<String, String>();
+    	aaiInternal.append("  aai-internal:\n");
+    	aaiInternal.append("    properties:\n");
+    	aaiInternal.append("      property-name:\n");
+    	aaiInternal.append("        type: string\n");
+    	aaiInternal.append("      property-value:\n");
+    	aaiInternal.append("        type: string\n");
+    	javaTypeDefinitions.put("aai-internal", aaiInternal.toString());
+    	return javaTypeDefinitions;
+    }
 
-	
 	public static final int VALUE_NONE = 0;
 	public static final int VALUE_DESCRIPTION = 1;
 	public static final int VALUE_INDEXED_PROPS = 2;
@@ -64,12 +87,17 @@ public class GenerateXsd {
 	private static final String root = "../aai-schema/src/main/resources";
 	private static final String xsd_dir = root + "/aai_schema";
 	private static final String yaml_dir = root + "/aai_swagger_yaml";
+	
+	/* These three strings are for yaml auto-generation from aai-common class*/
+	private static final String normalStartDir = "aai-core";
+	private static final String autoGenRoot = "aai-schema/src/main/resources";
+	private static final String alt_yaml_dir = autoGenRoot + "/aai_swagger_yaml";
 
 	private static int annotationsStartVersion = 9; // minimum version to support annotations in xsd
 	private static int swaggerSupportStartsVersion = 7; // minimum version to support swagger documentation
 	
 	private static XPath xpath = XPathFactory.newInstance().newXPath();
-	
+
 
 	private enum LineageType {
 		PARENT, CHILD, UNRELATED;
@@ -77,10 +105,91 @@ public class GenerateXsd {
 	private class EdgeDescription {
 		
 		private String ruleKey;
+		private String to;
+		private String from;
 		private LineageType type = LineageType.UNRELATED;
 		private String direction;
 		private String multiplicity;
+		private String preventDelete;
+		private String deleteOtherV;
 		private boolean hasDelTarget = false;
+		private String label;
+		private String description;
+		/**
+		 * @return the deleteOtherV
+		 */
+		public String getDeleteOtherV() {
+			return deleteOtherV;
+		}
+		/**
+		 * @param deleteOtherV the deleteOtherV to set
+		 */
+		public void setDeleteOtherV(String deleteOtherV) {
+			logger.debug("Edge: "+this.getRuleKey());
+			logger.debug("Truth: "+(("${direction}".equals(deleteOtherV)) ? "true" : "false"));
+			logger.debug("Truth: "+(("!${direction}".equals(deleteOtherV)) ? "true" : "false"));
+
+			if("${direction}".equals(deleteOtherV) ) {
+				this.deleteOtherV = this.direction;
+			} else if("!${direction}".equals(deleteOtherV) ) {
+				this.deleteOtherV = this.direction.equals("IN") ? "OUT" : ((this.direction.equals("OUT")) ? "IN" : deleteOtherV);
+			} else {
+				this.deleteOtherV = deleteOtherV;
+			}
+			logger.debug("DeleteOtherV="+deleteOtherV+"/"+this.direction+"="+this.deleteOtherV);
+		}
+		/**
+		 * @return the preventDelete
+		 */
+		public String getPreventDelete() {
+			return preventDelete;
+		}
+		/**
+		 * @param preventDelete the preventDelete to set
+		 */
+		public void setPreventDelete(String preventDelete) {
+			if(this.getTo().equals("flavor") || this.getFrom().equals("flavor") ){
+				logger.debug("Edge: "+this.getRuleKey());
+				logger.debug("Truth: "+(("${direction}".equals(preventDelete)) ? "true" : "false"));
+				logger.debug("Truth: "+(("!${direction}".equals(preventDelete)) ? "true" : "false"));
+			}
+
+			if("${direction}".equals(preventDelete) ) {
+				this.preventDelete = this.direction;
+			} else if("!${direction}".equals(preventDelete) ) {
+				this.preventDelete = this.direction.equals("IN") ? "OUT" : ((this.direction.equals("OUT")) ? "IN" : preventDelete);
+			} else {
+				this.preventDelete = preventDelete;
+			}
+			if(this.getTo().equals("flavor") || this.getFrom().equals("flavor")) {
+				logger.debug("PreventDelete="+preventDelete+"/"+this.direction+"="+this.preventDelete);
+			}
+		}
+		/**
+		 * @return the to
+		 */
+		public String getTo() {
+			return to;
+		}
+		/**
+		 * @param to the to to set
+		 */
+		public void setTo(String to) {
+			this.to = to;
+		}
+		/**
+		 * @return the from
+		 */
+		public String getFrom() {
+			return from;
+		}
+		/**
+		 * @param from the from to set
+		 */
+		public void setFrom(String from) {
+			this.from = from;
+		}
+
 
 		public String getRuleKey() {
 			return ruleKey;
@@ -90,6 +199,9 @@ public class GenerateXsd {
 		}
 		public String getDirection() {
 			return direction;
+		}
+		public String getDescription() {
+			return this.description;
 		}
 		public void setRuleKey(String val) {
 			this.ruleKey=val;
@@ -106,6 +218,9 @@ public class GenerateXsd {
 		public void setHasDelTarget(String val) {
 			hasDelTarget = Boolean.parseBoolean(val);
 		}
+		public void setDescription(String val) {
+			this.description = val;
+		}
 
 		public String getRelationshipDescription(String fromTo, String otherNodeName) {
 			
@@ -114,95 +229,487 @@ public class GenerateXsd {
 			if ("FROM".equals(fromTo)) {
 				if ("OUT".equals(direction)) {
 					if (LineageType.PARENT == type) {
-						result = " (is composed of "+otherNodeName;
+						result = " (PARENT of "+otherNodeName;
+						result = String.join(" ", result+",", this.from, this.getLabel(), this.to);
 					} 
 				} 
 				else {
 					if (LineageType.CHILD == type) {
-						result = " (comprises "+otherNodeName;
+						result = " (CHILD of "+otherNodeName;
+						result = String.join(" ", result+",",  this.from, this.getLabel(), this.to);
 					} 
 					else if (LineageType.PARENT == type) {
-						result = " (comprises "+otherNodeName;
+						result = " (PARENT of "+otherNodeName;
+						result = String.join(" ", result+",", this.from, this.getLabel(), this.to);
 					}
 				}
+				if (result.length() == 0) result = String.join(" ", "(", this.from, this.getLabel(), this.to+",", this.getMultiplicity());
 			} else {
+			//if ("TO".equals(fromTo)
 				if ("OUT".equals(direction)) {
 					if (LineageType.PARENT == type) {
-						result = " (comprises "+otherNodeName;
+						result = " (CHILD of "+otherNodeName;
+						result = String.join(" ", result+",", this.from, this.getLabel(), this.to+",", this.getMultiplicity());
 					} 
 				} else {
 					if (LineageType.PARENT == type) {
-						result = " (is composed of "+otherNodeName;
+						result = " (PARENT of "+otherNodeName;
+						result = String.join(" ", result+",", this.from, this.getLabel(), this.to+",", this.getMultiplicity());
 					}
 				}
+				if (result.length() == 0) result = String.join(" ", "(", this.from, this.getLabel(), this.to+",", this.getMultiplicity());
+
 			}
 
-//			if (type != null) {
-//				if (LineageType.PARENT.equals(type) && "FROM".equals(fromTo)) {
-//					if ("OUT".equals(direction)) {
-//						result = " (is composed of "+otherNodeName;
-//					} else {
-//						result = " (comprises "+otherNodeName;
-//					}
-//				} else {
-//					result = " (comprises " + otherNodeName;
-//					//					if (!(multiplicity.startsWith("One"))) {
-//					//						System.err.println("Surprised to find multiplicity "+multiplicity+" with comprises for "+ruleKey);
-//					//					}
-//				}
-//			}
-			if ("TO".equals(fromTo)) {
-				if (result.length() == 0) result = result + " (";
-				else result = result + ", ";
-
-				result = result + mapMultiplicity(fromTo);
-				if (hasDelTarget) result = result + ", will delete target node";
-			}
+			if (hasDelTarget) result = result + ", will delete target node";
 
 			if (result.length() > 0) result = result + ")";
+			
+			if (description != null && description.length() > 0) result = result + "\n      "+ description; // 6 spaces is important for yaml
 			
 			return result;
 		}
 
-		private String mapMultiplicity(String fromTo) {
-			String result = multiplicity;
-// Below logic works if an IN switches multiplicity, which it doesn't today.
-//			if ("TO".equals(fromTo)) {
-//				if (direction.equals("OUT")) {
-//					result = multiplicity;
-//				} else {
-//					result = switchMultiplicity(multiplicity);
-//				}
-//			} else {
-//				if (direction.equals("OUT")) {
-//					result = multiplicity;
-//				} else {
-//					result = switchMultiplicity(multiplicity);
-//				}
-//			} 
-			return result;
+		/**
+		 * @return the hasDelTarget
+		 */
+		@SuppressWarnings("unused")
+		public boolean isHasDelTarget() {
+			return hasDelTarget;
+		}
+		/**
+		 * @param hasDelTarget the hasDelTarget to set
+		 */
+		@SuppressWarnings("unused")
+		public void setHasDelTarget(boolean hasDelTarget) {
+			this.hasDelTarget = hasDelTarget;
+		}
+		/**
+		 * @return the type
+		 */
+		@SuppressWarnings("unused")
+		public LineageType getType() {
+			return type;
+		}
+		/**
+		 * @return the label
+		 */
+		public String getLabel() {
+			return label;
+		}
+		public void setLabel(String string) {
+			this.label=string;
+		}
+	}
+	
+	private static class PutRelationPathSet {
+		String apiPath;
+		String opId;
+		ArrayList<String> relations = new ArrayList<String>();
+		String objectName = "";
+		String currentAPIVersion = "";
+		public PutRelationPathSet(String opId, String path) {
+			super();
+			this.apiPath = path.replace("/relationship-list/relationship", "");
+			this.opId = opId;
+			objectName = GenerateXsd.deletePaths.get(apiPath);
+			currentAPIVersion = GenerateXsd.apiVersion;
+		}
+		public void process() {
+			this.toRelations();
+			this.fromRelations();
+			this.writeRelationsFile();
+
+		}
+		public void toRelations() {
+			logger.debug("{“comment”: “Valid TO Relations that can be added”},");
+			logger.debug("apiPath: "+apiPath+"\nopId="+opId+"\nobjectName="+objectName);
+			Collection<EdgeDescription> toEdges = GenerateXsd.getEdgeRulesTO(objectName);
+			
+			if(toEdges.size() > 0) {
+				relations.add("{\"comment\": \"Valid TO Relations that can be added\"}\n");
+			}
+			for (EdgeDescription ed : toEdges) {
+				logger.debug(ed.getRuleKey()+"Type="+ed.type);
+				String obj = ed.getRuleKey().replace(objectName,"").replace("|","");
+				String selectedRelation = "";
+				if(ed.type == LineageType.UNRELATED) {
+					String selectObj = getUnrelatedObjectPaths(obj, apiPath);
+					logger.debug("SelectedObj:"+selectObj);
+					selectedRelation = formatObjectRelationSet(obj,selectObj);
+					logger.trace("ObjectRelationSet"+selectedRelation);
+				} else {
+					String selectObj = getKinObjectPath(obj, apiPath);
+					logger.debug("SelectedObj:"+selectObj);
+					selectedRelation = formatObjectRelation(obj,selectObj);
+					logger.trace("ObjectRelationSet"+selectedRelation);
+				}
+				relations.add(selectedRelation);
+				logger.trace(selectedRelation);
+			}
+		}
+		
+		public void fromRelations() {
+			logger.debug("“comment”: “Valid FROM Relations that can be added”");
+			Collection<EdgeDescription> fromEdges = getEdgeRulesFROM(objectName);
+			if(fromEdges.size() > 0) {
+				relations.add("{\"comment\": \"Valid FROM Relations that can be added\"}\n");
+			}
+			for (EdgeDescription ed : fromEdges) {
+				logger.debug(ed.getRuleKey()+"Type="+ed.type);
+				String obj = ed.getRuleKey().replace(objectName,"").replace("|","");
+				String selectedRelation = "";
+				if(ed.type == LineageType.UNRELATED) {
+					String selectObj = getUnrelatedObjectPaths(obj, apiPath);
+					logger.debug("SelectedObj"+selectObj);
+					selectedRelation = formatObjectRelationSet(obj,selectObj);
+					logger.trace("ObjectRelationSet"+selectedRelation);
+				} else {
+					String selectObj = getKinObjectPath(obj, apiPath);
+					logger.debug("SelectedObj"+selectObj);
+					selectedRelation = formatObjectRelation(obj,selectObj);
+					logger.trace("ObjectRelationSet"+selectedRelation);
+				}
+				relations.add(selectedRelation);
+				logger.trace(selectedRelation);
+			}
+		}
+		public void writeRelationsFile() {
+			File examplefilePath = new File(yaml_dir + "/relations/" + currentAPIVersion+"/"+opId.replace("RelationshipListRelationship", "") + ".json");
+
+			logger.debug(String.join("exampleFilePath: ", examplefilePath.toString()));
+			FileOutputStream fop = null;
+			try {
+				if (!examplefilePath.exists()) {
+					examplefilePath.getParentFile().mkdirs();
+					examplefilePath.createNewFile();
+				}
+				fop = new FileOutputStream(examplefilePath);
+			} catch(Exception e) {
+				e.printStackTrace();
+				return;
+			}
+			try {
+				if(relations.size() > 0) {fop.write("[\n".getBytes());}
+				fop.write(String.join(",\n", relations).getBytes());
+				if(relations.size() > 0) {fop.write("\n]\n".getBytes());}
+				fop.flush();
+				fop.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+				return;
+			}
+			logger.debug(String.join(",\n", relations));
+			return;
+		}
+		
+		private static String formatObjectRelationSet(String obj, String selectObj) {
+			StringBuffer pathSb = new StringBuffer();
+			String[] paths = selectObj.split("[|]");
+			for (String s: paths) {
+				logger.trace("SelectOBJ"+s);
+				pathSb.append(formatObjectRelation(obj, s)+",\n");
+			}
+			pathSb.deleteCharAt(pathSb.length()-2);
+			return pathSb.toString();
 		}
 
-//		private String switchMultiplicity(String val) throws IllegalArgumentException
-//		{
-//			String result = null;
-//			switch (val) {
-//			case "Many2Many":
-//			case "One2One":
-//				result = val;
-//				break;
-//			case "Many2One":
-//				result = "One2Many";
-//				break;
-//			case "One2Many":
-//				result = "Many2One";
-//				break;
-//			default:
-//				throw new IllegalArgumentException("Multiplicity cannot be "+val);
-//			}
-//			System.out.println("Switched Multiplicity from "+val+" to "+result);
-//			return result;
-//		}
+		private static String formatObjectRelation(String obj, String selectObj) {
+			StringBuffer pathSb = new StringBuffer();
+			pathSb.append("{\n");
+			pathSb.append("\"related-to\" : \""+obj+"\",\n");
+			pathSb.append("\"related-link\" : \""+selectObj+"\"\n");
+			pathSb.append("}");
+			return pathSb.toString();
+		}
+
+		private static String getKinObjectPath(String obj, String apiPath) {
+			LevenshteinDistance proximity = new LevenshteinDistance();
+			String targetPath = "";
+			int targetScore = Integer.MAX_VALUE;
+			int targetMaxScore = 0;
+			for (Map.Entry<String, String> p : deletePaths.entrySet()) {
+					if(p.getValue().equals(obj)) {
+						targetScore = (targetScore >= proximity.apply(apiPath, p.getKey())) ? proximity.apply(apiPath, p.getKey()) : targetScore;
+						targetPath = (targetScore >= proximity.apply(apiPath, p.getKey())) ? p.getKey() : targetPath;
+						targetMaxScore = (targetMaxScore <= proximity.apply(apiPath, p.getKey())) ? proximity.apply(apiPath, p.getKey()) : targetScore;
+						logger.trace(proximity.apply(apiPath, p.getKey())+":"+p.getKey());
+						logger.trace(proximity.apply(apiPath, p.getKey())+":"+apiPath);
+					}
+			}
+			return targetPath;
+		}
+
+		private static String getUnrelatedObjectPaths(String obj, String apiPath) {
+			String targetPath = "";
+			logger.trace("Obj:"+obj +"\n" + apiPath);
+			for (Map.Entry<String, String> p : deletePaths.entrySet()) {
+					if(p.getValue().equals(obj)) {
+						logger.trace("p.getvalue:"+p.getValue()+"p.getkey:"+p.getKey());
+						targetPath +=  ((targetPath.length() == 0 ? "" : "|") + p.getKey());
+						logger.trace("Match:"+apiPath +"\n" + targetPath);
+					}
+			}
+			return targetPath;
+		}
+	}
+	
+	private static class PatchOperation {
+		String useOpId;
+		String xmlRootElementName;
+		String tag;
+		String path;
+		String pathParams;
+
+		public PatchOperation(String useOpId, String xmlRootElementName, String tag, String path, String pathParams) {
+			super();
+			this.useOpId = useOpId;
+			this.xmlRootElementName = xmlRootElementName;
+			this.tag = tag;
+			this.path = path;
+			this.pathParams = pathParams;
+		}
+
+		@Override
+		public String toString() {
+			StringBuffer pathSb = new StringBuffer();
+			pathSb.append("    patch:\n");
+			pathSb.append("      tags:\n");
+			pathSb.append("        - " + tag + "\n");
+
+			pathSb.append("      summary: update an existing " + xmlRootElementName + "\n");
+			pathSb.append("      description: update an existing " + xmlRootElementName + "\n");
+			pathSb.append("      operationId: Update" + useOpId + "\n");
+			pathSb.append("      consumes:\n");
+			pathSb.append("        - application/json\n");
+			pathSb.append("        - application/xml\n");					
+			pathSb.append("      produces:\n");
+			pathSb.append("        - application/json\n");
+			pathSb.append("        - application/xml\n");
+			pathSb.append("      responses:\n");
+			pathSb.append("        \"default\":\n");
+			pathSb.append("          " + responsesUrl);
+					
+			pathSb.append("      parameters:\n");
+			pathSb.append(pathParams); // for nesting
+			pathSb.append("        - name: body\n");
+			pathSb.append("          in: body\n");
+			pathSb.append("          description: " + xmlRootElementName + " object that needs to be created or updated\n");
+			pathSb.append("          required: true\n");
+			pathSb.append("          schema:\n");
+			pathSb.append("            $ref: \"patchSchema.yaml#/definitions/" + xmlRootElementName + "\"\n");
+		
+			return pathSb.toString();
+		}
+		public String toString1() {
+			StringBuffer pathSb = new StringBuffer();
+			StringBuffer relationshipExamplesSb = new StringBuffer();
+			if ( path.endsWith("/relationship") ) {
+				pathSb.append("  " + path + ":\n" );
+			}
+			pathSb.append("    patch:\n");
+			pathSb.append("      tags:\n");
+			pathSb.append("        - " + tag + "\n");
+
+			if ( path.endsWith("/relationship") ) {
+				pathSb.append("      summary: see node definition for valid relationships\n");
+				relationshipExamplesSb.append("[See Examples](apidocs/relations/"+GenerateXsd.apiVersion+"/"+useOpId+".json)");
+			} else {
+				pathSb.append("      summary: update an existing " + xmlRootElementName + "\n");
+				pathSb.append("      description: |\n");
+				pathSb.append("        Update an existing " + xmlRootElementName + "\n");
+				pathSb.append("        #\n");				
+				pathSb.append("        Note:  Endpoints that are not devoted to object relationships support both PUT and PATCH operations.\n");
+				pathSb.append("        The PUT operation will entirely replace an existing object.\n"); 
+				pathSb.append("        The PATCH operation sends a \"description of changes\" for an existing object.  The entire set of changes must be applied.  An error result means no change occurs.\n");				
+				pathSb.append("        #\n");				
+				pathSb.append("        Other differences between PUT and PATCH are:\n");
+				pathSb.append("        #\n");
+				pathSb.append("        - For PATCH, you can send any of the values shown in sample REQUEST body.  There are no required values.\n");
+				pathSb.append("        - For PATCH, resource-id which is a required REQUEST body element for PUT, must not be sent.\n");
+				pathSb.append("        - PATCH cannot be used to update relationship elements; there are dedicated PUT operations for this.\n");
+			}
+			pathSb.append("      operationId: Update" + useOpId + "\n");
+			pathSb.append("      consumes:\n");
+			pathSb.append("        - application/json\n");
+			pathSb.append("        - application/xml\n");					
+			pathSb.append("      produces:\n");
+			pathSb.append("        - application/json\n");
+			pathSb.append("        - application/xml\n");
+			pathSb.append("      responses:\n");
+			pathSb.append("        \"default\":\n");
+			pathSb.append("          " + responsesUrl);
+			pathSb.append("      parameters:\n");
+			pathSb.append(pathParams); // for nesting
+			pathSb.append("        - name: body\n");
+			pathSb.append("          in: body\n");
+			pathSb.append("          description: " + xmlRootElementName + " object that needs to be created or updated. "+relationshipExamplesSb.toString()+"\n");
+			pathSb.append("          required: true\n");
+			pathSb.append("          schema:\n");
+			pathSb.append("            $ref: \"#/patchDefinitions/" + xmlRootElementName + "\"\n");
+			return pathSb.toString();
+		}		
+	}
+	private static class PutOperation {
+		String useOpId;
+		String xmlRootElementName;
+		String tag;
+		String path;
+		String pathParams;
+		
+		public PutOperation(String useOpId, String xmlRootElementName, String tag, String path, String pathParams) {
+			super();
+			this.useOpId = useOpId;
+			this.xmlRootElementName = xmlRootElementName;
+			this.tag = tag;
+			this.path = path;
+			this.pathParams = pathParams;
+		}
+
+		@Override
+		public String toString() {
+			StringBuffer pathSb = new StringBuffer();
+			StringBuffer relationshipExamplesSb = new StringBuffer();
+			if ( path.endsWith("/relationship") ) {
+				pathSb.append("  " + path + ":\n" );
+			}
+			pathSb.append("    put:\n");
+			pathSb.append("      tags:\n");
+			pathSb.append("        - " + tag + "\n");
+
+			if ( path.endsWith("/relationship") ) {
+				pathSb.append("      summary: see node definition for valid relationships\n");
+			} else {
+				pathSb.append("      summary: create or update an existing " + xmlRootElementName + "\n");
+				pathSb.append("      description: |\n        Create or update an existing " + xmlRootElementName + ".\n        #\n        Note! This PUT method has a corresponding PATCH method that can be used to update just a few of the fields of an existing object, rather than a full object replacement.  An example can be found in the [PATCH section] below\n");
+			}
+			relationshipExamplesSb.append("[Valid relationship examples shown here](apidocs/relations/"+GenerateXsd.apiVersion+"/"+useOpId.replace("RelationshipListRelationship", "")+".json)");
+			pathSb.append("      operationId: createOrUpdate" + useOpId + "\n");
+			pathSb.append("      consumes:\n");
+			pathSb.append("        - application/json\n");
+			pathSb.append("        - application/xml\n");					
+			pathSb.append("      produces:\n");
+			pathSb.append("        - application/json\n");
+			pathSb.append("        - application/xml\n");
+			pathSb.append("      responses:\n");
+			pathSb.append("        \"default\":\n");
+			pathSb.append("          " + responsesUrl);
+		
+			pathSb.append("      parameters:\n");
+			pathSb.append(pathParams); // for nesting
+			pathSb.append("        - name: body\n");
+			pathSb.append("          in: body\n");
+			pathSb.append("          description: " + xmlRootElementName + " object that needs to be created or updated. "+relationshipExamplesSb.toString()+"\n");
+			pathSb.append("          required: true\n");
+			pathSb.append("          schema:\n");
+			pathSb.append("            $ref: \"#/definitions/" + xmlRootElementName + "\"\n");
+			return pathSb.toString();
+		}
+		public String tagRelationshipPathMapEntry() {
+			if ( path.endsWith("/relationship") ) {
+				putRelationPaths.put(useOpId, path);
+			}
+			return "";
+		}
+		
+	}
+	
+	private static class GetOperation {
+		String useOpId;
+		String xmlRootElementName;
+		String tag;
+		String path;
+		@SuppressWarnings("unused")
+		String pathParams;
+		public GetOperation(String useOpId, String xmlRootElementName, String tag, String path, String pathParams) {
+			super();
+			this.useOpId = useOpId;
+			this.xmlRootElementName = xmlRootElementName;
+			this.tag = tag;
+			this.path = path;
+			this.pathParams = pathParams;
+		}
+		@Override
+		public String toString() {
+			StringBuffer pathSb = new StringBuffer();
+			pathSb.append("  " + path + ":\n" );
+			pathSb.append("    get:\n");
+			pathSb.append("      tags:\n");
+			pathSb.append("        - " + tag + "\n");
+			pathSb.append("      summary: returns " + xmlRootElementName + "\n");
+
+			pathSb.append("      description: returns " + xmlRootElementName + "\n");
+			pathSb.append("      operationId: get" + useOpId + "\n");
+			pathSb.append("      produces:\n");
+			pathSb.append("        - application/json\n");
+			pathSb.append("        - application/xml\n");
+			
+			pathSb.append("      responses:\n");
+			pathSb.append("        \"200\":\n");
+			pathSb.append("          description: successful operation\n");
+			pathSb.append("          schema:\n");
+			pathSb.append("              $ref: \"#/getDefinitions/" + xmlRootElementName + "\"\n");
+			pathSb.append("        \"default\":\n");
+			pathSb.append("          " + responsesUrl);
+
+			return pathSb.toString();
+		}
+		
+	}
+	private static class DeleteOperation {
+		String useOpId;
+		String xmlRootElementName;
+		String tag;
+		String path;
+		String pathParams;
+		public DeleteOperation(String useOpId, String xmlRootElementName, String tag, String path, String pathParams) {
+			super();
+			this.useOpId = useOpId;
+			this.xmlRootElementName = xmlRootElementName;
+			this.tag = tag;
+			this.path = path;
+			this.pathParams = pathParams;
+		}
+		@Override
+		public String toString() {
+			StringBuffer pathSb = new StringBuffer();
+			pathSb.append("    delete:\n");
+			pathSb.append("      tags:\n");
+			pathSb.append("        - " + tag + "\n");
+			pathSb.append("      summary: delete an existing " + xmlRootElementName + "\n");
+			
+			pathSb.append("      description: delete an existing " + xmlRootElementName + "\n");
+			
+			pathSb.append("      operationId: delete" + useOpId + "\n");
+			pathSb.append("      consumes:\n");
+			pathSb.append("        - application/json\n");
+			pathSb.append("        - application/xml\n");					
+			pathSb.append("      produces:\n");
+			pathSb.append("        - application/json\n");
+			pathSb.append("        - application/xml\n");
+			pathSb.append("      responses:\n");
+			pathSb.append("        \"default\":\n");
+			pathSb.append("          " + responsesUrl);
+			pathSb.append("      parameters:\n");
+
+			pathSb.append(pathParams); // for nesting
+			if ( !path.endsWith("/relationship") ) {
+				pathSb.append("        - name: resource-version\n");
+
+				pathSb.append("          in: query\n");
+				pathSb.append("          description: resource-version for concurrency\n");
+				pathSb.append("          required: true\n");
+				pathSb.append("          type: string\n");
+			}
+			return pathSb.toString();
+		}
+		public String objectPathMapEntry() {
+			if (! path.endsWith("/relationship") ) {
+				deletePaths.put(path, xmlRootElementName);
+			}
+			return (xmlRootElementName+":"+path);
+		}
+		
 	}
 	
 	private static boolean validVersion(String versionToGen) {
@@ -247,57 +754,75 @@ public class GenerateXsd {
 		}
 		
 		
+		String responsesLabel = System.getProperty("yamlresponses_url");
+		responsesUrl = responsesLabel;
+		
+		List<Version> versionsToGen = new ArrayList<>();
 		if ( versionToGen == null ) {
 			System.err.println("Version is required, ie v<n> or ALL.");
 			System.exit(1);			
 		}
-		
-		responsesUrl = System.getProperty("yamlresponses_url");
-		String responsesLabel = System.getProperty("yamlresponses_label");
-		List<Version> versionsToGen = new ArrayList<>();
-
-		
-		if (!"ALL".equalsIgnoreCase(versionToGen) && !versionToGen.matches("v\\d+") && !validVersion(versionToGen)) {
+		else if (!"ALL".equalsIgnoreCase(versionToGen) && !versionToGen.matches("v\\d+") && !validVersion(versionToGen)) {
 			System.err.println("Invalid version passed. " + versionToGen);
 			System.exit(1);
 		}
-		
-		if ("ALL".equalsIgnoreCase(versionToGen)) {
+		else if ("ALL".equalsIgnoreCase(versionToGen)) {
 			versionsToGen = Arrays.asList(Version.values());
 			Collections.sort(versionsToGen);
 			Collections.reverse(versionsToGen);
 		} else {
 			versionsToGen.add(Version.valueOf(versionToGen));
 		}
-
-		if ( fileTypeToGen.equals(generateTypeYAML) ) {
+		
+		//process file type System property
+		fileTypeToGen = (fileTypeToGen == null ? generateTypeXSD : fileTypeToGen.toLowerCase());
+		if ( !fileTypeToGen.equals( generateTypeXSD ) && !fileTypeToGen.equals( generateTypeYAML )) {
+			System.err.println("Invalid gen_type passed. " + fileTypeToGen);
+			System.exit(1);
+		} else if ( fileTypeToGen.equals(generateTypeYAML) ) {
 			if ( responsesUrl == null || responsesUrl.length() < 1 
 					|| responsesLabel == null || responsesLabel.length() < 1 ) {
 				System.err.println("generating swagger yaml file requires yamlresponses_url and yamlresponses_label properties" );
 				System.exit(1);
+			} else {
+				responsesUrl = "description: "+ "Response codes found in [response codes]("+responsesLabel+ ").\n";
 			}
-			responsesUrl = "description: "+ responsesLabel+ "(" + responsesUrl + ").\n";
 		}
-		String oxmPath = root + "/oxm/";
-	
+		String oxmPath;
+		if(System.getProperty("user.dir") != null && !System.getProperty("user.dir").contains(normalStartDir)) {
+			oxmPath = autoGenRoot + "/oxm/";
+		}
+		else {
+			oxmPath = root + "/oxm/";
+		}
+
 		String outfileName;
 		File outfile;
 		String fileContent;
 		
 		for (Version v : versionsToGen) {
 			apiVersion = v.toString();
-			System.out.println("Generating " + apiVersion + " " + fileTypeToGen);
+			logger.info("Generating " + apiVersion + " " + fileTypeToGen);
 			File oxm_file = new File(oxmPath + "aai_oxm_" + apiVersion + ".xml");
 			apiVersionFmt = "." + apiVersion + ".";
 			generatedJavaType = new HashMap<String, String>();
 			appliedPaths = new HashMap<String, String>();
+			putRelationPaths = new HashMap<String, String>();
+			deletePaths = new HashMap<String, String>();
+
 			if ( fileTypeToGen.equals(generateTypeXSD) ) {
 				useAnnotationsInXsd = versionUsesAnnotations(apiVersion);
 				outfileName = xsd_dir + "/aai_schema_" + apiVersion + "." + generateTypeXSD;
-				fileContent = processOxmFile(oxm_file, v);
+				fileContent = processOxmFile(oxm_file, v, null);
 			} else if ( versionSupportsSwagger(apiVersion )) {
-				outfileName = yaml_dir + "/aai_swagger_" + apiVersion + "." + generateTypeYAML;
-				fileContent = generateSwaggerFromOxmFile( oxm_file);
+				if(System.getProperty("user.dir") != null && !System.getProperty("user.dir").contains(normalStartDir)) {
+					outfileName = alt_yaml_dir;
+				}
+				else {
+					outfileName = yaml_dir;
+				}
+				outfileName = outfileName + "/aai_swagger_" + apiVersion + "." + generateTypeYAML;
+				fileContent = generateSwaggerFromOxmFile( oxm_file, null);
 			} else {
 				continue;
 			}
@@ -309,7 +834,7 @@ public class GenerateXsd {
 		    try {
 		        outfile.createNewFile();
 		    } catch (IOException e) {
-	        	System.out.println( "Exception creating output file " + outfileName);
+	        	logger.error( "Exception creating output file " + outfileName);
 	        	e.printStackTrace();
 		    }
 		    BufferedWriter bw = null;
@@ -319,14 +844,14 @@ public class GenerateXsd {
 	        	bw = Files.newBufferedWriter(path, charset);
 	        	bw.write(fileContent);
 	        } catch ( IOException e) {
-	        	System.out.println( "Exception writing output file " + outfileName);
+	        	logger.error( "Exception writing output file " + outfileName);
 	        	e.printStackTrace();
 	        } finally {
 	        	if ( bw != null ) {
 	        		bw.close();
 	        	}
 	        }
-			System.out.println( "GeneratedXSD successful, saved in " + outfileName);
+			logger.info( "GeneratedXSD successful, saved in " + outfileName);
 		}
 		
 	}
@@ -339,7 +864,7 @@ public class GenerateXsd {
 		NodeList parentNodes = javaTypeElement.getElementsByTagName("java-attributes");
 		StringBuffer sb = new StringBuffer();
 		if ( parentNodes.getLength() == 0 ) {
-			//System.out.println( "no java-attributes for java-type " + javaTypeName);
+			logger.trace( "no java-attributes for java-type " + javaTypeName);
 			return "";
 
 		}
@@ -354,17 +879,10 @@ public class GenerateXsd {
             String attrName = attr.getNodeName();
 
             String attrValue = attr.getNodeValue();
-            //System.out.println("Found xml-root-element attribute: " + attrName + " with value: " + attrValue);
+            logger.trace("Found xml-root-element attribute: " + attrName + " with value: " + attrValue);
             if ( attrName.equals("name"))
             	xmlRootElementName = attrValue;
 		}
-		/*
-		if ( javaTypeName.equals("RelationshipList")) {
-			System.out.println( "Skipping " + javaTypeName);
-			generatedJavaType.put(javaTypeName, null);
-			return "";
-		}
-		*/
 		
 		Element parentElement = (Element)parentNodes.item(0);
 		NodeList xmlElementNodes = parentElement.getElementsByTagName("xml-element");
@@ -381,14 +899,14 @@ public class GenerateXsd {
 			sb1.append("    <xs:complexType>\n");
 			NodeList properties = GenerateXsd.locateXmlProperties(javaTypeElement);
 			if (properties != null && useAnnotationsInXsd) {
-				//System.out.println("properties found for: " + xmlRootElementName);
+				logger.trace("properties found for: " + xmlRootElementName);
 				sb1.append("      <xs:annotation>\r\n");
 				insertAnnotation(properties, false, "class", sb1, "      ");
 				
 				sb1.append("      </xs:annotation>\r\n");
-			} /*else {
-				System.out.println("no properties found for: " + xmlRootElementName);
-			}*/
+			} else {
+				logger.trace("no properties found for: " + xmlRootElementName);
+			}
 			sb1.append("      <xs:sequence>\n");
 			for ( int i = 0; i < xmlElementNodes.getLength(); ++i ) {
 				
@@ -406,7 +924,7 @@ public class GenerateXsd {
 						String attrValue = attr.getNodeValue();
 						if ( attrName.equals("name")) {
 							xmlElementWrapper = attrValue;
-							//System.out.println("found xml-element-wrapper " + xmlElementWrapper);
+							logger.trace("found xml-element-wrapper " + xmlElementWrapper);
 						}
 					}
 
@@ -421,7 +939,7 @@ public class GenerateXsd {
 		            String attrName = attr.getNodeName();
 	
 		            String attrValue = attr.getNodeValue();
-		            //System.out.println("For " + xmlRootElementName + " Found xml-element attribute: " + attrName + " with value: " + attrValue);
+		            logger.trace("For " + xmlRootElementName + " Found xml-element attribute: " + attrName + " with value: " + attrValue);
 		            if ( attrName.equals("name")) {
 		            	elementName = attrValue;
 		            }
@@ -460,33 +978,29 @@ public class GenerateXsd {
 						sb1.append("            <xs:annotation>\r\n");
 						insertAnnotation(properties, false, "class", sb1, "            ");
 						sb1.append("            </xs:annotation>\r\n");
-					} /*else {
-						System.out.println("no properties found for: " + xmlElementWrapper);
-					}*/
+					} else {
+						logger.trace("no properties found for: " + xmlElementWrapper);
+					}
 					sb1.append("            <xs:sequence>\n");
 					sb1.append("      ");
 				}
             	if ("Nodes".equals(addType)) {
-            		//System.out.println ("Skipping nodes, temporary testing");
+            		logger.trace("Skipping nodes, temporary testing");
             		continue;
             	}
 				if ( addType != null ) {
-					//sb1.append("        <xs:element ref=\"tns:" + elementName +"\"");
 					sb1.append("        <xs:element ref=\"tns:" + getXmlRootElementName(addType) +"\"");
 				} else {
 					sb1.append("        <xs:element name=\"" + elementName +"\"");
 				}
 				if ( elementType.equals("java.lang.String"))
 					sb1.append(" type=\"xs:string\"");
-				//if ( elementType.equals("java.lang.String"))
-					//sb1.append(" type=\"xs:string\"");
 				if ( elementType.equals("java.lang.Long"))
 					sb1.append(" type=\"xs:unsignedInt\"");
 				if ( elementType.equals("java.lang.Integer"))
 					sb1.append(" type=\"xs:int\"");
 				if ( elementType.equals("java.lang.Boolean"))
 					sb1.append(" type=\"xs:boolean\"");
-				//if ( elementIsRequired != null && elementIsRequired.equals("true")||addType != null) {
 				if ( elementIsRequired == null || !elementIsRequired.equals("true")||addType != null) {	
 					sb1.append(" minOccurs=\"0\"");
 				} 
@@ -513,32 +1027,10 @@ public class GenerateXsd {
 					sb1.append("        </xs:element>\n");
 				}
 			}
-			/*
-		if (  xmlRootElementName.equals("notify") ||
-			xmlRootElementName.equals("relationship") ||
-			xmlRootElementName.equals("relationship-data") ||
-			xmlRootElementName.equals("related-to-property") )
-			
-			sb1.append("        <xs:any namespace=\"##other\" processContents=\"lax\" minOccurs=\"0\" maxOccurs=\"unbounded\"/>\n");
-		*/	
 		sb1.append("      </xs:sequence>\n");
 		sb1.append("    </xs:complexType>\n");
 		sb1.append("  </xs:element>\n");
 		}
-		/*
-		NodeList valNodes = javaTypeElement.getElementsByTagName("xml-root-element");
-		Element valElement = (Element) valNodes.item(0);
-		attributes = valElement.getAttributes();
-		for ( int i = 0; i < attributes.getLength(); ++i ) {
-            Attr attr = (Attr) attributes.item(i);
-            String attrName = attr.getNodeName();
-
-            String attrValue = attr.getNodeValue();
-            System.out.println("Found xml-root-element attribute: " + attrName + " with value: " + attrValue);
-            if ( attrValue.equals("name"))
-            	xmlRootElementName = attrValue;
-		}
-		*/
 		
 		if ( xmlElementNodes.getLength() < 1 ) {
 			sb.append("  <xs:element name=\"" + xmlRootElementName + "\">\n");
@@ -549,9 +1041,7 @@ public class GenerateXsd {
 			generatedJavaType.put(javaTypeName, null);
 			return sb.toString();			
 		}
-		
 		sb.append( sb1 );
-
 		return sb.toString();
 	}
 	
@@ -576,8 +1066,6 @@ public class GenerateXsd {
 						name = "extendsFrom";
 					}
 					metadata.add(name + "=\"" + value.replaceAll("&",  "&amp;") + "\"");
-					//System.out.println("property name: " + name);
-	
 				}
 			}
 			sb1.append(
@@ -605,7 +1093,7 @@ public class GenerateXsd {
 	            	return javaTypeElement;
 			}
 		}
-		System.out.println( "oxm file format error, missing java-type " + javaTypeName);
+		logger.error( "oxm file format error, missing java-type " + javaTypeName);
 		return (Element) null;
 	}
 	
@@ -626,7 +1114,7 @@ public class GenerateXsd {
 	            	return javaTypeElement;
 			}
 		}
-		System.out.println( "oxm file format error, missing java-type " + javaTypeName);
+		logger.error( "oxm file format error, missing java-type " + javaTypeName);
 		return (Element) null;
 	}
 	private static String getXmlRootElementName( String javaTypeName )
@@ -651,21 +1139,28 @@ public class GenerateXsd {
 	                    attrName = attr.getNodeName();
 
 	                    attrValue = attr.getNodeValue();
-	                    //System.out.println("Found xml-root-element attribute: " + attrName + " with value: " + attrValue);
 	                    if ( attrName.equals("name"))
 	                    	return (attrValue);
 	        		}
 	            }
 			}
 		}
-		System.out.println( "oxm file format error, missing java-type " + javaTypeName);
+		logger.error( "oxm file format error, missing java-type " + javaTypeName);
 		return null;
 	}	
 	
 	
-	public static String processOxmFile( File oxmFile, Version v )
+	public static String processOxmFile( File oxmFile, Version v, String xml )
 	{
+		if ( xml != null ){
+		    apiVersion = v.toString();
+		    useAnnotationsInXsd = true;
+		    apiVersionFmt = "." + apiVersion + ".";
+		    generatedJavaType = new HashMap<>();
+			appliedPaths = new HashMap<>();
+		}
 		StringBuilder sb = new StringBuilder();
+		logger.trace("processing starts");
 		sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n");
 		String namespace = "org.onap";
 		if (v.compareTo(Version.v11) < 0 || v.compareTo(Version.v12) < 0) {
@@ -680,7 +1175,8 @@ public class GenerateXsd {
 						"    xmlns:annox=\"http://annox.dev.java.net\" \r\n" + 
 						"    jaxb:extensionBindingPrefixes=\"annox\">\n\n");
 		} else {
-			sb.append("<xs:schema elementFormDefault=\"qualified\" version=\"1.0\" targetNamespace=\"http://" + namespace + ".aai.inventory/"
+		
+			sb.append("<xs:schema elementFormDefault=\"qualified\" version=\"1.0\" targetNamespace=\"http://" + namespace + ".aai.inventory/" 
 					+ apiVersion + "\" xmlns:tns=\"http://" + namespace + ".aai.inventory/" + apiVersion + "\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\">\n\n");
 		}
 
@@ -689,8 +1185,14 @@ public class GenerateXsd {
 		    DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 		    dbFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
 		    DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-		    Document doc = dBuilder.parse(oxmFile);
-
+		    Document doc;
+		    
+		    if ( xml == null ){
+		    	doc = dBuilder.parse(oxmFile);
+		    } else {
+			    InputSource is = new InputSource(new StringReader(xml));
+			    doc = dBuilder.parse(is);
+		    } 
 		    NodeList bindingsNodes = doc.getElementsByTagName("xml-bindings");
 			Element bindingElement;
 			NodeList javaTypesNodes;
@@ -700,20 +1202,20 @@ public class GenerateXsd {
 
 			
 			if ( bindingsNodes == null || bindingsNodes.getLength() == 0 ) {
-				System.out.println( "missing <binding-nodes> in " + oxmFile );
+				logger.error( "missing <binding-nodes> in " + oxmFile );
 				return null;
 			}	    
 			
 			bindingElement = (Element) bindingsNodes.item(0);
 			javaTypesNodes = bindingElement.getElementsByTagName("java-types");
 			if ( javaTypesNodes.getLength() < 1 ) {
-				System.out.println( "missing <binding-nodes><java-types> in " + oxmFile );
+				logger.error( "missing <binding-nodes><java-types> in " + oxmFile );
 				return null;
 			}
 			javaTypesElement = (Element) javaTypesNodes.item(0);
 			javaTypeNodes = javaTypesElement.getElementsByTagName("java-type");
 			if ( javaTypeNodes.getLength() < 1 ) {
-				System.out.println( "missing <binding-nodes><java-types><java-type> in " + oxmFile );
+				logger.error( "missing <binding-nodes><java-types><java-type> in " + oxmFile );
 				return null;
 			}
 
@@ -732,11 +1234,11 @@ public class GenerateXsd {
 		            	javaTypeName = attrValue;
 				}
 				if ( javaTypeName == null ) {
-					System.out.println( "<java-type> has no name attribute in " + oxmFile );
+					logger.error( "<java-type> has no name attribute in " + oxmFile );
 					return null;
 				}
 				if ("Nodes".equals(javaTypeName)) {
-					//System.out.println("skipping Nodes entry (temporary feature)");
+					logger.debug("skipping Nodes entry (temporary feature)");
 					continue;
 				}
 				if ( !generatedJavaType.containsKey(javaTypeName) ) {
@@ -752,6 +1254,66 @@ public class GenerateXsd {
 		sb.append("</xs:schema>\n");
 		return sb.toString();
 	}
+	
+	public static String toDeleteRules(String objectName) {
+		Collection<EdgeDescription> toEdges = GenerateXsd.getEdgeRulesTO(objectName);
+		logger.debug("TO Edges count: "+toEdges.size()+" Object: "+objectName);
+		String prevent=null;
+		String also=null;
+		LinkedHashSet<String> preventDelete = new LinkedHashSet<String>();
+		LinkedHashSet<String> alsoDelete = new LinkedHashSet<String>();
+		for (EdgeDescription ed : toEdges) {
+			logger.debug("{“comment”: From = "+ed.getFrom()+" To: "+ed.getTo()+" Object: "+objectName);
+			logger.debug("{“comment”: Direction = "+ed.getDirection()+" PreventDelete: "+ed.getPreventDelete()+" DeleteOtherV: "+ed.getDeleteOtherV()+" Object: "+objectName);
+			if(ed.getPreventDelete().equals("IN") && ed.getTo().equals(objectName)) {
+				preventDelete.add(ed.getFrom().toUpperCase());
+			}
+			if(ed.getDeleteOtherV().equals("IN") && ed.getTo().equals(objectName) ) {
+				alsoDelete.add(ed.getFrom().toUpperCase());
+			}
+		}
+		if(preventDelete.size() > 0) {
+			prevent = "      - "+objectName.toUpperCase()+" cannot be deleted if linked to "+String.join(",",preventDelete);
+			logger.info(prevent);
+		}
+		if(alsoDelete.size() > 0) {
+			also = "      - "+objectName.toUpperCase()+" is DELETED when these are DELETED "+String.join(",",alsoDelete);
+			// This commented out line is better (gets who deletes what correct) but still not accurate.
+			//also = "      - Deletion of an instance of "+objectName.toUpperCase()+" causes instances of these directly related types to be DELETED ["+String.join(",",alsoDelete)+"]";
+			logger.info(also);
+		}
+		return String.join((prevent == null || also == null) ? "" : "\n", prevent == null ? "" : prevent, also == null ? "" : also)+((prevent == null && also == null) ? "" : "\n");
+	}
+	
+	public static String fromDeleteRules(String objectName) {
+		Collection<EdgeDescription> fromEdges = GenerateXsd.getEdgeRulesFROM(objectName);
+		LinkedHashSet<String> preventDelete = new LinkedHashSet <String>();
+		LinkedHashSet<String> alsoDelete = new LinkedHashSet <String>();
+		String prevent=null;
+		String also=null;
+		for (EdgeDescription ed : fromEdges) {
+			logger.debug("{“comment”: From = "+ed.getFrom()+" To: "+ed.getTo()+" Object: "+objectName);
+			logger.debug("{“comment”: Direction = "+ed.getDirection()+" PreventDelete: "+ed.getPreventDelete()+" DeleteOtherV: "+ed.getDeleteOtherV()+" Object: "+objectName);
+			if(ed.getPreventDelete().equals("OUT") && ed.getFrom().equals(objectName)) {
+				preventDelete.add(ed.getTo().toUpperCase());
+			}
+			if(ed.getDeleteOtherV().equals("OUT") && ed.getFrom().equals(objectName) ) {
+				alsoDelete.add(ed.getTo().toUpperCase());
+			}
+		}
+		if(preventDelete.size() > 0) {
+			prevent = "      - "+objectName.toUpperCase()+" cannot be deleted if linked to "+String.join(",",preventDelete);
+			logger.info(prevent);
+		}
+		if(alsoDelete.size() > 0) {
+			also = "      - "+objectName.toUpperCase()+" deletion means associated objects of these types are also DELETED:"+String.join(",",alsoDelete);
+			// This commented out line is better (gets who deletes what correct) but still not accurate.
+			//also = "      - Deletion of an instance of "+objectName.toUpperCase()+" causes instances of these directly related types to be DELETED ["+String.join(",",alsoDelete)+"]";
+			logger.info(also);
+		}
+		return String.join((prevent == null || also == null) ? "" : "\n", prevent == null ? "" : prevent, also == null ? "" : also)+((prevent == null && also == null) ? "" : "\n");
+	}
+
 
 	private static boolean isStandardType( String elementType )
 	{
@@ -778,7 +1340,7 @@ public class GenerateXsd {
 		}
 		return result;
 	}
-
+		
 	/**
 	 * Guaranteed to at least return non null but empty collection of edge descriptions
 	 * @param nodeName name of the vertex whose edge relationships to return
@@ -799,11 +1361,13 @@ public class GenerateXsd {
 			Map<String, Object> edgeMap;
 			String fromNode;
 			String toNode;
-			String ruleKey;
 			String direction;
 			String multiplicity;
 			String isParent;
 			String hasDelTarget;
+			String deleteOtherV;
+			String preventDelete;
+			String description;
 			EdgeDescription edgeDes;
 			
 			while( edgeRulesIterator.hasNext() ){
@@ -817,6 +1381,9 @@ public class GenerateXsd {
 				}
 				edgeDes = x.new EdgeDescription();
 				edgeDes.setRuleKey(fromNode + "|" + toNode);
+				edgeDes.setLabel((String)edgeMap.get("label"));
+				edgeDes.setTo((String)edgeMap.get("to"));
+				edgeDes.setFrom((String)edgeMap.get("from"));
 				direction = (String)edgeMap.get("direction");
 				edgeDes.setDirection(direction);
 				multiplicity = (String)edgeMap.get("multiplicity");
@@ -828,9 +1395,16 @@ public class GenerateXsd {
 					edgeDes.setType(LineageType.UNRELATED);
 				}
 				hasDelTarget = (String)edgeMap.get(EdgeProperty.DELETE_OTHER_V.toString());
+				deleteOtherV = (String)edgeMap.get(EdgeProperty.DELETE_OTHER_V.toString());
+				edgeDes.setDeleteOtherV(deleteOtherV);
 				edgeDes.setHasDelTarget(hasDelTarget);
-				result.add(edgeDes);
+				preventDelete = (String)edgeMap.get(EdgeProperty.PREVENT_DELETE.toString());
+				edgeDes.setPreventDelete(preventDelete);
+				description = (String)edgeMap.get(EdgeProperty.DESCRIPTION.toString());
+				edgeDes.setDescription(description);
 				
+				result.add(edgeDes);
+				logger.debug("Edge: "+edgeDes.getRuleKey());
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -854,13 +1428,26 @@ public class GenerateXsd {
 		return edges;
 	}
 	
+	private static Collection<EdgeDescription> getEdgeRulesTO( String nodeName ) 
+	{		
+		String toRulesPath = "$['rules'][?(@['to']=='" + nodeName + "')]";
+		Collection<EdgeDescription> edges = getEdgeRulesFromJson( toRulesPath, true );
+		return edges;
+	}
+	
+	private static Collection<EdgeDescription> getEdgeRulesFROM( String nodeName ) 
+	{		
+		String fromRulesPath = "$['rules'][?(@['from']=='" + nodeName + "')]";
+		Collection<EdgeDescription> edges = getEdgeRulesFromJson( fromRulesPath, true );
+		return edges;
+	}	
 	public static String processJavaTypeElementSwagger( String javaTypeName, Element javaTypeElement,
 			StringBuffer pathSb, StringBuffer definitionsSb, String path, String tag, String opId,
 			String getItemName, StringBuffer pathParams, String queryParams, String validEdges) {
 		
 		String xmlRootElementName = null;
-
-		//Map<String, String> addJavaType = new HashMap<String, String>();
+		StringBuilder definitionsLocalSb = new StringBuilder(256);
+		
 		String useTag = null;
 		String useOpId = null;
 		
@@ -871,38 +1458,11 @@ public class GenerateXsd {
 			case "Business":
 			case "LicenseManagement":
 			case "CloudInfrastructure":
-			case "ExternalSystem":
 				break;
 			default:
 				return null;
 			}
 		}
-		/*
-		if ( path == null )
-			System.out.println( "processJavaTypeElementSwagger called with null path for javaTypeName " + javaTypeName);
-		*/
-		/*
-		if ( path == null || !(path.contains("cloud-infrastructure")))
-			switch ( javaTypeName) {
-			 case "Inventory":
-				useTag = null;
-				break;
-				
-			case "CloudInfrastructure":
-			case "Search":
-			case "Actions":
-			case "ServiceDesignAndCreation":
-			case "LicenseManagement":
-			case "Network":
-				if ( tag == null )
-					useTag = javaTypeName;
-
-				break;
-			default:
-					return null;
-					
-			}
-		*/
 		
 		if ( !javaTypeName.equals("Inventory") ) {
 			if ( javaTypeName.equals("AaiInternal"))
@@ -915,20 +1475,11 @@ public class GenerateXsd {
 				useTag = javaTypeName;
 		}
 		
-		/*
-		if ( javaTypeName.equals("GenericVnf"))
-			System.out.println( "Processing " + javaTypeName);
-		else if ( javaTypeName.equals("Service"))
-				System.out.println( "Processing " + javaTypeName);
-		else if ( javaTypeName.equals("SitePair"))
-			System.out.println( "Processing " + javaTypeName);
-		*/
 		NodeList parentNodes = javaTypeElement.getElementsByTagName("java-attributes");
 
 		if ( parentNodes.getLength() == 0 ) {
-			//System.out.println( "no java-attributes for java-type " + javaTypeName);
+			logger.trace( "no java-attributes for java-type " + javaTypeName);
 			return "";
-
 		}
 		
 		NamedNodeMap attributes;
@@ -941,20 +1492,11 @@ public class GenerateXsd {
             String attrName = attr.getNodeName();
 
             String attrValue = attr.getNodeValue();
-            //System.out.println("Found xml-root-element attribute: " + attrName + " with value: " + attrValue);
+            logger.trace("Found xml-root-element attribute: " + attrName + " with value: " + attrValue);
             if ( attrName.equals("name"))
             	xmlRootElementName = attrValue;
 		}
-		/*
-		if ( xmlRootElementName.equals("oam-networks"))
-			System.out.println( "xmlRootElement oam-networks with getItemData [" + getItemName + "]");
-		*/
-		//already processed
-		/*
-		if ( generatedJavaType.containsKey(xmlRootElementName) ) {
-			return null;
-		}
-		*/
+
 		NodeList childNodes;
 		Element childElement;
 		NodeList xmlPropNodes = javaTypeElement.getElementsByTagName("xml-properties");
@@ -964,10 +1506,6 @@ public class GenerateXsd {
 		
 		Vector<String> indexedProps = null;
 		
-		/*System.out.println( "javaTypeName " + javaTypeName + " has xml-properties length " + xmlPropNodes.getLength());
-		if ( path != null && path.equals("/network/generic-vnfs"))
-			System.out.println("path is " + "/network/generic-vnfs with getItemName " + getItemName);
-		*/
 		if ( xmlPropNodes.getLength() > 0 ) {
 
 			for ( int i = 0; i < xmlPropNodes.getLength(); ++i ) {
@@ -993,8 +1531,6 @@ public class GenerateXsd {
 							}
 							if ( useValue == VALUE_DESCRIPTION && attrName.equals("value")) {
 								pathDescriptionProperty = attrValue;
-								//break;
-								//System.out.println("found xml-element-wrapper " + xmlElementWrapper);
 							}
 							if ( attrValue.equals("indexedProps")) {
 								useValue = VALUE_INDEXED_PROPS;
@@ -1007,15 +1543,7 @@ public class GenerateXsd {
 				}
 			}
 		}
-		//System.out.println("javaTypeName " + javaTypeName + " description " + pathDescriptionProperty);
-
-		/*
-		if ( javaTypeName.equals("RelationshipList")) {
-			System.out.println( "Skipping " + javaTypeName);
-			generatedJavaType.put(javaTypeName, null);
-			return "";
-		}
-		*/
+		logger.trace("javaTypeName " + javaTypeName + " description " + pathDescriptionProperty);
 		
 		Element parentElement = (Element)parentNodes.item(0);
 		NodeList xmlElementNodes = parentElement.getElementsByTagName("xml-element");
@@ -1040,24 +1568,16 @@ public class GenerateXsd {
 		if ( xmlRootElementName.equals("inventory"))
 			path = "";
 		else if ( path == null )
-			//path = "/aai/" + apiVersion;
 			path = "/" + xmlRootElementName;
 		else
 			path += "/" + xmlRootElementName;
 		st = new StringTokenizer(path, "/");
-		/*
-		if ( path.equals("/business/customers/customer/{global-customer-id}/service-subscriptions/service-subscription"))
-			System.out.println("processing path /business/customers/customer/{global-customer-id}/service-subscriptions with tag " + tag);
-		*/
 		boolean genPath = false;
-		/*
-		if ( path != null && path.equals("/network/generic-vnfs/generic-vnf"))
-			System.out.println("path is " + "/network/generic-vnfs/generic-vnf");
-		*/
+
 		if ( st.countTokens() > 1 && getItemName == null ) {
 			if ( appliedPaths.containsKey(path)) 
 				return null;
-			appliedPaths.put(path, null);
+			appliedPaths.put(path, xmlRootElementName);
 			genPath = true;
 			if ( path.contains("/relationship/") ) { // filter paths with relationship-list
 				genPath = false;
@@ -1075,23 +1595,7 @@ public class GenerateXsd {
 				xmlElementElement = (Element)xmlElementNodes.item(i);
 				if ( !xmlElementElement.getParentNode().isSameNode(parentElement))
 					continue;
-				/*childNodes = xmlElementElement.getElementsByTagName("xml-element-wrapper");
-				if ( childNodes.getLength() > 0 ) {
-					childElement = (Element)childNodes.item(0);
-					// get name
-					attributes = childElement.getAttributes();
-					for ( int k = 0; k < attributes.getLength(); ++k ) {
-						Attr attr = (Attr) attributes.item(k);
-						String attrName = attr.getNodeName();
-						String attrValue = attr.getNodeValue();
-						if ( attrName.equals("name")) {
-							xmlElementWrapper = attrValue;
-							//System.out.println("found xml-element-wrapper " + xmlElementWrapper);
-						}
-					}
 
-				}
-				*/
 				valNodes = xmlElementElement.getElementsByTagName("xml-properties");
 				attrDescription = null;
 				if ( valNodes.getLength() > 0 ) {
@@ -1115,7 +1619,6 @@ public class GenerateXsd {
 								}
 								if ( useValue && attrName.equals("value")) {
 									attrDescription = attrValue;
-									//System.out.println("found xml-element-wrapper " + xmlElementWrapper);
 								}
 							}
 
@@ -1133,7 +1636,7 @@ public class GenerateXsd {
 		            String attrName = attr.getNodeName();
 	
 		            String attrValue = attr.getNodeValue();
-		            //System.out.println("For " + xmlRootElementName + " Found xml-element attribute: " + attrName + " with value: " + attrValue);
+		            logger.trace("For " + xmlRootElementName + " Found xml-element attribute: " + attrName + " with value: " + attrValue);
 		            if ( attrName.equals("name")) {
 		            	elementName = attrValue;
 
@@ -1162,18 +1665,18 @@ public class GenerateXsd {
             	if ( getItemName != null ) {
             		if ( getItemName.equals("array") ) {
             			if ( elementContainerType != null && elementContainerType.equals("java.util.ArrayList")) {
-            				//System.out.println( " returning array " + elementName );
+            				logger.trace( " returning array " + elementName );
             				return elementName;
             			}
             			
             		} else { // not an array check
             			if ( elementContainerType == null || !elementContainerType.equals("java.util.ArrayList")) {
-            				//System.out.println( " returning object " + elementName );
+            				logger.trace( " returning object " + elementName );
             				return elementName;
             			}
             			
             		}
-            		//System.out.println( " returning null" );
+            		logger.trace( " returning null" );
             		return null;
             	}
 				if ( elementIsRequired != null ) {
@@ -1190,7 +1693,7 @@ public class GenerateXsd {
 				}
 
 				if (  elementIsKey != null )  {
-										sbParameters.append(("        - name: " + elementName + "\n"));
+					sbParameters.append(("        - name: " + elementName + "\n"));
 					sbParameters.append(("          in: path\n"));
 					if ( attrDescription != null && attrDescription.length() > 0 )
 						sbParameters.append(("          description: " + attrDescription + "\n"));
@@ -1205,10 +1708,12 @@ public class GenerateXsd {
 						sbParameters.append("          type: integer\n");
 						sbParameters.append("          format: int32\n");
 					}
-					if ( elementType.equals("java.lang.Boolean"))
+					if ( elementType.equals("java.lang.Boolean")) {
 						sbParameters.append("          type: boolean\n");
-
-
+					}
+					if(StringUtils.isNotBlank(elementName)) {
+						sbParameters.append("          example: "+"__"+elementName.toUpperCase()+"__"+"\n");
+					}
 				} else if (  indexedProps != null
 						&& indexedProps.contains(elementName ) ) {
 					sbIndexedParams.append(("        - name: " + elementName + "\n"));
@@ -1229,12 +1734,6 @@ public class GenerateXsd {
 					if ( elementType.equals("java.lang.Boolean"))
 						sbIndexedParams.append("          type: boolean\n");
 				}
-
-			/*
-			if ( elementName != null && elementName.equals("inventory-item"))
-				System.out.println( "processing inventory-item elementName");
-			*/
-		
 			if ( isStandardType(elementType)) {
 				sbProperties.append("      " + elementName + ":\n");
 				++propertyCnt;
@@ -1255,8 +1754,6 @@ public class GenerateXsd {
 				if ( attrDescription != null && attrDescription.length() > 0 )
 					sbProperties.append("        description: " + attrDescription + "\n");
 			}
-
-			//if ( addType != null && elementContainerType != null && elementContainerType.equals("java.util.ArrayList") ) {
 
 	        if ( addTypeV !=  null ) {
 	    		StringBuffer newPathParams = null;
@@ -1293,21 +1790,17 @@ public class GenerateXsd {
 					
 					if ( itemName != null ) {
 						if ( addType.equals("AaiInternal") ) {
-							//System.out.println( "addType AaiInternal, skip properties");
+							logger.debug( "addType AaiInternal, skip properties");
 							
 						} else if ( getItemName == null) {
 							++propertyCnt;
 							sbProperties.append("      " + getXmlRootElementName(addType) + ":\n");
 							sbProperties.append("        type: array\n        items:\n");
-							sbProperties.append("          $ref: \"#/definitions/" + itemName + "\"\n");
+							sbProperties.append("          $ref: \"#/definitions/" + (itemName == "" ? "aai-internal" : itemName) + "\"\n");
 							if ( attrDescription != null && attrDescription.length() > 0 )
 								sbProperties.append("        description: " + attrDescription + "\n");
 						}
 					} else {
-						/*itemName = processJavaTypeElementSwagger( addType, getJavaTypeElementSwagger(addType), 
-	        					pathSb, definitionsSb, path,  tag == null ? useTag : tag, useOpId, "other" );
-						if ( itemName != null ) {
-						*/
 						if ( elementContainerType != null && elementContainerType.equals("java.util.ArrayList")) {
 							// need properties for getXmlRootElementName(addType)
 				    		newPathParams = null;
@@ -1343,55 +1836,16 @@ public class GenerateXsd {
 						if ( attrDescription != null && attrDescription.length() > 0 )
 							sbProperties.append("        description: " + attrDescription + "\n");
 						++propertyCnt;
-						/*}
-						else {
-							System.out.println(" unable to define swagger object for " + addType);
-						}
-						*/
 					}
-					//if ( getItemName == null) looking for missing properties
-						//generatedJavaType.put(addType, null);
 	        	}
 	        }
 		}
 	}	
 		if ( genPath ) {
-			/*
-			if ( useOpId.equals("CloudInfrastructureComplexesComplexCtagPools"))
-				System.out.println( "adding path CloudInfrastructureComplexesComplexCtagPools");
-			*/
-
 			if ( !path.endsWith("/relationship") ) {
-				pathSb.append("  " + path + ":\n" );
-				pathSb.append("    get:\n");
-				pathSb.append("      tags:\n");
-				pathSb.append("        - " + tag + "\n");
-				pathSb.append("      summary: returns " + xmlRootElementName + "\n");
-	
-				pathSb.append("      description: returns " + xmlRootElementName + "\n");
-				pathSb.append("      operationId: get" + useOpId + "\n");
-				pathSb.append("      produces:\n");
-				pathSb.append("        - application/json\n");
-				pathSb.append("        - application/xml\n");
-				
-				pathSb.append("      responses:\n");
-				pathSb.append("        \"200\":\n");
-				pathSb.append("          description: successful operation\n");
-				pathSb.append("          schema:\n");
-				pathSb.append("              $ref: \"#/definitions/" + xmlRootElementName + "\"\n");
-				pathSb.append("        \"default\":\n");
-				pathSb.append("          " + responsesUrl);
-				/*
-				pathSb.append("        \"200\":\n");
-				pathSb.append("          description: successful operation\n");
-				pathSb.append("          schema:\n");
-				pathSb.append("              $ref: \"#/definitions/" + xmlRootElementName + "\"\n");
-				pathSb.append("        \"404\":\n");
-				pathSb.append("          description: resource was not found\n");
-				pathSb.append("        \"400\":\n");
-				pathSb.append("          description: bad request\n");
-				*/
-				if ( path.indexOf('{') > 0 ) {
+				GetOperation get = new GetOperation(useOpId, xmlRootElementName, tag, path, pathParams == null ? "" : pathParams.toString());
+				pathSb.append(get.toString());
+//				if ( path.indexOf('{') > 0 ) {
 		    		
 		            if ( sbParameters.toString().length() > 0 ) {
 						if ( pathParams == null )
@@ -1402,7 +1856,7 @@ public class GenerateXsd {
 						pathSb.append("      parameters:\n");
 						pathSb.append(pathParams);
 					} else
-						System.out.println( "null pathParams for " + useOpId);
+						logger.trace( "null pathParams for " + useOpId);
 					if ( sbIndexedParams.toString().length() > 0 ) {
 						if ( queryParams == null )
 							queryParams = sbIndexedParams.toString();
@@ -1415,7 +1869,7 @@ public class GenerateXsd {
 						}
 						pathSb.append(queryParams);
 					}
-				}
+//				}
 			}
 			boolean skipPutDelete = false; // no put or delete for "all" 
 			if ( !path.endsWith("/relationship") ) {				
@@ -1426,103 +1880,18 @@ public class GenerateXsd {
 			}
 			if ( path.indexOf('{') > 0 && !opId.startsWith("Search") &&!skipPutDelete) {
 				// add PUT
-				if ( path.endsWith("/relationship") ) {
-					pathSb.append("  " + path + ":\n" );
-				} 
-				pathSb.append("    put:\n");
-				pathSb.append("      tags:\n");
-				pathSb.append("        - " + tag + "\n");
-
-				if ( path.endsWith("/relationship") ) {
-					pathSb.append("      summary: see node definition for valid relationships\n");
-				} else {
-					pathSb.append("      summary: create or update an existing " + xmlRootElementName + "\n");
-					pathSb.append("      description: create or update an existing " + xmlRootElementName + "\n");
-				}
-				pathSb.append("      operationId: createOrUpdate" + useOpId + "\n");
-				pathSb.append("      consumes:\n");
-				pathSb.append("        - application/json\n");
-				pathSb.append("        - application/xml\n");					
-				pathSb.append("      produces:\n");
-				pathSb.append("        - application/json\n");
-				pathSb.append("        - application/xml\n");
-				pathSb.append("      responses:\n");
-				pathSb.append("        \"default\":\n");
-				pathSb.append("          " + responsesUrl);
-				/*
-				pathSb.append("      responses:\n");
-				pathSb.append("        \"200\":\n");
-				pathSb.append("          description: existing resource has been modified and there is a response buffer\n");					
-				pathSb.append("        \"201\":\n");
-				pathSb.append("          description: new resource is created\n");	
-				pathSb.append("        \"202\":\n");
-				pathSb.append("          description: action requested but may have taken other actions as well, which are returned in the response payload\n");				
-				pathSb.append("        \"204\":\n");
-				pathSb.append("          description: existing resource has been modified and there is no response buffer\n");				
-				pathSb.append("        \"400\":\n");
-				pathSb.append("          description: Bad Request will be returned if headers are missing\n");
-				pathSb.append("        \"404\":\n");
-				pathSb.append("          description: Not Found will be returned if an unknown URL is used\n");
-				*/						
-				pathSb.append("      parameters:\n");
-				//pathSb.append("        - in: path\n");
-				pathSb.append(pathParams); // for nesting
-				pathSb.append("        - name: body\n");
-				pathSb.append("          in: body\n");
-				pathSb.append("          description: " + xmlRootElementName + " object that needs to be created or updated\n");
-				pathSb.append("          required: true\n");
-				pathSb.append("          schema:\n");
-				pathSb.append("            $ref: \"#/definitions/" + xmlRootElementName + "\"\n");
-				/*
-				if ( queryParams != null ) {
-					pathSb.append(queryParams);
-				}
-				*/
-				// add DELETE
-				pathSb.append("    delete:\n");
-				pathSb.append("      tags:\n");
-				pathSb.append("        - " + tag + "\n");
-				pathSb.append("      summary: delete an existing " + xmlRootElementName + "\n");
-				
-				pathSb.append("      description: delete an existing " + xmlRootElementName + "\n");
-				
-				pathSb.append("      operationId: delete" + useOpId + "\n");
-				pathSb.append("      consumes:\n");
-				pathSb.append("        - application/json\n");
-				pathSb.append("        - application/xml\n");					
-				pathSb.append("      produces:\n");
-				pathSb.append("        - application/json\n");
-				pathSb.append("        - application/xml\n");
-				pathSb.append("      responses:\n");
-				pathSb.append("        \"default\":\n");
-				pathSb.append("          " + responsesUrl);
-				/*
-				pathSb.append("      responses:\n");
-				pathSb.append("        \"200\":\n");
-				pathSb.append("          description: successful, the response includes an entity describing the status\n");
-				pathSb.append("        \"204\":\n");
-				pathSb.append("          description: successful, action has been enacted but the response does not include an entity\n");
-				pathSb.append("        \"400\":\n");
-				pathSb.append("          description: Bad Request will be returned if headers are missing\n");
-				pathSb.append("        \"404\":\n");
-				pathSb.append("          description: Not Found will be returned if an unknown URL is used\n");
-				*/				
-				pathSb.append("      parameters:\n");
-				//pathSb.append("        - in: path\n");
-				pathSb.append(pathParams); // for nesting
+				PutOperation put = new PutOperation(useOpId, xmlRootElementName, tag, path, pathParams == null ? "" : pathParams.toString());
+				pathSb.append(put.toString());
 				if ( !path.endsWith("/relationship") ) {
-					pathSb.append("        - name: resource-version\n");
-	
-					pathSb.append("          in: query\n");
-					pathSb.append("          description: resource-version for concurrency\n");
-					pathSb.append("          required: true\n");
-					pathSb.append("          type: string\n");
+					PatchOperation patch = new PatchOperation(useOpId, xmlRootElementName, tag, path, pathParams == null ? "" : pathParams.toString());
+					pathSb.append(patch.toString1());
 				}
-				/*
-				if ( queryParams != null ) {
-					pathSb.append(queryParams);
-				}
-				*/
+				logger.debug(put.tagRelationshipPathMapEntry());
+
+				// add DELETE
+				DeleteOperation del = new DeleteOperation(useOpId, xmlRootElementName, tag, path, pathParams == null ? "" : pathParams.toString());
+				pathSb.append(del.toString());
+				logger.debug(del.objectPathMapEntry());
 			}
 			
 		}
@@ -1531,11 +1900,13 @@ public class GenerateXsd {
 		}
 	
 		definitionsSb.append("  " + xmlRootElementName + ":\n");
+		definitionsLocalSb.append("  " + xmlRootElementName + ":\n");
 		Collection<EdgeDescription> edges = getEdgeRules(xmlRootElementName );
+		
 		if ( edges.size() > 0 ) {
 			StringBuffer sbEdge = new StringBuffer();
 			sbEdge.append("      ###### Related Nodes\n");
-			for (EdgeDescription ed : edges) { 
+			for (EdgeDescription ed : edges) {
 				if ( ed.getRuleKey().startsWith(xmlRootElementName)) {
 				    sbEdge.append("      - TO ").append(ed.getRuleKey().substring(ed.getRuleKey().indexOf("|")+1));
 				    sbEdge.append(ed.getRelationshipDescription("TO", xmlRootElementName));
@@ -1549,51 +1920,94 @@ public class GenerateXsd {
 				    sbEdge.append("\n");
 				}
 			}
+			// Delete rule processing is incorrect.  One cannot express the delete rules in isolation from the
+			// specific edge.  Take the case of allotted-resource and service-instance.  When the service-instance owns the
+			// allotted-resource, yes, it deletes it.  But when the service-instance only uses the allotted-resource, the deletion
+			// of the service instance does not cause the deletion of the allotted-resource.
+			// I put some lines into the toDeleteRules and fromDeleteRules to correct things to an extent, but it's still
+			// not right.
+			sbEdge.append(toDeleteRules(xmlRootElementName));
+			sbEdge.append(fromDeleteRules(xmlRootElementName));
 			validEdges = sbEdge.toString();
 		}
 
 		// Handle description property.  Might have a description OR valid edges OR both OR neither.
 		// Only put a description: tag if there is at least one.
 		if (pathDescriptionProperty != null || validEdges != null) {
-			definitionsSb.append("    description: |\n");      
+			definitionsSb.append("    description: |\n");
+			definitionsLocalSb.append("    description: |\n");      
 
-			if ( pathDescriptionProperty != null ) 
+			if ( pathDescriptionProperty != null ) {
 				definitionsSb.append("      " + pathDescriptionProperty	+ "\n" );
-			if (validEdges != null)
+				definitionsLocalSb.append("      " + pathDescriptionProperty	+ "\n" );
+			}
+			if (validEdges != null) {
 				definitionsSb.append(validEdges);
+				definitionsLocalSb.append(validEdges);
+			}
 		}
 		
-		if ( requiredCnt > 0 )
+		if ( requiredCnt > 0 ) {
 			definitionsSb.append(sbRequired);
+			definitionsLocalSb.append(sbRequired);
+		}
+			
 		if ( propertyCnt > 0 ) {
 			definitionsSb.append("    properties:\n");
 			definitionsSb.append(sbProperties);
+			definitionsLocalSb.append("    properties:\n");
+			definitionsLocalSb.append(sbProperties);
+		}
+		try {
+			javaTypeDefinitions.put(xmlRootElementName, definitionsLocalSb.toString());
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		generatedJavaType.put(xmlRootElementName, null);
 		return null;
 	}
 	
-	public static String generateSwaggerFromOxmFile( File oxmFile )
-	{
+	public static void generateRelations() {
+		if(putRelationPaths == null)
+			return;
+		putRelationPaths.forEach((k,v)->{
+			logger.trace("k="+k+"\n"+"v="+v+v.equals("/business/customers/customer/{global-customer-id}/service-subscriptions/service-subscription/{service-type}/service-instances/service-instance/{service-instance-id}/allotted-resources/allotted-resource/{id}/relationship-list/relationship"));
+			logger.debug("apiPath(Operation): "+v);
+			logger.debug("Target object: "+v.replace("/relationship-list/relationship", ""));
+			logger.debug("Relations: ");
+			PutRelationPathSet prp = new PutRelationPathSet(k, v);
+			prp.process();
+		});
+	}
 
+	public static String generateSwaggerFromOxmFile( File oxmFile, String xml )
+	{
+		if ( xml != null ){
+			apiVersion = Version.getLatest().toString();
+		    apiVersionFmt = "." + apiVersion + ".";
+		    generatedJavaType = new HashMap<>();
+			appliedPaths = new HashMap<>();
+			responsesUrl = "Description: response-label\n";
+		}
 		StringBuffer sb = new StringBuffer();
-		sb.append("swagger: \"2.0\"\ninfo:\n  description: |\n    Copyright &copy; 2017 AT&amp;T Intellectual Property. All rights reserved.\n\n    Licensed under the Creative Commons License, Attribution 4.0 Intl. (the &quot;License&quot;); you may not use this documentation except in compliance with the License.\n\n    You may obtain a copy of the License at\n\n    (https://creativecommons.org/licenses/by/4.0/)\n\n    Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.\n\n    ECOMP and OpenECOMP are trademarks and service marks of AT&amp;T Intellectual Property.\n\n    This document is best viewed with Firefox or Chrome. Nodes can be found by appending /#/definitions/node-type-to-find to the path to this document. Edge definitions can be found with the node definitions.\n  version: \"" + apiVersion +"\"\n");
+		sb.append("swagger: \"2.0\"\ninfo:\n  ");
+		sb.append("description: |");
+		sb.append("\n\n    [Differences versus the previous schema version]("+"apidocs/aai_swagger_" + apiVersion + ".diff)");
+		sb.append("\n\n    Copyright &copy; 2017 AT&amp;T Intellectual Property. All rights reserved.\n\n    Licensed under the Creative Commons License, Attribution 4.0 Intl. (the &quot;License&quot;); you may not use this documentation except in compliance with the License.\n\n    You may obtain a copy of the License at\n\n    (https://creativecommons.org/licenses/by/4.0/)\n\n    Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.\n\n    ECOMP and OpenECOMP are trademarks and service marks of AT&amp;T Intellectual Property.\n\n    This document is best viewed with Firefox or Chrome. Nodes can be found by appending /#/definitions/node-type-to-find to the path to this document. Edge definitions can be found with the node definitions.\n  version: \"" + apiVersion +"\"\n");
 		sb.append("  title: Active and Available Inventory REST API\n");
 		sb.append("  license:\n    name: Apache 2.0\n    url: http://www.apache.org/licenses/LICENSE-2.0.html\n");
 		sb.append("  contact:\n    name:\n    url:\n    email:\n");
 		sb.append("host:\nbasePath: /aai/" + apiVersion + "\n");
 		sb.append("schemes:\n  - https\npaths:\n");
-		/*
-		sb.append("responses:\n");
-		sb.append("  \"200\":\n");
-		sb.append("    description: successful operation\n");
-		sb.append("  \"404\":\n");
-		sb.append("    description: resource was not found\n");
-		sb.append("  \"400\":\n");
-		sb.append("    description: bad request\n");
-		*/
+
 		try {
-		    File initialFile = new File("src/main/resources/dbedgerules/DbEdgeRules_" + apiVersion + ".json");
+			File initialFile;
+			if(System.getProperty("user.dir") != null && !System.getProperty("user.dir").contains(normalStartDir)) {
+				initialFile = new File(normalStartDir + "/src/main/resources/dbedgerules/DbEdgeRules_" + apiVersion + ".json");
+			}
+			else {
+				initialFile = new File("src/main/resources/dbedgerules/DbEdgeRules_" + apiVersion + ".json");
+			}
 		    InputStream is = new FileInputStream(initialFile);
 
 			Scanner scanner = new Scanner(is);
@@ -1604,7 +2018,14 @@ public class GenerateXsd {
 		    DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 		    dbFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
 		    DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-		    Document doc = dBuilder.parse(oxmFile);
+		    Document doc;
+		    
+		    if ( xml == null ) {
+		    	doc = dBuilder.parse(oxmFile);
+		    } else {
+			    InputSource isInput = new InputSource(new StringReader(xml));
+			    doc = dBuilder.parse(isInput);
+		    }
 
 		    NodeList bindingsNodes = doc.getElementsByTagName("xml-bindings");
 			Element bindingElement;
@@ -1615,21 +2036,21 @@ public class GenerateXsd {
 
 			
 			if ( bindingsNodes == null || bindingsNodes.getLength() == 0 ) {
-				System.out.println( "missing <binding-nodes> in " + oxmFile );
+				logger.error( "missing <binding-nodes> in " + oxmFile );
 				return null;
 			}	    
 			
 			bindingElement = (Element) bindingsNodes.item(0);
 			javaTypesNodes = bindingElement.getElementsByTagName("java-types");
 			if ( javaTypesNodes.getLength() < 1 ) {
-				System.out.println( "missing <binding-nodes><java-types> in " + oxmFile );
+				logger.error( "missing <binding-nodes><java-types> in " + oxmFile );
 				return null;
 			}
 			javaTypesElement = (Element) javaTypesNodes.item(0);
 
 			javaTypeNodes = javaTypesElement.getElementsByTagName("java-type");
 			if ( javaTypeNodes.getLength() < 1 ) {
-				System.out.println( "missing <binding-nodes><java-types><java-type> in " + oxmFile );
+				logger.error( "missing <binding-nodes><java-types><java-type> in " + oxmFile );
 				return null;
 			}
 
@@ -1638,8 +2059,7 @@ public class GenerateXsd {
 			Attr attr;
 			StringBuffer pathSb = new StringBuffer();
 			
-			StringBuffer definitionsSb = new StringBuffer("definitions:\n");
-			
+			StringBuffer definitionsSb = new StringBuffer();
 			for ( int i = 0; i < javaTypeNodes.getLength(); ++ i ) {
 				javaTypeElement = (Element) javaTypeNodes.item(i);
 				NamedNodeMap attributes = javaTypeElement.getAttributes();
@@ -1652,28 +2072,67 @@ public class GenerateXsd {
 		            	javaTypeName = attrValue;
 				}
 				if ( javaTypeName == null ) {
-					System.out.println( "<java-type> has no name attribute in " + oxmFile );
+					logger.error( "<java-type> has no name attribute in " + oxmFile );
 					return null;
 				}
 				if ( !generatedJavaType.containsKey(getXmlRootElementName(javaTypeName)) ) {
 					
-					//generatedJavaType.put(javaTypeName, null);
-					//if ( javaTypeName.equals("search")||javaTypeName.equals("actions"))
-
 					processJavaTypeElementSwagger( javaTypeName, javaTypeElement, pathSb,
 							definitionsSb, null, null, null, null, null, null, null);
 				}
 			}
 			sb.append(pathSb);
-			//System.out.println( "definitions block\n" + definitionsSb.toString());
-			sb.append(definitionsSb.toString());
-			//sb.append(definitionsSb);
-				
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
-		//System.out.println("generated " + sb.toString());
+		//append definitions
+		sb.append("definitions:\n");
+		Map<String, String> sortedJavaTypeDefinitions = new TreeMap<String, String>(javaTypeDefinitions);
+		for (Map.Entry<String, String> entry : sortedJavaTypeDefinitions.entrySet()) {
+		    logger.debug("Key: "+entry.getKey()+"Test: "+ (entry.getKey() == "relationship"));	
+		    if(entry.getKey().matches("relationship")) {
+			    String jb=entry.getValue();
+		    	logger.debug("Value: "+jb);
+			    int ndx=jb.indexOf("related-to-property:");
+			    if(ndx > 0) {
+			    	jb=jb.substring(0, ndx);
+			    	jb=jb.replaceAll(" +$", "");
+			    }
+		    	logger.debug("Value-after: "+jb);
+		    	sb.append(jb);
+		    	continue;
+		    }
+		    sb.append(entry.getValue());
+		}
+		    
+		sb.append("patchDefinitions:\n");
+		for (Map.Entry<String, String> entry : sortedJavaTypeDefinitions.entrySet()) {
+		    String jb=entry.getValue().replaceAll("/definitions/", "/patchDefinitions/");
+		    int ndx=jb.indexOf("relationship-list:");
+		    if(ndx > 0) {
+		    	jb=jb.substring(0, ndx);
+		    	jb=jb.replaceAll(" +$", "");
+		    }
+		    int ndx1=jb.indexOf("resource-version:");
+			logger.debug("Key: "+entry.getKey()+" index: " + ndx1);		    	
+			logger.debug("Value: "+jb);		    	
+			if(ndx1 > 0) {
+			    jb=jb.substring(0, ndx1);
+			    jb=jb.replaceAll(" +$", "");
+		    }
+			logger.debug("Value-after: "+jb);
+		    sb.append(jb);
+		}
+		    
+		sb.append("getDefinitions:\n");
+		for (Map.Entry<String, String> entry : sortedJavaTypeDefinitions.entrySet()) {
+		    String jb=entry.getValue().replaceAll("/definitions/", "/getDefinitions/");
+		    sb.append(jb);
+		}
+
+		logger.debug("generated " + sb.toString());
+		generateRelations();
 		return sb.toString();
 	}
 	
@@ -1686,7 +2145,7 @@ public class GenerateXsd {
 				Object nodeset = expr.evaluate(element, XPathConstants.NODESET);
 				if (nodeset != null) {
 					NodeList nodes = (NodeList) nodeset;
-					if (nodes.getLength() > 0) {
+					if (nodes != null && nodes.getLength() > 0) {
 						Element xmlProperty = (Element)nodes.item(0);
 						result = xmlProperty.getElementsByTagName("xml-property");
 					}

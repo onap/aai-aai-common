@@ -154,6 +154,12 @@
             <artifactId>commons-lang</artifactId>
             <version>2.6</version>
         </dependency>
+	<dependency>
+	    <groupId>org.apache.commons</groupId>
+	    <artifactId>commons-text</artifactId>
+	    <version>1.1</version>
+	    <scope>compile</scope>
+	</dependency>
         <dependency>
             <groupId>com.att.eelf</groupId>
             <artifactId>eelf-core</artifactId>
@@ -454,7 +460,7 @@
             <version>1.4.0</version>
             <scope>test</scope>
         </dependency>
-    </dependencies>
+	</dependencies>
 
     <build>
         <plugins>
@@ -484,6 +490,19 @@
                             <!-- <append>true</append> -->
                         </configuration>
                     </execution>
+		                <execution>
+				    <id>post-unit-test</id>
+				    <phase>test</phase>
+				    <goals>
+				        <goal>report</goal>
+				    </goals>
+				    <configuration>
+				        <!-- Sets the path to the file which contains the execution data. -->
+				        <dataFile>${project.build.directory}/coverage-reports/jacoco.exec</dataFile>
+				        <!-- Sets the output directory for the code coverage report. -->
+				        <outputDirectory>${project.reporting.outputDirectory}/jacoco</outputDirectory>
+				    </configuration>
+				</execution>
                 </executions>
             </plugin>
             <plugin>

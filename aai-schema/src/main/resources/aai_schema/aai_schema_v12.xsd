@@ -1866,14 +1866,14 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
     <xs:complexType>
       <xs:annotation>
         <xs:appinfo>
-          <annox:annotate target="class">@org.onap.aai.annotations.Metadata(description="cloud-region designates an installation of a cloud cluster or region or instantiation. In AT&amp;Ts AIC cloud, this could be an LCP or DCP. Cloud regions are uniquely identified by a composite key, cloud-owner + cloud-region-id. The format of the cloud-owner is vendor-cloudname and we will use att-aic for AT&amp;T's AIC.",indexedProps="cloud-owner,cloud-region-id,cloud-type,owner-defined-type",nameProps="owner-defined-type",container="cloud-regions",namespace="cloud-infrastructure")</annox:annotate>
+          <annox:annotate target="class">@org.onap.aai.annotations.Metadata(description="cloud-region designates an installation of a cloud cluster or region or instantiation. In cloud, this could be an LCP or DCP. Cloud regions are uniquely identified by a composite key, cloud-owner + cloud-region-id. The format of the cloud-owner is vendor-cloudname",indexedProps="cloud-owner,cloud-region-id,cloud-type,owner-defined-type",nameProps="owner-defined-type",container="cloud-regions",namespace="cloud-infrastructure")</annox:annotate>
         </xs:appinfo>
       </xs:annotation>
       <xs:sequence>
         <xs:element name="cloud-owner" type="xs:string">
           <xs:annotation>
             <xs:appinfo>
-              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(isKey=true,description="Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname")</annox:annotate>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(isKey=true,description="Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname")</annox:annotate>
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
@@ -2260,13 +2260,6 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
           <xs:annotation>
             <xs:appinfo>
               <annox:annotate target="field">@org.onap.aai.annotations.Metadata(isKey=true,description="Value from executing hostname on the compute node.")</annox:annotate>
-            </xs:appinfo>
-          </xs:annotation>
-        </xs:element>
-        <xs:element name="selflink" type="xs:string" minOccurs="0">
-          <xs:annotation>
-            <xs:appinfo>
-              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="URL to endpoint where AAI can get more details.")</annox:annotate>
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
@@ -3017,28 +3010,28 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
-        <xs:element name="bandwidth-up-wan1" type="xs:string">
+        <xs:element name="bandwidth-up-wan1" type="xs:string" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
               <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="The WAN uplink bandwidth for WAN1")</annox:annotate>
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
-        <xs:element name="bandwidth-down-wan1" type="xs:string">
+        <xs:element name="bandwidth-down-wan1" type="xs:string" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
               <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="The WAN downlink bandwidth for WAN1")</annox:annotate>
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
-        <xs:element name="bandwidth-up-wan2" type="xs:string">
+        <xs:element name="bandwidth-up-wan2" type="xs:string" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
               <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="The WAN uplink bandwidth for WAN2")</annox:annotate>
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
-        <xs:element name="bandwidth-down-wan2" type="xs:string">
+        <xs:element name="bandwidth-down-wan2" type="xs:string" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
               <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="The WAN downlink bandwidth for WAN2")</annox:annotate>
@@ -4273,7 +4266,7 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
         <xs:element name="ip-version" type="xs:string" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
-              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="v4, v6, or ds for dual stack (should be att-ip-version)")</annox:annotate>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="v4, v6, or ds for dual stack")</annox:annotate>
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
@@ -7271,11 +7264,196 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
       </xs:sequence>
     </xs:complexType>
   </xs:element>
+  <xs:element name="forwarder-evc">
+    <xs:complexType>
+      <xs:annotation>
+        <xs:appinfo>
+          <annox:annotate target="class">@org.onap.aai.annotations.Metadata(description="forwarder object is an optional child object of the Configuration object.",dependentOn="configuration",uniqueProps="forwarder-evc-id",container="forwarder-evcs")</annox:annotate>
+        </xs:appinfo>
+      </xs:annotation>
+      <xs:sequence>
+        <xs:element name="forwarder-evc-id" type="xs:string">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(isKey=true,description="Key for forwarder-evc object")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="circuit-id" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="Circuit ID from customer/ESP/ingress end of EVC, or reference to beater circuit on gateway/network/egress end of EVC")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="ivlan" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="Internal VLAN.")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="svlan" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="SVLAN value for ingress of egress forwarder.")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="cvlan" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="CVLAN value for ingress of egress forwarder.")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element ref="tns:relationship-list" minOccurs="0"/>
+        <xs:element name="resource-version" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="Used for optimistic concurrency. Must be empty on create, valid on update and delete.")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="forwarder-evcs">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="tns:forwarder-evc" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="evc">
+    <xs:complexType>
+      <xs:annotation>
+        <xs:appinfo>
+          <annox:annotate target="class">@org.onap.aai.annotations.Metadata(description="evc object is an optional child object of the Configuration object.",dependentOn="configuration",uniqueProps="evc-id",container="evcs")</annox:annotate>
+        </xs:appinfo>
+      </xs:annotation>
+      <xs:sequence>
+        <xs:element name="evc-id" type="xs:string">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(isKey=true,description="Unique/key field for the evc object")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="forwarding-path-topology" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="Point-to-Point, Multi-Point")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="cir-value" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="Commited Information Rate")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="cir-units" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="CIR units")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="connection-diversity-group-id" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="Diversity Group ID")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="service-hours" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="formerly Performance Group")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="esp-evc-circuit-id" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="EVC Circuit ID of ESP EVC")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="esp-evc-cir-value" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="Committed Information Rate (For ESP)")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="esp-evc-cir-units" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="CIR units (For ESP)")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="esp-itu-code" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="Identifies ESP")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="collector-pop-clli" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="Collector POP CLLI (from the hostname of the access pnf)")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="inter-connect-type-ingress" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="Interconnect type on ingress side of EVC.")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="tagmode-access-ingress" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="tagode for collector side of EVC")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="tagmode-access-egress" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="tagMode for network side of EVC")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element ref="tns:relationship-list" minOccurs="0"/>
+        <xs:element name="resource-version" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="Used for optimistic concurrency. Must be empty on create, valid on update and delete.")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="evcs">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="tns:evc" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
   <xs:element name="configuration">
     <xs:complexType>
       <xs:annotation>
         <xs:appinfo>
-          <annox:annotate target="class">@org.onap.aai.annotations.Metadata(description="Port Mirror Configuration.",indexedProps="configuration-id,model-invariant-id,model-version-id",uniqueProps="configuration-id",container="configurations",namespace="network",nameProps="configuration-type")</annox:annotate>
+          <annox:annotate target="class">@org.onap.aai.annotations.Metadata(description="Generic configuration object.",indexedProps="configuration-id,model-invariant-id,model-version-id",uniqueProps="configuration-id",container="configurations",namespace="network")</annox:annotate>
         </xs:appinfo>
       </xs:annotation>
       <xs:sequence>
@@ -7328,28 +7506,28 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
-        <xs:element name="orchestration-status" type="xs:string">
+        <xs:element name="orchestration-status" type="xs:string" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
               <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="Orchestration status of the configuration.")</annox:annotate>
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
-        <xs:element name="operational-status" type="xs:string">
+        <xs:element name="operational-status" type="xs:string" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
               <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="Indicator for whether the resource is considered operational.")</annox:annotate>
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
-        <xs:element name="configuration-selflink" type="xs:string">
+        <xs:element name="configuration-selflink" type="xs:string" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
               <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="URL to endpoint where AAI can get more details from SDN-GC.")</annox:annotate>
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
-        <xs:element name="model-customization-id" type="xs:string">
+        <xs:element name="model-customization-id" type="xs:string" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
               <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="id of  the configuration used to customize the resource")</annox:annotate>
@@ -7379,6 +7557,8 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
         </xs:element>
         <xs:element ref="tns:relationship-list" minOccurs="0"/>
         <xs:element ref="tns:metadata" minOccurs="0"/>
+        <xs:element ref="tns:forwarder-evcs" minOccurs="0"/>
+        <xs:element ref="tns:evcs" minOccurs="0"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -7406,6 +7586,13 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
           <xs:annotation>
             <xs:appinfo>
               <annox:annotate target="field">@org.onap.aai.annotations.Metadata(isKey=true,description="Unique ID of this segmentation")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="forwarder-role" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="ingress, intermediate, egress")</annox:annotate>
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
@@ -7528,7 +7715,7 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
     <xs:complexType>
       <xs:annotation>
         <xs:appinfo>
-          <annox:annotate target="class">@org.onap.aai.annotations.Metadata(description="Internal map to define the properties of an edge and interpret the map EdgeRules",edgeInfo="edgeLabel,direction,multiplicityRule,isParent,usesResource,hasDelTarget,SVC-INFRA,SVC-INFRA-REV")</annox:annotate>
+          <annox:annotate target="class">@org.onap.aai.annotations.Metadata(description="Internal map to define the properties of an edge and interpret the map EdgeRules",edgeInfo="aaiUuid,edgeLabel,direction,multiplicityRule,isParent,usesResource,hasDelTarget,SVC-INFRA,SVC-INFRA-REV",uniqueProps="aai-uuid",indexedProps="aai-uuid")</annox:annotate>
         </xs:appinfo>
       </xs:annotation>
       <xs:sequence>
@@ -7539,6 +7726,7 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
         <xs:element name="delete-other-v" type="xs:string" minOccurs="0"/>
         <xs:element name="SVC-INFRA" type="xs:string" minOccurs="0"/>
         <xs:element name="prevent-delete" type="xs:string" minOccurs="0"/>
+        <xs:element name="aai-uuid" type="xs:string" minOccurs="0"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>

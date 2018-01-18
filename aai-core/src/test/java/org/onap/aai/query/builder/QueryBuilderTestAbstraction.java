@@ -35,8 +35,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.step.util.BulkSet;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.onap.aai.AAISetup;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.exceptions.AAIException;
@@ -51,19 +50,33 @@ import org.onap.aai.serialization.db.exceptions.NoEdgeRuleFoundException;
 
 public abstract class QueryBuilderTestAbstraction extends AAISetup {
 
-	protected Loader loader;
-	protected Graph graph;
+	protected static Loader loader;
+	protected static Graph graph;
 	protected GraphTraversalSource g;
-	
+
 	protected EdgeRules testEdgeRules = EdgeRules.getInstance("/dbedgerules/DbEdgeRules_TraversalQueryTest.json");
+
+
+	@BeforeClass
+	public static void setup() throws Exception {
+		loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, AAIProperties.LATEST);
+		graph = TitanFactory.build().set("storage.backend", "inmemory").open();
+	}
 
 	@Before
 	public void configure() throws Exception {
-		loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, AAIProperties.LATEST);
-		graph = TitanFactory.build().set("storage.backend", "inmemory").open();
 		g = graph.traversal();
 	}
-	
+
+	@After
+	public void deConfigure() throws Exception {
+		g.tx().rollback();
+	}
+
+	@AfterClass
+	public static void teardown() throws Exception {
+		graph.close();
+	}
 	
 	@Test
 	public void createEdgeGVnfToVnfcTraversal() throws AAIException {
@@ -77,7 +90,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 		
 		assertEquals(vnfc, tQ.next());
 		
-		g.tx().rollback();
+
 	}
 	
 	@Test
@@ -94,7 +107,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 		
 		assertEquals(logicalLink, next);
 		
-		g.tx().rollback();
+
 	}
 	
 	@Test
@@ -111,7 +124,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 		
 		assertEquals(logicalLink, next);
 		
-		g.tx().rollback();
+
 	}
 	
 	@Test
@@ -128,7 +141,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 		
 		assertEquals(logicalLink, next);
 		
-		g.tx().rollback();
+
 	}
 	
 	@Test
@@ -147,7 +160,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 		assertEquals("Has 1 vertexes ", 1, list.size());
 		assertTrue("Has vertex on the default edge ", list.contains(vnfc1));
 		
-		g.tx().rollback();
+
 	}
 	
 	@Test
@@ -172,7 +185,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 		assertEquals("2 - Has 1 vertexes ", 1, list2.size());
 		assertTrue("2 - traversal results in vce ", list2.contains(vce));
 		
-		g.tx().rollback();
+
 	}
 	
 	@Test
@@ -191,7 +204,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 		assertEquals("1 - Has 1 vertexes ", 1, list.size());
 		assertTrue("1 - traversal results in vnfc ", list.contains(pserver));
 		
-		g.tx().rollback();
+
 	}
 	
 	@Test
@@ -213,7 +226,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 		assertTrue("Has vertex on the default edge ", list.contains(vnfc1));
 		assertTrue("Has vertex on the re-uses edge ", list.contains(vnfc2));
 		
-		g.tx().rollback();
+
 	}
 	
 	@Test
@@ -234,7 +247,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 		assertEquals("Has 1 vertexes ", 1, list.size());
 		assertTrue("Only returns the generic vnf vertex", list.contains(gvnf));
 		
-		g.tx().rollback();
+
 	}
 	
 	@Test
@@ -250,7 +263,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 
 		assertEquals("Has 1 vertexes ", 1, list.size());
 	
-		g.tx().rollback();
+
 	}
 	
 	@Test
@@ -266,7 +279,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 
 		assertEquals("Has 2 vertexes ", 2, list.size());
 	
-		g.tx().rollback();
+
 	}
 	
 	@Test
@@ -282,7 +295,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 
 		assertEquals("Has 2 vertexes ", 2, list.size());
 	
-		g.tx().rollback();
+
 	}
 	
 	@Test
@@ -302,7 +315,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 		assertEquals("Has 2 vertexes ", 1, list.size());
 		assertTrue("result has pserver ", list.contains(pserver));
 		
-		g.tx().rollback();
+
 	}
 	
 	@Test
@@ -322,7 +335,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 		assertEquals("Has 2 vertexes ", 1, list.size());
 		assertEquals("result has pserver ",pserver, list.get(0).iterator().next());
 		
-		g.tx().rollback();
+
 	}
 	
 	@Test
@@ -342,7 +355,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 		assertEquals("Has 2 vertexes ", 2, list.size());
 		assertTrue("result has pserver ", list.contains(pserver));
 		
-		g.tx().rollback();
+
 	}
 	
 	@Test
@@ -362,7 +375,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 		list.add(tQ.next());
 		assertFalse("Has next 3 ",tQ.hasNext());
 		assertTrue("Has all the vertexes", list.contains(v1) && list.remove(v2));
-		g.tx().rollback();
+
 	}
 	
 	@Test
@@ -382,7 +395,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 		assertEquals("Has 2 vertexes ", 2, list.size());
 		assertTrue("result has pserver ", list.contains(pserver));
 		
-		g.tx().rollback();
+
 	}
 	
 	@Test
@@ -402,7 +415,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 		assertEquals("Has 2 vertexes ", 2, list.size());
 		assertTrue("result has pserver ", list.contains(complex));
 		
-		g.tx().rollback();
+
 	}
 
 	@Test
@@ -421,7 +434,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 		assertEquals("1 - Has 1 edge ", 1, list.size());
 		assertTrue("1 - traversal results in edge ", list.contains(e));
 		
-		g.tx().rollback();
+
 	}
 	
 	@Test
@@ -440,7 +453,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 		assertEquals("1 - Has 1 edge ", 1, list1.size());
 		assertTrue("1 - traversal results in edge ", list1.contains(e));
 		
-		g.tx().rollback();
+
 	}
 
 	@Test
@@ -461,7 +474,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 		assertTrue("result has default edge ", list.contains(e1));
 		assertTrue("result has other edge ", list.contains(e2));
 		
-		g.tx().rollback();
+
 	}
 	
 	@Test
@@ -482,7 +495,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 		assertTrue("result has default edge ", list.contains(e1));
 		assertTrue("result has other edge ", list.contains(e2));
 		
-		g.tx().rollback();
+
 	}
 	
 	@Test
@@ -504,7 +517,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 		assertTrue("result has default edge ", list.contains(e1));
 		assertTrue("result has other edge ", list.contains(e2));
 		
-		g.tx().rollback();
+
 	}
 
 	@Test (expected = NoEdgeRuleFoundException.class)
@@ -518,7 +531,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 
 		QueryBuilder<Edge> tQ = getNewEdgeTraversal(gvnf);
 		tQ.getEdgesBetweenWithLabels(EdgeType.COUSIN, "generic-vnf", "pserver", Collections.emptyList());
-		g.tx().rollback();
+
 	}
 
 	@Test
@@ -538,7 +551,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 		assertEquals("Has 1 edges ", 1, list.size());
 		assertFalse("result does not have default edge ", list.contains(e1));
 		assertTrue("result has other edge ", list.contains(e2));
-		g.tx().rollback();
+
 	}
 
 	@Test
@@ -558,7 +571,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 		assertEquals("Has 2 edges ", 2, list.size());
 		assertTrue("result has generic-vnf-pserver-A edge ", list.contains(e1));
 		assertTrue("result has generic-vnf-pserver-B edge ", list.contains(e2));
-		g.tx().rollback();
+
 	}
 
 	@Test (expected = NoEdgeRuleFoundException.class)
@@ -571,7 +584,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 
 		List<Edge> list = tQ.toList();
 
-		g.tx().rollback();
+
 	}
 
 	private Vertex getVertex() throws AAIException {
@@ -600,7 +613,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 		assertEquals("Has 1 edges ", 1, list.size());
 		assertFalse("result does not have default edge ", list.contains(e1));
 		assertTrue("result has other edge ", list.contains(e2));
-		g.tx().rollback();
+
 	}
 
 	@Test
@@ -620,7 +633,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 		assertEquals("Has 2 edges ", 2, list.size());
 		assertTrue("result has generic-vnf-pserver-A edge ", list.contains(e1));
 		assertTrue("result has generic-vnf-pserver-B edge ", list.contains(e2));
-		g.tx().rollback();
+
 	}
 
 	protected abstract QueryBuilder<Edge> getNewEdgeTraversal(Vertex v);

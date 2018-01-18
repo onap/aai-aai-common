@@ -25,6 +25,14 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeoutException;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -77,7 +85,6 @@ public class RESTAPI {
 	 * Gets the from app id.
 	 *
 	 * @param headers the headers
-	 * @param logline the logline
 	 * @return the from app id
 	 * @throws AAIException the AAI exception
 	 */
@@ -105,7 +112,6 @@ public class RESTAPI {
 	 * Gets the trans id.
 	 *
 	 * @param headers the headers
-	 * @param logline the logline
 	 * @return the trans id
 	 * @throws AAIException the AAI exception
 	 */
@@ -194,6 +200,7 @@ public class RESTAPI {
 		templateVars.add(info.getPath().toString());
 		templateVars.addAll(e.getTemplateVars());
 
+		ErrorLogHelper.logException(e);
 		return Response
 				.status(e.getErrorObject().getHTTPResponseCode())
 				.entity(ErrorLogHelper.getRESTAPIErrorResponseWithLogging(headers.getAcceptableMediaTypes(), e, templateVars))
@@ -206,7 +213,6 @@ public class RESTAPI {
 	 * @param obj the obj
 	 * @param loader the loader
 	 * @param uri the uri
-	 * @param validateRequired the validate required
 	 * @throws AAIException the AAI exception
 	 * @throws UnsupportedEncodingException the unsupported encoding exception
 	 */
@@ -255,12 +261,15 @@ public class RESTAPI {
 			throw new AAIException("AAI_4009", "X-FromAppId is not set");
 		}
 
+		DBConnectionType type = DBConnectionType.REALTIME;
 		boolean isRealTimeClient = AAIConfig.get("aai.realtime.clients", "").contains(fromAppId);
 		if (isRealTimeClient || realTime != null) {
-			return DBConnectionType.REALTIME;
+			type = DBConnectionType.REALTIME;
 		} else {
-			return DBConnectionType.CACHED;
+			type = DBConnectionType.CACHED;
 		}
+
+		return type;
 	}
 	
 	/**
@@ -276,4 +285,116 @@ public class RESTAPI {
 		
 	}
 
+	/**
+	 * Returns the app specific timeout in milliseconds, -1 overrides the timeout for an app
+	 *
+	 * @param sot
+	 * @param appTimeouts
+	 * @param defaultTimeout
+	 * @return integer timeout in  or -1 to bypass
+	 * @throws AAIException
+	 */
+
+	public int getTimeoutLimit(String sot, String appTimeouts, String defaultTimeout) throws AAIException{
+		String[] ignoreAppIds = (appTimeouts).split("\\|");
+		int appLimit = Integer.parseInt(defaultTimeout);
+		final Map<String, Integer> m = new HashMap<String, Integer>();
+		if(ignoreAppIds != null) {
+			for (int i = 0; i < ignoreAppIds.length; i++) {
+				String[] vals = ignoreAppIds[i].split(",");
+				m.put(vals[0], Integer.parseInt(vals[1]));
+			}
+			if (m.get(sot) != null) {
+				appLimit = m.get(sot);
+			}
+		}
+		return appLimit;
+	}
+
+	/**
+	 * Returns whether time out is enabled
+	 * @param sot
+	 * @param isEnabled
+	 * @param appTimeouts
+	 * @param defaultTimeout
+	 * @return boolean of whether the timeout is enabled
+	 * @throws AAIException
+	 */
+	public boolean isTimeoutEnabled(String sot, String isEnabled, String appTimeouts, String defaultTimeout) throws AAIException{
+		Boolean isTimeoutEnabled = Boolean.parseBoolean(isEnabled);
+		int ata = -1;
+		if(isTimeoutEnabled) {
+			ata = getTimeoutLimit(sot, appTimeouts, defaultTimeout);
+		}
+		return isTimeoutEnabled && (ata > -1);
+	}
+
+	/**
+	 * Executes the process thread and watches the future for the timeout
+	 * @param handler
+	 * @param sourceOfTruth
+	 * @param appTimeoutLimit
+	 * @param defaultTimeoutLimit
+	 * @param method
+	 * @param headers
+	 * @param info
+	 * @return the response
+	 */
+
+	public Response executeProcess(Future<Response> handler, String sourceOfTruth, String appTimeoutLimit, String defaultTimeoutLimit, HttpMethod method, HttpHeaders headers, UriInfo info){
+		Response response = null;
+		int timeoutLimit = 0;
+		try {
+			timeoutLimit = getTimeoutLimit(sourceOfTruth, appTimeoutLimit, defaultTimeoutLimit);
+			response = handler.get(timeoutLimit, TimeUnit.MILLISECONDS);
+		} catch (TimeoutException e) {
+			AAIException ex = new AAIException("AAI_7406", String.format("Timeout limit of %s seconds reached.", timeoutLimit/1000));
+			response = consumerExceptionResponseGenerator(headers, info, method, ex);
+			handler.cancel(true);
+		} catch (Exception e) {
+			AAIException ex = new AAIException("AAI_4000", e);
+			response = consumerExceptionResponseGenerator(headers, info, method, ex);
+		}
+		return response;
+	}
+
+	/**
+	 * runner sets up the timer logic and invokes it
+	 * @param toe
+	 * @param tba
+	 * @param tdl
+	 * @param headers
+	 * @param info
+	 * @param httpMethod
+	 * @param c
+	 * @return the response
+	 */
+	public Response runner(String toe, String tba, String tdl, HttpHeaders headers, UriInfo info, HttpMethod httpMethod, Callable c){
+		Response response = null;
+		Future<Response> handler = null;
+		ExecutorService executor = null;
+		try {
+			String timeoutEnabled = AAIConfig.get(toe);
+			String timeoutByApp = AAIConfig.get(tba);
+			String timeoutDefaultLimit = AAIConfig.get(tdl);
+			String sourceOfTruth = headers.getRequestHeaders().getFirst("X-FromAppId");
+			if (isTimeoutEnabled(sourceOfTruth, timeoutEnabled, timeoutByApp, timeoutDefaultLimit)) {
+				executor = Executors.newSingleThreadExecutor();
+				handler = executor.submit(c);
+				response = executeProcess(handler, sourceOfTruth, timeoutByApp, timeoutDefaultLimit, httpMethod, headers, info);
+			} else {
+				response = (Response) c.call();
+			}
+		}catch(Exception e){
+			AAIException ex = new AAIException("AAI_4000", e);
+			response = consumerExceptionResponseGenerator(headers, info, httpMethod, ex);
+		}finally{
+			if(executor != null && handler != null){
+				executor.shutdownNow();
+			}
+		}
+		return response;
+	}
+
 }
+

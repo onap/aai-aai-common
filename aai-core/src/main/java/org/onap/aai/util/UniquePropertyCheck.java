@@ -32,6 +32,8 @@ import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 import org.onap.aai.exceptions.AAIException;
+import org.onap.aai.logging.LoggingContext;
+import org.onap.aai.logging.LoggingContext.StatusCode;
 import org.slf4j.MDC;
 
 import com.att.eelf.configuration.Configuration;
@@ -39,8 +41,7 @@ import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 import com.thinkaurelius.titan.core.TitanFactory;
 import com.thinkaurelius.titan.core.TitanGraph;
-
-
+import org.onap.aai.dbmap.AAIGraphConfig;
 
 public class UniquePropertyCheck {
 
@@ -61,11 +62,24 @@ public class UniquePropertyCheck {
 		props.setProperty(Configuration.PROPERTY_LOGGING_FILE_NAME, "uniquePropertyCheck-logback.xml");
 		props.setProperty(Configuration.PROPERTY_LOGGING_FILE_PATH, AAIConstants.AAI_HOME_ETC_APP_PROPERTIES);
 		EELFLogger logger = EELFManager.getInstance().getLogger(UniquePropertyCheck.class.getSimpleName());
+		
+		LoggingContext.init();
+		LoggingContext.partnerName(FROMAPPID);
+		LoggingContext.serviceName(AAIConstants.AAI_LEGACY_MS);
+		LoggingContext.component(COMPONENT);
+		LoggingContext.targetEntity(AAIConstants.AAI_LEGACY_MS);
+		LoggingContext.targetServiceName("main");
+		LoggingContext.requestId(TRANSID);
+		LoggingContext.statusCode(StatusCode.COMPLETE);
+		LoggingContext.responseCode(LoggingContext.SUCCESS);
+		
 		MDC.put("logFilenameAppender", UniquePropertyCheck.class.getSimpleName());
 		
 		if( args == null || args.length != 1 ){
 				String msg = "usage:  UniquePropertyCheck propertyName \n";
 				System.out.println(msg);
+				LoggingContext.statusCode(StatusCode.ERROR);
+    			LoggingContext.responseCode(LoggingContext.BUSINESS_PROCESS_ERROR);
 				logAndPrint(logger, msg );
 				System.exit(1);
 		}
@@ -75,26 +89,34 @@ public class UniquePropertyCheck {
 		try {   
     		AAIConfig.init();
     		System.out.println("    ---- NOTE --- about to open graph (takes a little while)--------\n");
-    		TitanGraph tGraph = TitanFactory.open(AAIConstants.REALTIME_DB_CONFIG);
+    		TitanGraph tGraph = TitanFactory.open(new AAIGraphConfig.Builder(AAIConstants.REALTIME_DB_CONFIG).forService(UniquePropertyCheck.class.getSimpleName()).withGraphType("realtime").buildConfiguration());
     		
     		if( tGraph == null ) {
+    			LoggingContext.statusCode(StatusCode.ERROR);
+    			LoggingContext.responseCode(LoggingContext.AVAILABILITY_TIMEOUT_ERROR);
     			logAndPrint(logger, " Error:  Could not get TitanGraph ");
     			System.exit(1);
     		}
     		
     		graph = tGraph.newTransaction();
     		if( graph == null ){
+    			LoggingContext.statusCode(StatusCode.ERROR);
+    			LoggingContext.responseCode(LoggingContext.AVAILABILITY_TIMEOUT_ERROR);
     			logAndPrint(logger, "could not get graph object in UniquePropertyCheck() \n");
     	 		System.exit(0);
     		}
     	}
 	    catch (AAIException e1) {
 			String msg =  "Threw Exception: [" + e1.toString() + "]";
+			LoggingContext.statusCode(StatusCode.ERROR);
+			LoggingContext.responseCode(LoggingContext.UNKNOWN_ERROR);
 			logAndPrint(logger, msg);
 			System.exit(0);
         }
         catch (Exception e2) {
 	 		String msg =  "Threw Exception: [" + e2.toString() + "]";
+	 		LoggingContext.statusCode(StatusCode.ERROR);
+			LoggingContext.responseCode(LoggingContext.UNKNOWN_ERROR);
 			logAndPrint(logger, msg);
 	 		System.exit(0);
         }
@@ -180,6 +202,8 @@ public class UniquePropertyCheck {
 	    	}
     	}
     	catch( Exception e2 ){
+    		LoggingContext.statusCode(StatusCode.ERROR);
+			LoggingContext.responseCode(LoggingContext.DATA_ERROR);
 	 		logAndPrint(logger, "Threw Exception: [" + e2.toString() + "]");
     	} 
     	finally {

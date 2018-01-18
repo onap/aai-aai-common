@@ -50,6 +50,7 @@ import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.dbmap.AAIGraph;
+import org.onap.aai.dbmap.AAIGraphConfig;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
@@ -57,11 +58,13 @@ import org.onap.aai.introspection.LoaderFactory;
 import org.onap.aai.introspection.ModelType;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.onap.aai.logging.ErrorLogHelper;
+import org.onap.aai.logging.LogFormatTools;
+import org.onap.aai.logging.LoggingContext;
 import org.onap.aai.serialization.db.AAIDirection;
 import org.onap.aai.serialization.db.EdgeProperty;
-import org.onap.aai.util.AAIConfig;
-import org.onap.aai.util.AAIConstants;
-import org.onap.aai.util.FormatDate;
+import org.onap.aai.util.*;
+import org.onap.aai.logging.LoggingContext;
+import org.onap.aai.logging.LoggingContext.StatusCode;
 
 import com.att.eelf.configuration.Configuration;
 import com.att.eelf.configuration.EELFLogger;
@@ -83,8 +86,9 @@ public class DataGrooming {
 	 * @param args the arguments
 	 */
 	public static void main(String[] args) {
-		
+
 		// Set the logging file properties to be used by EELFManager
+		System.setProperty("aai.service.name", DataGrooming.class.getSimpleName());
 		Properties props = System.getProperties();
 		props.setProperty(Configuration.PROPERTY_LOGGING_FILE_NAME, AAIConstants.AAI_DATA_GROOMING_LOGBACK_PROPS);
 		props.setProperty(Configuration.PROPERTY_LOGGING_FILE_PATH, AAIConstants.AAI_HOME_ETC_APP_PROPERTIES);
@@ -102,9 +106,19 @@ public class DataGrooming {
 		Boolean neverUseCache = false;
 		Boolean skipEdgeCheckFlag = false;
 		
+		LoggingContext.init();
+		LoggingContext.partnerName(FROMAPPID);
+		LoggingContext.serviceName(AAIConstants.AAI_LEGACY_MS);
+		LoggingContext.component("dataGrooming");
+		LoggingContext.targetEntity(AAIConstants.AAI_LEGACY_MS);
+		LoggingContext.targetServiceName("main");
+		LoggingContext.requestId(TRANSID);
+		LoggingContext.statusCode(StatusCode.COMPLETE);
+		LoggingContext.responseCode(LoggingContext.SUCCESS);
+
 		int timeWindowMinutes = 0; // A value of 0 means that we will not have a time-window -- we will look
                                    // at all nodes of the passed-in nodeType. 
-		long windowStartTime = 0; // Translation of the window into a starting timestamp 
+		
 		
 		int maxRecordsToFix = AAIConstants.AAI_GROOMING_DEFAULT_MAX_FIX;
 		int sleepMinutes = AAIConstants.AAI_GROOMING_DEFAULT_SLEEP_MINUTES;
@@ -127,17 +141,9 @@ public class DataGrooming {
 		dupeGrpsDeleted = 0;
 		FormatDate fd = new FormatDate("yyyyMMddHHmm", "GMT");
 		String dteStr = fd.getDateTime();
-		String groomOutFileName = "dataGrooming." + dteStr + ".out";
 
-		String argString = "";
-		for( int x = 0; x < args.length; x++ ) {
-			argString = argString + " " + args[x];
-		}
-		LOGGER.info(" DataGrooming called with these options: [" + argString + "]");
-		
 		if (args.length > 0) {
 			// They passed some arguments in that will affect processing
-			
 			for (int i = 0; i < args.length; i++) {
 				String thisArg = args[i];
 				if (thisArg.equals("-edgesOnly")) {
@@ -165,76 +171,98 @@ public class DataGrooming {
 				} else if (thisArg.equals("-maxFix")) {
 					i++;
 					if (i >= args.length) {
+						LoggingContext.statusCode(StatusCode.ERROR);
+						LoggingContext.responseCode(LoggingContext.BUSINESS_PROCESS_ERROR);
 						LOGGER.error(" No value passed with -maxFix option.  ");
-						System.exit(0);
+						AAISystemExitUtil.systemExitCloseAAIGraph(0);
 					}
 					String nextArg = args[i];
 					try {
 						maxRecordsToFix = Integer.parseInt(nextArg);
 					} catch (Exception e) {
+						LoggingContext.statusCode(StatusCode.ERROR);
+						LoggingContext.responseCode(LoggingContext.BUSINESS_PROCESS_ERROR);
 						LOGGER.error("Bad value passed with -maxFix option: ["
 										+ nextArg + "]");
-						System.exit(0);
+						AAISystemExitUtil.systemExitCloseAAIGraph(0);
 					}
 				} else if (thisArg.equals("-sleepMinutes")) {
 					i++;
 					if (i >= args.length) {
+						LoggingContext.statusCode(StatusCode.ERROR);
+						LoggingContext.responseCode(LoggingContext.BUSINESS_PROCESS_ERROR);
 						LOGGER.error("No value passed with -sleepMinutes option.");
-						System.exit(0);
+						AAISystemExitUtil.systemExitCloseAAIGraph(0);
 					}
 					String nextArg = args[i];
 					try {
 						sleepMinutes = Integer.parseInt(nextArg);
 					} catch (Exception e) {
+						LoggingContext.statusCode(StatusCode.ERROR);
+						LoggingContext.responseCode(LoggingContext.BUSINESS_PROCESS_ERROR);
 						LOGGER.error("Bad value passed with -sleepMinutes option: ["
 										+ nextArg + "]");
-						System.exit(0);
+						AAISystemExitUtil.systemExitCloseAAIGraph(0);
 					}
 				} else if (thisArg.equals("-timeWindowMinutes")) {
 					i++;
 					if (i >= args.length) {
+						LoggingContext.statusCode(StatusCode.ERROR);
+						LoggingContext.responseCode(LoggingContext.BUSINESS_PROCESS_ERROR);
 						LOGGER.error("No value passed with -timeWindowMinutes option.");
-						System.exit(0);
+						AAISystemExitUtil.systemExitCloseAAIGraph(0);
 					}
 					String nextArg = args[i];
 					try {
 						timeWindowMinutes = Integer.parseInt(nextArg);
 					} catch (Exception e) {
+						LoggingContext.statusCode(StatusCode.ERROR);
+						LoggingContext.responseCode(LoggingContext.BUSINESS_PROCESS_ERROR);
 						LOGGER.error("Bad value passed with -timeWindowMinutes option: ["
 										+ nextArg + "]");
-						System.exit(0);
+						AAISystemExitUtil.systemExitCloseAAIGraph(0);
 					}
-				  	if( timeWindowMinutes > 0 ){
-				  		// Translate the window value (ie. 30 minutes) into a unix timestamp like
-				  		//    we use in the db - so we can select data created after that time.
-				  		windowStartTime = figureWindowStartTime( timeWindowMinutes );
-				  	}
+				  	
 				} else if (thisArg.equals("-f")) {
 					i++;
 					if (i >= args.length) {
+						LoggingContext.statusCode(StatusCode.ERROR);
+						LoggingContext.responseCode(LoggingContext.BUSINESS_PROCESS_ERROR);
 						LOGGER.error(" No value passed with -f option. ");
-						System.exit(0);
+						AAISystemExitUtil.systemExitCloseAAIGraph(0);
 					}
 					prevFileName = args[i];
 				} else {
+					LoggingContext.statusCode(StatusCode.ERROR);
+					LoggingContext.responseCode(LoggingContext.BUSINESS_PROCESS_ERROR);
 					LOGGER.error(" Unrecognized argument passed to DataGrooming: ["
 									+ thisArg + "]. ");
-					LOGGER.error(" Valid values are: -f -autoFix -maxFix -edgesOnly -dupeFixOn -donFixOrphans -sleepMinutes -neverUseCache");
-					System.exit(0);
+					LOGGER.error(" Valid values are: -f -autoFix -maxFix -edgesOnly -skipEdgeChecks -dupeFixOn -donFixOrphans -timeWindowMinutes -sleepMinutes -neverUseCache");
+					AAISystemExitUtil.systemExitCloseAAIGraph(0);
 				}
 			}
 		}
 		
-
+		String windowTag = "FULL";
+		if( timeWindowMinutes > 0 ){
+			windowTag = "PARTIAL";
+		}
+		String groomOutFileName = "dataGrooming." + windowTag + "." + dteStr + ".out";
+		
 		try {
 			LoaderFactory.createLoaderForVersion(ModelType.MOXY, AAIProperties.LATEST);
 
 		}
 		catch (Exception ex){
-			LOGGER.error("ERROR - Could not create loader", ex);
-			System.exit(1);
+			LoggingContext.statusCode(StatusCode.ERROR);
+			LoggingContext.responseCode(LoggingContext.BUSINESS_PROCESS_ERROR);
+			LOGGER.error("ERROR - Could not create loader " + LogFormatTools.getStackTop(ex));
+			AAISystemExitUtil.systemExitCloseAAIGraph(1);
 		}
 
+		if (skipHostCheck) {
+			LOGGER.info(" We will skip the HostCheck as requested. ");
+		}
 
 		try {
 			if (!prevFileName.equals("")) {
@@ -248,7 +276,7 @@ public class DataGrooming {
 						maxRecordsToFix, groomOutFileName, ver, singleCommits,
 						dupeCheckOff, dupeFixOn, ghost2CheckOff, ghost2FixOn, 
 						finalShutdownFlag, cacheDbOkFlag, 
-						skipEdgeCheckFlag, windowStartTime);
+						skipEdgeCheckFlag, timeWindowMinutes);
 			} else if (doAutoFix) {
 				// They want us to run the processing twice -- first to look for
 				// delete candidates, then after
@@ -264,7 +292,7 @@ public class DataGrooming {
 						dontFixOrphansFlag, maxRecordsToFix, groomOutFileName,
 						ver, singleCommits, dupeCheckOff, dupeFixOn, ghost2CheckOff, ghost2FixOn, 
 						finalShutdownFlag, cacheDbOkFlag, 
-						skipEdgeCheckFlag, windowStartTime);
+						skipEdgeCheckFlag, timeWindowMinutes);
 				if (fixCandCount == 0) {
 					LOGGER.info(" No fix-Candidates were found by the first pass, so no second/fix-pass is needed. ");
 				} else {
@@ -277,7 +305,7 @@ public class DataGrooming {
 						Thread.sleep(sleepMsec);
 					} catch (InterruptedException ie) {
 						LOGGER.info("\n >>> Sleep Thread has been Interrupted <<< ");
-						System.exit(0);
+						AAISystemExitUtil.systemExitCloseAAIGraph(0);
 					}
 
 					dteStr = fd.getDateTime();
@@ -293,7 +321,7 @@ public class DataGrooming {
 							secondGroomOutFileName, ver, singleCommits,
 							dupeCheckOff, dupeFixOn, ghost2CheckOff, ghost2FixOn, 
 							finalShutdownFlag, cacheDbOkFlag, 
-							skipEdgeCheckFlag, windowStartTime);
+							skipEdgeCheckFlag, timeWindowMinutes);
 				}
 			} else {
 				// Do the grooming - plain vanilla (no fix-it-file, no
@@ -309,14 +337,16 @@ public class DataGrooming {
 						maxRecordsToFix, groomOutFileName, ver, singleCommits,
 						dupeCheckOff, dupeFixOn, ghost2CheckOff, ghost2FixOn, 
 						finalShutdownFlag, cacheDbOkFlag, 
-						skipEdgeCheckFlag, windowStartTime);
+						skipEdgeCheckFlag, timeWindowMinutes);
 			}
 		} catch (Exception ex) {
-			LOGGER.error("Exception while grooming data", ex);
+			LoggingContext.statusCode(StatusCode.ERROR);
+			LoggingContext.responseCode(LoggingContext.DATA_ERROR);
+			LOGGER.error("Exception while grooming data " + LogFormatTools.getStackTop(ex));
 		}
 
 		LOGGER.info(" Done! ");
-		System.exit(0);
+		AAISystemExitUtil.systemExitCloseAAIGraph(0);
 
 	}// End of main()
 
@@ -345,11 +375,12 @@ public class DataGrooming {
 			Boolean dupeCheckOff, Boolean dupeFixOn,
 			Boolean ghost2CheckOff, Boolean ghost2FixOn, 
 			Boolean finalShutdownFlag, Boolean cacheDbOkFlag,
-			Boolean skipEdgeCheckFlag, long windowStartTime) {
+			Boolean skipEdgeCheckFlag, int timeWindowMinutes) {
 
 		LOGGER.debug(" Entering doTheGrooming \n");
 
 		int cleanupCandidateCount = 0;
+		long windowStartTime = 0; // Translation of the window into a starting timestamp 
 		BufferedWriter bw = null;
 		TitanGraph graph = null;
 		TitanGraph graph2 = null;
@@ -360,6 +391,12 @@ public class DataGrooming {
 		Graph g = null;
 		Graph g2 = null;
 		try {
+			if( timeWindowMinutes > 0 ){
+		  		// Translate the window value (ie. 30 minutes) into a unix timestamp like
+		  		//    we use in the db - so we can select data created after that time.
+		  		windowStartTime = figureWindowStartTime( timeWindowMinutes );
+		  	}
+			
 			AAIConfig.init();
 			String targetDir = AAIConstants.AAI_HOME + AAIConstants.AAI_FILESEP
 					+ "logs" + AAIConstants.AAI_FILESEP + "data"
@@ -375,6 +412,8 @@ public class DataGrooming {
 			}
 
 			if (deleteCandidateList.size() > maxRecordsToFix) {
+				LoggingContext.statusCode(StatusCode.ERROR);
+				LoggingContext.responseCode(LoggingContext.DATA_ERROR);
 				LOGGER.warn(" >> WARNING >>  Delete candidate list size ("
 						+ deleteCandidateList.size()
 						+ ") is too big.  The maxFix we are using is: "
@@ -404,10 +443,10 @@ public class DataGrooming {
 			if( cacheDbOkFlag ){
 				// Since we're just reading (not deleting/fixing anything), we can use 
 				// a cached connection to the DB
-				graph = TitanFactory.open(AAIConstants.CACHED_DB_CONFIG);
+				graph = TitanFactory.open(new AAIGraphConfig.Builder(AAIConstants.CACHED_DB_CONFIG).forService(DataGrooming.class.getSimpleName()).withGraphType("cached").buildConfiguration());
 			}
 			else {
-				graph = TitanFactory.open(AAIConstants.REALTIME_DB_CONFIG);
+				graph = TitanFactory.open(new AAIGraphConfig.Builder(AAIConstants.REALTIME_DB_CONFIG).forService(DataGrooming.class.getSimpleName()).withGraphType("realtime1").buildConfiguration());
 			}
 			if (graph == null) {
 				String emsg = "null graph object in DataGrooming\n";
@@ -448,12 +487,16 @@ public class DataGrooming {
 					String nType = entry.getKey();
 					int thisNtCount = 0;
 					int thisNtDeleteCount = 0;
+					
 					LOGGER.debug(" >  Look at : [" + nType + "] ...");
 					ntList = ntList + "," + nType;
 
 					// Get a collection of the names of the key properties for this nodeType to use later
-					// Determine what the key fields are for this nodeType
-					Collection <String> keyProps = entry.getValue().getKeys();
+					// Determine what the key fields are for this nodeType - use an arrayList so they
+					// can be gotten out in a consistent order.
+					Set <String> keyPropsSet = entry.getValue().getKeys();
+					ArrayList <String> keyProps = new ArrayList <String> ();
+					keyProps.addAll(keyPropsSet);
 					
 					// Get the types of nodes that this nodetype depends on for uniqueness (if any)
 					Collection <String> depNodeTypes = loader.introspectorFromName(nType).getDependentOn();
@@ -477,12 +520,13 @@ public class DataGrooming {
 							}
 							Vertex thisVtx = iter.next();
 							if( windowStartTime > 0 ){
-								// We only want nodes that are created after a passed-in timestamp
-								Object objTimeStamp = thisVtx.property("aai-created-ts").orElse(null);
-								if( objTimeStamp != null ){
-									long thisNodeCreateTime = (long)objTimeStamp;
-									if( thisNodeCreateTime < windowStartTime ){
-										// It is NOT in our window, so we can pass over it
+								// They are using the time-window, so we only want nodes that are updated after a
+								// passed-in timestamp OR that have no last-modified-timestamp which means they are suspicious.
+								Object objModTimeStamp = thisVtx.property("aai-last-mod-ts").orElse(null);
+								if( objModTimeStamp != null ){
+									long thisNodeModTime = (long)objModTimeStamp;
+									if( thisNodeModTime < windowStartTime ){
+										// It has a last modified ts and is NOT in our window, so we can pass over it
 										continue;
 									}
 								}
@@ -521,7 +565,9 @@ public class DataGrooming {
 								boolean depNodeOk = true;
 								if( depNodeTypes.isEmpty() ){
 									// This kind of node is not dependent on any other.
-									// Make sure we can get it back using it's key properties and that we only get one.
+									// Make sure we can get it back using it's key properties (that is the
+									//   phantom checking) and that we only get one.  Note - we also need
+									//   to collect data for a second type of dupe-checking which is done later.
 									secondGetList = getNodeJustUsingKeyParams( TRANSID, FROMAPPID, source1, nType, 
 											propHashWithKeys, version );
 								} 
@@ -556,7 +602,9 @@ public class DataGrooming {
 												zeroEdges = true;
 											}
 										} catch (Exception ex) {
-											LOGGER.warn("WARNING from inside the for-each-vid-loop orphan-edges-check ", ex);
+											LoggingContext.statusCode(StatusCode.ERROR);
+											LoggingContext.responseCode(LoggingContext.DATA_ERROR);
+											LOGGER.warn("WARNING from inside the for-each-vid-loop orphan-edges-check " + LogFormatTools.getStackTop(ex) );
 										}
 										
 										if (deleteCandidateList.contains(thisVid)) {
@@ -568,7 +616,9 @@ public class DataGrooming {
 												thisNtDeleteCount++;
 											} catch (Exception e) {
 												okFlag = false;
-												LOGGER.error("ERROR trying to delete missing-dep-node VID = " + thisVid, e);
+												LoggingContext.statusCode(StatusCode.ERROR);
+												LoggingContext.responseCode(LoggingContext.DATA_ERROR);
+												LOGGER.error("ERROR trying to delete missing-dep-node VID = " + thisVid + " " + LogFormatTools.getStackTop(e));
 											}
 											if (okFlag) {
 												LOGGER.info(" DELETED missing-dep-node VID = " + thisVid);
@@ -605,7 +655,7 @@ public class DataGrooming {
 											}
 										}
 									}
-								}
+								}// end of -- else this is a dependent node  -- piece
 								
 								if( depNodeOk && (secondGetList == null || secondGetList.size() == 0) ){
 									// We could not get the node back using it's own key info. 
@@ -618,7 +668,9 @@ public class DataGrooming {
 											thisNtDeleteCount++;
 										} catch (Exception e) {
 											okFlag = false;
-											LOGGER.error("ERROR trying to delete phantom VID = " + thisVid, e);
+											LoggingContext.statusCode(StatusCode.ERROR);
+											LoggingContext.responseCode(LoggingContext.DATA_ERROR);
+											LOGGER.error("ERROR trying to delete phantom VID = " + thisVid + " " + LogFormatTools.getStackTop(e));
 										}
 										if (okFlag) {
 											LOGGER.info(" DELETED VID = " + thisVid);
@@ -644,20 +696,55 @@ public class DataGrooming {
 								}
 							} 
 							catch (AAIException e1) {
+								LoggingContext.statusCode(StatusCode.ERROR);
+								LoggingContext.responseCode(LoggingContext.DATA_ERROR);
 								LOGGER.warn(" For nodeType = " + nType + " Caught exception", e1);
 								errArr.add(e1.getErrorObject().toString());
 							}
 							catch (Exception e2) {
+								LoggingContext.statusCode(StatusCode.ERROR);
+								LoggingContext.responseCode(LoggingContext.DATA_ERROR);
 								LOGGER.warn(" For nodeType = " + nType
 										+ " Caught exception", e2);
 								errArr.add(e2.getMessage());
 							}
-						}// try block to enclose looping of a single vertex
+						}// try block to enclose looping over each single vertex
 						catch (Exception exx) {
+							LoggingContext.statusCode(StatusCode.ERROR);
+							LoggingContext.responseCode(LoggingContext.DATA_ERROR);
 							LOGGER.warn("WARNING from inside the while-verts-loop ", exx);
 						}
 						
 					} // while loop for each record of a nodeType
+					
+					if( depNodeTypes.isEmpty() && !dupeCheckOff ){
+						// For this nodeType, we haven't looked at the possibility of a 
+						// non-dependent node where two verts have same key info
+						ArrayList<ArrayList<Vertex>> nonDependentDupeSets = new ArrayList<ArrayList<Vertex>>();
+							nonDependentDupeSets = getDupeSets4NonDepNodes( 
+										TRANSID, FROMAPPID, g,
+										version, nType, tmpList, 
+										keyProps, loader );
+						// For each set found (each set is for a unique instance of key-values),
+						//  process the dupes found
+						Iterator<ArrayList<Vertex>> dsItr = nonDependentDupeSets.iterator();
+						while( dsItr.hasNext() ){
+							ArrayList<Vertex> dupeList =  dsItr.next();
+							LOGGER.info(" - now check Dupes for some non-dependent guys - ");
+							List<String> tmpDupeGroups = checkAndProcessDupes(
+										TRANSID, FROMAPPID, g, source1, version,
+										nType, dupeList, dupeFixOn,
+										deleteCandidateList, singleCommits,	dupeGroups, loader);
+							Iterator<String> dIter = tmpDupeGroups.iterator();
+							while (dIter.hasNext()) {
+								// Add in any newly found dupes to our running list
+								String tmpGrp = dIter.next();
+								LOGGER.info("Found set of dupes: [" + tmpGrp + "]");
+								dupeGroups.add(tmpGrp);
+							}
+						}
+						
+					}// end of extra dupe check for non-dependent nodes
 					
 					if ( (thisNtDeleteCount > 0) && singleCommits ) {
 						// NOTE - the singleCommits option is not used in normal processing
@@ -669,6 +756,7 @@ public class DataGrooming {
 					LOGGER.info( " Processed " + thisNtCount + " records for [" + nType + "], " + totalNodeCount + " total overall. " );
 					
 				}// While-loop for each node type
+				
 			}// end of check to make sure we weren't only supposed to do edges
 
 		
@@ -686,7 +774,7 @@ public class DataGrooming {
 			LOGGER.debug("    ---- DEBUG --- about to open a SECOND graph (takes a little while)--------\n");
 			// Note - graph2 just reads - but we want it to use a fresh connection to 
 			//      the database, so we are NOT using the CACHED DB CONFIG here.
-			graph2 = TitanFactory.open(AAIConstants.REALTIME_DB_CONFIG);
+			graph2 = TitanFactory.open(new AAIGraphConfig.Builder(AAIConstants.REALTIME_DB_CONFIG).forService(DataGrooming.class.getSimpleName()).withGraphType("realtime2").buildConfiguration());
 			if (graph2 == null) {
 				String emsg = "null graph2 object in DataGrooming\n";
 				throw new AAIException("AAI_6101", emsg);
@@ -718,6 +806,8 @@ public class DataGrooming {
 					try {
 						v = vItor2.next();
 					} catch (Exception vex) {
+						LoggingContext.statusCode(StatusCode.ERROR);
+						LoggingContext.responseCode(LoggingContext.DATA_ERROR);
 						LOGGER.warn(">>> WARNING trying to get next vertex on the vItor2 ");
 						continue;
 					}
@@ -727,6 +817,8 @@ public class DataGrooming {
 					try {
 						thisVertId = v.id().toString();
 					} catch (Exception ev) {
+						LoggingContext.statusCode(StatusCode.ERROR);
+						LoggingContext.responseCode(LoggingContext.DATA_ERROR);
 						LOGGER.warn("WARNING when doing getId() on a vertex from our vertex list.  ");
 						continue;
 					}
@@ -739,12 +831,13 @@ public class DataGrooming {
 					}
 					
 					if( windowStartTime > 0 ){
-						// We only want to look at nodes that are created after a passed-in timestamp
-						Object objTimeStamp = v.property("aai-created-ts").orElse(null);
-						if( objTimeStamp != null ){
-							long thisNodeCreateTime = (long)objTimeStamp;
-							if( thisNodeCreateTime < windowStartTime ){
-								// It is NOT in our window, so we can pass over it
+						// They are using the time-window, so we only want nodes that are updated after a
+						// passed-in timestamp OR that have no last-modified-timestamp which means they are suspicious.
+						Object objModTimeStamp = v.property("aai-last-mod-ts").orElse(null);
+						if( objModTimeStamp != null ){
+							long thisNodeModTime = (long)objModTimeStamp;
+							if( thisNodeModTime < windowStartTime ){
+								// It has a last modified ts and is NOT in our window, so we can pass over it
 								continue;
 							}
 						}
@@ -763,6 +856,8 @@ public class DataGrooming {
 						try {
 							e = eItor.next();
 						} catch (Exception iex) {
+							LoggingContext.statusCode(StatusCode.ERROR);
+							LoggingContext.responseCode(LoggingContext.DATA_ERROR);
 							LOGGER.warn(">>> WARNING trying to get next edge on the eItor ", iex);
 							continue;
 						}
@@ -770,6 +865,8 @@ public class DataGrooming {
 						try {
 							vIn = e.inVertex();
 						} catch (Exception err) {
+							LoggingContext.statusCode(StatusCode.ERROR);
+							LoggingContext.responseCode(LoggingContext.DATA_ERROR);
 							LOGGER.warn(">>> WARNING trying to get edge's In-vertex ", err);
 						}
 						String vNtI = "";
@@ -795,6 +892,8 @@ public class DataGrooming {
 								if( ! ghost2CheckOff ){
 									Vertex connectedVert = g2.traversal().V(vIdLong).next();
 									if( connectedVert == null ) {
+										LoggingContext.statusCode(StatusCode.ERROR);
+										LoggingContext.responseCode(LoggingContext.DATA_ERROR);
 										LOGGER.warn( "GHOST2 -- got NULL when doing getVertex for vid = " + vIdLong);
 										cantGetUsingVid = true;
 										
@@ -805,6 +904,8 @@ public class DataGrooming {
 											 ghost2 = g.traversal().V(vIdLong).next();
 										}
 										catch( Exception ex){
+											LoggingContext.statusCode(StatusCode.ERROR);
+											LoggingContext.responseCode(LoggingContext.DATA_ERROR);
 											LOGGER.warn( "GHOST2 --  Could not get the ghost info for a bad edge for vtxId = " + vIdLong, ex);
 										}
 										if( ghost2 != null ){
@@ -814,6 +915,8 @@ public class DataGrooming {
 								}// end of the ghost2 checking
 							} 
 							catch (Exception err) {
+								LoggingContext.statusCode(StatusCode.ERROR);
+								LoggingContext.responseCode(LoggingContext.DATA_ERROR);
 								LOGGER.warn(">>> WARNING trying to get edge's In-vertex props ", err);
 							}
 						}
@@ -841,6 +944,8 @@ public class DataGrooming {
 										deleteCount++;
 									} catch (Exception e1) {
 										okFlag = false;
+										LoggingContext.statusCode(StatusCode.ERROR);
+										LoggingContext.responseCode(LoggingContext.DATA_ERROR);
 										LOGGER.warn("WARNING when trying to delete bad-edge-connected VERTEX VID = "
 												+ vIdI, e1);
 									}
@@ -864,6 +969,8 @@ public class DataGrooming {
 										// that this edge has already been
 										// removed
 										okFlag = false;
+										LoggingContext.statusCode(StatusCode.ERROR);
+										LoggingContext.responseCode(LoggingContext.DATA_ERROR);
 										LOGGER.warn("WARNING when trying to delete edge = "
 												+ thisEid);
 									}
@@ -883,6 +990,8 @@ public class DataGrooming {
 						try {
 							vOut = e.outVertex();
 						} catch (Exception err) {
+							LoggingContext.statusCode(StatusCode.ERROR);
+							LoggingContext.responseCode(LoggingContext.DATA_ERROR);
 							LOGGER.warn(">>> WARNING trying to get edge's Out-vertex ");
 						}
 						String vNtO = "";
@@ -915,6 +1024,8 @@ public class DataGrooming {
 											 ghost2 = g.traversal().V(vIdLong).next();
 										}
 										catch( Exception ex){
+											LoggingContext.statusCode(StatusCode.ERROR);
+											LoggingContext.responseCode(LoggingContext.DATA_ERROR);
 											LOGGER.warn( "GHOST2 -- Could not get the ghost info for a bad edge for vtxId = " + vIdLong, ex);
 										}
 										if( ghost2 != null ){
@@ -923,6 +1034,8 @@ public class DataGrooming {
 									}
 								}
 							} catch (Exception err) {
+								LoggingContext.statusCode(StatusCode.ERROR);
+								LoggingContext.responseCode(LoggingContext.DATA_ERROR);
 								LOGGER.warn(">>> WARNING trying to get edge's Out-vertex props ", err);
 							}
 						}
@@ -950,6 +1063,8 @@ public class DataGrooming {
 										deleteCount++;
 									} catch (Exception e1) {
 										okFlag = false;
+										LoggingContext.statusCode(StatusCode.ERROR);
+										LoggingContext.responseCode(LoggingContext.DATA_ERROR);
 										LOGGER.warn("WARNING when trying to delete bad-edge-connected VID = "
 												+ vIdO, e1);
 									}
@@ -973,6 +1088,8 @@ public class DataGrooming {
 										// that this edge has already been
 										// removed
 										okFlag = false;
+										LoggingContext.statusCode(StatusCode.ERROR);
+										LoggingContext.responseCode(LoggingContext.DATA_ERROR);
 										LOGGER.warn("WARNING when trying to delete edge = "
 												+ thisEid, ex);
 									}
@@ -990,6 +1107,8 @@ public class DataGrooming {
 						}
 					}// End of while-edges-loop
 				} catch (Exception exx) {
+					LoggingContext.statusCode(StatusCode.ERROR);
+					LoggingContext.responseCode(LoggingContext.DATA_ERROR);
 					LOGGER.warn("WARNING from in the while-verts-loop ", exx);
 				}
 			}// End of while-vertices-loop (the edge-checking)
@@ -1004,7 +1123,9 @@ public class DataGrooming {
 					executeFinalCommit = true;
 					LOGGER.info("Commit was successful ");
 				} catch (Exception excom) {
-					LOGGER.error(" >>>> ERROR <<<<   Could not commit changes. ", excom);
+					LoggingContext.statusCode(StatusCode.ERROR);
+					LoggingContext.responseCode(LoggingContext.DATA_ERROR);
+					LOGGER.error(" >>>> ERROR <<<<   Could not commit changes. " + LogFormatTools.getStackTop(excom));
 					deleteCount = 0;
 				}
 			}
@@ -1018,7 +1139,14 @@ public class DataGrooming {
 			deleteCount = deleteCount + dupeGrpsDeleted;
 
 			bw.write("\n\n ============ Summary ==============\n");
-			bw.write("Ran these nodeTypes: " + ntList + "\n\n");
+			if( timeWindowMinutes == 0 ){
+				bw.write("Ran FULL data grooming (no time-window). \n");
+			}
+			else {
+				bw.write("Ran PARTIAL data grooming just looking at data added/updated in the last " + timeWindowMinutes + " minutes. \n");
+			}
+			
+			bw.write("\nRan these nodeTypes: " + ntList + "\n\n");
 			bw.write("There were this many delete candidates from previous run =  "
 					+ deleteCandidateList.size() + "\n");
 			if (dontFixOrphansFlag) {
@@ -1084,7 +1212,9 @@ public class DataGrooming {
 						bw.write(info + "\n");
 					}
 				} catch (Exception dex) {
-					LOGGER.error("error trying to print detail info for a ghost-node:  ", dex);
+					LoggingContext.statusCode(StatusCode.ERROR);
+					LoggingContext.responseCode(LoggingContext.DATA_ERROR);
+					LOGGER.error("error trying to print detail info for a ghost-node:  " + LogFormatTools.getStackTop(dex));
 				}
 			}
 
@@ -1106,7 +1236,9 @@ public class DataGrooming {
 						bw.write(info + "\n");
 					}
 				} catch (Exception dex) {
-					LOGGER.error("error trying to print detail info for a Orphan Node /missing dependent edge", dex);
+					LoggingContext.statusCode(StatusCode.ERROR);
+					LoggingContext.responseCode(LoggingContext.DATA_ERROR);
+					LOGGER.error("error trying to print detail info for a Orphan Node /missing dependent edge " + LogFormatTools.getStackTop(dex));
 				}
 			}
 
@@ -1129,7 +1261,10 @@ public class DataGrooming {
 						bw.write(info + "\n");
 					}
 				} catch (Exception dex) {
-					LOGGER.error("error trying to print detail info for a node missing its dependent edge but not an orphan", dex);
+					LoggingContext.statusCode(StatusCode.ERROR);
+					LoggingContext.responseCode(LoggingContext.DATA_ERROR);
+					LOGGER.error("error trying to print detail info for a node missing its dependent edge but not an orphan " 
+							+ LogFormatTools.getStackTop(dex));
 				}
 			}
 
@@ -1149,7 +1284,9 @@ public class DataGrooming {
 								+ propKey.value() + "]\n");
 					}
 				} catch (Exception pex) {
-					LOGGER.error("error trying to print empty/bad vertex data: ", pex);
+					LoggingContext.statusCode(StatusCode.ERROR);
+					LoggingContext.responseCode(LoggingContext.DATA_ERROR);
+					LOGGER.error("error trying to print empty/bad vertex data: " + LogFormatTools.getStackTop(pex));
 				}
 			}
 
@@ -1228,7 +1365,9 @@ public class DataGrooming {
 						}// else last entry
 					}// for each vertex in a group
 				} catch (Exception dex) {
-					LOGGER.error("error trying to print duplicate vertex data", dex);
+					LoggingContext.statusCode(StatusCode.ERROR);
+					LoggingContext.responseCode(LoggingContext.DATA_ERROR);
+					LOGGER.error("error trying to print duplicate vertex data " + LogFormatTools.getStackTop(dex));
 				}
 
 			}// while - work on each group of dupes
@@ -1259,10 +1398,14 @@ public class DataGrooming {
 						+ "] and investigate delete candidates. ");
 			}
 		} catch (AAIException e) {
-			LOGGER.error("Caught AAIException while grooming data", e);
+			LoggingContext.statusCode(StatusCode.ERROR);
+			LoggingContext.responseCode(LoggingContext.DATA_ERROR);
+			LOGGER.error("Caught AAIException while grooming data");
 			ErrorLogHelper.logException(e);
 		} catch (Exception ex) {
-			LOGGER.error("Caught exception while grooming data", ex);
+			LoggingContext.statusCode(StatusCode.ERROR);
+			LoggingContext.responseCode(LoggingContext.DATA_ERROR);
+			LOGGER.error("Caught exception while grooming data");
 			ErrorLogHelper.logError("AAI_6128", ex.getMessage() + ", resolve and rerun dataGrooming");
 		} finally {
 
@@ -1270,6 +1413,8 @@ public class DataGrooming {
 				try {
 					bw.close();
 				} catch (IOException iox) {
+					LoggingContext.statusCode(StatusCode.ERROR);
+					LoggingContext.responseCode(LoggingContext.AVAILABILITY_TIMEOUT_ERROR);
 					LOGGER.warn("Got an IOException trying to close bufferedWriter() \n", iox);
 				}
 			}
@@ -1284,6 +1429,8 @@ public class DataGrooming {
 					g.tx().rollback();
 				} catch (Exception ex) {
 					// Don't throw anything because Titan sometimes is just saying that the graph is already closed
+					LoggingContext.statusCode(StatusCode.ERROR);
+					LoggingContext.responseCode(LoggingContext.AVAILABILITY_TIMEOUT_ERROR);
 					LOGGER.warn("WARNING from final graphTransaction.rollback()", ex);
 				}
 			}
@@ -1295,6 +1442,8 @@ public class DataGrooming {
 					g2.tx().rollback();
 				} catch (Exception ex) {
 					// Don't throw anything because Titan sometimes is just saying that the graph is already closed
+					LoggingContext.statusCode(StatusCode.ERROR);
+					LoggingContext.responseCode(LoggingContext.AVAILABILITY_TIMEOUT_ERROR);
 					LOGGER.warn("WARNING from final graphTransaction2.rollback()", ex);
 				}
 			}
@@ -1307,6 +1456,8 @@ public class DataGrooming {
 					}
 				} catch (Exception ex) {
 					// Don't throw anything because Titan sometimes is just saying that the graph is already closed{
+					LoggingContext.statusCode(StatusCode.ERROR);
+					LoggingContext.responseCode(LoggingContext.AVAILABILITY_TIMEOUT_ERROR);
 					LOGGER.warn("WARNING from final graph.shutdown()", ex);
 				}
 				
@@ -1317,6 +1468,8 @@ public class DataGrooming {
 					}
 				} catch (Exception ex) {
 					// Don't throw anything because Titan sometimes is just saying that the graph is already closed{
+					LoggingContext.statusCode(StatusCode.ERROR);
+					LoggingContext.responseCode(LoggingContext.AVAILABILITY_TIMEOUT_ERROR);
 					LOGGER.warn("WARNING from final graph2.shutdown()", ex);
 				}
 			}
@@ -1549,6 +1702,7 @@ public class DataGrooming {
 		// (We'll check dep-node later)
 		// Determine what the key fields are for this nodeType
 		Collection <String> keyProps = new ArrayList <>();
+		HashMap <String,Object> keyPropValsHash = new HashMap <String,Object>();
 		try {
 			keyProps = loader.introspectorFromName(vtxANodeType).getKeys();
 		} catch (AAIUnknownObjectException e) {
@@ -1576,6 +1730,11 @@ public class DataGrooming {
 				// data - so don't pick one
 				return nullVtx;
 			}
+			else {
+				// Keep these around for (potential) use later
+				keyPropValsHash.put(propName, vtxAKeyPropVal);
+			}
+			     
 		}
 
 		// Collect the vid's and aai-node-types of the vertices that each vertex
@@ -1618,18 +1777,20 @@ public class DataGrooming {
 		}
 
 		// 1 - If this kind of node needs a dependent node for uniqueness, then
-		// verify that they both nodes
-		// point to the same dependent node (otherwise they're not really
-		// duplicates)
+		//    verify that they both nodes point to the same dependent 
+		//    node (otherwise they're not really duplicates)
 		// Note - there are sometimes more than one dependent node type since
-		// one nodeType can be used in
-		// different ways. But for a particular node, it will only have one
-		// dependent node that it's
-		// connected to.
-		Collection <String> depNodeTypes = loader.introspectorFromName(vtxANodeType).getDependentOn();
-			
+		//    one nodeType can be used in different ways. But for a 
+		//    particular node, it will only have one dependent node that 
+		//    it's connected to.
+		String onlyNodeThatIndexPointsToVidStr = "";
+		Collection<String> depNodeTypes = loader.introspectorFromName(vtxANodeType).getDependentOn();
 		if (depNodeTypes.isEmpty()) {
 			// This kind of node is not dependent on any other. That is ok.
+			// We need to find out if the unique index info is good or not and
+			// use that later when deciding if we can delete one.
+			onlyNodeThatIndexPointsToVidStr = findJustOneUsingIndex( transId,
+					fromAppId, g, keyPropValsHash, vtxANodeType, vidA, vidB, ver );
 		} else {
 			String depNodeVtxId4A = "";
 			String depNodeVtxId4B = "";
@@ -1654,8 +1815,11 @@ public class DataGrooming {
 		}
 
 		if (vtxIdsConn2A.size() == vtxIdsConn2B.size()) {
-			// 2 - If they both have edges to all the same vertices, then return
-			// the one with the lower vertexId.
+			// 2 - If they both have edges to all the same vertices, 
+			//  then return the one that can be reached uniquely via the 
+			//  key if that is the case or
+			//  else the one with the lower vertexId
+			
 			boolean allTheSame = true;
 			Iterator<String> iter = vtxIdsConn2A.iterator();
 			while (iter.hasNext()) {
@@ -1667,7 +1831,19 @@ public class DataGrooming {
 			}
 
 			if (allTheSame) {
-				if (vidA < vidB) {
+				// If everything is the same, but one of the two has a good 
+				// pointer to it, then save that one.  Otherwise, take the
+				// older one.
+				if( !onlyNodeThatIndexPointsToVidStr.equals("") ){
+					// only one is reachable via the index - choose that one.
+					if( onlyNodeThatIndexPointsToVidStr.equals(vidA.toString()) ){
+						preferredVtx = vtxA;
+					}
+					else if( onlyNodeThatIndexPointsToVidStr.equals(vidB.toString()) ){
+						preferredVtx = vtxB;
+					}
+				}
+				else if (vidA < vidB) {
 					preferredVtx = vtxA;
 				} else {
 					preferredVtx = vtxB;
@@ -1675,7 +1851,8 @@ public class DataGrooming {
 			}
 		} else if (vtxIdsConn2A.size() > vtxIdsConn2B.size()) {
 			// 3 - VertexA is connected to more things than vtxB.
-			// We'll pick VtxA if its edges are a superset of vtxB's edges.
+			// We'll pick VtxA if its edges are a superset of vtxB's edges 
+			//   and it doesn't contradict the check for the index/key pointer.
 			boolean missingOne = false;
 			Iterator<String> iter = vtxIdsConn2B.iterator();
 			while (iter.hasNext()) {
@@ -1686,11 +1863,15 @@ public class DataGrooming {
 				}
 			}
 			if (!missingOne) {
-				preferredVtx = vtxA;
+				if( onlyNodeThatIndexPointsToVidStr.equals("") 
+						|| onlyNodeThatIndexPointsToVidStr.equals(vidA.toString()) ){
+					preferredVtx = vtxA;
+				}
 			}
 		} else if (vtxIdsConn2B.size() > vtxIdsConn2A.size()) {
 			// 4 - VertexB is connected to more things than vtxA.
-			// We'll pick VtxB if its edges are a superset of vtxA's edges.
+			// We'll pick VtxB if its edges are a superset of vtxA's edges
+			//   and it doesn't contradict the check for the index/key pointer.
 			boolean missingOne = false;
 			Iterator<String> iter = vtxIdsConn2A.iterator();
 			while (iter.hasNext()) {
@@ -1701,7 +1882,10 @@ public class DataGrooming {
 				}
 			}
 			if (!missingOne) {
-				preferredVtx = vtxB;
+				if( onlyNodeThatIndexPointsToVidStr.equals("") 
+						|| onlyNodeThatIndexPointsToVidStr.equals(vidB.toString()) ){
+					preferredVtx = vtxB;
+				}
 			}
 		} else {
 			preferredVtx = nullVtx;
@@ -1724,7 +1908,6 @@ public class DataGrooming {
 	 * @param deleteCandidateList the delete candidate list
 	 * @param singleCommits the single commits
 	 * @param alreadyFoundDupeGroups the already found dupe groups
-	 * @param dbMaps the db maps
 	 * @return the array list
 	 */
 	private static List<String> checkAndProcessDupes(String transId,
@@ -1880,6 +2063,8 @@ public class DataGrooming {
 				}
 			}
 		} catch (Exception e) {
+			LoggingContext.statusCode(StatusCode.ERROR);
+			LoggingContext.responseCode(LoggingContext.DATA_ERROR);
 			LOGGER.warn(" >>> Threw an error in checkAndProcessDupes - just absorb this error and move on. ", e);
 		}
 
@@ -1896,7 +2081,6 @@ public class DataGrooming {
 	 * @param version the version
 	 * @param nType the n type
 	 * @param passedVertList the passed vert list
-	 * @param dbMaps the db maps
 	 * @return the hash map
 	 * @throws AAIException the AAI exception
 	 */
@@ -2007,6 +2191,8 @@ public class DataGrooming {
 					// like, "KeepVid=12345"
 					String[] prefArr = prefString.split("=");
 					if (prefArr.length != 2 || (!prefArr[0].equals("KeepVid"))) {
+						LoggingContext.statusCode(StatusCode.ERROR);
+						LoggingContext.responseCode(LoggingContext.DATA_ERROR);
 						LOGGER.error("Bad format. Expecting KeepVid=999999");
 						return false;
 					} else {
@@ -2035,7 +2221,9 @@ public class DataGrooming {
 										}
 									} catch (Exception e) {
 										okFlag = false;
-										LOGGER.error("ERROR trying to delete VID = " + thisVid, e);
+										LoggingContext.statusCode(StatusCode.ERROR);
+										LoggingContext.responseCode(LoggingContext.DATA_ERROR);
+										LOGGER.error("ERROR trying to delete VID = " + thisVid + " " + LogFormatTools.getStackTop(e));
 									}
 									if (okFlag) {
 										LOGGER.info(" DELETED VID = " + thisVid);
@@ -2044,6 +2232,8 @@ public class DataGrooming {
 								}
 							}
 						} else {
+							LoggingContext.statusCode(StatusCode.ERROR);
+							LoggingContext.responseCode(LoggingContext.DATA_ERROR);
 							LOGGER.error("ERROR - Vertex Id to keep not found in list of dupes.  dupeInfoString = ["
 									+ dupeInfoString + "]");
 							return false;
@@ -2123,7 +2313,9 @@ public class DataGrooming {
 			}
 		}
 		catch( Exception ex ){
-			LOGGER.error( " ERROR trying to get node for: [" + propsAndValuesForMsg + "]", ex);
+			LoggingContext.statusCode(StatusCode.ERROR);
+			LoggingContext.responseCode(LoggingContext.DATA_ERROR);
+			LOGGER.error( " ERROR trying to get node for: [" + propsAndValuesForMsg + "]" + LogFormatTools.getStackTop(ex));
 		}
 
 		if( verts != null ){
@@ -2290,7 +2482,7 @@ public class DataGrooming {
 		
 		Vertex parentVtx = null;
 		Iterator <Vertex> vertI = g.V(startVtx).union(__.inE().has(EdgeProperty.CONTAINS.toString(), AAIDirection.OUT.toString()).outV(), __.outE().has(EdgeProperty.CONTAINS.toString(), AAIDirection.IN.toString()).inV());
-				
+
 		while( vertI != null && vertI.hasNext() ){
 			// Note - there better only be one!
 			parentVtx = vertI.next();
@@ -2317,4 +2509,146 @@ public class DataGrooming {
 	} // End of figureWindowStartTime()
 	
 	
+	/**
+	 * Collect Duplicate Sets for nodes that are NOT dependent on parent nodes.
+	 *
+	 * @param transId the trans id
+	 * @param fromAppId the from app id
+	 * @param g the g
+	 * @param version the version
+	 * @param nType the n type
+	 * @param passedVertList the passed vert list
+	 * @return the array list
+	 */
+	private static ArrayList<ArrayList<Vertex>> getDupeSets4NonDepNodes( String transId,
+			String fromAppId, Graph g, String version, String nType,
+			ArrayList<Vertex> passedVertList,
+			ArrayList <String> keyPropNamesArr, 
+			 Loader loader ) {
+		
+		ArrayList<ArrayList<Vertex>> returnList = new ArrayList<ArrayList<Vertex>>();
+		
+		// We've been passed a set of nodes that we want to check. 
+		// They are all NON-DEPENDENT nodes of the same nodeType meaning that they should be 
+		// unique in the DB based on their KEY DATA alone.  So, if
+		// we group them by their key data - if any key has more than one
+		// vertex mapped to it, those vertices are dupes.
+		//
+		// When we find duplicates, we group them in an ArrayList (there can be
+		//     more than one duplicate for one set of key data)
+		// Then these dupeSets are grouped up and returned.
+		// 
+		
+		HashMap <String, ArrayList<String>> keyVals2VidHash = new HashMap <String, ArrayList<String>>();
+		HashMap <String,Vertex> vtxHash = new HashMap <String,Vertex>();
+		Iterator<Vertex> pItr = passedVertList.iterator();
+		while (pItr.hasNext()) {
+			try {
+				Vertex tvx =  pItr.next();
+				String thisVid = tvx.id().toString();
+				vtxHash.put(thisVid, tvx);
+				
+				// if there are more than one vertexId mapping to the same keyProps -- they are dupes
+				// we dont check till later since a set can contain more than 2.
+				String hKey = getNodeKeyValString( tvx, keyPropNamesArr );
+				if( keyVals2VidHash.containsKey(hKey) ){
+					// We've already seen this key 
+					ArrayList <String> tmpVL = (ArrayList <String>)keyVals2VidHash.get(hKey);
+					tmpVL.add(thisVid);
+					keyVals2VidHash.put(hKey, tmpVL);
+				}
+				else {
+					// First time for this key
+					ArrayList <String> tmpVL = new ArrayList <String>();
+					tmpVL.add(thisVid);
+					keyVals2VidHash.put(hKey, tmpVL);
+				}
+			}
+			catch (Exception e) {
+				LOGGER.warn(" >>> Threw an error in getDupeSets4NonDepNodes - just absorb this error and move on. ", e);
+			}
+		}
+					
+		for( Map.Entry<String, ArrayList<String>> entry : keyVals2VidHash.entrySet() ){
+			ArrayList <String> vidList = entry.getValue();
+			try {
+				if( !vidList.isEmpty() && vidList.size() > 1 ){
+					// There are more than one vertex id's using the same key info
+					ArrayList <Vertex> vertList = new ArrayList <Vertex> ();
+					for (int i = 0; i < vidList.size(); i++) {
+						String tmpVid = vidList.get(i);
+						vertList.add(vtxHash.get(tmpVid));
+					}
+					returnList.add(vertList);
+				}
+			} 
+			catch (Exception e) {
+				LOGGER.warn(" >>> Threw an error in getDupeSets4NonDepNodes - just absorb this error and move on. ", e);
+			}
+			
+		}
+		return returnList;
+
+	}// End of getDupeSets4NonDepNodes()
+	
+	
+	/**
+	 * Get values of the key properties for a node as a single string
+	 *
+	 * @param tvx the vertex to pull the properties from
+	 * @param keyPropNamesArr collection of key prop names
+	 * @return a String of concatenated values
+	 */
+	private static String getNodeKeyValString( Vertex tvx,
+			ArrayList <String> keyPropNamesArr ) {
+		
+		String retString = "";
+		Iterator <String> propItr = keyPropNamesArr.iterator();
+		while( propItr.hasNext() ){
+			String propName = propItr.next();
+			if( tvx != null ){
+				Object propValObj = tvx.property(propName).orElse(null);
+				retString = " " + retString + propValObj.toString();
+			} 
+		}
+		return retString;
+	
+	}// End of getNodeKeyValString()	
+	
+	
+	static private String findJustOneUsingIndex( String transId, String fromAppId,
+			GraphTraversalSource gts, HashMap <String,Object> keyPropValsHash, 
+			String nType, Long vidAL, Long vidBL, String apiVer){
+		
+		// See if querying by JUST the key params (which should be indexed) brings back
+		// ONLY one of the two vertices. Ie. the db still has a pointer to one of them
+		// and the other one is sort of stranded.
+		String returnVid = "";
+		
+		try {
+			List <Vertex> tmpVertList = getNodeJustUsingKeyParams( transId, fromAppId, gts,
+					nType, keyPropValsHash, apiVer );
+			if( tmpVertList != null && tmpVertList.size() == 1 ){
+				// We got just one - if it matches one of the ones we're looking
+				// for, then return that VID
+				Vertex tmpV = tmpVertList.get(0);
+				String thisVid = tmpV.id().toString();
+				if( thisVid.equals(vidAL.toString()) || thisVid.equals(vidBL.toString()) ){
+					String msg = " vid = " + thisVid + " is one of two that the DB can retrieve directly ------";
+					//System.out.println(msg);
+					LOGGER.info(msg);
+					returnVid = thisVid;
+				}
+			}
+		}
+		catch ( AAIException ae ){
+			String emsg = "Error trying to get node just by key " + ae.getMessage();
+			//System.out.println(emsg);
+			LOGGER.error(emsg);
+	  	}
+		
+		return returnVid;
+		
+	}// End of findJustOneUsingIndex()
+
 }

@@ -49,7 +49,11 @@ public class StoreNotificationEvent {
 	 * Instantiates a new store notification event.
 	 */
 	public StoreNotificationEvent(String transactionId, String sourceOfTruth) {
-		this.messageProducer = new AAIDmaapEventJMSProducer();
+		this(new AAIDmaapEventJMSProducer(), transactionId, sourceOfTruth);
+	}
+	
+	public StoreNotificationEvent(AAIDmaapEventJMSProducer producer, String transactionId, String sourceOfTruth) {
+		this.messageProducer = producer;
 		this.transactionId = transactionId;
 		this.sourceOfTruth = sourceOfTruth;
 	}
@@ -64,7 +68,7 @@ public class StoreNotificationEvent {
 	 * @throws AAIException
 	 *             the AAI exception
 	 */
-	public void storeEvent(NotificationEvent.EventHeader eh, Object obj) throws AAIException {
+	public String storeEvent(NotificationEvent.EventHeader eh, Object obj) throws AAIException {
 
 		if (obj == null) {
 			throw new AAIException("AAI_7350");
@@ -123,6 +127,7 @@ public class StoreNotificationEvent {
 			PojoUtils pu = new PojoUtils();
 			String entityJson = pu.getJsonFromObject(ne);
 			sendToDmaapJmsQueue(entityJson);
+			return entityJson;
 		} catch (Exception e) {
 			throw new AAIException("AAI_7350", e);
 		}
@@ -214,7 +219,7 @@ public class StoreNotificationEvent {
 		}
 	}
 
-	public void storeEvent(Loader loader, Introspector eventHeader, Introspector obj) throws AAIException {
+	public String storeEvent(Loader loader, Introspector eventHeader, Introspector obj) throws AAIException {
 		if (obj == null) {
 			throw new AAIException("AAI_7350");
 		}
@@ -271,6 +276,7 @@ public class StoreNotificationEvent {
 
 			String entityJson = notificationEvent.marshal(false);
 			sendToDmaapJmsQueue(entityJson);
+			return entityJson;
 		} catch (JSONException e) {
 			throw new AAIException("AAI_7350", e);
 		} catch (AAIUnknownObjectException e) {

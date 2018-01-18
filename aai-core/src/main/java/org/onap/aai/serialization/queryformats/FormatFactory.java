@@ -31,9 +31,6 @@ import org.onap.aai.serialization.queryformats.exceptions.QueryParamInjectionExc
 import org.onap.aai.serialization.queryformats.utils.QueryParamInjector;
 import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
 
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
-
 public class FormatFactory {
 
 	private final Loader loader;

@@ -291,7 +291,7 @@ public class ErrorLogHelper {
 
 					}
 				} catch (Exception ex) {
-					LOGGER.error("We were unable to create a rest exception to return on an API because of a parsing error", ex);
+					LOGGER.error("We were unable to create a rest exception to return on an API because of a parsing error " + ex.getMessage());
 				}
 			}
 		else  {		
@@ -319,7 +319,7 @@ public class ErrorLogHelper {
 					response = (MapperUtil.writeAsJSONString((Object) restresp));
 				}
 			} catch (AAIException ex) {
-				LOGGER.error("We were unable to create a rest exception to return on an API because of a parsing error", ex);
+				LOGGER.error("We were unable to create a rest exception to return on an API because of a parsing error " + ex.getMessage());
 			}
 		}
 		}
@@ -343,7 +343,7 @@ public class ErrorLogHelper {
 	public static String getRESTAPIErrorResponseWithLogging(List<MediaType> acceptHeadersOrig, AAIException are, ArrayList<String> variables) {
 		String response = ErrorLogHelper.getRESTAPIErrorResponse(acceptHeadersOrig, are, variables);
 		
-		LOGGER.error(are.getMessage(), are);
+		LOGGER.error(are.getMessage() + " " + LogFormatTools.getStackTop(are));
 		
 		return response;
 	}
@@ -427,7 +427,7 @@ public class ErrorLogHelper {
 				responseMessages.getResponseMessage().add(responseMessage);
 
 			} catch (Exception ex) {
-				LOGGER.error("We were unable to create a rest exception to return on an API because of a parsing error", ex);
+				LOGGER.error("We were unable to create a rest exception to return on an API because of a parsing error " + ex.getMessage());
 			}
 		}
 		
@@ -553,7 +553,7 @@ public class ErrorLogHelper {
 
 				}
 			} catch (Exception ex) {
-				LOGGER.error("We were unable to create a rest exception to return on an API because of a parsing error", ex);
+				LOGGER.error("We were unable to create a rest exception to return on an API because of a parsing error "+ ex.getMessage());
 			}
 			return response;
 		}
@@ -571,7 +571,13 @@ public class ErrorLogHelper {
 				LoggingContext.severity(sevCode);
 			}
 		}
-		
+		String stackTrace = "";
+		try {
+			stackTrace = LogFormatTools.getStackTop(e);
+		}
+		catch (Exception a) {
+			//ignore
+		}
 		final String errorMessage = new StringBuilder()
 											.append(errorObject.getErrorText())
 											.append(":")
@@ -586,14 +592,19 @@ public class ErrorLogHelper {
 		LoggingContext.responseDescription(errorMessage);
 		LoggingContext.statusCode(StatusCode.ERROR);
 
+		final String details = new StringBuilder().append(errorObject.getErrorCodeString())
+				.append(" ")
+				.append(stackTrace)
+				.toString();
+		
 		if (errorObject.getSeverity().equalsIgnoreCase("WARN"))
-			LOGGER.warn(errorMessage, e);
+			LOGGER.warn(details);
 		else if (errorObject.getSeverity().equalsIgnoreCase("ERROR"))
-			LOGGER.error(errorMessage, e);
+			LOGGER.error(details);
 		else if (errorObject.getSeverity().equalsIgnoreCase("FATAL"))
-			LOGGER.error(errorMessage, e);
+			LOGGER.error(details);
 		else if (errorObject.getSeverity().equals("INFO"))
-			LOGGER.info(errorMessage + ", " + e.getMessage());
+			LOGGER.info(details);
 	}
 
 	public static void logError(String code) {

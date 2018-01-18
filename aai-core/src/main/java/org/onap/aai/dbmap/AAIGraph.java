@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.io.IoCore;
@@ -58,8 +59,9 @@ public class AAIGraph {
 	private static final EELFLogger logger = EELFManager.getInstance().getLogger(AAIGraph.class);
 	protected static final String COMPONENT = "aaidbmap";
 	protected Map<String, TitanGraph> graphs = new HashMap<>();
-	private final String REALTIME_DB = "realtime";
-	private final String CACHED_DB = "cached";
+	private static final String REALTIME_DB = "realtime";
+	private static final String CACHED_DB = "cached";
+	private static boolean isInit = false;
 
 
 
@@ -68,6 +70,7 @@ public class AAIGraph {
 	 */
 	private AAIGraph() {
 		try {
+			String serviceName = System.getProperty("aai.service.name", "NA");
 			String rtConfig = System.getProperty("realtime.db.config");
 			String cachedConfig = System.getProperty("cached.db.config");
 			if (rtConfig == null) {
@@ -76,8 +79,8 @@ public class AAIGraph {
 			if (cachedConfig == null) {
 				cachedConfig = AAIConstants.CACHED_DB_CONFIG;
 			}
-			this.loadGraph(REALTIME_DB, rtConfig);
-			this.loadGraph(CACHED_DB, cachedConfig);
+			this.loadGraph(REALTIME_DB, rtConfig, serviceName);
+			this.loadGraph(CACHED_DB, cachedConfig, serviceName);
 		} catch (Exception e) {
 			throw new RuntimeException("Failed to instantiate graphs", e);
 		}
@@ -93,17 +96,23 @@ public class AAIGraph {
 	 * @return single instance of AAIGraph
 	 */
 	public static AAIGraph getInstance() {
+		isInit = true;
 		return Helper.INSTANCE;
 	}
+
+	public static boolean isInit() {
+		return isInit;
+	}
 	
-	private void loadGraph(String name, String configPath) throws AAIException {
+	private void loadGraph(String name, String configPath, String serviceName) throws Exception {
 	    // Graph being opened by TitanFactory is being placed in hashmap to be used later
 		// These graphs shouldn't be closed until the application shutdown
-	    TitanGraph graph = TitanFactory.open(configPath);
-		try (InputStream is = new FileInputStream(configPath)) {
+		try {
+			PropertiesConfiguration propertiesConfiguration = new AAIGraphConfig.Builder(configPath).forService(serviceName).withGraphType(name).buildConfiguration();
+			TitanGraph graph = TitanFactory.open(propertiesConfiguration);
 
 			Properties graphProps = new Properties();
-			graphProps.load(is);
+			propertiesConfiguration.getKeys().forEachRemaining(k -> graphProps.setProperty(k, propertiesConfiguration.getString(k)));
 
 			if ("inmemory".equals(graphProps.get("storage.backend"))) {
 				// Load the propertyKeys, indexes and edge-Labels into the DB
@@ -155,10 +164,10 @@ public class AAIGraph {
 	}
 
 	/**
-	 * Graph shutdown.
+	 * Close all of the graph connections made in the instance.
 	 */
 	public void graphShutdown() {
-		graphs.get(REALTIME_DB).close();
+		graphs.values().stream().filter(TitanGraph::isOpen).forEach(TitanGraph::close);
 	}
 
 	/**

@@ -1,0 +1,24 @@
+{
+  "vnf-id": "vnf1",
+  "vnf-type": "someval",
+  "vnf-name": "someval",
+  "lag-interfaces": {
+    "lag-interface": [
+      {
+        "interface-name": "lag1",
+        "l-interfaces": {
+          "l-interface": [
+            {
+              "interface-name": "int1",
+              "l3-interface-ipv6-address-list": [
+                {
+                  "l3-interface-ipv6-address": "${ip-address}"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
