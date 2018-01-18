@@ -42,7 +42,7 @@ paths:
         - application/xml
       responses:
         "default":
-          description: Response codes found in [response codes](https://wiki.web.att.com/display/UAAI/Alarm+Log).
+          description: Response codes found in [response codes].
         "all success":
           description: Below is the response for three sucessful transactions, each operation performed gets a status code
           schema:
@@ -142,7 +142,7 @@ paths:
         - application/xml
       responses:
         "default":
-          description: Response codes found in [response codes](https://wiki.web.att.com/display/UAAI/Alarm+Log).
+          description: Response codes found in [response codes]
         "all success":
           description: Below is the response for three different transactions, a put transaction that had two operations within it, a patch transaction with two operations in it, and a delete transaction with two operations within it, all of these operation were successfully completed, each operation get a status code
           schema:

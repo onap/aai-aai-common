@@ -19,7 +19,6 @@
  *
  * ECOMP is a trademark and service mark of AT&T Intellectual Property.
  */
-
 package org.onap.aai.serialization.queryformats;
 
 import com.google.gson.JsonObject;

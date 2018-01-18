@@ -52,6 +52,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.when;
 
@@ -115,6 +116,31 @@ public class HttpEntryTest extends AAISetup {
         when(httpHeaders.getMediaType()).thenReturn(APPLICATION_JSON);
     }
 
+    private Response getResponse(HttpEntry httpEntry, Loader loader, TransactionalGraphEngine dbEngine, HttpMethod method, String uri, String content) throws UnsupportedEncodingException, AAIException {
+        URI uriObject = UriBuilder.fromPath(uri).build();
+        QueryParser uriQuery = dbEngine.getQueryBuilder().createQueryFromURI(uriObject);
+        String objType = uriQuery.getResultType();
+        if (uri.endsWith("relationship")) {
+            objType = "relationship";
+        }
+        Introspector obj = null;
+        if (method.equals(HttpMethod.GET)) {
+            obj = loader.introspectorFromName(objType);
+        } else {
+            obj = loader.unmarshal(objType, content, org.onap.aai.restcore.MediaType.getEnum("application/json"));
+        }
+
+        DBRequest dbRequest =
+                new DBRequest.Builder(method, uriObject, uriQuery, obj, httpHeaders, uriInfo, "JUNIT-TRANSACTION")
+                        .rawRequestContent(content).build();
+
+        List<DBRequest> dbRequestList = new ArrayList<>();
+        dbRequestList.add(dbRequest);
+
+        Pair<Boolean, List<Pair<URI, Response>>> responsesTuple  = httpEntry.process(dbRequestList, "JUNIT");
+        return responsesTuple.getValue1().get(0).getValue1();
+    }
+
     
     @Test
     public void test1PutOnPserver() throws UnsupportedEncodingException, AAIException {
@@ -124,29 +150,51 @@ public class HttpEntryTest extends AAISetup {
         Loader loader = httpEntry.getLoader();
         TransactionalGraphEngine dbEngine = httpEntry.getDbEngine();
 
-        URI uriObject = UriBuilder.fromPath("/cloud-infrastructure/pservers/pserver/junit-test1").build();
-
-        QueryParser uriQuery = dbEngine.getQueryBuilder().createQueryFromURI(uriObject);
-
+        String uri = "/cloud-infrastructure/pservers/pserver/junit-test1";
         String content = "{\"hostname\":\"junit-test1\"}";
-
-        Introspector obj = loader.unmarshal("pserver", content, org.onap.aai.restcore.MediaType.getEnum("application/json"));
-
-        DBRequest dbRequest =
-                new DBRequest.Builder(HttpMethod.PUT, uriObject, uriQuery, obj, httpHeaders, uriInfo, "JUNIT-TRANSACTION")
-                        .rawRequestContent(content).build();
-
-        List<DBRequest> dbRequestList = new ArrayList<>();
-        dbRequestList.add(dbRequest);
-
-        Pair<Boolean, List<Pair<URI, Response>>> responsesTuple  = httpEntry.process(dbRequestList, "JUNIT");
-        Response response = responsesTuple.getValue1().get(0).getValue1();
+        Response response = getResponse(httpEntry, loader, dbEngine, HttpMethod.PUT, uri, content);
         dbEngine.commit();
         assertEquals("Expected the pserver to be created", 201, response.getStatus());
     }
 
     @Test
-    public void test2GetOnPserver() throws UnsupportedEncodingException, AAIException {
+    public void test2PutOnPserverNoPInterface() throws UnsupportedEncodingException, AAIException {
+
+        DBConnectionType type = DBConnectionType.REALTIME;
+        HttpEntry httpEntry = new HttpEntry(Version.getLatest(), ModelType.MOXY, QueryStyle.TRAVERSAL, type);
+        Loader loader = httpEntry.getLoader();
+        TransactionalGraphEngine dbEngine = httpEntry.getDbEngine();
+
+        String uri = "/cloud-infrastructure/pservers/pserver/junit-test2";
+        String content = "{\"hostname\":\"junit-test2\"}";
+        Response response = getResponse(httpEntry, loader, dbEngine, HttpMethod.PUT, uri, content);
+        dbEngine.commit();
+        assertEquals("Expected the pserver to be created", 201, response.getStatus());
+    }
+
+    @Test
+    public void test3PutOnPInterface()  {
+    	try {
+        DBConnectionType type = DBConnectionType.REALTIME;
+        HttpEntry httpEntry = new HttpEntry(Version.getLatest(), ModelType.MOXY, QueryStyle.TRAVERSAL, type);
+        Loader loader = httpEntry.getLoader();
+        TransactionalGraphEngine dbEngine = httpEntry.getDbEngine();
+
+        String uri = "/cloud-infrastructure/pservers/pserver/junit-test1/p-interfaces/p-interface/p1";
+        String content = "{\"interface-name\":\"p1\"}";
+        Response response = getResponse(httpEntry, loader, dbEngine, HttpMethod.PUT, uri, content);
+        dbEngine.commit();
+        assertEquals("Expected the p-interface to be created", 201, response.getStatus());
+    	} catch (UnsupportedEncodingException | AAIException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
+
+
+
+    @Test
+    public void test4GetOnPserver() throws UnsupportedEncodingException, AAIException {
 
         DBConnectionType type = DBConnectionType.REALTIME;
         HttpEntry httpEntry = new HttpEntry(Version.getLatest(), ModelType.MOXY, QueryStyle.TRAVERSAL, type);
@@ -155,68 +203,42 @@ public class HttpEntryTest extends AAISetup {
 
         URI uriObject = UriBuilder.fromPath("/cloud-infrastructure/pservers/pserver/junit-test1").build();
 
-        QueryParser uriQuery = dbEngine.getQueryBuilder().createQueryFromURI(uriObject);
-
-        String content = "";
-
-        Introspector obj = loader.introspectorFromName("pserver");
-
-        DBRequest dbRequest =
-                new DBRequest.Builder(HttpMethod.GET, uriObject, uriQuery, obj, httpHeaders, uriInfo, "JUNIT-TRANSACTION")
-                        .rawRequestContent(content).build();
-
-        List<DBRequest> dbRequestList = new ArrayList<>();
-        dbRequestList.add(dbRequest);
-
-        Pair<Boolean, List<Pair<URI, Response>>> responsesTuple  = httpEntry.process(dbRequestList, "JUNIT");
-        Response response = responsesTuple.getValue1().get(0).getValue1();
+        String uri = "/cloud-infrastructure/pservers/pserver/junit-test1";
+        String content = "{\"hostname\":\"junit-test1\", \"equip-type\":\"junit-equip-type\"}";
+        Response response = getResponse(httpEntry, loader, dbEngine, HttpMethod.GET, uri, content);
         dbEngine.commit();
         assertEquals("Expected the pserver to be returned", 200, response.getStatus());
     }
   
     @Test
-    public void test3MergePatchOnPserver() throws UnsupportedEncodingException, AAIException {
+    public void test5MergePatchOnPserver() throws UnsupportedEncodingException, AAIException {
 
         DBConnectionType type = DBConnectionType.REALTIME;
         HttpEntry httpEntry = new HttpEntry(Version.getLatest(), ModelType.MOXY, QueryStyle.TRAVERSAL, type);
         Loader loader = httpEntry.getLoader();
         TransactionalGraphEngine dbEngine = httpEntry.getDbEngine();
 
-        URI uriObject = UriBuilder.fromPath("/cloud-infrastructure/pservers/pserver/junit-test1").build();
-
-        QueryParser uriQuery = dbEngine.getQueryBuilder().createQueryFromURI(uriObject);
-
+        String uri = "/cloud-infrastructure/pservers/pserver/junit-test1";
         String content = "{\"hostname\":\"junit-test1\", \"equip-type\":\"junit-equip-type\"}";
-
-        Introspector obj = loader.unmarshal("pserver", content, org.onap.aai.restcore.MediaType.getEnum("application/json"));
-
-        DBRequest dbRequest =
-                new DBRequest.Builder(HttpMethod.MERGE_PATCH, uriObject, uriQuery, obj, httpHeaders, uriInfo, "JUNIT-TRANSACTION")
-                        .rawRequestContent(content).build();
-
-        List<DBRequest> dbRequestList = new ArrayList<>();
-        dbRequestList.add(dbRequest);
-
-        Pair<Boolean, List<Pair<URI, Response>>> responsesTuple  = httpEntry.process(dbRequestList, "JUNIT");
-        Response response = responsesTuple.getValue1().get(0).getValue1();
+        Response response = getResponse(httpEntry, loader, dbEngine, HttpMethod.MERGE_PATCH, uri, content);
         dbEngine.commit();
         assertEquals("Expected the pserver to be updated", 200, response.getStatus());
     }
     
-    private int doDelete(String resourceVersion) throws UnsupportedEncodingException, AAIException {
+    private int doDelete(String resourceVersion, String uri, String nodeType) throws UnsupportedEncodingException, AAIException {
     	queryParameters.add("resource-version", resourceVersion);
     	DBConnectionType type = DBConnectionType.REALTIME;
         HttpEntry httpEntry = new HttpEntry(Version.getLatest(), ModelType.MOXY, QueryStyle.TRAVERSAL, type);
         Loader loader = httpEntry.getLoader();
         TransactionalGraphEngine dbEngine = httpEntry.getDbEngine();
 
-        URI uriObject = UriBuilder.fromPath("/cloud-infrastructure/pservers/pserver/junit-test1").build();
+        URI uriObject = UriBuilder.fromPath(uri).build();
 
         QueryParser uriQuery = dbEngine.getQueryBuilder().createQueryFromURI(uriObject);
 
         String content = "";
 
-        Introspector obj = loader.introspectorFromName("pserver");
+        Introspector obj = loader.introspectorFromName(nodeType);
 
         DBRequest dbRequest =
                 new DBRequest.Builder(HttpMethod.DELETE, uriObject, uriQuery, obj, httpHeaders, uriInfo, "JUNIT-TRANSACTION")
@@ -232,7 +254,8 @@ public class HttpEntryTest extends AAISetup {
     }
     
     @Test
-    public void test4DeleteOnPserver() throws UnsupportedEncodingException, AAIException {
+    public void test6DeleteOnPserver() throws UnsupportedEncodingException, AAIException {
+
 
         DBConnectionType type = DBConnectionType.REALTIME;
         HttpEntry httpEntry = new HttpEntry(Version.getLatest(), ModelType.MOXY, QueryStyle.TRAVERSAL, type);
@@ -240,22 +263,9 @@ public class HttpEntryTest extends AAISetup {
         TransactionalGraphEngine dbEngine = httpEntry.getDbEngine();
 
         URI uriObject = UriBuilder.fromPath("/cloud-infrastructure/pservers/pserver/junit-test1").build();
-
-        QueryParser uriQuery = dbEngine.getQueryBuilder().createQueryFromURI(uriObject);
-
+        String uri = "/cloud-infrastructure/pservers/pserver/junit-test1";
         String content = "";
-
-        Introspector obj = loader.introspectorFromName("pserver");
-
-        DBRequest dbRequest =
-                new DBRequest.Builder(HttpMethod.GET, uriObject, uriQuery, obj, httpHeaders, uriInfo, "JUNIT-TRANSACTION")
-                        .rawRequestContent(content).build();
-
-        List<DBRequest> dbRequestList = new ArrayList<>();
-        dbRequestList.add(dbRequest);
-
-        Pair<Boolean, List<Pair<URI, Response>>> responsesTuple  = httpEntry.process(dbRequestList, "JUNIT");
-        Response response = responsesTuple.getValue1().get(0).getValue1();
+        Response response = getResponse(httpEntry, loader, dbEngine, HttpMethod.GET, uri, content);
         dbEngine.commit();
         String msg = response.getEntity().toString();
         JsonObject jsonObj = new JsonParser().parse(msg).getAsJsonObject();
@@ -263,36 +273,101 @@ public class HttpEntryTest extends AAISetup {
         if ( jsonObj.isJsonObject()) {
         	resourceVersion = jsonObj.get("resource-version").getAsString();
         }
-        assertEquals("Expected the pserver to be deleted", 204, doDelete(resourceVersion));
+        assertEquals("Expected the pserver to be deleted", 204, doDelete(resourceVersion, "/cloud-infrastructure/pservers/pserver/junit-test1", "pserver"));
     }
 
     @Test
-    public void test5FailedGetOnPserver() throws UnsupportedEncodingException, AAIException {
+    public void test7DeleteOnPserverNoPinterface() throws UnsupportedEncodingException, AAIException {
+
+    	
+        DBConnectionType type = DBConnectionType.REALTIME;
+        HttpEntry httpEntry = new HttpEntry(Version.getLatest(), ModelType.MOXY, QueryStyle.TRAVERSAL, type);
+        Loader loader = httpEntry.getLoader();
+        TransactionalGraphEngine dbEngine = httpEntry.getDbEngine();
+
+        String uri = "/cloud-infrastructure/pservers/pserver/junit-test2";
+        String content = "";
+        Response response = getResponse(httpEntry, loader, dbEngine, HttpMethod.GET, uri, content);
+        dbEngine.commit();
+        String msg = response.getEntity().toString();
+        JsonObject jsonObj = new JsonParser().parse(msg).getAsJsonObject();
+        String resourceVersion = "";
+        if ( jsonObj.isJsonObject()) {
+        	resourceVersion = jsonObj.get("resource-version").getAsString();
+        }
+        assertEquals("Expected the pserver to be deleted", 204, doDelete(resourceVersion, "/cloud-infrastructure/pservers/pserver/junit-test2", "pserver"));
+    }
+
+
+    @Test
+    public void test8FailedGetOnPserver() throws UnsupportedEncodingException, AAIException {
 
         DBConnectionType type = DBConnectionType.REALTIME;
         HttpEntry httpEntry = new HttpEntry(Version.getLatest(), ModelType.MOXY, QueryStyle.TRAVERSAL, type);
         Loader loader = httpEntry.getLoader();
         TransactionalGraphEngine dbEngine = httpEntry.getDbEngine();
 
-        URI uriObject = UriBuilder.fromPath("/cloud-infrastructure/pservers/pserver/junit-test2").build();
-
-        QueryParser uriQuery = dbEngine.getQueryBuilder().createQueryFromURI(uriObject);
-
+        String uri = "/cloud-infrastructure/pservers/pserver/junit-test2";
         String content = "";
-
-        Introspector obj = loader.introspectorFromName("pserver");
-
-        DBRequest dbRequest =
-                new DBRequest.Builder(HttpMethod.GET, uriObject, uriQuery, obj, httpHeaders, uriInfo, "JUNIT-TRANSACTION")
-                        .rawRequestContent(content).build();
-
-        List<DBRequest> dbRequestList = new ArrayList<>();
-        dbRequestList.add(dbRequest);
-
-        Pair<Boolean, List<Pair<URI, Response>>> responsesTuple  = httpEntry.process(dbRequestList, "JUNIT");
-        Response response = responsesTuple.getValue1().get(0).getValue1();
+        Response response = getResponse(httpEntry, loader, dbEngine, HttpMethod.GET, uri, content);
         dbEngine.commit();
 
         assertEquals("Expected the pserver to be deleted", 404, response.getStatus());
+    }
+
+    @Test
+    public void putEdgeTest() throws UnsupportedEncodingException, AAIException {
+
+        DBConnectionType type = DBConnectionType.REALTIME;
+        HttpEntry httpEntry = new HttpEntry(Version.getLatest(), ModelType.MOXY, QueryStyle.TRAVERSAL, type);
+        Loader loader = httpEntry.getLoader();
+        TransactionalGraphEngine dbEngine = httpEntry.getDbEngine();
+
+        //Put pserver
+        String uri = "/cloud-infrastructure/pservers/pserver/junit-edge-test-pserver";
+        String content = "{\"hostname\":\"junit-edge-test-pserver\"}";
+        getResponse(httpEntry, loader, dbEngine, HttpMethod.PUT, uri, content);
+        //Put complex
+        uri = "/cloud-infrastructure/complexes/complex/junit-edge-test-complex";
+        content = "{\"physical-location-id\":\"junit-edge-test-complex\",\"physical-location-type\":\"AAIDefault\",\"street1\":\"AAIDefault\",\"city\":\"AAIDefault\",\"state\":\"NJ\",\"postal-code\":\"07748\",\"country\":\"USA\",\"region\":\"US\"}";
+        getResponse(httpEntry, loader, dbEngine, HttpMethod.PUT, uri, content);
+
+        //PutEdge
+        uri = "/cloud-infrastructure/complexes/complex/junit-edge-test-complex/relationship-list/relationship";
+        content = "{\"related-to\":\"pserver\",\"related-link\":\"/aai/" + Version.getLatest().toString() + "/cloud-infrastructure/pservers/pserver/junit-edge-test-pserver\",\"relationship-label\":\"org.onap.relationships.inventory.LocatedIn\"}";
+        Response response = getResponse(httpEntry, loader, dbEngine, HttpMethod.PUT_EDGE, uri, content);
+
+        dbEngine.rollback();
+        //System.out.println(response.getEntity().toString());
+        assertEquals("Expected the pserver to be created", 200, response.getStatus());
+    }
+
+    @Test
+    public void putEdgeWrongLabelTest() throws UnsupportedEncodingException, AAIException {
+
+        DBConnectionType type = DBConnectionType.REALTIME;
+        HttpEntry httpEntry = new HttpEntry(Version.getLatest(), ModelType.MOXY, QueryStyle.TRAVERSAL, type);
+        Loader loader = httpEntry.getLoader();
+        TransactionalGraphEngine dbEngine = httpEntry.getDbEngine();
+
+        //Put pserver
+        String uri = "/cloud-infrastructure/pservers/pserver/junit-edge-test-pserver";
+        String content = "{\"hostname\":\"junit-edge-test-pserver\"}";
+        getResponse(httpEntry, loader, dbEngine, HttpMethod.PUT, uri, content);
+        //Put complex
+        uri = "/cloud-infrastructure/complexes/complex/junit-edge-test-complex";
+        content = "{\"physical-location-id\":\"junit-edge-test-complex\",\"physical-location-type\":\"AAIDefault\",\"street1\":\"AAIDefault\",\"city\":\"AAIDefault\",\"state\":\"NJ\",\"postal-code\":\"07748\",\"country\":\"USA\",\"region\":\"US\"}";
+        getResponse(httpEntry, loader, dbEngine, HttpMethod.PUT, uri, content);
+
+        //PutEdge
+        uri = "/cloud-infrastructure/complexes/complex/junit-edge-test-complex/relationship-list/relationship";
+        content = "{\"related-to\":\"pserver\",\"related-link\":\"/aai/" + Version.getLatest().toString() + "/cloud-infrastructure/pservers/pserver/junit-edge-test-pserver\",\"relationship-label\":\"junk\"}";
+        Response response = getResponse(httpEntry, loader, dbEngine, HttpMethod.PUT_EDGE, uri, content);
+
+        dbEngine.rollback();
+        String msg = response.getEntity().toString();
+        assertEquals("Expected the pserver to be created", 400, response.getStatus());
+        assertTrue(msg.contains("ERR.5.4.6107"));
+        assertTrue(msg.contains("Required Edge-property not found in input data:no COUSIN edge rule between complex and pserver with label junk"));
     }
 }

@@ -225,7 +225,7 @@
 				<xml-element java-attribute="keyValue" name="key-value" type="java.lang.String" />
 			</java-attributes>
 		</java-type>
-        
+
                <java-type name="ExternalSystem">
                        <xml-properties>
                                <xml-property name="description" value="Namespace for external system." />
@@ -520,7 +520,7 @@
 			<java-attributes>
 				<xml-element java-attribute="cloudOwner" name="cloud-owner" required="true" type="java.lang.String" xml-key="true">
 					<xml-properties>
-						<xml-property name="description" value="Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname" />
+						<xml-property name="description" value="Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname" />
 					</xml-properties>
 				</xml-element>
 				<xml-element java-attribute="cloudRegionId" name="cloud-region-id" required="true" type="java.lang.String" xml-key="true">
@@ -583,7 +583,7 @@
 				<xml-element container-type="java.util.ArrayList" java-attribute="vipIpv6AddressList" name="vip-ipv6-address-list" type="inventory.aai.onap.org.v12.VipIpv6AddressList" />
 			</java-attributes>
 			<xml-properties>
-				<xml-property name="description" value="cloud-region designates an installation of a cloud cluster or region or instantiation. In AT&amp;Ts AIC cloud, this could be an LCP or DCP. Cloud regions are uniquely identified by a composite key, cloud-owner + cloud-region-id. The format of the cloud-owner is vendor-cloudname and we will use att-aic for AT&amp;T's AIC." />
+				<xml-property name="description" value="cloud-region designates an installation of a cloud cluster or region or instantiation. In cloud, this could be an LCP or DCP. Cloud regions are uniquely identified by a composite key, cloud-owner + cloud-region-id. The format of the cloud-owner is vendor-cloudname" />
 				<xml-property name="indexedProps" value="cloud-owner,cloud-region-id,cloud-type,owner-defined-type" />
 				<xml-property name="nameProps" value="owner-defined-type" />
 				<xml-property name="container" value="cloud-regions" />
@@ -1788,11 +1788,6 @@
 						<xml-property name="description" value="Value from executing hostname on the compute node." />
 					</xml-properties>
 				</xml-element>
-				<xml-element java-attribute="selflink" name="selflink" type="java.lang.String">
-					<xml-properties>
-						<xml-property name="description" value="URL to endpoint where AAI can get more details." />
-					</xml-properties>
-				</xml-element>
 				<xml-element java-attribute="ptniiEquipName" name="ptnii-equip-name" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="PTNII name" />
@@ -2892,7 +2887,7 @@
 			</xml-properties>
 			<xml-root-element name="configurations" />
 			<java-attributes>
-				<xml-element container-type="java.util.ArrayList" java-attribute="configuration" name="configurations" type="inventory.aai.onap.org.v12.Configuration" />
+				<xml-element container-type="java.util.ArrayList" java-attribute="configuration" name="configuration" type="inventory.aai.onap.org.v12.Configuration" />
 			</java-attributes>
 		</java-type>
 
@@ -2918,7 +2913,7 @@
 					<xml-properties>
 						<xml-property name="description" value="port-mirroring-configuration." />
 					</xml-properties>
-				</xml-element>				
+				</xml-element>
 				<xml-element java-attribute="configurationSubType" name="configuration-sub-type" required="true" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="vprobe, pprobe." />
@@ -2940,26 +2935,26 @@
 						<xml-property name="dbAlias" value="model-version-id-local" />
 					</xml-properties>
 				</xml-element>
-				<xml-element java-attribute="orchestrationStatus" name="orchestration-status" required="true" type="java.lang.String">
+				<xml-element java-attribute="orchestrationStatus" name="orchestration-status" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Orchestration status of the configuration." />
 					</xml-properties>
 				</xml-element>
-				<xml-element java-attribute="operationalStatus" name="operational-status" required="true" type="java.lang.String">
+				<xml-element java-attribute="operationalStatus" name="operational-status" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Indicator for whether the resource is considered operational." />
 					</xml-properties>
-				</xml-element>				
-				<xml-element java-attribute="configurationSelflink" name="configuration-selflink" required="true" type="java.lang.String">
+				</xml-element>
+				<xml-element java-attribute="configurationSelflink" name="configuration-selflink" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="URL to endpoint where AAI can get more details from SDN-GC." />
 					</xml-properties>
 				</xml-element>
-				<xml-element java-attribute="modelCustomizationId" name="model-customization-id" required="true" type="java.lang.String">
+				<xml-element java-attribute="modelCustomizationId" name="model-customization-id" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="id of  the configuration used to customize the resource" />
 					</xml-properties>
-				</xml-element>				
+				</xml-element>
 				<xml-element java-attribute="tunnelBandwidth" name="tunnel-bandwidth" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="DHV Site Effective Bandwidth" />
@@ -2969,7 +2964,7 @@
 					<xml-properties>
 						<xml-property name="description" value="Velocloud Nominal Throughput - VNT" />
 					</xml-properties>
-				</xml-element>				
+				</xml-element>
 				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
@@ -2977,14 +2972,15 @@
 				</xml-element>
 				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v12.RelationshipList" />
 				<xml-element java-attribute="metadata" name="metadata" type="inventory.aai.onap.org.v12.Metadata" />
+				<xml-element java-attribute="forwarderEvcs" name="forwarder-evcs" type="inventory.aai.onap.org.v12.ForwarderEvcs" />
+				<xml-element java-attribute="evcs" name="evcs" type="inventory.aai.onap.org.v12.Evcs" />
 			</java-attributes>
 			<xml-properties>
-				<xml-property name="description" value="Port Mirror Configuration." />				
-				<xml-property name="indexedProps" value="configuration-id,model-invariant-id,model-version-id" />				
+				<xml-property name="description" value="Generic configuration object." />
+				<xml-property name="indexedProps" value="configuration-id,model-invariant-id,model-version-id" />
 				<xml-property name="uniqueProps" value="configuration-id" />
 				<xml-property name="container" value="configurations" />
 				<xml-property name="namespace" value="network" />
-                <xml-property name="nameProps" value="configuration-type" />
 			</xml-properties>
 		</java-type>
 
@@ -3029,7 +3025,7 @@
 				</xml-element>
 				<xml-element java-attribute="ipVersion" name="ip-version" type="java.lang.String">
 					<xml-properties>
-						<xml-property name="description" value="v4, v6, or ds for dual stack (should be att-ip-version)" />
+						<xml-property name="description" value="v4, v6, or ds for dual stack" />
 					</xml-properties>
 				</xml-element>
 				<xml-element java-attribute="routingProtocol" name="routing-protocol" type="java.lang.String">
@@ -5156,8 +5152,10 @@
 			<!-- NOTE that the names of these properties are not consistent and are in mixed case and hyphen case for now -->
 			<xml-properties>
 				<xml-property name="description" value="Internal map to define the properties of an edge and interpret the map EdgeRules" />
-				<xml-property name="edgeInfo" value="edgeLabel,direction,multiplicityRule,isParent,usesResource,hasDelTarget,SVC-INFRA,SVC-INFRA-REV" />
-			</xml-properties>
+				<xml-property name="edgeInfo" value="aaiUuid,edgeLabel,direction,multiplicityRule,isParent,usesResource,hasDelTarget,SVC-INFRA,SVC-INFRA-REV" />
+                <xml-property name="uniqueProps" value="aai-uuid" />
+                <xml-property name="indexedProps" value="aai-uuid" />
+            </xml-properties>
 			<xml-root-element name="edge-prop-names" />
 			<java-attributes>
 				<xml-element java-attribute="edgeLabel" name="edgeLabel" type="java.lang.String" />
@@ -5167,6 +5165,7 @@
 				<xml-element java-attribute="deleteOtherV" name="delete-other-v" type="java.lang.String" />
 				<xml-element java-attribute="svcinfra" name="SVC-INFRA" type="java.lang.String" />
 				<xml-element java-attribute="preventDelete" name="prevent-delete" type="java.lang.String" />
+				<xml-element java-attribute="aaiUuid" name="aai-uuid" type="java.lang.String" />
 			</java-attributes>
 		</java-type>
 
@@ -5976,22 +5975,22 @@
 						<xml-property name="description" value="Allotted Resource id UUID assigned to this instance." />
 					</xml-properties>
 				</xml-element>
-				<xml-element java-attribute="bandwidthUpWan1" name="bandwidth-up-wan1" required="true" type="java.lang.String">
+				<xml-element java-attribute="bandwidthUpWan1" name="bandwidth-up-wan1" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="The WAN uplink bandwidth for WAN1" />
 					</xml-properties>
 				</xml-element>
-				<xml-element java-attribute="bandwidthDownWan1" name="bandwidth-down-wan1" required="true" type="java.lang.String">
+				<xml-element java-attribute="bandwidthDownWan1" name="bandwidth-down-wan1" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="The WAN downlink bandwidth for WAN1" />
 					</xml-properties>
 				</xml-element>
-				<xml-element java-attribute="bandwidthUpWan2" name="bandwidth-up-wan2" required="true" type="java.lang.String">
+				<xml-element java-attribute="bandwidthUpWan2" name="bandwidth-up-wan2" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="The WAN uplink bandwidth for WAN2" />
 					</xml-properties>
 				</xml-element>
-				<xml-element java-attribute="bandwidthDownWan2" name="bandwidth-down-wan2" required="true" type="java.lang.String">
+				<xml-element java-attribute="bandwidthDownWan2" name="bandwidth-down-wan2" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="The WAN downlink bandwidth for WAN2" />
 					</xml-properties>
@@ -6506,6 +6505,11 @@
 						<xml-property name="description" value="Unique ID of this segmentation"/>
 					</xml-properties>
 				</xml-element>
+				<xml-element java-attribute="forwarderRole" name="forwarder-role" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="ingress, intermediate, egress"/>
+					</xml-properties>
+				</xml-element>
 				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v12.RelationshipList"/>
 				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
 					<xml-properties>
@@ -6514,5 +6518,151 @@
 				</xml-element>
 			</java-attributes>
 		</java-type>
+		
+		<java-type name="ForwarderEvcs">
+			<xml-root-element name="forwarder-evcs"/>
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="forwarderEvc" name="forwarder-evc" type="inventory.aai.onap.org.v12.ForwarderEvc"/>
+			</java-attributes>
+		</java-type>
+		
+		<java-type name="ForwarderEvc">
+			<xml-root-element name="forwarder-evc"/>
+			<java-attributes>
+				<xml-element java-attribute="forwarderEvcId" name="forwarder-evc-id" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="Key for forwarder-evc object"/>
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="circuitId" name="circuit-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Circuit ID from customer/ESP/ingress end of EVC, or reference to beater circuit on gateway/network/egress end of EVC" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="ivlan" name="ivlan" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Internal VLAN." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="svlan" name="svlan" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="SVLAN value for ingress of egress forwarder." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="cvlan" name="cvlan" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="CVLAN value for ingress of egress forwarder." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v12.RelationshipList"/>
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Used for optimistic concurrency. Must be empty on create, valid on update and delete."/>
+					</xml-properties>
+				</xml-element>
+			</java-attributes>
+			<xml-properties>
+				<xml-property name="description" value="forwarder object is an optional child object of the Configuration object." />
+				<xml-property name="dependentOn" value="configuration" />
+				<xml-property name="uniqueProps" value="forwarder-evc-id" />
+				<xml-property name="container" value="forwarder-evcs" />
+			</xml-properties>
+		</java-type>
+
+		<java-type name="Evcs">
+			<xml-root-element name="evcs" />
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="evc" name="evc" type="inventory.aai.onap.org.v12.Evc" />
+			</java-attributes>
+		</java-type>
+
+		<java-type name="Evc">
+			<xml-root-element name="evc" />
+			<java-attributes>
+				<xml-element java-attribute="evcId" name="evc-id" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="Unique/key field for the evc object" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="forwardingPathTopology" name="forwarding-path-topology" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Point-to-Point, Multi-Point" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="cirValue" name="cir-value" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Commited Information Rate" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="cirUnits" name="cir-units" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="CIR units" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="connectionDiversityGroupId" name="connection-diversity-group-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Diversity Group ID" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="serviceHours" name="service-hours" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="formerly Performance Group" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="espEvcCircuitId" name="esp-evc-circuit-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="EVC Circuit ID of ESP EVC" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="espEvcCirValue" name="esp-evc-cir-value" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Committed Information Rate (For ESP)" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="espEvcCirUnits" name="esp-evc-cir-units" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="CIR units (For ESP)" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="espItuCode" name="esp-itu-code" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Identifies ESP" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="collectorPopClli" name="collector-pop-clli" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Collector POP CLLI (from the hostname of the access pnf)" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="interConnectTypeIngress" name="inter-connect-type-ingress" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Interconnect type on ingress side of EVC." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="tagmodeAccessIngress" name="tagmode-access-ingress" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="tagode for collector side of EVC" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="tagmodeAccessEgress" name="tagmode-access-egress" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="tagMode for network side of EVC" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v12.RelationshipList"/>
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Used for optimistic concurrency. Must be empty on create, valid on update and delete."/>
+					</xml-properties>
+				</xml-element>
+			</java-attributes>
+			<xml-properties>
+				<xml-property name="description" value="evc object is an optional child object of the Configuration object." />
+				<xml-property name="dependentOn" value="configuration" />
+				<xml-property name="uniqueProps" value="evc-id" />
+				<xml-property name="container" value="evcs" />
+			</xml-properties>
+		</java-type>
+
 	</java-types>
 </xml-bindings>

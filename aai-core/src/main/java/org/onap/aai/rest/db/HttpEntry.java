@@ -30,7 +30,10 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -48,6 +51,8 @@ import org.onap.aai.dbmap.DBConnectionType;
 import org.onap.aai.domain.responseMessage.AAIResponseMessage;
 import org.onap.aai.domain.responseMessage.AAIResponseMessageDatum;
 import org.onap.aai.exceptions.AAIException;
+import org.onap.aai.extensions.AAIExtensionMap;
+import org.onap.aai.extensions.ExtensionController;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.introspection.LoaderFactory;
@@ -57,6 +62,7 @@ import org.onap.aai.introspection.ModelType;
 import org.onap.aai.introspection.Version;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.onap.aai.logging.ErrorLogHelper;
+import org.onap.aai.logging.LoggingContext;
 import org.onap.aai.parsers.query.QueryParser;
 import org.onap.aai.parsers.uri.URIToExtensionInformation;
 import org.onap.aai.rest.ueb.UEBNotification;
@@ -82,6 +88,7 @@ import com.thinkaurelius.titan.core.TitanException;
 public class HttpEntry {
 
 	private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(HttpEntry.class);
+	private static final String TARGET_ENTITY = "DB";
 
 	private final ModelType introspectorFactoryType;
 	
@@ -175,6 +182,7 @@ public class HttpEntry {
 	 */
 	public Pair<Boolean, List<Pair<URI, Response>>> process (List<DBRequest> requests, String sourceOfTruth, boolean enableResourceVersion) throws AAIException {
 		DBSerializer serializer = new DBSerializer(version, dbEngine, introspectorFactoryType, sourceOfTruth);
+		String methodName = "process";
 		Response response = null;
 		Status status = Status.NOT_FOUND;
 		Introspector obj = null;
@@ -191,16 +199,25 @@ public class HttpEntry {
 		QueryEngine queryEngine = dbEngine.getQueryEngine();
 		int maxRetries = 10;
 		int retry = 0;
+
+		LoggingContext.save();
 		for (DBRequest request : requests) {
 			try {
 				for (retry = 0; retry < maxRetries; ++retry) {
 					try {
 						method = request.getMethod();
+
+						LoggingContext.targetEntity(TARGET_ENTITY);
+						LoggingContext.targetServiceName(methodName + " " + method);
+
 						obj = request.getIntrospector();
 						query = request.getParser();
 						transactionId = request.getTransactionId();
 						uriTemp = request.getUri().getRawPath().replaceFirst("^v\\d+/", "");
 						uri = UriBuilder.fromPath(uriTemp).build();
+
+						LoggingContext.startTime();
+
 						List<Vertex> vertices = query.getQueryBuilder().toList();
 						boolean isNewVertex = false;
 						String outputMediaType = getMediaType(request.getHeaders().getAcceptableMediaTypes());
@@ -219,8 +236,10 @@ public class HttpEntry {
 						}
 						if (vertices.size() > 1 && processSingle && !method.equals(HttpMethod.GET)) {
 							if (method.equals(HttpMethod.DELETE)) {
+								LoggingContext.restoreIfPossible();
 								throw new AAIException("AAI_6138");
 							} else {
+								LoggingContext.restoreIfPossible();
 								throw new AAIException("AAI_6137");
 							}
 						}
@@ -254,8 +273,12 @@ public class HttpEntry {
 							case GET:
 								String nodeOnly = params.getFirst("nodes-only");
 								boolean isNodeOnly = nodeOnly != null;
-								
 								obj = this.getObjectFromDb(vertices, serializer, query, obj, request.getUri(), depth, isNodeOnly, cleanUp);
+
+								LoggingContext.elapsedTime((long)serializer.getDBTimeMsecs(),TimeUnit.MILLISECONDS);
+								LOGGER.info ("Completed");
+								LoggingContext.restoreIfPossible();
+
 								if (obj != null) {
 									status = Status.OK;
 									MarshallerProperties properties;
@@ -282,11 +305,20 @@ public class HttpEntry {
 								if (query.isDependent()) {
 									relatedObjects = this.getRelatedObjects(serializer, queryEngine, v);
 								}
+								LoggingContext.elapsedTime((long)serializer.getDBTimeMsecs() +
+										(long)queryEngine.getDBTimeMsecs(), TimeUnit.MILLISECONDS);
+								LOGGER.info ("Completed");
+								LoggingContext.restoreIfPossible();
 								notification.createNotificationEvent(transactionId, sourceOfTruth, status, uri, obj, relatedObjects);
+
 								break;
 							case PUT_EDGE:
 								serializer.touchStandardVertexProperties(v, false);
 								serializer.createEdge(obj, v);
+
+								LoggingContext.elapsedTime((long)serializer.getDBTimeMsecs(),TimeUnit.MILLISECONDS);
+								LOGGER.info ("Completed");
+								LoggingContext.restoreIfPossible();
 								status = Status.OK;
 								break;
 							case MERGE_PATCH:
@@ -319,8 +351,15 @@ public class HttpEntry {
 									if (query.isDependent()) {
 										relatedObjects = this.getRelatedObjects(serializer, queryEngine, v);
 									}
+									LoggingContext.elapsedTime((long)serializer.getDBTimeMsecs() +
+											(long)queryEngine.getDBTimeMsecs(), TimeUnit.MILLISECONDS);
+									LOGGER.info ("Completed");
+									LoggingContext.restoreIfPossible();
 									notification.createNotificationEvent(transactionId, sourceOfTruth, status, uri, patchedObj, relatedObjects);
 								} catch (IOException | JsonPatchException e) {
+
+									LOGGER.info ("Caught exception: " + e.getMessage());
+									LoggingContext.restoreIfPossible();
 									throw new AAIException("AAI_3000", "could not perform patch operation");
 								}
 								break;
@@ -330,13 +369,58 @@ public class HttpEntry {
 								if (query.isDependent()) {
 									relatedObjects = this.getRelatedObjects(serializer, queryEngine, v);
 								}
+								/*
+								 * Find all Delete-other-vertex vertices and create structure for notify
+								 * findDeleatble also returns the startVertex v and we dont want to create
+								 * duplicate notification events for the same
+								 * So remove the startvertex first
+								 */
+
+								List<Vertex> deletableVertices = dbEngine.getQueryEngine().findDeletable(v);
+								Long vId = (Long) v.id();
+
+								/*
+								 * I am assuming vertexId cant be null
+								 */
+								deletableVertices.removeIf(s -> vId.equals(s.id()));
+								boolean isDelVerticesPresent = !deletableVertices.isEmpty();
+								Map<Vertex, Introspector> deleteObjects = new HashMap<>();
+								Map<String, URI> uriMap = new HashMap<>();
+								Map<String, HashMap<String, Introspector>> deleteRelatedObjects = new HashMap<>();
+
+								if(isDelVerticesPresent){
+									deleteObjects = this.buildIntrospectorObjects(serializer, deletableVertices);
+
+									uriMap = this.buildURIMap(serializer, deleteObjects);
+									deleteRelatedObjects = this.buildRelatedObjects(serializer, queryEngine, deleteObjects);
+								}
+
 								serializer.delete(v, resourceVersion, enableResourceVersion);
+
+								LoggingContext.elapsedTime((long)serializer.getDBTimeMsecs() +
+										(long)queryEngine.getDBTimeMsecs(), TimeUnit.MILLISECONDS);
+								LOGGER.info ("Completed");
+								LoggingContext.restoreIfPossible();
 								status = Status.NO_CONTENT;
 								notification.createNotificationEvent(transactionId, sourceOfTruth, status, uri, obj, relatedObjects);
+
+								/*
+								 * Notify delete-other-v candidates
+								 */
+
+								if(isDelVerticesPresent){
+									this.buildNotificationEvent(sourceOfTruth, status, transactionId, notification, deleteObjects,
+									uriMap, deleteRelatedObjects);
+								}
+
 								break;
 							case DELETE_EDGE:
 								serializer.touchStandardVertexProperties(v, false);
 								serializer.deleteEdge(obj, v);
+
+								LoggingContext.elapsedTime((long)serializer.getDBTimeMsecs(),TimeUnit.MILLISECONDS);
+								LOGGER.info ("Completed");
+								LoggingContext.restoreIfPossible();
 								status = Status.NO_CONTENT;
 								break;
 							default:
@@ -370,25 +454,27 @@ public class HttpEntry {
 						break;
 					} catch (TitanException e) {
 						this.dbEngine.rollback();
+
+						LOGGER.info ("Caught exception: " + e.getMessage());
+						LoggingContext.restoreIfPossible();
 						AAIException ex = new AAIException("AAI_6142", e);
 						ErrorLogHelper.logException(ex);
-						Thread.sleep((retry + 1) * 20);
+						Thread.sleep((retry + 1) * 20L);
 						this.dbEngine.startTransaction();
 						queryEngine = dbEngine.getQueryEngine();
 						serializer = new DBSerializer(version, dbEngine, introspectorFactoryType, sourceOfTruth);
 					}
-				
 					if (retry == maxRetries) {
 						throw new AAIException("AAI_6134");
 					}
 				}
 			} catch (AAIException e) {
 				success = false;
-				ArrayList<String> templateVars = new ArrayList<String>();
+				ArrayList<String> templateVars = new ArrayList<>();
 				templateVars.add(request.getMethod().toString()); //GET, PUT, etc
-				templateVars.add(request.getUri().getPath().toString());
+				templateVars.add(request.getUri().getPath());
 				templateVars.addAll(e.getTemplateVars());
-				
+				ErrorLogHelper.logException(e);
 				response = Response
 						.status(e.getErrorObject().getHTTPResponseCode())
 						.entity(ErrorLogHelper.getRESTAPIErrorResponse(request.getHeaders().getAcceptableMediaTypes(), e, templateVars))
@@ -403,7 +489,7 @@ public class HttpEntry {
 				ArrayList<String> templateVars = new ArrayList<String>();
 				templateVars.add(request.getMethod().toString()); //GET, PUT, etc
 				templateVars.add(request.getUri().getPath().toString());
-
+				ErrorLogHelper.logException(ex);
 				response = Response
 						.status(ex.getErrorObject().getHTTPResponseCode())
 						.entity(ErrorLogHelper.getRESTAPIErrorResponse(request.getHeaders().getAcceptableMediaTypes(), ex, templateVars))
@@ -415,9 +501,9 @@ public class HttpEntry {
 		}
 		
 		notification.triggerEvents();
-		Pair<Boolean, List<Pair<URI, Response>>> tuple = Pair.with(success, responses);
-		return tuple;
+		return Pair.with(success, responses);
 	}
+
 
 	/**
 	 * Gets the media type.
@@ -562,5 +648,88 @@ public class HttpEntry {
 		
 		return relatedVertices;
 	}
+
+	private Map<Vertex, Introspector> buildIntrospectorObjects(DBSerializer serializer, Iterable<Vertex> vertices) {
+		Map<Vertex, Introspector> deleteObjectMap = new HashMap<>();
+		for (Vertex vertex : vertices) {
+			try {
+				// deleteObjectMap.computeIfAbsent(vertex, s ->
+				// serializer.getLatestVersionView(vertex));
+				Introspector deleteObj = serializer.getLatestVersionView(vertex);
+				deleteObjectMap.put(vertex, deleteObj);
+			} catch (UnsupportedEncodingException | AAIException e) {
+				LOGGER.warn("Unable to get Introspctor Objects, Just continue");
+				continue;
+			}
+
+		}
+
+		return deleteObjectMap;
+
+	}
+
+	private Map<String, URI> buildURIMap(DBSerializer serializer, Map<Vertex, Introspector> introSpector) {
+		Map<String, URI> uriMap = new HashMap<>();
+		for (Map.Entry<Vertex, Introspector> entry : introSpector.entrySet()) {
+			URI uri;
+			try {
+				uri = serializer.getURIForVertex(entry.getKey());
+				if (null != entry.getValue())
+					uriMap.put(entry.getValue().getObjectId(), uri);
+			} catch (UnsupportedEncodingException e) {
+				LOGGER.warn("Unable to get URIs, Just continue");
+				continue;
+			}
+
+		}
+
+		return uriMap;
+
+	}
+
+	private Map<String, HashMap<String, Introspector>> buildRelatedObjects(DBSerializer serializer,
+			QueryEngine queryEngine, Map<Vertex, Introspector> introSpector) {
+
+		Map<String, HashMap<String, Introspector>> relatedObjectsMap = new HashMap<>();
+		for (Map.Entry<Vertex, Introspector> entry : introSpector.entrySet()) {
+			try {
+				HashMap<String, Introspector> relatedObjects = this.getRelatedObjects(serializer, queryEngine,
+						entry.getKey());
+				if (null != entry.getValue())
+					relatedObjectsMap.put(entry.getValue().getObjectId(), relatedObjects);
+			} catch (IllegalAccessException | IllegalArgumentException
+					| InvocationTargetException | SecurityException | InstantiationException | NoSuchMethodException
+					| UnsupportedEncodingException | AAIException | URISyntaxException e) {
+				LOGGER.warn("Unable to get realted Objects, Just continue");
+				continue;
+			}
+
+		}
+
+		return relatedObjectsMap;
+
+	}
+
+	private void buildNotificationEvent(String sourceOfTruth, Status status, String transactionId,
+			UEBNotification notification, Map<Vertex, Introspector> deleteObjects, Map<String, URI> uriMap,
+			Map<String, HashMap<String, Introspector>> deleteRelatedObjects) {
+		for (Map.Entry<Vertex, Introspector> entry : deleteObjects.entrySet()) {
+			try {
+				String vertexObjectId = "";
+
+				if (null != entry.getValue()) {
+					vertexObjectId = entry.getValue().getObjectId();
+
+					if (uriMap.containsKey(vertexObjectId) && deleteRelatedObjects.containsKey(vertexObjectId))
+						notification.createNotificationEvent(transactionId, sourceOfTruth, status,
+								uriMap.get(vertexObjectId), entry.getValue(), deleteRelatedObjects.get(vertexObjectId));
+				}
+			} catch (UnsupportedEncodingException | AAIException e) {
+
+				LOGGER.warn("Error in sending otification");
+			}
+		}
+	}
+
  	
 }

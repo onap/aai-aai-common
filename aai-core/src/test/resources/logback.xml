@@ -130,7 +130,7 @@
 		</filter>
 		<file>${logDirectory}/rest/audit.log</file>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern>${logDirectory}/rest/audit-${Pid}.%d{yyyy-MM-dd}.log.zip
+			<fileNamePattern>${logDirectory}/rest/audit-${lrmRVer}-${lrmRO}-${Pid}.%d{yyyy-MM-dd}.log.zip
 			</fileNamePattern>
 		</rollingPolicy>
 		<triggeringPolicy
@@ -148,7 +148,7 @@
 		</filter>
 		<file>${logDirectory}/rest/perform.log</file>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern>${logDirectory}/rest/perform-${Pid}.%d{yyyy-MM-dd}.log.zip
+			<fileNamePattern>${logDirectory}/rest/perform-${lrmRVer}-${lrmRO}-${Pid}.%d{yyyy-MM-dd}.log.zip
 			</fileNamePattern>
 		</rollingPolicy>
 		<!--  <triggeringPolicy

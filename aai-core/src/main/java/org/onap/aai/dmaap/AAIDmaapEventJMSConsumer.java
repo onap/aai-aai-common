@@ -104,7 +104,16 @@ public class AAIDmaapEventJMSConsumer implements MessageListener {
 					eventName = jo.getString("event-topic");
 				}
 
+				MDC.put ("targetEntity", "DMAAP");
+				if (jo.getString("event-topic") != null) {
+					eventName = jo.getString("event-topic");
+					MDC.put ("targetServiceName", eventName);
+				}
+				MDC.put ("serviceName", "AAI");
+				MDC.put(LoggingField.STATUS_CODE.toString(), StatusCode.COMPLETE.toString());
+				MDC.put(LoggingField.RESPONSE_CODE.toString(), "0");
 				LOGGER.info(eventName + "|" + aaiEvent);
+
 				if ("AAI-EVENT".equals(eventName)) {
 					this.sentWithHttp(this.httpClient, this.aaiEventUrl, aaiEvent);
 				} else {
@@ -113,13 +122,21 @@ public class AAIDmaapEventJMSConsumer implements MessageListener {
 				}
 			} catch (java.net.SocketException e) {
 				if (!e.getMessage().contains("Connection reset")) {
+					MDC.put(LoggingField.STATUS_CODE.toString(), StatusCode.ERROR.toString());
+					MDC.put(LoggingField.RESPONSE_CODE.toString(), "200");
 					LOGGER.error("AAI_7304 Error reaching DMaaP to send event. " + aaiEvent, e);
 				}
 			} catch (IOException e) {
+				MDC.put(LoggingField.STATUS_CODE.toString(), StatusCode.ERROR.toString());
+				MDC.put(LoggingField.RESPONSE_CODE.toString(), "200");
 				LOGGER.error("AAI_7304 Error reaching DMaaP to send event. " + aaiEvent, e);
 			} catch (JMSException | JSONException e) {
+				MDC.put(LoggingField.STATUS_CODE.toString(), StatusCode.ERROR.toString());
+				MDC.put(LoggingField.RESPONSE_CODE.toString(), "200");
 				LOGGER.error("AAI_7350 Error parsing aaievent jsm message for sending to dmaap. " + jsmMessageTxt, e);
 			} catch (Exception e) {
+				MDC.put(LoggingField.STATUS_CODE.toString(), StatusCode.ERROR.toString());
+				MDC.put(LoggingField.RESPONSE_CODE.toString(), "200");
 				LOGGER.error("AAI_7350 Error sending message to dmaap. " + jsmMessageTxt, e);
 			}
 		}

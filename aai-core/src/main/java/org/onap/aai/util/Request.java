@@ -33,10 +33,7 @@ import org.onap.aai.exceptions.AAIException;
 
 public class Request<T> {
 
-	public static final String V2 = "v2";
-	public static final String V3 = "v3";
-	public static final String V4 = "v4";
-	public static final String V5 = "v5";
+	public static final String V12 = "v12";
 	public final String fromAppId;
 	public final String transactionId;
 	public final String path;
@@ -73,7 +70,7 @@ public class Request<T> {
 		private String path;
 		private RestObject<T> restObj;
 		private boolean oldServer;
-		private String apiVersion = Request.V4;
+		private String apiVersion = Request.V12;
 		
 
 		/**

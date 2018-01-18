@@ -27,6 +27,7 @@ import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
+import org.onap.aai.logging.LogFormatTools;
 import org.onap.aai.parsers.uri.Parsable;
 import org.onap.aai.parsers.uri.URIParser;
 import org.onap.aai.parsers.uri.URIToObject;
@@ -134,7 +135,8 @@ public class LegacyQueryParser extends QueryParser implements Parsable {
 					Introspector child = obj.newIntrospectorInstanceOfNestedProperty(obj.getChildName());
 					this.handleUriKeys(child, uriKeys);
 				} catch (AAIUnknownObjectException e) {
-					LOGGER.warn("Skipping container child " + obj.getChildName() + " (Unknown Object)", e);
+					LOGGER.warn("Skipping container child " + obj.getChildName() + " (Unknown Object) " +
+							LogFormatTools.getStackTop(e));
 				}
 			}
 			

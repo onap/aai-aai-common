@@ -21,18 +21,19 @@
  */
 package org.onap.aai.serialization.queryformats;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Stream;
-
-import org.onap.aai.serialization.queryformats.exceptions.AAIFormatQueryResultFormatNotSupported;
-import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
-
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
+import org.onap.aai.logging.LogFormatTools;
+import org.onap.aai.serialization.queryformats.exceptions.AAIFormatQueryResultFormatNotSupported;
+import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 public class Formatter {
 
@@ -50,14 +51,14 @@ public class Formatter {
 		Stream<Object> stream = null;
 		JsonObject result = new JsonObject();
 		JsonArray body = new JsonArray();
-		
+
 		if (this.format instanceof Count) {
 			JsonObject countResult;
 			try {
 				countResult = format.formatObject(queryResults);
-				body.add(countResult);			
+				body.add(countResult);
 			} catch (Exception e) {
-				LOGGER.warn("Failed to format result type of the query", e);
+				LOGGER.warn("Failed to format result type of the query " + LogFormatTools.getStackTop(e));
 			}
 		} else {
 			if (queryResults.size() >= format.parallelThreshold()) {
@@ -65,16 +66,16 @@ public class Formatter {
 			} else {
 				stream = queryResults.stream();
 			}
-			
+
 			final boolean isParallel = stream.isParallel();
-			
+
 			stream.map(o -> {
 				try {
 					return Optional.<JsonObject>of(format.formatObject(o));
 				} catch (AAIFormatVertexException e) {
-					LOGGER.warn("Failed to format vertex, returning a partial list", e);
+					LOGGER.warn("Failed to format vertex, returning a partial list " + LogFormatTools.getStackTop(e));
 				} catch (AAIFormatQueryResultFormatNotSupported e) {
-					LOGGER.warn("Failed to format result type of the query", e);
+					LOGGER.warn("Failed to format result type of the query " + LogFormatTools.getStackTop(e));
 				}
 
 				return Optional.<JsonObject>empty();

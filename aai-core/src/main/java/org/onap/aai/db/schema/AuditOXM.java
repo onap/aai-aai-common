@@ -47,6 +47,7 @@ import org.onap.aai.introspection.LoaderFactory;
 import org.onap.aai.introspection.ModelType;
 import org.onap.aai.introspection.Version;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
+import org.onap.aai.logging.LogFormatTools;
 import org.onap.aai.schema.enums.ObjectMetadata;
 import org.onap.aai.util.AAIConstants;
 import com.att.eelf.configuration.EELFLogger;
@@ -77,7 +78,7 @@ public class AuditOXM extends Auditor {
 				allObjects.add(temp);
 				this.createDBProperties(temp);
 			} catch (AAIUnknownObjectException e) {
-				LOGGER.warn("Skipping audit for object " + key + " (Unknown Object)", e);
+				LOGGER.warn("Skipping audit for object " + key + " (Unknown Object) " + LogFormatTools.getStackTop(e));
 			}
 		}
 		for (Introspector temp : allObjects) {

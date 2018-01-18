@@ -92,7 +92,7 @@ public class RawFormatTest extends AAISetup {
 
 	@Test
 	public void verifyPserverRelatedToHasEdgeLabel () throws AAIFormatVertexException, AAIException, AAIFormatQueryResultFormatNotSupported {
-		assertTrue(rawFormat.createRelationshipObject(pserver).get(0).getAsJsonObject().get("relationship-label").getAsString().equals("locatedIn"));
+		assertTrue(rawFormat.createRelationshipObject(pserver).get(0).getAsJsonObject().get("relationship-label").getAsString().equals("org.onap.relationships.inventory.LocatedIn"));
 	}
 	
 	@Test
@@ -102,7 +102,7 @@ public class RawFormatTest extends AAISetup {
 	
 	@Test
 	public void verifyComplexRelatedToHasEdgeLabel () throws AAIFormatVertexException, AAIException, AAIFormatQueryResultFormatNotSupported {
-		assertTrue(rawFormat.createRelationshipObject(complex).get(0).getAsJsonObject().get("relationship-label").getAsString().equals("locatedIn"));
+		assertTrue(rawFormat.createRelationshipObject(complex).get(0).getAsJsonObject().get("relationship-label").getAsString().equals("org.onap.relationships.inventory.LocatedIn"));
 	}
 	
 	@Test

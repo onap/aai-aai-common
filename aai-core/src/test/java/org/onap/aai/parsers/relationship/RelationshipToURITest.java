@@ -54,7 +54,7 @@ public class RelationshipToURITest extends AAISetup {
 	public void onlyLink() throws AAIException, URISyntaxException, IOException {
 		Loader loader = LoaderFactory.createLoaderForVersion(modelType, version10);
 		Introspector obj = loader.unmarshal("relationship", this.getJsonString("only-related-link.json"));
-		URI expected = new URI("/aai/v10/network/test-objects/test-object/key1");
+		URI expected = new URI("/aai/v10/network/generic-vnfs/generic-vnf/key1");
 		
 		RelationshipToURI parse = new RelationshipToURI(loader, obj);
 		
@@ -67,7 +67,7 @@ public class RelationshipToURITest extends AAISetup {
 	public void onlyData() throws AAIException, URISyntaxException, IOException {
 		Loader loader = LoaderFactory.createLoaderForVersion(modelType, version10);
 		Introspector obj = loader.unmarshal("relationship", this.getJsonString("only-relationship-data.json"));
-		URI expected = new URI("/network/test-objects/test-object/key1");
+		URI expected = new URI("/network/generic-vnfs/generic-vnf/key1");
 
 		RelationshipToURI parse = new RelationshipToURI(loader, obj);
 		
@@ -80,7 +80,7 @@ public class RelationshipToURITest extends AAISetup {
 	public void failV10() throws AAIException, URISyntaxException, IOException {
 		Loader loader = LoaderFactory.createLoaderForVersion(modelType, version10);
 		Introspector obj = loader.unmarshal("relationship", this.getJsonString("both-failv10-successv9.json"));
-		URI expected = new URI("/aai/v10/network/test-objects/test-object/key1");
+		URI expected = new URI("/aai/v10/network/generic-vnfs/generic-vnf/key1");
 		
 		thrown.expect(AAIIdentityMapParseException.class);
 		thrown.expect(hasProperty("code", is("AAI_3000")));
@@ -93,7 +93,7 @@ public class RelationshipToURITest extends AAISetup {
 	public void successV9() throws AAIException, URISyntaxException, IOException {
 		Loader loader = LoaderFactory.createLoaderForVersion(modelType, version9);
 		Introspector obj = loader.unmarshal("relationship", this.getJsonString("both-failv10-successv9.json"));
-		URI expected = new URI("/network/test-objects/test-object/key2");
+		URI expected = new URI("/network/generic-vnfs/generic-vnf/key2");
 		
 		RelationshipToURI parse = new RelationshipToURI(loader, obj);
 		URI uri = parse.getUri();
@@ -107,7 +107,7 @@ public class RelationshipToURITest extends AAISetup {
 	public void failV9() throws AAIException, URISyntaxException, IOException {
 		Loader loader = LoaderFactory.createLoaderForVersion(modelType, version9);
 		Introspector obj = loader.unmarshal("relationship", this.getJsonString("both-successv10-failv9.json"));
-		URI expected = new URI("/network/test-objects/test-object/key1");
+		URI expected = new URI("/network/generic-vnfs/generic-vnf/key1");
 		
 		thrown.expect(AAIIdentityMapParseException.class);
 		thrown.expect(hasProperty("code", is("AAI_3000")));
@@ -122,7 +122,7 @@ public class RelationshipToURITest extends AAISetup {
 	public void failNothingToParse() throws AAIException, URISyntaxException, IOException {
 		Loader loader = LoaderFactory.createLoaderForVersion(modelType, version10);
 		Introspector obj = loader.unmarshal("relationship", this.getJsonString("nothing-to-parse.json"));
-		URI expected = new URI("/aai/v10/network/test-objects/test-object/key1");
+		URI expected = new URI("/aai/v10/network/generic-vnfs/generic-vnf/key1");
 		
 		thrown.expect(AAIIdentityMapParseException.class);
 		thrown.expect(hasProperty("code", is("AAI_3000")));
@@ -136,7 +136,7 @@ public class RelationshipToURITest extends AAISetup {
 	public void successV10() throws AAIException, URISyntaxException, IOException {
 		Loader loader = LoaderFactory.createLoaderForVersion(modelType, version10);
 		Introspector obj = loader.unmarshal("relationship", this.getJsonString("both-successv10-failv9.json"));
-		URI expected = new URI("/aai/v10/network/test-objects/test-object/key1");
+		URI expected = new URI("/aai/v10/network/generic-vnfs/generic-vnf/key1");
 		
 		RelationshipToURI parse = new RelationshipToURI(loader, obj);
 		
@@ -152,7 +152,7 @@ public class RelationshipToURITest extends AAISetup {
 	public void ambiguousRelationship() throws AAIException, URISyntaxException, IOException {
 		Loader loader = LoaderFactory.createLoaderForVersion(modelType, version10);
 		Introspector obj = loader.unmarshal("relationship", this.getJsonString("ambiguous-relationship.json"));
-		URI expected = new URI("/aai/v10/network/test-objects/test-object/key1");
+		URI expected = new URI("/aai/v10/network/generic-vnfs/generic-vnf/key1");
 		
 		thrown.expect(AmbiguousMapAAIException.class);
 		thrown.expect(hasProperty("code", is("AAI_6146")));

@@ -369,6 +369,9 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
 	public abstract QueryBuilder<E> as(String name);
 	public abstract QueryBuilder<E> select(String name);
 	public abstract QueryBuilder<E> until(QueryBuilder<E> builder);
+	public abstract QueryBuilder<E> groupCount();
+	public abstract QueryBuilder<E> by(String name);
+	public abstract QueryBuilder<E> both();
 	
 	/**
 	 * Used to prevent the traversal from repeating its path through the graph.

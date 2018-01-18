@@ -126,7 +126,7 @@ public class GraphTraversalTest extends AAISetup {
 		QueryParser query = dbEngine.getQueryBuilder().createQueryFromURI(uri);
 		GraphTraversal<Vertex, Vertex> expected = __.<Vertex>start()
 				.has("physical-location-id", "key1").has("aai-node-type", "complex")
-				.out("hasCtagPool")
+				.in("org.onap.relationships.inventory.BelongsTo")
 				.has("aai-node-type", "ctag-pool")
 				.has("target-pe", "key2").has("availability-zone-name", "key3");
 		GraphTraversal<Vertex, Vertex> expectedParent = __.<Vertex>start()
@@ -164,14 +164,14 @@ public class GraphTraversalTest extends AAISetup {
 		QueryParser query = dbEngine.getQueryBuilder().createQueryFromURI(uri);
 		GraphTraversal<Vertex, Vertex> expected = __.<Vertex>start()
 				.has("vnf-id", "key1").has("aai-node-type", "vce")
-				.out("hasPortGroup")
+				.in("org.onap.relationships.inventory.BelongsTo")
 				.has("aai-node-type", "port-group")
-				.has("interface-id", "key2").out("hasCTag")
+				.has("interface-id", "key2").in("org.onap.relationships.inventory.BelongsTo")
 				.has("aai-node-type", "cvlan-tag")
 				.has("cvlan-tag", 655);
 		GraphTraversal<Vertex, Vertex> expectedParent = __.<Vertex>start()
 				.has("vnf-id", "key1").has("aai-node-type", "vce")
-				.out("hasPortGroup")
+				.in("org.onap.relationships.inventory.BelongsTo")
 				.has("aai-node-type", "port-group")
 				.has("interface-id", "key2");
 		assertEquals(
@@ -212,13 +212,13 @@ public class GraphTraversalTest extends AAISetup {
 		QueryParser query = dbEngine.getQueryBuilder().createQueryFromURI(uri);
 		GraphTraversal<Vertex, Vertex> expected = __.<Vertex>start()
 				.has("vnf-id", "key1").has("aai-node-type", "vce")
-				.out("hasPortGroup")
+				.in("org.onap.relationships.inventory.BelongsTo")
 				.has("aai-node-type", "port-group")
-				.has("interface-id", "key2").out("hasCTag")
+				.has("interface-id", "key2").in("org.onap.relationships.inventory.BelongsTo")
 				.has("aai-node-type", "cvlan-tag");
 		GraphTraversal<Vertex, Vertex> expectedParent = __.<Vertex>start()
 				.has("vnf-id", "key1").has("aai-node-type", "vce")
-				.out("hasPortGroup")
+				.in("org.onap.relationships.inventory.BelongsTo")
 				.has("aai-node-type", "port-group")
 				.has("interface-id", "key2");
 		assertEquals(
@@ -296,7 +296,7 @@ public class GraphTraversalTest extends AAISetup {
 		GraphTraversal<Vertex, Vertex> expected = __.<Vertex>start()
 				.has("cloud-owner", "mycloudowner").has("cloud-region-id", "mycloudregionid")
 				.has("aai-node-type", "cloud-region")
-				.out("has")
+				.in("org.onap.relationships.inventory.BelongsTo")
 				.has("aai-node-type", "tenant")
 				.has("tenant-name", "Tenant1");
 
@@ -340,7 +340,7 @@ public class GraphTraversalTest extends AAISetup {
 		GraphTraversal<Vertex, Vertex> expected = __.<Vertex>start()
 				.has("cloud-owner", "mycloudowner").has("cloud-region-id", "mycloudregionid")
 				.has("aai-node-type", "cloud-region")
-				.out("has")
+				.in("org.onap.relationships.inventory.BelongsTo")
 				.has("aai-node-type", "tenant")
 				.has("tenant-name", P.within(values));
 
@@ -432,14 +432,14 @@ public class GraphTraversalTest extends AAISetup {
 		
 		GraphTraversal<Vertex, Vertex> expected = __.<Vertex>start()
 				.has("vnf-id", "key1").has("aai-node-type", "vce")
-				.out("hasPortGroup")
+				.in("org.onap.relationships.inventory.BelongsTo")
 				.has("aai-node-type", "port-group")
-				.has("interface-id", "key2").out("hasCTag")
+				.has("interface-id", "key2").in("org.onap.relationships.inventory.BelongsTo")
 				.has("aai-node-type", "cvlan-tag")
 				.has("cvlan-tag", 333);
 		GraphTraversal<Vertex, Vertex> expectedParent = __.<Vertex>start()
 				.has("vnf-id", "key1").has("aai-node-type", "vce")
-				.out("hasPortGroup")
+				.in("org.onap.relationships.inventory.BelongsTo")
 				.has("aai-node-type", "port-group")
 				.has("interface-id", "key2");
 		assertEquals(
@@ -527,7 +527,7 @@ public class GraphTraversalTest extends AAISetup {
 		
 		GraphTraversal<Vertex, Vertex> expected = __.<Vertex>start()
 				.has("vnf-id", "key1").has(AAIProperties.NODE_TYPE, P.within("vce", "generic-vnf"))
-				.union(__.out("has").has(AAIProperties.NODE_TYPE, "vf-module")).has("vf-module-id", "key2");
+				.union(__.in("org.onap.relationships.inventory.BelongsTo").has(AAIProperties.NODE_TYPE, "vf-module")).has("vf-module-id", "key2");
 		
 		GraphTraversal<Vertex, Vertex> expectedParent = __.<Vertex>start()
 				.has("vnf-id", "key1").has(AAIProperties.NODE_TYPE, P.within("vce", "generic-vnf"));
@@ -621,15 +621,15 @@ public class GraphTraversalTest extends AAISetup {
 	
 	@Test
 	public void dbAliasedSearch() throws UnsupportedEncodingException, AAIException {
-		URI uri = UriBuilder.fromPath("network/test-objects").build();
+		URI uri = UriBuilder.fromPath("network/generic-vnfs").build();
 		MultivaluedMap<String, String> map = new MultivaluedHashMap<>();
 		map.putSingle("persona-model-customization-id", "key2");
 		QueryParser query = dbEnginev9.getQueryBuilder().createQueryFromURI(uri, map);
 		GraphTraversal<Vertex, Vertex> expected = __.<Vertex>start()
-				.has("aai-node-type", "test-object")
+				.has("aai-node-type", "generic-vnf")
 				.has("model-customization-id", "key2");
 		GraphTraversal<Vertex, Vertex> expectedParent = __.<Vertex>start()
-				.has("aai-node-type", "test-object");
+				.has("aai-node-type", "generic-vnf");
 		
 		assertEquals(
 				"gremlin query should be " + expected.toString(),
@@ -642,7 +642,7 @@ public class GraphTraversalTest extends AAISetup {
 		
 		assertEquals(
 				"result type should be",
-				"test-object",
+				"generic-vnf",
 				query.getResultType());
 		assertEquals(
 				"result type should be empty",
@@ -661,7 +661,7 @@ public class GraphTraversalTest extends AAISetup {
 		QueryParser query = dbEnginev9.getQueryBuilder().createQueryFromURI(uri, map);
 		GraphTraversal<Vertex, Vertex> expected = __.<Vertex>start()
 				.has("aai-node-type", "vpn-binding")
-				.where(__.out("has").has(AAIProperties.NODE_TYPE, "route-target").has("global-route-target", "key2"));
+				.where(__.in("org.onap.relationships.inventory.BelongsTo").has(AAIProperties.NODE_TYPE, "route-target").has("global-route-target", "key2"));
 		GraphTraversal<Vertex, Vertex> expectedParent = __.<Vertex>start()
 				.has("aai-node-type", "vpn-binding");
 		
@@ -693,7 +693,7 @@ public class GraphTraversalTest extends AAISetup {
 		GraphTraversal<Vertex, Vertex> expected = __.<Vertex>start()
 				.has("physical-location-id", "key1")
 				.has("aai-node-type", "complex")
-				.in("locatedIn").has("aai-node-type", "pserver");
+				.in("org.onap.relationships.inventory.LocatedIn").has("aai-node-type", "pserver");
 		GraphTraversal<Vertex, Vertex> expectedParent = __.<Vertex>start()
 				.has("physical-location-id", "key1")
 				.has("aai-node-type", "complex");
@@ -727,7 +727,7 @@ public class GraphTraversalTest extends AAISetup {
 		GraphTraversal<Vertex, Vertex> expected = __.<Vertex>start()
 				.has("physical-location-id", "key1")
 				.has("aai-node-type", "complex")
-				.in("locatedIn").has("aai-node-type", "pserver")
+				.in("org.onap.relationships.inventory.LocatedIn").has("aai-node-type", "pserver")
 				.has("hostname", "key2");
 		GraphTraversal<Vertex, Vertex> expectedParent = __.<Vertex>start()
 				.has("physical-location-id", "key1")
@@ -762,14 +762,14 @@ public class GraphTraversalTest extends AAISetup {
 		GraphTraversal<Vertex, Vertex> expected = __.<Vertex>start()
 				.has("physical-location-id", "key1")
 				.has("aai-node-type", "complex")
-				.in("locatedIn").has("aai-node-type", "pserver")
+				.in("org.onap.relationships.inventory.LocatedIn").has("aai-node-type", "pserver")
 				.has("hostname", "key2")
-				.in("runsOnPserver").has("aai-node-type", "vserver")
+				.in("tosca.relationships.HostedOn").has("aai-node-type", "vserver")
 				.has("vserver-id", "key3");
 		GraphTraversal<Vertex, Vertex> expectedParent = __.<Vertex>start()
 				.has("physical-location-id", "key1")
 				.has("aai-node-type", "complex")
-				.in("locatedIn").has("aai-node-type", "pserver")
+				.in("org.onap.relationships.inventory.LocatedIn").has("aai-node-type", "pserver")
 				.has("hostname", "key2");
 
 		assertEquals(

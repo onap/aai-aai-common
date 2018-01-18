@@ -28,10 +28,13 @@ import com.thinkaurelius.titan.core.TitanGraph;
 import com.thinkaurelius.titan.core.schema.TitanManagement;
 import org.onap.aai.dbmap.AAIGraph;
 import org.onap.aai.logging.ErrorLogHelper;
+import org.onap.aai.logging.LoggingContext;
+import org.onap.aai.logging.LoggingContext.StatusCode;
 import org.onap.aai.util.AAIConfig;
 import org.onap.aai.util.AAIConstants;
 
 import java.util.Properties;
+import java.util.UUID;
 
 
 public class GenTester {
@@ -46,7 +49,7 @@ public class GenTester {
 	public static void main(String[] args) {
 	   
 		TitanGraph graph = null;
-		
+		System.setProperty("aai.service.name", GenTester.class.getSimpleName());
 		// Set the logging file properties to be used by EELFManager
 		Properties props = System.getProperties();
 		props.setProperty(Configuration.PROPERTY_LOGGING_FILE_NAME, AAIConstants.AAI_CREATE_DB_SCHEMA_LOGBACK_PROPS);
@@ -54,7 +57,16 @@ public class GenTester {
 		LOGGER = EELFManager.getInstance().getLogger(GenTester.class);
 		boolean addDefaultCR = true;
 		
-		try {   
+		LoggingContext.init();
+		LoggingContext.component("DBGenTester");
+		LoggingContext.partnerName("AAI-TOOLS");
+		LoggingContext.targetEntity("AAI");
+		LoggingContext.requestId(UUID.randomUUID().toString());
+		LoggingContext.serviceName("AAI");
+		LoggingContext.targetServiceName("main");
+		LoggingContext.statusCode(StatusCode.COMPLETE);
+		LoggingContext.responseCode(LoggingContext.SUCCESS);
+		try {
 			AAIConfig.init();
 	    	if (args != null && args.length > 0 ){
 	    		if( "genDbRulesOnly".equals(args[0]) ){
@@ -88,6 +100,8 @@ public class GenTester {
 	    			
 	    			String emsg = "Unrecognized argument passed to GenTester.java: [" + args[0] + "]. ";
 	    			System.out.println(emsg);
+	    			LoggingContext.statusCode(StatusCode.ERROR);
+	    			LoggingContext.responseCode(LoggingContext.BUSINESS_PROCESS_ERROR);
 	    			LOGGER.error(emsg);
 	    			
 	    			emsg = "Either pass no argument for normal processing, or use 'GEN_DB_WITH_NO_SCHEMA'.";

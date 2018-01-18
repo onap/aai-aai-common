@@ -118,8 +118,15 @@ public class URIToExtensionInformation implements Parsable {
 	 */
 	public String getMethodName(HttpMethod httpMethod, boolean isPreprocess) {
 		String result = "Dynamic";
-		if (httpMethod.equals(HttpMethod.PUT)) {
+		/*
+		if (httpMethod.equals(HttpMethod.PUT) || httpMethod.equals(HttpMethod.PUT_EDGE)) {
 			result += "Add";
+		}
+		*/
+		if (httpMethod.equals(HttpMethod.PUT) ) {
+			result += "Add";
+		} else if  (httpMethod.equals(HttpMethod.PUT_EDGE)) {
+			result += "AddEdge";
 		} else if (httpMethod.equals(HttpMethod.DELETE)) {
 			result += "Del";
 		} else {

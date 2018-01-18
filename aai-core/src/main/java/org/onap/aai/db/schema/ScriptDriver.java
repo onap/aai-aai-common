@@ -22,13 +22,17 @@
 package org.onap.aai.db.schema;
 
 import java.io.IOException;
+import java.util.UUID;
 
+import org.apache.commons.configuration.ConfigurationException;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
-
+import org.onap.aai.dbmap.AAIGraphConfig;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Version;
+import org.onap.aai.logging.LoggingContext;
+import org.onap.aai.logging.LoggingContext.StatusCode;
 import org.onap.aai.util.AAIConfig;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
@@ -47,8 +51,18 @@ public class ScriptDriver {
 	 * @throws JsonMappingException the json mapping exception
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	public static void main (String[] args) throws AAIException, IOException {
+	public static void main (String[] args) throws AAIException, IOException, ConfigurationException {
 		CommandLineArgs cArgs = new CommandLineArgs();
+		
+		LoggingContext.init();
+		LoggingContext.component("DBSchemaScriptDriver");
+		LoggingContext.partnerName("NA");
+		LoggingContext.targetEntity("AAI");
+		LoggingContext.requestId(UUID.randomUUID().toString());
+		LoggingContext.serviceName("AAI");
+		LoggingContext.targetServiceName("main");
+		LoggingContext.statusCode(StatusCode.COMPLETE);
+		LoggingContext.responseCode(LoggingContext.SUCCESS);
 		
 		new JCommander(cArgs, args);
 		
@@ -57,7 +71,7 @@ public class ScriptDriver {
 		}
 		String config = cArgs.config;
 		AAIConfig.init();
-		try (TitanGraph graph = TitanFactory.open(config)) {
+		try (TitanGraph graph = TitanFactory.open(new AAIGraphConfig.Builder(config).forService(ScriptDriver.class.getSimpleName()).withGraphType("NA").buildConfiguration())) {
 			if (!("oxm".equals(cArgs.type) || "graph".equals(cArgs.type))) {
 				System.out.println("type: " + cArgs.type + " not recognized.");
 				System.exit(1);

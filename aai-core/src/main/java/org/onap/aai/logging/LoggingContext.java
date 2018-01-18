@@ -58,6 +58,12 @@ public class LoggingContext {
 	public static final String BUSINESS_PROCESS_ERROR = "500";
 	public static final String UNKNOWN_ERROR = "900";
 	
+	public static final Map<String, String> responseMap = new HashMap();
+	 
+    static {
+        responseMap.put(SUCCESS, "Success");
+        responseMap.put(UNKNOWN_ERROR, "Unknown error");
+    }
 	//ECOMP Specific Log Event Fields
 	public static enum LoggingField {
 		START_TIME("startTime"),
@@ -126,9 +132,6 @@ public class LoggingContext {
 
 	public static void requestId(String requestId) {
 		try {
-			if(requestId == null){
-				throw new IllegalArgumentException();
-			}
 			if (requestId.contains(":")) {
 				String[] uuidParts = requestId.split(":");
 				requestId = uuidParts[0];
@@ -138,12 +141,13 @@ public class LoggingContext {
 			final UUID generatedRequestUuid = UUID.randomUUID();
 			MDC.put(LoggingField.REQUEST_ID.toString(), generatedRequestUuid.toString());
 			LoggingContext.save();
-			AAIException ex = new AAIException("AAI_7405", e);
-			String responseCode = Integer.toString(ex.getErrorObject().getHTTPResponseCode().getStatusCode());
+			// set response code to 0 since we don't know what the outcome of this request is yet
+			String responseCode = LoggingContext.DATA_ERROR;
 			LoggingContext.responseCode(responseCode);
-
-			LOGGER.warn("Unable to use UUID " + requestId + " (Not formatted properly). Using generated UUID="
-					+ generatedRequestUuid);
+			LoggingContext.responseDescription("Unable to use UUID " + requestId + " (Not formatted properly) ");
+			LoggingContext.statusCode(StatusCode.ERROR);
+			
+			LOGGER.warn("Using generated UUID=" + generatedRequestUuid);
 			LoggingContext.restore();
 
 		}
@@ -196,6 +200,7 @@ public class LoggingContext {
 	public static void successStatusFields() {
 		responseCode(SUCCESS);
 		statusCode(LoggingContext.StatusCode.COMPLETE);
+		responseDescription("Success");
 	}
 	private static void serverIpAddress() {
 		try {

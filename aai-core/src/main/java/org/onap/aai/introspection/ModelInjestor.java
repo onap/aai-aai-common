@@ -105,7 +105,7 @@ public class ModelInjestor {
 	 */
 	public Version getVersionFromClassName (String classname) {
 		Matcher m = classNamePattern.matcher(classname);
-		String version = "v2"; //for the OXM, only the v2 ones don't include a model name, hence this default
+		String version = "v12";
 		if (m.find()) {
 			version = m.group(1);
 		}
