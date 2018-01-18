@@ -134,7 +134,6 @@ public class URIToRelationshipObject implements Parsable {
 		URI originalUri = parser.getOriginalURI();
 		
 		URI relatedLink = new URI(this.baseURL + this.originalVersion + "/" + originalUri);
-		this.relationship.setValue("related-link", relatedLink);
 		if (this.originalVersion.compareTo(Version.v10) >= 0) {
 			//only return the path section of the URI past v10
 			relatedLink = new URI(relatedLink.getRawPath());

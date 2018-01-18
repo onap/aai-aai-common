@@ -34,7 +34,18 @@ public final class StopWatch {
 	public static double stop() {
 		return LoggingContext.stopWatchStop();
 	}
-
+	public static void conditionalStart() {
+		if ( LoggingContext.isStopWatchStarted() ) {
+			return;
+		}
+		start();
+	}
+	public static double stopIfStarted() {
+		if ( LoggingContext.isStopWatchStarted() ) {
+			return (stop());
+		}
+		return (0);
+	}
 	public static void clear() {
 		LoggingContext.remove(LoggingField.STOP_WATCH_START.toString());
 		LoggingContext.remove(LoggingField.ELAPSED_TIME.toString());

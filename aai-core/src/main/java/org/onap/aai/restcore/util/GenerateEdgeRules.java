@@ -21,8 +21,6 @@
  */
 package org.onap.aai.restcore.util;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -30,108 +28,162 @@ import freemarker.template.TemplateException;
 import java.io.*;
 import java.util.*;
 
-public class GenerateEdgeRules {
+import org.onap.aai.serialization.db.EdgeRules;
+import org.onap.aai.introspection.Version;
 
-    private static final EELFLogger LOG = EELFManager.getInstance().getLogger(GenerateEdgeRules.class);
+public class GenerateEdgeRules {
 
     public static void main(String[] args) throws IOException, TemplateException {
 
-        String filename = "/AAI8032.csv";
+        String filename = "/edgeLabelMigration.csv";
         InputStream inputStream = GenerateEdgeRules.class.getResourceAsStream(filename);
         Map<String, Integer> headers = new HashMap<>();
-        Map<String, Object> edgeRulesMap = new TreeMap<String, Object>();
-        List<Map<String, String>> edgeRules = new ArrayList<>();
+
+        List<EdgeRuleBean> rulesToWriteV12 = new ArrayList<>();
+        List<EdgeRuleBean> rulesToWriteV7 = new ArrayList<>();
+        List<EdgeRuleBean> rulesToWriteV8 = new ArrayList<>();
+        List<EdgeRuleBean> rulesToWriteV9 = new ArrayList<>();
+        List<EdgeRuleBean> rulesToWriteV10 = new ArrayList<>();
+        List<EdgeRuleBean> rulesToWriteV11 = new ArrayList<>();
+
+        ArrayList <String> rulesWeAlreadyHave = new ArrayList <String>();
+
+        EdgeRules rulesV8 = EdgeRules.getInstance(Version.v8);
+        EdgeRules rulesV9 = EdgeRules.getInstance(Version.v9);
+        EdgeRules rulesV10 = EdgeRules.getInstance(Version.v10);
+        EdgeRules rulesV11 = EdgeRules.getInstance(Version.v11);
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
 
             String line = null;
-
             int rowNum = 0;
-
-            // Retrieve the header line to map the indexes to their column names
-
             while ((line = reader.readLine()) != null) {
-
-                if (rowNum == 0) {
+            	if (rowNum == 0) {
                     headers = retrieveHeaderMap(line);
-                } else {
-                    String[] columns = line.split(",");
+                }
+                else {
+                	EdgeRuleBean data = new EdgeRuleBean();
+                	String[] columns = line.split(",");
+                	String oldNodeA = columns[headers.get("from")];
+                	String oldNodeB = columns[headers.get("to")];
+                	String oldEdgeLabel = columns[headers.get("label")];
 
-                    String originalNode = columns[headers.get("Orig NodeA|NodeB")];
-                    String finalNode = columns[headers.get("Final NodeA|NodeB")];
-                    String originalEdge = columns[headers.get("Orig EdgeLabel")];
-                    String finalEdge = columns[headers.get("Final EdgeLabel")];
+                    String nodeA = columns[headers.get("new from")];
+                    data.setFrom(nodeA);
+                    String nodeB = columns[headers.get("new to")];
+                    data.setTo(nodeB);
 
-                    String lineage = columns[headers.get("Final Lineage")];
-                    String originalParent = columns[headers.get("Orig ParentOf")];
-                    String usesResource = columns[headers.get("Revised UsesResource")];
-                    String hasDelTarget = columns[headers.get("Revised hasDelTarget")];
-                    String svcInfra = columns[headers.get("Final SVC-INFRA")];
-                    String svcInfraRev = "";
+                    String edgeLabel = columns[headers.get("new label")];
+                    data.setLabel( edgeLabel );
 
-                    if(usesResource.equals("T"))
-                        usesResource = "true";
-                    else if(usesResource.equals("F"))
-                        usesResource = "false";
 
-                    if (hasDelTarget.equals("T") || hasDelTarget.equals("AB")) {
-                        hasDelTarget = "true";
-                    } else if (hasDelTarget.equals("F")) {
-                        hasDelTarget = "false";
+                    // Note: it is assumed that if we know the two NodeTypes and the edgeLabel, we can
+                    //     uniquely identify an edgeRule -- so if that key is found twice, it is a
+                    //     problem with our CSV file.  Note -we check with the nodeTypes in both directions.
+                    String key1 = nodeA + "|" + nodeB + "|" + edgeLabel;
+                    String key2 = nodeB + "|" + nodeA + "|" + edgeLabel;
+                    if( rulesWeAlreadyHave.contains(key1) ){
+                    	throw new Exception ("Duplicate rule found for [" + key1 + "] -- please fix the CSV file. ");
+                    }
+                    else if( rulesWeAlreadyHave.contains(key2) ){
+                    	throw new Exception ("Duplicate rule found for [" + key2 + "] -- please fix the CSV file. ");
+                    }
+                    else {
+                    	rulesWeAlreadyHave.add(key1);
+                    	rulesWeAlreadyHave.add(key2);
                     }
 
-                    if (svcInfra.equals("T")) {
-                        svcInfra = "true";
-                    } else if (svcInfra.equals("F")) {
-                        svcInfra = "false";
-                    } else if (svcInfra.equals("R")) {
-                        svcInfra = "reverse";
+                    String direction = columns[headers.get("new direction")];
+                    data.setDirection(direction);
+
+                    String multiplicity = columns[headers.get("new multiplicity")];
+                    data.setMultiplicity(multiplicity);
+
+                    String lineage = columns[headers.get("new contains-other-v")];
+                    data.setLineage(lineage);
+
+                    String deleteOtherV = columns[headers.get("new delete-other-v")];
+                    data.setDeleteOtherV(deleteOtherV);
+
+                    String svcInfra = columns[headers.get("new SVC-INFRA")];
+                    data.setSvcInfra(svcInfra);
+
+                    String prevDel = columns[headers.get("new prevent-delete")];
+                    data.setPreventDelete(prevDel);
+
+                    String defaultVal = columns[headers.get("new default")];
+                    if( defaultVal.equals("T") ){
+                    	data.setDefault("true");
+                    }
+                    else if( defaultVal.equals("F") ){
+                    	data.setDefault("false");
                     }
 
-                    if (originalParent.equals("T")) {
-                        if (lineage.trim().equalsIgnoreCase("CHILD")) {
-                            lineage = "true";
-                        } else if (lineage.trim().equalsIgnoreCase("PARENT")) {
-                            lineage = "reverse";
-                        }
-                    } else {
-                        lineage = "false";
+                    rulesToWriteV12.add(data);
+
+                    if( rulesV8.hasEdgeRule(oldNodeA, oldNodeB, oldEdgeLabel) ){
+                    	rulesToWriteV8.add(data);
                     }
 
-                    Map<String, String> edgeMap = new HashMap<String, String>();
+                    if( rulesV9.hasEdgeRule(oldNodeA, oldNodeB, oldEdgeLabel) ){
+                    	rulesToWriteV9.add(data);
+                    }
 
-                    edgeMap.put("lineage", lineage);
-                    edgeMap.put("usesResource", usesResource);
-                    edgeMap.put("hasDelTarget", hasDelTarget);
-                    edgeMap.put("SVC-INFRA", svcInfra);
-                    edgeMap.put("SVC-INFRA-REV", svcInfraRev);
-                    edgeMap.put("nodes", finalNode);
-                    edgeMap.put("edge", finalEdge);
-                    edgeMap.put("direction", columns[headers.get("Orig Direction")]);
-                    edgeMap.put("multiplicity", columns[headers.get("Revised Multiplicity")]);
+                    if( rulesV10.hasEdgeRule(oldNodeA, oldNodeB, oldEdgeLabel) ){
+                    	rulesToWriteV10.add(data);
+                    }
 
-                    edgeRules.add(edgeMap);
-
+                    if( rulesV11.hasEdgeRule(oldNodeA, oldNodeB, oldEdgeLabel) ){
+                    	rulesToWriteV11.add(data);
+                    }
                 }
                 ++rowNum;
             }
+
+            Configuration configuration = new Configuration();
+            Template template = configuration.getTemplate("src/main/resources/edgerulesTemplate.ftlh");
+            Writer file = new FileWriter(new File("src/main/resources/EdgeRulesWithNewLabels_v12.json"));
+            Map<String, List<EdgeRuleBean>> wrappedRules = new HashMap<>();
+    		wrappedRules.put("wrappedRules", rulesToWriteV12);
+    		template.process(wrappedRules, file);
+    		file.close();
+
+    		file = new FileWriter(new File("src/main/resources/EdgeRulesWithNewLabels_v7.json"));
+            wrappedRules = new HashMap<>();
+       		wrappedRules.put("wrappedRules", rulesToWriteV7);
+       		template.process(wrappedRules, file);
+       		file.close();
+
+    		file = new FileWriter(new File("src/main/resources/EdgeRulesWithNewLabels_v8.json"));
+            wrappedRules = new HashMap<>();
+       		wrappedRules.put("wrappedRules", rulesToWriteV8);
+       		template.process(wrappedRules, file);
+       		file.close();
+
+
+    		file = new FileWriter(new File("src/main/resources/EdgeRulesWithNewLabels_v9.json"));
+            wrappedRules = new HashMap<>();
+       		wrappedRules.put("wrappedRules", rulesToWriteV9);
+       		template.process(wrappedRules, file);
+       		file.close();
+
+    		file = new FileWriter(new File("src/main/resources/EdgeRulesWithNewLabels_v10.json"));
+            wrappedRules = new HashMap<>();
+       		wrappedRules.put("wrappedRules", rulesToWriteV10);
+       		template.process(wrappedRules, file);
+       		file.close();
+
+    		file = new FileWriter(new File("src/main/resources/EdgeRulesWithNewLabels_v11.json"));
+            wrappedRules = new HashMap<>();
+       		wrappedRules.put("wrappedRules", rulesToWriteV11);
+       		template.process(wrappedRules, file);
+       		file.close();
+
         } catch(Exception ex){
             ex.printStackTrace();
         }
 
-        edgeRulesMap.put("edgeRules", edgeRules);
 
-        Collections.sort(edgeRules, new Comparator<Map<String, String>>() {
-            @Override
-            public int compare(Map<String, String> o1, Map<String, String> o2) {
-                return o1.get("nodes").compareTo(o2.get("nodes"));
-            }
-        });
-
-        Configuration configuration = new Configuration();
-        Template template = configuration.getTemplate("ajsc-aai/src/main/resources/EdgeRules.ftl");
-        Writer file = new FileWriter(new File("ajsc-aai/src/main/resources" + "/" + "EdgeRules.txt"));
-        template.process(edgeRulesMap, file);
     }
 
     private static Map<String, Integer> retrieveHeaderMap(String line){
@@ -146,7 +198,7 @@ public class GenerateEdgeRules {
         int index = 0;
 
         for(String columnName : columnNames){
-            map.put(columnName, index++);
+        	map.put(columnName, index++);
         }
 
         return map;

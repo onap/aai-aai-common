@@ -1,4 +1,4 @@
 {
-	"related-to": "test-object",
-	"related-link": "http://localhost/aai/v10/network/test-objects/test-object/key1"
+	"related-to": "generic-vnf",
+	"related-link": "http://localhost/aai/v10/network/generic-vnfs/generic-vnf/key1"
 }

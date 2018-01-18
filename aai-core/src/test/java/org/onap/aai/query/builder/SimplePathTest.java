@@ -79,9 +79,6 @@ public class SimplePathTest extends AAISetup {
 		Vertex lint2 = graph.addVertex(T.label, "l-interface", T.id, "11", "aai-node-type", "l-interface",
 						"interface-name", "lint2", "is-port-mirrored", "true", "in-maint", "true", "is-ip-unnumbered", "false");
 		
-		Vertex loglink2 = graph.addVertex(T.label, "logical-link", T.id, "21", "aai-node-type", "logical-link",
-				"link-name", "loglink2", "in-maint", "false", "link-type", "sausage");
-		
 		Vertex lint3 = graph.addVertex(T.label, "l-interface", T.id, "12", "aai-node-type", "l-interface",
 				"interface-name", "lint3", "is-port-mirrored", "true", "in-maint", "true", "is-ip-unnumbered", "false");
 		
@@ -91,8 +88,7 @@ public class SimplePathTest extends AAISetup {
 		rules.addTreeEdge(g, gvnf1, lint1);
 		rules.addEdge(g, lint1, loglink1);
 		rules.addEdge(g, loglink1, lint2);
-		rules.addEdge(g, lint2, loglink2);
-		rules.addEdge(g, loglink2, lint3);
+		rules.addEdge(g, loglink1, lint3);
 		rules.addTreeEdge(g, gvnf2, lint3);
 		
 		return g;

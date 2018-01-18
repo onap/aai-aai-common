@@ -59,7 +59,7 @@ public class URIParserTest extends AAISetup {
 		URI uri = UriBuilder.fromPath("/aai/" + loader.getVersion() + "/network/tenants/tenant/key1/vservers/vserver/key2/l-interfaces/l-interface/key3").build();
 		
 		thrown.expect(AAIException.class);
-		thrown.expect(hasProperty("code",  is("AAI_3000")));
+		thrown.expect(hasProperty("code",  is("AAI_3001")));
 		
 		new URIToDBKey(loader, uri);
 	}

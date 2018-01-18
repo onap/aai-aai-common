@@ -25,14 +25,8 @@ import static com.jayway.jsonpath.Criteria.where;
 import static com.jayway.jsonpath.Filter.filter;
 
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Scanner;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
@@ -243,6 +237,8 @@ public class EdgeRules {
 		for (Entry<EdgeProperty, String> entry : propMap.entrySet()) {
 			edge.property(entry.getKey().toString(), entry.getValue());
 		}
+
+		edge.property(AAIProperties.AAI_UUID, UUID.randomUUID().toString());
 	}
 
 	/**
@@ -652,11 +648,17 @@ public class EdgeRules {
 		rule.setDeleteOtherV(edge.get(EdgeProperty.DELETE_OTHER_V.toString()));
 		rule.setServiceInfrastructure(edge.get(EdgeProperty.SVC_INFRA.toString()));
 		rule.setPreventDelete(edge.get(EdgeProperty.PREVENT_DELETE.toString()));
+		rule.setTo(edge.get("to"));
+		rule.setFrom(edge.get("from"));
 		if (edge.containsKey("default")) {
 			rule.setIsDefault(edge.get("default"));
 		}
 
-		return rule;
+        if(rule.getFrom().equals(rule.getTo())){
+            return this.flipDirection(rule);
+        } else {
+            return rule;
+        }
 	}
 	
 	/**
@@ -777,6 +779,11 @@ public class EdgeRules {
 	 */
 	private void verifyRule(Map<String, String> rule) {
 		for (EdgeProperty prop : EdgeProperty.values()) {
+
+		    // Description is not required as it is only set for v12 versions
+		    if("description".equals(prop.toString())){
+		    	continue;
+		    }
 			if (!rule.containsKey(prop.toString())) {
 				/* Throws RuntimeException as rule definition errors
 				 * cannot be recovered from, and should never happen anyway

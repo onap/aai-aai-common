@@ -25,6 +25,7 @@ import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
+import org.onap.aai.logging.LogFormatTools;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -141,7 +142,7 @@ public class IntrospectorWalker {
 							walk(child, parent, localVisited);
 						}
 					} catch (AAIUnknownObjectException e) {
-						LOGGER.warn("Skipping property " + prop + " (Unknown Object)", e);
+						LOGGER.warn("Skipping property " + prop + " (Unknown Object) " + LogFormatTools.getStackTop(e));
 					}
 				} else {
 					w.processPrimitiveList(prop, obj);
@@ -159,7 +160,7 @@ public class IntrospectorWalker {
 
 							obj.setValue(prop, listReference);
 						} catch (AAIUnknownObjectException e) {
-							LOGGER.warn("Skipping property " + prop + " (Unknown Object)", e);
+							LOGGER.warn("Skipping property " + prop + " (Unknown Object) " + LogFormatTools.getStackTop(e));
 						}
 					} else if (!isComplexType){
 						w.processPrimitiveList(prop, obj);
@@ -176,7 +177,7 @@ public class IntrospectorWalker {
 							child = obj.newIntrospectorInstanceOfProperty(prop);
 							obj.setValue(prop, child.getUnderlyingObject());
 						} catch (AAIUnknownObjectException e) {
-							LOGGER.warn("Skipping property " + prop + " (Unknown Object)", e);
+							LOGGER.warn("Skipping property " + prop + " (Unknown Object) " + LogFormatTools.getStackTop(e));
 						}
 					}
 				}

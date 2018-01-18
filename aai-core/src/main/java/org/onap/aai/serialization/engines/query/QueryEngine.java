@@ -34,8 +34,8 @@ import java.util.List;
 
 public abstract class QueryEngine {
 
-	protected final GraphTraversalSource g;
-
+	final protected GraphTraversalSource g;
+	protected double dbTimeMsecs = 0;
 	/**
 	 * Instantiates a new query engine.
 	 *
@@ -144,5 +144,7 @@ public abstract class QueryEngine {
 	 * @return list of start's cousin vertices
 	 */
 	public abstract List<Vertex> findCousinVertices(Vertex start);
+
+	public abstract double getDBTimeMsecs();
 
 }

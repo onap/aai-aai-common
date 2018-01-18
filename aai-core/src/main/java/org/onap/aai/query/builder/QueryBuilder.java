@@ -112,6 +112,33 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
 	public abstract QueryBuilder<Vertex> getVerticesByProperty(String key, List<?> values);
 
 	/**
+	 * Gets the vertices that are excluded by property.
+	 *
+	 * @param key the key
+	 * @param value the value
+	 * @return the vertices by property
+	 */
+	public abstract QueryBuilder<Vertex> getVerticesExcludeByProperty(String key, Object value);
+
+	/**
+	 * filters by all the values for this property and excludes the vertices
+	 * @param key
+	 * @param values
+	 * @return vertices that match these values
+	 */
+	public QueryBuilder<Vertex> getVerticesExcludeByIndexedProperty(String key, List<?> values) {
+		return this.getVerticesExcludeByProperty(key, values);
+	}
+
+	/**
+	 * filters by all the values for this property and excludes the vertices
+	 * @param key
+	 * @param values
+	 * @return vertices that match these values
+	 */
+	public abstract QueryBuilder<Vertex> getVerticesExcludeByProperty(String key, List<?> values);
+
+	/**
 	 * Gets the child vertices from parent.
 	 *
 	 * @param parentKey the parent key
@@ -369,6 +396,9 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
 	public abstract QueryBuilder<E> as(String name);
 	public abstract QueryBuilder<E> select(String name);
 	public abstract QueryBuilder<E> until(QueryBuilder<E> builder);
+	public abstract QueryBuilder<E> groupCount();
+	public abstract QueryBuilder<E> by(String name);
+	public abstract QueryBuilder<E> both();
 	
 	/**
 	 * Used to prevent the traversal from repeating its path through the graph.

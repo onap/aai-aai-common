@@ -42,6 +42,7 @@ import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.introspection.Loader;
+import org.onap.aai.logging.StopWatch;
 
 /*
  * This class needs some big explanation despite its compact size.
@@ -68,10 +69,15 @@ public class GraphTraversalQueryEngine extends QueryEngine {
 	 */
 	@Override
 	public List<Vertex> findParents(Vertex start) {
-		
-		@SuppressWarnings("unchecked")
-		final GraphTraversal<Vertex, Vertex> pipe = this.g.V(start).emit(v -> true).repeat(__.union(__.inE().has(CONTAINS.toString(), OUT.toString()).outV(), __.outE().has(CONTAINS.toString(), IN.toString()).inV()));
-		return pipe.toList();
+		try {
+			StopWatch.conditionalStart();
+                        @SuppressWarnings("unchecked")
+                        final GraphTraversal<Vertex, Vertex> pipe = this.g.V(start).emit(v -> true).repeat(__.union(__.inE().has(CONTAINS.toString(), OUT.toString()).outV(), __.outE().has(CONTAINS.toString(), IN.toString()).inV()));
+		        return pipe.toList();
+		}
+		finally {
+			dbTimeMsecs += StopWatch.stopIfStarted();
+		}
 	}
 
 	/**
@@ -129,7 +135,7 @@ public class GraphTraversalQueryEngine extends QueryEngine {
 						__.outE().has(DELETE_OTHER_V.toString(), OUT.toString()).inV(),
 						__.inE().has(DELETE_OTHER_V.toString(), IN.toString()).outV()
 					)
-				);
+				).dedup();
 		
 		return pipe.toList();
 	}
@@ -201,5 +207,8 @@ public class GraphTraversalQueryEngine extends QueryEngine {
 		return pipeline.toList();
 	}
 	
+	public double getDBTimeMsecs() {
+		return (dbTimeMsecs);
+	}
 }
 
