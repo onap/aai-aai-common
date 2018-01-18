@@ -30,6 +30,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
 import java.util.Timer;
+import org.onap.aai.logging.LoggingContext;
+import org.onap.aai.logging.LoggingContext.StatusCode;
+
+import java.util.UUID;
 
 import org.eclipse.jetty.util.security.Password;
 
@@ -62,6 +66,16 @@ public class AAIConfig {
      * @throws AAIException the AAI exception
      */
     public synchronized static void init() throws AAIException{
+
+    	LoggingContext.save();
+		LoggingContext.component("config");
+		LoggingContext.partnerName("NA");
+		LoggingContext.targetEntity("AAI");
+		LoggingContext.requestId(UUID.randomUUID().toString());
+		LoggingContext.serviceName("AAI");
+		LoggingContext.targetServiceName("init");
+		LoggingContext.statusCode(StatusCode.COMPLETE);
+
 		LOGGER.info("Initializing AAIConfig");
 		
 		ArrayList<String> genericVnfBools = new ArrayList<String>();
@@ -96,6 +110,7 @@ public class AAIConfig {
         } else {
             LOGGER.info("A&AI Server Node Name = " + AAIConstants.AAI_NODENAME);
         }
+        LoggingContext.restore();
     }
 
     /**
@@ -137,7 +152,7 @@ public class AAIConfig {
         String propFileName = GLOBAL_PROP_FILE_NAME;
         Properties newServerProps = null;
         
-        LOGGER.info("Reloading config from " + propFileName);
+        LOGGER.debug("Reloading config from " + propFileName);
         
         try {
             InputStream is = new FileInputStream(propFileName);

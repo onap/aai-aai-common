@@ -141,6 +141,37 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
 		stepIndex++;
 		return (QueryBuilder<Vertex>) this;
 	}
+	
+	/**
+	 * @{inheritDoc}
+	 */
+	@Override
+	public QueryBuilder<Vertex> getVerticesExcludeByProperty(String key, Object value) {
+		
+		// correct value call because the index is registered as an Integer
+		traversal.has(key, P.neq(this.correctObjectType(value)));
+		
+		stepIndex++;
+		return (QueryBuilder<Vertex>) this;
+	}
+	
+	/**
+	 * @{inheritDoc}
+	 */
+	@Override
+	public QueryBuilder<Vertex> getVerticesExcludeByProperty(final String key, final List<?> values) {
+		
+		//this is because the index is registered as an Integer
+		List<Object> correctedValues = new ArrayList<>();
+		for (Object item : values) {
+			correctedValues.add(this.correctObjectType(item));
+		}
+		
+		traversal.has(key, P.without(correctedValues));
+		
+		stepIndex++;
+		return (QueryBuilder<Vertex>) this;
+	}
 
 	/**
 	 * @{inheritDoc}
@@ -409,6 +440,30 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
 	@Override
 	public QueryBuilder<E> until(QueryBuilder<E> builder) {
 		this.traversal.until((GraphTraversal<Vertex,E>)builder.getQuery());
+		stepIndex++;
+		
+		return this;
+	}
+	
+	@Override
+	public QueryBuilder<E> groupCount() {
+		this.traversal.groupCount();
+		stepIndex++;
+		
+		return this;
+	}
+	
+	@Override
+	public QueryBuilder<E> both() {
+		this.traversal.both();
+		stepIndex++;
+		
+		return this;
+	}
+	
+	@Override
+	public QueryBuilder<E> by(String name) {
+		this.traversal.by(name);
 		stepIndex++;
 		
 		return this;

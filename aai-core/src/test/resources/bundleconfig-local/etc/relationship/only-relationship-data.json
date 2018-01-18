@@ -1,7 +1,7 @@
 {
-	"related-to": "test-object",
+	"related-to": "generic-vnf",
 	"relationship-data" : [{
-		"relationship-key" : "test-object.vnf-id",
+		"relationship-key" : "generic-vnf.vnf-id",
 		"relationship-value":"key1"
 	}]
 }

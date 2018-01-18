@@ -83,9 +83,11 @@ public class DataCopyTest {
 				loader);
 		
 		graph.traversal().addV("aai-node-type", "model", "model-invariant-id", "key1").as("v1")
-		.addV("aai-node-type", "model-ver", "model-ver", "myValue", "model-version-id", "key2", "model-version", "testValue").addInE("has", "v1", EdgeProperty.CONTAINS.toString(), true)
+		.addV("aai-node-type", "model-ver", "model-ver", "myValue", "model-version-id", "key2", "model-version", "testValue")
+				.addOutE("org.onap.relationships.inventory.BelongsTo", "v1", EdgeProperty.CONTAINS.toString(), true)
 		.addV("aai-node-type", "model", "model-invariant-id", "key3").as("v2")
-		.addV("aai-node-type", "model-ver", "model-ver", "myValue", "model-version-id", "key4").addInE("has", "v2", EdgeProperty.CONTAINS.toString(), true)
+		.addV("aai-node-type", "model-ver", "model-ver", "myValue", "model-version-id", "key4")
+				.addOutE("org.onap.relationships.inventory.BelongsTo", "v2", EdgeProperty.CONTAINS.toString(), true)
 		.next();
 		graph.tx().commit();
 	}
@@ -105,7 +107,7 @@ public class DataCopyTest {
 	public void runPopulatePersonaModelVer() throws URISyntaxException, AAIException, UnsupportedEncodingException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, SecurityException, InstantiationException, NoSuchMethodException, MalformedURLException {
 		
 		final Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.getLatest());
-		final Introspector obj = loader.introspectorFromName("test-object");
+		final Introspector obj = loader.introspectorFromName("generic-vnf");
 		obj.setValue("vnf-id", "myId");
 		obj.setValue("model-invariant-id", "key1");
 		obj.setValue("model-version-id", "key2");
@@ -123,7 +125,7 @@ public class DataCopyTest {
 		
 		runner.execute(obj, self);
 
-		assertEquals("value populated", "testValue", obj.getValue("persona-model-ver"));
+		assertEquals("value populated", "testValue", obj.getValue("persona-model-version"));
 		
 		g.tx().rollback();
 		
@@ -134,7 +136,7 @@ public class DataCopyTest {
 	public void runPopulateModelVersionId() throws URISyntaxException, AAIException, UnsupportedEncodingException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, SecurityException, InstantiationException, NoSuchMethodException, MalformedURLException {
 		
 		final Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.v9);
-		final Introspector obj = loader.introspectorFromName("test-object");
+		final Introspector obj = loader.introspectorFromName("generic-vnf");
 		obj.setValue("vnf-id", "myId");
 		obj.setValue("persona-model-id", "key1");
 		obj.setValue("persona-model-version", "testValue");
@@ -187,7 +189,7 @@ public class DataCopyTest {
 	public void expectedMissingPropertyExceptionInURI() throws AAIException, UnsupportedEncodingException {
 		
 		final Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.getLatest());
-		final Introspector obj = loader.introspectorFromName("test-object");
+		final Introspector obj = loader.introspectorFromName("generic-vnf");
 		obj.setValue("vnf-id", "myId");
 		obj.setValue("model-invariant-id", "key1");
 
@@ -210,7 +212,7 @@ public class DataCopyTest {
 	@Test
 	public void expectedMissingPropertyExceptionForResultingObject() throws AAIException, UnsupportedEncodingException {
 		final Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.getLatest());
-		final Introspector obj = loader.introspectorFromName("test-object");
+		final Introspector obj = loader.introspectorFromName("generic-vnf");
 		obj.setValue("vnf-id", "myId");
 		obj.setValue("model-invariant-id", "key3");
 		obj.setValue("model-version-id", "key4");
@@ -234,7 +236,7 @@ public class DataCopyTest {
 	@Test
 	public void expectNoProcessingWithNoProperties() throws AAIException, UnsupportedEncodingException {
 		final Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.getLatest());
-		final Introspector obj = loader.introspectorFromName("test-object");
+		final Introspector obj = loader.introspectorFromName("generic-vnf");
 		obj.setValue("vnf-id", "myId");
 
 		TransactionalGraphEngine spy = spy(dbEngine);

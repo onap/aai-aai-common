@@ -34,6 +34,7 @@ import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.introspection.LoaderFactory;
 import org.onap.aai.introspection.ModelType;
+import org.onap.aai.logging.LogFormatTools;
 import org.onap.aai.schema.enums.PropertyMetadata;
 import org.onap.aai.serialization.db.EdgeRule;
 import org.onap.aai.serialization.db.EdgeRules;
@@ -80,7 +81,7 @@ public class SchemaGenerator{
     		AAIConfig.init();
     	}
     	catch (Exception ex){
-			LOGGER.error(" ERROR - Could not run AAIConfig.init(). ", ex);
+			LOGGER.error(" ERROR - Could not run AAIConfig.init(). " + LogFormatTools.getStackTop(ex));
 			System.out.println(" ERROR - Could not run AAIConfig.init(). ");
 			System.exit(1);
 		}

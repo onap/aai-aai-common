@@ -150,7 +150,7 @@ public class UniqueURIQueryTest extends AAISetup {
 		String parentKey = "vce/key1/port-group/key2";
 		URI uri = UriBuilder.fromPath(parentURI + "/cvlan-tags").build();
 		QueryParser query = dbEngine.getQueryBuilder().createQueryFromURI(uri);
-		GraphTraversal<Vertex, Vertex> expected = __.<Vertex>start().has("aai-unique-key", parentKey).out("hasCTag").has("aai-node-type", "cvlan-tag");
+		GraphTraversal<Vertex, Vertex> expected = __.<Vertex>start().has("aai-unique-key", parentKey).in("org.onap.relationships.inventory.BelongsTo").has("aai-node-type", "cvlan-tag");
 		GraphTraversal<Vertex, Vertex> parentExpected = __.<Vertex>start().has("aai-unique-key",parentKey);
 		String parentResultType = "port-group";
 		String resultType = "cvlan-tag";

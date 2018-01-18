@@ -28,6 +28,7 @@ import org.apache.commons.lang.ClassUtils;
 import org.eclipse.persistence.exceptions.DynamicException;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.onap.aai.logging.ErrorLogHelper;
+import org.onap.aai.logging.LogFormatTools;
 import org.onap.aai.restcore.MediaType;
 import org.onap.aai.schema.enums.ObjectMetadata;
 import org.onap.aai.schema.enums.PropertyMetadata;
@@ -465,7 +466,7 @@ public abstract class Introspector implements Cloneable {
 						break;
 					}
 				} catch (AAIUnknownObjectException e) {
-					LOGGER.warn("Skipping inheritor " + inheritor + " (Unknown Object)", e);
+					LOGGER.warn("Skipping inheritor " + inheritor + " (Unknown Object) " + LogFormatTools.getStackTop(e));
 				}
 			}
 		} else {

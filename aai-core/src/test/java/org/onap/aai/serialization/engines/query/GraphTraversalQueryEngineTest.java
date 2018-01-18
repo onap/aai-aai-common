@@ -19,7 +19,6 @@
  *
  * ECOMP is a trademark and service mark of AT&T Intellectual Property.
  */
-
 package org.onap.aai.serialization.engines.query;
 
 import static org.junit.Assert.*;
@@ -31,6 +30,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import com.att.eelf.configuration.EELFLogger;
+import com.att.eelf.configuration.EELFManager;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.Tree;
 import org.apache.tinkerpop.gremlin.structure.Direction;
@@ -51,7 +52,7 @@ import org.onap.aai.introspection.Version;
 import org.onap.aai.serialization.db.EdgeRules;
 
 public class GraphTraversalQueryEngineTest extends AAISetup {
-	
+
 	@Test
 	public void testFindParents() throws AAIException {
 		//setup
@@ -236,13 +237,13 @@ public class GraphTraversalQueryEngineTest extends AAISetup {
 		GraphTraversalQueryEngine engine = new GraphTraversalQueryEngine(g);
 			
 		//test
-		List<Vertex> outRes = engine.findRelatedVertices(gv, Direction.OUT, "hasLInterface", "l-interface");
+		List<Vertex> outRes = engine.findRelatedVertices(gv, Direction.IN, "org.onap.relationships.inventory.BelongsTo", "l-interface");
 		assertTrue(outRes.containsAll(outExpected) && outExpected.containsAll(outRes));
-		
-		List<Vertex> inRes = engine.findRelatedVertices(log, Direction.IN, "usesLogicalLink", "l-interface");
+
+		List<Vertex> inRes = engine.findRelatedVertices(log, Direction.IN, "tosca.relationships.network.LinksTo", "l-interface");
 		assertTrue(inRes.containsAll(inExpected) && inExpected.containsAll(inRes));
 		
-		List<Vertex> bothRes = engine.findRelatedVertices(lint, Direction.BOTH, "usesLogicalLink", "logical-link");
+		List<Vertex> bothRes = engine.findRelatedVertices(lint, Direction.BOTH, "tosca.relationships.network.LinksTo", "logical-link");
 		assertTrue(bothRes.containsAll(bothExpected) && bothExpected.containsAll(bothRes));
 	}
 	

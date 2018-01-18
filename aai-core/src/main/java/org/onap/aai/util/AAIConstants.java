@@ -47,6 +47,8 @@ public final class AAIConstants {
 	public static final String CACHED_DB_CONFIG = AAI_HOME_ETC_APP_PROPERTIES + "titan-cached.properties";
 	public static final String AAI_HOME_ETC_OXM = AAI_HOME_ETC + "oxm" + AAI_FILESEP;
 	public static final String AAI_EVENT_DMAAP_PROPS = AAI_HOME_ETC_APP_PROPERTIES + "aaiEventDMaaPPublisher.properties";
+	public static final String AAI_HOME_ETC_SCRIPT = AAI_HOME_ETC + AAI_FILESEP + "scriptdata" + AAI_FILESEP;
+
 
 	public static final String AAI_PROV_LOGBACK_PROPS = "prov-logback.xml";
 	public static final String AAI_GETRES_LOGBACK_PROPS = "getres-logback.xml";
@@ -96,6 +98,14 @@ public final class AAIConstants {
 	public static final String AAI_BULKCONSUMER_LIMIT = "aai.bulkconsumer.payloadlimit";
 	public static final String AAI_BULKCONSUMER_OVERRIDE_LIMIT = "aai.bulkconsumer.payloadoverride";
 
+	public static final String AAI_TRAVERSAL_TIMEOUT_LIMIT = "aai.traversal.timeoutlimit";
+	public static final String AAI_TRAVERSAL_TIMEOUT_ENABLED = "aai.traversal.timeoutenabled";
+	public static final String AAI_TRAVERSAL_TIMEOUT_APP = "aai.traversal.timeout.appspecific";
+
+	public static final String AAI_CRUD_TIMEOUT_LIMIT = "aai.crud.timeoutlimit";
+	public static final String AAI_CRUD_TIMEOUT_ENABLED = "aai.crud.timeoutenabled";
+	public static final String AAI_CRUD_TIMEOUT_APP = "aai.crud.timeout.appspecific";
+
     public static final String AAI_LOGGING_HBASE_INTERCEPTOR = "aai.logging.hbase.interceptor";
     public static final String AAI_LOGGING_HBASE_ENABLED = "aai.logging.hbase.enabled";
     public static final String AAI_LOGGING_HBASE_LOGREQUEST = "aai.logging.hbase.logrequest";
@@ -124,7 +134,7 @@ public final class AAIConstants {
 	public static final String AAI_SKIPREALTIME_GROOMING = (System.getProperty("aai.skiprealtime.grooming") == null) ? "true" : System.getProperty("aai.skiprealtime.grooming");
 	
 
-	/*** UEB ***/	
+	/*** UEB ***/
 	public static final String UEB_PUB_PARTITION_AAI = "AAI";
 	public static final String UEB_PUB_AAI_VCE_INTERFACE_DATA_TOPIC = "ueb.pub.aai.vce.interface.data.topic";
 

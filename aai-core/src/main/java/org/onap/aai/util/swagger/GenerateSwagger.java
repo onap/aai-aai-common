@@ -26,6 +26,7 @@ import com.fasterxml.jackson.dataformat.yaml.snakeyaml.constructor.SafeConstruct
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import org.onap.aai.introspection.Version;
 
 import java.io.*;
 import java.util.*;
@@ -37,7 +38,11 @@ public class GenerateSwagger {
     public static final String DEFAULT_WIKI = "";
 
     public static final String DEFAULT_SCHEMA_DIR = "../aai-schema";
-    public static final String CURRENT_VERSION = "v11";
+    public static final String CURRENT_VERSION = Version. getLatest().toString();
+    //if the program is run from aai-common, use this directory as default"
+    public static final String ALT_SCHEMA_DIR = "aai-schema";
+    //used to check to see if program is run from aai-core
+    public static final String DEFAULT_RUN_DIR = "aai-core";
 
     public static void main(String[] args) throws IOException, TemplateException {
 
@@ -46,8 +51,14 @@ public class GenerateSwagger {
         String wikiLink = System.getProperty("aai.wiki.link");
 
         if(schemaDir == null){
-            System.out.println("Warning: Schema directory is not set so using default schema dir: " + DEFAULT_SCHEMA_DIR);
-            schemaDir = DEFAULT_SCHEMA_DIR;
+            if(System.getProperty("user.dir") != null && !System.getProperty("user.dir").contains(DEFAULT_RUN_DIR)) {
+            	System.out.println("Warning: Schema directory is not set so using default schema dir: " + ALT_SCHEMA_DIR);
+            	schemaDir = ALT_SCHEMA_DIR;
+    		}
+    		else {
+    			System.out.println("Warning: Schema directory is not set so using default schema dir: " + DEFAULT_SCHEMA_DIR);
+    			schemaDir = DEFAULT_SCHEMA_DIR;
+    		}
         }
 
         if(versionToGenerate == null){
@@ -136,8 +147,13 @@ public class GenerateSwagger {
 
         Configuration configuration = new Configuration();
         configuration.setClassForTemplateLoading(Api.class, "/");
-        configuration.setDirectoryForTemplateLoading(new File("src/main/resources/"));
-
+        String resourcePath = "src/main/resources";
+        if(System.getProperty("user.dir") != null && !System.getProperty("user.dir").contains(DEFAULT_RUN_DIR)) {
+        	configuration.setDirectoryForTemplateLoading(new File(DEFAULT_RUN_DIR + "/" + resourcePath));
+        }
+        else {
+        	configuration.setDirectoryForTemplateLoading(new File(resourcePath));
+        }
         Template template = configuration.getTemplate("swagger.html.ftl");
 
         String outputDirStr = schemaDir + "/src/main/resources/aai_swagger_html";

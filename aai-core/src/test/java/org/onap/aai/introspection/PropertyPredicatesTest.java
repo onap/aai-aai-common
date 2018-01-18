@@ -29,6 +29,7 @@ import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import java.util.Set;
 
 import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 
@@ -43,33 +44,33 @@ public class PropertyPredicatesTest extends AAISetup {
 	@Before
 	public void setup() throws Exception {
 		loader = LoaderFactory.createLoaderForVersion(introspectorFactoryType, version);
-		obj = loader.introspectorFromName("test-object");
+		obj = loader.introspectorFromName("generic-vnf");
 	}
 	
 	@Test
 	public void includeInTestGeneration() throws AAIUnknownObjectException {
 		
 		Set<String> props = obj.getProperties(PropertyPredicates.includeInTestGeneration());
-		
-		assertThat("props not found", props, 
-				not(hasItems("persona-model-ver", "not-visible-test-element", "model-invariant-id", "model-version-id")));
+
+		assertThat("props not found", props,
+				not(hasItems("model-invariant-id", "model-version-id")));
 	}
 	
 	@Test
 	public void isVisible() throws AAIUnknownObjectException {
 		
 		Set<String> props = obj.getProperties(PropertyPredicates.isVisible());
-		
-		assertThat("props not found", props, not(hasItems("persona-model-ver")));
+
+		assertThat("props not found", props, hasItems("model-invariant-id", "model-version-id"));
 	}
 	
 	@Test
 	public void all() throws AAIUnknownObjectException {
 		
 		Set<String> props = obj.getProperties();
-		
-		assertThat("all found", props, hasItems("persona-model-ver", "not-visible-test-element"));
+
+		assertThat("all found", props, hasItems("model-invariant-id", "model-version-id"));
 	}
 	
-	
+
 }

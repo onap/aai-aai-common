@@ -36,5 +36,6 @@ public class AAIProperties {
 	public static final Integer MAXIMUM_DEPTH = 10000;
 	public static final String LINKED = "linked";
 	public static final String DB_ALIAS_SUFFIX = "-local";
+	public static final String AAI_UUID = "aai-uuid";
 
 }

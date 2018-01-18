@@ -32,6 +32,7 @@ import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.onap.aai.introspection.exceptions.AAIUnmarshallingException;
 import org.onap.aai.logging.ErrorLogHelper;
+import org.onap.aai.logging.LogFormatTools;
 import org.onap.aai.restcore.MediaType;
 import org.onap.aai.workarounds.NamingExceptions;
 import org.w3c.dom.Document;
@@ -157,7 +158,7 @@ public class MoxyLoader extends Loader {
 					Introspector introspector = this.introspectorFromName(objName);
 					map.put(introspector.getDbName(), introspector);
 				} catch (AAIUnknownObjectException e) {
-					LOGGER.warn("Unexpected AAIUnknownObjectException while running getAllObjects()", e);
+					LOGGER.warn("Unexpected AAIUnknownObjectException while running getAllObjects() " + LogFormatTools.getStackTop(e));
 				}
 			}
 			allObjs = map.build();
@@ -182,7 +183,7 @@ public class MoxyLoader extends Loader {
 				result.add(list.item(i).getAttributes().getNamedItem("name").getNodeValue());
 			}
 		} catch (ParserConfigurationException | SAXException | IOException e) {
-			LOGGER.warn("Exception while enumerating objects for API version " + getVersion() + " (returning partial results)", e);
+			LOGGER.warn("Exception while enumerating objects for API version " + getVersion() + " (returning partial results) " + LogFormatTools.getStackTop(e));
 		}
 
 		//result.remove("EdgePropNames");

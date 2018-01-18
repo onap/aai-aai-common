@@ -40,6 +40,8 @@ import org.onap.aai.introspection.LoaderFactory;
 import org.onap.aai.introspection.ModelType;
 import org.onap.aai.introspection.Version;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
+import org.onap.aai.logging.LogFormatTools;
+
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 import com.google.common.base.CaseFormat;
@@ -121,7 +123,7 @@ public class ListEndpoints {
 					try {
 						endpoints.add(currentUri + obj.getLoader().introspectorFromName(key).getGenericURI());
 					} catch (AAIUnknownObjectException e) {
-						LOGGER.warn("Skipping endpoint for " + key + " (Unknown object)", e);
+						LOGGER.warn("Skipping endpoint for " + key + " (Unknown object) " + LogFormatTools.getStackTop(e));
 					}
 				}
 			}
@@ -147,7 +149,7 @@ public class ListEndpoints {
 								newVisited
 								);
 					} catch (AAIUnknownObjectException e) {
-						LOGGER.warn("Skipping nested endpoint for " + propName + " (Unknown Object)", e);
+						LOGGER.warn("Skipping nested endpoint for " + propName + " (Unknown Object) " + LogFormatTools.getStackTop(e));
 					}
 				}
 			} else if (obj.isComplexType(propName)) {
@@ -161,7 +163,7 @@ public class ListEndpoints {
 							visited
 							);
 				} catch (AAIUnknownObjectException e) {
-					LOGGER.warn("Skipping nested enpoint for " + propName + " (Unknown Object)", e);
+					LOGGER.warn("Skipping nested enpoint for " + propName + " (Unknown Object) "+ LogFormatTools.getStackTop(e));
 				}
 			}
 		}
