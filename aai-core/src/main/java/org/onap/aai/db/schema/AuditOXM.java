@@ -106,15 +106,8 @@ public class AuditOXM extends Auditor {
 			for (int i = 0; i < list.getLength(); i++) {
 				result.add(list.item(i).getAttributes().getNamedItem("name").getNodeValue());
 			}
-		} catch (ParserConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SAXException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (ParserConfigurationException | SAXException | IOException e) {
+			LOGGER.error(e.getMessage());
 		}
 
 		result.remove("EdgePropNames");
