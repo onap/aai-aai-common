@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import com.att.eelf.configuration.EELFLogger;
+import com.att.eelf.configuration.EELFManager;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 
 import org.onap.aai.introspection.Version;
@@ -37,7 +39,8 @@ import com.thinkaurelius.titan.core.schema.TitanManagement.IndexBuilder;
 
 public class ManageTitanSchema {
 
-	
+	private static final EELFLogger logger = EELFManager.getInstance().getLogger(AuditOXM.class);
+
 	private TitanManagement graphMgmt;
 	private TitanGraph graph;
 	private List<DBProperty> aaiProperties;
@@ -75,7 +78,7 @@ public class ManageTitanSchema {
 			createIndexes();
 			createEdgeLabels();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(),e);
 			graphMgmt.rollback();
 		}
 		graphMgmt.commit();
@@ -242,10 +245,9 @@ public class ManageTitanSchema {
 				//waitForCompletion(indexName);
 				//TitanIndexRepair.hbaseRepair(AAIConstants.AAI_CONFIG_FILENAME, indexName, "");
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				graph.tx().rollback();
 				graph.close();
-				e.printStackTrace();
+				logger.error(e.getMessage(),e);
 			}
 			
 			//mgmt = graph.asAdmin().getManagementSystem();
