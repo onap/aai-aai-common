@@ -30,26 +30,29 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.jms.connection.CachingConnectionFactory;
 import org.springframework.jms.core.JmsTemplate;
 
-public class AAIDmaapEventJMSProducer implements MessageProducer {
+public class JMSProducer implements MessageProducer {
 
 	private JmsTemplate jmsTemplate;
 
 	private ApplicationContext applicationContext;
 
-	public AAIDmaapEventJMSProducer() {
+	public JMSProducer() {
 		if(AAIConfig.get("aai.jms.enable", "true").equals("true")){
-            this.jmsTemplate = new JmsTemplate();
-            String activeMqTcpUrl = System.getProperty("activemq.tcp.url", "tcp://localhost:61547");
-            this.jmsTemplate.setConnectionFactory(new CachingConnectionFactory(new ActiveMQConnectionFactory(activeMqTcpUrl)));
-            this.jmsTemplate.setDefaultDestination(new ActiveMQQueue("IN_QUEUE"));
+			applicationContext = SpringContextAware.getApplicationContext();
+			if(applicationContext == null){
+				this.jmsTemplate = new JmsTemplate();
+				String activeMqTcpUrl = System.getProperty("activemq.tcp.url", "tcp://localhost:61547");
+				this.jmsTemplate.setConnectionFactory(new CachingConnectionFactory(new ActiveMQConnectionFactory(activeMqTcpUrl)));
+				this.jmsTemplate.setDefaultDestination(new ActiveMQQueue("IN_QUEUE"));
+			} else {
+				jmsTemplate = (JmsTemplate) applicationContext.getBean("jmsTemplate");
+			}
 		}
 	}
 
 	public void sendMessageToDefaultDestination(JSONObject finalJson) {
 		if(jmsTemplate != null){
 			jmsTemplate.convertAndSend(finalJson.toString());
-			CachingConnectionFactory ccf = (CachingConnectionFactory) this.jmsTemplate.getConnectionFactory();
-			ccf.destroy();
 		}
 	}
 }

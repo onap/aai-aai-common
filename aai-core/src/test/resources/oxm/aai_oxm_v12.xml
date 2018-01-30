@@ -5139,13 +5139,13 @@
 			</xml-properties>
 			<xml-root-element name="reserved-prop-names" />
 			<java-attributes>
-				<xml-element java-attribute="lastModSourceOfTruth" name="last-mod-source-of-truth" type="java.lang.String" />
-				<xml-element java-attribute="aaiNodeType" name="aai-node-type" type="java.lang.String" />
-				<xml-element java-attribute="aaiCreatedTs" name="aai-created-ts" type="java.lang.Long" />
-				<xml-element java-attribute="aaiUniqueKey" name="aai-unique-key" type="java.lang.String" />
-				<xml-element java-attribute="aaiLastModTs" name="aai-last-mod-ts" type="java.lang.Long" />
-				<xml-element java-attribute="sourceOfTruth" name="source-of-truth" type="java.lang.String" />
-				<xml-element java-attribute="aaiUri" name="aai-uri" type="java.lang.String" />
+				<xml-element java-attribute="edgeLabel" name="edgeLabel" type="java.lang.String" />
+				<xml-element java-attribute="direction" name="direction" type="java.lang.String" />
+				<xml-element java-attribute="multiplicityRule" name="multiplicityRule" type="java.lang.String" />
+				<xml-element java-attribute="containsOtherV" name="contains-other-v" type="java.lang.String" />
+				<xml-element java-attribute="deleteOtherV" name="delete-other-v" type="java.lang.String" />
+				<xml-element java-attribute="svcinfra" name="SVC-INFRA" type="java.lang.String" />
+				<xml-element java-attribute="preventDelete" name="prevent-delete" type="java.lang.String" />
 			</java-attributes>
 		</java-type>
 		<java-type name="EdgePropNames">

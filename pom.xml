@@ -20,6 +20,7 @@
         <module>aai-core</module>
         <module>aai-auth</module>
 	    <module>aai-utils</module>
+        <module>aai-client-loadbalancer</module>
     </modules>
 
     <properties>

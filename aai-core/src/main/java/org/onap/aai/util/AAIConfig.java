@@ -52,8 +52,6 @@ public class AAIConfig {
     
     // this (probably) won't change between releases, put it in the config if it gets annoying...
     private static HashMap<String,ArrayList<String>> defaultBools = new HashMap<String,ArrayList<String>>();
-    private static Timer timer = new Timer();
-    
     /**
      * Instantiates a new AAI config.
      */
@@ -122,13 +120,6 @@ public class AAIConfig {
     	return defaultBools;
     }
         
-    /**
-     * Cleanup.
-     */
-    public static void cleanup() {
-		timer.cancel();
-	}
-
     /**
      * Gets the config file.
      *

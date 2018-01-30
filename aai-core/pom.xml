@@ -13,17 +13,16 @@
     <version>1.2.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <properties>
-	<onap.nexus.url>https://nexus.onap.org</onap.nexus.url>
+        <gendoc.version>v12</gendoc.version>
+        <aai.wiki.link>https://wiki.onap.org/</aai.wiki.link>
+        <hbase.version>1.0.2</hbase.version>
         <sonar.language>java</sonar.language>
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <sonar.surefire.reportsPath>${project.build.directory}/surefire-reports</sonar.surefire.reportsPath>
         <sonar.jacoco.reportPath>${project.build.directory}/coverage-reports/jacoco.exec</sonar.jacoco.reportPath>
         <sonar.jacoco.reportMissing.force.zero>false</sonar.jacoco.reportMissing.force.zero>
         <sonar.projectVersion>${project.version}</sonar.projectVersion>
-        <sonar.exclusions>org/onap/aai/domain/**</sonar.exclusions>
-        <gendoc.version>v12</gendoc.version>
-        <aai.wiki.link>https://wiki.onap.org/</aai.wiki.link>
-        <hbase.version>1.0.2</hbase.version>
+        <httpclient.version>4.5.1</httpclient.version>
         <jackson.version>2.2.3</jackson.version>
     </properties>
     <profiles>
@@ -142,7 +141,166 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>autoGenerate</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>1.1.1</version>
+                        <executions>
+                            <execution>
+                                <id>autoGenerateYaml</id>
+                                <phase>process-classes</phase>
+                                <goals>
+                                    <goal>java</goal>
+                                </goals>
+                                <configuration>
+                                    <mainClass>org.onap.aai.util.GenerateXsd</mainClass>
+                                    <systemProperties>
+                                        <systemProperty>
+                                            <key>gen_version</key>
+                                            <value>ALL</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>gen_type</key>
+                                            <value>YAML</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>yamlresponses_url</key>
+                                            <value>https://wiki.web.att.com/pages/viewpage.action?pageId=607391054
+                                            </value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>yamlresponses_label</key>
+                                            <value>Response codes found in [response codes]</value>
+                                        </systemProperty>
+                                    </systemProperties>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>autoGenerateHtml</id>
+                                <phase>process-classes</phase>
+                                <goals>
+                                    <goal>java</goal>
+                                </goals>
+                                <configuration>
+                                    <mainClass>org.onap.aai.util.AutoGenerateHtml</mainClass>
+                                    <systemProperties>
+                                        <property>
+                                            <key>aai.generate.version</key>
+                                            <value>${gendoc.version}</value>
+                                        </property>
+                                        <property>
+                                            <key>aai.wiki.link</key>
+                                            <value>${aai.wiki.link}</value>
+                                        </property>
+                                    </systemProperties>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.12.4</version>
+                <configuration>
+                    <argLine>-noverify ${argLine}</argLine>
+                    <systemPropertyVariables>
+                        <AJSC_HOME>.</AJSC_HOME>
+                        <BUNDLECONFIG_DIR>bundleconfig-local</BUNDLECONFIG_DIR>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>sonar-maven-plugin</artifactId>
+                <version>3.2</version>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.7.7.201606060606</version>
+                <configuration>
+                    <dumpOnExit>true</dumpOnExit>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>jacoco-initialize-unit-tests</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                        <configuration>
+                            <destFile>${project.build.directory}/coverage-reports/jacoco.exec</destFile>
+                            <!-- <append>true</append> -->
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>post-unit-test</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                        <configuration>
+                            <!-- Sets the path to the file which contains the execution data. -->
+                            <dataFile>${project.build.directory}/coverage-reports/jacoco.exec</dataFile>
+                            <!-- Sets the output directory for the code coverage report. -->
+                            <outputDirectory>${project.reporting.outputDirectory}/jacoco</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <!-- explicitly define maven-deploy-plugin after other to force exec order -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.12.4</version>
+                <configuration>
+                    <argLine>-noverify ${argLine}</argLine>
+                    <runOrder>alphabetical</runOrder>
+                    <systemPropertyVariables>
+                        <AJSC_HOME>.</AJSC_HOME>
+                        <BUNDLECONFIG_DIR>bundleconfig-local</BUNDLECONFIG_DIR>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
     <dependencies>
         <dependency>
             <groupId>org.onap.aai.aai-common</groupId>
@@ -154,30 +312,22 @@
             <artifactId>commons-lang</artifactId>
             <version>2.6</version>
         </dependency>
-	<dependency>
-	    <groupId>org.apache.commons</groupId>
-	    <artifactId>commons-text</artifactId>
-	    <version>1.1</version>
-	    <scope>compile</scope>
-	</dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-text</artifactId>
+            <version>1.1</version>
+            <scope>compile</scope>
+        </dependency>
         <dependency>
             <groupId>com.att.eelf</groupId>
             <artifactId>eelf-core</artifactId>
             <version>1.0.0</version>
         </dependency>
         <dependency>
-            <groupId>jdk.tools</groupId>
-            <artifactId>jdk.tools</artifactId>
-            <version>1.8.0_101</version>
-            <scope>system</scope>
-            <systemPath>${JAVA_HOME}/lib/tools.jar</systemPath>
-        </dependency>
-        <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-core-asl</artifactId>
             <version>1.9.13</version>
         </dependency>
-
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-mapper-asl</artifactId>
@@ -336,6 +486,11 @@
             <version>1.0.b2</version>
         </dependency>
         <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.6</version>
+        </dependency>
+        <dependency>
             <groupId>commons-cli</groupId>
             <artifactId>commons-cli</artifactId>
             <version>1.3</version>
@@ -437,11 +592,11 @@
             <artifactId>dmaapClient</artifactId>
             <version>0.2.12</version>
             <exclusions>
-				<exclusion>
-					<groupId>com.att.aft</groupId>
-					<artifactId>dme2</artifactId>
-				</exclusion>
-			</exclusions>
+                <exclusion>
+                    <groupId>com.att.aft</groupId>
+                    <artifactId>dme2</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.camel</groupId>
@@ -460,78 +615,17 @@
             <version>1.4.0</version>
             <scope>test</scope>
         </dependency>
-	</dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>sonar-maven-plugin</artifactId>
-                <version>3.2</version>
-            </plugin>
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.7.7.201606060606</version>
-                <configuration>
-                    <dumpOnExit>true</dumpOnExit>
-                    <excludes>
-                        <exclude>**/domain/**</exclude>
-                    </excludes>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>jacoco-initialize-unit-tests</id>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                        <configuration>
-                            <destFile>${project.build.directory}/coverage-reports/jacoco.exec</destFile>
-                            <!-- <append>true</append> -->
-                        </configuration>
-                    </execution>
-		                <execution>
-				    <id>post-unit-test</id>
-				    <phase>test</phase>
-				    <goals>
-				        <goal>report</goal>
-				    </goals>
-				    <configuration>
-				        <!-- Sets the path to the file which contains the execution data. -->
-				        <dataFile>${project.build.directory}/coverage-reports/jacoco.exec</dataFile>
-				        <!-- Sets the output directory for the code coverage report. -->
-				        <outputDirectory>${project.reporting.outputDirectory}/jacoco</outputDirectory>
-				    </configuration>
-				</execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-site-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.12.4</version>
-                <configuration>
-                    <argLine>-noverify ${argLine}</argLine>
-                    <runOrder>alphabetical</runOrder>
-                    <systemPropertyVariables>
-                        <AJSC_HOME>.</AJSC_HOME>
-                        <BUNDLECONFIG_DIR>bundleconfig-local</BUNDLECONFIG_DIR>
-                    </systemPropertyVariables>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>${httpclient.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.onap.aai.aai-common</groupId>
+            <artifactId>aai-client-loadbalancer</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 
     <!-- Plugins and repositories -->
     <pluginRepositories>
