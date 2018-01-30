@@ -82,7 +82,7 @@ public abstract class Introspector implements Cloneable {
 				this.set(convertedName, clazz.newInstance());
 				result = this.get(convertedName);
 			} catch (DynamicException | InstantiationException | IllegalAccessException e) {
-				
+				LOGGER.warn(e.getMessage(),e);
 			}
 		}
 
@@ -106,7 +106,7 @@ public abstract class Introspector implements Cloneable {
 				this.set(convertedName, clazz.newInstance());
 				value = this.get(convertedName);
 			} catch (DynamicException | InstantiationException | IllegalAccessException e) {
-				
+				LOGGER.warn(e.getMessage(),e);
 			}
 		}
 		if (value != null) {
@@ -138,7 +138,7 @@ public abstract class Introspector implements Cloneable {
 				this.set(convertedName, clazz.newInstance());
 				value = this.get(convertedName);
 			} catch (DynamicException | InstantiationException | IllegalAccessException e) {
-				
+				LOGGER.warn(e.getMessage(),e);
 			}
 		}
 		
