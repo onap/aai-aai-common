@@ -490,6 +490,81 @@
                        </xml-properties>
                </java-type>
 
+		<java-type name="HpaCapabilities">
+			<xml-properties>
+				<xml-property name="description" value="Collection of HPA Capabilities"/>
+			</xml-properties>
+			<xml-root-element name="hpa-capabilities"/>
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="hpaCapability" name="hpa-capability" type="inventory.aai.onap.org.v13.HpaCapability"/>
+			</java-attributes>
+		</java-type>
+
+		<java-type name="HpaCapability">
+			<xml-root-element name="hpa-capability"/>
+			<java-attributes>
+				<xml-element java-attribute="hpaCapabilityId" name="hpa-capability-id" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="UUID to uniquely identify a HPA capability"/>
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="hpaFeature" name="hpa-feature" required="true" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Name of the HPACapability"/>
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="version" name="hpa-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="HPA schema version"/>
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="hardwareArchitecture" name="hpa-hw-arch" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Hardware architecture"/>
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete."/>
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v13.RelationshipList"/>
+				<xml-element container-type="java.util.ArrayList" java-attribute="hpaFeatureAttribute" name="hpa-feature-attribute" type="inventory.aai.onap.org.v13.HpaFeatureAttribute"/>
+			</java-attributes>
+			<xml-properties>
+				<xml-property name="description" value="Represents a HPA capability"/>
+				<xml-property name="indexedProps" value="hpa-feature,hpa-hw-arch,hpa-capability-id"/>
+				<xml-property name="dependentOn" value="flavor"/>
+				<xml-property name="container" value="hpa-capabilities"/>
+			</xml-properties>
+		</java-type>
+
+		<java-type name="HpaFeatureAttribute">
+			<xml-root-element name="hpa-feature-attribute"/>
+			<java-attributes>
+				<xml-element java-attribute="hpaAttributeKey" name="hpa-attr-key" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="name of the specific HPA attribute"/>
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="hpaAttributeValue" name="hpa-attr-value" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="JSON string specifying the value, unit and type of the specific HPA attribute"/>
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete."/>
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v13.RelationshipList"/>
+			</java-attributes>
+			<xml-properties>
+				<xml-property name="description" value="HPA Capability Feature attributes"/>
+				<xml-property name="container" value="hpa-capability"/>
+			</xml-properties>
+		</java-type>
+
 		<java-type name="CloudInfrastructure">
 			<xml-properties>
 				<xml-property name="description" value="Namespace for cloud infrastructure." />
@@ -591,7 +666,12 @@
 				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v13.RelationshipList" />
 				<xml-element container-type="java.util.ArrayList" java-attribute="vipIpv4AddressList" name="vip-ipv4-address-list" type="inventory.aai.onap.org.v13.VipIpv4AddressList" />
 				<xml-element container-type="java.util.ArrayList" java-attribute="vipIpv6AddressList" name="vip-ipv6-address-list" type="inventory.aai.onap.org.v13.VipIpv6AddressList" />
-			</java-attributes>
+				<xml-element java-attribute="hpaCapabilities" name="hpa-capabilities" type="inventory.aai.onap.org.v13.HpaCapabilities">
+					<xml-properties>
+						<xml-property name="description" value="List of cloud-region specific HPA Capabilities"/>
+					</xml-properties>
+				</xml-element>
+            </java-attributes>
 			<xml-properties>
 				<xml-property name="description" value="cloud-region designates an installation of a cloud cluster or region or instantiation." />
 				<xml-property name="indexedProps" value="cloud-owner,cloud-region-id,cloud-type,owner-defined-type" />
@@ -1408,7 +1488,7 @@
 				</xml-element>
 				<xml-element java-attribute="flavorName" name="flavor-name" required="true" type="java.lang.String">
 					<xml-properties>
-						<xml-property name="description" value="Flavor name" />
+						<xml-property name="description" value="Cloud Region Flavor name" />
 					</xml-properties>
 				</xml-element>
 				<xml-element java-attribute="flavorVcpus" name="flavor-vcpus" type="java.lang.Integer">
@@ -1449,6 +1529,11 @@
 				<xml-element java-attribute="flavorDisabled" name="flavor-disabled" type="java.lang.Boolean">
 					<xml-properties>
 						<xml-property name="description" value="Boolean as to whether this flavor is no longer enabled" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="hpaCapabilities" name="hpa-capabilities" type="inventory.aai.onap.org.v13.HpaCapabilities">
+					<xml-properties>
+						<xml-property name="description" value="List of flavor specific HPA Capabilities"/>
 					</xml-properties>
 				</xml-element>
 				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
