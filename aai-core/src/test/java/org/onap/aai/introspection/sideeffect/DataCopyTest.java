@@ -261,7 +261,7 @@ public class DataCopyTest {
 	private String getJsonString(String filename) throws IOException {
 		
 		
-		FileInputStream is = new FileInputStream("src/test/resources/bundleconfig-local/etc/oxm/sideeffect/" + filename);
+		FileInputStream is = new FileInputStream("src/test/resources/oxm/sideeffect/" + filename);
 		String s =  IOUtils.toString(is, "UTF-8"); 
 		IOUtils.closeQuietly(is);
 		

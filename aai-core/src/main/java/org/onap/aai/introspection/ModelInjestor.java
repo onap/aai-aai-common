@@ -21,6 +21,8 @@
  */
 package org.onap.aai.introspection;
 
+import com.att.eelf.configuration.EELFLogger;
+import com.att.eelf.configuration.EELFManager;
 import org.eclipse.persistence.dynamic.DynamicType;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
@@ -42,6 +44,7 @@ public class ModelInjestor {
 	private Map<Version, DynamicJAXBContext> versionContextMap = new HashMap<>();
 	private static final Pattern classNamePattern = Pattern.compile("\\.(v\\d+)\\.");
 	private static final Pattern uriPattern = 	Pattern.compile("(v\\d+)\\/");
+	private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(ModelInjestor.class);
 
 	
 	/**
@@ -90,8 +93,24 @@ public class ModelInjestor {
 	 */
 	private void injestModel (Version version) throws JAXBException, FileNotFoundException {
 		String fileName = this.getOXMFileName(version);
-		InputStream iStream = new FileInputStream(new File(fileName));
-		Map<String, Object> properties = new HashMap<String, Object>(); 
+
+		File oxmFile = new File(AAIConstants.AAI_HOME_ETC + fileName);
+
+		// Check if the file exists on the path and if it doesn't exist then
+		// Using classloader makes it easy to have a different oxm file
+		// for unit testing the oxm files otherwise, you will be
+		// stuck with using the main oxm for even the testing
+
+		InputStream iStream;
+		if(oxmFile.exists()){
+			LOGGER.info("Oxm file exists on the system {}", oxmFile);
+		    iStream = new FileInputStream(oxmFile);
+		} else {
+			LOGGER.warn("Unable to find oxm file {} on the system so using classloader", oxmFile);
+			iStream = getClass().getClassLoader().getResourceAsStream(fileName);
+		}
+
+		Map<String, Object> properties = new HashMap<String, Object>();
 		properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, iStream);
 		final DynamicJAXBContext jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(this.getClass().getClassLoader(), properties);
 		versionContextMap.put(version, jaxbContext);
@@ -168,7 +187,13 @@ public class ModelInjestor {
 	}
 	
 	public String getOXMFileName(Version v) {
-		return 	AAIConstants.AAI_HOME_ETC_OXM + "aai_oxm_" + v.toString() + ".xml";
+		// Changed the /oxm/aai_oxm_*.xml to oxm/aai_oxm_*.xml
+		// Modified to load from input stream using getClass().getClassLoader()
+		// As this will be able to relatively get the oxm if the oxm file is there
+		// So if there is a src/main/resources/oxm/ and src/test/resources/oxm, the
+		// test oxm will end up being used for tests and src oxm for source files
+		// Don't change this unless you understand the details specified
+		return 	"oxm/aai_oxm_" + v.toString() + ".xml";
 	}
 	
 }
