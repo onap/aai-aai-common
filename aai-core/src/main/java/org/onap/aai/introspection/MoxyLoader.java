@@ -34,6 +34,7 @@ import org.onap.aai.introspection.exceptions.AAIUnmarshallingException;
 import org.onap.aai.logging.ErrorLogHelper;
 import org.onap.aai.logging.LogFormatTools;
 import org.onap.aai.restcore.MediaType;
+import org.onap.aai.util.AAIConstants;
 import org.onap.aai.workarounds.NamingExceptions;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -46,8 +47,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.stream.StreamSource;
-import java.io.IOException;
-import java.io.StringReader;
+import java.io.*;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -176,7 +176,19 @@ public class MoxyLoader extends Loader {
 			docFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
 
 			final DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-			final Document doc = docBuilder.parse(fileName);
+
+			InputStream inputStream;
+			File oxmFile = new File(AAIConstants.AAI_HOME_ETC + fileName);
+
+			if(oxmFile.exists()){
+			    LOGGER.info("Oxm file exists on the system {}", oxmFile);
+				inputStream = new FileInputStream(oxmFile);
+			} else {
+				LOGGER.warn("Unable to find oxm file {} on the system so using classloader", oxmFile);
+				inputStream = getClass().getClassLoader().getResourceAsStream(fileName);
+			}
+
+			final Document doc = docBuilder.parse(inputStream);
 			final NodeList list = doc.getElementsByTagName("java-type");
 
 			for (int i = 0; i < list.getLength(); i++) {
