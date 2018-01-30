@@ -151,7 +151,7 @@ public class StoreNotificationEventTest extends AAISetup {
 		DynamicEntity obj = Mockito.mock(DynamicEntity.class);
 		DynamicJAXBContext notificationJaxbContext = Mockito.mock(DynamicJAXBContext.class);
 		ClassLoader cl = getClass().getClassLoader();
-		InputStream is = cl.getResourceAsStream("bundleconfig-local/etc/oxm/aai_oxm_v11.xml");
+		InputStream is = cl.getResourceAsStream("oxm/aai_oxm_v11.xml");
 		Map<String, Object> properties = new HashMap<String, Object>();
 		properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, is);
 		DynamicJAXBContext notificationJaxbContextReal = DynamicJAXBContextFactory.createContextFromOXM(cl, properties);

@@ -24,20 +24,24 @@ package org.onap.aai.dmaap;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.json.JSONObject;
+import org.onap.aai.config.SpringContextAware;
 import org.onap.aai.util.AAIConfig;
+import org.springframework.context.ApplicationContext;
 import org.springframework.jms.connection.CachingConnectionFactory;
 import org.springframework.jms.core.JmsTemplate;
 
-public class AAIDmaapEventJMSProducer {
+public class AAIDmaapEventJMSProducer implements MessageProducer {
 
 	private JmsTemplate jmsTemplate;
 
+	private ApplicationContext applicationContext;
+
 	public AAIDmaapEventJMSProducer() {
 		if(AAIConfig.get("aai.jms.enable", "true").equals("true")){
-			this.jmsTemplate = new JmsTemplate();
-			String activeMqTcpUrl = System.getProperty("activemq.tcp.url", "tcp://localhost:61447");
-			this.jmsTemplate.setConnectionFactory(new CachingConnectionFactory(new ActiveMQConnectionFactory(activeMqTcpUrl)));
-			this.jmsTemplate.setDefaultDestination(new ActiveMQQueue("IN_QUEUE"));
+            this.jmsTemplate = new JmsTemplate();
+            String activeMqTcpUrl = System.getProperty("activemq.tcp.url", "tcp://localhost:61547");
+            this.jmsTemplate.setConnectionFactory(new CachingConnectionFactory(new ActiveMQConnectionFactory(activeMqTcpUrl)));
+            this.jmsTemplate.setDefaultDestination(new ActiveMQQueue("IN_QUEUE"));
 		}
 	}
 

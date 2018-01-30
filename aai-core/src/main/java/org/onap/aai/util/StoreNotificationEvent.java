@@ -27,35 +27,70 @@ import java.util.UUID;
 
 import javax.xml.bind.Marshaller;
 
+import com.att.eelf.configuration.EELFLogger;
+import com.att.eelf.configuration.EELFManager;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.onap.aai.config.SpringContextAware;
 import org.onap.aai.dmaap.AAIDmaapEventJMSProducer;
+import org.onap.aai.dmaap.JMSProducer;
+import org.onap.aai.dmaap.MessageProducer;
 import org.onap.aai.domain.notificationEvent.NotificationEvent;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.env.Environment;
 
 public class StoreNotificationEvent {
 
-	private AAIDmaapEventJMSProducer messageProducer;
+    private static final EELFLogger logger = EELFManager.getInstance().getLogger(StoreNotificationEvent.class);
+	private MessageProducer messageProducer;
 	private String fromAppId = "";
 	private String transId = "";
 	private final String transactionId;
 	private final String sourceOfTruth;
+
+	private ApplicationContext context;
+	private Environment env;
+
 	/**
 	 * Instantiates a new store notification event.
 	 */
 	public StoreNotificationEvent(String transactionId, String sourceOfTruth) {
-		this(new AAIDmaapEventJMSProducer(), transactionId, sourceOfTruth);
+		this.context         = SpringContextAware.getApplicationContext();
+		// If the context is null then this is being invoked from
+		// non spring context so creating the jms producer each time
+		// Otherwise, get the jms producer from the spring context so
+		// no need to create a instance of this each time
+        // Also check if the environment has the dmaap profile
+		// TODO - Add the constants for profile so do this when adding the https two-way ssl and one way with basic auth
+		if(this.context == null){
+			this.messageProducer = new AAIDmaapEventJMSProducer();
+		} else {
+		    env = context.getEnvironment();
+			if(env.acceptsProfiles("dmaap")){
+				try {
+					this.messageProducer = (JMSProducer)context.getBean("jmsProducer");
+				} catch(NoSuchBeanDefinitionException ex){
+					logger.error("Currently using the dmaap profile but still not able to find bean so check DmaapConfig", ex);
+				}
+			} else {
+				this.messageProducer = new AAIDmaapEventJMSProducer();
+			}
+		}
+        this.transactionId   = transactionId;
+        this.sourceOfTruth   = sourceOfTruth;
 	}
-	
+
 	public StoreNotificationEvent(AAIDmaapEventJMSProducer producer, String transactionId, String sourceOfTruth) {
-		this.messageProducer = producer;
-		this.transactionId = transactionId;
-		this.sourceOfTruth = sourceOfTruth;
+	    this.messageProducer = producer;
+		this.transactionId   = transactionId;
+		this.sourceOfTruth   = sourceOfTruth;
 	}
 
 	/**

@@ -1,0 +1,18 @@
+{
+	"global-customer-id": "key1",
+	"subscriber-name": "44IPZu0Ri",
+	"subscriber-type": "gIgOtou5Np5u",
+	"service-subscriptions": {
+      "service-subscription" : [ {
+         "service-type" : "key2",
+         "temp-ub-sub-account-id" : "JJYRez",
+         "service-instances" : {
+            "service-instance" : [ {
+               "service-instance-id" : "nested-instance-key",
+               "model-invariant-id" : "key1",
+               "model-version-id" : "key2"
+               }]
+               }
+               }]
+               }
+               }

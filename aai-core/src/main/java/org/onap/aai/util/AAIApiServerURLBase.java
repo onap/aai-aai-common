@@ -21,13 +21,6 @@
  */
 package org.onap.aai.util;
 
-import java.util.List;
-import java.util.Map;
-
-import org.apache.cxf.helpers.CastUtils;
-import org.apache.cxf.message.Message;
-import org.apache.cxf.phase.PhaseInterceptorChain;
-
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Version;
 
@@ -42,20 +35,20 @@ public class AAIApiServerURLBase {
 	public static String get() throws AAIException {
 		
 		String hostName = null;
-		try {
-			Message message = PhaseInterceptorChain.getCurrentMessage();
-			Map<String, List<String>> headers = CastUtils.cast((Map) message.get(Message.PROTOCOL_HEADERS));
-			List sa = null;
-			    if (headers != null) {
-			            sa = headers.get("host");
-			        }
-
-			        if (sa != null && sa.size() == 1) {
-			            hostName = "https://"+ sa.get(0).toString() + "/aai/";
-			        }
-		} catch (Exception e) { 
-			// TODO: we may want to log an error here
-		}
+//		try {
+//			Message message = PhaseInterceptorChain.getCurrentMessage();
+//			Map<String, List<String>> headers = CastUtils.cast((Map) message.get(Message.PROTOCOL_HEADERS));
+//			List sa = null;
+//			    if (headers != null) {
+//			            sa = headers.get("host");
+//			        }
+//
+//			        if (sa != null && sa.size() == 1) {
+//			            hostName = "https://"+ sa.get(0).toString() + "/aai/";
+//			        }
+//		} catch (Exception e) {
+//			// TODO: we may want to log an error here
+//		}
 		// TODO: should this check the value a little closer and look for a pattern?
 		if (hostName == null) { 
 			hostName = AAIConfig.get(AAIConstants.AAI_SERVER_URL_BASE);
