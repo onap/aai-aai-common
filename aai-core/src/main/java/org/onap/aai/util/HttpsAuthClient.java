@@ -106,13 +106,13 @@ public class HttpsAuthClient{
 				char[] pwd = keystore_password.toCharArray();
 				ks.load(fin, pwd);
 				kmf.init(ks, pwd);
+				ctx.init(kmf.getKeyManagers(), null, null);
 			} catch (Exception e) {
 				System.out.println("Error setting up kmf: exiting");
 				e.printStackTrace();
 				System.exit(1);
 			}
 
-			ctx.init(kmf.getKeyManagers(), null, null);
 			config.getProperties().put(HTTPSProperties.PROPERTY_HTTPS_PROPERTIES, 
 										new HTTPSProperties( new HostnameVerifier() {
 				@Override
