@@ -282,6 +282,32 @@
 			"description":""
 		},
 		{
+			"from": "hpa-capability",
+			"to": "flavor",
+			"label": "org.onap.relationships.inventory.BelongsTo",
+			"direction": "OUT",
+			"multiplicity": "MANY2ONE",
+			"contains-other-v": "!${direction}",
+			"delete-other-v": "NONE",
+			"SVC-INFRA": "NONE",
+			"prevent-delete": "!${direction}",
+			"default": "true",
+			"description":""
+		},
+		{
+			"from": "hpa-capability",
+			"to": "cloud-region",
+			"label": "org.onap.relationships.inventory.AssociatedWith",
+			"direction": "OUT",
+			"multiplicity": "MANY2ONE",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"SVC-INFRA": "NONE",
+			"prevent-delete": "!${direction}",
+			"default": "true",
+			"description":""
+		},
+		{
 			"from": "group-assignment",
 			"to": "cloud-region",
 			"label": "org.onap.relationships.inventory.BelongsTo",
