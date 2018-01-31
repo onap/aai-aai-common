@@ -21,6 +21,8 @@
  */
 package org.onap.aai.introspection;
 
+import com.att.eelf.configuration.EELFLogger;
+import com.att.eelf.configuration.EELFManager;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.onap.aai.db.props.AAIProperties;
 
@@ -30,6 +32,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class PojoInjestor {
+	private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(PojoInjestor.class);
 	
 	private String POJO_CLASSPATH = "org.onap.aai.domain.yang";
 	private final Pattern classNamePattern = Pattern.compile("\\.(v\\d+)\\.");
@@ -45,8 +48,7 @@ public class PojoInjestor {
 			}
 			context = JAXBContextFactory.createContext(POJO_CLASSPATH, this.getClass().getClassLoader());
 		} catch (JAXBException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOGGER.error(e.getMessage(),e);
 		}
 		
 		return context;
