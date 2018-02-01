@@ -21,6 +21,8 @@
  */
 package org.onap.aai.parsers.uri;
 
+import com.att.eelf.configuration.EELFLogger;
+import com.att.eelf.configuration.EELFManager;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
@@ -44,7 +46,7 @@ import java.util.List;
  *
  */
 public class URIToObject implements Parsable {
-
+	private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(URIToObject.class);
 	
 	private Introspector topEntity = null;
 	
@@ -203,6 +205,7 @@ public class URIToObject implements Parsable {
 				}
 			}
 		} catch (UnsupportedEncodingException e) {
+			LOGGER.error(e.getMessage(),e);
 		}
 		this.previous = entity;
 	}
