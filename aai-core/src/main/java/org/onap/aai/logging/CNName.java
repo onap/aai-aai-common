@@ -23,6 +23,8 @@ package org.onap.aai.logging;
 
 import ch.qos.logback.access.pattern.AccessConverter;
 import ch.qos.logback.access.spi.IAccessEvent;
+import com.att.eelf.configuration.EELFLogger;
+import com.att.eelf.configuration.EELFManager;
 
 import javax.security.auth.x500.X500Principal;
 import javax.servlet.http.HttpServletRequest;
@@ -31,6 +33,7 @@ import java.security.cert.X509Certificate;
 import static java.util.Base64.getDecoder;
 
 public class CNName extends AccessConverter {
+	private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(CNName.class);
 
 	/**
 	 * Converts access events to String response codes
@@ -83,7 +86,8 @@ public class CNName extends AccessConverter {
 					authUser = subjectDN.toString();
 					return authUser;
 				}
-			} catch(Exception ex){
+			} catch(Exception e){
+                LOGGER.error(e.getMessage(),e);
 				return "-";
 			}
 		} else {
