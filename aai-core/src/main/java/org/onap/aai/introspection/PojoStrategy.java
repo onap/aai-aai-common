@@ -21,6 +21,8 @@
  */
 package org.onap.aai.introspection;
 
+import com.att.eelf.configuration.EELFLogger;
+import com.att.eelf.configuration.EELFManager;
 import com.google.common.base.CaseFormat;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Multimap;
@@ -43,6 +45,7 @@ import java.lang.reflect.*;
 import java.util.*;
 
 public class PojoStrategy extends Introspector {
+	private static final EELFLogger LOGGER2 = EELFManager.getInstance().getLogger(PojoStrategy.class);
 
 	private Object internalObject = null;
 	private PojoInjestor injestor = null;
@@ -72,7 +75,7 @@ public class PojoStrategy extends Introspector {
 			marshaller = jaxbContext.createMarshaller();
 			unmarshaller = jaxbContext.createUnmarshaller();
 		} catch (JAXBException e) {
-
+			LOGGER2.error(e.getMessage(),e);
 		}
 		
 	}
@@ -133,6 +136,7 @@ public class PojoStrategy extends Introspector {
 		try {
 			return this.internalObject.getClass().getDeclaredMethod(getMethodName).invoke(this.internalObject);			
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+			LOGGER2.error(e.getMessage(),e);
 			return null;
 		}
 	}
@@ -181,7 +185,7 @@ public class PojoStrategy extends Introspector {
 		try {
 			field = this.internalObject.getClass().getDeclaredField(CaseFormat.LOWER_HYPHEN.to(CaseFormat.LOWER_CAMEL, name));
 		} catch (NoSuchFieldException | SecurityException e) {
-			
+			LOGGER2.error(e.getMessage(),e);
 			return null;
 		}
 		
@@ -202,6 +206,7 @@ public class PojoStrategy extends Introspector {
 			}
 			
 		} catch (Exception e) {
+			LOGGER2.error(e.getMessage(),e);
 			return null;
 		}
 	}
@@ -252,7 +257,7 @@ public class PojoStrategy extends Introspector {
 	        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, properties.getFormatted());
 	        marshaller.marshal(this.internalObject, result);
 		} catch (JAXBException e) {
-			//e.printStackTrace();
+			LOGGER2.error(e.getMessage(),e);
 		}
 
         return result.toString();
@@ -270,8 +275,7 @@ public class PojoStrategy extends Introspector {
 				
 				result = unmarshaller.unmarshal(new StreamSource(new StringReader(this.marshal(true))), this.internalObject.getClass()).getValue();
 			 } catch (JAXBException e) {
-					// TODO Auto-generated catch block
-					//e.printStackTrace();
+			 	LOGGER2.error(e.getMessage(),e);
 			}
 		 result = IntrospectorFactory.newInstance(getModelType(), result);
 		 return result;
@@ -336,7 +340,7 @@ public class PojoStrategy extends Introspector {
 				}
 			}
 		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-			// TODO Auto-generated catch block
+			LOGGER2.error(e.getMessage(),e);
 		}
 		
 		return result;
@@ -363,7 +367,7 @@ public class PojoStrategy extends Introspector {
 		try {
 			value = (String)this.classLevelMetadata.getClass().getMethod(methodName).invoke(classLevelMetadata);
 		} catch (IllegalArgumentException | IllegalAccessException | SecurityException | InvocationTargetException | NoSuchMethodException e) {
-			//TODO
+			LOGGER2.error(e.getMessage(),e);
 		}
 		
 		return value;
