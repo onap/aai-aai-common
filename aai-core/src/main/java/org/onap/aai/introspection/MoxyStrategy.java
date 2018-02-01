@@ -21,6 +21,8 @@
  */
 package org.onap.aai.introspection;
 
+import com.att.eelf.configuration.EELFLogger;
+import com.att.eelf.configuration.EELFManager;
 import com.google.common.base.CaseFormat;
 import com.google.common.base.Joiner;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -49,7 +51,9 @@ import java.util.*;
 import java.util.Map.Entry;
 
 public class MoxyStrategy extends Introspector {
-	
+
+	private static final EELFLogger LOGGER2 = EELFManager.getInstance().getLogger(MoxyStrategy.class);
+
 	private DynamicEntity internalObject = null;
 	private DynamicType internalType = null;
 	private DynamicJAXBContext jaxbContext = null;
@@ -62,7 +66,7 @@ public class MoxyStrategy extends Introspector {
 	private Set<String> requiredProperties = null;
 
 	private boolean isInitialized = false;
-	
+
 	protected MoxyStrategy(Object obj) {
 		super(obj);
 		/* must look up the correct jaxbcontext for this object */
@@ -79,11 +83,11 @@ public class MoxyStrategy extends Introspector {
 			marshaller = jaxbContext.createMarshaller();
 			unmarshaller = jaxbContext.createUnmarshaller();
 		} catch (JAXBException e) {
-
+			LOGGER2.error(e.getMessage(),e);
 		}
 
 	}
-	
+
 	private void init() {
 		isInitialized = true;
 
@@ -94,13 +98,13 @@ public class MoxyStrategy extends Introspector {
 		}
 		props = Collections.unmodifiableSet(props);
 		this.properties = props;
-		
+
 		Set<String> requiredProps = new LinkedHashSet<>();
 		requiredProps = new LinkedHashSet<>();
 		for (DatabaseMapping dm : cd.getMappings()) {
-			if (dm.getField() instanceof XMLField) { 
+			if (dm.getField() instanceof XMLField) {
 				XMLField x = (XMLField)dm.getField();
-				if (x != null) { 
+				if (x != null) {
 					if (x.isRequired()) {
 						requiredProps.add(this.removeXPathDescriptor(x.getName()));
 					}
@@ -109,25 +113,25 @@ public class MoxyStrategy extends Introspector {
 		}
 		requiredProps = Collections.unmodifiableSet(requiredProps);
 		this.requiredProperties = requiredProps;
-	
+
 		Set<String> keys = new LinkedHashSet<>();
-		
+
 		for (String name : internalType.getDescriptor().getPrimaryKeyFieldNames()) {
 			keys.add(this.removeXPathDescriptor(name));
 		}
 		keys = Collections.unmodifiableSet(keys);
 		this.keys = keys;
-		
-		
+
+
 	}
-	
+
 	@Override
 	public boolean hasProperty(String name) {
 		String convertedName = convertPropertyName(name);
 
-		return internalType.containsProperty(convertedName);	
+		return internalType.containsProperty(convertedName);
 	}
-	
+
 	@Override
 	public Object get(String name) {
 		return internalObject.get(name);
@@ -135,7 +139,7 @@ public class MoxyStrategy extends Introspector {
 
 	@Override
 	public void set(String name, Object obj) throws IllegalArgumentException {
-		
+
 		internalObject.set(name, obj);
 	}
 
@@ -147,7 +151,7 @@ public class MoxyStrategy extends Introspector {
 		}
 
 		return this.properties;
-		
+
 	}
 
 	@Override
@@ -169,7 +173,7 @@ public class MoxyStrategy extends Introspector {
 
 		return this.keys;
 	}
-	
+
 	@Override
 	public Map<PropertyMetadata, String> getPropertyMetadata(String prop) {
 		String propName = this.convertPropertyName(prop);
@@ -182,7 +186,7 @@ public class MoxyStrategy extends Introspector {
 						PropertyMetadata.valueOf(CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, (String)entry.getKey())), (String)entry.getValue());
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -190,8 +194,8 @@ public class MoxyStrategy extends Introspector {
 	public String getJavaClassName() {
 		return internalObject.getClass().getName();
 	}
-	
-	
+
+
 
 	@Override
 	public Class<?> getClass(String name) {
@@ -201,7 +205,7 @@ public class MoxyStrategy extends Introspector {
 			if (internalType.getPropertyType(name) == null) {
 				if (cd.getMappingForAttributeName(name) instanceof XMLCompositeDirectCollectionMapping) {
 					resultClass = cd.getMappingForAttributeName(name).getContainerPolicy().getContainerClass();
-	
+
 				} else if (cd.getMappingForAttributeName(name) instanceof XMLCompositeCollectionMapping) {
 					resultClass = cd.getMappingForAttributeName(name).getContainerPolicy().getContainerClass();
 				} else {
@@ -217,6 +221,7 @@ public class MoxyStrategy extends Introspector {
 			}
 		} catch (DynamicException e) {
 			//property doesn't exist
+			LOGGER2.error(e.getMessage(),e);
 		}
 		return resultClass;
 	}
@@ -233,7 +238,7 @@ public class MoxyStrategy extends Introspector {
 				resultClass = cd.getMappingForAttributeName(name).getReferenceDescriptor().getJavaClass();
 			}
 		}
-		
+
 		return resultClass;
 	}
 
@@ -241,20 +246,20 @@ public class MoxyStrategy extends Introspector {
 	public Object getUnderlyingObject() {
 		return this.internalObject;
 	}
-	
+
 	@Override
 	public String getChildName() {
-		
+
 		String className = internalObject.getClass().getSimpleName();
 		String lowerHyphen = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, className);
-		
+
 		if (this.isContainer()) {
 			lowerHyphen = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN,this.getGenericTypeClass(this.getProperties().iterator().next()).getSimpleName());
 		}
-		
+
 		return lowerHyphen;
 	}
-	
+
 	@Override
 	public String getName() {
 		String className = internalObject.getClass().getSimpleName();
@@ -263,11 +268,11 @@ public class MoxyStrategy extends Introspector {
 		if (this.isContainer()) {
 			lowerHyphen = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN,this.getGenericTypeClass(this.getProperties().get(0)).getSimpleName());
 		}*/
-		
+
 
 		return lowerHyphen;
 	}
-	
+
 	@Override
 	public String getObjectId() throws UnsupportedEncodingException {
 		String result = "";
@@ -275,17 +280,17 @@ public class MoxyStrategy extends Introspector {
 		if (this.isContainer()) {
 			 result += "/" + this.getName();
 		} else {
-			
+
 			if (container != null) {
 				result += "/" + container;
 			}
 			result += "/" + this.getDbName() + "/" + this.findKey();
-			
+
 		}
-		
+
 		return result;
 	}
-	
+
 	@Override
 	protected String findKey() throws UnsupportedEncodingException {
 		Set<String> keys = null;
@@ -295,10 +300,10 @@ public class MoxyStrategy extends Introspector {
 			String value = UriUtils.encode(this.getValue(key).toString(), "UTF-8");
 			results.add(value);
 		}
-		
+
 		return Joiner.on("/").join(results);
 	}
-	
+
 	@Override
 	public String preProcessKey (String key) {
 		String result = "";
@@ -306,19 +311,19 @@ public class MoxyStrategy extends Introspector {
 		String[] split = key.split("/");
 		int i = 0;
 		for (i = split.length-1; i >= 0; i--) {
-			
+
 			if (jaxbContext.getDynamicType(split[i]) != null) {
 				break;
-				
+
 			}
-			
+
 		}
 		result = Joiner.on("/").join(Arrays.copyOfRange(split, 0, i));
-		
+
 		return result;
-		
+
 	}
-	
+
 	@Override
 	public String marshal(MarshallerProperties properties) {
 		StringWriter result = new StringWriter();
@@ -332,12 +337,12 @@ public class MoxyStrategy extends Introspector {
 	        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, properties.getFormatted());
 	        marshaller.marshal(this.internalObject, result);
 		} catch (JAXBException e) {
-			//e.printStackTrace();
+			LOGGER2.error(e.getMessage(),e);
 		}
 
         return result.toString();
 	}
-	
+
 	@Override
 	public Object clone() {
 		Object result = null;
@@ -347,11 +352,10 @@ public class MoxyStrategy extends Introspector {
 		        unmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/json");
 		        unmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
 				unmarshaller.setProperty(UnmarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME, true);
-				
+
 				result = unmarshaller.unmarshal(new StreamSource(new StringReader(this.marshal(true))), this.internalObject.getClass()).getValue();
 			 } catch (JAXBException e) {
-					// TODO Auto-generated catch block
-					//e.printStackTrace();
+			 	LOGGER2.error(e.getMessage(),e);
 			}
 		 result = IntrospectorFactory.newInstance(getModelType(), result);
 		 return result;
