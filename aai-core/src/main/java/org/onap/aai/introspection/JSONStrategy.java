@@ -21,6 +21,8 @@
  */
 package org.onap.aai.introspection;
 
+import com.att.eelf.configuration.EELFLogger;
+import com.att.eelf.configuration.EELFManager;
 import org.json.simple.JSONObject;
 import org.onap.aai.schema.enums.ObjectMetadata;
 import org.onap.aai.schema.enums.PropertyMetadata;
@@ -32,6 +34,7 @@ import java.util.Set;
 import java.util.UUID;
 
 public class JSONStrategy extends Introspector {
+	private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(JSONStrategy.class);
 
 	private JSONObject json = null;
 	private String namedType = "";
@@ -158,6 +161,7 @@ public class JSONStrategy extends Introspector {
 		try {
 			return this.getClass(name).newInstance();
 		} catch (InstantiationException | IllegalAccessException e) {
+            LOGGER.error(e.getMessage(),e);
 			return null;
 		}
 	}
@@ -167,6 +171,7 @@ public class JSONStrategy extends Introspector {
 		try {
 			return this.getGenericTypeClass(name).newInstance();
 		} catch (InstantiationException | IllegalAccessException e) {
+            LOGGER.error(e.getMessage(),e);
 			return null;
 		}
 	}
