@@ -346,6 +346,7 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
 		return unionTraversals.toArray(new Traversal[unionTraversals.size()]);
 	}
 
+	@Override
 	public QueryBuilder<Edge> getEdgesBetweenWithLabels(EdgeType type, String outNodeType, String inNodeType, List<String> labels) throws AAIException {
 		Introspector outObj = loader.introspectorFromName(outNodeType);
 		Introspector inObj = loader.introspectorFromName(inNodeType);
