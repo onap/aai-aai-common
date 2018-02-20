@@ -1163,7 +1163,7 @@ public class GenerateXsd {
 		logger.trace("processing starts");
 		sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n");
 		String namespace = "org.onap";
-		if (v.compareTo(Version.v11) < 0 || v.compareTo(Version.v12) < 0) {
+		if (v.compareTo(Version.v11) < 0) {
 			namespace = "org.openecomp";
 		}
 		if ( useAnnotationsInXsd ) {

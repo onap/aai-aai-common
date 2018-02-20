@@ -58,7 +58,7 @@ public class UrlBuilder {
 			final StringBuilder result = new StringBuilder();
 			final URI uri = this.serializer.getURIForVertex(v);
 			
-			if (this.version.compareTo(Version.v11) >= 0 || this.version.compareTo(Version.v12) >= 0) {
+			if (this.version.compareTo(Version.v11) >= 0) {
 				result.append(AAIConstants.AAI_APP_ROOT);
 			} else {
 				result.append(this.serverBase);
@@ -77,7 +77,7 @@ public class UrlBuilder {
 
 		result.append("/resources/id/" + v.id());
 		result.insert(0, this.version);
-		if (this.version.compareTo(Version.v11) >= 0 || this.version.compareTo(Version.v12) >= 0) {
+		if (this.version.compareTo(Version.v11) >= 0) {
 			result.insert(0, AAIConstants.AAI_APP_ROOT);
 		} else {
 			result.insert(0, this.serverBase);
