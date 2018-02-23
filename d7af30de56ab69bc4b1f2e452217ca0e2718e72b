@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_8e891e77",
+        "filename": "INFO.yaml",
+        "patchSetId": 2
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2018-02-23T20:05:31Z",
+      "side": 1,
+      "message": "Just curious about the timezone \"America/Michigan\"?  Most of MIchigan is in the Eastern timezone, but there are parts of the Upper Peninsula that are in Central.  This doesn\u0027t seem specific enough.",
+      "revId": "d7af30de56ab69bc4b1f2e452217ca0e2718e72b",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
