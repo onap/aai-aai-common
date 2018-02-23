@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "5a93c517_f36bef1b",
+        "filename": "INFO.yaml",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2018-02-23T17:29:58Z",
+      "side": 1,
+      "message": "type: \"zoom\"\nagenda: \u0027https://wiki.onap.org/display/DW/AAI+Meeting+Notes\u0027\nurl: \u0027https://wiki.onap.org/pages/viewpage.action?pageId\u003d8227676\u0027\nserver: \u0027n/a\u0027\nchannel: \u0027n/a\u0027\nrepeats: \u0027weekly\u0027\ntime: \u002714:00 UTC\u0027",
+      "revId": "79601c9628990b086377ce78f83d9d3dc83105bf",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5a93c517_7d1fae6c",
         "filename": "INFO.yaml",
         "patchSetId": 1
