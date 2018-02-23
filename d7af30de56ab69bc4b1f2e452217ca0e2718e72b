@@ -16,6 +16,23 @@
       "revId": "d7af30de56ab69bc4b1f2e452217ca0e2718e72b",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_ee73027e",
+        "filename": "INFO.yaml",
+        "patchSetId": 2
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2018-02-23T20:35:36Z",
+      "side": 1,
+      "message": "Steve Smokowski worked on the OpenECOMP version of AAI but moved on before the ONAP project committer list was defined; he is not listed as a committer on the Resources and Repositories wiki page.  @Gildas, do I need to make a formal request of the TSC for this, or can this committer just be removed?  I have confirmation from Steve that is OK being removed.",
+      "revId": "d7af30de56ab69bc4b1f2e452217ca0e2718e72b",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
