@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "5a93c517_8e511e38",
+        "filename": "INFO.yaml",
+        "patchSetId": 2
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1
+      },
+      "writtenOn": "2018-02-24T00:15:00Z",
+      "side": 1,
+      "message": "@James you\u0027re correct it\u0027s not specific enough. In fact the TZ database has deprecated US/Michigan and America/Michigan is not a valid TZ.\n\nIt should be America/Detroit for ET or America/Menominee for the Wisconsin border of Michigan. So... what TZ are you in?\n\nSee: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones",
+      "parentUuid": "5a93c517_8e891e77",
+      "revId": "d7af30de56ab69bc4b1f2e452217ca0e2718e72b",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5a93c517_ee73027e",
         "filename": "INFO.yaml",
         "patchSetId": 2
