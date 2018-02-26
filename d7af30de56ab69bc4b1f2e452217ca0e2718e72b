@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "5a93c517_5f7bc2f4",
+        "filename": "INFO.yaml",
+        "patchSetId": 2
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2018-02-26T13:49:27Z",
+      "side": 1,
+      "message": "@Andrew, I\u0027m in America/Detroit.  I think the NJ ones should be \"America/New York\", i think Steve Blimkie should be \"America/Toronto\" and Tian should be \"Europe/London\"",
+      "parentUuid": "5a93c517_8e511e38",
+      "revId": "d7af30de56ab69bc4b1f2e452217ca0e2718e72b",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5a93c517_ee73027e",
         "filename": "INFO.yaml",
         "patchSetId": 2
