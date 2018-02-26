@@ -1,0 +1,165 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_bf7685a2",
+        "filename": "INFO.yaml",
+        "patchSetId": 3
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1
+      },
+      "writtenOn": "2018-02-26T16:33:00Z",
+      "side": 1,
+      "message": "This should probably be James not Jimmy",
+      "range": {
+        "startLine": 6,
+        "startChar": 11,
+        "endLine": 6,
+        "endChar": 16
+      },
+      "revId": "42ba682b54e3a322ec4bbb81156a0d36339ecd94",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_7f6c7dd0",
+        "filename": "INFO.yaml",
+        "patchSetId": 3
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1
+      },
+      "writtenOn": "2018-02-26T16:33:00Z",
+      "side": 1,
+      "message": "Per comments left by James on patch 2 this should be Detroit not Michigan",
+      "range": {
+        "startLine": 10,
+        "startChar": 23,
+        "endLine": 10,
+        "endChar": 31
+      },
+      "revId": "42ba682b54e3a322ec4bbb81156a0d36339ecd94",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_1f46994f",
+        "filename": "INFO.yaml",
+        "patchSetId": 3
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1
+      },
+      "writtenOn": "2018-02-26T16:33:00Z",
+      "side": 1,
+      "message": "Since James is listed as the project lead and then pulled in via an anchor this entry is redundant.",
+      "range": {
+        "startLine": 26,
+        "startChar": 0,
+        "endLine": 30,
+        "endChar": 34
+      },
+      "revId": "42ba682b54e3a322ec4bbb81156a0d36339ecd94",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_bf9d25be",
+        "filename": "INFO.yaml",
+        "patchSetId": 3
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1
+      },
+      "writtenOn": "2018-02-26T16:33:00Z",
+      "side": 1,
+      "message": "This should be \u0027New York\u0027 not NJ",
+      "range": {
+        "startLine": 35,
+        "startChar": 25,
+        "endLine": 35,
+        "endChar": 27
+      },
+      "revId": "42ba682b54e3a322ec4bbb81156a0d36339ecd94",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_ff5f2d0d",
+        "filename": "INFO.yaml",
+        "patchSetId": 3
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1
+      },
+      "writtenOn": "2018-02-26T16:33:00Z",
+      "side": 1,
+      "message": "This should be America/Toronto",
+      "range": {
+        "startLine": 40,
+        "startChar": 17,
+        "endLine": 40,
+        "endChar": 30
+      },
+      "revId": "42ba682b54e3a322ec4bbb81156a0d36339ecd94",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_5f6741e9",
+        "filename": "INFO.yaml",
+        "patchSetId": 3
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1
+      },
+      "writtenOn": "2018-02-26T16:33:00Z",
+      "side": 1,
+      "message": "This should be \u0027Europe/London\u0027",
+      "range": {
+        "startLine": 45,
+        "startChar": 17,
+        "endLine": 45,
+        "endChar": 24
+      },
+      "revId": "42ba682b54e3a322ec4bbb81156a0d36339ecd94",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_3f6a75b3",
+        "filename": "INFO.yaml",
+        "patchSetId": 3
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1
+      },
+      "writtenOn": "2018-02-26T16:33:00Z",
+      "side": 1,
+      "message": "This should be \u0027New York\u0027",
+      "range": {
+        "startLine": 50,
+        "startChar": 25,
+        "endLine": 50,
+        "endChar": 27
+      },
+      "revId": "42ba682b54e3a322ec4bbb81156a0d36339ecd94",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
