@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_8561ea06",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v13.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 511,
+      "author": {
+        "id": 813
+      },
+      "writtenOn": "2018-03-01T22:27:55Z",
+      "side": 1,
+      "message": "I would call this as hpaFeature",
+      "range": {
+        "startLine": 511,
+        "startChar": 45,
+        "endLine": 511,
+        "endChar": 62
+      },
+      "revId": "a23f9463b48ab414e5cf33b2946430264d25e476",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_c543726a",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v13.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 532,
+      "author": {
+        "id": 813
+      },
+      "writtenOn": "2018-03-01T22:27:55Z",
+      "side": 1,
+      "message": "there is no simple and complex anymore,  please change this to hpafeatureAttribute",
+      "range": {
+        "startLine": 532,
+        "startChar": 82,
+        "endLine": 532,
+        "endChar": 100
+      },
+      "revId": "a23f9463b48ab414e5cf33b2946430264d25e476",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_c53a92e6",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v13.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 1482,
+      "author": {
+        "id": 813
+      },
+      "writtenOn": "2018-03-01T22:27:55Z",
+      "side": 1,
+      "message": "Little bit more descriptive on this.  Description value can be \"Cloud region flavor name\".",
+      "range": {
+        "startLine": 1482,
+        "startChar": 46,
+        "endLine": 1482,
+        "endChar": 52
+      },
+      "revId": "a23f9463b48ab414e5cf33b2946430264d25e476",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
