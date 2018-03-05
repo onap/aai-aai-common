@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_bac2fd82",
+        "filename": "aai-core/src/main/resources/dbedgerules/DbEdgeRules_v12.json",
+        "patchSetId": 3
+      },
+      "lineNbr": 287,
+      "author": {
+        "id": 1889
+      },
+      "writtenOn": "2018-03-05T06:14:00Z",
+      "side": 1,
+      "message": "I prefer the relationship between hpa-capability and flavor is \"AssociatedWith\" instead of \"BelongsTo\"",
+      "range": {
+        "startLine": 287,
+        "startChar": 4,
+        "endLine": 287,
+        "endChar": 55
+      },
+      "revId": "90a39c968e53e6822777cb81224ca1e41acf5e51",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_dac909ad",
+        "filename": "aai-core/src/main/resources/dbedgerules/DbEdgeRules_v12.json",
+        "patchSetId": 3
+      },
+      "lineNbr": 289,
+      "author": {
+        "id": 1889
+      },
+      "writtenOn": "2018-03-05T06:14:00Z",
+      "side": 1,
+      "message": "Perhaps it is MANY2MANY since one flavor can refer to multiple HPA capability and one HPA capability can be referred by many flavors.",
+      "range": {
+        "startLine": 289,
+        "startChar": 3,
+        "endLine": 289,
+        "endChar": 29
+      },
+      "revId": "90a39c968e53e6822777cb81224ca1e41acf5e51",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_5abdf900",
+        "filename": "aai-core/src/main/resources/dbedgerules/DbEdgeRules_v12.json",
+        "patchSetId": 3
+      },
+      "lineNbr": 300,
+      "author": {
+        "id": 1889
+      },
+      "writtenOn": "2018-03-05T06:14:00Z",
+      "side": 1,
+      "message": "the relationship between hpa-capability and cloud-region is hence \"BelongsTo\". Otherwise I didn\u0027t see why we need this associatedWith relationship.",
+      "range": {
+        "startLine": 300,
+        "startChar": 3,
+        "endLine": 300,
+        "endChar": 61
+      },
+      "revId": "90a39c968e53e6822777cb81224ca1e41acf5e51",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_1a3bf19d",
+        "filename": "aai-core/src/main/resources/dbedgerules/DbEdgeRules_v13.json",
+        "patchSetId": 3
+      },
+      "lineNbr": 287,
+      "author": {
+        "id": 1889
+      },
+      "writtenOn": "2018-03-05T06:14:00Z",
+      "side": 1,
+      "message": "the same comment as v12.json",
+      "range": {
+        "startLine": 287,
+        "startChar": 46,
+        "endLine": 287,
+        "endChar": 55
+      },
+      "revId": "90a39c968e53e6822777cb81224ca1e41acf5e51",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
