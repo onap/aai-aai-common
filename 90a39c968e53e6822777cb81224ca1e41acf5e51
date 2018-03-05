@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "5a93c517_b1d463ec",
+        "filename": "aai-core/src/main/resources/dbedgerules/DbEdgeRules_v12.json",
+        "patchSetId": 3
+      },
+      "lineNbr": 287,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2018-03-05T16:05:32Z",
+      "side": 1,
+      "message": "This could be done, yes, but then it would not follow the convention of all children having the belongsTo relationship.",
+      "parentUuid": "5a93c517_bac2fd82",
+      "range": {
+        "startLine": 287,
+        "startChar": 4,
+        "endLine": 287,
+        "endChar": 55
+      },
+      "revId": "90a39c968e53e6822777cb81224ca1e41acf5e51",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5a93c517_dac909ad",
         "filename": "aai-core/src/main/resources/dbedgerules/DbEdgeRules_v12.json",
         "patchSetId": 3
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "5a93c517_d1cfaf54",
+        "filename": "aai-core/src/main/resources/dbedgerules/DbEdgeRules_v12.json",
+        "patchSetId": 3
+      },
+      "lineNbr": 289,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2018-03-05T16:05:32Z",
+      "side": 1,
+      "message": "This would create a new instance of each HPA capability within each flavor. MANY2MANY is not a valid multiplicity if contains-other-v is not NONE",
+      "parentUuid": "5a93c517_dac909ad",
+      "range": {
+        "startLine": 289,
+        "startChar": 3,
+        "endLine": 289,
+        "endChar": 29
+      },
+      "revId": "90a39c968e53e6822777cb81224ca1e41acf5e51",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5a93c517_5abdf900",
         "filename": "aai-core/src/main/resources/dbedgerules/DbEdgeRules_v12.json",
         "patchSetId": 3
@@ -59,6 +107,30 @@
       "writtenOn": "2018-03-05T06:14:00Z",
       "side": 1,
       "message": "the relationship between hpa-capability and cloud-region is hence \"BelongsTo\". Otherwise I didn\u0027t see why we need this associatedWith relationship.",
+      "range": {
+        "startLine": 300,
+        "startChar": 3,
+        "endLine": 300,
+        "endChar": 61
+      },
+      "revId": "90a39c968e53e6822777cb81224ca1e41acf5e51",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_510b9f8d",
+        "filename": "aai-core/src/main/resources/dbedgerules/DbEdgeRules_v12.json",
+        "patchSetId": 3
+      },
+      "lineNbr": 300,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2018-03-05T16:05:32Z",
+      "side": 1,
+      "message": "This would not make sense because cloud-region is not the direct parent of hpa-capability",
+      "parentUuid": "5a93c517_5abdf900",
       "range": {
         "startLine": 300,
         "startChar": 3,
