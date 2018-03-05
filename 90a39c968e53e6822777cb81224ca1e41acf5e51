@@ -96,6 +96,30 @@
     },
     {
       "key": {
+        "uuid": "5a93c517_c4db6b7a",
+        "filename": "aai-core/src/main/resources/dbedgerules/DbEdgeRules_v12.json",
+        "patchSetId": 3
+      },
+      "lineNbr": 289,
+      "author": {
+        "id": 1361
+      },
+      "writtenOn": "2018-03-05T19:21:08Z",
+      "side": 1,
+      "message": "One HPACapability is referred by only one flavor. If 2 flavors has same HPA Capability it will be 2 different objects even though it has same parameters. So the relationship is MANY2ONE",
+      "parentUuid": "5a93c517_dac909ad",
+      "range": {
+        "startLine": 289,
+        "startChar": 3,
+        "endLine": 289,
+        "endChar": 29
+      },
+      "revId": "90a39c968e53e6822777cb81224ca1e41acf5e51",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5a93c517_5abdf900",
         "filename": "aai-core/src/main/resources/dbedgerules/DbEdgeRules_v12.json",
         "patchSetId": 3
@@ -130,6 +154,30 @@
       "writtenOn": "2018-03-05T16:05:32Z",
       "side": 1,
       "message": "This would not make sense because cloud-region is not the direct parent of hpa-capability",
+      "parentUuid": "5a93c517_5abdf900",
+      "range": {
+        "startLine": 300,
+        "startChar": 3,
+        "endLine": 300,
+        "endChar": 61
+      },
+      "revId": "90a39c968e53e6822777cb81224ca1e41acf5e51",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_84e1e32b",
+        "filename": "aai-core/src/main/resources/dbedgerules/DbEdgeRules_v12.json",
+        "patchSetId": 3
+      },
+      "lineNbr": 300,
+      "author": {
+        "id": 1361
+      },
+      "writtenOn": "2018-03-05T19:21:08Z",
+      "side": 1,
+      "message": "If we can agree on the fact that some HPACapability has flavor as parent and some has cloud-region as parent. We can give the relationship as belongsTo(parent-child) for both flavor and cloud-region, given the condition that the relationship will be exclusive. Christina mentioned this is possible so both cases can be accessed as follows \n\n…/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}/hpa-capabilities/hpa-capability/{….}\nVs\n…/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}/flavors/flavor/{flavor-id}/hpa-capabilities/hpa-capability/{….}",
       "parentUuid": "5a93c517_5abdf900",
       "range": {
         "startLine": 300,
