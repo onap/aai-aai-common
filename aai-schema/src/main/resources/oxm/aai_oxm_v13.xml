@@ -4747,6 +4747,11 @@
 						<xml-property name="description" value="Equipment model.  Source of truth should define valid values." />
 					</xml-properties>
 				</xml-element>
+                <xml-element java-attribute="equipFamily" name="equip-family" type="java.lang.String">
+                    <xml-properties>
+                        <xml-property name="description" value="Equipment family.  Source of truth should define valid values." />
+                    </xml-properties>
+                </xml-element>
 				<xml-element java-attribute="managementOption" name="management-option" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="identifier of managed by ATT or customer" />
