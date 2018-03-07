@@ -1001,18 +1001,18 @@
 					<xml-properties>
 						<xml-property name="description" value="Whether A&amp;AI should be managing this interface of not. Could have value like CUSTOMER" />
 					</xml-properties>
-				</xml-element>	
+				</xml-element>
 				<xml-element java-attribute="interfaceDescription" name="interface-description" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Human friendly text regarding this interface." />
 					</xml-properties>
-				</xml-element>			
+				</xml-element>
 				<xml-element java-attribute="isPortMirrored" name="is-port-mirrored" required="true" type="java.lang.Boolean">
 					<xml-properties>
 						<xml-property name="defaultValue" value="false"/>
 						<xml-property name="description" value="boolean indicatating whether or not port is a mirrored." />
 					</xml-properties>
-				</xml-element>					
+				</xml-element>
 				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
@@ -1039,7 +1039,7 @@
 					<xml-properties>
 						<xml-property name="description" value="Freeform field for storing an ip address, list of ip addresses or a subnet block." />
 					</xml-properties>
-				</xml-element>				
+				</xml-element>
 				<xml-element java-attribute="vlans" name="vlans" type="inventory.aai.onap.org.v13.Vlans" />
 				<xml-element java-attribute="sriovVfs" name="sriov-vfs" type="inventory.aai.onap.org.v13.SriovVfs" />
 				<xml-element java-attribute="lInterfaces" name="l-interfaces" type="inventory.aai.onap.org.v13.LInterfaces" />
@@ -1248,7 +1248,7 @@
 					<xml-properties>
 						<xml-property name="description" value="Whether customer is going to use this VLAN for backdoor connection to another customer premise device." />
 					</xml-properties>
-				</xml-element>					
+				</xml-element>
 				<xml-element java-attribute="vpnKey" name="vpn-key" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="This indicates the customers VPN ID associated with this vlan" />
@@ -1275,7 +1275,7 @@
 						<xml-property name="defaultValue" value="false"/>
 						<xml-property name="description" value="Flag indicating the interface uses the IP Unnumbered configuration." />
 					</xml-properties>
-				</xml-element>			
+				</xml-element>
 				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v13.RelationshipList" />
 				<xml-element container-type="java.util.ArrayList" java-attribute="l3InterfaceIpv4AddressList" name="l3-interface-ipv4-address-list" type="inventory.aai.onap.org.v13.L3InterfaceIpv4AddressList" />
 				<xml-element container-type="java.util.ArrayList" java-attribute="l3InterfaceIpv6AddressList" name="l3-interface-ipv6-address-list" type="inventory.aai.onap.org.v13.L3InterfaceIpv6AddressList" />
@@ -1456,7 +1456,7 @@
 				<xml-property name="container" value="flavors" />
 			</xml-properties>
 		</java-type>
-		
+
 		<java-type name="Snapshots">
 			<xml-properties>
 				<xml-property name="description" value="Collection of openstack snapshots" />
@@ -1464,9 +1464,9 @@
 			<xml-root-element name="snapshots" />
 			<java-attributes>
 				<xml-element container-type="java.util.ArrayList" java-attribute="snapshot" name="snapshot" type="inventory.aai.onap.org.v13.Snapshot" />
-			</java-attributes>		
+			</java-attributes>
 		</java-type>
-		
+
 		<java-type name="Snapshot">
 			<xml-root-element name="snapshot" />
 			<java-attributes>
@@ -1534,9 +1534,9 @@
 				<xml-property name="indexedProps" value="application,snapshot-name,application-vendor,snapshot-id,application-version,prev-snapshot-id" />
 				<xml-property name="dependentOn" value="cloud-region" />
 				<xml-property name="container" value="snapshots" />
-			</xml-properties>	
+			</xml-properties>
 		</java-type>
-		
+
 		<java-type name="GroupAssignments">
 			<xml-properties>
 				<xml-property name="description" value="Collection of openstack group assignments" />
@@ -1546,7 +1546,7 @@
 				<xml-element container-type="java.util.ArrayList" java-attribute="groupAssignment" name="group-assignment" type="inventory.aai.onap.org.v13.GroupAssignment" />
 			</java-attributes>
 		</java-type>
-		
+
 		<java-type name="GroupAssignment">
 			<xml-root-element name="group-assignment" />
 			<java-attributes>
@@ -1559,7 +1559,7 @@
 					<xml-properties>
 						<xml-property name="description" value="Group type - the type of group this instance refers to" />
 					</xml-properties>
-				</xml-element>				
+				</xml-element>
 				<xml-element java-attribute="groupName" name="group-name" required="true" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Group name - name assigned to the group" />
@@ -1569,12 +1569,12 @@
 					<xml-properties>
 						<xml-property name="description" value="Group description - description of the group" />
 					</xml-properties>
-				</xml-element>	
+				</xml-element>
 				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
 					</xml-properties>
-				</xml-element>		
+				</xml-element>
 				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v13.RelationshipList" />
 			</java-attributes>
 			<xml-properties>
@@ -1585,7 +1585,7 @@
 				<xml-property name="dependentOn" value="cloud-region" />
 				<xml-property name="container" value="group-assignments" />
 			</xml-properties>
-		</java-type>			
+		</java-type>
 
 		<java-type name="Images">
 			<xml-properties>
@@ -2042,7 +2042,7 @@
 					<xml-properties>
 						<xml-property name="description" value="Human friendly text regarding this interface." />
 					</xml-properties>
-				</xml-element>	
+				</xml-element>
 				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
@@ -2392,7 +2392,7 @@
 				<xml-property name="namespace" value="business" />
 			</xml-properties>
 		</java-type>
-		
+
 		<java-type name="LinesOfBusiness">
 			<xml-properties>
 				<xml-property name="description" value="Collection of lines-of-business" />
@@ -2402,7 +2402,7 @@
 				<xml-element container-type="java.util.ArrayList" java-attribute="lineOfBusiness" name="line-of-business" type="inventory.aai.onap.org.v13.LineOfBusiness" />
 			</java-attributes>
 		</java-type>
-		
+
 		<java-type name="LineOfBusiness">
 			<xml-root-element name="line-of-business" />
 			<java-attributes>
@@ -2426,7 +2426,7 @@
 				<xml-property name="namespace" value="business" />
 			</xml-properties>
 		</java-type>
-		
+
 		<java-type name="OwningEntities">
 			<xml-properties>
 				<xml-property name="description" value="Collection of owning-entities" />
@@ -2436,7 +2436,7 @@
 				<xml-element container-type="java.util.ArrayList" java-attribute="owningEntity" name="owning-entity" type="inventory.aai.onap.org.v13.OwningEntity" />
 			</java-attributes>
 		</java-type>
-		
+
 		<java-type name="OwningEntity">
 			<xml-root-element name="owning-entity" />
 			<java-attributes>
@@ -2466,7 +2466,7 @@
 				<xml-property name="namespace" value="business" />
 			</xml-properties>
 		</java-type>
-		
+
 		<java-type name="Platforms">
 			<xml-properties>
 				<xml-property name="description" value="Collection of platforms" />
@@ -2476,7 +2476,7 @@
 				<xml-element container-type="java.util.ArrayList" java-attribute="platform" name="platform" type="inventory.aai.onap.org.v13.Platform" />
 			</java-attributes>
 		</java-type>
-		
+
 		<java-type name="Platform">
 			<xml-root-element name="platform" />
 			<java-attributes>
@@ -2500,7 +2500,7 @@
 				<xml-property name="namespace" value="business" />
 			</xml-properties>
 		</java-type>
-		
+
 		<java-type name="ServiceSubscriptions">
 			<xml-properties>
 				<xml-property name="description" value="Collection of objects that group service instances." />
@@ -3233,7 +3233,7 @@
 					<xml-properties>
 						<xml-property name="description" value="The type of destinatination equipment. Could be Router, UCPE, etc." />
 					</xml-properties>
-				</xml-element>					
+				</xml-element>
 				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
@@ -3760,7 +3760,7 @@
 						<xml-property name="visibility" value="deployment" />
 						<xml-property name="requires" value="model-invariant-id" />
 					</xml-properties>
-				</xml-element>				
+				</xml-element>
 				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
@@ -4093,7 +4093,7 @@
 					<xml-properties>
 						<xml-property name="description" value="ip address assignment direction of the subnet" />
 					</xml-properties>
-				</xml-element>			
+				</xml-element>
 				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
@@ -4103,9 +4103,9 @@
 					<xml-properties>
 						<xml-property name="description" value="sequence of the subnet" />
 					</xml-properties>
-				</xml-element>		
+				</xml-element>
 				<xml-element java-attribute="hostRoutes" name="host-routes" type="inventory.aai.onap.org.v13.HostRoutes" />
-				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v13.RelationshipList" />				
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v13.RelationshipList" />
 			</java-attributes>
 			<xml-properties>
 				<xml-property name="indexedProps" value="subnet-id,subnet-name" />
@@ -4394,18 +4394,18 @@
 					<xml-properties>
 						<xml-property name="description" value="English description of Network function that the specific VNF deployment is providing" />
 					</xml-properties>
-				</xml-element>	
+				</xml-element>
 				<xml-element java-attribute="nfRole" name="nf-role" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="role in the network that this model will be providing" />
 						<xml-property name="suggestibleOnSearch" value="true"/>
 					</xml-properties>
-				</xml-element>	
+				</xml-element>
 				<xml-element java-attribute="nfNamingCode" name="nf-naming-code" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="string assigned to this model used for naming purposes" />
 					</xml-properties>
-				</xml-element>	
+				</xml-element>
 				<xml-element java-attribute="selflink" name="selflink" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Path to the controller object." />
@@ -4430,7 +4430,7 @@
 					<xml-properties>
 						<xml-property name="description" value="Network Management profile of this VNF" />
 					</xml-properties>
-				</xml-element>			
+				</xml-element>
 				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v13.RelationshipList" />
 				<xml-element java-attribute="lInterfaces" name="l-interfaces" type="inventory.aai.onap.org.v13.LInterfaces" />
 				<xml-element java-attribute="lagInterfaces" name="lag-interfaces" type="inventory.aai.onap.org.v13.LagInterfaces" />
@@ -4747,6 +4747,11 @@
 						<xml-property name="description" value="Equipment model.  Source of truth should define valid values." />
 					</xml-properties>
 				</xml-element>
+				<xml-element java-attribute="equipFamily" name="equip-family" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Equipment family.  Source of truth should define valid values." />
+					</xml-properties>
+				</xml-element>
 				<xml-element java-attribute="managementOption" name="management-option" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="identifier of managed by ATT or customer" />
@@ -4907,7 +4912,7 @@
 					<xml-properties>
 						<xml-property name="description" value="Units for downstream BW value" />
 					</xml-properties>
-				</xml-element>					
+				</xml-element>
 				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
@@ -5217,7 +5222,7 @@
 				<xml-element container-type="java.util.ArrayList" java-attribute="modelVer" name="model-ver" type="inventory.aai.onap.org.v13.ModelVer" />
 			</java-attributes>
 		</java-type>
-		
+
 		<java-type name="ModelVer">
 			<xml-root-element name="model-ver" />
 			<xml-properties>
@@ -5637,7 +5642,7 @@
 				<xml-any-element container-type="java.util.ArrayList" java-attribute="any" lax="true" name="any" />
 			</java-attributes>
 		</java-type>
-		
+
 		<java-type name="SecondaryFilts">
 			<xml-properties>
 				<xml-property name="description" value="SecondaryFilts for performing a named-query or model query" />
@@ -5647,7 +5652,7 @@
 				<xml-element container-type="java.util.ArrayList" java-attribute="secondaryFilt" name="secondary-filt" type="inventory.aai.onap.org.v13.SecondaryFilt" />
 			</java-attributes>
 		</java-type>
-		
+
 		<java-type name="SecondaryFilt">
 			<xml-properties>
 				<xml-property name="description" value="SecondaryFilt for performing a named-query or model query" />
@@ -5721,7 +5726,7 @@
 				<xml-element java-attribute="propertyValue" name="property-value" type="java.lang.String" />
 			</java-attributes>
 		</java-type>
-		
+
 		<java-type name="RouteTableReferences">
 			<xml-properties>
 				<xml-property name="description" value="Collection of openstack route table references" />
@@ -5731,7 +5736,7 @@
 				<xml-element container-type="java.util.ArrayList" java-attribute="routeTableReference" name="route-table-reference" type="inventory.aai.onap.org.v13.RouteTableReference" />
 			</java-attributes>
 		</java-type>
-		
+
 		<java-type name="RouteTableReference">
 			<xml-root-element name="route-table-reference" />
 			<java-attributes>
@@ -5752,7 +5757,7 @@
 				</xml-element>
 				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v13.RelationshipList" />
 			</java-attributes>
-			
+
 			<xml-properties>
 				<xml-property name="description" value="Openstack route table reference." />
 				<xml-property name="nameProps" value="route-table-reference-fqdn" />
@@ -5762,7 +5767,7 @@
 				<xml-property name="namespace" value="network" />
 			</xml-properties>
 		</java-type>
-		
+
 		<java-type name="InstanceGroups">
 			<xml-properties>
 				<xml-property name="description" value="Collection of openstack route table references" />
@@ -5772,7 +5777,7 @@
 				<xml-element container-type="java.util.ArrayList" java-attribute="instanceGroup" name="instance-group" type="inventory.aai.onap.org.v13.InstanceGroup" />
 			</java-attributes>
 		</java-type>
-		
+
 		<java-type name="InstanceGroup">
 			<xml-root-element name="instance-group" />
 			<java-attributes>
@@ -5820,7 +5825,7 @@
 				</xml-element>
 				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v13.RelationshipList" />
 			</java-attributes>
-			
+
 			<xml-properties>
 				<xml-property name="description" value="General mechanism for grouping instances" />
 				<xml-property name="nameProps" value="description" />
@@ -5831,7 +5836,7 @@
 				<xml-property name="namespace" value="network" />
 			</xml-properties>
 		</java-type>
-		
+
 
 		<java-type name="SegmentationAssignments">
 			<xml-properties>
@@ -5842,7 +5847,7 @@
 				<xml-element container-type="java.util.ArrayList" java-attribute="segmentationAssignment" name="segmentation-assignment" type="inventory.aai.onap.org.v13.SegmentationAssignment" />
 			</java-attributes>
 		</java-type>
-				
+
 		<java-type name="SegmentationAssignment">
 			<xml-root-element name="segmentation-assignment" />
 			<java-attributes>
@@ -5865,7 +5870,7 @@
 				<xml-property name="container" value="segmentation-assignments" />
 			</xml-properties>
 		</java-type>
-		
+
 		<java-type name="AllottedResources">
 			<xml-properties>
 				<xml-property name="description" value="This object is used to store slices of services being offered" />
@@ -5875,7 +5880,7 @@
 				<xml-element container-type="java.util.ArrayList" java-attribute="allottedResource" name="allotted-resource" type="inventory.aai.onap.org.v13.AllottedResource" />
 			</java-attributes>
 		</java-type>
-		
+
 		<java-type name="AllottedResource">
 			<xml-root-element name="allotted-resource" />
 			<java-attributes>
@@ -5945,7 +5950,7 @@
 				<xml-element java-attribute="tunnelXconnects" name="tunnel-xconnects" type="inventory.aai.onap.org.v13.TunnelXconnects" />
 				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v13.RelationshipList" />
 			</java-attributes>
-			
+
 			<xml-properties>
 				<xml-property name="description" value="Represents a slice or partial piece of a resource that gets separately allotted" />
 				<xml-property name="nameProps" value="description" />
@@ -5955,8 +5960,8 @@
 				<xml-property name="container" value="allotted-resources" />
 				<!--  <xml-property name="namespace" value="network" /> -->
 			</xml-properties>
-		</java-type>	
-		
+		</java-type>
+
 		<java-type name="TunnelXconnects">
 			<xml-properties>
 				<xml-property name="description" value="This object is used to store the specific tunnel cross connect aspects of an allotted resource" />
@@ -5966,7 +5971,7 @@
 				<xml-element container-type="java.util.ArrayList" java-attribute="tunnelXconnect" name="tunnel-xconnect" type="inventory.aai.onap.org.v13.TunnelXconnect" />
 			</java-attributes>
 		</java-type>
-		
+
 		<java-type name="TunnelXconnect">
 			<xml-root-element name="tunnel-xconnect" />
 			<java-attributes>
@@ -6002,7 +6007,7 @@
 				</xml-element>
 				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v13.RelationshipList" />
 			</java-attributes>
-			
+
 			<xml-properties>
 				<xml-property name="description" value="Represents the specifics of a tunnel cross connect piece of a resource that gets separately allotted" />
 				<xml-property name="uniqueProps" value="id" />
@@ -6012,7 +6017,7 @@
 				<!--  <xml-property name="namespace" value="network" /> -->
 			</xml-properties>
 		</java-type>
-		
+
 		<java-type name="Entitlements">
 			<xml-properties>
 				<xml-property name="description" value="Entitlements, keyed by group-uuid and resource-uuid, related to license management" />
@@ -6022,7 +6027,7 @@
 				<xml-element container-type="java.util.ArrayList" java-attribute="entitlement" name="entitlement" type="inventory.aai.onap.org.v13.Entitlement" />
 			</java-attributes>
 		</java-type>
-				
+
 		<java-type name="Entitlement">
 			<xml-root-element name="entitlement" />
 			<java-attributes>
@@ -6050,8 +6055,8 @@
 				<xml-property name="container" value="entitlements" />
 			</xml-properties>
 		</java-type>
-		
-		
+
+
 		<java-type name="Licenses">
 			<xml-properties>
 				<xml-property name="description" value="Licenses to be allocated across resources, keyed by group-uuid and resource-uuid, related to license management" />
@@ -6061,7 +6066,7 @@
 				<xml-element container-type="java.util.ArrayList" java-attribute="license" name="license" type="inventory.aai.onap.org.v13.License" />
 			</java-attributes>
 		</java-type>
-				
+
 		<java-type name="License">
 			<xml-root-element name="license" />
 			<java-attributes>
@@ -6089,7 +6094,7 @@
 				<xml-property name="container" value="licenses" />
 			</xml-properties>
 		</java-type>
-		
+
 		<java-type name="Vnf">
 			<xml-root-element name="vnf"/>
 			<java-attributes>
@@ -6107,7 +6112,7 @@
 				<xml-property name="abstract" value="true" />
 			</xml-properties>
 		</java-type>
-		
+
 		<java-type name="Zones">
 			<xml-properties>
 				<xml-property name="description" value="Collection of zones" />
@@ -6198,7 +6203,7 @@
 				<xml-property name="canBeLinked" value="true" />
 			</xml-properties>
 		</java-type>
-						
+
 		<java-type name="SriovPfs">
 			<xml-properties>
 				<xml-property name="description" value="Collection of SR-IOV Physical Functions." />
@@ -6230,7 +6235,7 @@
 				<xml-property name="container" value="sriov-pfs" />
 			</xml-properties>
 		</java-type>
-		
+
 		<java-type name="HostRoutes">
 			<xml-root-element name="host-routes" />
 			<java-attributes>
@@ -6273,7 +6278,7 @@
 				<xml-property name="container" value="host-routes" />
 			</xml-properties>
 		</java-type>
-		
+
 		<java-type name="VipIpv4AddressList">
 			<xml-root-element name="vip-ipv4-address-list" />
 			<java-attributes>
@@ -6325,7 +6330,7 @@
 				<xml-property name="dependentOn" value="cloud-region" />
 			</xml-properties>
 		</java-type>
-		
+
 		<java-type name="VipIpv6AddressList">
 			<xml-root-element name="vip-ipv6-address-list" />
 			<java-attributes>
@@ -6377,7 +6382,7 @@
 				<xml-property name="dependentOn" value="cloud-region" />
 			</xml-properties>
 		</java-type>
-		
+
 		<java-type name="OperationalEnvironments">
 			<xml-properties>
 				<xml-property name="description" value="a logical partition of the cloud which allows to have multiple environments in the production AIC." />
@@ -6440,14 +6445,14 @@
 				<xml-property name="namespace" value="cloud-infrastructure" />
 			</xml-properties>
 		</java-type>
-		
+
 		<java-type name="ForwardingPaths">
 			<xml-root-element name="forwarding-paths" />
 			<java-attributes>
 				<xml-element container-type="java.util.ArrayList" java-attribute="forwardingPath" name="forwarding-path" type="inventory.aai.onap.org.v13.ForwardingPath" />
 			</java-attributes>
 		</java-type>
-		
+
 		<java-type name="ForwardingPath">
 			<xml-root-element name="forwarding-path"/>
 			<xml-properties>
@@ -6483,14 +6488,14 @@
 				<xml-element java-attribute="forwarders" name="forwarders" type="inventory.aai.onap.org.v13.Forwarders" />
 			</java-attributes>
 		</java-type>
-		
+
 		<java-type name="Forwarders">
 			<xml-root-element name="forwarders" />
 			<java-attributes>
 				<xml-element container-type="java.util.ArrayList" java-attribute="forwarder" name="forwarder" type="inventory.aai.onap.org.v13.Forwarder" />
 			</java-attributes>
 		</java-type>
-		
+
 		<java-type name="Forwarder">
 			<xml-root-element name="forwarder"/>
 			<xml-properties>
@@ -6518,14 +6523,14 @@
 				</xml-element>
 			</java-attributes>
 		</java-type>
-		
+
 		<java-type name="ForwarderEvcs">
 			<xml-root-element name="forwarder-evcs"/>
 			<java-attributes>
 				<xml-element container-type="java.util.ArrayList" java-attribute="forwarderEvc" name="forwarder-evc" type="inventory.aai.onap.org.v13.ForwarderEvc"/>
 			</java-attributes>
 		</java-type>
-		
+
 		<java-type name="ForwarderEvc">
 			<xml-root-element name="forwarder-evc"/>
 			<java-attributes>
