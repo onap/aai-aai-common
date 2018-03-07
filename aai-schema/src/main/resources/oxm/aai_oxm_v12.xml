@@ -564,6 +564,16 @@
 						<xml-property name="description" value="Whether the cloud region supports (true) or does not support (false) SR-IOV automation." />
 					</xml-properties>
 				</xml-element>
+				<xml-element java-attribute="cloudExtraInfo" name="cloud-extra-info" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="ESR inputs extra information about the VIM or Cloud which will be decoded by MultiVIM." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="cloudEpaCaps" name="cloud-epa-caps" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="MultiVIM will discover and expose EPA capabilities." />
+					</xml-properties>
+				</xml-element>
 				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
@@ -583,7 +593,7 @@
 				<xml-element container-type="java.util.ArrayList" java-attribute="vipIpv6AddressList" name="vip-ipv6-address-list" type="inventory.aai.onap.org.v12.VipIpv6AddressList" />
 			</java-attributes>
 			<xml-properties>
-				<xml-property name="description" value="cloud-region designates an installation of a cloud cluster or region or instantiation. In cloud, this could be an LCP or DCP. Cloud regions are uniquely identified by a composite key, cloud-owner + cloud-region-id. The format of the cloud-owner is vendor-cloudname" />
+				<xml-property name="description" value="cloud-region designates an installation of a cloud cluster or region or instantiation." />
 				<xml-property name="indexedProps" value="cloud-owner,cloud-region-id,cloud-type,owner-defined-type" />
 				<xml-property name="nameProps" value="owner-defined-type" />
 				<xml-property name="container" value="cloud-regions" />
@@ -1991,6 +2001,11 @@
 						<xml-property name="description" value="Trigger for operational monitoring of this resource by Service Assurance systems." />
 					</xml-properties>
 				</xml-element>
+				<xml-element java-attribute="macAddress" name="mac-addresss" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="MAC Address of the p-interface." />
+					</xml-properties>
+				</xml-element>
 				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
@@ -2935,22 +2950,22 @@
 						<xml-property name="dbAlias" value="model-version-id-local" />
 					</xml-properties>
 				</xml-element>
-				<xml-element java-attribute="orchestrationStatus" name="orchestration-status" type="java.lang.String">
+				<xml-element java-attribute="orchestrationStatus" name="orchestration-status" required="true" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Orchestration status of the configuration." />
 					</xml-properties>
 				</xml-element>
-				<xml-element java-attribute="operationalStatus" name="operational-status" type="java.lang.String">
+				<xml-element java-attribute="operationalStatus" name="operational-status" required="true" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Indicator for whether the resource is considered operational." />
 					</xml-properties>
 				</xml-element>
-				<xml-element java-attribute="configurationSelflink" name="configuration-selflink" type="java.lang.String">
+				<xml-element java-attribute="configurationSelflink" name="configuration-selflink" required="true" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="URL to endpoint where AAI can get more details from SDN-GC." />
 					</xml-properties>
 				</xml-element>
-				<xml-element java-attribute="modelCustomizationId" name="model-customization-id" type="java.lang.String">
+				<xml-element java-attribute="modelCustomizationId" name="model-customization-id" required="true" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="id of  the configuration used to customize the resource" />
 					</xml-properties>
@@ -2976,11 +2991,12 @@
 				<xml-element java-attribute="evcs" name="evcs" type="inventory.aai.onap.org.v12.Evcs" />
 			</java-attributes>
 			<xml-properties>
-				<xml-property name="description" value="Generic configuration object." />
+                <xml-property name="description" value="Port Mirror Configuration." />
 				<xml-property name="indexedProps" value="configuration-id,model-invariant-id,model-version-id" />
 				<xml-property name="uniqueProps" value="configuration-id" />
 				<xml-property name="container" value="configurations" />
 				<xml-property name="namespace" value="network" />
+                <xml-property name="nameProps" value="configuration-type" />
 			</xml-properties>
 		</java-type>
 
