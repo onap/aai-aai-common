@@ -513,12 +513,12 @@
 						<xml-property name="description" value="Name of the HPACapability"/>
 					</xml-properties>
 				</xml-element>
-				<xml-element java-attribute="version" name="hpa-version" type="java.lang.String">
+				<xml-element java-attribute="hpaVersion" name="hpa-version" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="HPA schema version"/>
 					</xml-properties>
 				</xml-element>
-				<xml-element java-attribute="hardwareArchitecture" name="hpa-hw-arch" type="java.lang.String">
+				<xml-element java-attribute="architecture" name="architecture" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Hardware architecture"/>
 					</xml-properties>
@@ -533,7 +533,7 @@
 			</java-attributes>
 			<xml-properties>
 				<xml-property name="description" value="Represents a HPA capability"/>
-				<xml-property name="indexedProps" value="hpa-feature,hpa-hw-arch,hpa-capability-id"/>
+				<xml-property name="indexedProps" value="hpa-feature,architecture,hpa-capability-id"/>
 				<xml-property name="dependentOn" value="flavor,cloud-region"/>
 				<xml-property name="container" value="hpa-capabilities"/>
 			</xml-properties>
@@ -542,12 +542,12 @@
 		<java-type name="HpaFeatureAttributes">
 			<xml-root-element name="hpa-feature-attributes"/>
 			<java-attributes>
-				<xml-element java-attribute="hpaAttributeKey" name="hpa-attr-key" type="java.lang.String">
+				<xml-element java-attribute="hpaAttributeKey" name="hpa-attribute-key" required="true" type="java.lang.String" xml-key="true">
 					<xml-properties>
 						<xml-property name="description" value="name of the specific HPA attribute"/>
 					</xml-properties>
 				</xml-element>
-				<xml-element java-attribute="hpaAttributeValue" name="hpa-attr-value" type="java.lang.String">
+				<xml-element java-attribute="hpaAttributeValue" name="hpa-attribute-value" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="JSON string specifying the value, unit and type of the specific HPA attribute"/>
 					</xml-properties>
@@ -561,6 +561,8 @@
 			</java-attributes>
 			<xml-properties>
 				<xml-property name="description" value="HPA Capability Feature attributes"/>
+				<xml-property name="indexedProps" value="hpa-attribute-key"/>
+				<xml-property name="dependentOn" value="hpa-capability"/>
 				<xml-property name="container" value="hpa-capability"/>
 			</xml-properties>
 		</java-type>
