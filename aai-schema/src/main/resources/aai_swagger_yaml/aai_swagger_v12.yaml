@@ -53540,7 +53540,7 @@ definitions:
           $ref: "#/definitions/operational-environment"
   cloud-region:
     description: |
-      cloud-region designates an installation of a cloud cluster or region or instantiation. In cloud, this could be an LCP or DCP. Cloud regions are uniquely identified by a composite key, cloud-owner + cloud-region-id. The format of the cloud-owner is vendor-cloudname
+      cloud-region designates an installation of a cloud cluster or region or instantiation.
       ###### Related Nodes
       - TO esr-system-info (CHILD of cloud-region, cloud-region has esr-system-info, One2Many)
       - TO complex( cloud-region org.onap.relationships.inventory.LocatedIn complex, MANY2ONE)
@@ -53593,6 +53593,12 @@ definitions:
         description: complex name for cloud-region instance.  NOTE - THIS FIELD IS NOT CORRECTLY POPULATED.
       sriov-automation:
         type: boolean
+      cloud-extra-info:
+        type: string
+        description: ESR inputs extra information about the VIM or Cloud which will be decoded by MultiVIM.
+      cloud-epa-caps:
+        type: string
+        description: MultiVIM will discover and expose EPA capabilities.
       resource-version:
         type: string
         description: Used for optimistic concurrency.  Must be empty on create, valid on update and delete.
@@ -53735,7 +53741,7 @@ definitions:
           $ref: "#/definitions/complex"
   configuration:
     description: |
-      Generic configuration object.
+      Port Mirror Configuration.
       ###### Related Nodes
       - TO allotted-resource( configuration org.onap.relationships.inventory.Uses allotted-resource, ONE2ONE)
       - TO logical-link( configuration org.onap.relationships.inventory.Uses logical-link, ONE2MANY)
@@ -53754,6 +53760,10 @@ definitions:
     - configuration-id
     - configuration-type
     - configuration-sub-type
+    - orchestration-status
+    - operational-status
+    - configuration-selflink
+    - model-customization-id
     properties:
       configuration-id:
         type: string
@@ -56607,6 +56617,9 @@ definitions:
       prov-status:
         type: string
         description: Trigger for operational monitoring of this resource by Service Assurance systems.
+      mac-addresss:
+        type: string
+        description: MAC Address of the p-interface.
       resource-version:
         type: string
         description: Used for optimistic concurrency.  Must be empty on create, valid on update and delete.
@@ -59036,7 +59049,7 @@ patchDefinitions:
           $ref: "#/patchDefinitions/operational-environment"
   cloud-region:
     description: |
-      cloud-region designates an installation of a cloud cluster or region or instantiation. In cloud, this could be an LCP or DCP. Cloud regions are uniquely identified by a composite key, cloud-owner + cloud-region-id. The format of the cloud-owner is vendor-cloudname
+      cloud-region designates an installation of a cloud cluster or region or instantiation.
       ###### Related Nodes
       - TO esr-system-info (CHILD of cloud-region, cloud-region has esr-system-info, One2Many)
       - TO complex( cloud-region org.onap.relationships.inventory.LocatedIn complex, MANY2ONE)
@@ -59089,6 +59102,12 @@ patchDefinitions:
         description: complex name for cloud-region instance.  NOTE - THIS FIELD IS NOT CORRECTLY POPULATED.
       sriov-automation:
         type: boolean
+      cloud-extra-info:
+        type: string
+        description: ESR inputs extra information about the VIM or Cloud which will be decoded by MultiVIM.
+      cloud-epa-caps:
+        type: string
+        description: MultiVIM will discover and expose EPA capabilities.
   cloud-regions:
     properties:
       cloud-region:
@@ -59144,7 +59163,7 @@ patchDefinitions:
           $ref: "#/patchDefinitions/complex"
   configuration:
     description: |
-      Generic configuration object.
+      Port Mirror Configuration.
       ###### Related Nodes
       - TO allotted-resource( configuration org.onap.relationships.inventory.Uses allotted-resource, ONE2ONE)
       - TO logical-link( configuration org.onap.relationships.inventory.Uses logical-link, ONE2MANY)
@@ -59163,6 +59182,10 @@ patchDefinitions:
     - configuration-id
     - configuration-type
     - configuration-sub-type
+    - orchestration-status
+    - operational-status
+    - configuration-selflink
+    - model-customization-id
     properties:
       configuration-id:
         type: string
@@ -61314,6 +61337,9 @@ patchDefinitions:
       prov-status:
         type: string
         description: Trigger for operational monitoring of this resource by Service Assurance systems.
+      mac-addresss:
+        type: string
+        description: MAC Address of the p-interface.
   p-interfaces:
     description: |
       Collection of physical interfaces.
@@ -63264,7 +63290,7 @@ getDefinitions:
           $ref: "#/getDefinitions/operational-environment"
   cloud-region:
     description: |
-      cloud-region designates an installation of a cloud cluster or region or instantiation. In cloud, this could be an LCP or DCP. Cloud regions are uniquely identified by a composite key, cloud-owner + cloud-region-id. The format of the cloud-owner is vendor-cloudname
+      cloud-region designates an installation of a cloud cluster or region or instantiation.
       ###### Related Nodes
       - TO esr-system-info (CHILD of cloud-region, cloud-region has esr-system-info, One2Many)
       - TO complex( cloud-region org.onap.relationships.inventory.LocatedIn complex, MANY2ONE)
@@ -63317,6 +63343,12 @@ getDefinitions:
         description: complex name for cloud-region instance.  NOTE - THIS FIELD IS NOT CORRECTLY POPULATED.
       sriov-automation:
         type: boolean
+      cloud-extra-info:
+        type: string
+        description: ESR inputs extra information about the VIM or Cloud which will be decoded by MultiVIM.
+      cloud-epa-caps:
+        type: string
+        description: MultiVIM will discover and expose EPA capabilities.
       resource-version:
         type: string
         description: Used for optimistic concurrency.  Must be empty on create, valid on update and delete.
@@ -63459,7 +63491,7 @@ getDefinitions:
           $ref: "#/getDefinitions/complex"
   configuration:
     description: |
-      Generic configuration object.
+      Port Mirror Configuration.
       ###### Related Nodes
       - TO allotted-resource( configuration org.onap.relationships.inventory.Uses allotted-resource, ONE2ONE)
       - TO logical-link( configuration org.onap.relationships.inventory.Uses logical-link, ONE2MANY)
@@ -63478,6 +63510,10 @@ getDefinitions:
     - configuration-id
     - configuration-type
     - configuration-sub-type
+    - orchestration-status
+    - operational-status
+    - configuration-selflink
+    - model-customization-id
     properties:
       configuration-id:
         type: string
@@ -66331,6 +66367,9 @@ getDefinitions:
       prov-status:
         type: string
         description: Trigger for operational monitoring of this resource by Service Assurance systems.
+      mac-addresss:
+        type: string
+        description: MAC Address of the p-interface.
       resource-version:
         type: string
         description: Used for optimistic concurrency.  Must be empty on create, valid on update and delete.
