@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!--
   ============LICENSE_START=======================================================
-  org.openecomp.aai
+  org.onap.aai
   ================================================================================
   Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
   ================================================================================
@@ -529,18 +529,18 @@
 					</xml-properties>
 				</xml-element>
 				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v12.RelationshipList"/>
-				<xml-element container-type="java.util.ArrayList" java-attribute="hpaFeatureAttribute" name="hpa-feature-attribute" type="inventory.aai.onap.org.v12.HpaFeatureAttribute"/>
+				<xml-element container-type="java.util.ArrayList" java-attribute="hpaFeatureAttributes" name="hpa-feature-attributes" type="inventory.aai.onap.org.v12.HpaFeatureAttributes"/>
 			</java-attributes>
 			<xml-properties>
 				<xml-property name="description" value="Represents a HPA capability"/>
 				<xml-property name="indexedProps" value="hpa-feature,hpa-hw-arch,hpa-capability-id"/>
-				<xml-property name="dependentOn" value="flavor"/>
+				<xml-property name="dependentOn" value="flavor,cloud-region"/>
 				<xml-property name="container" value="hpa-capabilities"/>
 			</xml-properties>
 		</java-type>
 
-		<java-type name="HpaFeatureAttribute">
-			<xml-root-element name="hpa-feature-attribute"/>
+		<java-type name="HpaFeatureAttributes">
+			<xml-root-element name="hpa-feature-attributes"/>
 			<java-attributes>
 				<xml-element java-attribute="hpaAttributeKey" name="hpa-attr-key" type="java.lang.String">
 					<xml-properties>
