@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "5a93c517_b5251d5d",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v12.xml",
+        "patchSetId": 4
+      },
+      "lineNbr": 493,
+      "author": {
+        "id": 1361
+      },
+      "writtenOn": "2018-03-08T19:52:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5a93c517_f2bdfbd8",
+      "revId": "85224c2d89e67d94977a379e21993538aa3791de",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5a93c517_52eb8fdb",
         "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v13.xml",
         "patchSetId": 4
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "5a93c517_d528e934",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v13.xml",
+        "patchSetId": 4
+      },
+      "lineNbr": 493,
+      "author": {
+        "id": 1361
+      },
+      "writtenOn": "2018-03-08T19:52:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5a93c517_52eb8fdb",
+      "revId": "85224c2d89e67d94977a379e21993538aa3791de",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5a93c517_d2df9f38",
         "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v13.xml",
         "patchSetId": 4
@@ -47,6 +83,24 @@
       "writtenOn": "2018-03-08T15:36:30Z",
       "side": 1,
       "message": "We should not include new properties as nameProps; this includes that property in a related-to-property array in the relationship-list object when the output is returned. We\u0027ve found that this causes a performance hit and are planning to phase this out.",
+      "revId": "85224c2d89e67d94977a379e21993538aa3791de",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_75231556",
+        "filename": "aai-schema/src/main/resources/oxm/aai_oxm_v13.xml",
+        "patchSetId": 4
+      },
+      "lineNbr": 536,
+      "author": {
+        "id": 1361
+      },
+      "writtenOn": "2018-03-08T19:52:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5a93c517_d2df9f38",
       "revId": "85224c2d89e67d94977a379e21993538aa3791de",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
