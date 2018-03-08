@@ -16,6 +16,24 @@
       "revId": "da36113d7fe65ec34b6ab153fbec7400336b485b",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_f5072580",
+        "filename": "aai-core/src/main/resources/dbedgerules/DbEdgeRules_v13.json",
+        "patchSetId": 7
+      },
+      "lineNbr": 303,
+      "author": {
+        "id": 1361
+      },
+      "writtenOn": "2018-03-08T20:45:00Z",
+      "side": 1,
+      "message": "AssociatedWIth is not used. hpa-capability is either child of flavor or cloud-region depending on how it is discovered. Changed the contains-other-v as specified in the new patchset.",
+      "parentUuid": "5a93c517_f5e085ce",
+      "revId": "da36113d7fe65ec34b6ab153fbec7400336b485b",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
