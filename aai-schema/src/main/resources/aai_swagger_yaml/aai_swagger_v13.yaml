@@ -5276,6 +5276,514 @@ paths:
           description: Cloud-owner defined type indicator (e.g., dcp, lcp)
           required: false
           type: string
+  /cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}/flavors/flavor/{flavor-id}/hpa-capabilities/hpa-capability/{hpa-capability-id}/relationship-list/relationship:
+    put:
+      tags:
+        - CloudInfrastructure
+      summary: see node definition for valid relationships
+      operationId: createOrUpdateCloudInfrastructureCloudRegionsCloudRegionFlavorsFlavorHpaCapabilitiesHpaCapabilityRelationshipListRelationship
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: cloud-owner
+          in: path
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
+          required: true
+          type: string
+          example: __CLOUD-OWNER__
+        - name: cloud-region-id
+          in: path
+          description: Identifier used by the vendor for the region. Second part of composite key
+          required: true
+          type: string
+          example: __CLOUD-REGION-ID__
+        - name: flavor-id
+          in: path
+          description: Flavor id, expected to be unique across cloud-region.
+          required: true
+          type: string
+          example: __FLAVOR-ID__
+        - name: hpa-capability-id
+          in: path
+          description: UUID to uniquely identify a HPA capability
+          required: true
+          type: string
+          example: __HPA-CAPABILITY-ID__
+        - name: body
+          in: body
+          description: relationship object that needs to be created or updated. [Valid relationship examples shown here](apidocs/relations/v13/CloudInfrastructureCloudRegionsCloudRegionFlavorsFlavorHpaCapabilitiesHpaCapability.json)
+          required: true
+          schema:
+            $ref: "#/definitions/relationship"
+    delete:
+      tags:
+        - CloudInfrastructure
+      summary: delete an existing relationship
+      description: delete an existing relationship
+      operationId: deleteCloudInfrastructureCloudRegionsCloudRegionFlavorsFlavorHpaCapabilitiesHpaCapabilityRelationshipListRelationship
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: cloud-owner
+          in: path
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
+          required: true
+          type: string
+          example: __CLOUD-OWNER__
+        - name: cloud-region-id
+          in: path
+          description: Identifier used by the vendor for the region. Second part of composite key
+          required: true
+          type: string
+          example: __CLOUD-REGION-ID__
+        - name: flavor-id
+          in: path
+          description: Flavor id, expected to be unique across cloud-region.
+          required: true
+          type: string
+          example: __FLAVOR-ID__
+        - name: hpa-capability-id
+          in: path
+          description: UUID to uniquely identify a HPA capability
+          required: true
+          type: string
+          example: __HPA-CAPABILITY-ID__
+  /cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}/flavors/flavor/{flavor-id}/hpa-capabilities/hpa-capability/{hpa-capability-id}/hpa-feature-attribute/relationship-list/relationship:
+    put:
+      tags:
+        - CloudInfrastructure
+      summary: see node definition for valid relationships
+      operationId: createOrUpdateCloudInfrastructureCloudRegionsCloudRegionFlavorsFlavorHpaCapabilitiesHpaCapabilityHpaFeatureAttributeRelationshipListRelationship
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: cloud-owner
+          in: path
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
+          required: true
+          type: string
+          example: __CLOUD-OWNER__
+        - name: cloud-region-id
+          in: path
+          description: Identifier used by the vendor for the region. Second part of composite key
+          required: true
+          type: string
+          example: __CLOUD-REGION-ID__
+        - name: flavor-id
+          in: path
+          description: Flavor id, expected to be unique across cloud-region.
+          required: true
+          type: string
+          example: __FLAVOR-ID__
+        - name: hpa-capability-id
+          in: path
+          description: UUID to uniquely identify a HPA capability
+          required: true
+          type: string
+          example: __HPA-CAPABILITY-ID__
+        - name: body
+          in: body
+          description: relationship object that needs to be created or updated. [Valid relationship examples shown here](apidocs/relations/v13/CloudInfrastructureCloudRegionsCloudRegionFlavorsFlavorHpaCapabilitiesHpaCapabilityHpaFeatureAttribute.json)
+          required: true
+          schema:
+            $ref: "#/definitions/relationship"
+    delete:
+      tags:
+        - CloudInfrastructure
+      summary: delete an existing relationship
+      description: delete an existing relationship
+      operationId: deleteCloudInfrastructureCloudRegionsCloudRegionFlavorsFlavorHpaCapabilitiesHpaCapabilityHpaFeatureAttributeRelationshipListRelationship
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: cloud-owner
+          in: path
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
+          required: true
+          type: string
+          example: __CLOUD-OWNER__
+        - name: cloud-region-id
+          in: path
+          description: Identifier used by the vendor for the region. Second part of composite key
+          required: true
+          type: string
+          example: __CLOUD-REGION-ID__
+        - name: flavor-id
+          in: path
+          description: Flavor id, expected to be unique across cloud-region.
+          required: true
+          type: string
+          example: __FLAVOR-ID__
+        - name: hpa-capability-id
+          in: path
+          description: UUID to uniquely identify a HPA capability
+          required: true
+          type: string
+          example: __HPA-CAPABILITY-ID__
+  /cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}/flavors/flavor/{flavor-id}/hpa-capabilities/hpa-capability/{hpa-capability-id}/hpa-feature-attribute:
+    get:
+      tags:
+        - CloudInfrastructure
+      summary: returns hpa-feature-attribute
+      description: returns hpa-feature-attribute
+      operationId: getCloudInfrastructureCloudRegionsCloudRegionFlavorsFlavorHpaCapabilitiesHpaCapabilityHpaFeatureAttribute
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "200":
+          description: successful operation
+          schema:
+              $ref: "#/getDefinitions/hpa-feature-attribute"
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: cloud-owner
+          in: path
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
+          required: true
+          type: string
+          example: __CLOUD-OWNER__
+        - name: cloud-region-id
+          in: path
+          description: Identifier used by the vendor for the region. Second part of composite key
+          required: true
+          type: string
+          example: __CLOUD-REGION-ID__
+        - name: flavor-id
+          in: path
+          description: Flavor id, expected to be unique across cloud-region.
+          required: true
+          type: string
+          example: __FLAVOR-ID__
+        - name: hpa-capability-id
+          in: path
+          description: UUID to uniquely identify a HPA capability
+          required: true
+          type: string
+          example: __HPA-CAPABILITY-ID__
+        - name: cloud-type
+          in: query
+          description: Type of the cloud (e.g., openstack)
+          required: false
+          type: string
+        - name: owner-defined-type
+          in: query
+          description: Cloud-owner defined type indicator (e.g., dcp, lcp)
+          required: false
+          type: string
+        - name: flavor-name
+          in: query
+          description: Cloud Region Flavor name
+          required: false
+          type: string
+        - name: hpa-feature
+          in: query
+          description: Name of the HPACapability
+          required: false
+          type: string
+        - name: hpa-hw-arch
+          in: query
+          description: Hardware architecture
+          required: false
+          type: string
+  /cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}/flavors/flavor/{flavor-id}/hpa-capabilities/hpa-capability/{hpa-capability-id}:
+    get:
+      tags:
+        - CloudInfrastructure
+      summary: returns hpa-capability
+      description: returns hpa-capability
+      operationId: getCloudInfrastructureCloudRegionsCloudRegionFlavorsFlavorHpaCapabilitiesHpaCapability
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "200":
+          description: successful operation
+          schema:
+              $ref: "#/getDefinitions/hpa-capability"
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: cloud-owner
+          in: path
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
+          required: true
+          type: string
+          example: __CLOUD-OWNER__
+        - name: cloud-region-id
+          in: path
+          description: Identifier used by the vendor for the region. Second part of composite key
+          required: true
+          type: string
+          example: __CLOUD-REGION-ID__
+        - name: flavor-id
+          in: path
+          description: Flavor id, expected to be unique across cloud-region.
+          required: true
+          type: string
+          example: __FLAVOR-ID__
+        - name: hpa-capability-id
+          in: path
+          description: UUID to uniquely identify a HPA capability
+          required: true
+          type: string
+          example: __HPA-CAPABILITY-ID__
+        - name: cloud-type
+          in: query
+          description: Type of the cloud (e.g., openstack)
+          required: false
+          type: string
+        - name: owner-defined-type
+          in: query
+          description: Cloud-owner defined type indicator (e.g., dcp, lcp)
+          required: false
+          type: string
+        - name: flavor-name
+          in: query
+          description: Cloud Region Flavor name
+          required: false
+          type: string
+        - name: hpa-feature
+          in: query
+          description: Name of the HPACapability
+          required: false
+          type: string
+        - name: hpa-hw-arch
+          in: query
+          description: Hardware architecture
+          required: false
+          type: string
+    put:
+      tags:
+        - CloudInfrastructure
+      summary: create or update an existing hpa-capability
+      description: |
+        Create or update an existing hpa-capability.
+        #
+        Note! This PUT method has a corresponding PATCH method that can be used to update just a few of the fields of an existing object, rather than a full object replacement.  An example can be found in the [PATCH section] below
+      operationId: createOrUpdateCloudInfrastructureCloudRegionsCloudRegionFlavorsFlavorHpaCapabilitiesHpaCapability
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: cloud-owner
+          in: path
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
+          required: true
+          type: string
+          example: __CLOUD-OWNER__
+        - name: cloud-region-id
+          in: path
+          description: Identifier used by the vendor for the region. Second part of composite key
+          required: true
+          type: string
+          example: __CLOUD-REGION-ID__
+        - name: flavor-id
+          in: path
+          description: Flavor id, expected to be unique across cloud-region.
+          required: true
+          type: string
+          example: __FLAVOR-ID__
+        - name: hpa-capability-id
+          in: path
+          description: UUID to uniquely identify a HPA capability
+          required: true
+          type: string
+          example: __HPA-CAPABILITY-ID__
+        - name: body
+          in: body
+          description: hpa-capability object that needs to be created or updated. [Valid relationship examples shown here](apidocs/relations/v13/CloudInfrastructureCloudRegionsCloudRegionFlavorsFlavorHpaCapabilitiesHpaCapability.json)
+          required: true
+          schema:
+            $ref: "#/definitions/hpa-capability"
+    patch:
+      tags:
+        - CloudInfrastructure
+      summary: update an existing hpa-capability
+      description: |
+        Update an existing hpa-capability
+        #
+        Note:  Endpoints that are not devoted to object relationships support both PUT and PATCH operations.
+        The PUT operation will entirely replace an existing object.
+        The PATCH operation sends a "description of changes" for an existing object.  The entire set of changes must be applied.  An error result means no change occurs.
+        #
+        Other differences between PUT and PATCH are:
+        #
+        - For PATCH, you can send any of the values shown in sample REQUEST body.  There are no required values.
+        - For PATCH, resource-id which is a required REQUEST body element for PUT, must not be sent.
+        - PATCH cannot be used to update relationship elements; there are dedicated PUT operations for this.
+      operationId: UpdateCloudInfrastructureCloudRegionsCloudRegionFlavorsFlavorHpaCapabilitiesHpaCapability
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: cloud-owner
+          in: path
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
+          required: true
+          type: string
+          example: __CLOUD-OWNER__
+        - name: cloud-region-id
+          in: path
+          description: Identifier used by the vendor for the region. Second part of composite key
+          required: true
+          type: string
+          example: __CLOUD-REGION-ID__
+        - name: flavor-id
+          in: path
+          description: Flavor id, expected to be unique across cloud-region.
+          required: true
+          type: string
+          example: __FLAVOR-ID__
+        - name: hpa-capability-id
+          in: path
+          description: UUID to uniquely identify a HPA capability
+          required: true
+          type: string
+          example: __HPA-CAPABILITY-ID__
+        - name: body
+          in: body
+          description: hpa-capability object that needs to be created or updated. 
+          required: true
+          schema:
+            $ref: "#/patchDefinitions/hpa-capability"
+    delete:
+      tags:
+        - CloudInfrastructure
+      summary: delete an existing hpa-capability
+      description: delete an existing hpa-capability
+      operationId: deleteCloudInfrastructureCloudRegionsCloudRegionFlavorsFlavorHpaCapabilitiesHpaCapability
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: cloud-owner
+          in: path
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
+          required: true
+          type: string
+          example: __CLOUD-OWNER__
+        - name: cloud-region-id
+          in: path
+          description: Identifier used by the vendor for the region. Second part of composite key
+          required: true
+          type: string
+          example: __CLOUD-REGION-ID__
+        - name: flavor-id
+          in: path
+          description: Flavor id, expected to be unique across cloud-region.
+          required: true
+          type: string
+          example: __FLAVOR-ID__
+        - name: hpa-capability-id
+          in: path
+          description: UUID to uniquely identify a HPA capability
+          required: true
+          type: string
+          example: __HPA-CAPABILITY-ID__
+        - name: resource-version
+          in: query
+          description: resource-version for concurrency
+          required: true
+          type: string
+  /cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}/flavors/flavor/{flavor-id}/hpa-capabilities:
+    get:
+      tags:
+        - CloudInfrastructure
+      summary: returns hpa-capabilities
+      description: returns hpa-capabilities
+      operationId: getCloudInfrastructureCloudRegionsCloudRegionFlavorsFlavorHpaCapabilities
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "200":
+          description: successful operation
+          schema:
+              $ref: "#/getDefinitions/hpa-capabilities"
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: cloud-owner
+          in: path
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
+          required: true
+          type: string
+          example: __CLOUD-OWNER__
+        - name: cloud-region-id
+          in: path
+          description: Identifier used by the vendor for the region. Second part of composite key
+          required: true
+          type: string
+          example: __CLOUD-REGION-ID__
+        - name: flavor-id
+          in: path
+          description: Flavor id, expected to be unique across cloud-region.
+          required: true
+          type: string
+          example: __FLAVOR-ID__
+        - name: cloud-type
+          in: query
+          description: Type of the cloud (e.g., openstack)
+          required: false
+          type: string
+        - name: owner-defined-type
+          in: query
+          description: Cloud-owner defined type indicator (e.g., dcp, lcp)
+          required: false
+          type: string
+        - name: flavor-name
+          in: query
+          description: Cloud Region Flavor name
+          required: false
+          type: string
   /cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}/flavors/flavor/{flavor-id}/relationship-list/relationship:
     put:
       tags:
@@ -5398,7 +5906,7 @@ paths:
           type: string
         - name: flavor-name
           in: query
-          description: Flavor name
+          description: Cloud Region Flavor name
           required: false
           type: string
     put:
@@ -8287,6 +8795,439 @@ paths:
           in: query
           description: resource-version for concurrency
           required: true
+          type: string
+  /cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}/hpa-capabilities/hpa-capability/{hpa-capability-id}/relationship-list/relationship:
+    put:
+      tags:
+        - CloudInfrastructure
+      summary: see node definition for valid relationships
+      operationId: createOrUpdateCloudInfrastructureCloudRegionsCloudRegionHpaCapabilitiesHpaCapabilityRelationshipListRelationship
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: cloud-owner
+          in: path
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
+          required: true
+          type: string
+          example: __CLOUD-OWNER__
+        - name: cloud-region-id
+          in: path
+          description: Identifier used by the vendor for the region. Second part of composite key
+          required: true
+          type: string
+          example: __CLOUD-REGION-ID__
+        - name: hpa-capability-id
+          in: path
+          description: UUID to uniquely identify a HPA capability
+          required: true
+          type: string
+          example: __HPA-CAPABILITY-ID__
+        - name: body
+          in: body
+          description: relationship object that needs to be created or updated. [Valid relationship examples shown here](apidocs/relations/v13/CloudInfrastructureCloudRegionsCloudRegionHpaCapabilitiesHpaCapability.json)
+          required: true
+          schema:
+            $ref: "#/definitions/relationship"
+    delete:
+      tags:
+        - CloudInfrastructure
+      summary: delete an existing relationship
+      description: delete an existing relationship
+      operationId: deleteCloudInfrastructureCloudRegionsCloudRegionHpaCapabilitiesHpaCapabilityRelationshipListRelationship
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: cloud-owner
+          in: path
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
+          required: true
+          type: string
+          example: __CLOUD-OWNER__
+        - name: cloud-region-id
+          in: path
+          description: Identifier used by the vendor for the region. Second part of composite key
+          required: true
+          type: string
+          example: __CLOUD-REGION-ID__
+        - name: hpa-capability-id
+          in: path
+          description: UUID to uniquely identify a HPA capability
+          required: true
+          type: string
+          example: __HPA-CAPABILITY-ID__
+  /cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}/hpa-capabilities/hpa-capability/{hpa-capability-id}/hpa-feature-attribute/relationship-list/relationship:
+    put:
+      tags:
+        - CloudInfrastructure
+      summary: see node definition for valid relationships
+      operationId: createOrUpdateCloudInfrastructureCloudRegionsCloudRegionHpaCapabilitiesHpaCapabilityHpaFeatureAttributeRelationshipListRelationship
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: cloud-owner
+          in: path
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
+          required: true
+          type: string
+          example: __CLOUD-OWNER__
+        - name: cloud-region-id
+          in: path
+          description: Identifier used by the vendor for the region. Second part of composite key
+          required: true
+          type: string
+          example: __CLOUD-REGION-ID__
+        - name: hpa-capability-id
+          in: path
+          description: UUID to uniquely identify a HPA capability
+          required: true
+          type: string
+          example: __HPA-CAPABILITY-ID__
+        - name: body
+          in: body
+          description: relationship object that needs to be created or updated. [Valid relationship examples shown here](apidocs/relations/v13/CloudInfrastructureCloudRegionsCloudRegionHpaCapabilitiesHpaCapabilityHpaFeatureAttribute.json)
+          required: true
+          schema:
+            $ref: "#/definitions/relationship"
+    delete:
+      tags:
+        - CloudInfrastructure
+      summary: delete an existing relationship
+      description: delete an existing relationship
+      operationId: deleteCloudInfrastructureCloudRegionsCloudRegionHpaCapabilitiesHpaCapabilityHpaFeatureAttributeRelationshipListRelationship
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: cloud-owner
+          in: path
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
+          required: true
+          type: string
+          example: __CLOUD-OWNER__
+        - name: cloud-region-id
+          in: path
+          description: Identifier used by the vendor for the region. Second part of composite key
+          required: true
+          type: string
+          example: __CLOUD-REGION-ID__
+        - name: hpa-capability-id
+          in: path
+          description: UUID to uniquely identify a HPA capability
+          required: true
+          type: string
+          example: __HPA-CAPABILITY-ID__
+  /cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}/hpa-capabilities/hpa-capability/{hpa-capability-id}/hpa-feature-attribute:
+    get:
+      tags:
+        - CloudInfrastructure
+      summary: returns hpa-feature-attribute
+      description: returns hpa-feature-attribute
+      operationId: getCloudInfrastructureCloudRegionsCloudRegionHpaCapabilitiesHpaCapabilityHpaFeatureAttribute
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "200":
+          description: successful operation
+          schema:
+              $ref: "#/getDefinitions/hpa-feature-attribute"
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: cloud-owner
+          in: path
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
+          required: true
+          type: string
+          example: __CLOUD-OWNER__
+        - name: cloud-region-id
+          in: path
+          description: Identifier used by the vendor for the region. Second part of composite key
+          required: true
+          type: string
+          example: __CLOUD-REGION-ID__
+        - name: hpa-capability-id
+          in: path
+          description: UUID to uniquely identify a HPA capability
+          required: true
+          type: string
+          example: __HPA-CAPABILITY-ID__
+        - name: cloud-type
+          in: query
+          description: Type of the cloud (e.g., openstack)
+          required: false
+          type: string
+        - name: owner-defined-type
+          in: query
+          description: Cloud-owner defined type indicator (e.g., dcp, lcp)
+          required: false
+          type: string
+        - name: hpa-feature
+          in: query
+          description: Name of the HPACapability
+          required: false
+          type: string
+        - name: hpa-hw-arch
+          in: query
+          description: Hardware architecture
+          required: false
+          type: string
+  /cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}/hpa-capabilities/hpa-capability/{hpa-capability-id}:
+    get:
+      tags:
+        - CloudInfrastructure
+      summary: returns hpa-capability
+      description: returns hpa-capability
+      operationId: getCloudInfrastructureCloudRegionsCloudRegionHpaCapabilitiesHpaCapability
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "200":
+          description: successful operation
+          schema:
+              $ref: "#/getDefinitions/hpa-capability"
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: cloud-owner
+          in: path
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
+          required: true
+          type: string
+          example: __CLOUD-OWNER__
+        - name: cloud-region-id
+          in: path
+          description: Identifier used by the vendor for the region. Second part of composite key
+          required: true
+          type: string
+          example: __CLOUD-REGION-ID__
+        - name: hpa-capability-id
+          in: path
+          description: UUID to uniquely identify a HPA capability
+          required: true
+          type: string
+          example: __HPA-CAPABILITY-ID__
+        - name: cloud-type
+          in: query
+          description: Type of the cloud (e.g., openstack)
+          required: false
+          type: string
+        - name: owner-defined-type
+          in: query
+          description: Cloud-owner defined type indicator (e.g., dcp, lcp)
+          required: false
+          type: string
+        - name: hpa-feature
+          in: query
+          description: Name of the HPACapability
+          required: false
+          type: string
+        - name: hpa-hw-arch
+          in: query
+          description: Hardware architecture
+          required: false
+          type: string
+    put:
+      tags:
+        - CloudInfrastructure
+      summary: create or update an existing hpa-capability
+      description: |
+        Create or update an existing hpa-capability.
+        #
+        Note! This PUT method has a corresponding PATCH method that can be used to update just a few of the fields of an existing object, rather than a full object replacement.  An example can be found in the [PATCH section] below
+      operationId: createOrUpdateCloudInfrastructureCloudRegionsCloudRegionHpaCapabilitiesHpaCapability
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: cloud-owner
+          in: path
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
+          required: true
+          type: string
+          example: __CLOUD-OWNER__
+        - name: cloud-region-id
+          in: path
+          description: Identifier used by the vendor for the region. Second part of composite key
+          required: true
+          type: string
+          example: __CLOUD-REGION-ID__
+        - name: hpa-capability-id
+          in: path
+          description: UUID to uniquely identify a HPA capability
+          required: true
+          type: string
+          example: __HPA-CAPABILITY-ID__
+        - name: body
+          in: body
+          description: hpa-capability object that needs to be created or updated. [Valid relationship examples shown here](apidocs/relations/v13/CloudInfrastructureCloudRegionsCloudRegionHpaCapabilitiesHpaCapability.json)
+          required: true
+          schema:
+            $ref: "#/definitions/hpa-capability"
+    patch:
+      tags:
+        - CloudInfrastructure
+      summary: update an existing hpa-capability
+      description: |
+        Update an existing hpa-capability
+        #
+        Note:  Endpoints that are not devoted to object relationships support both PUT and PATCH operations.
+        The PUT operation will entirely replace an existing object.
+        The PATCH operation sends a "description of changes" for an existing object.  The entire set of changes must be applied.  An error result means no change occurs.
+        #
+        Other differences between PUT and PATCH are:
+        #
+        - For PATCH, you can send any of the values shown in sample REQUEST body.  There are no required values.
+        - For PATCH, resource-id which is a required REQUEST body element for PUT, must not be sent.
+        - PATCH cannot be used to update relationship elements; there are dedicated PUT operations for this.
+      operationId: UpdateCloudInfrastructureCloudRegionsCloudRegionHpaCapabilitiesHpaCapability
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: cloud-owner
+          in: path
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
+          required: true
+          type: string
+          example: __CLOUD-OWNER__
+        - name: cloud-region-id
+          in: path
+          description: Identifier used by the vendor for the region. Second part of composite key
+          required: true
+          type: string
+          example: __CLOUD-REGION-ID__
+        - name: hpa-capability-id
+          in: path
+          description: UUID to uniquely identify a HPA capability
+          required: true
+          type: string
+          example: __HPA-CAPABILITY-ID__
+        - name: body
+          in: body
+          description: hpa-capability object that needs to be created or updated. 
+          required: true
+          schema:
+            $ref: "#/patchDefinitions/hpa-capability"
+    delete:
+      tags:
+        - CloudInfrastructure
+      summary: delete an existing hpa-capability
+      description: delete an existing hpa-capability
+      operationId: deleteCloudInfrastructureCloudRegionsCloudRegionHpaCapabilitiesHpaCapability
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: cloud-owner
+          in: path
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
+          required: true
+          type: string
+          example: __CLOUD-OWNER__
+        - name: cloud-region-id
+          in: path
+          description: Identifier used by the vendor for the region. Second part of composite key
+          required: true
+          type: string
+          example: __CLOUD-REGION-ID__
+        - name: hpa-capability-id
+          in: path
+          description: UUID to uniquely identify a HPA capability
+          required: true
+          type: string
+          example: __HPA-CAPABILITY-ID__
+        - name: resource-version
+          in: query
+          description: resource-version for concurrency
+          required: true
+          type: string
+  /cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}/hpa-capabilities:
+    get:
+      tags:
+        - CloudInfrastructure
+      summary: returns hpa-capabilities
+      description: returns hpa-capabilities
+      operationId: getCloudInfrastructureCloudRegionsCloudRegionHpaCapabilities
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "200":
+          description: successful operation
+          schema:
+              $ref: "#/getDefinitions/hpa-capabilities"
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: cloud-owner
+          in: path
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
+          required: true
+          type: string
+          example: __CLOUD-OWNER__
+        - name: cloud-region-id
+          in: path
+          description: Identifier used by the vendor for the region. Second part of composite key
+          required: true
+          type: string
+          example: __CLOUD-REGION-ID__
+        - name: cloud-type
+          in: query
+          description: Type of the cloud (e.g., openstack)
+          required: false
+          type: string
+        - name: owner-defined-type
+          in: query
+          description: Cloud-owner defined type indicator (e.g., dcp, lcp)
+          required: false
           type: string
   /cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}:
     get:
@@ -53549,6 +54490,7 @@ definitions:
       - FROM availability-zone( availability-zone org.onap.relationships.inventory.BelongsTo cloud-region, MANY2ONE)
       - FROM dvs-switch( dvs-switch org.onap.relationships.inventory.BelongsTo cloud-region, MANY2ONE)
       - FROM flavor( flavor org.onap.relationships.inventory.BelongsTo cloud-region, MANY2ONE)
+      - FROM hpa-capability( hpa-capability org.onap.relationships.inventory.BelongsTo cloud-region, MANY2ONE)
       - FROM group-assignment( group-assignment org.onap.relationships.inventory.BelongsTo cloud-region, MANY2ONE)
       - FROM image( image org.onap.relationships.inventory.BelongsTo cloud-region, MANY2ONE)
       - FROM oam-network( oam-network org.onap.relationships.inventory.BelongsTo cloud-region, MANY2ONE)
@@ -53559,7 +54501,7 @@ definitions:
       - FROM volume-group( volume-group org.onap.relationships.inventory.BelongsTo cloud-region, MANY2ONE)
       - FROM logical-link( logical-link org.onap.relationships.inventory.LocatedIn cloud-region, MANY2MANY)
       - FROM pserver( pserver org.onap.relationships.inventory.LocatedIn cloud-region, MANY2ONE)
-      - CLOUD-REGION cannot be deleted if linked to DVS-SWITCH,FLAVOR,GROUP-ASSIGNMENT,IMAGE,OAM-NETWORK,SNAPSHOT,TENANT,VIP-IPV4-ADDRESS-LIST,VIP-IPV6-ADDRESS-LIST,VOLUME-GROUP
+      - CLOUD-REGION cannot be deleted if linked to DVS-SWITCH,FLAVOR,HPA-CAPABILITY,GROUP-ASSIGNMENT,IMAGE,OAM-NETWORK,SNAPSHOT,TENANT,VIP-IPV4-ADDRESS-LIST,VIP-IPV6-ADDRESS-LIST,VOLUME-GROUP
       - CLOUD-REGION is DELETED when these are DELETED AVAILABILITY-ZONE
       - CLOUD-REGION deletion means associated objects of these types are also DELETED:ESR-SYSTEM-INFO
     required:
@@ -53650,6 +54592,11 @@ definitions:
         type: array
         items:          
           $ref: "#/definitions/vip-ipv6-address-list"
+      hpa-capabilities:
+        type: array
+        items:
+          $ref: "#/definitions/hpa-capability"
+        description: List of cloud-region specific HPA Capabilities
   cloud-regions:
     properties:
       cloud-region:
@@ -54452,8 +55399,9 @@ definitions:
       Openstack flavor.
       ###### Related Nodes
       - TO cloud-region( flavor org.onap.relationships.inventory.BelongsTo cloud-region, MANY2ONE)
+      - FROM hpa-capability( hpa-capability org.onap.relationships.inventory.BelongsTo flavor, MANY2ONE)
       - FROM vserver( vserver org.onap.relationships.inventory.Uses flavor, MANY2ONE)
-      - FLAVOR cannot be deleted if linked to VSERVER
+      - FLAVOR cannot be deleted if linked to HPA-CAPABILITY,VSERVER
     required:
     - flavor-id
     - flavor-name
@@ -54464,7 +55412,7 @@ definitions:
         description: Flavor id, expected to be unique across cloud-region.
       flavor-name:
         type: string
-        description: Flavor name
+        description: Cloud Region Flavor name
       flavor-vcpus:
         type: integer
         format: int32
@@ -54493,6 +55441,11 @@ definitions:
       flavor-disabled:
         type: boolean
         description: Boolean as to whether this flavor is no longer enabled
+      hpa-capabilities:
+        type: array
+        items:
+          $ref: "#/definitions/hpa-capability"
+        description: List of flavor specific HPA Capabilities
       resource-version:
         type: string
         description: Used for optimistic concurrency.  Must be empty on create, valid on update and delete.
@@ -54942,6 +55895,64 @@ definitions:
         type: array
         items:          
           $ref: "#/definitions/host-route"
+  hpa-capabilities:
+    description: |
+      Collection of HPA Capabilities
+    properties:
+      hpa-capability:
+        type: array
+        items:          
+          $ref: "#/definitions/hpa-capability"
+  hpa-capability:
+    description: |
+      Represents a HPA capability
+      ###### Related Nodes
+      - TO flavor( hpa-capability org.onap.relationships.inventory.BelongsTo flavor, MANY2ONE)
+      - TO cloud-region( hpa-capability org.onap.relationships.inventory.BelongsTo cloud-region, MANY2ONE)
+    required:
+    - hpa-capability-id
+    - hpa-feature
+    properties:
+      hpa-capability-id:
+        type: string
+        description: UUID to uniquely identify a HPA capability
+      hpa-feature:
+        type: string
+        description: Name of the HPACapability
+      hpa-version:
+        type: string
+        description: HPA schema version
+      hpa-hw-arch:
+        type: string
+        description: Hardware architecture
+      resource-version:
+        type: string
+        description: Used for optimistic concurrency.  Must be empty on create, valid on update and delete.
+      relationship-list:
+        type: array
+        items:
+          $ref: "#/definitions/relationship"
+      hpa-feature-attribute:
+        type: array
+        items:          
+          $ref: "#/definitions/hpa-feature-attribute"
+  hpa-feature-attribute:
+    description: |
+      HPA Capability Feature attributes
+    properties:
+      hpa-attr-key:
+        type: string
+        description: name of the specific HPA attribute
+      hpa-attr-value:
+        type: string
+        description: JSON string specifying the value, unit and type of the specific HPA attribute
+      resource-version:
+        type: string
+        description: Used for optimistic concurrency.  Must be empty on create, valid on update and delete.
+      relationship-list:
+        type: array
+        items:
+          $ref: "#/definitions/relationship"
   image:
     description: |
       Openstack image.
@@ -59058,6 +60069,7 @@ patchDefinitions:
       - FROM availability-zone( availability-zone org.onap.relationships.inventory.BelongsTo cloud-region, MANY2ONE)
       - FROM dvs-switch( dvs-switch org.onap.relationships.inventory.BelongsTo cloud-region, MANY2ONE)
       - FROM flavor( flavor org.onap.relationships.inventory.BelongsTo cloud-region, MANY2ONE)
+      - FROM hpa-capability( hpa-capability org.onap.relationships.inventory.BelongsTo cloud-region, MANY2ONE)
       - FROM group-assignment( group-assignment org.onap.relationships.inventory.BelongsTo cloud-region, MANY2ONE)
       - FROM image( image org.onap.relationships.inventory.BelongsTo cloud-region, MANY2ONE)
       - FROM oam-network( oam-network org.onap.relationships.inventory.BelongsTo cloud-region, MANY2ONE)
@@ -59068,7 +60080,7 @@ patchDefinitions:
       - FROM volume-group( volume-group org.onap.relationships.inventory.BelongsTo cloud-region, MANY2ONE)
       - FROM logical-link( logical-link org.onap.relationships.inventory.LocatedIn cloud-region, MANY2MANY)
       - FROM pserver( pserver org.onap.relationships.inventory.LocatedIn cloud-region, MANY2ONE)
-      - CLOUD-REGION cannot be deleted if linked to DVS-SWITCH,FLAVOR,GROUP-ASSIGNMENT,IMAGE,OAM-NETWORK,SNAPSHOT,TENANT,VIP-IPV4-ADDRESS-LIST,VIP-IPV6-ADDRESS-LIST,VOLUME-GROUP
+      - CLOUD-REGION cannot be deleted if linked to DVS-SWITCH,FLAVOR,HPA-CAPABILITY,GROUP-ASSIGNMENT,IMAGE,OAM-NETWORK,SNAPSHOT,TENANT,VIP-IPV4-ADDRESS-LIST,VIP-IPV6-ADDRESS-LIST,VOLUME-GROUP
       - CLOUD-REGION is DELETED when these are DELETED AVAILABILITY-ZONE
       - CLOUD-REGION deletion means associated objects of these types are also DELETED:ESR-SYSTEM-INFO
     required:
@@ -59723,8 +60735,9 @@ patchDefinitions:
       Openstack flavor.
       ###### Related Nodes
       - TO cloud-region( flavor org.onap.relationships.inventory.BelongsTo cloud-region, MANY2ONE)
+      - FROM hpa-capability( hpa-capability org.onap.relationships.inventory.BelongsTo flavor, MANY2ONE)
       - FROM vserver( vserver org.onap.relationships.inventory.Uses flavor, MANY2ONE)
-      - FLAVOR cannot be deleted if linked to VSERVER
+      - FLAVOR cannot be deleted if linked to HPA-CAPABILITY,VSERVER
     required:
     - flavor-id
     - flavor-name
@@ -59735,7 +60748,7 @@ patchDefinitions:
         description: Flavor id, expected to be unique across cloud-region.
       flavor-name:
         type: string
-        description: Flavor name
+        description: Cloud Region Flavor name
       flavor-vcpus:
         type: integer
         format: int32
@@ -59764,6 +60777,11 @@ patchDefinitions:
       flavor-disabled:
         type: boolean
         description: Boolean as to whether this flavor is no longer enabled
+      hpa-capabilities:
+        type: array
+        items:
+          $ref: "#/patchDefinitions/hpa-capability"
+        description: List of flavor specific HPA Capabilities
   flavors:
     description: |
       Collection of openstack flavors.
@@ -60066,6 +61084,46 @@ patchDefinitions:
         type: array
         items:          
           $ref: "#/patchDefinitions/host-route"
+  hpa-capabilities:
+    description: |
+      Collection of HPA Capabilities
+    properties:
+      hpa-capability:
+        type: array
+        items:          
+          $ref: "#/patchDefinitions/hpa-capability"
+  hpa-capability:
+    description: |
+      Represents a HPA capability
+      ###### Related Nodes
+      - TO flavor( hpa-capability org.onap.relationships.inventory.BelongsTo flavor, MANY2ONE)
+      - TO cloud-region( hpa-capability org.onap.relationships.inventory.BelongsTo cloud-region, MANY2ONE)
+    required:
+    - hpa-capability-id
+    - hpa-feature
+    properties:
+      hpa-capability-id:
+        type: string
+        description: UUID to uniquely identify a HPA capability
+      hpa-feature:
+        type: string
+        description: Name of the HPACapability
+      hpa-version:
+        type: string
+        description: HPA schema version
+      hpa-hw-arch:
+        type: string
+        description: Hardware architecture
+  hpa-feature-attribute:
+    description: |
+      HPA Capability Feature attributes
+    properties:
+      hpa-attr-key:
+        type: string
+        description: name of the specific HPA attribute
+      hpa-attr-value:
+        type: string
+        description: JSON string specifying the value, unit and type of the specific HPA attribute
   image:
     description: |
       Openstack image.
@@ -63299,6 +64357,7 @@ getDefinitions:
       - FROM availability-zone( availability-zone org.onap.relationships.inventory.BelongsTo cloud-region, MANY2ONE)
       - FROM dvs-switch( dvs-switch org.onap.relationships.inventory.BelongsTo cloud-region, MANY2ONE)
       - FROM flavor( flavor org.onap.relationships.inventory.BelongsTo cloud-region, MANY2ONE)
+      - FROM hpa-capability( hpa-capability org.onap.relationships.inventory.BelongsTo cloud-region, MANY2ONE)
       - FROM group-assignment( group-assignment org.onap.relationships.inventory.BelongsTo cloud-region, MANY2ONE)
       - FROM image( image org.onap.relationships.inventory.BelongsTo cloud-region, MANY2ONE)
       - FROM oam-network( oam-network org.onap.relationships.inventory.BelongsTo cloud-region, MANY2ONE)
@@ -63309,7 +64368,7 @@ getDefinitions:
       - FROM volume-group( volume-group org.onap.relationships.inventory.BelongsTo cloud-region, MANY2ONE)
       - FROM logical-link( logical-link org.onap.relationships.inventory.LocatedIn cloud-region, MANY2MANY)
       - FROM pserver( pserver org.onap.relationships.inventory.LocatedIn cloud-region, MANY2ONE)
-      - CLOUD-REGION cannot be deleted if linked to DVS-SWITCH,FLAVOR,GROUP-ASSIGNMENT,IMAGE,OAM-NETWORK,SNAPSHOT,TENANT,VIP-IPV4-ADDRESS-LIST,VIP-IPV6-ADDRESS-LIST,VOLUME-GROUP
+      - CLOUD-REGION cannot be deleted if linked to DVS-SWITCH,FLAVOR,HPA-CAPABILITY,GROUP-ASSIGNMENT,IMAGE,OAM-NETWORK,SNAPSHOT,TENANT,VIP-IPV4-ADDRESS-LIST,VIP-IPV6-ADDRESS-LIST,VOLUME-GROUP
       - CLOUD-REGION is DELETED when these are DELETED AVAILABILITY-ZONE
       - CLOUD-REGION deletion means associated objects of these types are also DELETED:ESR-SYSTEM-INFO
     required:
@@ -63400,6 +64459,11 @@ getDefinitions:
         type: array
         items:          
           $ref: "#/getDefinitions/vip-ipv6-address-list"
+      hpa-capabilities:
+        type: array
+        items:
+          $ref: "#/getDefinitions/hpa-capability"
+        description: List of cloud-region specific HPA Capabilities
   cloud-regions:
     properties:
       cloud-region:
@@ -64202,8 +65266,9 @@ getDefinitions:
       Openstack flavor.
       ###### Related Nodes
       - TO cloud-region( flavor org.onap.relationships.inventory.BelongsTo cloud-region, MANY2ONE)
+      - FROM hpa-capability( hpa-capability org.onap.relationships.inventory.BelongsTo flavor, MANY2ONE)
       - FROM vserver( vserver org.onap.relationships.inventory.Uses flavor, MANY2ONE)
-      - FLAVOR cannot be deleted if linked to VSERVER
+      - FLAVOR cannot be deleted if linked to HPA-CAPABILITY,VSERVER
     required:
     - flavor-id
     - flavor-name
@@ -64214,7 +65279,7 @@ getDefinitions:
         description: Flavor id, expected to be unique across cloud-region.
       flavor-name:
         type: string
-        description: Flavor name
+        description: Cloud Region Flavor name
       flavor-vcpus:
         type: integer
         format: int32
@@ -64243,6 +65308,11 @@ getDefinitions:
       flavor-disabled:
         type: boolean
         description: Boolean as to whether this flavor is no longer enabled
+      hpa-capabilities:
+        type: array
+        items:
+          $ref: "#/getDefinitions/hpa-capability"
+        description: List of flavor specific HPA Capabilities
       resource-version:
         type: string
         description: Used for optimistic concurrency.  Must be empty on create, valid on update and delete.
@@ -64692,6 +65762,64 @@ getDefinitions:
         type: array
         items:          
           $ref: "#/getDefinitions/host-route"
+  hpa-capabilities:
+    description: |
+      Collection of HPA Capabilities
+    properties:
+      hpa-capability:
+        type: array
+        items:          
+          $ref: "#/getDefinitions/hpa-capability"
+  hpa-capability:
+    description: |
+      Represents a HPA capability
+      ###### Related Nodes
+      - TO flavor( hpa-capability org.onap.relationships.inventory.BelongsTo flavor, MANY2ONE)
+      - TO cloud-region( hpa-capability org.onap.relationships.inventory.BelongsTo cloud-region, MANY2ONE)
+    required:
+    - hpa-capability-id
+    - hpa-feature
+    properties:
+      hpa-capability-id:
+        type: string
+        description: UUID to uniquely identify a HPA capability
+      hpa-feature:
+        type: string
+        description: Name of the HPACapability
+      hpa-version:
+        type: string
+        description: HPA schema version
+      hpa-hw-arch:
+        type: string
+        description: Hardware architecture
+      resource-version:
+        type: string
+        description: Used for optimistic concurrency.  Must be empty on create, valid on update and delete.
+      relationship-list:
+        type: array
+        items:
+          $ref: "#/getDefinitions/relationship"
+      hpa-feature-attribute:
+        type: array
+        items:          
+          $ref: "#/getDefinitions/hpa-feature-attribute"
+  hpa-feature-attribute:
+    description: |
+      HPA Capability Feature attributes
+    properties:
+      hpa-attr-key:
+        type: string
+        description: name of the specific HPA attribute
+      hpa-attr-value:
+        type: string
+        description: JSON string specifying the value, unit and type of the specific HPA attribute
+      resource-version:
+        type: string
+        description: Used for optimistic concurrency.  Must be empty on create, valid on update and delete.
+      relationship-list:
+        type: array
+        items:
+          $ref: "#/getDefinitions/relationship"
   image:
     description: |
       Openstack image.
