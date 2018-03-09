@@ -308,6 +308,19 @@
 			"description":""
 		},
 		{
+			"from": "hpa-feature-attributes",
+			"to": "hpa-capability",
+			"label": "org.onap.relationships.inventory.BelongsTo",
+			"direction": "OUT",
+			"multiplicity": "MANY2ONE",
+			"contains-other-v": "!${direction}",
+			"delete-other-v": "!${direction}",
+			"SVC-INFRA": "!${direction}",
+			"prevent-delete": "NONE",
+			"default": "true",
+			"description":""
+		},
+		{
 			"from": "group-assignment",
 			"to": "cloud-region",
 			"label": "org.onap.relationships.inventory.BelongsTo",
