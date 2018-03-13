@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_55560b07",
+        "filename": "aai-core/src/test/java/org/onap/aai/rest/HPACapabilityTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 75
+      },
+      "writtenOn": "2018-03-13T13:13:48Z",
+      "side": 1,
+      "message": "Can you remove this and the following line where the variables f1 and f2 are initialized? You don\u0027t need them. Also, it looks my username is being used. I might have accidentally let my username slip when I generated the payload, you can remove these two lines from here.",
+      "revId": "fe013cc4ab1221ea3504c6d8fc97cff6400b7499",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
