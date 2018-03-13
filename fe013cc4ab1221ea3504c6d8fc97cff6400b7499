@@ -16,6 +16,23 @@
       "revId": "fe013cc4ab1221ea3504c6d8fc97cff6400b7499",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_b57aef85",
+        "filename": "aai-core/src/test/java/org/onap/aai/rest/HPACapabilityTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 75
+      },
+      "writtenOn": "2018-03-13T13:19:24Z",
+      "side": 1,
+      "message": "Why is this commented out? Were you not able to delete the flavor successfully?",
+      "revId": "fe013cc4ab1221ea3504c6d8fc97cff6400b7499",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
