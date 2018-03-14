@@ -1,0 +1,48 @@
+{
+	"rules": [
+		{
+			"from": "foo",
+			"to": "bar",
+			"label": "eats",
+			"direction": "OUT",
+			"multiplicity": "One2Many",
+			"contains-other-v": "NONE",
+			"delete-other-v": "${direction}",
+			"prevent-delete": "NONE",
+			"description": "Hard to describe"
+		},
+		{
+			"from": "foo",
+			"to": "bar",
+			"label": "eatz",
+			"direction": "IN",
+			"multiplicity": "One2Many",
+			"contains-other-v": "NONE",
+			"delete-other-v": "${direction}",
+			"prevent-delete": "NONE",
+			"description": "Hard to describe"
+		},
+		{
+			"from": "foo",
+			"to": "baz",
+			"label": "isVeryHappyAbout",
+			"direction": "OUT",
+			"multiplicity": "One2Many",
+			"contains-other-v": "${direction}",
+			"delete-other-v": "${direction}",
+			"prevent-delete": "NONE",
+			"description": "Hard to describe"
+		},
+		{
+			"from": "quux",
+			"to": "foo",
+			"label": "dancesWith",
+			"direction": "IN",
+			"multiplicity": "One2Many",
+			"contains-other-v": "!${direction}",
+			"delete-other-v": "${direction}",
+			"prevent-delete": "NONE",
+			"description": "Hard to describe"
+		}
+	]
+}

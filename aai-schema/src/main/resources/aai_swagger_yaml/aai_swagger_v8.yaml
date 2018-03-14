@@ -45117,6 +45117,68 @@ definitions:
         type: array
         items:          
           $ref: "#/definitions/host-route"
+  hpa-capabilities:
+    description: |
+      Collection of HPA Capabilities
+    properties:
+      hpa-capability:
+        type: array
+        items:          
+          $ref: "#/definitions/hpa-capability"
+  hpa-capability:
+    description: |
+      Represents a HPA capability
+      ###### Related Nodes
+      - TO flavor( hpa-capability org.onap.relationships.inventory.BelongsTo flavor, MANY2ONE)
+      - TO cloud-region( hpa-capability org.onap.relationships.inventory.BelongsTo cloud-region, MANY2ONE)
+      - FROM hpa-feature-attributes( hpa-feature-attributes org.onap.relationships.inventory.BelongsTo hpa-capability, MANY2ONE)
+      - HPA-CAPABILITY is DELETED when these are DELETED HPA-FEATURE-ATTRIBUTES
+    required:
+    - hpa-capability-id
+    - hpa-feature
+    properties:
+      hpa-capability-id:
+        type: string
+        description: UUID to uniquely identify a HPA capability
+      hpa-feature:
+        type: string
+        description: Name of the HPACapability
+      hpa-version:
+        type: string
+        description: HPA schema version
+      hpa-hw-arch:
+        type: string
+        description: Hardware architecture
+      resource-version:
+        type: string
+        description: Used for optimistic concurrency.  Must be empty on create, valid on update and delete.
+      relationship-list:
+        type: array
+        items:
+          $ref: "#/definitions/relationship"
+      hpa-feature-attributes:
+        type: array
+        items:          
+          $ref: "#/definitions/hpa-feature-attributes"
+  hpa-feature-attributes:
+    description: |
+      HPA Capability Feature attributes
+      ###### Related Nodes
+      - TO hpa-capability( hpa-feature-attributes org.onap.relationships.inventory.BelongsTo hpa-capability, MANY2ONE)
+    properties:
+      hpa-attr-key:
+        type: string
+        description: name of the specific HPA attribute
+      hpa-attr-value:
+        type: string
+        description: JSON string specifying the value, unit and type of the specific HPA attribute
+      resource-version:
+        type: string
+        description: Used for optimistic concurrency.  Must be empty on create, valid on update and delete.
+      relationship-list:
+        type: array
+        items:
+          $ref: "#/definitions/relationship"
   image:
     description: |
       Openstack image.
@@ -49775,6 +49837,50 @@ patchDefinitions:
         type: array
         items:          
           $ref: "#/patchDefinitions/host-route"
+  hpa-capabilities:
+    description: |
+      Collection of HPA Capabilities
+    properties:
+      hpa-capability:
+        type: array
+        items:          
+          $ref: "#/patchDefinitions/hpa-capability"
+  hpa-capability:
+    description: |
+      Represents a HPA capability
+      ###### Related Nodes
+      - TO flavor( hpa-capability org.onap.relationships.inventory.BelongsTo flavor, MANY2ONE)
+      - TO cloud-region( hpa-capability org.onap.relationships.inventory.BelongsTo cloud-region, MANY2ONE)
+      - FROM hpa-feature-attributes( hpa-feature-attributes org.onap.relationships.inventory.BelongsTo hpa-capability, MANY2ONE)
+      - HPA-CAPABILITY is DELETED when these are DELETED HPA-FEATURE-ATTRIBUTES
+    required:
+    - hpa-capability-id
+    - hpa-feature
+    properties:
+      hpa-capability-id:
+        type: string
+        description: UUID to uniquely identify a HPA capability
+      hpa-feature:
+        type: string
+        description: Name of the HPACapability
+      hpa-version:
+        type: string
+        description: HPA schema version
+      hpa-hw-arch:
+        type: string
+        description: Hardware architecture
+  hpa-feature-attributes:
+    description: |
+      HPA Capability Feature attributes
+      ###### Related Nodes
+      - TO hpa-capability( hpa-feature-attributes org.onap.relationships.inventory.BelongsTo hpa-capability, MANY2ONE)
+    properties:
+      hpa-attr-key:
+        type: string
+        description: name of the specific HPA attribute
+      hpa-attr-value:
+        type: string
+        description: JSON string specifying the value, unit and type of the specific HPA attribute
   image:
     description: |
       Openstack image.
@@ -53980,6 +54086,68 @@ getDefinitions:
         type: array
         items:          
           $ref: "#/getDefinitions/host-route"
+  hpa-capabilities:
+    description: |
+      Collection of HPA Capabilities
+    properties:
+      hpa-capability:
+        type: array
+        items:          
+          $ref: "#/getDefinitions/hpa-capability"
+  hpa-capability:
+    description: |
+      Represents a HPA capability
+      ###### Related Nodes
+      - TO flavor( hpa-capability org.onap.relationships.inventory.BelongsTo flavor, MANY2ONE)
+      - TO cloud-region( hpa-capability org.onap.relationships.inventory.BelongsTo cloud-region, MANY2ONE)
+      - FROM hpa-feature-attributes( hpa-feature-attributes org.onap.relationships.inventory.BelongsTo hpa-capability, MANY2ONE)
+      - HPA-CAPABILITY is DELETED when these are DELETED HPA-FEATURE-ATTRIBUTES
+    required:
+    - hpa-capability-id
+    - hpa-feature
+    properties:
+      hpa-capability-id:
+        type: string
+        description: UUID to uniquely identify a HPA capability
+      hpa-feature:
+        type: string
+        description: Name of the HPACapability
+      hpa-version:
+        type: string
+        description: HPA schema version
+      hpa-hw-arch:
+        type: string
+        description: Hardware architecture
+      resource-version:
+        type: string
+        description: Used for optimistic concurrency.  Must be empty on create, valid on update and delete.
+      relationship-list:
+        type: array
+        items:
+          $ref: "#/getDefinitions/relationship"
+      hpa-feature-attributes:
+        type: array
+        items:          
+          $ref: "#/getDefinitions/hpa-feature-attributes"
+  hpa-feature-attributes:
+    description: |
+      HPA Capability Feature attributes
+      ###### Related Nodes
+      - TO hpa-capability( hpa-feature-attributes org.onap.relationships.inventory.BelongsTo hpa-capability, MANY2ONE)
+    properties:
+      hpa-attr-key:
+        type: string
+        description: name of the specific HPA attribute
+      hpa-attr-value:
+        type: string
+        description: JSON string specifying the value, unit and type of the specific HPA attribute
+      resource-version:
+        type: string
+        description: Used for optimistic concurrency.  Must be empty on create, valid on update and delete.
+      relationship-list:
+        type: array
+        items:
+          $ref: "#/getDefinitions/relationship"
   image:
     description: |
       Openstack image.

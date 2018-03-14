@@ -5362,12 +5362,12 @@ paths:
           required: true
           type: string
           example: __HPA-CAPABILITY-ID__
-  /cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}/flavors/flavor/{flavor-id}/hpa-capabilities/hpa-capability/{hpa-capability-id}/hpa-feature-attribute/relationship-list/relationship:
+  /cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}/flavors/flavor/{flavor-id}/hpa-capabilities/hpa-capability/{hpa-capability-id}/hpa-feature-attributes/relationship-list/relationship:
     put:
       tags:
         - CloudInfrastructure
       summary: see node definition for valid relationships
-      operationId: createOrUpdateCloudInfrastructureCloudRegionsCloudRegionFlavorsFlavorHpaCapabilitiesHpaCapabilityHpaFeatureAttributeRelationshipListRelationship
+      operationId: createOrUpdateCloudInfrastructureCloudRegionsCloudRegionFlavorsFlavorHpaCapabilitiesHpaCapabilityHpaFeatureAttributesRelationshipListRelationship
       consumes:
         - application/json
         - application/xml
@@ -5404,7 +5404,7 @@ paths:
           example: __HPA-CAPABILITY-ID__
         - name: body
           in: body
-          description: relationship object that needs to be created or updated. [Valid relationship examples shown here](apidocs/relations/v13/CloudInfrastructureCloudRegionsCloudRegionFlavorsFlavorHpaCapabilitiesHpaCapabilityHpaFeatureAttribute.json)
+          description: relationship object that needs to be created or updated. [Valid relationship examples shown here](apidocs/relations/v13/CloudInfrastructureCloudRegionsCloudRegionFlavorsFlavorHpaCapabilitiesHpaCapabilityHpaFeatureAttributes.json)
           required: true
           schema:
             $ref: "#/definitions/relationship"
@@ -5413,7 +5413,7 @@ paths:
         - CloudInfrastructure
       summary: delete an existing relationship
       description: delete an existing relationship
-      operationId: deleteCloudInfrastructureCloudRegionsCloudRegionFlavorsFlavorHpaCapabilitiesHpaCapabilityHpaFeatureAttributeRelationshipListRelationship
+      operationId: deleteCloudInfrastructureCloudRegionsCloudRegionFlavorsFlavorHpaCapabilitiesHpaCapabilityHpaFeatureAttributesRelationshipListRelationship
       consumes:
         - application/json
         - application/xml
@@ -5448,13 +5448,13 @@ paths:
           required: true
           type: string
           example: __HPA-CAPABILITY-ID__
-  /cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}/flavors/flavor/{flavor-id}/hpa-capabilities/hpa-capability/{hpa-capability-id}/hpa-feature-attribute:
+  /cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}/flavors/flavor/{flavor-id}/hpa-capabilities/hpa-capability/{hpa-capability-id}/hpa-feature-attributes:
     get:
       tags:
         - CloudInfrastructure
-      summary: returns hpa-feature-attribute
-      description: returns hpa-feature-attribute
-      operationId: getCloudInfrastructureCloudRegionsCloudRegionFlavorsFlavorHpaCapabilitiesHpaCapabilityHpaFeatureAttribute
+      summary: returns hpa-feature-attributes
+      description: returns hpa-feature-attributes
+      operationId: getCloudInfrastructureCloudRegionsCloudRegionFlavorsFlavorHpaCapabilitiesHpaCapabilityHpaFeatureAttributes
       produces:
         - application/json
         - application/xml
@@ -5462,7 +5462,7 @@ paths:
         "200":
           description: successful operation
           schema:
-              $ref: "#/getDefinitions/hpa-feature-attribute"
+              $ref: "#/getDefinitions/hpa-feature-attributes"
         "default":
           description: Response codes found in [response codes](https://wiki.onap.org/).
       parameters:
@@ -8870,12 +8870,12 @@ paths:
           required: true
           type: string
           example: __HPA-CAPABILITY-ID__
-  /cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}/hpa-capabilities/hpa-capability/{hpa-capability-id}/hpa-feature-attribute/relationship-list/relationship:
+  /cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}/hpa-capabilities/hpa-capability/{hpa-capability-id}/hpa-feature-attributes/relationship-list/relationship:
     put:
       tags:
         - CloudInfrastructure
       summary: see node definition for valid relationships
-      operationId: createOrUpdateCloudInfrastructureCloudRegionsCloudRegionHpaCapabilitiesHpaCapabilityHpaFeatureAttributeRelationshipListRelationship
+      operationId: createOrUpdateCloudInfrastructureCloudRegionsCloudRegionHpaCapabilitiesHpaCapabilityHpaFeatureAttributesRelationshipListRelationship
       consumes:
         - application/json
         - application/xml
@@ -8906,7 +8906,7 @@ paths:
           example: __HPA-CAPABILITY-ID__
         - name: body
           in: body
-          description: relationship object that needs to be created or updated. [Valid relationship examples shown here](apidocs/relations/v13/CloudInfrastructureCloudRegionsCloudRegionHpaCapabilitiesHpaCapabilityHpaFeatureAttribute.json)
+          description: relationship object that needs to be created or updated. [Valid relationship examples shown here](apidocs/relations/v13/CloudInfrastructureCloudRegionsCloudRegionHpaCapabilitiesHpaCapabilityHpaFeatureAttributes.json)
           required: true
           schema:
             $ref: "#/definitions/relationship"
@@ -8915,7 +8915,7 @@ paths:
         - CloudInfrastructure
       summary: delete an existing relationship
       description: delete an existing relationship
-      operationId: deleteCloudInfrastructureCloudRegionsCloudRegionHpaCapabilitiesHpaCapabilityHpaFeatureAttributeRelationshipListRelationship
+      operationId: deleteCloudInfrastructureCloudRegionsCloudRegionHpaCapabilitiesHpaCapabilityHpaFeatureAttributesRelationshipListRelationship
       consumes:
         - application/json
         - application/xml
@@ -8944,13 +8944,13 @@ paths:
           required: true
           type: string
           example: __HPA-CAPABILITY-ID__
-  /cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}/hpa-capabilities/hpa-capability/{hpa-capability-id}/hpa-feature-attribute:
+  /cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}/hpa-capabilities/hpa-capability/{hpa-capability-id}/hpa-feature-attributes:
     get:
       tags:
         - CloudInfrastructure
-      summary: returns hpa-feature-attribute
-      description: returns hpa-feature-attribute
-      operationId: getCloudInfrastructureCloudRegionsCloudRegionHpaCapabilitiesHpaCapabilityHpaFeatureAttribute
+      summary: returns hpa-feature-attributes
+      description: returns hpa-feature-attributes
+      operationId: getCloudInfrastructureCloudRegionsCloudRegionHpaCapabilitiesHpaCapabilityHpaFeatureAttributes
       produces:
         - application/json
         - application/xml
@@ -8958,7 +8958,7 @@ paths:
         "200":
           description: successful operation
           schema:
-              $ref: "#/getDefinitions/hpa-feature-attribute"
+              $ref: "#/getDefinitions/hpa-feature-attributes"
         "default":
           description: Response codes found in [response codes](https://wiki.onap.org/).
       parameters:
@@ -55909,6 +55909,8 @@ definitions:
       ###### Related Nodes
       - TO flavor( hpa-capability org.onap.relationships.inventory.BelongsTo flavor, MANY2ONE)
       - TO cloud-region( hpa-capability org.onap.relationships.inventory.BelongsTo cloud-region, MANY2ONE)
+      - FROM hpa-feature-attributes( hpa-feature-attributes org.onap.relationships.inventory.BelongsTo hpa-capability, MANY2ONE)
+      - HPA-CAPABILITY is DELETED when these are DELETED HPA-FEATURE-ATTRIBUTES
     required:
     - hpa-capability-id
     - hpa-feature
@@ -55932,13 +55934,15 @@ definitions:
         type: array
         items:
           $ref: "#/definitions/relationship"
-      hpa-feature-attribute:
+      hpa-feature-attributes:
         type: array
         items:          
-          $ref: "#/definitions/hpa-feature-attribute"
-  hpa-feature-attribute:
+          $ref: "#/definitions/hpa-feature-attributes"
+  hpa-feature-attributes:
     description: |
       HPA Capability Feature attributes
+      ###### Related Nodes
+      - TO hpa-capability( hpa-feature-attributes org.onap.relationships.inventory.BelongsTo hpa-capability, MANY2ONE)
     properties:
       hpa-attr-key:
         type: string
@@ -61098,6 +61102,8 @@ patchDefinitions:
       ###### Related Nodes
       - TO flavor( hpa-capability org.onap.relationships.inventory.BelongsTo flavor, MANY2ONE)
       - TO cloud-region( hpa-capability org.onap.relationships.inventory.BelongsTo cloud-region, MANY2ONE)
+      - FROM hpa-feature-attributes( hpa-feature-attributes org.onap.relationships.inventory.BelongsTo hpa-capability, MANY2ONE)
+      - HPA-CAPABILITY is DELETED when these are DELETED HPA-FEATURE-ATTRIBUTES
     required:
     - hpa-capability-id
     - hpa-feature
@@ -61114,9 +61120,11 @@ patchDefinitions:
       hpa-hw-arch:
         type: string
         description: Hardware architecture
-  hpa-feature-attribute:
+  hpa-feature-attributes:
     description: |
       HPA Capability Feature attributes
+      ###### Related Nodes
+      - TO hpa-capability( hpa-feature-attributes org.onap.relationships.inventory.BelongsTo hpa-capability, MANY2ONE)
     properties:
       hpa-attr-key:
         type: string
@@ -65776,6 +65784,8 @@ getDefinitions:
       ###### Related Nodes
       - TO flavor( hpa-capability org.onap.relationships.inventory.BelongsTo flavor, MANY2ONE)
       - TO cloud-region( hpa-capability org.onap.relationships.inventory.BelongsTo cloud-region, MANY2ONE)
+      - FROM hpa-feature-attributes( hpa-feature-attributes org.onap.relationships.inventory.BelongsTo hpa-capability, MANY2ONE)
+      - HPA-CAPABILITY is DELETED when these are DELETED HPA-FEATURE-ATTRIBUTES
     required:
     - hpa-capability-id
     - hpa-feature
@@ -65799,13 +65809,15 @@ getDefinitions:
         type: array
         items:
           $ref: "#/getDefinitions/relationship"
-      hpa-feature-attribute:
+      hpa-feature-attributes:
         type: array
         items:          
-          $ref: "#/getDefinitions/hpa-feature-attribute"
-  hpa-feature-attribute:
+          $ref: "#/getDefinitions/hpa-feature-attributes"
+  hpa-feature-attributes:
     description: |
       HPA Capability Feature attributes
+      ###### Related Nodes
+      - TO hpa-capability( hpa-feature-attributes org.onap.relationships.inventory.BelongsTo hpa-capability, MANY2ONE)
     properties:
       hpa-attr-key:
         type: string
