@@ -29,7 +29,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
 @Configuration
-@PropertySource("classpath:schemaIngest.properties")
+@PropertySource(value = "classpath:schemaIngest.properties", ignoreResourceNotFound=true)
 @PropertySource(value = "file:${schemaIngestPropLoc}", ignoreResourceNotFound=true)
 public class SchemaLocationsBean {
 	/*
