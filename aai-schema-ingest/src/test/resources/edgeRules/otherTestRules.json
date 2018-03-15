@@ -1,0 +1,136 @@
+{
+	"rules": [
+		{
+			"from": "parent",
+			"to": "notation",
+			"label": "has",
+			"direction": "OUT",
+			"multiplicity": "Many2Many",
+			"contains-other-v": "${direction}",
+			"delete-other-v": "NONE",
+			"prevent-delete": "NONE",
+			"description": "parent contains notation"
+		},
+		{
+			"from": "not-notation",
+			"to": "parent",
+			"label": "contains",
+			"direction": "OUT",
+			"multiplicity": "Many2Many",
+			"contains-other-v": "!${direction}",
+			"delete-other-v": "NONE",
+			"prevent-delete": "NONE",
+			"description": "parent contains not-notation"
+		},
+		{
+			"from": "parent",
+			"to": "out-out",
+			"label": "eats",
+			"direction": "OUT",
+			"multiplicity": "Many2Many",
+			"contains-other-v": "OUT",
+			"delete-other-v": "NONE",
+			"prevent-delete": "NONE",
+			"description": "parent contains out-out"
+		},
+		{
+			"from": "parent",
+			"to": "in-in",
+			"label": "verbs",
+			"direction": "IN",
+			"multiplicity": "Many2Many",
+			"contains-other-v": "IN",
+			"delete-other-v": "NONE",
+			"prevent-delete": "NONE",
+			"description": "parent contains in-in"
+		},
+		{
+			"from": "out-in",
+			"to": "parent",
+			"label": "alarms",
+			"direction": "OUT",
+			"multiplicity": "Many2Many",
+			"contains-other-v": "IN",
+			"delete-other-v": "NONE",
+			"prevent-delete": "NONE",
+			"description": "parent contains out-in"
+		},
+		{
+			"from": "in-out",
+			"to": "parent",
+			"label": "befriends",
+			"direction": "IN",
+			"multiplicity": "Many2Many",
+			"contains-other-v": "OUT",
+			"delete-other-v": "NONE",
+			"prevent-delete": "NONE",
+			"description": "parent contains in-out"
+		},
+		{
+			"from": "parent",
+			"to": "grandparent1",
+			"label": "has",
+			"direction": "OUT",
+			"multiplicity": "Many2Many",
+			"contains-other-v": "!${direction}",
+			"delete-other-v": "NONE",
+			"prevent-delete": "NONE",
+			"description": "parent contained by grandparent1"
+		},
+		{
+			"from": "grandparent2",
+			"to": "parent",
+			"label": "contains",
+			"direction": "OUT",
+			"multiplicity": "Many2Many",
+			"contains-other-v": "${direction}",
+			"delete-other-v": "NONE",
+			"prevent-delete": "NONE",
+			"description": "parent contained by grandparent2"
+		},
+		{
+			"from": "parent",
+			"to": "grandparent3",
+			"label": "eats",
+			"direction": "OUT",
+			"multiplicity": "Many2Many",
+			"contains-other-v": "IN",
+			"delete-other-v": "NONE",
+			"prevent-delete": "NONE",
+			"description": "parent contained by grandparent3"
+		},
+		{
+			"from": "parent",
+			"to": "grandparent4",
+			"label": "verbs",
+			"direction": "IN",
+			"multiplicity": "Many2Many",
+			"contains-other-v": "OUT",
+			"delete-other-v": "NONE",
+			"prevent-delete": "NONE",
+			"description": "parent contained by grandparent4"
+		},
+		{
+			"from": "grandparent5",
+			"to": "parent",
+			"label": "alarms",
+			"direction": "OUT",
+			"multiplicity": "Many2Many",
+			"contains-other-v": "OUT",
+			"delete-other-v": "NONE",
+			"prevent-delete": "NONE",
+			"description": "parent contained by grandparent5"
+		},
+		{
+			"from": "grandparent6",
+			"to": "parent",
+			"label": "befriends",
+			"direction": "IN",
+			"multiplicity": "Many2Many",
+			"contains-other-v": "IN",
+			"delete-other-v": "NONE",
+			"prevent-delete": "NONE",
+			"description": "parent contained by grandparent6"
+		}
+	]
+}

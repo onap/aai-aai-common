@@ -21,6 +21,7 @@
         <module>aai-auth</module>
 	    <module>aai-utils</module>
         <module>aai-client-loadbalancer</module>
+	<module>aai-schema-ingest</module>
     </modules>
 
     <properties>
