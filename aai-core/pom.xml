@@ -24,6 +24,10 @@
         <sonar.projectVersion>${project.version}</sonar.projectVersion>
         <httpclient.version>4.5.1</httpclient.version>
         <jackson.version>2.2.3</jackson.version>
+	<eelf.core.version>1.0.0</eelf.core.version>
+	<logback.version>1.2.3</logback.version>
+	<freemarker.version>2.3.21</freemarker.version>
+	<activemq.version>5.15.3</activemq.version>
     </properties>
     <profiles>
         <profile>
@@ -320,7 +324,7 @@
         <dependency>
             <groupId>com.att.eelf</groupId>
             <artifactId>eelf-core</artifactId>
-            <version>1.0.0</version>
+            <version>${eelf.core.version}</version>
         </dependency>
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
@@ -512,17 +516,17 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
-            <version>1.1.7</version>
+            <version>${logback.version}</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.1.7</version>
+            <version>${logback.version}</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-access</artifactId>
-            <version>1.1.7</version>
+            <version>${logback.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.hbase</groupId>
@@ -564,7 +568,7 @@
         <dependency>
             <groupId>org.apache.activemq</groupId>
             <artifactId>activemq-broker</artifactId>
-            <version>5.14.4</version>
+            <version>${activemq.version}</version>
         </dependency>
         <dependency>
             <groupId>com.opencsv</groupId>
@@ -574,7 +578,7 @@
         <dependency>
             <groupId>org.freemarker</groupId>
             <artifactId>freemarker</artifactId>
-            <version>2.3.14</version>
+            <version>${freemarker.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.fge</groupId>
