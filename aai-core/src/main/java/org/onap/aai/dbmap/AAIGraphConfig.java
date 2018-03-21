@@ -24,8 +24,8 @@ import com.att.eelf.configuration.EELFManager;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterators;
-import com.thinkaurelius.titan.diskstorage.configuration.ConfigElement;
-import com.thinkaurelius.titan.diskstorage.configuration.backend.CommonsConfiguration;
+import org.janusgraph.diskstorage.configuration.ConfigElement;
+import org.janusgraph.diskstorage.configuration.backend.CommonsConfiguration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.lang.StringUtils;
@@ -37,10 +37,10 @@ import java.util.Iterator;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-import static com.thinkaurelius.titan.graphdb.configuration.GraphDatabaseConfiguration.*;
+import static org.janusgraph.graphdb.configuration.GraphDatabaseConfiguration.*;
 
 /**
- * For building a config that TitanFactory.open can use with an identifiable graph.unique-instance-id
+ * For building a config that JanusGraphFactory.open can use with an identifiable graph.unique-instance-id
  */
 public class AAIGraphConfig {
 
@@ -50,7 +50,7 @@ public class AAIGraphConfig {
 
 	public PropertiesConfiguration getCc(String configPath, String graphType, String service) throws ConfigurationException, FileNotFoundException {
 
-		PropertiesConfiguration cc = this.loadTitanPropFile(configPath);
+		PropertiesConfiguration cc = this.loadJanusGraphPropFile(configPath);
 
 		String uid = ManagementFactory.getRuntimeMXBean().getName() + "_" + service  + "_" + graphType + "_" + System.currentTimeMillis();
 		for (char c : ConfigElement.ILLEGAL_CHARS) {
@@ -63,7 +63,7 @@ public class AAIGraphConfig {
 	}
 
 
-	private PropertiesConfiguration loadTitanPropFile(String shortcutOrFile) throws ConfigurationException, FileNotFoundException {
+	private PropertiesConfiguration loadJanusGraphPropFile(String shortcutOrFile) throws ConfigurationException, FileNotFoundException {
 		File file = new File(shortcutOrFile);
 		if (file.exists()) {
 			PropertiesConfiguration propertiesConfiguration = new PropertiesConfiguration();

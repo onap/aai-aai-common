@@ -19,7 +19,7 @@
  */
 package org.onap.aai.serialization.db;
 
-import com.thinkaurelius.titan.core.TitanGraph;
+import org.janusgraph.core.JanusGraph;
 import org.onap.aai.dbmap.AAIGraph;
 import org.onap.aai.dbmap.DBConnectionType;
 
@@ -58,11 +58,11 @@ public class GraphSingleton {
 	 *
 	 * @return the tx graph
 	 */
-	public TitanGraph getTxGraph() {
+	public JanusGraph getTxGraph() {
 		return AAIGraph.getInstance().getGraph();
 	}
 	
-	public TitanGraph getTxGraph(DBConnectionType connectionType) {
+	public JanusGraph getTxGraph(DBConnectionType connectionType) {
 		return AAIGraph.getInstance().getGraph(connectionType);
 	}
 }

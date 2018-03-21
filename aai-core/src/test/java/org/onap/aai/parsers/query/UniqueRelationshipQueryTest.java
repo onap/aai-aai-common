@@ -32,7 +32,7 @@ import org.onap.aai.AAISetup;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.*;
 import org.onap.aai.serialization.engines.QueryStyle;
-import org.onap.aai.serialization.engines.TitanDBEngine;
+import org.onap.aai.serialization.engines.JanusGraphDBEngine;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 
 import javax.xml.bind.JAXBException;
@@ -48,7 +48,7 @@ public class UniqueRelationshipQueryTest extends AAISetup {
 
 	private ModelInjestor injestor = ModelInjestor.getInstance();
 	private TransactionalGraphEngine dbEngine = 
-			new TitanDBEngine(QueryStyle.GREMLIN_UNIQUE, 
+			new JanusGraphDBEngine(QueryStyle.GREMLIN_UNIQUE, 
 				LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.v8),
 				false);
 	private final Version version = Version.v8;

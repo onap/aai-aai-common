@@ -22,6 +22,7 @@ package org.onap.aai.serialization.engines;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.strategy.verification.ReadOnlyStrategy;
 import org.apache.tinkerpop.gremlin.structure.Graph;
@@ -39,29 +40,29 @@ import org.onap.aai.serialization.engines.query.GraphTraversalQueryEngine;
 import org.onap.aai.serialization.engines.query.QueryEngine;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 
-import com.thinkaurelius.titan.core.TitanGraph;
+import org.janusgraph.core.JanusGraph;
 
 public class InMemoryDBEngine extends TransactionalGraphEngine {
 
 	/**
-	 * Instantiates a new titan DB engine.
+	 * Instantiates a new JanusGraph DB engine.
 	 *
 	 * @param style
 	 *            the style
 	 * @param loader
 	 *            the loader
 	 */
-	private TitanGraph graph = null;
+	private JanusGraph graph = null;
 
 	private static final TransactionalGraphEngine.Admin admin = null;
 
-	public InMemoryDBEngine(QueryStyle style, DBConnectionType connectionType, Loader loader, TitanGraph graph) {
+	public InMemoryDBEngine(QueryStyle style, DBConnectionType connectionType, Loader loader, JanusGraph graph) {
 		super(style, loader, connectionType, InMemoryGraphSingleton.getInstance(graph));
 		this.graph = graph;
 	}
 
 	/**
-	 * Instantiates a new titan DB engine.
+	 * Instantiates a new JanusGraph DB engine.
 	 *
 	 * @param style
 	 *            the style
@@ -70,7 +71,7 @@ public class InMemoryDBEngine extends TransactionalGraphEngine {
 	 * @param connect
 	 *            the connect
 	 */
-	public InMemoryDBEngine(QueryStyle style, Loader loader, boolean connect, TitanGraph graph) {
+	public InMemoryDBEngine(QueryStyle style, Loader loader, boolean connect, JanusGraph graph) {
 		super(style, loader);
 		if (connect) {
 			this.singleton = InMemoryGraphSingleton.getInstance(graph);

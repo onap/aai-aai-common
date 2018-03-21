@@ -66,8 +66,8 @@ import org.onap.aai.logging.LoggingContext.StatusCode;
 import com.att.eelf.configuration.Configuration;
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
-import com.thinkaurelius.titan.core.TitanFactory;
-import com.thinkaurelius.titan.core.TitanGraph;
+import org.janusgraph.core.JanusGraphFactory;
+import org.janusgraph.core.JanusGraph;
 
 
 public class DataGrooming {
@@ -379,8 +379,8 @@ public class DataGrooming {
 		int cleanupCandidateCount = 0;
 		long windowStartTime = 0; // Translation of the window into a starting timestamp 
 		BufferedWriter bw = null;
-		TitanGraph graph = null;
-		TitanGraph graph2 = null;
+		JanusGraph graph = null;
+		JanusGraph graph2 = null;
 		int deleteCount = 0;
 		boolean executeFinalCommit = false;
 		Set<String> deleteCandidateList = new LinkedHashSet<>();
@@ -440,10 +440,10 @@ public class DataGrooming {
 			if( cacheDbOkFlag ){
 				// Since we're just reading (not deleting/fixing anything), we can use 
 				// a cached connection to the DB
-				graph = TitanFactory.open(new AAIGraphConfig.Builder(AAIConstants.CACHED_DB_CONFIG).forService(DataGrooming.class.getSimpleName()).withGraphType("cached").buildConfiguration());
+				graph = JanusGraphFactory.open(new AAIGraphConfig.Builder(AAIConstants.CACHED_DB_CONFIG).forService(DataGrooming.class.getSimpleName()).withGraphType("cached").buildConfiguration());
 			}
 			else {
-				graph = TitanFactory.open(new AAIGraphConfig.Builder(AAIConstants.REALTIME_DB_CONFIG).forService(DataGrooming.class.getSimpleName()).withGraphType("realtime1").buildConfiguration());
+				graph = JanusGraphFactory.open(new AAIGraphConfig.Builder(AAIConstants.REALTIME_DB_CONFIG).forService(DataGrooming.class.getSimpleName()).withGraphType("realtime1").buildConfiguration());
 			}
 			if (graph == null) {
 				String emsg = "null graph object in DataGrooming\n";
@@ -771,7 +771,7 @@ public class DataGrooming {
 			logger.debug("    ---- DEBUG --- about to open a SECOND graph (takes a little while)--------\n");
 			// Note - graph2 just reads - but we want it to use a fresh connection to 
 			//      the database, so we are NOT using the CACHED DB CONFIG here.
-			graph2 = TitanFactory.open(new AAIGraphConfig.Builder(AAIConstants.REALTIME_DB_CONFIG).forService(DataGrooming.class.getSimpleName()).withGraphType("realtime2").buildConfiguration());
+			graph2 = JanusGraphFactory.open(new AAIGraphConfig.Builder(AAIConstants.REALTIME_DB_CONFIG).forService(DataGrooming.class.getSimpleName()).withGraphType("realtime2").buildConfiguration());
 			if (graph2 == null) {
 				String emsg = "null graph2 object in DataGrooming\n";
 				throw new AAIException("AAI_6101", emsg);
@@ -1425,7 +1425,7 @@ public class DataGrooming {
 					}
 					g.tx().rollback();
 				} catch (Exception ex) {
-					// Don't throw anything because Titan sometimes is just saying that the graph is already closed
+					// Don't throw anything because JanusGraph sometimes is just saying that the graph is already closed
 					LoggingContext.statusCode(StatusCode.ERROR);
 					LoggingContext.responseCode(LoggingContext.AVAILABILITY_TIMEOUT_ERROR);
 					logger.warn("WARNING from final graphTransaction.rollback()", ex);
@@ -1438,7 +1438,7 @@ public class DataGrooming {
 				try {
 					g2.tx().rollback();
 				} catch (Exception ex) {
-					// Don't throw anything because Titan sometimes is just saying that the graph is already closed
+					// Don't throw anything because JanusGraph sometimes is just saying that the graph is already closed
 					LoggingContext.statusCode(StatusCode.ERROR);
 					LoggingContext.responseCode(LoggingContext.AVAILABILITY_TIMEOUT_ERROR);
 					logger.warn("WARNING from final graphTransaction2.rollback()", ex);
@@ -1452,7 +1452,7 @@ public class DataGrooming {
 						graph.close();
 					}
 				} catch (Exception ex) {
-					// Don't throw anything because Titan sometimes is just saying that the graph is already closed{
+					// Don't throw anything because JanusGraph sometimes is just saying that the graph is already closed{
 					LoggingContext.statusCode(StatusCode.ERROR);
 					LoggingContext.responseCode(LoggingContext.AVAILABILITY_TIMEOUT_ERROR);
 					logger.warn("WARNING from final graph.shutdown()", ex);
@@ -1464,7 +1464,7 @@ public class DataGrooming {
 						graph2.close();
 					}
 				} catch (Exception ex) {
-					// Don't throw anything because Titan sometimes is just saying that the graph is already closed{
+					// Don't throw anything because JanusGraph sometimes is just saying that the graph is already closed{
 					LoggingContext.statusCode(StatusCode.ERROR);
 					LoggingContext.responseCode(LoggingContext.AVAILABILITY_TIMEOUT_ERROR);
 					logger.warn("WARNING from final graph2.shutdown()", ex);
@@ -2085,7 +2085,7 @@ public class DataGrooming {
 			String transId, String fromAppId, GraphTraversalSource g, String version,
 			String nType, ArrayList<Vertex> passedVertList, Loader loader)
 			throws AAIException {
-		// Given a list of Titan Vertices of one nodeType (see AAI-8956), group 
+		// Given a list of JanusGraph Vertices of one nodeType (see AAI-8956), group 
 		// them together by the parent node they depend on.
 		// Ie. if given a list of ip address nodes (assumed to all have the
 		// same key info) they might sit under several different parent vertices.

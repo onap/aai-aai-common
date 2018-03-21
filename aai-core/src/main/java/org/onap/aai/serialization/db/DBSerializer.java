@@ -23,7 +23,7 @@ package org.onap.aai.serialization.db;
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 import com.google.common.base.CaseFormat;
-import com.thinkaurelius.titan.core.SchemaViolationException;
+import org.janusgraph.core.SchemaViolationException;
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;

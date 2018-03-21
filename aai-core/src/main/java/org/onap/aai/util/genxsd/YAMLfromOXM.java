@@ -287,12 +287,6 @@ public class YAMLfromOXM extends OxmFileProcessor {
 	        for ( int k = 0; addTypeV != null && k < addTypeV.size(); ++k ) {
 	        	String addType = addTypeV.elementAt(k);
 				logger.debug("addType: "+ addType);
-				if(addType == "overloaded-model" || addType.equals("OverloadedModel") || addType == "owning-entity") {
-					logger.debug("Description check: "+ addType+"opId="+opId+" itemName=none");
-//					Log.info("Element name="+xmlElementElement.getAttribute("name"));
-				}
-
-	        
 	        	if ( opId == null || !opId.contains(addType)) {
 	        		processJavaTypeElementSwagger( addType, getJavaTypeElementSwagger(addType), 
 	    				pathSb, definitionsSb, path,  tag == null ? useTag : tag, useOpId, null,

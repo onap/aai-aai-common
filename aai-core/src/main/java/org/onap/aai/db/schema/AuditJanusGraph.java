@@ -25,22 +25,22 @@ import java.util.LinkedHashSet;
 
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 
-import com.thinkaurelius.titan.core.EdgeLabel;
-import com.thinkaurelius.titan.core.PropertyKey;
-import com.thinkaurelius.titan.core.TitanGraph;
-import com.thinkaurelius.titan.core.schema.TitanGraphIndex;
-import com.thinkaurelius.titan.core.schema.TitanManagement;
+import org.janusgraph.core.EdgeLabel;
+import org.janusgraph.core.PropertyKey;
+import org.janusgraph.core.JanusGraph;
+import org.janusgraph.core.schema.JanusGraphIndex;
+import org.janusgraph.core.schema.JanusGraphManagement;
 
-public class AuditTitan extends Auditor {
+public class AuditJanusGraph extends Auditor {
 
-	private final TitanGraph graph;
+	private final JanusGraph graph;
 	
 	/**
-	 * Instantiates a new audit titan.
+	 * Instantiates a new audit JanusGraph.
 	 *
 	 * @param g the g
 	 */
-	public AuditTitan (TitanGraph g) {
+	public AuditJanusGraph (JanusGraph g) {
 		this.graph = g;
 		buildSchema();
 	}
@@ -58,12 +58,12 @@ public class AuditTitan extends Auditor {
 	 * Populate properties.
 	 */
 	private void populateProperties() {
-		TitanManagement mgmt = graph.openManagement();
+		JanusGraphManagement mgmt = graph.openManagement();
 		Iterable<PropertyKey> iterable = mgmt.getRelationTypes(PropertyKey.class);
-		Iterator<PropertyKey> titanProperties = iterable.iterator();
+		Iterator<PropertyKey> JanusGraphProperties = iterable.iterator();
 		PropertyKey propKey;
-		while (titanProperties.hasNext()) {
-			propKey = titanProperties.next();
+		while (JanusGraphProperties.hasNext()) {
+			propKey = JanusGraphProperties.next();
 			DBProperty prop = new DBProperty();
 			
 			prop.setName(propKey.name());
@@ -78,23 +78,23 @@ public class AuditTitan extends Auditor {
 	 * Populate indexes.
 	 */
 	private void populateIndexes() {
-		TitanManagement mgmt = graph.openManagement();
-		Iterable<TitanGraphIndex> iterable = mgmt.getGraphIndexes(Vertex.class);
-		Iterator<TitanGraphIndex> titanIndexes = iterable.iterator();
-		TitanGraphIndex titanIndex;
-		while (titanIndexes.hasNext()) {
-			titanIndex = titanIndexes.next();
-			if (titanIndex.isCompositeIndex()) {
+		JanusGraphManagement mgmt = graph.openManagement();
+		Iterable<JanusGraphIndex> iterable = mgmt.getGraphIndexes(Vertex.class);
+		Iterator<JanusGraphIndex> JanusGraphIndexes = iterable.iterator();
+		JanusGraphIndex JanusGraphIndex;
+		while (JanusGraphIndexes.hasNext()) {
+			JanusGraphIndex = JanusGraphIndexes.next();
+			if (JanusGraphIndex.isCompositeIndex()) {
 				DBIndex index = new DBIndex();
 				LinkedHashSet<DBProperty> dbProperties = new LinkedHashSet<>();
-				index.setName(titanIndex.name());
-				index.setUnique(titanIndex.isUnique());
-				PropertyKey[] keys = titanIndex.getFieldKeys();
+				index.setName(JanusGraphIndex.name());
+				index.setUnique(JanusGraphIndex.isUnique());
+				PropertyKey[] keys = JanusGraphIndex.getFieldKeys();
 				for (PropertyKey key : keys) {
 					dbProperties.add(this.properties.get(key.name()));
 				}
 				index.setProperties(dbProperties);
-				index.setStatus(titanIndex.getIndexStatus(keys[0]));
+				index.setStatus(JanusGraphIndex.getIndexStatus(keys[0]));
 				this.indexes.put(index.getName(), index);
 			}
 		}	
@@ -104,12 +104,12 @@ public class AuditTitan extends Auditor {
 	 * Populate edge labels.
 	 */
 	private void populateEdgeLabels() {
-		TitanManagement mgmt = graph.openManagement();
+		JanusGraphManagement mgmt = graph.openManagement();
 		Iterable<EdgeLabel> iterable = mgmt.getRelationTypes(EdgeLabel.class);
-		Iterator<EdgeLabel> titanEdgeLabels = iterable.iterator();
+		Iterator<EdgeLabel> JanusGraphEdgeLabels = iterable.iterator();
 		EdgeLabel edgeLabel;
-		while (titanEdgeLabels.hasNext()) {
-			edgeLabel = titanEdgeLabels.next();
+		while (JanusGraphEdgeLabels.hasNext()) {
+			edgeLabel = JanusGraphEdgeLabels.next();
 			EdgeProperty edgeProperty = new EdgeProperty();
 			
 			edgeProperty.setName(edgeLabel.name());

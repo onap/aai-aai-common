@@ -41,7 +41,7 @@ import org.onap.aai.introspection.Version;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.onap.aai.serialization.db.DBSerializer;
 import org.onap.aai.serialization.engines.QueryStyle;
-import org.onap.aai.serialization.engines.TitanDBEngine;
+import org.onap.aai.serialization.engines.JanusGraphDBEngine;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
 import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
@@ -149,7 +149,7 @@ public class SimpleFormatTest extends AAISetup {
 
 		if(loader == null){
 			loader = LoaderFactory.createLoaderForVersion(factoryType, Version.v10);
-			dbEngine = spy(new TitanDBEngine(QueryStyle.TRAVERSAL, DBConnectionType.CACHED, loader));
+			dbEngine = spy(new JanusGraphDBEngine(QueryStyle.TRAVERSAL, DBConnectionType.CACHED, loader));
 
 			TransactionalGraphEngine.Admin spyAdmin = spy(dbEngine.asAdmin());
 

@@ -51,9 +51,9 @@ import org.onap.aai.util.AAIConstants;
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 import com.google.common.collect.Multimap;
-import com.thinkaurelius.titan.core.Cardinality;
-import com.thinkaurelius.titan.core.Multiplicity;
-import com.thinkaurelius.titan.core.schema.SchemaStatus;
+import org.janusgraph.core.Cardinality;
+import org.janusgraph.core.Multiplicity;
+import org.janusgraph.core.schema.SchemaStatus;
 
 public class AuditOXM extends Auditor {
 

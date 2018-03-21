@@ -41,11 +41,11 @@ import org.onap.aai.util.AAIConfig;
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 import com.google.common.collect.Multimap;
-import com.thinkaurelius.titan.core.Cardinality;
-import com.thinkaurelius.titan.core.Multiplicity;
-import com.thinkaurelius.titan.core.PropertyKey;
-import com.thinkaurelius.titan.core.TitanGraph;
-import com.thinkaurelius.titan.core.schema.TitanManagement;
+import org.janusgraph.core.Cardinality;
+import org.janusgraph.core.Multiplicity;
+import org.janusgraph.core.PropertyKey;
+import org.janusgraph.core.JanusGraph;
+import org.janusgraph.core.schema.JanusGraphManagement;
 
 
 
@@ -56,24 +56,24 @@ public class SchemaGenerator{
 	
 	
 	 /**
- 	 * Load schema into titan.
+ 	 * Load schema into JanusGraph.
  	 *
  	 * @param graph the graph
  	 * @param graphMgmt the graph mgmt
  	 * @param addDefaultCloudRegion the add default cloud region
  	 */
- 	public static void loadSchemaIntoTitan(final TitanGraph graph, final TitanManagement graphMgmt, boolean addDefaultCloudRegion) {
+ 	public static void loadSchemaIntoJanusGraph(final JanusGraph graph, final JanusGraphManagement graphMgmt, boolean addDefaultCloudRegion) {
 		 addDefaultCR = addDefaultCloudRegion;
-		 loadSchemaIntoTitan(graph, graphMgmt);
+		 loadSchemaIntoJanusGraph(graph, graphMgmt);
 	 }
 	
     /**
-     * Load schema into titan.
+     * Load schema into JanusGraph.
      *
      * @param graph the graph
      * @param graphMgmt the graph mgmt
      */
-    public static void loadSchemaIntoTitan(final TitanGraph graph, final TitanManagement graphMgmt) {
+    public static void loadSchemaIntoJanusGraph(final JanusGraph graph, final JanusGraphManagement graphMgmt) {
 
     	try {
     		AAIConfig.init();
@@ -84,8 +84,8 @@ public class SchemaGenerator{
 			System.exit(1);
 		}
     	
-        // NOTE - Titan 0.5.3 doesn't keep a list of legal node Labels.  
-    	//   They are only used when a vertex is actually being created.  Titan 1.1 will keep track (we think).
+        // NOTE - JanusGraph 0.5.3 doesn't keep a list of legal node Labels.  
+    	//   They are only used when a vertex is actually being created.  JanusGraph 1.1 will keep track (we think).
         	
 
 		// Use EdgeRules to make sure edgeLabels are defined in the db.  NOTE: the multiplicty used here is 
@@ -186,7 +186,7 @@ public class SchemaGenerator{
     	LOGGER.info(imsg);
     	
         graphMgmt.commit();
-    }// End of loadSchemaIntoTitan()
+    }// End of loadSchemaIntoJanusGraph()
 
 }
 

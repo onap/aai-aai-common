@@ -37,15 +37,15 @@ import org.onap.aai.util.AAIConstants;
 
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
-import com.thinkaurelius.titan.core.TitanFactory;
-import com.thinkaurelius.titan.core.TitanGraph;
-import com.thinkaurelius.titan.core.schema.TitanManagement;
+import org.janusgraph.core.JanusGraphFactory;
+import org.janusgraph.core.JanusGraph;
+import org.janusgraph.core.schema.JanusGraphManagement;
 
 /**
  * Database Mapping class which acts as the middle man between the REST
- * interface objects and Titan DB objects. This class provides methods to commit
- * the objects received on the REST interface into the Titan graph database as
- * vertices and edges. Transactions are also managed here by using a TitanGraph
+ * interface objects and JanusGraph DB objects. This class provides methods to commit
+ * the objects received on the REST interface into the JanusGraph graph database as
+ * vertices and edges. Transactions are also managed here by using a JanusGraph
  * object to load, commit/rollback and shutdown for each request. The data model
  * rules such as keys/required properties are handled by calling DBMeth methods
  * which are driven by a specification file in json.
@@ -56,7 +56,7 @@ public class AAIGraph {
 
 	private static final EELFLogger logger = EELFManager.getInstance().getLogger(AAIGraph.class);
 	protected static final String COMPONENT = "aaidbmap";
-	protected Map<String, TitanGraph> graphs = new HashMap<>();
+	protected Map<String, JanusGraph> graphs = new HashMap<>();
 	private static final String REALTIME_DB = "realtime";
 	private static final String CACHED_DB = "cached";
 	private static boolean isInit = false;
@@ -103,11 +103,11 @@ public class AAIGraph {
 	}
 	
 	private void loadGraph(String name, String configPath, String serviceName) throws Exception {
-	    // Graph being opened by TitanFactory is being placed in hashmap to be used later
+	    // Graph being opened by JanusGraphFactory is being placed in hashmap to be used later
 		// These graphs shouldn't be closed until the application shutdown
 		try {
 			PropertiesConfiguration propertiesConfiguration = new AAIGraphConfig.Builder(configPath).forService(serviceName).withGraphType(name).buildConfiguration();
-			TitanGraph graph = TitanFactory.open(propertiesConfiguration);
+			JanusGraph graph = JanusGraphFactory.open(propertiesConfiguration);
 
 			Properties graphProps = new Properties();
 			propertiesConfiguration.getKeys().forEachRemaining(k -> graphProps.setProperty(k, propertiesConfiguration.getString(k)));
@@ -130,7 +130,7 @@ public class AAIGraph {
 	    }
 	}
 
-	private void loadSnapShotToInMemoryGraph(TitanGraph graph, Properties graphProps) {
+	private void loadSnapShotToInMemoryGraph(JanusGraph graph, Properties graphProps) {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Load Snapshot to InMemory Graph");
 		}
@@ -153,19 +153,19 @@ public class AAIGraph {
 		}
 	}
 
-	private void loadSchema(TitanGraph graph) {
+	private void loadSchema(JanusGraph graph) {
 		// Load the propertyKeys, indexes and edge-Labels into the DB
-		TitanManagement graphMgt = graph.openManagement();
+		JanusGraphManagement graphMgt = graph.openManagement();
 		
-		System.out.println("-- loading schema into Titan");
-		SchemaGenerator.loadSchemaIntoTitan( graph, graphMgt );
+		System.out.println("-- loading schema into JanusGraph");
+		SchemaGenerator.loadSchemaIntoJanusGraph( graph, graphMgt );
 	}
 
 	/**
 	 * Close all of the graph connections made in the instance.
 	 */
 	public void graphShutdown() {
-		graphs.values().stream().filter(TitanGraph::isOpen).forEach(TitanGraph::close);
+		graphs.values().stream().filter(JanusGraph::isOpen).forEach(JanusGraph::close);
 	}
 
 	/**
@@ -173,7 +173,7 @@ public class AAIGraph {
 	 *
 	 * @return the graph
 	 */
-	public TitanGraph getGraph() {
+	public JanusGraph getGraph() {
 		return graphs.get(REALTIME_DB);
 	}
 	
@@ -182,7 +182,7 @@ public class AAIGraph {
 		graphs.get(this.getGraphName(connectionType)).close();
 	}
 	
-	public TitanGraph getGraph(DBConnectionType connectionType) {
+	public JanusGraph getGraph(DBConnectionType connectionType) {
 		return graphs.get(this.getGraphName(connectionType));
 	}
 	

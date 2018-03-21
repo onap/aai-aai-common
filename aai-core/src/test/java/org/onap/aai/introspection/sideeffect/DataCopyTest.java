@@ -19,8 +19,8 @@
  */
 package org.onap.aai.introspection.sideeffect;
 
-import com.thinkaurelius.titan.core.TitanFactory;
-import com.thinkaurelius.titan.core.TitanGraph;
+import org.janusgraph.core.JanusGraphFactory;
+import org.janusgraph.core.JanusGraph;
 import org.apache.commons.io.IOUtils;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Graph;
@@ -41,7 +41,7 @@ import org.onap.aai.parsers.query.QueryParser;
 import org.onap.aai.serialization.db.DBSerializer;
 import org.onap.aai.serialization.db.EdgeProperty;
 import org.onap.aai.serialization.engines.QueryStyle;
-import org.onap.aai.serialization.engines.TitanDBEngine;
+import org.onap.aai.serialization.engines.JanusGraphDBEngine;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 
 import java.io.FileInputStream;
@@ -60,7 +60,7 @@ import static org.mockito.Mockito.when;
 @RunWith(value = Parameterized.class)
 public class DataCopyTest {
 
-	private static TitanGraph graph;
+	private static JanusGraph graph;
 	private final static Version version = Version.getLatest();
 	private final static ModelType introspectorFactoryType = ModelType.MOXY;
 	private final static DBConnectionType type = DBConnectionType.REALTIME;
@@ -84,7 +84,7 @@ public class DataCopyTest {
 	
 	@BeforeClass
 	public static void setup() throws NoSuchFieldException, SecurityException, Exception {
-		graph = TitanFactory.build().set("storage.backend","inmemory").open();
+		graph = JanusGraphFactory.build().set("storage.backend","inmemory").open();
 		System.setProperty("AJSC_HOME", ".");
 		System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
 		loader = LoaderFactory.createLoaderForVersion(introspectorFactoryType, version);
@@ -107,7 +107,7 @@ public class DataCopyTest {
 	@Before
 	public void initMock() {
 		MockitoAnnotations.initMocks(this);
-		dbEngine = new TitanDBEngine(
+		dbEngine = new JanusGraphDBEngine(
 				queryStyle,
 				type,
 				loader);

@@ -19,7 +19,7 @@
  */
 package org.onap.aai.serialization.db;
 
-import com.thinkaurelius.titan.core.TitanFactory;
+import org.janusgraph.core.JanusGraphFactory;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.*;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
@@ -34,7 +34,7 @@ import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.*;
 import org.onap.aai.parsers.query.QueryParser;
 import org.onap.aai.serialization.engines.QueryStyle;
-import org.onap.aai.serialization.engines.TitanDBEngine;
+import org.onap.aai.serialization.engines.JanusGraphDBEngine;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 
 import java.io.UnsupportedEncodingException;
@@ -80,7 +80,7 @@ public class DbSerializerTest extends AAISetup {
 
 	@BeforeClass
 	public static void init() throws Exception {
-		graph = TitanFactory.build().set("storage.backend", "inmemory").open();
+		graph = JanusGraphFactory.build().set("storage.backend", "inmemory").open();
 
 	}
 
@@ -88,12 +88,12 @@ public class DbSerializerTest extends AAISetup {
 	public void setup() throws Exception {
 		//createGraph();
 		loader = LoaderFactory.createLoaderForVersion(introspectorFactoryType, version);
-		dbEngine = new TitanDBEngine(queryStyle, type, loader);
+		dbEngine = new JanusGraphDBEngine(queryStyle, type, loader);
 		spy = spy(dbEngine);
 		adminSpy = spy(dbEngine.asAdmin());
 
 
-		engine = new TitanDBEngine(queryStyle, type, loader);
+		engine = new JanusGraphDBEngine(queryStyle, type, loader);
 		dbser = new DBSerializer(version, engine, introspectorFactoryType, "AAI-TEST");
 	}
 

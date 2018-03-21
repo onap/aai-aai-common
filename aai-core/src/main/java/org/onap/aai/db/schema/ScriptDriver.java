@@ -34,8 +34,8 @@ import org.onap.aai.logging.LoggingContext.StatusCode;
 import org.onap.aai.util.AAIConfig;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
-import com.thinkaurelius.titan.core.TitanFactory;
-import com.thinkaurelius.titan.core.TitanGraph;
+import org.janusgraph.core.JanusGraphFactory;
+import org.janusgraph.core.JanusGraph;
 
 public class ScriptDriver {
 
@@ -69,7 +69,7 @@ public class ScriptDriver {
 		}
 		String config = cArgs.config;
 		AAIConfig.init();
-		try (TitanGraph graph = TitanFactory.open(new AAIGraphConfig.Builder(config).forService(ScriptDriver.class.getSimpleName()).withGraphType("NA").buildConfiguration())) {
+		try (JanusGraph graph = JanusGraphFactory.open(new AAIGraphConfig.Builder(config).forService(ScriptDriver.class.getSimpleName()).withGraphType("NA").buildConfiguration())) {
 			if (!("oxm".equals(cArgs.type) || "graph".equals(cArgs.type))) {
 				System.out.println("type: " + cArgs.type + " not recognized.");
 				System.exit(1);

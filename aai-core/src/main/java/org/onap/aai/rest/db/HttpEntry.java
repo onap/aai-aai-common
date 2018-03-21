@@ -68,7 +68,7 @@ import org.onap.aai.restcore.HttpMethod;
 import org.onap.aai.schema.enums.ObjectMetadata;
 import org.onap.aai.serialization.db.DBSerializer;
 import org.onap.aai.serialization.engines.QueryStyle;
-import org.onap.aai.serialization.engines.TitanDBEngine;
+import org.onap.aai.serialization.engines.JanusGraphDBEngine;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 import org.onap.aai.serialization.engines.query.QueryEngine;
 
@@ -78,7 +78,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
-import com.thinkaurelius.titan.core.TitanException;
+import org.janusgraph.core.JanusGraphException;
+import org.onap.aai.serialization.queryformats.Format;
+import org.onap.aai.serialization.queryformats.FormatFactory;
+import org.onap.aai.serialization.queryformats.Formatter;
 
 /**
  * The Class HttpEntry.
@@ -113,7 +116,7 @@ public class HttpEntry {
 		this.queryStyle = queryStyle;
 		this.version = version;
 		this.loader = LoaderFactory.createLoaderForVersion(introspectorFactoryType, version);
-		this.dbEngine = new TitanDBEngine(
+		this.dbEngine = new JanusGraphDBEngine(
 				queryStyle,
 				connectionType,
 				loader);
@@ -281,7 +284,7 @@ public class HttpEntry {
 									status = Status.OK;
 									MarshallerProperties properties;
 									if (!request.getMarshallerProperties().isPresent()) {
-										properties = 
+										properties =
 												new MarshallerProperties.Builder(org.onap.aai.restcore.MediaType.getEnum(outputMediaType)).build();
 									} else {
 										properties = request.getMarshallerProperties().get();
@@ -450,7 +453,7 @@ public class HttpEntry {
 						responses.add(pairedResp);
 						//break out of retry loop
 						break;
-					} catch (TitanException e) {
+					} catch (JanusGraphException e) {
 						this.dbEngine.rollback();
 
 						LOGGER.info ("Caught exception: " + e.getMessage());
@@ -586,9 +589,9 @@ public class HttpEntry {
                 depth = AAIProperties.MAXIMUM_DEPTH;
 			}
 		} else {
-			if (depthParam.length() > 0 && !depthParam.equals("all")){
+			if (!depthParam.isEmpty() && !"all".equals(depthParam)){
 				try {
-					depth = Integer.valueOf(depthParam);
+					depth = Integer.parseInt(depthParam);
 				} catch (Exception e) {
 					throw new AAIException("AAI_4016");
 				}

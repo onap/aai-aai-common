@@ -19,7 +19,7 @@
  */
 package org.onap.aai.query.builder;
 
-import com.thinkaurelius.titan.core.TitanFactory;
+import org.janusgraph.core.JanusGraphFactory;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.BulkSet;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.Tree;
@@ -56,7 +56,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 	@BeforeClass
 	public static void setup() throws Exception {
 		loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, AAIProperties.LATEST);
-		graph = TitanFactory.build().set("storage.backend", "inmemory").open();
+		graph = JanusGraphFactory.build().set("storage.backend", "inmemory").open();
 	}
 
 	@Before

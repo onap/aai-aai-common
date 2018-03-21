@@ -30,10 +30,10 @@ import org.apache.tinkerpop.gremlin.structure.io.IoCore;
 import org.onap.aai.dbgen.SchemaGenerator;
 import org.onap.aai.logging.LogFormatTools;
 
-import com.thinkaurelius.titan.core.TitanFactory;
-import com.thinkaurelius.titan.core.TitanGraph;
-import com.thinkaurelius.titan.core.TitanTransaction;
-import com.thinkaurelius.titan.core.schema.TitanManagement;
+import org.janusgraph.core.JanusGraphFactory;
+import org.janusgraph.core.JanusGraph;
+import org.janusgraph.core.JanusGraphTransaction;
+import org.janusgraph.core.schema.JanusGraphManagement;
 
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
@@ -41,7 +41,7 @@ import com.att.eelf.configuration.EELFManager;
 public class InMemoryGraph {
 
 	private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(InMemoryGraph.class);
-	private TitanGraph graph = null;
+	private JanusGraph graph = null;
 
 
 	public InMemoryGraph(Builder builder) throws IOException  {
@@ -50,16 +50,16 @@ public class InMemoryGraph {
 		 */
 		InputStream is = new FileInputStream(builder.propertyFile);
 		try {
-			graph = TitanFactory.open(builder.propertyFile);
+			graph = JanusGraphFactory.open(builder.propertyFile);
 			
 			Properties graphProps = new Properties();
 			graphProps.load(is);
-			TitanManagement graphMgt = graph.openManagement();
+			JanusGraphManagement graphMgt = graph.openManagement();
             if(builder.isSchemaEnabled){
             	LOGGER.info("Schema Enabled");
-            	SchemaGenerator.loadSchemaIntoTitan(graph, graphMgt);
+            	SchemaGenerator.loadSchemaIntoJanusGraph(graph, graphMgt);
             }
-			TitanTransaction transaction = graph.newTransaction();
+			JanusGraphTransaction transaction = graph.newTransaction();
 			LOGGER.info("Loading snapshot");
 			transaction.io(IoCore.graphson()).readGraph(builder.graphsonLocation);
 			transaction.commit();
@@ -97,7 +97,7 @@ public class InMemoryGraph {
 		}
 	}
 
-	public TitanGraph getGraph() {
+	public JanusGraph getGraph() {
 		return graph;
 	}
 

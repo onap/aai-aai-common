@@ -22,8 +22,8 @@ package org.onap.aai.dbgen;
 import com.att.eelf.configuration.Configuration;
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
-import com.thinkaurelius.titan.core.TitanGraph;
-import com.thinkaurelius.titan.core.schema.TitanManagement;
+import org.janusgraph.core.JanusGraph;
+import org.janusgraph.core.schema.JanusGraphManagement;
 import org.onap.aai.dbmap.AAIGraph;
 import org.onap.aai.logging.ErrorLogHelper;
 import org.onap.aai.logging.LoggingContext;
@@ -46,7 +46,7 @@ public class GenTester {
 	 */
 	public static void main(String[] args) {
 	   
-		TitanGraph graph = null;
+		JanusGraph graph = null;
 		System.setProperty("aai.service.name", GenTester.class.getSimpleName());
 		// Set the logging file properties to be used by EELFManager
 		Properties props = System.getProperties();
@@ -81,11 +81,11 @@ public class GenTester {
 					graph = AAIGraph.getInstance().getGraph();
 			    	
 			       if( graph == null ){
-					   ErrorLogHelper.logError("AAI_5102", "Error creating Titan graph.");
+					   ErrorLogHelper.logError("AAI_5102", "Error creating JanusGraph graph.");
 			           return;
 			       }
 			       else {
-			    	   String amsg = "Successfully loaded a Titan graph without doing any schema work.  ";
+			    	   String amsg = "Successfully loaded a JanusGraph graph without doing any schema work.  ";
 			    	   System.out.println(amsg);
 			    	   LOGGER.auditEvent(amsg);
 			           return;
@@ -118,17 +118,17 @@ public class GenTester {
 			graph = AAIGraph.getInstance().getGraph();
 	    	
 			if( graph == null ){
-				ErrorLogHelper.logError("AAI_5102", "Error creating Titan graph. ");
+				ErrorLogHelper.logError("AAI_5102", "Error creating JanusGraph graph. ");
 				return;
 			}
 
 			// Load the propertyKeys, indexes and edge-Labels into the DB
-			TitanManagement graphMgt = graph.openManagement();
+			JanusGraphManagement graphMgt = graph.openManagement();
 
-	       	imsg = "-- Loading new schema elements into Titan --";
+	       	imsg = "-- Loading new schema elements into JanusGraph --";
        		System.out.println(imsg);
        		LOGGER.info(imsg);
-       		SchemaGenerator.loadSchemaIntoTitan( graph, graphMgt, addDefaultCR );
+       		SchemaGenerator.loadSchemaIntoJanusGraph( graph, graphMgt, addDefaultCR );
 
 	    } catch(Exception ex) {
 	    	ErrorLogHelper.logError("AAI_4000", ex.getMessage());

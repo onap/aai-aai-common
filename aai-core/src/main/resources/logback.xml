@@ -184,7 +184,7 @@
 			</fileNamePattern>
 		</rollingPolicy>
 		<encoder class="org.onap.aai.logging.EcompEncoder">
-			<pattern>${eelfLogPattern}</pattern>
+			<pattern>${eelfErrorLogPattern}</pattern>
 		</encoder>
 	</appender>
 
@@ -234,7 +234,7 @@
 			<pattern>${eelfLogPattern}</pattern>
 		</encoder>
 	</appender>
-	<logger name="org.onap.aai" level="DEBUG" additivity="true">
+	<logger name="org.onap.aai" level="DEBUG" additivity="false">
 		<appender-ref ref="asyncDEBUG" />
 		<appender-ref ref="asyncERROR" />
 		<appender-ref ref="asyncMETRIC" />
@@ -273,7 +273,7 @@
 	<logger name="com.att.ajsc.filemonitor" level="WARN" />
 	<logger name="com.netflix.loadbalancer" level="WARN" />
 
-	<logger name="org.apache.zookeeper" level="WARN" />
+	<logger name="org.apache.zookeeper" level="OFF" />
 
 	<!-- Other Loggers that may help troubleshoot -->
 	<logger name="net.sf" level="WARN" />
@@ -371,8 +371,8 @@
 		<appender-ref ref="dmaapAAIEventConsumerMetric" />
 	</logger>
 
-	<logger name="org.apache" level="WARN" />
-	<logger name="org.zookeeper" level="WARN" />
+	<logger name="org.apache" level="OFF" />
+	<logger name="org.zookeeper" level="OFF" />
 	<logger name="org.janusgraph" level="WARN" />
 	<logger name="com.att.aft.dme2" level="WARN" />
 
@@ -387,6 +387,5 @@
 
 	<root level="DEBUG">
 		<appender-ref ref="external" />
-		<appender-ref ref="STDOUT" />
 	</root>
 </configuration>

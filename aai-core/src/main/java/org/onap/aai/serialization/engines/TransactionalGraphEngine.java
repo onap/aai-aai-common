@@ -19,9 +19,6 @@
  */
 package org.onap.aai.serialization.engines;
 
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.strategy.verification.ReadOnlyStrategy;
 import org.apache.tinkerpop.gremlin.structure.Graph;
@@ -36,8 +33,11 @@ import org.onap.aai.serialization.db.GraphSingleton;
 import org.onap.aai.serialization.engines.query.GraphTraversalQueryEngine;
 import org.onap.aai.serialization.engines.query.QueryEngine;
 
-import com.thinkaurelius.titan.core.TitanGraph;
-import com.thinkaurelius.titan.core.schema.TitanManagement;
+import org.janusgraph.core.JanusGraph;
+import org.janusgraph.core.schema.JanusGraphManagement;
+
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class TransactionalGraphEngine {
 	
@@ -97,7 +97,7 @@ public abstract class TransactionalGraphEngine {
 	 *
 	 * @return the graph
 	 */
-	private TitanGraph getGraph() {
+	private JanusGraph getGraph() {
 		return singleton.getTxGraph(this.connectionType);
 	}
 	
@@ -237,7 +237,7 @@ public abstract class TransactionalGraphEngine {
 			return readOnlyTraversal;
 		}
 		
-		public TitanManagement getManagementSystem() {
+		public JanusGraphManagement getManagementSystem() {
 			return getGraph().openManagement();
 		}
 	}

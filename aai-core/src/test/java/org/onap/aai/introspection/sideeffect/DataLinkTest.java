@@ -19,12 +19,17 @@
  */
 package org.onap.aai.introspection.sideeffect;
 
-import com.thinkaurelius.titan.core.TitanFactory;
-import com.thinkaurelius.titan.core.TitanGraph;
+import org.janusgraph.core.JanusGraphFactory;
+import org.janusgraph.core.schema.JanusGraphManagement;
+import org.janusgraph.core.JanusGraph;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
@@ -37,10 +42,11 @@ import org.onap.aai.dbmap.DBConnectionType;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.*;
 import org.onap.aai.parsers.query.QueryParser;
+import org.onap.aai.serialization.db.AAIDirection;
 import org.onap.aai.serialization.db.DBSerializer;
 import org.onap.aai.serialization.db.EdgeProperty;
 import org.onap.aai.serialization.engines.QueryStyle;
-import org.onap.aai.serialization.engines.TitanDBEngine;
+import org.onap.aai.serialization.engines.JanusGraphDBEngine;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 
 import java.io.UnsupportedEncodingException;
@@ -49,16 +55,17 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 @RunWith(value = Parameterized.class)
 public class DataLinkTest extends AAISetup {
 
-	private static TitanGraph graph;
+	private static JanusGraph graph;
 	private final static Version version = Version.getLatest();
 	private final static ModelType introspectorFactoryType = ModelType.MOXY;
 	private final static DBConnectionType type = DBConnectionType.REALTIME;
@@ -82,7 +89,7 @@ public class DataLinkTest extends AAISetup {
 	
 	@BeforeClass
 	public static void setup() throws NoSuchFieldException, SecurityException, Exception {
-		graph = TitanFactory.build().set("storage.backend","inmemory").open();
+		graph = JanusGraphFactory.build().set("storage.backend","inmemory").open();
 		loader = LoaderFactory.createLoaderForVersion(introspectorFactoryType, version);
 
 		graph.traversal().addV("aai-node-type", "vpn-binding", "vpn-id", "addKey", AAIProperties.AAI_URI, "/network/vpn-bindings/vpn-binding/addKey").as("v1")
@@ -113,7 +120,7 @@ public class DataLinkTest extends AAISetup {
 	@Before
 	public void initMock() {
 		MockitoAnnotations.initMocks(this);
-		dbEngine = new TitanDBEngine(
+		dbEngine = new JanusGraphDBEngine(
 				queryStyle,
 				type,
 				loader);
@@ -131,6 +138,24 @@ public class DataLinkTest extends AAISetup {
 		TransactionalGraphEngine.Admin adminSpy = spy(dbEngine.asAdmin());
 		Graph g = graph.newTransaction();
 		GraphTraversalSource traversal = g.traversal();
+//		Graph g = graph.newTransaction();
+//		GraphTraversalSource traversal = g;
+		System.out.println("Begin method inventory:");
+		Iterator<Vertex> vertexItr = traversal.V();
+   		while( vertexItr != null && vertexItr.hasNext() ){
+   			Vertex v = vertexItr.next();
+   			System.out.println("\nnodeType="+v.<String>property("aai-node-type"));
+   			for(String key: v.keys()) {
+   				System.out.println("label="+v.label()+";key= "+key+";value= "+v.value(key)+";id= "+v.id());
+   			}
+   			Direction d = null;
+   			Iterator<Edge> edgeItr = v.edges(Direction.BOTH);
+   	   		while( edgeItr != null && edgeItr.hasNext() ){
+   	   			Edge e = edgeItr.next();
+   				System.out.println("outV="+e.outVertex().property(AAIProperties.NODE_TYPE)+"/"+e.outVertex().id()+";inV= "+e.inVertex().property(AAIProperties.NODE_TYPE)+"/"+e.inVertex().id());
+   			}
+   		}
+   		System.out.println("End method inventory:");
 		when(spy.asAdmin()).thenReturn(adminSpy);
 		when(adminSpy.getTraversalSource()).thenReturn(traversal);
 		when(spy.tx()).thenReturn(g);
@@ -158,23 +183,80 @@ public class DataLinkTest extends AAISetup {
 		obj.setValue("route-target-role", "modifyRoleKey2");
 		TransactionalGraphEngine spy = spy(dbEngine);
 		TransactionalGraphEngine.Admin adminSpy = spy(dbEngine.asAdmin());
+//		Graph g = graph.newTransaction();
+//		GraphTraversalSource traversal = g;
 		Graph g = graph.newTransaction();
 		GraphTraversalSource traversal = g.traversal();
+		System.out.println("Begin method inventory:");
+		Iterator<Vertex> vertexItr = traversal.V();
+   		while( vertexItr != null && vertexItr.hasNext() ){
+   			Vertex v = vertexItr.next();
+   			System.out.println("\nnodeType="+v.<String>property("aai-node-type"));
+   			for(String key: v.keys()) {
+   				System.out.println("label="+v.label()+";key= "+key+";value= "+v.value(key)+"/"+v.id());
+   			}
+   			Direction d = null;
+   			Iterator<Edge> edgeItr = v.edges(Direction.BOTH);
+   	   		while( edgeItr != null && edgeItr.hasNext() ){
+   	   			Edge e = edgeItr.next();
+   				System.out.println("outV="+e.outVertex().property(AAIProperties.NODE_TYPE)+"/"+e.outVertex().id()+";inV= "+e.inVertex().property(AAIProperties.NODE_TYPE)+"/"+e.inVertex().id());
+   			}
+   		}
+   		System.out.println("End method inventory:");
+
 		when(spy.asAdmin()).thenReturn(adminSpy);
 		when(adminSpy.getTraversalSource()).thenReturn(traversal);
+//		when(spy.tx()).thenReturn(graph);
 		when(spy.tx()).thenReturn(g);
 		when(self.<String>property(AAIProperties.AAI_URI)).thenReturn(prop);
 		when(prop.orElse(null)).thenReturn(obj.getURI());
 		DBSerializer serializer = new DBSerializer(version, spy, introspectorFactoryType, "AAI_TEST");
 		SideEffectRunner runner = new SideEffectRunner
 				.Builder(spy, serializer).addSideEffect(DataLinkWriter.class).build();
-		
+		System.out.println("Traversal Source: "+traversal.toString());
+		vertexItr = traversal.V();
+		System.out.println("Begin method inventory:");
+   		while( vertexItr != null && vertexItr.hasNext() ){
+   			Vertex v = vertexItr.next();
+   			System.out.println("\nnodeType="+v.<String>property("aai-node-type"));
+   			for(String key: v.keys()) {
+   				System.out.println("label="+v.label()+";key= "+key+";value= "+v.value(key)+"/"+v.id());
+   			}
+   			Iterator<Edge> edgeItr = v.edges(Direction.BOTH);
+   	   		while( edgeItr != null && edgeItr.hasNext() ){
+   	   			Edge e = edgeItr.next();
+   				System.out.println("outV="+e.outVertex().property(AAIProperties.NODE_TYPE)+"/"+e.outVertex().id()+";inV= "+e.inVertex().property(AAIProperties.NODE_TYPE)+"/"+e.inVertex().id());
+   			}
+   		}
+   		System.out.println("End method inventory:");
+		try {
 		runner.execute(obj, self);
+		} catch(Exception e) {
 
-		assertEquals("route-target vertex found", true, traversal.V()
-				.has(AAIProperties.NODE_TYPE, "route-target").has("global-route-target", "modifyTargetKey2").has("route-target-role", "modifyRoleKey2").has("linked", true).hasNext());
-		assertEquals("previous link removed", true, traversal.V()
-				.has(AAIProperties.NODE_TYPE, "route-target").has("global-route-target", "modifyTargetKey").has("route-target-role", "modifyRoleKey").hasNot("linked").hasNext());
+		}
+//		runner.execute(obj, self);
+		System.out.println("=================\n");
+		vertexItr = traversal.V();
+   		while( vertexItr != null && vertexItr.hasNext() ){
+   			Vertex v = vertexItr.next();
+   			System.out.println("\nnodeType="+v.<String>property("aai-node-type"));
+   			for(String key: v.keys()) {
+   				System.out.println("label="+v.label()+";key= "+key+";value= "+v.value(key)+"/"+v.id());
+   			}
+   			Iterator<Edge> edgeItr = v.edges(Direction.BOTH);
+   	   		while( edgeItr != null && edgeItr.hasNext() ){
+   	   			Edge e = edgeItr.next();
+   				System.out.println("outV="+e.outVertex().property(AAIProperties.NODE_TYPE)+"/"+e.outVertex().id()+";inV= "+e.inVertex().property(AAIProperties.NODE_TYPE)+"/"+e.inVertex().id());
+   			}
+   		}
+		assertThat("new route-target vertex found with/or without link", traversal.V()
+				.has(AAIProperties.NODE_TYPE, "route-target").has("global-route-target", "modifyTargetKey2").has("route-target-role", "modifyRoleKey2").hasNext(),is(true));
+		assertThat("new route-target vertex found", traversal.V()
+				.has(AAIProperties.NODE_TYPE, "route-target").has("global-route-target", "modifyTargetKey2").has("route-target-role", "modifyRoleKey2").has("linked", true).hasNext(),is(true));
+		assertThat("previous link removed", traversal.V()
+				.has(AAIProperties.NODE_TYPE, "route-target").has("global-route-target", "modifyTargetKey").has("route-target-role", "modifyRoleKey").has("linked").hasNext(),is(not(true)));
+		assertThat("previous vertex still exists", traversal.V()
+				.has(AAIProperties.NODE_TYPE, "route-target").has("global-route-target", "modifyTargetKey").has("route-target-role", "modifyRoleKey").hasNext(),is(true));
 		g.tx().rollback();
 		
 	}

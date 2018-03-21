@@ -19,7 +19,7 @@
  */
 package org.onap.aai.db.schema;
 
-import com.thinkaurelius.titan.core.Multiplicity;
+import org.janusgraph.core.Multiplicity;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.annotate.JsonPropertyOrder;
 

@@ -21,22 +21,22 @@ package org.onap.aai.serialization.db;
 
 import org.onap.aai.dbmap.DBConnectionType;
 
-import com.thinkaurelius.titan.core.TitanGraph;
+import org.janusgraph.core.JanusGraph;
 
 public class InMemoryGraphSingleton extends GraphSingleton {
 
-	private static TitanGraph inMemgraph;
+	private static JanusGraph inMemgraph;
 
 	private static class Helper {
 		private static final InMemoryGraphSingleton INSTANCE = new InMemoryGraphSingleton();
 	}
 
 	/**
-	 * Gets the single instance of TitanGraphSingleton.
+	 * Gets the single instance of JanusGraphSingleton.
 	 *
-	 * @return single instance of TitanGraphSingleton
+	 * @return single instance of JanusGraphSingleton
 	 */
-	public static InMemoryGraphSingleton getInstance(TitanGraph graph) {
+	public static InMemoryGraphSingleton getInstance(JanusGraph graph) {
 		inMemgraph = graph;
 		return Helper.INSTANCE;
 	}
@@ -47,12 +47,12 @@ public class InMemoryGraphSingleton extends GraphSingleton {
 	 * @return the tx graph
 	 */
 	@Override
-	public TitanGraph getTxGraph() {
+	public JanusGraph getTxGraph() {
 		return inMemgraph;
 	}
 
 	@Override
-	public TitanGraph getTxGraph(DBConnectionType connectionType) {
+	public JanusGraph getTxGraph(DBConnectionType connectionType) {
 		return inMemgraph;
 	}
 }

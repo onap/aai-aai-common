@@ -47,7 +47,7 @@ import org.onap.aai.introspection.Version;
 import org.onap.aai.serialization.db.DBSerializer;
 import org.onap.aai.serialization.db.EdgeRules;
 import org.onap.aai.serialization.engines.QueryStyle;
-import org.onap.aai.serialization.engines.TitanDBEngine;
+import org.onap.aai.serialization.engines.JanusGraphDBEngine;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatQueryResultFormatNotSupported;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
@@ -142,7 +142,7 @@ public class CountQuerySupportTest extends AAISetup {
 
 		if (loader == null) {
 			loader = LoaderFactory.createLoaderForVersion(factoryType, version);
-			dbEngine = spy(new TitanDBEngine(QueryStyle.TRAVERSAL, DBConnectionType.CACHED, loader));
+			dbEngine = spy(new JanusGraphDBEngine(QueryStyle.TRAVERSAL, DBConnectionType.CACHED, loader));
 			serializer = new DBSerializer(version, dbEngine, factoryType, "Junit");
 			
 			ff = new FormatFactory(loader, serializer);

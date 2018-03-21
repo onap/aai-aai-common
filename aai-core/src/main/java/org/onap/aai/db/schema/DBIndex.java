@@ -22,7 +22,7 @@ package org.onap.aai.db.schema;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import com.thinkaurelius.titan.core.schema.SchemaStatus;
+import org.janusgraph.core.schema.SchemaStatus;
 
 public class DBIndex implements Named {
 

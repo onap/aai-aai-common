@@ -37,7 +37,7 @@ import org.onap.aai.introspection.ModelType;
 import org.onap.aai.introspection.Version;
 import org.onap.aai.rest.RestTokens;
 import org.onap.aai.serialization.engines.QueryStyle;
-import org.onap.aai.serialization.engines.TitanDBEngine;
+import org.onap.aai.serialization.engines.JanusGraphDBEngine;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 
 import javax.ws.rs.core.MultivaluedHashMap;
@@ -82,12 +82,12 @@ public class GraphTraversalTest extends AAISetup {
 	@Before
 	public void configure() throws Exception {
 		dbEngine =
-				new TitanDBEngine(queryStyle,
+				new JanusGraphDBEngine(queryStyle,
 					LoaderFactory.createLoaderForVersion(ModelType.MOXY, AAIProperties.LATEST),
 					false);
 		
 		dbEnginev9 = 
-				new TitanDBEngine(queryStyle,
+				new JanusGraphDBEngine(queryStyle,
 					LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.v9),
 					false);
 	}

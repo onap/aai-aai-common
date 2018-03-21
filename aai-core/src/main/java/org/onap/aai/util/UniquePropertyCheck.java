@@ -37,8 +37,8 @@ import org.slf4j.MDC;
 import com.att.eelf.configuration.Configuration;
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
-import com.thinkaurelius.titan.core.TitanFactory;
-import com.thinkaurelius.titan.core.TitanGraph;
+import org.janusgraph.core.JanusGraphFactory;
+import org.janusgraph.core.JanusGraph;
 import org.onap.aai.dbmap.AAIGraphConfig;
 
 public class UniquePropertyCheck {
@@ -87,12 +87,12 @@ public class UniquePropertyCheck {
 		try {   
     		AAIConfig.init();
     		System.out.println("    ---- NOTE --- about to open graph (takes a little while)--------\n");
-    		TitanGraph tGraph = TitanFactory.open(new AAIGraphConfig.Builder(AAIConstants.REALTIME_DB_CONFIG).forService(UniquePropertyCheck.class.getSimpleName()).withGraphType("realtime").buildConfiguration());
+    		JanusGraph tGraph = JanusGraphFactory.open(new AAIGraphConfig.Builder(AAIConstants.REALTIME_DB_CONFIG).forService(UniquePropertyCheck.class.getSimpleName()).withGraphType("realtime").buildConfiguration());
     		
     		if( tGraph == null ) {
     			LoggingContext.statusCode(StatusCode.ERROR);
     			LoggingContext.responseCode(LoggingContext.AVAILABILITY_TIMEOUT_ERROR);
-    			logAndPrint(logger, " Error:  Could not get TitanGraph ");
+    			logAndPrint(logger, " Error:  Could not get JanusGraph ");
     			System.exit(1);
     		}
     		

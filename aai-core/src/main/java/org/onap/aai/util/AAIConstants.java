@@ -41,8 +41,8 @@ public final class AAIConstants {
 	public static final String AAI_AUTH_CONFIG_FILENAME = AAI_HOME_ETC_AUTH + "aai_policy.json";
 	public static final String AAI_MECHID_CONFIG_FILENAME = AAI_HOME_ETC_APP_PROPERTIES + "mechIds.json";
 	public static final String AAI_HOME_ETC_QUERY = AAI_HOME_ETC + "query" + AAI_FILESEP + "stored-queries.properties";
-	public static final String REALTIME_DB_CONFIG = AAI_HOME_ETC_APP_PROPERTIES + "titan-realtime.properties";
-	public static final String CACHED_DB_CONFIG = AAI_HOME_ETC_APP_PROPERTIES + "titan-cached.properties";
+	public static final String REALTIME_DB_CONFIG = AAI_HOME_ETC_APP_PROPERTIES + "janusgraph-realtime.properties";
+	public static final String CACHED_DB_CONFIG = AAI_HOME_ETC_APP_PROPERTIES + "janusgraph-cached.properties";
 	public static final String AAI_HOME_ETC_OXM = AAI_HOME_ETC + "oxm" + AAI_FILESEP;
 	public static final String AAI_EVENT_DMAAP_PROPS = AAI_HOME_ETC_APP_PROPERTIES + "aaiEventDMaaPPublisher.properties";
 	public static final String AAI_HOME_ETC_SCRIPT = AAI_HOME_ETC + AAI_FILESEP + "scriptdata" + AAI_FILESEP;

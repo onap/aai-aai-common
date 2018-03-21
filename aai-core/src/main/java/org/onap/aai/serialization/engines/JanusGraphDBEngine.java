@@ -27,31 +27,31 @@ import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 import org.onap.aai.dbmap.DBConnectionType;
 import org.onap.aai.introspection.Loader;
-import org.onap.aai.serialization.db.TitanGraphSingleton;
+import org.onap.aai.serialization.db.JanusGraphSingleton;
 
-public class TitanDBEngine extends TransactionalGraphEngine {
+public class JanusGraphDBEngine extends TransactionalGraphEngine {
 
 	/**
-	 * Instantiates a new titan DB engine.
+	 * Instantiates a new JanusGraph DB engine.
 	 *
 	 * @param style the style
 	 * @param loader the loader
 	 */
-	public TitanDBEngine(QueryStyle style, DBConnectionType connectionType, Loader loader) {
-		super(style, loader, connectionType, TitanGraphSingleton.getInstance());
+	public JanusGraphDBEngine(QueryStyle style, DBConnectionType connectionType, Loader loader) {
+		super(style, loader, connectionType, JanusGraphSingleton.getInstance());
 	}
 	
 	/**
-	 * Instantiates a new titan DB engine.
+	 * Instantiates a new JanusGraph DB engine.
 	 *
 	 * @param style the style
 	 * @param loader the loader
 	 * @param connect the connect
 	 */
-	public TitanDBEngine(QueryStyle style, Loader loader, boolean connect) {
+	public JanusGraphDBEngine(QueryStyle style, Loader loader, boolean connect) {
 		super(style, loader);
 		if (connect) {
-			this.singleton = TitanGraphSingleton.getInstance();
+			this.singleton = JanusGraphSingleton.getInstance();
 		}
 	}
 

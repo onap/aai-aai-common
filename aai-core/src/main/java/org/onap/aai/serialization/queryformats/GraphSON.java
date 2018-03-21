@@ -21,7 +21,7 @@ package org.onap.aai.serialization.queryformats;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.thinkaurelius.titan.graphdb.tinkerpop.TitanIoRegistry;
+import org.janusgraph.graphdb.tinkerpop.JanusGraphIoRegistry;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.io.graphson.GraphSONMapper;
@@ -33,7 +33,7 @@ import java.io.OutputStream;
 
 public class GraphSON implements FormatMapper {
 
-	private final GraphSONMapper mapper = GraphSONMapper.build().addRegistry(TitanIoRegistry.INSTANCE).create();
+	private final GraphSONMapper mapper = GraphSONMapper.build().addRegistry(JanusGraphIoRegistry.getInstance()).create();
 	private final GraphSONWriter writer = GraphSONWriter.build().mapper(mapper).create();
 	protected JsonParser parser = new JsonParser();
 	

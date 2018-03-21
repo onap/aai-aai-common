@@ -20,18 +20,18 @@
 package org.onap.aai.serialization.db;
 
 /* This is class is just a wrapper of its parent */
-public class TitanGraphSingleton extends GraphSingleton {
+public class JanusGraphSingleton extends GraphSingleton {
 
 	private static class Helper {
-		private static final TitanGraphSingleton INSTANCE = new TitanGraphSingleton();
+		private static final JanusGraphSingleton INSTANCE = new JanusGraphSingleton();
 	}
 	
 	/**
-	 * Gets the single instance of TitanGraphSingleton.
+	 * Gets the single instance of JanusGraphSingleton.
 	 *
-	 * @return single instance of TitanGraphSingleton
+	 * @return single instance of JanusGraphSingleton
 	 */
-	public static TitanGraphSingleton getInstance() {
+	public static JanusGraphSingleton getInstance() {
 		return Helper.INSTANCE;
 	}
 }

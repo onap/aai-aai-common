@@ -67,7 +67,7 @@ public class AAIExtensionMap {
 	// -----------------------------------------------------------------------
 	// postExtSkipErrorCallback | java.lang.Boolean (RW)
 	// -----------------------------------------------------------------------
-	// graph | com.thinkaurelius.titan.core.TitanGraph (RW)
+	// graph | org.janusgraph.core.JanusGraph (RW)
 	// -----------------------------------------------------------------------
 	// objectFromResponse | Object
 	// -----------------------------------------------------------------------

@@ -29,7 +29,7 @@ import org.onap.aai.introspection.ModelInjestor;
 import org.onap.aai.introspection.ModelType;
 import org.onap.aai.introspection.Version;
 import org.onap.aai.serialization.engines.QueryStyle;
-import org.onap.aai.serialization.engines.TitanDBEngine;
+import org.onap.aai.serialization.engines.JanusGraphDBEngine;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 
 import javax.ws.rs.core.UriBuilder;
@@ -46,7 +46,7 @@ public class LegacyQueryTest extends AAISetup {
 	private ModelInjestor injestor = ModelInjestor.getInstance();
 
 	private TransactionalGraphEngine dbEngine =
-			new TitanDBEngine(QueryStyle.GREMLIN_TRAVERSAL,
+			new JanusGraphDBEngine(QueryStyle.GREMLIN_TRAVERSAL,
 				LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.v8),
 				false);	
 	private final Version version = Version.v8;

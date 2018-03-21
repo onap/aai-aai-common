@@ -19,9 +19,9 @@
  */
 package org.onap.aai.dbmap;
 
-import com.thinkaurelius.titan.core.TitanFactory;
-import com.thinkaurelius.titan.core.TitanGraph;
-import com.thinkaurelius.titan.core.schema.TitanManagement;
+import org.janusgraph.core.JanusGraphFactory;
+import org.janusgraph.core.JanusGraph;
+import org.janusgraph.core.schema.JanusGraphManagement;
 import org.hamcrest.CoreMatchers;
 import org.junit.*;
 import org.onap.aai.AAISetup;
@@ -44,7 +44,7 @@ public class AAIGraphTest extends AAISetup{
 	@Test
 	public void getRealtimeInstanceConnectionName() throws Exception {
 
-		TitanManagement graphMgt = AAIGraph.getInstance().getGraph().openManagement();
+		JanusGraphManagement graphMgt = AAIGraph.getInstance().getGraph().openManagement();
 		String connectionInstanceName = graphMgt.getOpenInstances().stream().filter(c -> c.contains("current")).findFirst().get();
 		assertThat(connectionInstanceName, containsString(SERVICE_NAME));
 		assertThat(connectionInstanceName, containsString("realtime"));
@@ -55,7 +55,7 @@ public class AAIGraphTest extends AAISetup{
 	@Test
 	public void getCachedInstanceConnectionName() throws Exception {
 
-		TitanManagement graphMgt = AAIGraph.getInstance().getGraph(DBConnectionType.CACHED).openManagement();
+		JanusGraphManagement graphMgt = AAIGraph.getInstance().getGraph(DBConnectionType.CACHED).openManagement();
 		String connectionInstanceName = graphMgt.getOpenInstances().stream().filter(c -> c.contains("current")).findFirst().get();
 		assertThat(connectionInstanceName, containsString(SERVICE_NAME));
 		assertThat(connectionInstanceName, containsString("cached"));
@@ -64,9 +64,9 @@ public class AAIGraphTest extends AAISetup{
 	}
 
 	@Test
-	public void titanGraphOpenNameTest() throws Exception{
-		TitanGraph graph = TitanFactory.open(new AAIGraphConfig.Builder(AAIConstants.REALTIME_DB_CONFIG).forService(SERVICE_NAME).withGraphType("graphType").buildConfiguration());
-		TitanManagement graphMgt = graph.openManagement();
+	public void JanusGraphOpenNameTest() throws Exception{
+		JanusGraph graph = JanusGraphFactory.open(new AAIGraphConfig.Builder(AAIConstants.REALTIME_DB_CONFIG).forService(SERVICE_NAME).withGraphType("graphType").buildConfiguration());
+		JanusGraphManagement graphMgt = graph.openManagement();
 		String connectionInstanceName = graphMgt.getOpenInstances().stream().filter(c -> c.contains("current")).findFirst().get();
 		assertThat(connectionInstanceName,matchesPattern("^\\d+_[\\w\\-\\d]+_" + SERVICE_NAME + "_graphType_\\d+\\(current\\)$"));
 		graphMgt.rollback();

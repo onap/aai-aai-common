@@ -20,7 +20,7 @@
 package org.onap.aai.db.schema;
 
 import org.onap.aai.introspection.Introspector;
-import com.thinkaurelius.titan.core.Cardinality;
+import org.janusgraph.core.Cardinality;
 
 public class DBProperty implements Named {
 

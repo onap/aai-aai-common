@@ -28,19 +28,19 @@ import com.att.eelf.configuration.EELFManager;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 
 import org.onap.aai.introspection.Version;
-import com.thinkaurelius.titan.core.PropertyKey;
-import com.thinkaurelius.titan.core.TitanGraph;
-import com.thinkaurelius.titan.core.schema.SchemaStatus;
-import com.thinkaurelius.titan.core.schema.TitanGraphIndex;
-import com.thinkaurelius.titan.core.schema.TitanManagement;
-import com.thinkaurelius.titan.core.schema.TitanManagement.IndexBuilder;
+import org.janusgraph.core.PropertyKey;
+import org.janusgraph.core.JanusGraph;
+import org.janusgraph.core.schema.SchemaStatus;
+import org.janusgraph.core.schema.JanusGraphIndex;
+import org.janusgraph.core.schema.JanusGraphManagement;
+import org.janusgraph.core.schema.JanusGraphManagement.IndexBuilder;
 
-public class ManageTitanSchema {
+public class ManageJanusGraphSchema {
 
-	private static final EELFLogger logger = EELFManager.getInstance().getLogger(AuditOXM.class);
+	private static final EELFLogger logger = EELFManager.getInstance().getLogger(ManageJanusGraphSchema.class);
 
-	private TitanManagement graphMgmt;
-	private TitanGraph graph;
+	private JanusGraphManagement graphMgmt;
+	private JanusGraph graph;
 	private List<DBProperty> aaiProperties;
 	private List<DBIndex> aaiIndexes;
 	private List<EdgeProperty> aaiEdgeProperties;
@@ -48,11 +48,11 @@ public class ManageTitanSchema {
 	private Auditor graphInfo = null;
 	
 	/**
-	 * Instantiates a new manage titan schema.
+	 * Instantiates a new manage JanusGraph schema.
 	 *
 	 * @param graph the graph
 	 */
-	public ManageTitanSchema(final TitanGraph graph) {
+	public ManageJanusGraphSchema(final JanusGraph graph) {
 		this.graph = graph;
 		oxmInfo = AuditorFactory.getOXMAuditor(Version.v8);
 		graphInfo = AuditorFactory.getGraphAuditor(graph);
@@ -126,8 +126,8 @@ public class ManageTitanSchema {
 				keyList.add(graphMgmt.getPropertyKey(prop.getName()));
 			}
 			if (graphMgmt.containsGraphIndex(index.getName())) {
-				TitanGraphIndex titanIndex = graphMgmt.getGraphIndex(index.getName());
-				PropertyKey[] dbKeys = titanIndex.getFieldKeys();
+				JanusGraphIndex JanusGraphIndex = graphMgmt.getGraphIndex(index.getName());
+				PropertyKey[] dbKeys = JanusGraphIndex.getFieldKeys();
 				if (dbKeys.length != keyList.size()) {
 					isChanged = true;
 				} else {
@@ -178,7 +178,7 @@ public class ManageTitanSchema {
 	 * @param mgmt the mgmt
 	 * @param prop the prop
 	 */
-	private void createProperty(TitanManagement mgmt, DBProperty prop) {
+	private void createProperty(JanusGraphManagement mgmt, DBProperty prop) {
 		if (mgmt.containsPropertyKey(prop.getName())) {
 			PropertyKey key = mgmt.getPropertyKey(prop.getName());
 			boolean isChanged = false;
@@ -209,11 +209,11 @@ public class ManageTitanSchema {
 	 * @param isNew the is new
 	 * @param isChanged the is changed
 	 */
-	private void createIndex(TitanManagement mgmt, String indexName, List<PropertyKey> keys, boolean isUnique, boolean isNew, boolean isChanged) {
+	private void createIndex(JanusGraphManagement mgmt, String indexName, List<PropertyKey> keys, boolean isUnique, boolean isNew, boolean isChanged) {
 		
 		/*if (isChanged) {
 			System.out.println("Changing index: " + indexName);
-			TitanGraphIndex oldIndex = mgmt.getGraphIndex(indexName);
+			JanusGraphIndex oldIndex = mgmt.getGraphIndex(indexName);
 			mgmt.updateIndex(oldIndex, SchemaAction.DISABLE_INDEX);
 			mgmt.commit();
 			//cannot remove indexes
@@ -241,7 +241,7 @@ public class ManageTitanSchema {
 			
 			try {
 				//waitForCompletion(indexName);
-				//TitanIndexRepair.hbaseRepair(AAIConstants.AAI_CONFIG_FILENAME, indexName, "");
+				//JanusGraphIndexRepair.hbaseRepair(AAIConstants.AAI_CONFIG_FILENAME, indexName, "");
 			} catch (Exception e) {
 				graph.tx().rollback();
 				graph.close();
@@ -270,8 +270,8 @@ public class ManageTitanSchema {
 		long before = System.currentTimeMillis();
 		while (!registered) {
 		    Thread.sleep(500L);
-		    TitanManagement mgmt = graph.openManagement();
-		    TitanGraphIndex idx  = mgmt.getGraphIndex(name);
+		    JanusGraphManagement mgmt = graph.openManagement();
+		    JanusGraphIndex idx  = mgmt.getGraphIndex(name);
 		    registered = true;
 		    for (PropertyKey k : idx.getFieldKeys()) {
 		        SchemaStatus s = idx.getIndexStatus(k);  
@@ -301,7 +301,7 @@ public class ManageTitanSchema {
 	 */
 	public void updateIndex(DBIndex index) {
 
-		TitanManagement mgmt = graph.openManagement();
+		JanusGraphManagement mgmt = graph.openManagement();
 		List<PropertyKey> keys = new ArrayList<>();
 		boolean isNew = false;
 		boolean isChanged = false;

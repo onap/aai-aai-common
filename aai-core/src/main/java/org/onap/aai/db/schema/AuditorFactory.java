@@ -20,7 +20,7 @@
 package org.onap.aai.db.schema;
 
 import org.onap.aai.introspection.Version;
-import com.thinkaurelius.titan.core.TitanGraph;
+import org.janusgraph.core.JanusGraph;
 
 public class AuditorFactory {
 
@@ -40,7 +40,7 @@ public class AuditorFactory {
 	 * @param g the g
 	 * @return the graph auditor
 	 */
-	public static Auditor getGraphAuditor (TitanGraph g) {
-		return new AuditTitan(g);
+	public static Auditor getGraphAuditor (JanusGraph g) {
+		return new AuditJanusGraph(g);
 	}
 }
