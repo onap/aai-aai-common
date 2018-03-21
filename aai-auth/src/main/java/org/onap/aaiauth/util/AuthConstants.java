@@ -1,10 +1,9 @@
 /**
  * ============LICENSE_START=======================================================
- * EcompAuth
+ * org.onap.aai
  * ================================================================================
- * Copyright © 2017 AT&T Intellectual Property.
+ * Copyright © 2017 AT&T Intellectual Property. All rights reserved.
  * Copyright © 2017 Amdocs
- * All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +17,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  * ============LICENSE_END=========================================================
- *
- * ECOMP and OpenECOMP are trademarks
- * and service marks of AT&T Intellectual Property.
  */
 package org.onap.aaiauth.util;
 
