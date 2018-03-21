@@ -63,7 +63,6 @@ import org.onap.aai.logging.LoggingContext;
 import org.onap.aai.serialization.db.AAIDirection;
 import org.onap.aai.serialization.db.EdgeProperty;
 import org.onap.aai.util.*;
-import org.onap.aai.logging.LoggingContext;
 import org.onap.aai.logging.LoggingContext.StatusCode;
 
 import com.att.eelf.configuration.Configuration;
@@ -75,7 +74,7 @@ import com.thinkaurelius.titan.core.TitanGraph;
 
 public class DataGrooming {
 
-	private static EELFLogger LOGGER;
+	private static EELFLogger logger;
 	private static final String FROMAPPID = "AAI-DB";
 	private static final String TRANSID = UUID.randomUUID().toString();
 	private static int dupeGrpsDeleted = 0;
@@ -92,7 +91,7 @@ public class DataGrooming {
 		Properties props = System.getProperties();
 		props.setProperty(Configuration.PROPERTY_LOGGING_FILE_NAME, AAIConstants.AAI_DATA_GROOMING_LOGBACK_PROPS);
 		props.setProperty(Configuration.PROPERTY_LOGGING_FILE_PATH, AAIConstants.AAI_HOME_ETC_APP_PROPERTIES);
-		LOGGER = EELFManager.getInstance().getLogger(DataGrooming.class);
+		logger = EELFManager.getInstance().getLogger(DataGrooming.class);
 		String ver = "version"; // Placeholder
 		Boolean doAutoFix = false;
 		Boolean edgesOnlyFlag = false;
@@ -134,7 +133,7 @@ public class DataGrooming {
 		}
 		catch ( Exception e ){
 			// Don't worry, we'll just use the defaults that we got from AAIConstants
-			LOGGER.warn("WARNING - could not pick up aai.grooming values from aaiconfig.properties file. ");
+			logger.warn("WARNING - could not pick up aai.grooming values from aaiconfig.properties file. ");
 		}
 		
 		String prevFileName = "";
@@ -173,7 +172,7 @@ public class DataGrooming {
 					if (i >= args.length) {
 						LoggingContext.statusCode(StatusCode.ERROR);
 						LoggingContext.responseCode(LoggingContext.BUSINESS_PROCESS_ERROR);
-						LOGGER.error(" No value passed with -maxFix option.  ");
+						logger.error(" No value passed with -maxFix option.  ");
 						AAISystemExitUtil.systemExitCloseAAIGraph(0);
 					}
 					String nextArg = args[i];
@@ -182,7 +181,7 @@ public class DataGrooming {
 					} catch (Exception e) {
 						LoggingContext.statusCode(StatusCode.ERROR);
 						LoggingContext.responseCode(LoggingContext.BUSINESS_PROCESS_ERROR);
-						LOGGER.error("Bad value passed with -maxFix option: ["
+						logger.error("Bad value passed with -maxFix option: ["
 										+ nextArg + "]");
 						AAISystemExitUtil.systemExitCloseAAIGraph(0);
 					}
@@ -191,7 +190,7 @@ public class DataGrooming {
 					if (i >= args.length) {
 						LoggingContext.statusCode(StatusCode.ERROR);
 						LoggingContext.responseCode(LoggingContext.BUSINESS_PROCESS_ERROR);
-						LOGGER.error("No value passed with -sleepMinutes option.");
+						logger.error("No value passed with -sleepMinutes option.");
 						AAISystemExitUtil.systemExitCloseAAIGraph(0);
 					}
 					String nextArg = args[i];
@@ -200,7 +199,7 @@ public class DataGrooming {
 					} catch (Exception e) {
 						LoggingContext.statusCode(StatusCode.ERROR);
 						LoggingContext.responseCode(LoggingContext.BUSINESS_PROCESS_ERROR);
-						LOGGER.error("Bad value passed with -sleepMinutes option: ["
+						logger.error("Bad value passed with -sleepMinutes option: ["
 										+ nextArg + "]");
 						AAISystemExitUtil.systemExitCloseAAIGraph(0);
 					}
@@ -209,7 +208,7 @@ public class DataGrooming {
 					if (i >= args.length) {
 						LoggingContext.statusCode(StatusCode.ERROR);
 						LoggingContext.responseCode(LoggingContext.BUSINESS_PROCESS_ERROR);
-						LOGGER.error("No value passed with -timeWindowMinutes option.");
+						logger.error("No value passed with -timeWindowMinutes option.");
 						AAISystemExitUtil.systemExitCloseAAIGraph(0);
 					}
 					String nextArg = args[i];
@@ -218,7 +217,7 @@ public class DataGrooming {
 					} catch (Exception e) {
 						LoggingContext.statusCode(StatusCode.ERROR);
 						LoggingContext.responseCode(LoggingContext.BUSINESS_PROCESS_ERROR);
-						LOGGER.error("Bad value passed with -timeWindowMinutes option: ["
+						logger.error("Bad value passed with -timeWindowMinutes option: ["
 										+ nextArg + "]");
 						AAISystemExitUtil.systemExitCloseAAIGraph(0);
 					}
@@ -228,16 +227,16 @@ public class DataGrooming {
 					if (i >= args.length) {
 						LoggingContext.statusCode(StatusCode.ERROR);
 						LoggingContext.responseCode(LoggingContext.BUSINESS_PROCESS_ERROR);
-						LOGGER.error(" No value passed with -f option. ");
+						logger.error(" No value passed with -f option. ");
 						AAISystemExitUtil.systemExitCloseAAIGraph(0);
 					}
 					prevFileName = args[i];
 				} else {
 					LoggingContext.statusCode(StatusCode.ERROR);
 					LoggingContext.responseCode(LoggingContext.BUSINESS_PROCESS_ERROR);
-					LOGGER.error(" Unrecognized argument passed to DataGrooming: ["
+					logger.error(" Unrecognized argument passed to DataGrooming: ["
 									+ thisArg + "]. ");
-					LOGGER.error(" Valid values are: -f -autoFix -maxFix -edgesOnly -skipEdgeChecks -dupeFixOn -donFixOrphans -timeWindowMinutes -sleepMinutes -neverUseCache");
+					logger.error(" Valid values are: -f -autoFix -maxFix -edgesOnly -skipEdgeChecks -dupeFixOn -donFixOrphans -timeWindowMinutes -sleepMinutes -neverUseCache");
 					AAISystemExitUtil.systemExitCloseAAIGraph(0);
 				}
 			}
@@ -256,19 +255,19 @@ public class DataGrooming {
 		catch (Exception ex){
 			LoggingContext.statusCode(StatusCode.ERROR);
 			LoggingContext.responseCode(LoggingContext.BUSINESS_PROCESS_ERROR);
-			LOGGER.error("ERROR - Could not create loader " + LogFormatTools.getStackTop(ex));
+			logger.error("ERROR - Could not create loader " + LogFormatTools.getStackTop(ex));
 			AAISystemExitUtil.systemExitCloseAAIGraph(1);
 		}
 
 		if (skipHostCheck) {
-			LOGGER.info(" We will skip the HostCheck as requested. ");
+			logger.info(" We will skip the HostCheck as requested. ");
 		}
 
 		try {
-			if (!prevFileName.equals("")) {
+			if (!prevFileName.isEmpty()) {
 				// They are trying to fix some data based on a data in a
 				// previous file.
-				LOGGER.info(" Call doTheGrooming() with a previous fileName ["
+				logger.info(" Call doTheGrooming() with a previous fileName ["
 								+ prevFileName + "] for cleanup. ");
 				Boolean finalShutdownFlag = true;
 				Boolean cacheDbOkFlag = false;
@@ -284,8 +283,8 @@ public class DataGrooming {
 				// that were found by the first run.
 				// Note: we will produce a separate output file for each of the
 				// two runs.
-				LOGGER.info(" Doing an auto-fix call to Grooming. ");
-				LOGGER.info(" First, Call doTheGrooming() to look at what's out there. ");
+				logger.info(" Doing an auto-fix call to Grooming. ");
+				logger.info(" First, Call doTheGrooming() to look at what's out there. ");
 				Boolean finalShutdownFlag = false;
 				Boolean cacheDbOkFlag = true;
 				int fixCandCount = doTheGrooming("", edgesOnlyFlag,
@@ -294,24 +293,24 @@ public class DataGrooming {
 						finalShutdownFlag, cacheDbOkFlag, 
 						skipEdgeCheckFlag, timeWindowMinutes);
 				if (fixCandCount == 0) {
-					LOGGER.info(" No fix-Candidates were found by the first pass, so no second/fix-pass is needed. ");
+					logger.info(" No fix-Candidates were found by the first pass, so no second/fix-pass is needed. ");
 				} else {
 					// We'll sleep a little and then run a fix-pass based on the
 					// first-run's output file.
 					try {
-						LOGGER.info("About to sleep for " + sleepMinutes
+						logger.info("About to sleep for " + sleepMinutes
 								+ " minutes.");
 						int sleepMsec = sleepMinutes * 60 * 1000;
 						Thread.sleep(sleepMsec);
 					} catch (InterruptedException ie) {
-						LOGGER.info("\n >>> Sleep Thread has been Interrupted <<< ");
+						logger.info("\n >>> Sleep Thread has been Interrupted <<< ");
 						AAISystemExitUtil.systemExitCloseAAIGraph(0);
 					}
 
 					dteStr = fd.getDateTime();
 					String secondGroomOutFileName = "dataGrooming." + dteStr
 							+ ".out";
-					LOGGER.info(" Now, call doTheGrooming() a second time and pass in the name of the file "
+					logger.info(" Now, call doTheGrooming() a second time and pass in the name of the file "
 									+ "generated by the first pass for fixing: ["
 									+ groomOutFileName + "]");
 					finalShutdownFlag = true;
@@ -327,7 +326,7 @@ public class DataGrooming {
 				// Do the grooming - plain vanilla (no fix-it-file, no
 				// auto-fixing)
 				Boolean finalShutdownFlag = true;
-				LOGGER.info(" Call doTheGrooming() ");
+				logger.info(" Call doTheGrooming() ");
 				Boolean cacheDbOkFlag = true;
 				if( neverUseCache ){
 					// They have forbidden us from using a cached db connection.
@@ -342,10 +341,10 @@ public class DataGrooming {
 		} catch (Exception ex) {
 			LoggingContext.statusCode(StatusCode.ERROR);
 			LoggingContext.responseCode(LoggingContext.DATA_ERROR);
-			LOGGER.error("Exception while grooming data " + LogFormatTools.getStackTop(ex));
+			logger.error("Exception while grooming data " + LogFormatTools.getStackTop(ex));
 		}
 
-		LOGGER.info(" Done! ");
+		logger.info(" Done! ");
 		AAISystemExitUtil.systemExitCloseAAIGraph(0);
 
 	}// End of main()
@@ -377,7 +376,7 @@ public class DataGrooming {
 			Boolean finalShutdownFlag, Boolean cacheDbOkFlag,
 			Boolean skipEdgeCheckFlag, int timeWindowMinutes) {
 
-		LOGGER.debug(" Entering doTheGrooming \n");
+		logger.debug(" Entering doTheGrooming \n");
 
 		int cleanupCandidateCount = 0;
 		long windowStartTime = 0; // Translation of the window into a starting timestamp 
@@ -405,7 +404,7 @@ public class DataGrooming {
 			// Make sure the target directory exists
 			new File(targetDir).mkdirs();
 
-			if (!fileNameForFixing.equals("")) {
+			if (!fileNameForFixing.isEmpty()) {
 				deleteCandidateList = getDeleteList(targetDir,
 						fileNameForFixing, edgesOnlyFlag, dontFixOrphansFlag,
 						dupeFixOn);
@@ -414,7 +413,7 @@ public class DataGrooming {
 			if (deleteCandidateList.size() > maxRecordsToFix) {
 				LoggingContext.statusCode(StatusCode.ERROR);
 				LoggingContext.responseCode(LoggingContext.DATA_ERROR);
-				LOGGER.warn(" >> WARNING >>  Delete candidate list size ("
+				logger.warn(" >> WARNING >>  Delete candidate list size ("
 						+ deleteCandidateList.size()
 						+ ") is too big.  The maxFix we are using is: "
 						+ maxRecordsToFix
@@ -434,11 +433,11 @@ public class DataGrooming {
 				throw new AAIException("AAI_6124", emsg);
 			}
 
-			LOGGER.info(" Will write to " + fullOutputFileName );
+			logger.info(" Will write to " + fullOutputFileName );
 			bw = new BufferedWriter(new FileWriter(groomOutFile.getAbsoluteFile()));
 			ErrorLogHelper.loadProperties();
 			
-			LOGGER.info("    ---- NOTE --- about to open graph (takes a little while)--------\n");
+			logger.info("    ---- NOTE --- about to open graph (takes a little while)--------\n");
 
 			if( cacheDbOkFlag ){
 				// Since we're just reading (not deleting/fixing anything), we can use 
@@ -453,7 +452,7 @@ public class DataGrooming {
 				throw new AAIException("AAI_6101", emsg);
 			}
 		
-			LOGGER.debug(" Got the graph object. ");
+			logger.debug(" Got the graph object. ");
 			
 			g = graph.newTransaction();
 			if (g == null) {
@@ -477,10 +476,10 @@ public class DataGrooming {
 			Set<Entry<String, Introspector>> entrySet = loader.getAllObjects().entrySet();
 			String ntList = "";
 
-			LOGGER.info("  Starting DataGrooming Processing ");
+			logger.info("  Starting DataGrooming Processing ");
 
 			if (edgesOnlyFlag) {
-				LOGGER.info(" NOTE >> Skipping Node processing as requested.  Will only process Edges. << ");
+				logger.info(" NOTE >> Skipping Node processing as requested.  Will only process Edges. << ");
 			} 
 			else {
 				for (Entry<String, Introspector> entry : entrySet) {
@@ -488,7 +487,7 @@ public class DataGrooming {
 					int thisNtCount = 0;
 					int thisNtDeleteCount = 0;
 					
-					LOGGER.debug(" >  Look at : [" + nType + "] ...");
+					logger.debug(" >  Look at : [" + nType + "] ...");
 					ntList = ntList + "," + nType;
 
 					// Get a collection of the names of the key properties for this nodeType to use later
@@ -516,7 +515,7 @@ public class DataGrooming {
 							thisNtCount++;
 							if( thisNtCount == lastShownForNt + 250 ){
 								lastShownForNt = thisNtCount;
-								LOGGER.debug("count for " + nType + " so far = " + thisNtCount );
+								logger.debug("count for " + nType + " so far = " + thisNtCount );
 							}
 							Vertex thisVtx = iter.next();
 							if( windowStartTime > 0 ){
@@ -534,7 +533,7 @@ public class DataGrooming {
 							
 							String thisVid = thisVtx.id().toString();
 							if (processedVertices.contains(thisVid)) {
-								LOGGER.debug("skipping already processed vertex: " + thisVid);
+								logger.debug("skipping already processed vertex: " + thisVid);
 								continue;
 							}
 							totalNodeCount++;
@@ -604,7 +603,7 @@ public class DataGrooming {
 										} catch (Exception ex) {
 											LoggingContext.statusCode(StatusCode.ERROR);
 											LoggingContext.responseCode(LoggingContext.DATA_ERROR);
-											LOGGER.warn("WARNING from inside the for-each-vid-loop orphan-edges-check " + LogFormatTools.getStackTop(ex) );
+											logger.warn("WARNING from inside the for-each-vid-loop orphan-edges-check " + LogFormatTools.getStackTop(ex) );
 										}
 										
 										if (deleteCandidateList.contains(thisVid)) {
@@ -618,10 +617,10 @@ public class DataGrooming {
 												okFlag = false;
 												LoggingContext.statusCode(StatusCode.ERROR);
 												LoggingContext.responseCode(LoggingContext.DATA_ERROR);
-												LOGGER.error("ERROR trying to delete missing-dep-node VID = " + thisVid + " " + LogFormatTools.getStackTop(e));
+												logger.error("ERROR trying to delete missing-dep-node VID = " + thisVid + " " + LogFormatTools.getStackTop(e));
 											}
 											if (okFlag) {
-												LOGGER.info(" DELETED missing-dep-node VID = " + thisVid);
+												logger.info(" DELETED missing-dep-node VID = " + thisVid);
 											}
 										} else {
 											// We count nodes missing their depNodes two ways - the first if it has
@@ -670,10 +669,10 @@ public class DataGrooming {
 											okFlag = false;
 											LoggingContext.statusCode(StatusCode.ERROR);
 											LoggingContext.responseCode(LoggingContext.DATA_ERROR);
-											LOGGER.error("ERROR trying to delete phantom VID = " + thisVid + " " + LogFormatTools.getStackTop(e));
+											logger.error("ERROR trying to delete phantom VID = " + thisVid + " " + LogFormatTools.getStackTop(e));
 										}
 										if (okFlag) {
-											LOGGER.info(" DELETED VID = " + thisVid);
+											logger.info(" DELETED VID = " + thisVid);
 										}
 									} else {
 										ghostNodeHash.put(thisVid, thisVtx);
@@ -681,7 +680,7 @@ public class DataGrooming {
 								}
 								else if( (secondGetList.size() > 1) && depNodeOk && !dupeCheckOff ){
 									// Found some DUPLICATES - need to process them
-									LOGGER.info(" - now check Dupes for this guy - ");
+									logger.info(" - now check Dupes for this guy - ");
 									List<String> tmpDupeGroups = checkAndProcessDupes(
 												TRANSID, FROMAPPID, g, source1, version,
 												nType, secondGetList, dupeFixOn,
@@ -690,7 +689,7 @@ public class DataGrooming {
 									while (dIter.hasNext()) {
 										// Add in any newly found dupes to our running list
 										String tmpGrp = dIter.next();
-										LOGGER.info("Found set of dupes: [" + tmpGrp + "]");
+										logger.info("Found set of dupes: [" + tmpGrp + "]");
 										dupeGroups.add(tmpGrp);
 									}
 								}
@@ -698,13 +697,13 @@ public class DataGrooming {
 							catch (AAIException e1) {
 								LoggingContext.statusCode(StatusCode.ERROR);
 								LoggingContext.responseCode(LoggingContext.DATA_ERROR);
-								LOGGER.warn(" For nodeType = " + nType + " Caught exception", e1);
+								logger.warn(" For nodeType = " + nType + " Caught exception", e1);
 								errArr.add(e1.getErrorObject().toString());
 							}
 							catch (Exception e2) {
 								LoggingContext.statusCode(StatusCode.ERROR);
 								LoggingContext.responseCode(LoggingContext.DATA_ERROR);
-								LOGGER.warn(" For nodeType = " + nType
+								logger.warn(" For nodeType = " + nType
 										+ " Caught exception", e2);
 								errArr.add(e2.getMessage());
 							}
@@ -712,7 +711,7 @@ public class DataGrooming {
 						catch (Exception exx) {
 							LoggingContext.statusCode(StatusCode.ERROR);
 							LoggingContext.responseCode(LoggingContext.DATA_ERROR);
-							LOGGER.warn("WARNING from inside the while-verts-loop ", exx);
+							logger.warn("WARNING from inside the while-verts-loop ", exx);
 						}
 						
 					} // while loop for each record of a nodeType
@@ -730,7 +729,7 @@ public class DataGrooming {
 						Iterator<ArrayList<Vertex>> dsItr = nonDependentDupeSets.iterator();
 						while( dsItr.hasNext() ){
 							ArrayList<Vertex> dupeList =  dsItr.next();
-							LOGGER.info(" - now check Dupes for some non-dependent guys - ");
+							logger.info(" - now check Dupes for some non-dependent guys - ");
 							List<String> tmpDupeGroups = checkAndProcessDupes(
 										TRANSID, FROMAPPID, g, source1, version,
 										nType, dupeList, dupeFixOn,
@@ -739,7 +738,7 @@ public class DataGrooming {
 							while (dIter.hasNext()) {
 								// Add in any newly found dupes to our running list
 								String tmpGrp = dIter.next();
-								LOGGER.info("Found set of dupes: [" + tmpGrp + "]");
+								logger.info("Found set of dupes: [" + tmpGrp + "]");
 								dupeGroups.add(tmpGrp);
 							}
 						}
@@ -753,7 +752,7 @@ public class DataGrooming {
 						
 					}
 					thisNtDeleteCount = 0;
-					LOGGER.info( " Processed " + thisNtCount + " records for [" + nType + "], " + totalNodeCount + " total overall. " );
+					logger.info( " Processed " + thisNtCount + " records for [" + nType + "], " + totalNodeCount + " total overall. " );
 					
 				}// While-loop for each node type
 				
@@ -771,7 +770,7 @@ public class DataGrooming {
 			// --------------------------------------------------------------------------------------
 
 			// To do some strange checking - we need a second graph object
-			LOGGER.debug("    ---- DEBUG --- about to open a SECOND graph (takes a little while)--------\n");
+			logger.debug("    ---- DEBUG --- about to open a SECOND graph (takes a little while)--------\n");
 			// Note - graph2 just reads - but we want it to use a fresh connection to 
 			//      the database, so we are NOT using the CACHED DB CONFIG here.
 			graph2 = TitanFactory.open(new AAIGraphConfig.Builder(AAIConstants.REALTIME_DB_CONFIG).forService(DataGrooming.class.getSimpleName()).withGraphType("realtime2").buildConfiguration());
@@ -779,7 +778,7 @@ public class DataGrooming {
 				String emsg = "null graph2 object in DataGrooming\n";
 				throw new AAIException("AAI_6101", emsg);
 			} else {
-				LOGGER.debug("Got the graph2 object... \n");
+				logger.debug("Got the graph2 object... \n");
 			}
 			g2 = graph2.newTransaction();
 			if (g2 == null) {
@@ -798,7 +797,7 @@ public class DataGrooming {
 			int counter = 0;
 			int lastShown = 0;
 			Iterator<Vertex> vItor2 = vertList.iterator();
-			LOGGER.info(" Checking for bad edges  --- ");
+			logger.info(" Checking for bad edges  --- ");
 
 			while (vItor2.hasNext()) {
 				Vertex v = null;
@@ -808,7 +807,7 @@ public class DataGrooming {
 					} catch (Exception vex) {
 						LoggingContext.statusCode(StatusCode.ERROR);
 						LoggingContext.responseCode(LoggingContext.DATA_ERROR);
-						LOGGER.warn(">>> WARNING trying to get next vertex on the vItor2 ");
+						logger.warn(">>> WARNING trying to get next vertex on the vItor2 ");
 						continue;
 					}
 					
@@ -819,12 +818,12 @@ public class DataGrooming {
 					} catch (Exception ev) {
 						LoggingContext.statusCode(StatusCode.ERROR);
 						LoggingContext.responseCode(LoggingContext.DATA_ERROR);
-						LOGGER.warn("WARNING when doing getId() on a vertex from our vertex list.  ");
+						logger.warn("WARNING when doing getId() on a vertex from our vertex list.  ");
 						continue;
 					}
 					if (ghostNodeHash.containsKey(thisVertId)) {
 						// This is a phantom node, so don't try to use it
-						LOGGER.info(" >> Skipping edge check for edges from vertexId = "
+						logger.info(" >> Skipping edge check for edges from vertexId = "
 										+ thisVertId
 										+ ", since that guy is a Phantom Node");
 						continue;
@@ -845,7 +844,7 @@ public class DataGrooming {
 					
 					if (counter == lastShown + 250) {
 						lastShown = counter;
-						LOGGER.info("... Checking edges for vertex # "
+						logger.info("... Checking edges for vertex # "
 								+ counter);
 					}
 					Iterator<Edge> eItor = v.edges(Direction.BOTH);
@@ -858,7 +857,7 @@ public class DataGrooming {
 						} catch (Exception iex) {
 							LoggingContext.statusCode(StatusCode.ERROR);
 							LoggingContext.responseCode(LoggingContext.DATA_ERROR);
-							LOGGER.warn(">>> WARNING trying to get next edge on the eItor ", iex);
+							logger.warn(">>> WARNING trying to get next edge on the eItor ", iex);
 							continue;
 						}
 
@@ -867,7 +866,7 @@ public class DataGrooming {
 						} catch (Exception err) {
 							LoggingContext.statusCode(StatusCode.ERROR);
 							LoggingContext.responseCode(LoggingContext.DATA_ERROR);
-							LOGGER.warn(">>> WARNING trying to get edge's In-vertex ", err);
+							logger.warn(">>> WARNING trying to get edge's In-vertex ", err);
 						}
 						String vNtI = "";
 						String vIdI = "";
@@ -894,7 +893,7 @@ public class DataGrooming {
 									if( connectedVert == null ) {
 										LoggingContext.statusCode(StatusCode.ERROR);
 										LoggingContext.responseCode(LoggingContext.DATA_ERROR);
-										LOGGER.warn( "GHOST2 -- got NULL when doing getVertex for vid = " + vIdLong);
+										logger.warn( "GHOST2 -- got NULL when doing getVertex for vid = " + vIdLong);
 										cantGetUsingVid = true;
 										
 										// If we can NOT get this ghost with the SECOND graph-object, 
@@ -906,7 +905,7 @@ public class DataGrooming {
 										catch( Exception ex){
 											LoggingContext.statusCode(StatusCode.ERROR);
 											LoggingContext.responseCode(LoggingContext.DATA_ERROR);
-											LOGGER.warn( "GHOST2 --  Could not get the ghost info for a bad edge for vtxId = " + vIdLong, ex);
+											logger.warn( "GHOST2 --  Could not get the ghost info for a bad edge for vtxId = " + vIdLong, ex);
 										}
 										if( ghost2 != null ){
 											ghostNodeHash.put(vIdI, ghost2);
@@ -917,7 +916,7 @@ public class DataGrooming {
 							catch (Exception err) {
 								LoggingContext.statusCode(StatusCode.ERROR);
 								LoggingContext.responseCode(LoggingContext.DATA_ERROR);
-								LOGGER.warn(">>> WARNING trying to get edge's In-vertex props ", err);
+								logger.warn(">>> WARNING trying to get edge's In-vertex props ", err);
 							}
 						}
 						if (keysMissing || vIn == null || vNtI.equals("")
@@ -946,11 +945,11 @@ public class DataGrooming {
 										okFlag = false;
 										LoggingContext.statusCode(StatusCode.ERROR);
 										LoggingContext.responseCode(LoggingContext.DATA_ERROR);
-										LOGGER.warn("WARNING when trying to delete bad-edge-connected VERTEX VID = "
+										logger.warn("WARNING when trying to delete bad-edge-connected VERTEX VID = "
 												+ vIdI, e1);
 									}
 									if (okFlag) {
-										LOGGER.info(" DELETED vertex from bad edge = "
+										logger.info(" DELETED vertex from bad edge = "
 														+ vIdI);
 									}
 								} else {
@@ -971,11 +970,11 @@ public class DataGrooming {
 										okFlag = false;
 										LoggingContext.statusCode(StatusCode.ERROR);
 										LoggingContext.responseCode(LoggingContext.DATA_ERROR);
-										LOGGER.warn("WARNING when trying to delete edge = "
+										logger.warn("WARNING when trying to delete edge = "
 												+ thisEid);
 									}
 									if (okFlag) {
-										LOGGER.info(" DELETED edge = " + thisEid);
+										logger.info(" DELETED edge = " + thisEid);
 									}
 								}
 							} else {
@@ -992,7 +991,7 @@ public class DataGrooming {
 						} catch (Exception err) {
 							LoggingContext.statusCode(StatusCode.ERROR);
 							LoggingContext.responseCode(LoggingContext.DATA_ERROR);
-							LOGGER.warn(">>> WARNING trying to get edge's Out-vertex ");
+							logger.warn(">>> WARNING trying to get edge's Out-vertex ");
 						}
 						String vNtO = "";
 						String vIdO = "";
@@ -1018,7 +1017,7 @@ public class DataGrooming {
 									Vertex connectedVert = g2.traversal().V(vIdLong).next();
 									if( connectedVert == null ) {
 										cantGetUsingVid = true;
-										LOGGER.info( "GHOST2 -- got NULL when doing getVertex for vid = " + vIdLong);
+										logger.info( "GHOST2 -- got NULL when doing getVertex for vid = " + vIdLong);
 										// If we can get this ghost with the other graph-object, then get it -- it's still a ghost
 										try {
 											 ghost2 = g.traversal().V(vIdLong).next();
@@ -1026,7 +1025,7 @@ public class DataGrooming {
 										catch( Exception ex){
 											LoggingContext.statusCode(StatusCode.ERROR);
 											LoggingContext.responseCode(LoggingContext.DATA_ERROR);
-											LOGGER.warn( "GHOST2 -- Could not get the ghost info for a bad edge for vtxId = " + vIdLong, ex);
+											logger.warn( "GHOST2 -- Could not get the ghost info for a bad edge for vtxId = " + vIdLong, ex);
 										}
 										if( ghost2 != null ){
 											ghostNodeHash.put(vIdO, ghost2);
@@ -1036,7 +1035,7 @@ public class DataGrooming {
 							} catch (Exception err) {
 								LoggingContext.statusCode(StatusCode.ERROR);
 								LoggingContext.responseCode(LoggingContext.DATA_ERROR);
-								LOGGER.warn(">>> WARNING trying to get edge's Out-vertex props ", err);
+								logger.warn(">>> WARNING trying to get edge's Out-vertex props ", err);
 							}
 						}
 						if (keysMissing || vOut == null || vNtO.equals("")
@@ -1065,11 +1064,11 @@ public class DataGrooming {
 										okFlag = false;
 										LoggingContext.statusCode(StatusCode.ERROR);
 										LoggingContext.responseCode(LoggingContext.DATA_ERROR);
-										LOGGER.warn("WARNING when trying to delete bad-edge-connected VID = "
+										logger.warn("WARNING when trying to delete bad-edge-connected VID = "
 												+ vIdO, e1);
 									}
 									if (okFlag) {
-										LOGGER.info(" DELETED vertex from bad edge = "
+										logger.info(" DELETED vertex from bad edge = "
 														+ vIdO);
 									}
 								} else {
@@ -1090,11 +1089,11 @@ public class DataGrooming {
 										okFlag = false;
 										LoggingContext.statusCode(StatusCode.ERROR);
 										LoggingContext.responseCode(LoggingContext.DATA_ERROR);
-										LOGGER.warn("WARNING when trying to delete edge = "
+										logger.warn("WARNING when trying to delete edge = "
 												+ thisEid, ex);
 									}
 									if (okFlag) {
-										LOGGER.info(" DELETED edge = " + thisEid);
+										logger.info(" DELETED edge = " + thisEid);
 									}
 								}
 							} else {
@@ -1109,7 +1108,7 @@ public class DataGrooming {
 				} catch (Exception exx) {
 					LoggingContext.statusCode(StatusCode.ERROR);
 					LoggingContext.responseCode(LoggingContext.DATA_ERROR);
-					LOGGER.warn("WARNING from in the while-verts-loop ", exx);
+					logger.warn("WARNING from in the while-verts-loop ", exx);
 				}
 			}// End of while-vertices-loop (the edge-checking)
 		  }	// end of -- if we're not skipping the edge-checking 
@@ -1118,14 +1117,14 @@ public class DataGrooming {
 			deleteCount = deleteCount + dupeGrpsDeleted;
 			if (!singleCommits && deleteCount > 0) {
 				try {
-					LOGGER.info("About to do the commit for "
+					logger.info("About to do the commit for "
 							+ deleteCount + " removes. ");
 					executeFinalCommit = true;
-					LOGGER.info("Commit was successful ");
+					logger.info("Commit was successful ");
 				} catch (Exception excom) {
 					LoggingContext.statusCode(StatusCode.ERROR);
 					LoggingContext.responseCode(LoggingContext.DATA_ERROR);
-					LOGGER.error(" >>>> ERROR <<<<   Could not commit changes. " + LogFormatTools.getStackTop(excom));
+					logger.error(" >>>> ERROR <<<<   Could not commit changes. " + LogFormatTools.getStackTop(excom));
 					deleteCount = 0;
 				}
 			}
@@ -1214,7 +1213,7 @@ public class DataGrooming {
 				} catch (Exception dex) {
 					LoggingContext.statusCode(StatusCode.ERROR);
 					LoggingContext.responseCode(LoggingContext.DATA_ERROR);
-					LOGGER.error("error trying to print detail info for a ghost-node:  " + LogFormatTools.getStackTop(dex));
+					logger.error("error trying to print detail info for a ghost-node:  " + LogFormatTools.getStackTop(dex));
 				}
 			}
 
@@ -1238,7 +1237,7 @@ public class DataGrooming {
 				} catch (Exception dex) {
 					LoggingContext.statusCode(StatusCode.ERROR);
 					LoggingContext.responseCode(LoggingContext.DATA_ERROR);
-					LOGGER.error("error trying to print detail info for a Orphan Node /missing dependent edge " + LogFormatTools.getStackTop(dex));
+					logger.error("error trying to print detail info for a Orphan Node /missing dependent edge " + LogFormatTools.getStackTop(dex));
 				}
 			}
 
@@ -1263,7 +1262,7 @@ public class DataGrooming {
 				} catch (Exception dex) {
 					LoggingContext.statusCode(StatusCode.ERROR);
 					LoggingContext.responseCode(LoggingContext.DATA_ERROR);
-					LOGGER.error("error trying to print detail info for a node missing its dependent edge but not an orphan " 
+					logger.error("error trying to print detail info for a node missing its dependent edge but not an orphan "
 							+ LogFormatTools.getStackTop(dex));
 				}
 			}
@@ -1286,7 +1285,7 @@ public class DataGrooming {
 				} catch (Exception pex) {
 					LoggingContext.statusCode(StatusCode.ERROR);
 					LoggingContext.responseCode(LoggingContext.DATA_ERROR);
-					LOGGER.error("error trying to print empty/bad vertex data: " + LogFormatTools.getStackTop(pex));
+					logger.error("error trying to print empty/bad vertex data: " + LogFormatTools.getStackTop(pex));
 				}
 			}
 
@@ -1367,7 +1366,7 @@ public class DataGrooming {
 				} catch (Exception dex) {
 					LoggingContext.statusCode(StatusCode.ERROR);
 					LoggingContext.responseCode(LoggingContext.DATA_ERROR);
-					LOGGER.error("error trying to print duplicate vertex data " + LogFormatTools.getStackTop(dex));
+					logger.error("error trying to print duplicate vertex data " + LogFormatTools.getStackTop(dex));
 				}
 
 			}// while - work on each group of dupes
@@ -1387,8 +1386,8 @@ public class DataGrooming {
 
 			bw.close();
 
-			LOGGER.info("\n ------------- Done doing all the checks ------------ ");
-			LOGGER.info("Output will be written to " + fullOutputFileName);
+			logger.info("\n ------------- Done doing all the checks ------------ ");
+			logger.info("Output will be written to " + fullOutputFileName);
 
 			if (cleanupCandidateCount > 0) {
 				// Technically, this is not an error -- but we're throwing this
@@ -1400,12 +1399,12 @@ public class DataGrooming {
 		} catch (AAIException e) {
 			LoggingContext.statusCode(StatusCode.ERROR);
 			LoggingContext.responseCode(LoggingContext.DATA_ERROR);
-			LOGGER.error("Caught AAIException while grooming data");
+			logger.error("Caught AAIException while grooming data");
 			ErrorLogHelper.logException(e);
 		} catch (Exception ex) {
 			LoggingContext.statusCode(StatusCode.ERROR);
 			LoggingContext.responseCode(LoggingContext.DATA_ERROR);
-			LOGGER.error("Caught exception while grooming data");
+			logger.error("Caught exception while grooming data");
 			ErrorLogHelper.logError("AAI_6128", ex.getMessage() + ", resolve and rerun dataGrooming");
 		} finally {
 
@@ -1415,7 +1414,7 @@ public class DataGrooming {
 				} catch (IOException iox) {
 					LoggingContext.statusCode(StatusCode.ERROR);
 					LoggingContext.responseCode(LoggingContext.AVAILABILITY_TIMEOUT_ERROR);
-					LOGGER.warn("Got an IOException trying to close bufferedWriter() \n", iox);
+					logger.warn("Got an IOException trying to close bufferedWriter() \n", iox);
 				}
 			}
 
@@ -1431,7 +1430,7 @@ public class DataGrooming {
 					// Don't throw anything because Titan sometimes is just saying that the graph is already closed
 					LoggingContext.statusCode(StatusCode.ERROR);
 					LoggingContext.responseCode(LoggingContext.AVAILABILITY_TIMEOUT_ERROR);
-					LOGGER.warn("WARNING from final graphTransaction.rollback()", ex);
+					logger.warn("WARNING from final graphTransaction.rollback()", ex);
 				}
 			}
 			
@@ -1444,7 +1443,7 @@ public class DataGrooming {
 					// Don't throw anything because Titan sometimes is just saying that the graph is already closed
 					LoggingContext.statusCode(StatusCode.ERROR);
 					LoggingContext.responseCode(LoggingContext.AVAILABILITY_TIMEOUT_ERROR);
-					LOGGER.warn("WARNING from final graphTransaction2.rollback()", ex);
+					logger.warn("WARNING from final graphTransaction2.rollback()", ex);
 				}
 			}
 				
@@ -1458,7 +1457,7 @@ public class DataGrooming {
 					// Don't throw anything because Titan sometimes is just saying that the graph is already closed{
 					LoggingContext.statusCode(StatusCode.ERROR);
 					LoggingContext.responseCode(LoggingContext.AVAILABILITY_TIMEOUT_ERROR);
-					LOGGER.warn("WARNING from final graph.shutdown()", ex);
+					logger.warn("WARNING from final graph.shutdown()", ex);
 				}
 				
 				try {
@@ -1470,7 +1469,7 @@ public class DataGrooming {
 					// Don't throw anything because Titan sometimes is just saying that the graph is already closed{
 					LoggingContext.statusCode(StatusCode.ERROR);
 					LoggingContext.responseCode(LoggingContext.AVAILABILITY_TIMEOUT_ERROR);
-					LOGGER.warn("WARNING from final graph2.shutdown()", ex);
+					logger.warn("WARNING from final graph2.shutdown()", ex);
 				}
 			}
 				
@@ -1706,7 +1705,7 @@ public class DataGrooming {
 		try {
 			keyProps = loader.introspectorFromName(vtxANodeType).getKeys();
 		} catch (AAIUnknownObjectException e) {
-			LOGGER.warn("Required property not found", e);
+			logger.warn("Required property not found", e);
 			throw new AAIException("AAI_6105", "Required Property name(s) not found for nodeType = " + vtxANodeType + ")");
 		}
 		
@@ -2065,7 +2064,7 @@ public class DataGrooming {
 		} catch (Exception e) {
 			LoggingContext.statusCode(StatusCode.ERROR);
 			LoggingContext.responseCode(LoggingContext.DATA_ERROR);
-			LOGGER.warn(" >>> Threw an error in checkAndProcessDupes - just absorb this error and move on. ", e);
+			logger.warn(" >>> Threw an error in checkAndProcessDupes - just absorb this error and move on. ", e);
 		}
 
 		return returnList;
@@ -2193,7 +2192,7 @@ public class DataGrooming {
 					if (prefArr.length != 2 || (!prefArr[0].equals("KeepVid"))) {
 						LoggingContext.statusCode(StatusCode.ERROR);
 						LoggingContext.responseCode(LoggingContext.DATA_ERROR);
-						LOGGER.error("Bad format. Expecting KeepVid=999999");
+						logger.error("Bad format. Expecting KeepVid=999999");
 						return false;
 					} else {
 						String keepVidStr = prefArr[1];
@@ -2223,10 +2222,10 @@ public class DataGrooming {
 										okFlag = false;
 										LoggingContext.statusCode(StatusCode.ERROR);
 										LoggingContext.responseCode(LoggingContext.DATA_ERROR);
-										LOGGER.error("ERROR trying to delete VID = " + thisVid + " " + LogFormatTools.getStackTop(e));
+										logger.error("ERROR trying to delete VID = " + thisVid + " " + LogFormatTools.getStackTop(e));
 									}
 									if (okFlag) {
-										LOGGER.info(" DELETED VID = " + thisVid);
+										logger.info(" DELETED VID = " + thisVid);
 										deletedSomething = true;
 									}
 								}
@@ -2234,7 +2233,7 @@ public class DataGrooming {
 						} else {
 							LoggingContext.statusCode(StatusCode.ERROR);
 							LoggingContext.responseCode(LoggingContext.DATA_ERROR);
-							LOGGER.error("ERROR - Vertex Id to keep not found in list of dupes.  dupeInfoString = ["
+							logger.error("ERROR - Vertex Id to keep not found in list of dupes.  dupeInfoString = ["
 									+ dupeInfoString + "]");
 							return false;
 						}
@@ -2315,7 +2314,7 @@ public class DataGrooming {
 		catch( Exception ex ){
 			LoggingContext.statusCode(StatusCode.ERROR);
 			LoggingContext.responseCode(LoggingContext.DATA_ERROR);
-			LOGGER.error( " ERROR trying to get node for: [" + propsAndValuesForMsg + "]" + LogFormatTools.getStackTop(ex));
+			logger.error( " ERROR trying to get node for: [" + propsAndValuesForMsg + "]" + LogFormatTools.getStackTop(ex));
 		}
 
 		if( verts != null ){
@@ -2326,7 +2325,7 @@ public class DataGrooming {
 		}
 		
 		if( retVertList.size() == 0 ){
-			LOGGER.debug("DEBUG No node found for nodeType = [" + nodeType +
+			logger.debug("DEBUG No node found for nodeType = [" + nodeType +
 					"], propsAndVal = " + propsAndValuesForMsg );
 		}
 		
@@ -2565,7 +2564,7 @@ public class DataGrooming {
 				}
 			}
 			catch (Exception e) {
-				LOGGER.warn(" >>> Threw an error in getDupeSets4NonDepNodes - just absorb this error and move on. ", e);
+				logger.warn(" >>> Threw an error in getDupeSets4NonDepNodes - just absorb this error and move on. ", e);
 			}
 		}
 					
@@ -2583,7 +2582,7 @@ public class DataGrooming {
 				}
 			} 
 			catch (Exception e) {
-				LOGGER.warn(" >>> Threw an error in getDupeSets4NonDepNodes - just absorb this error and move on. ", e);
+				logger.warn(" >>> Threw an error in getDupeSets4NonDepNodes - just absorb this error and move on. ", e);
 			}
 			
 		}
@@ -2636,7 +2635,7 @@ public class DataGrooming {
 				if( thisVid.equals(vidAL.toString()) || thisVid.equals(vidBL.toString()) ){
 					String msg = " vid = " + thisVid + " is one of two that the DB can retrieve directly ------";
 					//System.out.println(msg);
-					LOGGER.info(msg);
+					logger.info(msg);
 					returnVid = thisVid;
 				}
 			}
@@ -2644,7 +2643,7 @@ public class DataGrooming {
 		catch ( AAIException ae ){
 			String emsg = "Error trying to get node just by key " + ae.getMessage();
 			//System.out.println(emsg);
-			LOGGER.error(emsg);
+			logger.error(emsg);
 	  	}
 		
 		return returnVid;
