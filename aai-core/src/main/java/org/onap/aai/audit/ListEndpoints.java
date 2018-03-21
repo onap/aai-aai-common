@@ -53,8 +53,8 @@ public class ListEndpoints {
 
 	private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(ListEndpoints.class);
 
-	private final String start = "inventory";
-	private final String[] blacklist = { "search", "aai-internal" };
+	private final static String start = "inventory";
+	private final static String[] blacklist = { "search", "aai-internal" };
 
 	private List<String> endpoints = new ArrayList<>();
 	private Map<String, String> endpointToLogicalName = new HashMap<String, String>();
@@ -99,19 +99,17 @@ public class ListEndpoints {
 
 		String currentUri = "";
 
-		if (!obj.getDbName().equals("inventory")) {
+		if (!obj.getDbName().equals(start)) {
 			currentUri = uri + obj.getGenericURI();
 		} else {
 			currentUri = uri;
 		}
-		if (obj.getName().equals("relationship-data") || obj.getName().equals("related-to-property")) {
+		if ("relationship-data".equals(obj.getName()) || "related-to-property".equals(obj.getName())) {
 			return;
 		}
 		if (!obj.isContainer()) {
 			endpoints.add(currentUri);
 		}
-		
-		String dbName = obj.getDbName();
 		
 		populateLogicalName(obj, uri, currentUri);
 		
@@ -179,7 +177,7 @@ public class ListEndpoints {
 	 */
 	private void populateLogicalName(Introspector obj, String uri, String currentUri) {
 
-		if (obj.getDbName().equals("inventory") || currentUri.split("/").length <= 4 || currentUri.endsWith("relationship-list")) {
+		if (obj.getDbName().equals(start) || currentUri.split("/").length <= 4 || currentUri.endsWith("relationship-list")) {
 			return;
 		}
 		
@@ -251,7 +249,7 @@ public class ListEndpoints {
 		List<String> result = new ArrayList<>();
 		Pattern p = null;
 		Matcher m = null;
-		if (!filterOut.equals("")) {
+		if (!filterOut.isEmpty()) {
 			p = Pattern.compile(filterOut);
 			m = null;
 		}
