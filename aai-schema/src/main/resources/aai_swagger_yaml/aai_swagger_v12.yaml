@@ -5362,7 +5362,7 @@ paths:
           required: true
           type: string
           example: __HPA-CAPABILITY-ID__
-  /cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}/flavors/flavor/{flavor-id}/hpa-capabilities/hpa-capability/{hpa-capability-id}/hpa-feature-attributes/relationship-list/relationship:
+  /cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}/flavors/flavor/{flavor-id}/hpa-capabilities/hpa-capability/{hpa-capability-id}/hpa-feature-attributes/{hpa-attribute-key}/relationship-list/relationship:
     put:
       tags:
         - CloudInfrastructure
@@ -5402,6 +5402,12 @@ paths:
           required: true
           type: string
           example: __HPA-CAPABILITY-ID__
+        - name: hpa-attribute-key
+          in: path
+          description: name of the specific HPA attribute
+          required: true
+          type: string
+          example: __HPA-ATTRIBUTE-KEY__
         - name: body
           in: body
           description: relationship object that needs to be created or updated. [Valid relationship examples shown here](apidocs/relations/v12/CloudInfrastructureCloudRegionsCloudRegionFlavorsFlavorHpaCapabilitiesHpaCapabilityHpaFeatureAttributes.json)
@@ -5448,7 +5454,13 @@ paths:
           required: true
           type: string
           example: __HPA-CAPABILITY-ID__
-  /cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}/flavors/flavor/{flavor-id}/hpa-capabilities/hpa-capability/{hpa-capability-id}/hpa-feature-attributes:
+        - name: hpa-attribute-key
+          in: path
+          description: name of the specific HPA attribute
+          required: true
+          type: string
+          example: __HPA-ATTRIBUTE-KEY__
+  /cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}/flavors/flavor/{flavor-id}/hpa-capabilities/hpa-capability/{hpa-capability-id}/hpa-feature-attributes/{hpa-attribute-key}:
     get:
       tags:
         - CloudInfrastructure
@@ -5490,6 +5502,12 @@ paths:
           required: true
           type: string
           example: __HPA-CAPABILITY-ID__
+        - name: hpa-attribute-key
+          in: path
+          description: name of the specific HPA attribute
+          required: true
+          type: string
+          example: __HPA-ATTRIBUTE-KEY__
         - name: cloud-type
           in: query
           description: Type of the cloud (e.g., openstack)
@@ -5510,10 +5528,179 @@ paths:
           description: Name of the HPACapability
           required: false
           type: string
-        - name: hpa-hw-arch
+        - name: architecture
           in: query
           description: Hardware architecture
           required: false
+          type: string
+    put:
+      tags:
+        - CloudInfrastructure
+      summary: create or update an existing hpa-feature-attributes
+      description: |
+        Create or update an existing hpa-feature-attributes.
+        #
+        Note! This PUT method has a corresponding PATCH method that can be used to update just a few of the fields of an existing object, rather than a full object replacement.  An example can be found in the [PATCH section] below
+      operationId: createOrUpdateCloudInfrastructureCloudRegionsCloudRegionFlavorsFlavorHpaCapabilitiesHpaCapabilityHpaFeatureAttributes
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: cloud-owner
+          in: path
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
+          required: true
+          type: string
+          example: __CLOUD-OWNER__
+        - name: cloud-region-id
+          in: path
+          description: Identifier used by the vendor for the region. Second part of composite key
+          required: true
+          type: string
+          example: __CLOUD-REGION-ID__
+        - name: flavor-id
+          in: path
+          description: Flavor id, expected to be unique across cloud-region.
+          required: true
+          type: string
+          example: __FLAVOR-ID__
+        - name: hpa-capability-id
+          in: path
+          description: UUID to uniquely identify a HPA capability
+          required: true
+          type: string
+          example: __HPA-CAPABILITY-ID__
+        - name: hpa-attribute-key
+          in: path
+          description: name of the specific HPA attribute
+          required: true
+          type: string
+          example: __HPA-ATTRIBUTE-KEY__
+        - name: body
+          in: body
+          description: hpa-feature-attributes object that needs to be created or updated. [Valid relationship examples shown here](apidocs/relations/v12/CloudInfrastructureCloudRegionsCloudRegionFlavorsFlavorHpaCapabilitiesHpaCapabilityHpaFeatureAttributes.json)
+          required: true
+          schema:
+            $ref: "#/definitions/hpa-feature-attributes"
+    patch:
+      tags:
+        - CloudInfrastructure
+      summary: update an existing hpa-feature-attributes
+      description: |
+        Update an existing hpa-feature-attributes
+        #
+        Note:  Endpoints that are not devoted to object relationships support both PUT and PATCH operations.
+        The PUT operation will entirely replace an existing object.
+        The PATCH operation sends a "description of changes" for an existing object.  The entire set of changes must be applied.  An error result means no change occurs.
+        #
+        Other differences between PUT and PATCH are:
+        #
+        - For PATCH, you can send any of the values shown in sample REQUEST body.  There are no required values.
+        - For PATCH, resource-id which is a required REQUEST body element for PUT, must not be sent.
+        - PATCH cannot be used to update relationship elements; there are dedicated PUT operations for this.
+      operationId: UpdateCloudInfrastructureCloudRegionsCloudRegionFlavorsFlavorHpaCapabilitiesHpaCapabilityHpaFeatureAttributes
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: cloud-owner
+          in: path
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
+          required: true
+          type: string
+          example: __CLOUD-OWNER__
+        - name: cloud-region-id
+          in: path
+          description: Identifier used by the vendor for the region. Second part of composite key
+          required: true
+          type: string
+          example: __CLOUD-REGION-ID__
+        - name: flavor-id
+          in: path
+          description: Flavor id, expected to be unique across cloud-region.
+          required: true
+          type: string
+          example: __FLAVOR-ID__
+        - name: hpa-capability-id
+          in: path
+          description: UUID to uniquely identify a HPA capability
+          required: true
+          type: string
+          example: __HPA-CAPABILITY-ID__
+        - name: hpa-attribute-key
+          in: path
+          description: name of the specific HPA attribute
+          required: true
+          type: string
+          example: __HPA-ATTRIBUTE-KEY__
+        - name: body
+          in: body
+          description: hpa-feature-attributes object that needs to be created or updated. 
+          required: true
+          schema:
+            $ref: "#/patchDefinitions/hpa-feature-attributes"
+    delete:
+      tags:
+        - CloudInfrastructure
+      summary: delete an existing hpa-feature-attributes
+      description: delete an existing hpa-feature-attributes
+      operationId: deleteCloudInfrastructureCloudRegionsCloudRegionFlavorsFlavorHpaCapabilitiesHpaCapabilityHpaFeatureAttributes
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: cloud-owner
+          in: path
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
+          required: true
+          type: string
+          example: __CLOUD-OWNER__
+        - name: cloud-region-id
+          in: path
+          description: Identifier used by the vendor for the region. Second part of composite key
+          required: true
+          type: string
+          example: __CLOUD-REGION-ID__
+        - name: flavor-id
+          in: path
+          description: Flavor id, expected to be unique across cloud-region.
+          required: true
+          type: string
+          example: __FLAVOR-ID__
+        - name: hpa-capability-id
+          in: path
+          description: UUID to uniquely identify a HPA capability
+          required: true
+          type: string
+          example: __HPA-CAPABILITY-ID__
+        - name: hpa-attribute-key
+          in: path
+          description: name of the specific HPA attribute
+          required: true
+          type: string
+          example: __HPA-ATTRIBUTE-KEY__
+        - name: resource-version
+          in: query
+          description: resource-version for concurrency
+          required: true
           type: string
   /cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}/flavors/flavor/{flavor-id}/hpa-capabilities/hpa-capability/{hpa-capability-id}:
     get:
@@ -5577,7 +5764,7 @@ paths:
           description: Name of the HPACapability
           required: false
           type: string
-        - name: hpa-hw-arch
+        - name: architecture
           in: query
           description: Hardware architecture
           required: false
@@ -8870,7 +9057,7 @@ paths:
           required: true
           type: string
           example: __HPA-CAPABILITY-ID__
-  /cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}/hpa-capabilities/hpa-capability/{hpa-capability-id}/hpa-feature-attributes/relationship-list/relationship:
+  /cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}/hpa-capabilities/hpa-capability/{hpa-capability-id}/hpa-feature-attributes/{hpa-attribute-key}/relationship-list/relationship:
     put:
       tags:
         - CloudInfrastructure
@@ -8904,6 +9091,12 @@ paths:
           required: true
           type: string
           example: __HPA-CAPABILITY-ID__
+        - name: hpa-attribute-key
+          in: path
+          description: name of the specific HPA attribute
+          required: true
+          type: string
+          example: __HPA-ATTRIBUTE-KEY__
         - name: body
           in: body
           description: relationship object that needs to be created or updated. [Valid relationship examples shown here](apidocs/relations/v12/CloudInfrastructureCloudRegionsCloudRegionHpaCapabilitiesHpaCapabilityHpaFeatureAttributes.json)
@@ -8944,7 +9137,13 @@ paths:
           required: true
           type: string
           example: __HPA-CAPABILITY-ID__
-  /cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}/hpa-capabilities/hpa-capability/{hpa-capability-id}/hpa-feature-attributes:
+        - name: hpa-attribute-key
+          in: path
+          description: name of the specific HPA attribute
+          required: true
+          type: string
+          example: __HPA-ATTRIBUTE-KEY__
+  /cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}/hpa-capabilities/hpa-capability/{hpa-capability-id}/hpa-feature-attributes/{hpa-attribute-key}:
     get:
       tags:
         - CloudInfrastructure
@@ -8980,6 +9179,12 @@ paths:
           required: true
           type: string
           example: __HPA-CAPABILITY-ID__
+        - name: hpa-attribute-key
+          in: path
+          description: name of the specific HPA attribute
+          required: true
+          type: string
+          example: __HPA-ATTRIBUTE-KEY__
         - name: cloud-type
           in: query
           description: Type of the cloud (e.g., openstack)
@@ -8995,10 +9200,161 @@ paths:
           description: Name of the HPACapability
           required: false
           type: string
-        - name: hpa-hw-arch
+        - name: architecture
           in: query
           description: Hardware architecture
           required: false
+          type: string
+    put:
+      tags:
+        - CloudInfrastructure
+      summary: create or update an existing hpa-feature-attributes
+      description: |
+        Create or update an existing hpa-feature-attributes.
+        #
+        Note! This PUT method has a corresponding PATCH method that can be used to update just a few of the fields of an existing object, rather than a full object replacement.  An example can be found in the [PATCH section] below
+      operationId: createOrUpdateCloudInfrastructureCloudRegionsCloudRegionHpaCapabilitiesHpaCapabilityHpaFeatureAttributes
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: cloud-owner
+          in: path
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
+          required: true
+          type: string
+          example: __CLOUD-OWNER__
+        - name: cloud-region-id
+          in: path
+          description: Identifier used by the vendor for the region. Second part of composite key
+          required: true
+          type: string
+          example: __CLOUD-REGION-ID__
+        - name: hpa-capability-id
+          in: path
+          description: UUID to uniquely identify a HPA capability
+          required: true
+          type: string
+          example: __HPA-CAPABILITY-ID__
+        - name: hpa-attribute-key
+          in: path
+          description: name of the specific HPA attribute
+          required: true
+          type: string
+          example: __HPA-ATTRIBUTE-KEY__
+        - name: body
+          in: body
+          description: hpa-feature-attributes object that needs to be created or updated. [Valid relationship examples shown here](apidocs/relations/v12/CloudInfrastructureCloudRegionsCloudRegionHpaCapabilitiesHpaCapabilityHpaFeatureAttributes.json)
+          required: true
+          schema:
+            $ref: "#/definitions/hpa-feature-attributes"
+    patch:
+      tags:
+        - CloudInfrastructure
+      summary: update an existing hpa-feature-attributes
+      description: |
+        Update an existing hpa-feature-attributes
+        #
+        Note:  Endpoints that are not devoted to object relationships support both PUT and PATCH operations.
+        The PUT operation will entirely replace an existing object.
+        The PATCH operation sends a "description of changes" for an existing object.  The entire set of changes must be applied.  An error result means no change occurs.
+        #
+        Other differences between PUT and PATCH are:
+        #
+        - For PATCH, you can send any of the values shown in sample REQUEST body.  There are no required values.
+        - For PATCH, resource-id which is a required REQUEST body element for PUT, must not be sent.
+        - PATCH cannot be used to update relationship elements; there are dedicated PUT operations for this.
+      operationId: UpdateCloudInfrastructureCloudRegionsCloudRegionHpaCapabilitiesHpaCapabilityHpaFeatureAttributes
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: cloud-owner
+          in: path
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
+          required: true
+          type: string
+          example: __CLOUD-OWNER__
+        - name: cloud-region-id
+          in: path
+          description: Identifier used by the vendor for the region. Second part of composite key
+          required: true
+          type: string
+          example: __CLOUD-REGION-ID__
+        - name: hpa-capability-id
+          in: path
+          description: UUID to uniquely identify a HPA capability
+          required: true
+          type: string
+          example: __HPA-CAPABILITY-ID__
+        - name: hpa-attribute-key
+          in: path
+          description: name of the specific HPA attribute
+          required: true
+          type: string
+          example: __HPA-ATTRIBUTE-KEY__
+        - name: body
+          in: body
+          description: hpa-feature-attributes object that needs to be created or updated. 
+          required: true
+          schema:
+            $ref: "#/patchDefinitions/hpa-feature-attributes"
+    delete:
+      tags:
+        - CloudInfrastructure
+      summary: delete an existing hpa-feature-attributes
+      description: delete an existing hpa-feature-attributes
+      operationId: deleteCloudInfrastructureCloudRegionsCloudRegionHpaCapabilitiesHpaCapabilityHpaFeatureAttributes
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: cloud-owner
+          in: path
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
+          required: true
+          type: string
+          example: __CLOUD-OWNER__
+        - name: cloud-region-id
+          in: path
+          description: Identifier used by the vendor for the region. Second part of composite key
+          required: true
+          type: string
+          example: __CLOUD-REGION-ID__
+        - name: hpa-capability-id
+          in: path
+          description: UUID to uniquely identify a HPA capability
+          required: true
+          type: string
+          example: __HPA-CAPABILITY-ID__
+        - name: hpa-attribute-key
+          in: path
+          description: name of the specific HPA attribute
+          required: true
+          type: string
+          example: __HPA-ATTRIBUTE-KEY__
+        - name: resource-version
+          in: query
+          description: resource-version for concurrency
+          required: true
           type: string
   /cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}/hpa-capabilities/hpa-capability/{hpa-capability-id}:
     get:
@@ -9051,7 +9407,7 @@ paths:
           description: Name of the HPACapability
           required: false
           type: string
-        - name: hpa-hw-arch
+        - name: architecture
           in: query
           description: Hardware architecture
           required: false
@@ -55924,7 +56280,7 @@ definitions:
       hpa-version:
         type: string
         description: HPA schema version
-      hpa-hw-arch:
+      architecture:
         type: string
         description: Hardware architecture
       resource-version:
@@ -55943,11 +56299,13 @@ definitions:
       HPA Capability Feature attributes
       ###### Related Nodes
       - TO hpa-capability( hpa-feature-attributes org.onap.relationships.inventory.BelongsTo hpa-capability, MANY2ONE)
+    required:
+    - hpa-attribute-key
     properties:
-      hpa-attr-key:
+      hpa-attribute-key:
         type: string
         description: name of the specific HPA attribute
-      hpa-attr-value:
+      hpa-attribute-value:
         type: string
         description: JSON string specifying the value, unit and type of the specific HPA attribute
       resource-version:
@@ -61117,7 +61475,7 @@ patchDefinitions:
       hpa-version:
         type: string
         description: HPA schema version
-      hpa-hw-arch:
+      architecture:
         type: string
         description: Hardware architecture
   hpa-feature-attributes:
@@ -61125,11 +61483,13 @@ patchDefinitions:
       HPA Capability Feature attributes
       ###### Related Nodes
       - TO hpa-capability( hpa-feature-attributes org.onap.relationships.inventory.BelongsTo hpa-capability, MANY2ONE)
+    required:
+    - hpa-attribute-key
     properties:
-      hpa-attr-key:
+      hpa-attribute-key:
         type: string
         description: name of the specific HPA attribute
-      hpa-attr-value:
+      hpa-attribute-value:
         type: string
         description: JSON string specifying the value, unit and type of the specific HPA attribute
   image:
@@ -65799,7 +66159,7 @@ getDefinitions:
       hpa-version:
         type: string
         description: HPA schema version
-      hpa-hw-arch:
+      architecture:
         type: string
         description: Hardware architecture
       resource-version:
@@ -65818,11 +66178,13 @@ getDefinitions:
       HPA Capability Feature attributes
       ###### Related Nodes
       - TO hpa-capability( hpa-feature-attributes org.onap.relationships.inventory.BelongsTo hpa-capability, MANY2ONE)
+    required:
+    - hpa-attribute-key
     properties:
-      hpa-attr-key:
+      hpa-attribute-key:
         type: string
         description: name of the specific HPA attribute
-      hpa-attr-value:
+      hpa-attribute-value:
         type: string
         description: JSON string specifying the value, unit and type of the specific HPA attribute
       resource-version:
