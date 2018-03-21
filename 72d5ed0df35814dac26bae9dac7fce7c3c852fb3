@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_3afe9f39",
+        "filename": "aai-core/src/main/java/org/onap/aai/query/builder/MissingOptionalParameter.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2018-03-21T20:40:21Z",
+      "side": 1,
+      "message": "looks like this is a dupe license",
+      "revId": "72d5ed0df35814dac26bae9dac7fce7c3c852fb3",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
