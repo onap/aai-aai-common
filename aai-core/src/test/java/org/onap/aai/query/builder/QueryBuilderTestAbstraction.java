@@ -19,13 +19,14 @@
  */
 package org.onap.aai.query.builder;
 
-import org.janusgraph.core.JanusGraphFactory;
+import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.BulkSet;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.Tree;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.janusgraph.core.JanusGraphFactory;
 import org.junit.*;
 import org.onap.aai.AAISetup;
 import org.onap.aai.db.props.AAIProperties;
@@ -42,6 +43,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import static org.junit.Assert.*;
 
 public abstract class QueryBuilderTestAbstraction extends AAISetup {
@@ -105,6 +108,38 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 		
 
 	}
+	
+	@SuppressWarnings("rawtypes")
+	@Test
+	public void createEdgeLinterfaceToLogicalLinkTraversal_Path() throws AAIException {
+		Vertex pInterface = g.addV("aai-node-type","p-interface","interface-name","p-interface-a").next();
+		Vertex lInterface = g.addV("aai-node-type","l-interface","interface-name","l-interface-a").next();
+		Vertex logicalLink = g.addV("aai-node-type","logical-link","link-name","logical-link-a").next();
+		testEdgeRules.addEdge(g, lInterface, logicalLink);
+		testEdgeRules.addTreeEdge(g, pInterface, lInterface);
+
+		QueryBuilder<Path> tQ = getNewPathTraversalWithTestEdgeRules(pInterface).createEdgeTraversal(EdgeType.TREE,
+				loader.introspectorFromName("p-interface" ), loader.introspectorFromName("l-interface")).createEdgeTraversal(EdgeType.COUSIN,
+				loader.introspectorFromName("l-interface" ), loader.introspectorFromName("logical-link")).path();
+
+		Path path = tQ.next();
+		assertThat(path.objects(), contains(pInterface, lInterface, logicalLink));
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Test
+	public void parentVertexTest() throws AAIException {
+		Vertex pInterface = g.addV("aai-node-type","p-interface","interface-name","p-interface-a").next();
+		Vertex lInterface = g.addV("aai-node-type","l-interface","interface-name","l-interface-a").next();
+
+		testEdgeRules.addTreeEdge(g, pInterface, lInterface);
+
+		QueryBuilder<Vertex> tQ = getNewEdgeTraversalWithTestEdgeRules(lInterface).getParentVertex();
+
+		Vertex parent = tQ.next();
+		assertThat(parent, is(pInterface));
+	}
+
 
 	@Test
 	public void createEdgeLinterfaceToLogicalLinkIntrospectorTraversal() throws AAIException {
@@ -644,5 +679,8 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 
 	protected abstract QueryBuilder<Tree> getNewTreeTraversalWithTestEdgeRules();
 
+	protected abstract QueryBuilder<Path> getNewPathTraversalWithTestEdgeRules(Vertex v);
+
+	protected abstract QueryBuilder<Path> getNewPathTraversalWithTestEdgeRules();
 		
 }
