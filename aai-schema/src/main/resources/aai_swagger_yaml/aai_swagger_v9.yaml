@@ -49103,7 +49103,7 @@ definitions:
       hpa-version:
         type: string
         description: HPA schema version
-      hpa-hw-arch:
+      architecture:
         type: string
         description: Hardware architecture
       resource-version:
@@ -49122,11 +49122,13 @@ definitions:
       HPA Capability Feature attributes
       ###### Related Nodes
       - TO hpa-capability( hpa-feature-attributes org.onap.relationships.inventory.BelongsTo hpa-capability, MANY2ONE)
+    required:
+    - hpa-attribute-key
     properties:
-      hpa-attr-key:
+      hpa-attribute-key:
         type: string
         description: name of the specific HPA attribute
-      hpa-attr-value:
+      hpa-attribute-value:
         type: string
         description: JSON string specifying the value, unit and type of the specific HPA attribute
       resource-version:
@@ -53973,7 +53975,7 @@ patchDefinitions:
       hpa-version:
         type: string
         description: HPA schema version
-      hpa-hw-arch:
+      architecture:
         type: string
         description: Hardware architecture
   hpa-feature-attributes:
@@ -53981,11 +53983,13 @@ patchDefinitions:
       HPA Capability Feature attributes
       ###### Related Nodes
       - TO hpa-capability( hpa-feature-attributes org.onap.relationships.inventory.BelongsTo hpa-capability, MANY2ONE)
+    required:
+    - hpa-attribute-key
     properties:
-      hpa-attr-key:
+      hpa-attribute-key:
         type: string
         description: name of the specific HPA attribute
-      hpa-attr-value:
+      hpa-attribute-value:
         type: string
         description: JSON string specifying the value, unit and type of the specific HPA attribute
   image:
@@ -58323,7 +58327,7 @@ getDefinitions:
       hpa-version:
         type: string
         description: HPA schema version
-      hpa-hw-arch:
+      architecture:
         type: string
         description: Hardware architecture
       resource-version:
@@ -58342,11 +58346,13 @@ getDefinitions:
       HPA Capability Feature attributes
       ###### Related Nodes
       - TO hpa-capability( hpa-feature-attributes org.onap.relationships.inventory.BelongsTo hpa-capability, MANY2ONE)
+    required:
+    - hpa-attribute-key
     properties:
-      hpa-attr-key:
+      hpa-attribute-key:
         type: string
         description: name of the specific HPA attribute
-      hpa-attr-value:
+      hpa-attribute-value:
         type: string
         description: JSON string specifying the value, unit and type of the specific HPA attribute
       resource-version:
