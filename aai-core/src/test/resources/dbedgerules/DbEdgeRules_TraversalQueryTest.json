@@ -152,6 +152,18 @@
 			"prevent-delete": "NONE",
 			"default": "true",
 			"description": "Hard to describe"
+		},
+		{
+			"from": "l-interface",
+			"to": "p-interface",
+			"label": "tosca.relationships.network.BindsTo",
+			"direction": "OUT",
+			"multiplicity": "MANY2ONE",
+			"contains-other-v": "!${direction}",
+			"SVC-INFRA": "${direction}",
+			"delete-other-v": "!${direction}",
+			"prevent-delete": "NONE",
+			"default": "true"
 		}
 	]
 }
