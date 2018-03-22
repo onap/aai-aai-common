@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.common.base.Joiner;
+import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Direction;
@@ -525,6 +527,16 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
 		stepIndex++;
 		return this;
 	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public QueryBuilder<Path> path(){
+		this.list.add(".path()");
+		stepIndex++;
+		return (QueryBuilder<Path>)this;
+	}
 	
 	@Override
 	public QueryBuilder<Edge> outE() {
@@ -677,6 +689,12 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
 		}
 		
 		return (List<E>)this.completeTraversal.toList();
+	}
+
+	protected QueryBuilder<Edge> has(String key, String value) {
+		this.list.add(".has('" + key + "','" + value + "')");
+
+		return (QueryBuilder<Edge>)this;
 	}
 	
 }

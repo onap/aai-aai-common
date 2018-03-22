@@ -27,6 +27,7 @@ import java.util.Map;
 
 import javax.ws.rs.core.MultivaluedMap;
 
+import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
@@ -36,6 +37,8 @@ import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.parsers.query.QueryParser;
 import org.onap.aai.parsers.query.QueryParserStrategy;
+import org.onap.aai.serialization.db.AAIDirection;
+import org.onap.aai.serialization.db.EdgeProperty;
 import org.onap.aai.serialization.db.EdgeType;
 
 /**
@@ -405,16 +408,48 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
 	 * @return a QueryBuilder with the simplePath step appended to its traversal
 	 */
 	public abstract QueryBuilder<E> simplePath();
+
+	/**
+	 *
+	 * @return QueryBuilder with the path step appended to its traversal
+	 */
+	public abstract QueryBuilder<Path> path();
 	
  	public abstract void markContainer();
 
 	public abstract QueryBuilder<E> getContainerQuery();
 
 	public abstract List<E> toList();
-	
+
+	/**
+	 * Used to skip step if there is an optional property missing.
+	 * @param key
+	 * @param value
+	 * @return
+	 */
 	public QueryBuilder<Vertex> getVerticesByProperty(String key, MissingOptionalParameter value) {
 		return (QueryBuilder<Vertex>) this;
 	}
 
-		
+	/**
+	 * TODO the edge direction is hardcoded here, make it more generic
+	 * Returns the parent edge of the vertex
+	 * @return
+	 */
+	public QueryBuilder<Edge> getParentEdge() {
+		this.outE().has(EdgeProperty.CONTAINS.toString(), AAIDirection.IN.toString());
+		return (QueryBuilder<Edge>)this;
+	}
+
+	/**
+	 * TODO the edge direction is hardcoded here, make it more generic
+	 * Returns the parent vertex of the vertex
+	 * @return
+	 */
+	public QueryBuilder<Vertex> getParentVertex() {
+		this.getParentEdge().inV();
+		return (QueryBuilder<Vertex>)this;
+	}
+
+	protected abstract QueryBuilder<Edge> has(String key, String value);
 }

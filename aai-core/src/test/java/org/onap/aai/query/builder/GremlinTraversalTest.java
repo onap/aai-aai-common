@@ -19,6 +19,7 @@
  */
 package org.onap.aai.query.builder;
 
+import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.Tree;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
@@ -52,6 +53,16 @@ public class GremlinTraversalTest extends QueryBuilderTestAbstraction {
 
 	@Override
 	protected QueryBuilder<Tree> getNewTreeTraversalWithTestEdgeRules() {
+		return new GremlinTraversal<>(loader, g, testEdgeRules);
+	}
+
+	@Override
+	protected QueryBuilder<Path> getNewPathTraversalWithTestEdgeRules(Vertex v) {
+		return new GremlinTraversal<>(loader, g, v, testEdgeRules);
+	}
+
+	@Override
+	protected QueryBuilder<Path> getNewPathTraversalWithTestEdgeRules() {
 		return new GremlinTraversal<>(loader, g, testEdgeRules);
 	}
 
