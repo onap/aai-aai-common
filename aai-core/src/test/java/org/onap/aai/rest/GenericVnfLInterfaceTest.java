@@ -23,25 +23,39 @@ import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.onap.aai.AAIJunitRunner;
+import org.junit.runners.Parameterized;
+import org.onap.aai.AAISetup;
 import org.onap.aai.HttpTestUtil;
 import org.onap.aai.PayloadUtil;
+import org.onap.aai.serialization.engines.QueryStyle;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import javax.ws.rs.core.Response;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
-@RunWith(AAIJunitRunner.class)
-public class GenericVnfLInterfaceTest {
+@RunWith(value = Parameterized.class)
+public class GenericVnfLInterfaceTest extends AAISetup {
 
     private HttpTestUtil httpTestUtil;
 
+    @Parameterized.Parameter(value = 0)
+    public QueryStyle queryStyle;
+
+    @Parameterized.Parameters(name = "QueryStyle.{0}")
+    public static Collection<Object[]> data() {
+        return Arrays.asList(new Object[][]{
+                {QueryStyle.TRAVERSAL}
+        });
+    }
+
     @Before
     public void setUp(){
-        httpTestUtil = new HttpTestUtil();
+        httpTestUtil = new HttpTestUtil(queryStyle);
     }
 
     @Test
@@ -57,7 +71,8 @@ public class GenericVnfLInterfaceTest {
         response = httpTestUtil.doGet("/aai/v12/network/generic-vnfs/generic-vnf/vnf1");
         assertEquals("Expecting the generic vnf to be updated", 200, response.getStatus());
 
-        resource = response.getEntity().toString().replaceAll("ipv1\",\"resource-version\":\"\\d+\"", "ipv2\"");
+        resource = response.getEntity().toString();
+        resource = resource.replaceAll("ipv1\",\"resource-version\":\"\\d+\"", "ipv2\"");
         response = httpTestUtil.doPut("/aai/v12/network/generic-vnfs/generic-vnf/vnf1", resource);
         assertEquals("Expecting the generic vnf to be updated", 200, response.getStatus());
 

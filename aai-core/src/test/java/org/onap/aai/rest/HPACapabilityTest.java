@@ -29,6 +29,7 @@ import org.onap.aai.AAIJunitRunner;
 import org.onap.aai.HttpTestUtil;
 import org.onap.aai.PayloadUtil;
 import org.onap.aai.introspection.*;
+import org.onap.aai.serialization.engines.QueryStyle;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import javax.ws.rs.core.Response;
@@ -49,7 +50,7 @@ public class HPACapabilityTest {
 
     @Before
     public void setup() {
-        httpTestUtil = new HttpTestUtil();
+        httpTestUtil = new HttpTestUtil(QueryStyle.TRAVERSAL);
         templateValuesMap = new HashMap<>();
     }
 
