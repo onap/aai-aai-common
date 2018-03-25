@@ -157,7 +157,6 @@ public class EdgeRulesTest extends AAISetup {
 		assertEquals(true, "IN".equalsIgnoreCase(rule.getContains()));
 		assertEquals(true, "NONE".equalsIgnoreCase(rule.getDeleteOtherV()));
 		assertEquals(true, MultiplicityRule.MANY2ONE.equals(rule.getMultiplicityRule()));
-		assertEquals(true,  "OUT".equalsIgnoreCase(rule.getServiceInfrastructure()));
 		assertEquals(true, "IN".equalsIgnoreCase(rule.getPreventDelete()));
 	}
 
@@ -239,23 +238,6 @@ public class EdgeRulesTest extends AAISetup {
 		thrown.expect(RuntimeException.class);
 		thrown.expectMessage("org.onap.aai.exceptions.AAIException: Rule between foo and bar is missing property delete-other-v.");
 		rules.getAllRules();
-	}
-
-	@Test
-	public void getChildrenMissingPropertyTest() {
-		EdgeRules rules = EdgeRules.getInstance("/dbedgerules/DbEdgeRules_test_broken.json");
-
-		thrown.expect(RuntimeException.class);
-		thrown.expectMessage("org.onap.aai.exceptions.AAIException: Rule between quux and foo is missing property SVC-INFRA.");
-		rules.getChildren("foo");
-	}
-
-	@Test
-	public void getEdgeRuleMissingPropertyTest() throws AAIException {
-		EdgeRules rules = EdgeRules.getInstance("/dbedgerules/DbEdgeRules_test_broken.json");
-
-		thrown.expect(RuntimeException.class);
-		rules.getEdgeRules("foo", "quux");
 	}
 
 	@Test

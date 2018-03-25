@@ -27,6 +27,8 @@ import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.onap.aai.AAISetup;
@@ -45,18 +47,20 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
+@RunWith(value = Parameterized.class)
 public class DataLinkTest extends AAISetup {
 
 	private static TitanGraph graph;
 	private final static Version version = Version.getLatest();
 	private final static ModelType introspectorFactoryType = ModelType.MOXY;
-	private final static QueryStyle queryStyle = QueryStyle.TRAVERSAL;
 	private final static DBConnectionType type = DBConnectionType.REALTIME;
 	private static Loader loader;
 	private static TransactionalGraphEngine dbEngine;
@@ -65,32 +69,39 @@ public class DataLinkTest extends AAISetup {
 	@Mock private VertexProperty<String> prop;
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
-	
+
+	@Parameterized.Parameter(value = 0)
+	public QueryStyle queryStyle;
+
+	@Parameterized.Parameters(name = "QueryStyle.{0}")
+	public static Collection<Object[]> data() {
+		return Arrays.asList(new Object[][]{
+				{QueryStyle.TRAVERSAL}
+		});
+	}
 	
 	@BeforeClass
 	public static void setup() throws NoSuchFieldException, SecurityException, Exception {
 		graph = TitanFactory.build().set("storage.backend","inmemory").open();
 		loader = LoaderFactory.createLoaderForVersion(introspectorFactoryType, version);
-		dbEngine = new TitanDBEngine(
-				queryStyle,
-				type,
-				loader);
-		
-		graph.traversal().addV("aai-node-type", "vpn-binding", "vpn-id", "addKey").as("v1")
-		.addV("aai-node-type", "vpn-binding", "vpn-id", "modifyKey").as("v2")
-		.addV("aai-node-type", "route-target", "global-route-target", "modifyTargetKey", "route-target-role", "modifyRoleKey", "linked", true)
+
+		graph.traversal().addV("aai-node-type", "vpn-binding", "vpn-id", "addKey", AAIProperties.AAI_URI, "/network/vpn-bindings/vpn-binding/addKey").as("v1")
+		.addV("aai-node-type", "vpn-binding", "vpn-id", "modifyKey", AAIProperties.AAI_URI, "/network/vpn-bindings/vpn-binding/modifyKey").as("v2")
+		.addV("aai-node-type", "route-target", "global-route-target", "modifyTargetKey", "route-target-role", "modifyRoleKey", "linked", true, AAIProperties.AAI_URI, "/network/vpn-bindings/vpn-binding/modifyKey/route-targets/route-target/modifyTargetKey/modifyRoleKey")
 				.addOutE("org.onap.relationships.inventory.BelongsTo", "v2", EdgeProperty.CONTAINS.toString(), true)
-		.addV("aai-node-type", "vpn-binding", "vpn-id", "deleteKey").as("v3")
-		.addV("aai-node-type", "route-target", "global-route-target", "deleteTargetKey", "route-target-role", "deleteRoleKey", "linked", true)
+		.addV("aai-node-type", "vpn-binding", "vpn-id", "deleteKey",AAIProperties.AAI_URI, "/network/vpn-bindings/vpn-binding/deleteKey").as("v3" )
+		.addV("aai-node-type", "route-target", "global-route-target", "deleteTargetKey", "route-target-role", "deleteRoleKey", "linked", true, AAIProperties.AAI_URI, "/network/vpn-bindings/vpn-binding/deleteKey/route-targets/route-target/deleteTargetKey/deleteRoleKey")
 				.addOutE("org.onap.relationships.inventory.BelongsTo", "v3", EdgeProperty.CONTAINS.toString(), true)
-		.addV("aai-node-type", "vpn-binding", "vpn-id", "getKey").as("v4")
-		.addV("aai-node-type", "route-target", "global-route-target", "getTargetKey", "route-target-role", "getRoleKey", "linked", true)
+		.addV("aai-node-type", "vpn-binding", "vpn-id", "getKey", AAIProperties.AAI_URI, "/network/vpn-bindings/vpn-binding/getKey").as("v4")
+		.addV("aai-node-type", "route-target", "global-route-target", "getTargetKey", "route-target-role", "getRoleKey", "linked", true, AAIProperties.AAI_URI, "/network/vpn-bindings/vpn-binding/getKey/route-targets/route-target/getTargetKeyNoLink/getRoleKeyNoLink")
 				.addOutE("org.onap.relationships.inventory.BelongsTo", "v4", EdgeProperty.CONTAINS.toString(), true)
-		.addV("aai-node-type", "vpn-binding", "vpn-id", "getKeyNoLink").as("v5")
-		.addV("aai-node-type", "route-target", "global-route-target", "getTargetKeyNoLink", "route-target-role", "getRoleKeyNoLink")
+		.addV("aai-node-type", "vpn-binding", "vpn-id", "getKeyNoLink", AAIProperties.AAI_URI, "/network/vpn-bindings/vpn-binding/getKeyNoLink").as("v5")
+		.addV("aai-node-type", "route-target", "global-route-target", "getTargetKeyNoLink", "route-target-role", "getRoleKeyNoLink", AAIProperties.AAI_URI, "/network/vpn-bindings/vpn-binding/getKeyNoLink/route-targets/route-target/getTargetKeyNoLink/getRoleKeyNoLink")
 				.addOutE("org.onap.relationships.inventory.BelongsTo", "v5", EdgeProperty.CONTAINS.toString(), true)
 		.next();
 		graph.tx().commit();
+
+		graph.traversal().V().has("aai-uri","/network/vpn-bindings/vpn-binding/deleteKey").properties().forEachRemaining(p->System.out.println(p.key() +" : " + p.value()));
 	}
 	
 	@AfterClass
@@ -102,6 +113,10 @@ public class DataLinkTest extends AAISetup {
 	@Before
 	public void initMock() {
 		MockitoAnnotations.initMocks(this);
+		dbEngine = new TitanDBEngine(
+				queryStyle,
+				type,
+				loader);
 	}
 	
 	@Test
@@ -129,7 +144,6 @@ public class DataLinkTest extends AAISetup {
 
 		assertEquals("route-target vertex found", true, traversal.V()
 				.has(AAIProperties.NODE_TYPE, "route-target").has("global-route-target", "key1").has("route-target-role", "key2").has("linked", true).hasNext());
-		
 		g.tx().rollback();
 		
 	}
@@ -194,6 +208,7 @@ public class DataLinkTest extends AAISetup {
 				.has("linked", true)
 				.hasNext()
 		);
+
 		g.tx().rollback();
 		
 	}

@@ -28,6 +28,8 @@ import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.onap.aai.db.props.AAIProperties;
@@ -48,25 +50,36 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
+@RunWith(value = Parameterized.class)
 public class DataCopyTest {
 
 	private static TitanGraph graph;
 	private final static Version version = Version.getLatest();
 	private final static ModelType introspectorFactoryType = ModelType.MOXY;
-	private final static QueryStyle queryStyle = QueryStyle.TRAVERSAL;
 	private final static DBConnectionType type = DBConnectionType.REALTIME;
 	private static Loader loader;
 	private static TransactionalGraphEngine dbEngine;
 	@Mock private Vertex self;
 	@Mock private VertexProperty<String> prop;
 	@Mock private QueryParser uriQuery;
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	@Rule public ExpectedException thrown = ExpectedException.none();
+
+	@Parameterized.Parameter(value = 0)
+	public QueryStyle queryStyle;
+
+	@Parameterized.Parameters(name = "QueryStyle.{0}")
+	public static Collection<Object[]> data() {
+		return Arrays.asList(new Object[][]{
+				{QueryStyle.TRAVERSAL}
+		});
+	}
 	
 	
 	@BeforeClass
@@ -75,16 +88,11 @@ public class DataCopyTest {
 		System.setProperty("AJSC_HOME", ".");
 		System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
 		loader = LoaderFactory.createLoaderForVersion(introspectorFactoryType, version);
-		dbEngine = new TitanDBEngine(
-				queryStyle,
-				type,
-				loader);
-		
-		graph.traversal().addV("aai-node-type", "model", "model-invariant-id", "key1").as("v1")
-		.addV("aai-node-type", "model-ver", "model-ver", "myValue", "model-version-id", "key2", "model-version", "testValue")
+		graph.traversal().addV("aai-node-type", "model", "model-invariant-id", "key1", AAIProperties.AAI_URI, "/service-design-and-creation/models/model/key1").as("v1")
+		.addV("aai-node-type", "model-ver", "model-ver", "myValue", "model-version-id", "key2", "model-version", "testValue", AAIProperties.AAI_URI, "/service-design-and-creation/models/model/key1/model-vers/model-ver/key2")
 				.addOutE("org.onap.relationships.inventory.BelongsTo", "v1", EdgeProperty.CONTAINS.toString(), true)
-		.addV("aai-node-type", "model", "model-invariant-id", "key3").as("v2")
-		.addV("aai-node-type", "model-ver", "model-ver", "myValue", "model-version-id", "key4")
+		.addV("aai-node-type", "model", "model-invariant-id", "key3", AAIProperties.AAI_URI, "/service-design-and-creation/models/model/key3").as("v2")
+		.addV("aai-node-type", "model-ver", "model-ver", "myValue", "model-version-id", "key4", AAIProperties.AAI_URI, "/service-design-and-creation/models/model/key3/model-vers/model-ver/key4")
 				.addOutE("org.onap.relationships.inventory.BelongsTo", "v2", EdgeProperty.CONTAINS.toString(), true)
 		.next();
 		graph.tx().commit();
@@ -99,6 +107,10 @@ public class DataCopyTest {
 	@Before
 	public void initMock() {
 		MockitoAnnotations.initMocks(this);
+		dbEngine = new TitanDBEngine(
+				queryStyle,
+				type,
+				loader);
 	}
 	
 	@Test

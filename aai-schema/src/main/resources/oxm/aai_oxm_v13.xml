@@ -563,7 +563,6 @@
 				<xml-property name="description" value="HPA Capability Feature attributes"/>
 				<xml-property name="indexedProps" value="hpa-attribute-key"/>
 				<xml-property name="dependentOn" value="hpa-capability"/>
-				<xml-property name="container" value="hpa-capability"/>
 			</xml-properties>
 		</java-type>
 
