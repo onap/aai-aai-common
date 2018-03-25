@@ -19,28 +19,39 @@
  */
 package org.onap.aai.query.builder;
 
+import org.apache.tinkerpop.gremlin.process.traversal.step.util.Tree;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 
 public class GremlinTraversalTest extends QueryBuilderTestAbstraction {
 	
 	@Override
-	protected QueryBuilder<Edge> getNewEdgeTraversal(Vertex v) {
+	protected QueryBuilder<Edge> getNewEdgeTraversalWithTestEdgeRules(Vertex v) {
 		return new GremlinTraversal<>(loader, g, v, testEdgeRules);
 	}
 	
 	@Override
-	protected QueryBuilder<Edge> getNewEdgeTraversal() {
+	protected QueryBuilder<Edge> getNewEdgeTraversalWithTestEdgeRules() {
 		return new GremlinTraversal<>(loader, g, testEdgeRules);
 	}
 	
 	@Override
-	protected QueryBuilder<Vertex> getNewVertexTraversal(Vertex v) {
+	protected QueryBuilder<Vertex> getNewVertexTraversalWithTestEdgeRules(Vertex v) {
 		return new GremlinTraversal<>(loader, g, v, testEdgeRules);
 	}
 	
 	@Override
-	protected QueryBuilder<Vertex> getNewVertexTraversal() {
+	protected QueryBuilder<Vertex> getNewVertexTraversalWithTestEdgeRules() {
+		return new GremlinTraversal<>(loader, g, testEdgeRules);
+	}
+	
+	@Override
+	protected QueryBuilder<Tree> getNewTreeTraversalWithTestEdgeRules(Vertex v) {
+		return new GremlinTraversal<>(loader, g, v, testEdgeRules);
+	}
+
+	@Override
+	protected QueryBuilder<Tree> getNewTreeTraversalWithTestEdgeRules() {
 		return new GremlinTraversal<>(loader, g, testEdgeRules);
 	}
 

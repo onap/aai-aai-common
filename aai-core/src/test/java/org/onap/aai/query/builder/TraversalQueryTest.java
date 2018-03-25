@@ -19,16 +19,9 @@
  */
 package org.onap.aai.query.builder;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import org.apache.tinkerpop.gremlin.process.traversal.step.util.Tree;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.junit.Test;
@@ -36,63 +29,86 @@ import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.serialization.db.EdgeType;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 public class TraversalQueryTest extends QueryBuilderTestAbstraction {
 
 	
 	@Override
-	protected QueryBuilder<Edge> getNewEdgeTraversal(Vertex v) {
+	protected QueryBuilder<Edge> getNewEdgeTraversalWithTestEdgeRules(Vertex v) {
 		return new TraversalQuery<>(loader, g, v, testEdgeRules);
 	}
 	
 	@Override
-	protected QueryBuilder<Edge> getNewEdgeTraversal() {
+	protected QueryBuilder<Edge> getNewEdgeTraversalWithTestEdgeRules() {
 		return new TraversalQuery<>(loader, g, testEdgeRules);
 	}
 	
 	@Override
-	protected QueryBuilder<Vertex> getNewVertexTraversal(Vertex v) {
+	protected QueryBuilder<Vertex> getNewVertexTraversalWithTestEdgeRules(Vertex v) {
 		return new TraversalQuery<>(loader, g, v, testEdgeRules);
 	}
 	
 	@Override
+	protected QueryBuilder<Vertex> getNewVertexTraversalWithTestEdgeRules() {
+		return new TraversalQuery<>(loader, g, testEdgeRules);
+	}
+
+
 	protected QueryBuilder<Vertex> getNewVertexTraversal() {
+		return new TraversalQuery<>(loader, g);
+	}
+	
+	@Override
+	protected QueryBuilder<Tree> getNewTreeTraversalWithTestEdgeRules(Vertex v) {
+		return new TraversalQuery<>(loader, g, v, testEdgeRules);
+	}
+
+	@Override
+	protected QueryBuilder<Tree> getNewTreeTraversalWithTestEdgeRules() {
 		return new TraversalQuery<>(loader, g, testEdgeRules);
 	}
 	
 	@Test
 	public void unionQuery() {
-		QueryBuilder<Vertex> tQ = new TraversalQuery<>(loader, g);
-		QueryBuilder<Vertex> tQ2 = new TraversalQuery<>(loader, g);
-		QueryBuilder<Vertex> tQ3 = new TraversalQuery<>(loader, g);
+		QueryBuilder<Vertex> tQ = getNewVertexTraversal();
+		QueryBuilder<Vertex> tQ2 = getNewVertexTraversal();
+		QueryBuilder<Vertex> tQ3 = getNewVertexTraversal();
 		tQ.union(
 				tQ2.getVerticesByProperty("test1", "value1"),
 				tQ3.getVerticesByIndexedProperty("test2", "value2"));
-		
+
 		GraphTraversal<Vertex, Vertex> expected = __.<Vertex>start()
 				.union(__.has("test1", "value1"),__.has("test2", "value2"));
-		
+
 		assertEquals("they are equal", expected, tQ.getQuery());
-		
+
 
 	}
 
 	@Test
 	public void traversalClones() throws UnsupportedEncodingException, AAIException, URISyntaxException {
-		QueryBuilder<Vertex> tQ = new TraversalQuery<>(loader, g);
+		QueryBuilder<Vertex> tQ = getNewVertexTraversal();
 		QueryBuilder<Vertex> builder = tQ.createQueryFromURI(new URI("network/generic-vnfs/generic-vnf/key1")).getQueryBuilder();
 		GraphTraversal<Vertex, Vertex> expected = __.<Vertex>start().has("vnf-id", "key1").has("aai-node-type", "generic-vnf");
 		GraphTraversal<Vertex, Vertex> containerExpected = __.<Vertex>start().has("aai-node-type", "generic-vnf");
-		
+
 		assertEquals("query object", expected.toString(), builder.getQuery().toString());
 		assertEquals("container query object", containerExpected.toString(), builder.getContainerQuery().getQuery().toString());
-		
+
 
 	}
 
 	@Test
 	public void nestedTraversalClones() throws UnsupportedEncodingException, AAIException, URISyntaxException {
-		
-		QueryBuilder<Vertex> tQ = new TraversalQuery<>(loader, g);
+
+		QueryBuilder<Vertex> tQ = getNewVertexTraversal();
 		QueryBuilder<Vertex> builder = tQ.createQueryFromURI(new URI("network/generic-vnfs/generic-vnf/key1/l-interfaces/l-interface/key2")).getQueryBuilder();
 		GraphTraversal<Vertex, Vertex> expected = __.<Vertex>start()
 				.has("vnf-id", "key1")
@@ -119,7 +135,7 @@ public class TraversalQueryTest extends QueryBuilderTestAbstraction {
 		
 		testEdgeRules.addEdge(g, gvnf, vnfc1);
 		
-		QueryBuilder<Vertex> tQ = getNewVertexTraversal(gvnf);
+		QueryBuilder<Vertex> tQ = getNewVertexTraversalWithTestEdgeRules(gvnf);
 		tQ.createEdgeTraversal(EdgeType.COUSIN, "vnf", "vnfc");
 		
 		List<Vertex> list = tQ.toList();
@@ -138,10 +154,10 @@ public class TraversalQueryTest extends QueryBuilderTestAbstraction {
 		
 		testEdgeRules.addEdge(g, vce, vnfc1);
 		
-		QueryBuilder<Vertex> tQ1 = new TraversalQuery<>(loader, g, vce, testEdgeRules);
+		QueryBuilder<Vertex> tQ1 = getNewVertexTraversalWithTestEdgeRules(vce);
 		tQ1.createEdgeTraversal(EdgeType.COUSIN, "vnf", "vnfc");
 		
-		QueryBuilder<Vertex> tQ2 = new TraversalQuery<>(loader, g, vnfc1, testEdgeRules);
+		QueryBuilder<Vertex> tQ2 = getNewVertexTraversalWithTestEdgeRules(vnfc1);
 		tQ2.createEdgeTraversal(EdgeType.COUSIN, "vnfc", "vnf");
 		
 		List<Vertex> list1 = tQ1.toList();
@@ -163,7 +179,7 @@ public class TraversalQueryTest extends QueryBuilderTestAbstraction {
 		
 		testEdgeRules.addEdge(g, vce, pserver);
 		
-		QueryBuilder<Vertex> tQ1 = new TraversalQuery<>(loader, g, vce, testEdgeRules);
+		QueryBuilder<Vertex> tQ1 = getNewVertexTraversalWithTestEdgeRules(vce);
 		tQ1.createEdgeTraversal(EdgeType.COUSIN, "vnf", "pserver");
 		
 		List<Vertex> list = tQ1.toList();
@@ -184,7 +200,7 @@ public class TraversalQueryTest extends QueryBuilderTestAbstraction {
 		testEdgeRules.addEdge(g, gvnf, vnfc1);
 		testEdgeRules.addEdge(g, gvnf, vnfc2, "re-uses");
 		
-		QueryBuilder<Vertex> tQ = getNewVertexTraversal(gvnf);
+		QueryBuilder<Vertex> tQ = getNewVertexTraversalWithTestEdgeRules(gvnf);
 		tQ.createEdgeTraversal(EdgeType.COUSIN, "vnf", "vnfc");
 		
 		List<Vertex> list = tQ.toList();
@@ -205,7 +221,7 @@ public class TraversalQueryTest extends QueryBuilderTestAbstraction {
 		testEdgeRules.addEdge(g, gvnf, pserver);
 		testEdgeRules.addEdge(g, gvnf, pserver, "generic-vnf-pserver-B");
 		
-		QueryBuilder<Vertex> tQ = getNewVertexTraversal(gvnf);
+		QueryBuilder<Vertex> tQ = getNewVertexTraversalWithTestEdgeRules(gvnf);
 		tQ.createEdgeTraversal(EdgeType.COUSIN, "vnf", "pserver");
 		
 		List<Vertex> list = tQ.toList();
@@ -225,7 +241,7 @@ public class TraversalQueryTest extends QueryBuilderTestAbstraction {
 		testEdgeRules.addEdge(g, gvnf, complex);
 		testEdgeRules.addEdge(g, gvnf, complex, "complex-generic-vnf-B");
 		
-		QueryBuilder<Vertex> tQ = getNewVertexTraversal(gvnf);
+		QueryBuilder<Vertex> tQ = getNewVertexTraversalWithTestEdgeRules(gvnf);
 		tQ.createEdgeTraversal(EdgeType.COUSIN, "vnf", "complex");
 		
 		List<Vertex> list = tQ.toList();
@@ -235,7 +251,7 @@ public class TraversalQueryTest extends QueryBuilderTestAbstraction {
 		
 
 	}
-	
-	
+
+
 	
 }

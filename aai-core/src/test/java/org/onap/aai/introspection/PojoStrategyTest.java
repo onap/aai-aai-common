@@ -39,4 +39,69 @@ public class PojoStrategyTest {
 		assertEquals("", volumegroup.getMetadata(ObjectMetadata.NAMESPACE));
 	}
 
+	@Test
+	public void testGetWithBogusValue(){
+		Introspector cloudregion = IntrospectorFactory.newInstance(ModelType.POJO, new CloudRegion());
+		assertEquals(null, cloudregion.get("test"));
+	}
+
+	@Test
+	public void testSetWithValue(){
+		Introspector cloudregion = IntrospectorFactory.newInstance(ModelType.POJO, new CloudRegion());
+		cloudregion.set("cloudOwner", "test");
+		assertEquals("test", cloudregion.get("cloudOwner"));
+	}
+
+	@Test
+	public void testHasProperty(){
+		Introspector cloudregion = IntrospectorFactory.newInstance(ModelType.POJO, new CloudRegion());
+		assertEquals( true, cloudregion.hasProperty("test"));
+	}
+
+	@Test
+	public void testMethodsforExceptions(){
+		PojoStrategy ps = new PojoStrategy(new CloudRegion());
+		Exception ex  = null;
+		Boolean exceptionThrownForKeys = false;
+		Boolean exceptionThrownForProcessKeys = false;
+		try{
+			ps.findKey();
+			ps.getKeys();
+		}catch(Exception e){
+			exceptionThrownForKeys= true;
+		}
+		try {
+			ps.getProperties();
+			ps.getRequiredProperties();
+			ps.getClass("TEST");
+			ps.getGenericTypeClass("TEST");
+			ps.getJavaClassName();
+			ps.getUnderlyingObject();
+			ps.clone();
+			ps.getChildName();
+			ps.getObjectId();
+			ps.getPropertyMetadata("TEST");
+			ps.getName();
+			ps.getVersion();
+		}catch(Exception e){
+			ex = e;
+		}
+
+
+		try{
+			ps.preProcessKey("TEST/TEST/TEST");
+		}catch(Exception e){
+			exceptionThrownForProcessKeys = true;
+		}
+		try{
+			ps.set("TEST", new Object());
+		}catch(Exception e){
+
+		}
+		assertEquals(null, ex);
+		assertEquals(true, exceptionThrownForKeys);
+		assertEquals(true, exceptionThrownForProcessKeys);
+	}
+
+
 }

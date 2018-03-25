@@ -24,14 +24,18 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.onap.aai.AAIJunitRunner;
+import org.junit.runners.Parameterized;
+import org.onap.aai.AAISetup;
 import org.onap.aai.HttpTestUtil;
 import org.onap.aai.PayloadUtil;
 import org.onap.aai.exceptions.AAIException;
+import org.onap.aai.serialization.engines.QueryStyle;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import javax.ws.rs.core.Response;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
 
@@ -40,14 +44,24 @@ import static org.junit.Assert.assertEquals;
  * children nodes associated to it then you should be able to
  * remove the cloud region without removing the individual child nodes first
  */
-@RunWith(AAIJunitRunner.class)
-public class CloudRegionTest {
+@RunWith(value = Parameterized.class)
+public class CloudRegionTest extends AAISetup {
 
     private HttpTestUtil httpTestUtil;
 
+    @Parameterized.Parameter(value = 0)
+    public QueryStyle queryStyle;
+
+    @Parameterized.Parameters(name = "QueryStyle.{0}")
+    public static Collection<Object[]> data() {
+        return Arrays.asList(new Object[][]{
+                {QueryStyle.TRAVERSAL}
+        });
+    }
+
     @Before
     public void setUp(){
-        httpTestUtil = new HttpTestUtil();
+        httpTestUtil = new HttpTestUtil(queryStyle);
     }
 
     @Ignore("Test is failing due to the deletion of node with children not correct will be fixed soon")
@@ -70,5 +84,4 @@ public class CloudRegionTest {
         response = httpTestUtil.doDelete(cloudRegionUri, resourceVersion);
         assertEquals("Expected the cloud region to be deleted", 204, response.getStatus());
     }
-
 }

@@ -19,17 +19,10 @@
  */
 package org.onap.aai.query.builder;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
+import com.thinkaurelius.titan.core.TitanFactory;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.BulkSet;
+import org.apache.tinkerpop.gremlin.process.traversal.step.util.Tree;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
@@ -42,9 +35,14 @@ import org.onap.aai.introspection.LoaderFactory;
 import org.onap.aai.introspection.ModelType;
 import org.onap.aai.serialization.db.EdgeRules;
 import org.onap.aai.serialization.db.EdgeType;
-
-import com.thinkaurelius.titan.core.TitanFactory;
 import org.onap.aai.serialization.db.exceptions.NoEdgeRuleFoundException;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 public abstract class QueryBuilderTestAbstraction extends AAISetup {
 
@@ -83,7 +81,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 		Vertex vnfc = g.addV("aai-node-type","vnfc","vnfc-name","a-name").next();
 		testEdgeRules.addEdge(g, gvnf, vnfc, "uses");
 		
-		QueryBuilder<Vertex> tQ = getNewVertexTraversal(gvnf);
+		QueryBuilder<Vertex> tQ = getNewVertexTraversalWithTestEdgeRules(gvnf);
 		tQ.createEdgeTraversal(EdgeType.COUSIN, "generic-vnf", "vnfc");
 		
 		assertEquals(vnfc, tQ.next());
@@ -98,7 +96,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 		Vertex logicalLink = g.addV("aai-node-type","logical-link","link-name","logical-link-a").next();
 		testEdgeRules.addEdge(g, lInterface, logicalLink, "sourceLInterface");
 		
-		QueryBuilder<Vertex> tQ = getNewVertexTraversal(lInterface);
+		QueryBuilder<Vertex> tQ = getNewVertexTraversalWithTestEdgeRules(lInterface);
 		tQ.createEdgeTraversal(EdgeType.COUSIN, "l-interface", "logical-link");
 		
 		Vertex next = tQ.next();
@@ -107,7 +105,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 		
 
 	}
-	
+
 	@Test
 	public void createEdgeLinterfaceToLogicalLinkIntrospectorTraversal() throws AAIException {
 				
@@ -115,7 +113,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 		Vertex logicalLink = g.addV("aai-node-type","logical-link","link-name","logical-link-a").next();
 		testEdgeRules.addEdge(g, lInterface, logicalLink, "sourceLInterface");
 		
-		QueryBuilder<Vertex> tQ = getNewVertexTraversal(lInterface);
+		QueryBuilder<Vertex> tQ = getNewVertexTraversalWithTestEdgeRules(lInterface);
 		tQ.createEdgeTraversal(EdgeType.COUSIN, loader.introspectorFromName("l-interface"), loader.introspectorFromName("logical-link"));
 		
 		Vertex next = tQ.next();
@@ -132,7 +130,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 		Vertex logicalLink = g.addV("aai-node-type","logical-link","link-name","logical-link-a").next();
 		testEdgeRules.addEdge(g, lInterface, logicalLink, "sourceLInterface");
 		
-		QueryBuilder<Vertex> tQ = getNewVertexTraversal(lInterface);
+		QueryBuilder<Vertex> tQ = getNewVertexTraversalWithTestEdgeRules(lInterface);
 		tQ.createEdgeTraversal(EdgeType.COUSIN, lInterface, loader.introspectorFromName("logical-link"));
 		
 		Vertex next = tQ.next();
@@ -150,7 +148,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 		
 		testEdgeRules.addEdge(g, gvnf, vnfc1);
 		
-		QueryBuilder<Vertex> tQ = getNewVertexTraversal(gvnf);
+		QueryBuilder<Vertex> tQ = getNewVertexTraversalWithTestEdgeRules(gvnf);
 		tQ.createEdgeTraversal(EdgeType.COUSIN, "generic-vnf", "vnfc");
 		
 		List<Vertex> list = tQ.toList();
@@ -169,10 +167,10 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 		
 		testEdgeRules.addEdge(g, vce, vnfc1);
 		
-		QueryBuilder<Vertex> tQ1 = getNewVertexTraversal(vce);
+		QueryBuilder<Vertex> tQ1 = getNewVertexTraversalWithTestEdgeRules(vce);
 		tQ1.createEdgeTraversal(EdgeType.COUSIN, "vce", "vnfc");
 		
-		QueryBuilder<Vertex> tQ2 = getNewVertexTraversal(vnfc1);
+		QueryBuilder<Vertex> tQ2 = getNewVertexTraversalWithTestEdgeRules(vnfc1);
 		tQ2.createEdgeTraversal(EdgeType.COUSIN, "vnfc", "vce");
 		
 		List<Vertex> list1 = tQ1.toList();
@@ -194,7 +192,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 		
 		testEdgeRules.addEdge(g, vce, pserver);
 		
-		QueryBuilder<Vertex> tQ1 = getNewVertexTraversal(vce);
+		QueryBuilder<Vertex> tQ1 = getNewVertexTraversalWithTestEdgeRules(vce);
 		tQ1.createEdgeTraversal(EdgeType.COUSIN, "vce", "pserver");
 		
 		List<Vertex> list = tQ1.toList();
@@ -215,7 +213,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 		testEdgeRules.addEdge(g, gvnf, vnfc1);
 		testEdgeRules.addEdge(g, gvnf, vnfc2, "re-uses");
 		
-		QueryBuilder<Vertex> tQ = getNewVertexTraversal(gvnf);
+		QueryBuilder<Vertex> tQ = getNewVertexTraversalWithTestEdgeRules(gvnf);
 		tQ.createEdgeTraversal(EdgeType.COUSIN, "generic-vnf", "vnfc");
 		
 		List<Vertex> list = tQ.toList();
@@ -237,7 +235,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 		testEdgeRules.addEdge(g, gvnf, vnfc1);
 		testEdgeRules.addEdge(g, pserver, vnfc1);
 		
-		QueryBuilder<Vertex> tQ = getNewVertexTraversal(vnfc1);
+		QueryBuilder<Vertex> tQ = getNewVertexTraversalWithTestEdgeRules(vnfc1);
 		tQ.createEdgeTraversal(EdgeType.COUSIN, "vnfc", "generic-vnf");
 		
 		List<Vertex> list = tQ.toList();
@@ -305,7 +303,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 		testEdgeRules.addEdge(g, gvnf, pserver);
 		testEdgeRules.addEdge(g, gvnf, pserver, "generic-vnf-pserver-B");
 		
-		QueryBuilder<Vertex> tQ = getNewVertexTraversal(gvnf);
+		QueryBuilder<Vertex> tQ = getNewVertexTraversalWithTestEdgeRules(gvnf);
 		tQ.createEdgeTraversal(EdgeType.COUSIN, "generic-vnf", "pserver").dedup();
 		
 		List<Vertex> list = tQ.toList();
@@ -345,7 +343,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 		testEdgeRules.addEdge(g, gvnf, pserver);
 		testEdgeRules.addEdge(g, gvnf, pserver, "generic-vnf-pserver-B");
 		
-		QueryBuilder<Vertex> tQ = getNewVertexTraversal(gvnf);
+		QueryBuilder<Vertex> tQ = getNewVertexTraversalWithTestEdgeRules(gvnf);
 		tQ.createEdgeTraversal(EdgeType.COUSIN, "generic-vnf", "pserver").store("x").cap("x").unfold();
 		
 		List<Vertex> list = tQ.toList();
@@ -385,7 +383,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 		testEdgeRules.addEdge(g, gvnf, pserver);
 		testEdgeRules.addEdge(g, gvnf, pserver, "generic-vnf-pserver-B");
 		
-		QueryBuilder<Vertex> tQ = getNewVertexTraversal(gvnf);
+		QueryBuilder<Vertex> tQ = getNewVertexTraversalWithTestEdgeRules(gvnf);
 		tQ.createEdgeTraversal(EdgeType.COUSIN, "generic-vnf", "pserver");
 		
 		List<Vertex> list = tQ.toList();
@@ -405,7 +403,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 		testEdgeRules.addEdge(g, gvnf, complex);
 		testEdgeRules.addEdge(g, gvnf, complex, "complex-generic-vnf-B");
 		
-		QueryBuilder<Vertex> tQ = getNewVertexTraversal(gvnf);
+		QueryBuilder<Vertex> tQ = getNewVertexTraversalWithTestEdgeRules(gvnf);
 		tQ.createEdgeTraversal(EdgeType.COUSIN, "generic-vnf", "complex");
 		
 		List<Vertex> list = tQ.toList();
@@ -424,7 +422,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 		
 		Edge e = testEdgeRules.addEdge(g, vce, pserver);
 		
-		QueryBuilder<Edge> tQ1 = getNewEdgeTraversal(vce);
+		QueryBuilder<Edge> tQ1 = getNewEdgeTraversalWithTestEdgeRules(vce);
 		tQ1.getEdgesBetween(EdgeType.COUSIN, "vce", "pserver");
 		
 		List<Edge> list = tQ1.toList();
@@ -443,7 +441,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 		
 		Edge e = testEdgeRules.addEdge(g, vce, vnfc1);
 		
-		QueryBuilder<Edge> tQ1 = getNewEdgeTraversal(vce);
+		QueryBuilder<Edge> tQ1 = getNewEdgeTraversalWithTestEdgeRules(vce);
 		tQ1.getEdgesBetween(EdgeType.COUSIN, "vce", "vnfc");
 		
 		List<Edge> list1 = tQ1.toList();
@@ -463,7 +461,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 		Edge e1 = testEdgeRules.addEdge(g, gvnf, pserver);
 		Edge e2 = testEdgeRules.addEdge(g, gvnf, pserver, "generic-vnf-pserver-B");
 		
-		QueryBuilder<Edge> tQ = getNewEdgeTraversal(gvnf);
+		QueryBuilder<Edge> tQ = getNewEdgeTraversalWithTestEdgeRules(gvnf);
 		tQ.getEdgesBetween(EdgeType.COUSIN, "generic-vnf", "pserver");
 		
 		List<Edge> list = tQ.toList();
@@ -484,7 +482,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 		Edge e1 = testEdgeRules.addEdge(g, gvnf, complex);
 		Edge e2 = testEdgeRules.addEdge(g, gvnf, complex, "complex-generic-vnf-B");
 		
-		QueryBuilder<Edge> tQ = getNewEdgeTraversal(gvnf);
+		QueryBuilder<Edge> tQ = getNewEdgeTraversalWithTestEdgeRules(gvnf);
 		tQ.getEdgesBetween(EdgeType.COUSIN, "generic-vnf", "complex");
 		
 		List<Edge> list = tQ.toList();
@@ -506,7 +504,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 		Edge e1 = testEdgeRules.addEdge(g, gvnf, vnfc1);
 		Edge e2 = testEdgeRules.addEdge(g, gvnf, vnfc2, "re-uses");
 		
-		QueryBuilder<Edge> tQ = getNewEdgeTraversal(gvnf);
+		QueryBuilder<Edge> tQ = getNewEdgeTraversalWithTestEdgeRules(gvnf);
 		tQ.getEdgesBetween(EdgeType.COUSIN, "generic-vnf", "vnfc");
 		
 		List<Edge> list = tQ.toList();
@@ -524,10 +522,10 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 		Vertex gvnf = g.addV("aai-node-type","generic-vnf","vnf-id","gvnf").next();
 		Vertex pserver = g.addV("aai-node-type","pserver","hostname","a-name").next();
 
-		Edge e1 = testEdgeRules.addEdge(g, gvnf, pserver);
-		Edge e2 = testEdgeRules.addEdge(g, gvnf, pserver, "generic-vnf-pserver-B");
+		testEdgeRules.addEdge(g, gvnf, pserver);
+		testEdgeRules.addEdge(g, gvnf, pserver, "generic-vnf-pserver-B");
 
-		QueryBuilder<Edge> tQ = getNewEdgeTraversal(gvnf);
+		QueryBuilder<Edge> tQ = getNewEdgeTraversalWithTestEdgeRules(gvnf);
 		tQ.getEdgesBetweenWithLabels(EdgeType.COUSIN, "generic-vnf", "pserver", Collections.emptyList());
 
 	}
@@ -541,7 +539,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 		Edge e1 = testEdgeRules.addEdge(g, gvnf, pserver);
 		Edge e2 = testEdgeRules.addEdge(g, gvnf, pserver, "generic-vnf-pserver-B");
 
-		QueryBuilder<Edge> tQ = getNewEdgeTraversal(gvnf);
+		QueryBuilder<Edge> tQ = getNewEdgeTraversalWithTestEdgeRules(gvnf);
 		tQ.getEdgesBetweenWithLabels(EdgeType.COUSIN, "generic-vnf", "pserver", Collections.singletonList("generic-vnf-pserver-B"));
 
 		List<Edge> list = tQ.toList();
@@ -561,7 +559,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 		Edge e1 = testEdgeRules.addEdge(g, gvnf, pserver);
 		Edge e2 = testEdgeRules.addEdge(g, gvnf, pserver, "generic-vnf-pserver-B");
 
-		QueryBuilder<Edge> tQ = getNewEdgeTraversal(gvnf);
+		QueryBuilder<Edge> tQ = getNewEdgeTraversalWithTestEdgeRules(gvnf);
 		tQ.getEdgesBetweenWithLabels(EdgeType.COUSIN, "generic-vnf", "pserver", Arrays.asList("generic-vnf-pserver-B", "generic-vnf-pserver-A"));
 
 		List<Edge> list = tQ.toList();
@@ -577,10 +575,10 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 
 		Vertex gvnf = getVertex();
 
-		QueryBuilder<Edge> tQ = getNewEdgeTraversal(gvnf);
+		QueryBuilder<Edge> tQ = getNewEdgeTraversalWithTestEdgeRules(gvnf);
 		tQ.getEdgesBetweenWithLabels(EdgeType.COUSIN, "generic-vnf", "pserver", Collections.emptyList());
 
-		List<Edge> list = tQ.toList();
+		tQ.toList();
 
 
 	}
@@ -589,8 +587,8 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 		Vertex gvnf = g.addV("aai-node-type","generic-vnf","vnf-id","gvnf").next();
 		Vertex pserver = g.addV("aai-node-type","pserver","hostname","a-name").next();
 
-		Edge e1 = testEdgeRules.addEdge(g, gvnf, pserver);
-		Edge e2 = testEdgeRules.addEdge(g, gvnf, pserver, "generic-vnf-pserver-B");
+		testEdgeRules.addEdge(g, gvnf, pserver);
+		testEdgeRules.addEdge(g, gvnf, pserver, "generic-vnf-pserver-B");
 		return gvnf;
 	}
 
@@ -603,7 +601,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 		Edge e1 = testEdgeRules.addEdge(g, gvnf, pserver);
 		Edge e2 = testEdgeRules.addEdge(g, gvnf, pserver, "generic-vnf-pserver-B");
 
-		QueryBuilder<Edge> tQ = getNewEdgeTraversal(gvnf);
+		QueryBuilder<Edge> tQ = getNewEdgeTraversalWithTestEdgeRules(gvnf);
 		tQ.getEdgesBetweenWithLabels(EdgeType.COUSIN, "generic-vnf", "pserver", Collections.singletonList("generic-vnf-pserver-B"));
 
 		List<Edge> list = tQ.toList();
@@ -623,7 +621,7 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 		Edge e1 = testEdgeRules.addEdge(g, gvnf, pserver);
 		Edge e2 = testEdgeRules.addEdge(g, gvnf, pserver, "generic-vnf-pserver-B");
 
-		QueryBuilder<Edge> tQ = getNewEdgeTraversal(gvnf);
+		QueryBuilder<Edge> tQ = getNewEdgeTraversalWithTestEdgeRules(gvnf);
 		tQ.getEdgesBetweenWithLabels(EdgeType.COUSIN, "generic-vnf", "pserver", Arrays.asList("generic-vnf-pserver-B", "generic-vnf-pserver-A"));
 
 		List<Edge> list = tQ.toList();
@@ -634,13 +632,17 @@ public abstract class QueryBuilderTestAbstraction extends AAISetup {
 
 	}
 
-	protected abstract QueryBuilder<Edge> getNewEdgeTraversal(Vertex v);
+	protected abstract QueryBuilder<Edge> getNewEdgeTraversalWithTestEdgeRules(Vertex v);
 	
-	protected abstract QueryBuilder<Edge> getNewEdgeTraversal();
+	protected abstract QueryBuilder<Edge> getNewEdgeTraversalWithTestEdgeRules();
 	
-	protected abstract QueryBuilder<Vertex> getNewVertexTraversal(Vertex v);
+	protected abstract QueryBuilder<Vertex> getNewVertexTraversalWithTestEdgeRules(Vertex v);
 	
-	protected abstract QueryBuilder<Vertex> getNewVertexTraversal();
+	protected abstract QueryBuilder<Vertex> getNewVertexTraversalWithTestEdgeRules();
+
+	protected abstract QueryBuilder<Tree> getNewTreeTraversalWithTestEdgeRules(Vertex v);
+
+	protected abstract QueryBuilder<Tree> getNewTreeTraversalWithTestEdgeRules();
 
 		
 }

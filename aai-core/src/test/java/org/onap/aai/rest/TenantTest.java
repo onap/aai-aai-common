@@ -19,33 +19,45 @@
  */
 package org.onap.aai.rest;
 
+import com.att.eelf.configuration.EELFLogger;
+import com.att.eelf.configuration.EELFManager;
 import com.jayway.jsonpath.JsonPath;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.onap.aai.AAIJunitRunner;
+import org.junit.runners.Parameterized;
+import org.onap.aai.AAISetup;
 import org.onap.aai.HttpTestUtil;
 import org.onap.aai.PayloadUtil;
+import org.onap.aai.serialization.engines.QueryStyle;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import javax.ws.rs.core.Response;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 
-@RunWith(AAIJunitRunner.class)
-public class TenantTest {
+@RunWith(value = Parameterized.class)
+public class TenantTest extends AAISetup {
 
+    private static EELFLogger logger = EELFManager.getInstance().getLogger(PserverTest.class);
     private HttpTestUtil httpTestUtil;
-
     private Map<String, String> templateValuesMap;
 
+    @Parameterized.Parameter(value = 0)
+    public QueryStyle queryStyle;
+
+    @Parameterized.Parameters(name = "QueryStyle.{0}")
+    public static Collection<Object[]> data() {
+        return Arrays.asList(new Object[][]{
+                {QueryStyle.TRAVERSAL}
+        });
+    }
+
     @Before
-    public void setup(){
-        httpTestUtil      = new HttpTestUtil();
+    public void setUp(){
+        httpTestUtil = new HttpTestUtil(queryStyle);
         templateValuesMap = new HashMap<>();
     }
 

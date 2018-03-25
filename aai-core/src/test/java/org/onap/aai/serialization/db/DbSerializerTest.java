@@ -19,9 +19,23 @@
  */
 package org.onap.aai.serialization.db;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
+import com.thinkaurelius.titan.core.TitanFactory;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.apache.tinkerpop.gremlin.structure.*;
+import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
+import org.junit.*;
+import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.onap.aai.AAISetup;
+import org.onap.aai.db.props.AAIProperties;
+import org.onap.aai.dbmap.DBConnectionType;
+import org.onap.aai.exceptions.AAIException;
+import org.onap.aai.introspection.*;
+import org.onap.aai.parsers.query.QueryParser;
+import org.onap.aai.serialization.engines.QueryStyle;
+import org.onap.aai.serialization.engines.TitanDBEngine;
+import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
@@ -29,30 +43,11 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
 
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
-import org.apache.tinkerpop.gremlin.structure.Edge;
-import org.apache.tinkerpop.gremlin.structure.Graph;
-import org.apache.tinkerpop.gremlin.structure.T;
-import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
-import org.junit.*;
-import org.junit.rules.ExpectedException;
-import org.onap.aai.AAISetup;
-import org.onap.aai.db.props.AAIProperties;
-import org.onap.aai.dbmap.DBConnectionType;
-import org.onap.aai.exceptions.AAIException;
-import org.onap.aai.introspection.Introspector;
-import org.onap.aai.introspection.Loader;
-import org.onap.aai.introspection.LoaderFactory;
-import org.onap.aai.introspection.ModelType;
-import org.onap.aai.introspection.Version;
-import org.onap.aai.parsers.query.QueryParser;
-import org.onap.aai.serialization.engines.QueryStyle;
-import org.onap.aai.serialization.engines.TitanDBEngine;
-import org.onap.aai.serialization.engines.TransactionalGraphEngine;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
-import com.thinkaurelius.titan.core.TitanFactory;
-
+@RunWith(value = Parameterized.class)
 public class DbSerializerTest extends AAISetup {
 
 	//to use, set thrown.expect to whatever your test needs
@@ -65,7 +60,6 @@ public class DbSerializerTest extends AAISetup {
 
 	private final Version version = Version.getLatest();
 	private final ModelType introspectorFactoryType = ModelType.MOXY;
-	private final QueryStyle queryStyle = QueryStyle.TRAVERSAL;
 	private final DBConnectionType type = DBConnectionType.REALTIME;
 	private Loader loader;
 	private TransactionalGraphEngine dbEngine;
@@ -74,15 +68,25 @@ public class DbSerializerTest extends AAISetup {
 	TransactionalGraphEngine spy;
 	TransactionalGraphEngine.Admin adminSpy;
 
+	@Parameterized.Parameter(value = 0)
+	public QueryStyle queryStyle;
+
+	@Parameterized.Parameters(name = "QueryStyle.{0}")
+	public static Collection<Object[]> data() {
+		return Arrays.asList(new Object[][]{
+				{QueryStyle.TRAVERSAL}
+		});
+	}
+
 	@BeforeClass
 	public static void init() throws Exception {
 		graph = TitanFactory.build().set("storage.backend", "inmemory").open();
-		createGraph();
 
 	}
 
 	@Before
 	public void setup() throws Exception {
+		//createGraph();
 		loader = LoaderFactory.createLoaderForVersion(introspectorFactoryType, version);
 		dbEngine = new TitanDBEngine(queryStyle, type, loader);
 		spy = spy(dbEngine);
@@ -91,29 +95,6 @@ public class DbSerializerTest extends AAISetup {
 
 		engine = new TitanDBEngine(queryStyle, type, loader);
 		dbser = new DBSerializer(version, engine, introspectorFactoryType, "AAI-TEST");
-	}
-
-	public static void createGraph() throws AAIException {
-		/*
-		 * This setus up the test graph, For future junits , add more vertices
-		 * and edges
-		 */
-
-		Vertex l3interipv4addresslist_1 = graph.traversal().addV("aai-node-type", "l3-interface-ipv4-address-list",
-				"l3-interface-ipv4-address", "l3-interface-ipv4-address-1").next();
-		Vertex subnet_2 = graph.traversal().addV("aai-node-type", "subnet", "subnet-id", "subnet-id-2").next();
-		Vertex l3interipv6addresslist_3 = graph.traversal().addV("aai-node-type", "l3-interface-ipv6-address-list",
-				"l3-interface-ipv6-address", "l3-interface-ipv6-address-3").next();
-		Vertex subnet_4 = graph.traversal().addV("aai-node-type", "subnet", "subnet-id", "subnet-id-4").next();
-		Vertex subnet_5 = graph.traversal().addV("aai-node-type", "subnet", "subnet-id", "subnet-id-5").next();
-		Vertex l3network_6 = graph.traversal()
-				.addV("aai-node-type", "l3-network", "network-id", "network-id-6", "network-name", "network-name-6")
-				.next();
-
-		GraphTraversalSource g = graph.traversal();
-		EdgeRules.getInstance().addEdge(g, l3interipv4addresslist_1, subnet_2);
-		EdgeRules.getInstance().addEdge(g, l3interipv6addresslist_3, subnet_4);
-		EdgeRules.getInstance().addTreeEdge(g, subnet_5, l3network_6);
 	}
 
 	@Test
@@ -166,8 +147,33 @@ public class DbSerializerTest extends AAISetup {
 		graph.close();
 	}
 
+
+	public void subnetSetup() throws AAIException {
+		/*
+		 * This setus up the test graph, For future junits , add more vertices
+		 * and edges
+		 */
+
+		Vertex l3interipv4addresslist_1 = graph.traversal().addV("aai-node-type", "l3-interface-ipv4-address-list",
+				"l3-interface-ipv4-address", "l3-interface-ipv4-address-1").next();
+		Vertex subnet_2 = graph.traversal().addV("aai-node-type", "subnet", "subnet-id", "subnet-id-2").next();
+		Vertex l3interipv6addresslist_3 = graph.traversal().addV("aai-node-type", "l3-interface-ipv6-address-list",
+				"l3-interface-ipv6-address", "l3-interface-ipv6-address-3").next();
+		Vertex subnet_4 = graph.traversal().addV("aai-node-type", "subnet", "subnet-id", "subnet-id-4").next();
+		Vertex subnet_5 = graph.traversal().addV("aai-node-type", "subnet", "subnet-id", "subnet-id-5").next();
+		Vertex l3network_6 = graph.traversal()
+				.addV("aai-node-type", "l3-network", "network-id", "network-id-6", "network-name", "network-name-6")
+				.next();
+
+		GraphTraversalSource g = graph.traversal();
+		EdgeRules.getInstance().addEdge(g, l3interipv4addresslist_1, subnet_2);
+		EdgeRules.getInstance().addEdge(g, l3interipv6addresslist_3, subnet_4);
+		EdgeRules.getInstance().addTreeEdge(g, subnet_5, l3network_6);
+	}
+
 	@Test
 	public void subnetDelWithInEdgesIpv4Test() throws AAIException {
+		subnetSetup();
 		String expected_message = "Object is being reference by additional objects preventing it from being deleted. Please clean up references from the following types [l3-interface-ipv4-address-list]";
 
 		/*
@@ -182,6 +188,7 @@ public class DbSerializerTest extends AAISetup {
 
 	@Test
 	public void subnetDelWithInEdgesIpv6Test() throws AAIException {
+		subnetSetup();
 		String expected_message = "Object is being reference by additional objects preventing it from being deleted. Please clean up references from the following types [l3-interface-ipv6-address-list]";
 
 		/*
@@ -195,6 +202,7 @@ public class DbSerializerTest extends AAISetup {
 
 	@Test
 	public void subnetDelWithInEdgesL3network() throws AAIException {
+		subnetSetup();
 		String expected_message = "";
 
 		/*
@@ -275,6 +283,37 @@ public class DbSerializerTest extends AAISetup {
 		} catch (IllegalArgumentException e) {
 			fail("Vertex uuid is not valid uuid");
 		}
+	}
+
+	@Test
+	public void serializeToDbNewVertexAndEdgeAAIUUIDTest() throws AAIException, UnsupportedEncodingException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, URISyntaxException {
+		String testName = new Object() {}.getClass().getEnclosingMethod().getName();
+		EdgeRules ers = EdgeRules.getInstance("/dbedgerules/DbEdgeRules_test.json");
+		DBSerializer localDbser = getDBSerializerWithSpecificEdgeRules(ers);
+
+		engine.startTransaction();
+
+		engine.tx().addVertex("aai-node-type","vnfc","vnfc-name","vnfc-" + testName, AAIProperties.AAI_URI, "/network/vnfcs/vnfc/vnfc-" + testName);
+
+		Introspector relationship = loader.introspectorFromName("relationship");
+		relationship.setValue("related-to", "vnfc");
+		relationship.setValue("related-link", "/network/vnfcs/vnfc/vnfc-" + testName);
+
+		Introspector relationshipList = loader.introspectorFromName("relationship-list");
+		relationshipList.setValue("relationship", Collections.singletonList(relationship.getUnderlyingObject()));
+
+		Introspector gvnfObj = loader.introspectorFromName("generic-vnf");
+		Vertex gvnf = localDbser.createNewVertex(gvnfObj);
+		gvnfObj.setValue("relationship-list", relationshipList.getUnderlyingObject());
+		gvnfObj.setValue("vnf-id", "vnf-" + testName);
+
+		QueryParser uriQuery = dbEngine.getQueryBuilder().createQueryFromURI(new URI("/network/generic-vnfs/generic-vnf/vnf-" + testName));
+
+		localDbser.serializeToDb(gvnfObj, gvnf, uriQuery, null, "test");
+		assertTrue("Generic-vnf has uuid ", gvnf.property(AAIProperties.AAI_UUID).isPresent());
+		assertTrue("Edge has uuid ", gvnf.edges(Direction.BOTH).next().property(AAIProperties.AAI_UUID).isPresent());
+
+
 	}
 
 	@Test
@@ -400,8 +439,8 @@ public class DbSerializerTest extends AAISetup {
 	public void deleteEdgeTest() throws AAIException, UnsupportedEncodingException {
 		engine.startTransaction();
 
-		Vertex gvnf = engine.tx().addVertex("aai-node-type","generic-vnf","vnf-id","myvnf");
-		Vertex vnfc = engine.tx().addVertex("aai-node-type","vnfc","vnfc-name","a-name");
+		Vertex gvnf = engine.tx().addVertex("aai-node-type","generic-vnf","vnf-id","myvnf", "aai-uri", "/network/generic-vnfs/generic-vnf/myvnf");
+		Vertex vnfc = engine.tx().addVertex("aai-node-type","vnfc","vnfc-name","a-name", "aai-uri", "/network/vnfcs/vnfc/a-name");
 		EdgeRules rules = EdgeRules.getInstance();
 		rules.addEdge(engine.tx().traversal(), gvnf, vnfc);
 
@@ -424,8 +463,8 @@ public class DbSerializerTest extends AAISetup {
 	public void createEdgeTest() throws AAIException, UnsupportedEncodingException {
 		engine.startTransaction();
 
-		Vertex gvnf = engine.tx().addVertex("aai-node-type","generic-vnf","vnf-id","myvnf");
-		Vertex vnfc = engine.tx().addVertex("aai-node-type","vnfc","vnfc-name","a-name");
+		Vertex gvnf = engine.tx().addVertex("aai-node-type","generic-vnf","vnf-id","myvnf", "aai-uri", "/network/generic-vnfs/generic-vnf/myvnf");
+		Vertex vnfc = engine.tx().addVertex("aai-node-type","vnfc","vnfc-name","a-name", "aai-uri", "/network/vnfcs/vnfc/a-name");
 
 		//sunny day case
 		Introspector relData = loader.introspectorFromName("relationship-data");
@@ -446,8 +485,8 @@ public class DbSerializerTest extends AAISetup {
 	public void createCousinEdgeThatShouldBeTreeTest() throws AAIException, UnsupportedEncodingException, URISyntaxException {
 		engine.startTransaction();
 
-		Vertex gvnf = engine.tx().addVertex("aai-node-type","generic-vnf","vnf-id","myvnf");
-		Vertex vf = engine.tx().addVertex("aai-node-type","vf-module","vf-module-id","vf-id");
+		Vertex gvnf = engine.tx().addVertex("aai-node-type","generic-vnf","vnf-id","myvnf", "aai-uri", "/network/generic-vnfs/generic-vnf/myvnf");
+		Vertex vf = engine.tx().addVertex("aai-node-type","vf-module","vf-module-id","vf-id", "aai-uri", "/network/generic-vnfs/generic-vnf/myvnf/vf-modules/vf-module/vf-id");
 
 		EdgeRules.getInstance().addTreeEdge(engine.tx().traversal(), gvnf, vf);
 
@@ -475,7 +514,7 @@ public class DbSerializerTest extends AAISetup {
 	public void createEdgeNodeDoesNotExistExceptionTest() throws AAIException, UnsupportedEncodingException {
 		engine.startTransaction();
 
-		Vertex gvnf = engine.tx().addVertex("aai-node-type","generic-vnf","vnf-id","myvnf");
+		Vertex gvnf = engine.tx().addVertex("aai-node-type","generic-vnf","vnf-id","myvnf", "aai-uri", "/network/generic-vnfs/generic-vnf/myvnf");
 
 		//rainy day case, edge to non-existent object
 		Introspector relData = loader.introspectorFromName("relationship-data");
@@ -579,8 +618,8 @@ public class DbSerializerTest extends AAISetup {
 
 		engine.startTransaction();
 
-		Vertex gvnf = engine.tx().addVertex("aai-node-type","generic-vnf","vnf-id","myvnf");
-		Vertex vnfc = engine.tx().addVertex("aai-node-type","vnfc","vnfc-name","a-name");
+		Vertex gvnf = engine.tx().addVertex("aai-node-type","generic-vnf","vnf-id","myvnf", "aai-uri", "/network/generic-vnfs/generic-vnf/myvnf");
+		Vertex vnfc = engine.tx().addVertex("aai-node-type","vnfc","vnfc-name","a-name", "aai-uri", "/network/vnfcs/vnfc/a-name");
 
 		//sunny day case
 		Introspector relData = loader.introspectorFromName("relationship-data");
@@ -603,8 +642,8 @@ public class DbSerializerTest extends AAISetup {
 
 		engine.startTransaction();
 
-		Vertex gvnf = engine.tx().addVertex("aai-node-type","generic-vnf","vnf-id","myvnf");
-		engine.tx().addVertex("aai-node-type","vnfc","vnfc-name","a-name");
+		Vertex gvnf = engine.tx().addVertex("aai-node-type","generic-vnf","vnf-id","myvnf", "aai-uri", "/network/generic-vnfs/generic-vnf/myvnf");
+		engine.tx().addVertex("aai-node-type","vnfc","vnfc-name","a-name", "aai-uri", "/network/vnfcs/vnfc/a-name");
 
 		Introspector relData = loader.introspectorFromName("relationship-data");
 		relData.setValue("relationship-key", "vnfc.vnfc-name");
@@ -630,8 +669,8 @@ public class DbSerializerTest extends AAISetup {
 
 		engine.startTransaction();
 
-		Vertex gvnf = engine.tx().addVertex("aai-node-type","generic-vnf","vnf-id","myvnf");
-		Vertex vnfc = engine.tx().addVertex("aai-node-type","vnfc","vnfc-name","a-name");
+		Vertex gvnf = engine.tx().addVertex("aai-node-type","generic-vnf","vnf-id","myvnf", "aai-uri", "/network/generic-vnfs/generic-vnf/myvnf");
+		Vertex vnfc = engine.tx().addVertex("aai-node-type","vnfc","vnfc-name","a-name", "aai-uri", "/network/vnfcs/vnfc/a-name");
 		ers.addEdge(graph.traversal(), gvnf, vnfc, "re-uses");
 
 		Introspector relData = loader.introspectorFromName("relationship-data");
@@ -658,8 +697,8 @@ public class DbSerializerTest extends AAISetup {
 
 		engine.startTransaction();
 
-		Vertex gvnf = engine.tx().addVertex("aai-node-type","generic-vnf","vnf-id","myvnf");
-		Vertex vnfc = engine.tx().addVertex("aai-node-type","vnfc","vnfc-name","a-name");
+		Vertex gvnf = engine.tx().addVertex("aai-node-type","generic-vnf","vnf-id","myvnf", "aai-uri", "/network/generic-vnfs/generic-vnf/myvnf");
+		Vertex vnfc = engine.tx().addVertex("aai-node-type","vnfc","vnfc-name","a-name", "aai-uri", "/network/vnfcs/vnfc/a-name");
 		ers.addEdge(graph.traversal(), gvnf, vnfc, "uses");
 
 		Introspector relData = loader.introspectorFromName("relationship-data");
@@ -692,8 +731,8 @@ public class DbSerializerTest extends AAISetup {
 
 		engine.startTransaction();
 
-		Vertex gvnf = engine.tx().addVertex("aai-node-type","generic-vnf","vnf-id","myvnf");
-		Vertex vnfc = engine.tx().addVertex("aai-node-type","vnfc","vnfc-name","a-name");
+		Vertex gvnf = engine.tx().addVertex("aai-node-type","generic-vnf","vnf-id","myvnf", "aai-uri", "/network/generic-vnfs/generic-vnf/myvnf");
+		Vertex vnfc = engine.tx().addVertex("aai-node-type","vnfc","vnfc-name","a-name", "aai-uri", "/network/vnfcs/vnfc/a-name");
 
 		Introspector relData = loader.introspectorFromName("relationship-data");
 		relData.setValue("relationship-key", "vnfc.vnfc-name");
@@ -722,8 +761,8 @@ public class DbSerializerTest extends AAISetup {
 
 		engine.startTransaction();
 
-		Vertex gvnf = engine.tx().addVertex("aai-node-type","generic-vnf","vnf-id","myvnf");
-		Vertex vnfc = engine.tx().addVertex("aai-node-type","vnfc","vnfc-name","a-name");
+		Vertex gvnf = engine.tx().addVertex("aai-node-type","generic-vnf","vnf-id","myvnf", "aai-uri", "/network/generic-vnfs/generic-vnf/myvnf");
+		Vertex vnfc = engine.tx().addVertex("aai-node-type","vnfc","vnfc-name","a-name", "aai-uri", "/network/vnfcs/vnfc/a-name");
 		ers.addEdge(graph.traversal(), gvnf, vnfc, "uses");
 		ers.addEdge(graph.traversal(), gvnf, vnfc, "re-uses");
 		ers.addEdge(graph.traversal(), gvnf, vnfc, "over-uses");
@@ -756,8 +795,8 @@ public class DbSerializerTest extends AAISetup {
 
 		engine.startTransaction();
 
-		Vertex gvnf = engine.tx().addVertex("aai-node-type","generic-vnf","vnf-id","myvnf");
-		Vertex vnfc = engine.tx().addVertex("aai-node-type","vnfc","vnfc-name","a-name");
+		Vertex gvnf = engine.tx().addVertex("aai-node-type","generic-vnf","vnf-id","myvnf", "aai-uri", "/network/generic-vnfs/generic-vnf/myvnf");
+		Vertex vnfc = engine.tx().addVertex("aai-node-type","vnfc","vnfc-name","a-name", "aai-uri", "/network/vnfcs/vnfc/a-name");
 		ers.addEdge(graph.traversal(), gvnf, vnfc, "uses");
 		ers.addEdge(graph.traversal(), gvnf, vnfc, "re-uses");
 		ers.addEdge(graph.traversal(), gvnf, vnfc, "over-uses");
@@ -791,8 +830,8 @@ public class DbSerializerTest extends AAISetup {
 
 		engine.startTransaction();
 
-		Vertex gvnf = engine.tx().addVertex("aai-node-type","generic-vnf","vnf-id","myvnf");
-		Vertex vnfc = engine.tx().addVertex("aai-node-type","vnfc","vnfc-name","a-name");
+		Vertex gvnf = engine.tx().addVertex("aai-node-type","generic-vnf","vnf-id","myvnf", "aai-uri", "/network/generic-vnfs/generic-vnf/myvnf");
+		Vertex vnfc = engine.tx().addVertex("aai-node-type","vnfc","vnfc-name","a-name", "aai-uri", "/network/vnfcs/vnfc/a-name");
 		ers.addEdge(graph.traversal(), gvnf, vnfc, "uses");
 		ers.addEdge(graph.traversal(), gvnf, vnfc, "re-uses");
 		ers.addEdge(graph.traversal(), gvnf, vnfc, "over-uses");
@@ -819,7 +858,7 @@ public class DbSerializerTest extends AAISetup {
 
 		engine.startTransaction();
 
-		engine.tx().addVertex("aai-node-type","vnfc","vnfc-name","a-name");
+		engine.tx().addVertex("aai-node-type","vnfc","vnfc-name","a-name", "aai-uri", "/network/vnfcs/vnfc/a-name");
 
 		Introspector relationship = loader.introspectorFromName("relationship");
 		relationship.setValue("related-to", "vnfc");
@@ -858,7 +897,7 @@ public class DbSerializerTest extends AAISetup {
 
 		engine.startTransaction();
 
-		engine.tx().addVertex("aai-node-type","vnfc","vnfc-name","a-name");
+		engine.tx().addVertex("aai-node-type","vnfc","vnfc-name","a-name", "aai-uri", "/network/vnfcs/vnfc/a-name");
 
 		Introspector relationship = loader.introspectorFromName("relationship");
 		relationship.setValue("related-to", "vnfc");
@@ -897,7 +936,7 @@ public class DbSerializerTest extends AAISetup {
 
 		engine.startTransaction();
 
-		engine.tx().addVertex("aai-node-type","vnfc","vnfc-name","a-name");
+		engine.tx().addVertex("aai-node-type","vnfc","vnfc-name","a-name", "aai-uri", "/network/vnfcs/vnfc/a-name");
 
 		Introspector relationship = loader.introspectorFromName("relationship");
 		relationship.setValue("related-to", "vnfc");
@@ -926,7 +965,7 @@ public class DbSerializerTest extends AAISetup {
 		DBSerializer localDbser = getDBSerializerWithSpecificEdgeRules(ers);
 
 		engine.startTransaction();
-		engine.tx().addVertex("aai-node-type","vnfc","vnfc-name","a-name");
+		engine.tx().addVertex("aai-node-type","vnfc","vnfc-name","a-name", "aai-uri", "/network/vnfcs/vnfc/a-name");
 
 		Introspector relationship;
 		Introspector relationshipList;
@@ -982,7 +1021,8 @@ public class DbSerializerTest extends AAISetup {
 		DBSerializer localDbser = getDBSerializerWithSpecificEdgeRules(ers);
 
 		engine.startTransaction();
-		engine.tx().addVertex("aai-node-type","vnfc","vnfc-name","a-name");
+		engine.tx().addVertex("aai-node-type","vnfc","vnfc-name","a-name", "aai-uri", "/network/vnfcs/vnfc/a-name");
+
 
 		Introspector relationship;
 		Introspector relationshipList;
@@ -1145,14 +1185,15 @@ public class DbSerializerTest extends AAISetup {
 				ModelType.MOXY, "AAI-TEST");
 
 		engine.startTransaction();
-		Vertex gv = engine.tx().addVertex("aai-node-type", "generic-vnf", "vnf-id", "id1");
-		Vertex lint = engine.tx().addVertex("aai-node-type", "l-interface", "interface-name", "name1");
+		Vertex gv = engine.tx().addVertex("aai-node-type", "generic-vnf", "vnf-id", "id1", "aai-uri", "/network/generic-vnfs/generic-vnf/id1");
+		Vertex lint = engine.tx().addVertex("aai-node-type", "l-interface");
 		rules.addTreeEdge(engine.tx().traversal(), gv, lint);
 
 		Introspector lintIntro = loader.introspectorFromName("l-interface");
+		lintIntro.setValue("interface-name", "name1");
 		lintIntro.setValue("interface-role", "actor");
 		URI lintURI = new URI("/network/generic-vnfs/generic-vnf/id1/l-interfaces/l-interface/name1");
-		QueryParser uriQuery = dbEngine.getQueryBuilder(gv).createQueryFromURI(lintURI);
+		QueryParser uriQuery = engine.getQueryBuilder(gv).createQueryFromURI(lintURI);
 		dbser.serializeToDb(lintIntro, lint, uriQuery, "test-identifier", "AAI-TEST");
 
 		assertTrue(engine.tx().traversal().V(lint).has("interface-role", "actor").hasNext());
