@@ -27,6 +27,8 @@ import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.onap.aai.AAISetup;
 import org.onap.aai.dbmap.DBConnectionType;
 import org.onap.aai.exceptions.AAIException;
@@ -42,6 +44,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
@@ -49,16 +53,26 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
+@RunWith(value = Parameterized.class)
 public class DbAliasTest extends AAISetup {
 
 	private TitanGraph graph;
 
 	private final Version version = Version.v9;
 	private final ModelType introspectorFactoryType = ModelType.MOXY;
-	private final QueryStyle queryStyle = QueryStyle.TRAVERSAL;
 	private final DBConnectionType type = DBConnectionType.REALTIME;
 	private Loader loader;
 	private TransactionalGraphEngine dbEngine;
+
+	@Parameterized.Parameter(value = 0)
+	public QueryStyle queryStyle;
+
+	@Parameterized.Parameters(name = "QueryStyle.{0}")
+	public static Collection<Object[]> data() {
+		return Arrays.asList(new Object[][]{
+				{QueryStyle.TRAVERSAL}
+		});
+	}
 
 	@Before
 	public void setup() throws Exception {

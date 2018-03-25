@@ -24,28 +24,37 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.onap.aai.AAIJunitRunner;
 import org.onap.aai.HttpTestUtil;
 import org.onap.aai.PayloadUtil;
+import org.onap.aai.serialization.engines.QueryStyle;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import javax.ws.rs.core.Response;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 
-@RunWith(AAIJunitRunner.class)
+@RunWith(value = AAIJunitRunner.class)
 public class TenantTest {
 
     private HttpTestUtil httpTestUtil;
-
     private Map<String, String> templateValuesMap;
 
+    @Parameterized.Parameter(value = 0)
+    public QueryStyle queryStyle;
+
+    @Parameterized.Parameters(name = "QueryStyle.{0}")
+    public static Collection<Object[]> data() {
+        return Arrays.asList(new Object[][]{
+                {QueryStyle.TRAVERSAL}
+        });
+    }
+
     @Before
-    public void setup(){
-        httpTestUtil      = new HttpTestUtil();
+    public void setUp(){
+        httpTestUtil = new HttpTestUtil(queryStyle);
         templateValuesMap = new HashMap<>();
     }
 

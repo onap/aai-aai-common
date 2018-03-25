@@ -19,16 +19,15 @@
  */
 package org.onap.aai;
 
-import org.junit.runners.BlockJUnit4ClassRunner;
-import org.junit.runners.model.InitializationError;
+import org.junit.runners.Parameterized;
 import org.onap.aai.util.AAIConstants;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
-public class AAIJunitRunner extends BlockJUnit4ClassRunner {
+public class AAIJunitRunner extends Parameterized {
 
-    public AAIJunitRunner(Class<?> klass) throws InitializationError {
+    public AAIJunitRunner(Class<?> klass) throws Throwable {
         super(klass);
         setProps();
         modifyOxmHome();

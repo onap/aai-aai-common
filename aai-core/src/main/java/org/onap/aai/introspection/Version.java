@@ -19,6 +19,9 @@
  */
 package org.onap.aai.introspection;
 
+/**
+ * Requires the order to be in ascending order
+ */
 public enum Version {
 	v8,
 	v9,
@@ -26,12 +29,38 @@ public enum Version {
 	v11,
 	v12,
 	v13;
-	
+
+	public static final String VERSION_EXPRESSION = "v8|v9|v10|v11|v12|v13|latest";
+	public static final String VERSION_EXPRESSION_V8_PLUS = "v8|v9|v10|v11|v12|v13|latest";
+	public static final String VERSION_EXPRESSION_V9_PLUS = "v9|v10|v11|v12|v13|latest";
+
+	/**
+	 * Checks if v is the latest version
+	 * @param v
+	 * @return
+	 */
 	public static boolean isLatest(Version v) {
-		return (Version.v13.equals(v)); //TODO update when we increment the version, or find a better way of doing this
+		return Version.getLatest().equals(v);
 	}
-	
+
+	/**
+	 * Gets the latest version
+	 * @return
+	 */
 	public static Version getLatest(){
-		return Version.v13; //TODO update when we increment the version, or find a better way of doing this
+		return Version.values()[Version.values().length-1];
 	}
+
+	/**
+	 * To be used inplace of <b>Version.getVersion(String)</b> to correctly get version of "latest"
+	 * @param v
+	 * @return
+	 */
+	public static Version getVersion(String v) {
+		if ("latest".equals(v)) {
+			return Version.getLatest();
+		}
+		return Version.valueOf(v);
+	}
+
 }

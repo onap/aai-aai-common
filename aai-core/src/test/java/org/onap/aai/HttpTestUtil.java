@@ -41,7 +41,9 @@ import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 import javax.ws.rs.core.*;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.doReturn;
@@ -54,6 +56,7 @@ public class HttpTestUtil extends RESTAPI {
     protected static final MediaType APPLICATION_JSON = MediaType.valueOf("application/json");
 
     private static final String EMPTY = "";
+    private final QueryStyle queryStyle;
 
     protected HttpHeaders httpHeaders;
     protected UriInfo uriInfo;
@@ -63,6 +66,10 @@ public class HttpTestUtil extends RESTAPI {
 
     protected List<String> aaiRequestContextList;
     protected List<MediaType> outputMediaTypes;
+
+    public HttpTestUtil(QueryStyle qs) {
+        this.queryStyle = qs;
+    }
 
     public void init(){
 
@@ -114,7 +121,7 @@ public class HttpTestUtil extends RESTAPI {
 
             if(arr != null && arr.length > 1){
                 if(arr[0].matches("^v\\d+")){
-                    version = Version.valueOf(arr[0]);
+                    version = Version.getVersion(arr[0]);
                     uri = uri.replaceAll("^v\\d+", "");
                 }
             }
@@ -125,7 +132,7 @@ public class HttpTestUtil extends RESTAPI {
             Mockito.when(uriInfo.getPath()).thenReturn(uri);
 
             DBConnectionType type = DBConnectionType.REALTIME;
-            HttpEntry httpEntry   = new HttpEntry(version, ModelType.MOXY, QueryStyle.TRAVERSAL, type);
+            HttpEntry httpEntry   = new HttpEntry(version, ModelType.MOXY, queryStyle, type);
             Loader loader         = httpEntry.getLoader();
             dbEngine              = httpEntry.getDbEngine();
 
@@ -206,7 +213,7 @@ public class HttpTestUtil extends RESTAPI {
 
             if(arr != null && arr.length > 1){
                 if(arr[0].matches("^v\\d+")){
-                    version = Version.valueOf(arr[0]);
+                    version = Version.getVersion(arr[0]);
                     uri = uri.replaceAll("^v\\d+", "");
                 }
             }
@@ -216,7 +223,7 @@ public class HttpTestUtil extends RESTAPI {
             }
 
             DBConnectionType type = DBConnectionType.REALTIME;
-            HttpEntry httpEntry   = new HttpEntry(version, ModelType.MOXY, QueryStyle.TRAVERSAL, type);
+            HttpEntry httpEntry   = new HttpEntry(version, ModelType.MOXY, queryStyle, type);
             Loader loader         = httpEntry.getLoader();
             dbEngine              = httpEntry.getDbEngine();
 
@@ -287,7 +294,7 @@ public class HttpTestUtil extends RESTAPI {
 
             if(arr != null && arr.length > 1){
                 if(arr[0].matches("^v\\d+")){
-                    version = Version.valueOf(arr[0]);
+                    version = Version.getVersion(arr[0]);
                     if(!uri.contains("relationship-list/relationship")){
                         uri = uri.replaceAll("^v\\d+", "");
                     }
@@ -300,7 +307,7 @@ public class HttpTestUtil extends RESTAPI {
 
             Mockito.when(uriInfo.getPath()).thenReturn(uri);
             DBConnectionType type = DBConnectionType.REALTIME;
-            HttpEntry httpEntry   = new HttpEntry(version, ModelType.MOXY, QueryStyle.TRAVERSAL, type);
+            HttpEntry httpEntry   = new HttpEntry(version, ModelType.MOXY, queryStyle, type);
             Loader loader         = httpEntry.getLoader();
             dbEngine              = httpEntry.getDbEngine();
 

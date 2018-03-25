@@ -45,10 +45,11 @@
         <sonar.projectVersion>${project.version}</sonar.projectVersion>
         <httpclient.version>4.5.1</httpclient.version>
         <jackson.version>2.2.3</jackson.version>
-	<eelf.core.version>1.0.0</eelf.core.version>
-	<logback.version>1.2.3</logback.version>
-	<freemarker.version>2.3.21</freemarker.version>
-	<activemq.version>5.15.3</activemq.version>
+        <eelf.core.version>1.0.0</eelf.core.version>
+        <logback.version>1.2.3</logback.version>
+        <freemarker.version>2.3.21</freemarker.version>
+        <activemq.version>5.15.3</activemq.version>
+        <jacoco.line.coverage.limit>0.50</jacoco.line.coverage.limit>
     </properties>
     <profiles>
         <profile>
@@ -280,6 +281,27 @@
                             <dataFile>${project.build.directory}/coverage-reports/jacoco.exec</dataFile>
                             <!-- Sets the output directory for the code coverage report. -->
                             <outputDirectory>${project.reporting.outputDirectory}/jacoco</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>default-check</id>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <configuration>
+                            <dataFile>${project.build.directory}/coverage-reports/jacoco.exec</dataFile>
+                            <rules>
+                                <rule implementation="org.jacoco.maven.RuleConfiguration">
+                                    <element>BUNDLE</element>
+                                    <limits>
+                                        <limit implementation="org.jacoco.report.check.Limit">
+                                            <counter>LINE</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>${jacoco.line.coverage.limit}</minimum>
+                                        </limit>
+                                    </limits>
+                                </rule>
+                            </rules>
                         </configuration>
                     </execution>
                 </executions>

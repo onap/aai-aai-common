@@ -27,6 +27,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.onap.aai.AAISetup;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.exceptions.AAIException;
@@ -44,6 +46,8 @@ import javax.ws.rs.core.UriBuilder;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.containsString;
@@ -51,13 +55,23 @@ import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 
+@RunWith(value = Parameterized.class)
 public class GraphTraversalTest extends AAISetup {
 
 	private TransactionalGraphEngine dbEngine;
 	private TransactionalGraphEngine dbEnginev9;
-	
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+
+	@Parameterized.Parameter(value = 0)
+	public QueryStyle queryStyle;
+
+	@Parameterized.Parameters(name = "QueryStyle.{0}")
+	public static Collection<Object[]> data() {
+		return Arrays.asList(new Object[][]{
+				{QueryStyle.TRAVERSAL}
+		});
+	}
+
+	@Rule public ExpectedException thrown = ExpectedException.none();
 	
 	/**
 	 * Configure.
@@ -68,12 +82,12 @@ public class GraphTraversalTest extends AAISetup {
 	@Before
 	public void configure() throws Exception {
 		dbEngine =
-				new TitanDBEngine(QueryStyle.TRAVERSAL, 
+				new TitanDBEngine(queryStyle,
 					LoaderFactory.createLoaderForVersion(ModelType.MOXY, AAIProperties.LATEST),
 					false);
 		
 		dbEnginev9 = 
-				new TitanDBEngine(QueryStyle.TRAVERSAL, 
+				new TitanDBEngine(queryStyle,
 					LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.v9),
 					false);
 	}
