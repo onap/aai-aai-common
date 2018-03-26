@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_d4165955",
+        "filename": "docs/platform/index.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2018-03-26T15:09:39Z",
+      "side": 1,
+      "message": "I don\u0027t think we want index.rst to reference itself. i think we can just discard any changes on this file",
+      "revId": "687b9ada0755d6f3e92599c1ffb4ed42aba768a0",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
