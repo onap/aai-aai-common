@@ -82,5 +82,22 @@
 		<scope>test</scope>
 	</dependency>
   </dependencies>
+    <build>
+		<plugins>
+			<plugin>
+				<!-- explicitly define maven-deploy-plugin after other to force exec order -->
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.sonatype.plugins</groupId>
+				<artifactId>nexus-staging-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
   
 </project>
