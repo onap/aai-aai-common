@@ -36,7 +36,6 @@
     <properties>
         <gendoc.version>v12</gendoc.version>
         <aai.wiki.link>https://wiki.onap.org/</aai.wiki.link>
-        <hbase.version>1.0.2</hbase.version>
         <sonar.language>java</sonar.language>
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <sonar.surefire.reportsPath>${project.build.directory}/surefire-reports</sonar.surefire.reportsPath>
@@ -576,43 +575,6 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-access</artifactId>
             <version>${logback.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.hbase</groupId>
-            <artifactId>hbase-client</artifactId>
-            <version>${hbase.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-log4j12</artifactId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>log4j</artifactId>
-                    <groupId>log4j</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.hbase</groupId>
-            <artifactId>hbase-protocol</artifactId>
-            <version>${hbase.version}</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>log4j</artifactId>
-                    <groupId>log4j</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.hbase</groupId>
-            <artifactId>hbase-common</artifactId>
-            <version>${hbase.version}</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>log4j</artifactId>
-                    <groupId>log4j</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.activemq</groupId>
