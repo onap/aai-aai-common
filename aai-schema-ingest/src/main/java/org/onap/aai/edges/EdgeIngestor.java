@@ -1,22 +1,3 @@
-/**
- * ============LICENSE_START=======================================================
- * org.onap.aai
- * ================================================================================
- * Copyright © 2017-2018 AT&T Intellectual Property. All rights reserved.
- * ================================================================================
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * ============LICENSE_END=========================================================
- */
 package org.onap.aai.edges;
 
 import java.io.BufferedReader;
@@ -55,7 +36,7 @@ import static com.jayway.jsonpath.Criteria.where;
  * 	information, including allowing various filters to extract particular rules.
  */
 public class EdgeIngestor {
-	private Map<Version, List<DocumentContext>> versionJsonFilesMap = new EnumMap<>(Version.class);
+	private Map<Version, List<DocumentContext>> versionJsonFilesMap;
 	private static final String READ_START = "$.rules.[?]";
 	private static final String READ_ALL_START = "$.rules.*";
 	
@@ -69,38 +50,8 @@ public class EdgeIngestor {
 	 */
 	public EdgeIngestor(ConfigTranslator translator) {
 		Map<Version, List<String>> filesToIngest = translator.getEdgeFiles();
-		
-		for (Entry<Version, List<String>> verFile : filesToIngest.entrySet()) {
-			Version v = verFile.getKey();
-			List<String> files = verFile.getValue();
-			
-			List<DocumentContext> docs = new ArrayList<>();
-	
-			for (String rulesFilename : files) {
-				String fileContents = readInJsonFile(rulesFilename);
-				docs.add(JsonPath.parse(fileContents));
-			}
-			versionJsonFilesMap.put(v, docs);
-		}
-	}
-	
-	/**
-	 * Reads the json file at the given filename into an in-memory String.
-	 * 
-	 * @param rulesFilename - json file to be read (must include path to the file)
-	 * @return String json contents of the given file
-	 */
-	private String readInJsonFile(String rulesFilename) {
-		StringBuilder sb = new StringBuilder();
-		try(BufferedReader br = new BufferedReader(new FileReader(rulesFilename))) {
-			String line;
-			while ((line = br.readLine()) != null) {
-				sb.append(line);
-			}
-		} catch (IOException e) {
-			throw new ExceptionInInitializerError(e);
-		}
-		return sb.toString();
+		JsonIngestor ji = new JsonIngestor();
+		versionJsonFilesMap = ji.ingest(filesToIngest);
 	}
 	
 	//-----methods for getting rule info-----//
@@ -533,46 +484,16 @@ public class EdgeIngestor {
 	private Multimap<String, EdgeRule> convertToEdgeRules(List<Map<String, String>> allFound) {
 		Multimap<String, EdgeRule> rules = ArrayListMultimap.create();
 		
+		TypeAlphabetizer alpher = new TypeAlphabetizer();
+		
 		if (!allFound.isEmpty()) {
 			for (Map<String, String> raw : allFound) {
 				EdgeRule converted = new EdgeRule(raw);
-				String alphabetizedKey = buildAlphabetizedKey(raw.get(EdgeField.FROM.toString()), raw.get(EdgeField.TO.toString()));
+				String alphabetizedKey = alpher.buildAlphabetizedKey(raw.get(EdgeField.FROM.toString()), raw.get(EdgeField.TO.toString()));
 				rules.put(alphabetizedKey, converted);
 			}
 		}
 		
 		return rules;
-	}
-	
-	/**
-	 * Builds the multimap key for the rules, where nodetypes are alphabetically sorted
-	 * (ignoring dashes).
-	 * 
-	 * @param nodeA - first nodetype
-	 * @param nodeB - second nodetype
-	 * @return {alphabetically first nodetype}|{alphabetically second nodetype}
-	 * 		ex: buildAlphabetizedKey("l-interface", "logical-link") -> "l-interface|logical-link"
-	 * 			buildAlphabetizedKey("logical-link", "l-interface") -> "l-interface|logical-link"
-	 * 
-	 * This is alphabetical order to normalize the keys, as sometimes there will be multiple
-	 * rules for a pair of node types but the from/to value in the json is flipped for some of them.
-	 */
-	private String buildAlphabetizedKey(String nodeA, String nodeB) {
-		//normalize
-		String normalizedNodeA = nodeA.replace("-", "");
-		String normalizedNodeB = nodeB.replace("-", "");
-		int cmp = normalizedNodeA.compareTo(normalizedNodeB);
-		
-		StringBuilder sb = new StringBuilder();
-		if (cmp <= 0) {
-			sb.append(nodeA);
-			sb.append("|");
-			sb.append(nodeB);
-		} else {
-			sb.append(nodeB);
-			sb.append("|");
-			sb.append(nodeA);
-		}
-		return sb.toString();
 	}
 }

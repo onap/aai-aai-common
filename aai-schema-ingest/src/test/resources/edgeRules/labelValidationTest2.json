@@ -1,0 +1,52 @@
+{
+	"rules": [
+		{
+			"from": "human",
+			"to": "strange-and-interesting-plant",
+			"label": "owns",
+			"direction": "OUT",
+			"multiplicity": "ONE2ONE",
+			"contains-other-v": "OUT",
+			"delete-other-v": "NONE",
+			"prevent-delete": "NONE",
+			"default": "true",
+			"description":"will be part of valid set (dup label (human owns) to stuff in file1, but different pair so ok)"
+		},
+		{
+			"from": "badger",
+			"to": "mushroom",
+			"label": "onap.whatever.BindsTo",
+			"direction": "OUT",
+			"multiplicity": "ONE2ONE",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"prevent-delete": "NONE",
+			"default": "true",
+			"description":"will be part of invalid set - full copy in file2"
+		},
+		{
+			"from": "floor",
+			"to": "lava",
+			"label": "is",
+			"direction": "OUT",
+			"multiplicity": "ONE2ONE",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"prevent-delete": "NONE",
+			"default": "true",
+			"description":"will be part of invalid set - dup in file2, contains and cousin, from/to flipped"
+		},
+		{
+			"from": "human",
+			"to": "toaster",
+			"label": "builds",
+			"direction": "OUT",
+			"multiplicity": "ONE2ONE",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"prevent-delete": "NONE",
+			"default": "true",
+			"description":"will be part of valid set across both files"
+		}
+	]
+}

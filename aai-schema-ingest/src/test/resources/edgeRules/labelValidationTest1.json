@@ -1,0 +1,124 @@
+{
+	"rules": [
+		{
+			"from": "human",
+			"to": "monster",
+			"label": "fights",
+			"direction": "OUT",
+			"multiplicity": "ONE2ONE",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"prevent-delete": "NONE",
+			"default": "true",
+			"description":"will be part of valid set"
+		},
+		{
+			"from": "monster",
+			"to": "human",
+			"label": "ignores",
+			"direction": "OUT",
+			"multiplicity": "ONE2ONE",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"prevent-delete": "NONE",
+			"default": "true",
+			"description":"will be part of valid set"
+		},
+		{
+			"from": "human",
+			"to": "monster",
+			"label": "tames",
+			"direction": "OUT",
+			"multiplicity": "ONE2ONE",
+			"contains-other-v": "OUT",
+			"delete-other-v": "NONE",
+			"prevent-delete": "NONE",
+			"default": "true",
+			"description":"will be part of valid set"
+		},
+		{
+			"from": "sphinx",
+			"to": "monster",
+			"label": "isA",
+			"direction": "OUT",
+			"multiplicity": "ONE2ONE",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"prevent-delete": "NONE",
+			"default": "true",
+			"description":"will be part of invalid set - dup label, cousin and containment, from/to flipped"
+		},
+		{
+			"from": "sphinx",
+			"to": "monster",
+			"label": "isA",
+			"direction": "OUT",
+			"multiplicity": "ONE2ONE",
+			"contains-other-v": "OUT",
+			"delete-other-v": "NONE",
+			"prevent-delete": "NONE",
+			"default": "true",
+			"description":"will be part of invalid set - dup label, cousin and containment, from/to flipped"
+		},
+		{
+			"from": "griffin",
+			"to": "hippogriff",
+			"label": "fliesPast",
+			"direction": "OUT",
+			"multiplicity": "ONE2ONE",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"prevent-delete": "NONE",
+			"default": "false",
+			"description":"will be part of invalid set - dup label, both cousins, from/to flipped"
+		},
+		{
+			"from": "hippogriff",
+			"to": "griffin",
+			"label": "fliesPast",
+			"direction": "OUT",
+			"multiplicity": "ONE2ONE",
+			"contains-other-v": "NONE",
+			"delete-other-v": "${direction}",
+			"prevent-delete": "NONE",
+			"default": "true",
+			"description":"will be part of invalid set - dup label, both cousins, from/to flipped"
+		},
+		{
+			"from": "human",
+			"to": "toaster",
+			"label": "owns",
+			"direction": "OUT",
+			"multiplicity": "ONE2ONE",
+			"contains-other-v": "OUT",
+			"delete-other-v": "NONE",
+			"prevent-delete": "NONE",
+			"default": "true",
+			"description":"will be part of valid set (dup label (human owns) but on different pair so ok)"
+		},
+		{
+			"from": "badger",
+			"to": "mushroom",
+			"label": "onap.whatever.BindsTo",
+			"direction": "OUT",
+			"multiplicity": "ONE2ONE",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"prevent-delete": "NONE",
+			"default": "true",
+			"description":"will be part of invalid set - full copy in file2"
+		},
+		{
+			"from": "lava",
+			"to": "floor",
+			"label": "is",
+			"direction": "IN",
+			"multiplicity": "ONE2ONE",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"prevent-delete": "NONE",
+			"default": "true",
+			"description":"will be part of invalid set - dup in file2, contains and cousin, from/to flipped"
+		}
+	]
+}
