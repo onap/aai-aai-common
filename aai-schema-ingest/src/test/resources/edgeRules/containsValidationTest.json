@@ -1,0 +1,64 @@
+{
+	"rules" : [
+		{
+			"from": "human",
+			"to": "monster",
+			"label": "fights",
+			"direction": "OUT",
+			"multiplicity": "ONE2ONE",
+			"contains-other-v": "${direction}",
+			"delete-other-v": "NONE",
+			"prevent-delete": "NONE",
+			"default": "true",
+			"description":"valid set with one containment"
+		},
+		{
+			"from": "human",
+			"to": "monster",
+			"label": "avoids",
+			"direction": "OUT",
+			"multiplicity": "ONE2ONE",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"prevent-delete": "NONE",
+			"default": "true",
+			"description":"valid set with one containment"
+		},
+		{
+			"from": "cheese",
+			"to": "bread",
+			"label": "eatenWith",
+			"direction": "OUT",
+			"multiplicity": "ONE2ONE",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"prevent-delete": "NONE",
+			"default": "true",
+			"description":"valid set with no containment"
+		},
+		{
+			"from": "box",
+			"to": "cat",
+			"label": "contains",
+			"direction": "OUT",
+			"multiplicity": "ONE2ONE",
+			"contains-other-v": "${direction}",
+			"delete-other-v": "NONE",
+			"prevent-delete": "NONE",
+			"default": "true",
+			"description":"invalid set with more than one containment"
+		},
+		{
+			"from": "box",
+			"to": "cat",
+			"label": "encapsulates",
+			"direction": "OUT",
+			"multiplicity": "ONE2ONE",
+			"contains-other-v": "IN",
+			"delete-other-v": "NONE",
+			"prevent-delete": "NONE",
+			"default": "true",
+			"description":"invalid set with more than one containment"
+		}
+	]
+}

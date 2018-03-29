@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+  ============LICENSE_START=======================================================
+  org.openecomp.aai
+  ================================================================================
+  Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+  ================================================================================
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  ============LICENSE_END=========================================================
+  -->
+
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm" package-name="inventory.aai.onap.org.v12" xml-mapping-metadata-complete="true">
+	<xml-schema element-form-default="QUALIFIED">
+		<xml-ns namespace-uri="http://org.onap.aai.inventory/v12" />
+	</xml-schema>
+	<java-types>
+		<java-type name="LogicalLink">
+			<xml-root-element name="logical-link" />
+			<java-attributes>
+				<xml-element java-attribute="linkName" name="link-name" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="e.g., evc-name, or vnf-nameA_interface-nameA_vnf-nameZ_interface-nameZ" />
+					</xml-properties>
+				</xml-element>
+				<xml-element default-value="false" required="true" java-attribute="inMaint" name="in-maint" type="java.lang.Boolean">
+					<xml-properties>
+						<xml-property name="defaultValue" value="false"/>
+						<xml-property name="description" value="used to indicate whether or not this object is in maintenance mode (maintenance mode = true). This field (in conjunction with prov-status) is used to suppress alarms and vSCL on VNFs/VMs." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="linkType" name="link-type" required="true" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Type of logical link, e.g., evc" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="speedValue" name="speed-value" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Captures the numeric part of the speed" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="speedUnits" name="speed-units" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Captures the units corresponding to the speed" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="ipVersion" name="ip-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="v4, v6, or ds for dual stack (should be att-ip-version)" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="routingProtocol" name="routing-protocol" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="For example, static or BGP" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="modelInvariantId" name="model-invariant-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="the ASDC model id for this resource or service model." />
+						<xml-property name="visibility" value="deployment" />
+						<xml-property name="requires" value="model-version-id" />
+						<xml-property name="dbAlias" value="model-invariant-id-local" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="modelVersionId" name="model-version-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="the ASDC model version for this resource or service model." />
+						<xml-property name="visibility" value="deployment" />
+						<xml-property name="requires" value="model-invariant-id" />
+						<xml-property name="dbAlias" value="model-version-id-local" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="personaModelVersion" name="persona-model-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="the ASDC model version for this resource or service model." />
+						<xml-property name="visibility" value="internal" />
+						<xml-property name="dataCopy" value="service-design-and-creation/models/model/{model-invariant-id}/model-vers/model-ver/{model-version-id}#model-version" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="widgetModelId" name="widget-model-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="the ASDC data dictionary widget model. This maps directly to the A&amp;AI widget." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="widgetModelVersion" name="widget-model-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="the ASDC data dictionary version of the widget model.This maps directly to the A&amp;AI version of the widget." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="operationalStatus" name="operational-status" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Indication of operational status of the logical link." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="provStatus" name="prov-status" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Trigger for operational monitoring of this VNF by BAU Service Assurance systems." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="linkRole" name="link-role" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Indication of the network use of the logical link." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="linkName2" name="link-name2" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Alias or alternate name (CLCI or D1 name)." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="linkId" name="link-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="UUID of the logical-link, SDNC generates this." />
+					</xml-properties>
+				</xml-element>
+					<xml-element java-attribute="circuitId" name="circuit-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Circuit id" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="purpose" name="purpose" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Reason for this entity, role it is playing" />
+					</xml-properties>
+				</xml-element>
+			</java-attributes>
+			<xml-properties>
+				<xml-property name="description" value="Logical links generally connect l-interfaces but are used to express logical connectivity between two points" />
+				<xml-property name="indexedProps" value="link-name,model-invariant-id,model-version-id,widget-model-id,widget-model-version,link-id,prov-status,circuit-id,purpose" />
+				<xml-property name="uniqueProps" value="link-id" />
+				<xml-property name="container" value="logical-links" />
+				<xml-property name="namespace" value="network" />
+				<xml-property name="searchable" value="link-name" />
+			</xml-properties>
+		</java-type>
+		
+		<java-type name="LagInterface">
+			<xml-root-element name="lag-interface" />
+			<java-attributes>
+				<xml-element java-attribute="scooble" name="scooble" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="Name that identifies the link aggregate interface" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="aThing" name="a-thing" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Human friendly text regarding this interface." />
+					</xml-properties>
+				</xml-element>	
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="speedValue" name="speed-value" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Captures the numeric part of the speed" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="speedUnits" name="speed-units" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Captures the units corresponding to the speed" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="imAChange" name="im-a-change" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="ID of interface" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="interfaceRole" name="interface-role" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Role assigned to this Interface, should use values as defined in ECOMP Yang models." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="provStatus" name="prov-status" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Trigger for operational monitoring of this resource by Service Assurance systems." />
+					</xml-properties>
+				</xml-element>
+				<xml-element default-value="false" java-attribute="inMaint" name="in-maint" required="true" type="java.lang.Boolean">
+					<xml-properties>
+						<xml-property name="defaultValue" value="false"/>
+						<xml-property name="description" value="used to indicate whether or not this object is in maintenance mode (maintenance mode = true)" />
+					</xml-properties>
+				</xml-element>
+			</java-attributes>
+			<xml-properties>
+				<xml-property name="description" value="Link aggregate interface" />
+				<xml-property name="indexedProps" value="interface-name,interface-id,interface-role" />
+				<xml-property name="dependentOn" value="generic-vnf,pserver,vpls-pe,pnf" />
+				<xml-property name="container" value="lag-interfaces" />
+			</xml-properties>
+		</java-type>
+	</java-types>
+</xml-bindings>

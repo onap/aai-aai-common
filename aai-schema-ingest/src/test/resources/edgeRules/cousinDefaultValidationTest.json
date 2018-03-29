@@ -1,0 +1,112 @@
+{
+	"rules" : [
+		{
+			"from": "human",
+			"to": "monster",
+			"label": "fights",
+			"direction": "OUT",
+			"multiplicity": "ONE2ONE",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"prevent-delete": "NONE",
+			"default": "true",
+			"description":"valid set as cousin/contains have separate defaulting"
+		},
+		{
+			"from": "human",
+			"to": "monster",
+			"label": "builds",
+			"direction": "OUT",
+			"multiplicity": "ONE2ONE",
+			"contains-other-v": "OUT",
+			"delete-other-v": "NONE",
+			"prevent-delete": "NONE",
+			"default": "true",
+			"description":"valid set as cousin/contains have separate defaulting"
+		},
+		{
+			"from": "boop",
+			"to": "beep",
+			"label": "isTransformedByRobotsInto",
+			"direction": "OUT",
+			"multiplicity": "ONE2ONE",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"prevent-delete": "NONE",
+			"default": "true",
+			"description":"valid set with exactly 1 default"
+		},
+		{
+			"from": "boop",
+			"to": "beep",
+			"label": "yields",
+			"direction": "OUT",
+			"multiplicity": "ONE2ONE",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"prevent-delete": "NONE",
+			"default": "false",
+			"description":"valid set with exactly 1 default"
+		},
+		{
+			"from": "sheep",
+			"to": "wool",
+			"label": "produces",
+			"direction": "OUT",
+			"multiplicity": "ONE2ONE",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"prevent-delete": "NONE",
+			"default": "true",
+			"description":"invalid set with multiple defaults"
+		},
+		{
+			"from": "wool",
+			"to": "sheep",
+			"label": "isShearedFrom",
+			"direction": "OUT",
+			"multiplicity": "ONE2ONE",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"prevent-delete": "NONE",
+			"default": "true",
+			"description":"invalid set with multiple defaults"
+		},
+		{
+			"from": "cloth",
+			"to": "thread",
+			"label": "isWovenFrom",
+			"direction": "OUT",
+			"multiplicity": "ONE2ONE",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"prevent-delete": "NONE",
+			"default": "false",
+			"description":"invalid set with no defaults"
+		},
+		{
+			"from": "cloth",
+			"to": "thread",
+			"label": "unravelsTo",
+			"direction": "OUT",
+			"multiplicity": "ONE2ONE",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"prevent-delete": "NONE",
+			"default": "false",
+			"description":"invalid set with no defaults"
+		},
+		{
+			"from": "family",
+			"to": "baby",
+			"label": "raises",
+			"direction": "OUT",
+			"multiplicity": "ONE2ONE",
+			"contains-other-v": "OUT",
+			"delete-other-v": "NONE",
+			"prevent-delete": "NONE",
+			"default": "true",
+			"description":"vacuously valid set (ie no cousin so doesn't even matter)"
+		}
+	]
+}
