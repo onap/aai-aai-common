@@ -19,13 +19,9 @@
  */
 package org.onap.aai.util;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.apache.cxf.message.Message;
-import org.apache.cxf.phase.PhaseInterceptorChain;
-
 import org.onap.aai.exceptions.AAIException;
+
+import java.util.regex.Pattern;
 
 public class AAIApiVersion {
 	
@@ -42,29 +38,7 @@ public class AAIApiVersion {
 	public static String get() throws AAIException {
 		
 		String apiVersion = null;
-		try {
-			Message message = PhaseInterceptorChain.getCurrentMessage();
-			String requestURI = (String) message.get(Message.REQUEST_URI);
-			
-			if (requestURI != null) {
-				Matcher matcher = versionPattern.matcher(requestURI);
-				if (matcher.find() && matcher.groupCount() >= 2) {
-					apiVersion = matcher.group(2);
-		        }
-				if (apiVersion == null) { 
-					Matcher latestMatcher = latestVersionPattern.matcher(requestURI);
-					if (latestMatcher.find() && latestMatcher.groupCount() >= 2) {
-						apiVersion = AAIConfig.get(AAIConstants.AAI_DEFAULT_API_VERSION_PROP, AAIConstants.AAI_DEFAULT_API_VERSION);
-					}
-				}
-				
-			}
-			
-		} catch (Exception e) { 
-			// TODO: we may want to log an error here
-		}
-		// TODO: should this check the value a little closer and look for a pattern?
-		if (apiVersion == null || !apiVersion.startsWith("v")) { 
+		if (apiVersion == null || !apiVersion.startsWith("v")) {
 			apiVersion = AAIConfig.get (AAIConstants.AAI_DEFAULT_API_VERSION_PROP, AAIConstants.AAI_DEFAULT_API_VERSION);
 			//apiVersion = AAIConstants.AAI_DEFAULT_API_VERSION;
 		}

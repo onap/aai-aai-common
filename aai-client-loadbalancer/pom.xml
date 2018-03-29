@@ -81,6 +81,11 @@
             <artifactId>spring-retry</artifactId>
             <version>1.2.1.RELEASE</version>
         </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-codec-http</artifactId>
+            <version>4.0.29.Final</version>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>
