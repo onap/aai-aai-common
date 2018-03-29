@@ -49,13 +49,13 @@
 			"default": "true"
 		},
 		{
-			"from": "cloud-region",
-			"to": "esr-system-info",
-			"label": "has",
+			"from": "esr-system-info",
+			"to": "cloud-region",
+			"label": "org.onap.relationships.inventory.BelongsTo",
 			"direction": "OUT",
-			"multiplicity": "One2Many",
-			"contains-other-v": "${direction}",
-			"delete-other-v": "${direction}",
+			"multiplicity": "MANY2ONE",
+			"contains-other-v": "!${direction}",
+			"delete-other-v": "!${direction}",
 			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE",
 			"default": "true"
