@@ -279,6 +279,8 @@ public class Api {
 
             private String description;
 
+			private String version;
+
             public String getResponseCode() {
                 return responseCode;
             }
@@ -302,6 +304,10 @@ public class Api {
                         ", description='" + description + '\'' +
                         '}';
             }
+
+			public void setVersion(String version) {
+				this.version = version;				
+			}
         }
 
     }
