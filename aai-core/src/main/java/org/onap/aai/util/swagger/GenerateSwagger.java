@@ -16,6 +16,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  * ============LICENSE_END=========================================================
+ *
+ * ECOMP is a trademark and service mark of AT&T Intellectual Property.
  */
 package org.onap.aai.util.swagger;
 
@@ -36,7 +38,7 @@ public class GenerateSwagger {
     public static final String DEFAULT_WIKI = "";
 
     public static final String DEFAULT_SCHEMA_DIR = "../aai-schema";
-    public static final String CURRENT_VERSION = Version. getLatest().toString();
+    public static final String CURRENT_VERSION = Version.getLatest().toString();
     //if the program is run from aai-common, use this directory as default"
     public static final String ALT_SCHEMA_DIR = "aai-schema";
     //used to check to see if program is run from aai-core
@@ -60,7 +62,7 @@ public class GenerateSwagger {
         }
 
         if(versionToGenerate == null){
-            System.out.println("Warning: Version to generate is not set so using default version: " + CURRENT_VERSION);
+            System.out.println("Warning: Version to generate is not set so using default versionToGenerate " + CURRENT_VERSION);
             versionToGenerate = CURRENT_VERSION;
         }
 
@@ -122,6 +124,7 @@ public class GenerateSwagger {
         resultMap.put("sortedAaiApis", sortedTagMap);
         resultMap.put("wikiLink", wikiLink);
         resultMap.put("definitions", definitionList);
+        resultMap.put("version", versionToGenerate);
         if (infoMap.containsKey("description")) {
             String infoDescription = infoMap.get("description").toString();
 
@@ -129,6 +132,9 @@ public class GenerateSwagger {
                     .map(line -> {
                         line = line.trim();
                         String hyperLink = "";
+                        if(line.trim().contains("Differences versus")) {
+                        	return String.format("");
+                        }
                         if(line.trim().contains("https://")){
                             int startIndex = line.indexOf("https://");
                             int endIndex = line.lastIndexOf("/");
@@ -239,6 +245,26 @@ public class GenerateSwagger {
 
                     if(requestBodyList != null && requestBodyList.size() == 1){
                         requestBody = requestBodyList.get(0);
+                        for(String key : requestBody.keySet()) {
+                            //Filter out all the relationship links that appear in the YAML
+                        	if(key.equals("description")) {
+                        		String reqBody=(String)requestBody.get(key);
+                        		if(reqBody.replaceAll("\\[.*.json\\)", "") != reqBody) {
+                        			requestBody.put(key, reqBody.replaceAll("\\[.*.json\\)", ""));
+                        		}
+                        	}
+                            //Filter out all the patchDefinition links that appear in the YAML
+                        	if(key.equals("schema")) {
+                        		LinkedHashMap<String,String> reqBody = (LinkedHashMap<String,String>)requestBody.get(key);
+                        		String schema=reqBody.get("$ref");
+                        		String schemaNopatch = schema.replace("patchDefinitions", "definitions");
+
+                        		if(! schema.equals(schemaNopatch)) {
+                        			reqBody.put("$ref", schemaNopatch);
+                        			requestBody.put(key, reqBody);
+                        		}
+                        	}
+                        }
                         httpVerb.setBodyParametersEnabled(true);
                         httpVerb.setBodyParameters(requestBody);
 
@@ -274,13 +300,15 @@ public class GenerateSwagger {
 
                             response.setResponseCode(responseMap.getKey());
                             response.setDescription((String) responseValueMap.get("description"));
+                            response.setVersion((String) responseValueMap.get("version"));
 
                             if(responseValueMap != null && responseValueMap.containsKey("schema")){
                                 Map<String, Object> schemaMap = (Map<String, Object>)responseValueMap.get("schema");
                                 if(schemaMap != null && schemaMap.containsKey("$ref")){
                                     String schemaLink = schemaMap.get("$ref").toString();
                                     httpVerb.setHasReturnSchema(true);
-                                    httpVerb.setReturnSchemaLink(schemaLink);
+                                    //Filter out all the getDefinition links that appear in the YAML
+                                    httpVerb.setReturnSchemaLink(schemaLink.replace("getDefinitions", "definitions"));
                                     int retCode = schemaLink.lastIndexOf('/');
                                     if(retCode != -1 && retCode != schemaLink.length()){
                                         httpVerb.setReturnSchemaObject(schemaLink.substring(retCode));

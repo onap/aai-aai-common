@@ -16,6 +16,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  * ============LICENSE_END=========================================================
+ *
+ * ECOMP is a trademark and service mark of AT&T Intellectual Property.
  */
 package org.onap.aai.util.swagger;
 
@@ -279,6 +281,8 @@ public class Api {
 
             private String description;
 
+			private String version;
+
             public String getResponseCode() {
                 return responseCode;
             }
@@ -302,6 +306,10 @@ public class Api {
                         ", description='" + description + '\'' +
                         '}';
             }
+
+			public void setVersion(String version) {
+				this.version = version;				
+			}
         }
 
     }
