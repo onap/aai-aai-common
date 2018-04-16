@@ -43,8 +43,7 @@ public class HttpPingImpl implements HttpPing, IPing {
     private static final EELFLogger logger = EELFManager.getInstance().getLogger(HttpPingImpl.class);
 
     private static final Base64.Encoder base64Encoder = Base64.getEncoder();
-
-    private static final HttpHeaders HTTP_HEADERS = new HttpHeaders();
+    private static final String UNABLE_TO_ESTABLISH = "Successfully connected by workaround due to unable to read own topic {}";
 
     // This is a workaround for the topics that the user
     // does not have the access to read their own topic status
@@ -207,13 +206,13 @@ public class HttpPingImpl implements HttpPing, IPing {
                     logger.info("Successfully connected by workaround due to unable to read own topic {}", url);
                     return isAlive;
                 } else {
-                    logger.warn("Unable to establish a connection to {} due to {}", server.getHostPort(), ex.getMessage());
+                    logger.warn(UNABLE_TO_ESTABLISH, server.getHostPort(), ex.getMessage());
                 }
             } else {
-                logger.warn("Unable to establish a connection to {} due to {}", server.getHostPort(), ex.getMessage());
+                logger.warn(UNABLE_TO_ESTABLISH, server.getHostPort(), ex.getMessage());
             }
         } catch (Exception ex) {
-            logger.warn("Unable to establish a connection to {} due to {}", server.getHostPort(), ex.getMessage());
+            logger.warn(UNABLE_TO_ESTABLISH, server.getHostPort(), ex.getMessage());
         }
 
         return isAlive;
