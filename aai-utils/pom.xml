@@ -37,6 +37,7 @@
 
     <properties>
         <onap.nexus.url>https://nexus.onap.org</onap.nexus.url>
+        <logback.version>1.2.3</logback.version>
     </properties>
 
     <dependencies>
@@ -90,6 +91,21 @@
             <artifactId>junit</artifactId>
             <version>4.11</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>${logback.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-access</artifactId>
+            <version>${logback.version}</version>
         </dependency>
     </dependencies>
 
