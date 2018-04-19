@@ -46986,10 +46986,10 @@ definitions:
     description: |
       cloud-region designates an installation of a cloud cluster or region or instantiation.
       ###### Related Nodes
-      - TO esr-system-info (CHILD of cloud-region, cloud-region has esr-system-info, One2Many)(2)
       - TO complex( cloud-region LocatedIn complex, MANY2ONE)
       - TO l3-network( cloud-region Uses l3-network, MANY2MANY)
       - TO zone( cloud-region LocatedIn zone, MANY2ONE)
+      - FROM esr-system-info( esr-system-info BelongsTo cloud-region, MANY2ONE)(1)
       - FROM availability-zone( availability-zone BelongsTo cloud-region, MANY2ONE)(1)
       - FROM dvs-switch( dvs-switch BelongsTo cloud-region, MANY2ONE)
       - FROM flavor( flavor BelongsTo cloud-region, MANY2ONE)
@@ -47006,7 +47006,6 @@ definitions:
       - FROM pserver( pserver LocatedIn cloud-region, MANY2ONE)
 
       -(1) IF this CLOUD-REGION node is deleted, this FROM node is DELETED also
-      -(2) IF this CLOUD-REGION node is deleted, this TO node is DELETED also
       -CLOUD-REGION cannot be deleted if related to DVS-SWITCH,FLAVOR,HPA-CAPABILITY,GROUP-ASSIGNMENT,IMAGE,OAM-NETWORK,SNAPSHOT,TENANT,VIP-IPV4-ADDRESS-LIST,VIP-IPV6-ADDRESS-LIST,VOLUME-GROUP
 
     required:
@@ -47652,9 +47651,9 @@ definitions:
     description: |
       Persist EMS address information used by EMS driver.
       ###### Related Nodes
-      - TO esr-system-info (CHILD of esr-ems, esr-ems has esr-system-info, One2Many)(2)
+      - FROM esr-system-info( esr-system-info BelongsTo esr-ems, MANY2ONE)(1)
 
-      -(2) IF this ESR-EMS node is deleted, this TO node is DELETED also
+      -(1) IF this ESR-EMS node is deleted, this FROM node is DELETED also
     required:
     - ems-id
     properties:
@@ -47680,12 +47679,12 @@ definitions:
     description: |
       Persist common address information of external systems.
       ###### Related Nodes
-      - FROM esr-ems (PARENT of esr-system-info, esr-ems has esr-system-info)(3)
-      - FROM esr-vnfm (PARENT of esr-system-info, esr-vnfm has esr-system-info)(3)
-      - FROM esr-thirdparty-sdnc (PARENT of esr-system-info, esr-thirdparty-sdnc has esr-system-info)(3)
-      - FROM cloud-region (PARENT of esr-system-info, cloud-region has esr-system-info)(3)
+      - TO esr-ems( esr-system-info BelongsTo esr-ems, MANY2ONE)(4)
+      - TO esr-vnfm( esr-system-info BelongsTo esr-vnfm, ONE2ONE)(4)
+      - TO esr-thirdparty-sdnc( esr-system-info BelongsTo esr-thirdparty-sdnc, ONE2ONE)(4)
+      - TO cloud-region( esr-system-info BelongsTo cloud-region, MANY2ONE)(4)
 
-      -(3) IF this FROM node is deleted, this ESR-SYSTEM-INFO is DELETED also
+      -(4) IF this TO node is deleted, this ESR-SYSTEM-INFO is DELETED also
     required:
     - esr-system-info-id
     - user-name
@@ -47767,10 +47766,10 @@ definitions:
     description: |
       Persist SDNC address information used by ONAP SDNC.
       ###### Related Nodes
-      - TO esr-system-info (CHILD of esr-thirdparty-sdnc, esr-thirdparty-sdnc has esr-system-info, One2One)(2)
-      - TO pnf( esr-thirdparty-sdnc has pnf, One2Many)
+      - TO pnf( esr-thirdparty-sdnc AppliesTo pnf, ONE2MANY)
+      - FROM esr-system-info( esr-system-info BelongsTo esr-thirdparty-sdnc, ONE2ONE)(1)
 
-      -(2) IF this ESR-THIRDPARTY-SDNC node is deleted, this TO node is DELETED also
+      -(1) IF this ESR-THIRDPARTY-SDNC node is deleted, this FROM node is DELETED also
     required:
     - thirdparty-sdnc-id
     properties:
@@ -47802,9 +47801,9 @@ definitions:
     description: |
       Persist VNFM address information used by VF-C.
       ###### Related Nodes
-      - TO esr-system-info (CHILD of esr-vnfm, esr-vnfm has esr-system-info, One2One)(2)
+      - FROM esr-system-info( esr-system-info BelongsTo esr-vnfm, ONE2ONE)(1)
 
-      -(2) IF this ESR-VNFM node is deleted, this TO node is DELETED also
+      -(1) IF this ESR-VNFM node is deleted, this FROM node is DELETED also
     required:
     - vnfm-id
     properties:
@@ -50355,7 +50354,7 @@ definitions:
       - TO complex( pnf LocatedIn complex, MANY2ONE)
       - TO instance-group( pnf MemberOf instance-group, MANY2MANY)
       - TO zone( pnf LocatedIn zone, MANY2ONE)
-      - FROM esr-thirdparty-sdnc( esr-thirdparty-sdnc has pnf, One2Many)
+      - FROM esr-thirdparty-sdnc( esr-thirdparty-sdnc AppliesTo pnf, ONE2MANY)
       - FROM generic-vnf( generic-vnf HostedOn pnf, MANY2MANY)
       - FROM logical-link( logical-link BridgedTo pnf, MANY2MANY)
       - FROM lag-interface( lag-interface BindsTo pnf, MANY2ONE)(1)
@@ -52734,10 +52733,10 @@ patchDefinitions:
     description: |
       cloud-region designates an installation of a cloud cluster or region or instantiation.
       ###### Related Nodes
-      - TO esr-system-info (CHILD of cloud-region, cloud-region has esr-system-info, One2Many)(2)
       - TO complex( cloud-region LocatedIn complex, MANY2ONE)
       - TO l3-network( cloud-region Uses l3-network, MANY2MANY)
       - TO zone( cloud-region LocatedIn zone, MANY2ONE)
+      - FROM esr-system-info( esr-system-info BelongsTo cloud-region, MANY2ONE)(1)
       - FROM availability-zone( availability-zone BelongsTo cloud-region, MANY2ONE)(1)
       - FROM dvs-switch( dvs-switch BelongsTo cloud-region, MANY2ONE)
       - FROM flavor( flavor BelongsTo cloud-region, MANY2ONE)
@@ -52754,7 +52753,6 @@ patchDefinitions:
       - FROM pserver( pserver LocatedIn cloud-region, MANY2ONE)
 
       -(1) IF this CLOUD-REGION node is deleted, this FROM node is DELETED also
-      -(2) IF this CLOUD-REGION node is deleted, this TO node is DELETED also
       -CLOUD-REGION cannot be deleted if related to DVS-SWITCH,FLAVOR,HPA-CAPABILITY,GROUP-ASSIGNMENT,IMAGE,OAM-NETWORK,SNAPSHOT,TENANT,VIP-IPV4-ADDRESS-LIST,VIP-IPV6-ADDRESS-LIST,VOLUME-GROUP
 
     required:
@@ -53197,9 +53195,9 @@ patchDefinitions:
     description: |
       Persist EMS address information used by EMS driver.
       ###### Related Nodes
-      - TO esr-system-info (CHILD of esr-ems, esr-ems has esr-system-info, One2Many)(2)
+      - FROM esr-system-info( esr-system-info BelongsTo esr-ems, MANY2ONE)(1)
 
-      -(2) IF this ESR-EMS node is deleted, this TO node is DELETED also
+      -(1) IF this ESR-EMS node is deleted, this FROM node is DELETED also
     required:
     - ems-id
     properties:
@@ -53216,12 +53214,12 @@ patchDefinitions:
     description: |
       Persist common address information of external systems.
       ###### Related Nodes
-      - FROM esr-ems (PARENT of esr-system-info, esr-ems has esr-system-info)(3)
-      - FROM esr-vnfm (PARENT of esr-system-info, esr-vnfm has esr-system-info)(3)
-      - FROM esr-thirdparty-sdnc (PARENT of esr-system-info, esr-thirdparty-sdnc has esr-system-info)(3)
-      - FROM cloud-region (PARENT of esr-system-info, cloud-region has esr-system-info)(3)
+      - TO esr-ems( esr-system-info BelongsTo esr-ems, MANY2ONE)(4)
+      - TO esr-vnfm( esr-system-info BelongsTo esr-vnfm, ONE2ONE)(4)
+      - TO esr-thirdparty-sdnc( esr-system-info BelongsTo esr-thirdparty-sdnc, ONE2ONE)(4)
+      - TO cloud-region( esr-system-info BelongsTo cloud-region, MANY2ONE)(4)
 
-      -(3) IF this FROM node is deleted, this ESR-SYSTEM-INFO is DELETED also
+      -(4) IF this TO node is deleted, this ESR-SYSTEM-INFO is DELETED also
     required:
     - esr-system-info-id
     - user-name
@@ -53297,10 +53295,10 @@ patchDefinitions:
     description: |
       Persist SDNC address information used by ONAP SDNC.
       ###### Related Nodes
-      - TO esr-system-info (CHILD of esr-thirdparty-sdnc, esr-thirdparty-sdnc has esr-system-info, One2One)(2)
-      - TO pnf( esr-thirdparty-sdnc has pnf, One2Many)
+      - TO pnf( esr-thirdparty-sdnc AppliesTo pnf, ONE2MANY)
+      - FROM esr-system-info( esr-system-info BelongsTo esr-thirdparty-sdnc, ONE2ONE)(1)
 
-      -(2) IF this ESR-THIRDPARTY-SDNC node is deleted, this TO node is DELETED also
+      -(1) IF this ESR-THIRDPARTY-SDNC node is deleted, this FROM node is DELETED also
     required:
     - thirdparty-sdnc-id
     properties:
@@ -53323,9 +53321,9 @@ patchDefinitions:
     description: |
       Persist VNFM address information used by VF-C.
       ###### Related Nodes
-      - TO esr-system-info (CHILD of esr-vnfm, esr-vnfm has esr-system-info, One2One)(2)
+      - FROM esr-system-info( esr-system-info BelongsTo esr-vnfm, ONE2ONE)(1)
 
-      -(2) IF this ESR-VNFM node is deleted, this TO node is DELETED also
+      -(1) IF this ESR-VNFM node is deleted, this FROM node is DELETED also
     required:
     - vnfm-id
     properties:
@@ -55250,7 +55248,7 @@ patchDefinitions:
       - TO complex( pnf LocatedIn complex, MANY2ONE)
       - TO instance-group( pnf MemberOf instance-group, MANY2MANY)
       - TO zone( pnf LocatedIn zone, MANY2ONE)
-      - FROM esr-thirdparty-sdnc( esr-thirdparty-sdnc has pnf, One2Many)
+      - FROM esr-thirdparty-sdnc( esr-thirdparty-sdnc AppliesTo pnf, ONE2MANY)
       - FROM generic-vnf( generic-vnf HostedOn pnf, MANY2MANY)
       - FROM logical-link( logical-link BridgedTo pnf, MANY2MANY)
       - FROM lag-interface( lag-interface BindsTo pnf, MANY2ONE)(1)
@@ -57182,10 +57180,10 @@ getDefinitions:
     description: |
       cloud-region designates an installation of a cloud cluster or region or instantiation.
       ###### Related Nodes
-      - TO esr-system-info (CHILD of cloud-region, cloud-region has esr-system-info, One2Many)(2)
       - TO complex( cloud-region LocatedIn complex, MANY2ONE)
       - TO l3-network( cloud-region Uses l3-network, MANY2MANY)
       - TO zone( cloud-region LocatedIn zone, MANY2ONE)
+      - FROM esr-system-info( esr-system-info BelongsTo cloud-region, MANY2ONE)(1)
       - FROM availability-zone( availability-zone BelongsTo cloud-region, MANY2ONE)(1)
       - FROM dvs-switch( dvs-switch BelongsTo cloud-region, MANY2ONE)
       - FROM flavor( flavor BelongsTo cloud-region, MANY2ONE)
@@ -57202,7 +57200,6 @@ getDefinitions:
       - FROM pserver( pserver LocatedIn cloud-region, MANY2ONE)
 
       -(1) IF this CLOUD-REGION node is deleted, this FROM node is DELETED also
-      -(2) IF this CLOUD-REGION node is deleted, this TO node is DELETED also
       -CLOUD-REGION cannot be deleted if related to DVS-SWITCH,FLAVOR,HPA-CAPABILITY,GROUP-ASSIGNMENT,IMAGE,OAM-NETWORK,SNAPSHOT,TENANT,VIP-IPV4-ADDRESS-LIST,VIP-IPV6-ADDRESS-LIST,VOLUME-GROUP
 
     required:
@@ -57848,9 +57845,9 @@ getDefinitions:
     description: |
       Persist EMS address information used by EMS driver.
       ###### Related Nodes
-      - TO esr-system-info (CHILD of esr-ems, esr-ems has esr-system-info, One2Many)(2)
+      - FROM esr-system-info( esr-system-info BelongsTo esr-ems, MANY2ONE)(1)
 
-      -(2) IF this ESR-EMS node is deleted, this TO node is DELETED also
+      -(1) IF this ESR-EMS node is deleted, this FROM node is DELETED also
     required:
     - ems-id
     properties:
@@ -57876,12 +57873,12 @@ getDefinitions:
     description: |
       Persist common address information of external systems.
       ###### Related Nodes
-      - FROM esr-ems (PARENT of esr-system-info, esr-ems has esr-system-info)(3)
-      - FROM esr-vnfm (PARENT of esr-system-info, esr-vnfm has esr-system-info)(3)
-      - FROM esr-thirdparty-sdnc (PARENT of esr-system-info, esr-thirdparty-sdnc has esr-system-info)(3)
-      - FROM cloud-region (PARENT of esr-system-info, cloud-region has esr-system-info)(3)
+      - TO esr-ems( esr-system-info BelongsTo esr-ems, MANY2ONE)(4)
+      - TO esr-vnfm( esr-system-info BelongsTo esr-vnfm, ONE2ONE)(4)
+      - TO esr-thirdparty-sdnc( esr-system-info BelongsTo esr-thirdparty-sdnc, ONE2ONE)(4)
+      - TO cloud-region( esr-system-info BelongsTo cloud-region, MANY2ONE)(4)
 
-      -(3) IF this FROM node is deleted, this ESR-SYSTEM-INFO is DELETED also
+      -(4) IF this TO node is deleted, this ESR-SYSTEM-INFO is DELETED also
     required:
     - esr-system-info-id
     - user-name
@@ -57963,10 +57960,10 @@ getDefinitions:
     description: |
       Persist SDNC address information used by ONAP SDNC.
       ###### Related Nodes
-      - TO esr-system-info (CHILD of esr-thirdparty-sdnc, esr-thirdparty-sdnc has esr-system-info, One2One)(2)
-      - TO pnf( esr-thirdparty-sdnc has pnf, One2Many)
+      - TO pnf( esr-thirdparty-sdnc AppliesTo pnf, ONE2MANY)
+      - FROM esr-system-info( esr-system-info BelongsTo esr-thirdparty-sdnc, ONE2ONE)(1)
 
-      -(2) IF this ESR-THIRDPARTY-SDNC node is deleted, this TO node is DELETED also
+      -(1) IF this ESR-THIRDPARTY-SDNC node is deleted, this FROM node is DELETED also
     required:
     - thirdparty-sdnc-id
     properties:
@@ -57998,9 +57995,9 @@ getDefinitions:
     description: |
       Persist VNFM address information used by VF-C.
       ###### Related Nodes
-      - TO esr-system-info (CHILD of esr-vnfm, esr-vnfm has esr-system-info, One2One)(2)
+      - FROM esr-system-info( esr-system-info BelongsTo esr-vnfm, ONE2ONE)(1)
 
-      -(2) IF this ESR-VNFM node is deleted, this TO node is DELETED also
+      -(1) IF this ESR-VNFM node is deleted, this FROM node is DELETED also
     required:
     - vnfm-id
     properties:
@@ -60551,7 +60548,7 @@ getDefinitions:
       - TO complex( pnf LocatedIn complex, MANY2ONE)
       - TO instance-group( pnf MemberOf instance-group, MANY2MANY)
       - TO zone( pnf LocatedIn zone, MANY2ONE)
-      - FROM esr-thirdparty-sdnc( esr-thirdparty-sdnc has pnf, One2Many)
+      - FROM esr-thirdparty-sdnc( esr-thirdparty-sdnc AppliesTo pnf, ONE2MANY)
       - FROM generic-vnf( generic-vnf HostedOn pnf, MANY2MANY)
       - FROM logical-link( logical-link BridgedTo pnf, MANY2MANY)
       - FROM lag-interface( lag-interface BindsTo pnf, MANY2ONE)(1)
