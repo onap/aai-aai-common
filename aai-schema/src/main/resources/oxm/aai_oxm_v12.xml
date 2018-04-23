@@ -672,6 +672,7 @@
 						<xml-property name="description" value="List of cloud-region specific HPA Capabilities"/>
 					</xml-properties>
 				</xml-element>
+				<xml-element java-attribute="esrSystemInfoList" name="esr-system-info-list" type="inventory.aai.onap.org.v13.EsrSystemInfoList" />
 			</java-attributes>
 			<xml-properties>
 				<xml-property name="description" value="cloud-region designates an installation of a cloud cluster or region or instantiation." />

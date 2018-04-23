@@ -8504,6 +8504,294 @@ paths:
           description:
           required: false
           type: string
+  /cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}/esr-system-info-list/esr-system-info/{esr-system-info-id}/relationship-list/relationship:
+    put:
+      tags:
+        - CloudInfrastructure
+      summary: see node definition for valid relationships
+      operationId: createOrUpdateCloudInfrastructureCloudRegionsCloudRegionEsrSystemInfoListEsrSystemInfoRelationshipListRelationship
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: cloud-owner
+          in: path
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
+          required: true
+          type: string
+          example: __CLOUD-OWNER__
+        - name: cloud-region-id
+          in: path
+          description: Identifier used by the vendor for the region. Second part of composite key
+          required: true
+          type: string
+          example: __CLOUD-REGION-ID__
+        - name: esr-system-info-id
+          in: path
+          description: Unique ID of esr system info.
+          required: true
+          type: string
+          example: __ESR-SYSTEM-INFO-ID__
+        - name: body
+          in: body
+          description: relationship object that needs to be created or updated. [Valid relationship examples shown here](apidocs/relations/v13/CloudInfrastructureCloudRegionsCloudRegionEsrSystemInfoListEsrSystemInfo.json)
+          required: true
+          schema:
+            $ref: "#/definitions/relationship"
+    delete:
+      tags:
+        - CloudInfrastructure
+      summary: delete an existing relationship
+      description: delete an existing relationship
+      operationId: deleteCloudInfrastructureCloudRegionsCloudRegionEsrSystemInfoListEsrSystemInfoRelationshipListRelationship
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: cloud-owner
+          in: path
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
+          required: true
+          type: string
+          example: __CLOUD-OWNER__
+        - name: cloud-region-id
+          in: path
+          description: Identifier used by the vendor for the region. Second part of composite key
+          required: true
+          type: string
+          example: __CLOUD-REGION-ID__
+        - name: esr-system-info-id
+          in: path
+          description: Unique ID of esr system info.
+          required: true
+          type: string
+          example: __ESR-SYSTEM-INFO-ID__
+  /cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}/esr-system-info-list/esr-system-info/{esr-system-info-id}:
+    get:
+      tags:
+        - CloudInfrastructure
+      summary: returns esr-system-info
+      description: returns esr-system-info
+      operationId: getCloudInfrastructureCloudRegionsCloudRegionEsrSystemInfoListEsrSystemInfo
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "200":
+          description: successful operation
+          schema:
+              $ref: "#/getDefinitions/esr-system-info"
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: cloud-owner
+          in: path
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
+          required: true
+          type: string
+          example: __CLOUD-OWNER__
+        - name: cloud-region-id
+          in: path
+          description: Identifier used by the vendor for the region. Second part of composite key
+          required: true
+          type: string
+          example: __CLOUD-REGION-ID__
+        - name: esr-system-info-id
+          in: path
+          description: Unique ID of esr system info.
+          required: true
+          type: string
+          example: __ESR-SYSTEM-INFO-ID__
+    put:
+      tags:
+        - CloudInfrastructure
+      summary: create or update an existing esr-system-info
+      description: |
+        Create or update an existing esr-system-info.
+        #
+        Note! This PUT method has a corresponding PATCH method that can be used to update just a few of the fields of an existing object, rather than a full object replacement.  An example can be found in the [PATCH section] below
+      operationId: createOrUpdateCloudInfrastructureCloudRegionsCloudRegionEsrSystemInfoListEsrSystemInfo
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: cloud-owner
+          in: path
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
+          required: true
+          type: string
+          example: __CLOUD-OWNER__
+        - name: cloud-region-id
+          in: path
+          description: Identifier used by the vendor for the region. Second part of composite key
+          required: true
+          type: string
+          example: __CLOUD-REGION-ID__
+        - name: esr-system-info-id
+          in: path
+          description: Unique ID of esr system info.
+          required: true
+          type: string
+          example: __ESR-SYSTEM-INFO-ID__
+        - name: body
+          in: body
+          description: esr-system-info object that needs to be created or updated. [Valid relationship examples shown here](apidocs/relations/v13/CloudInfrastructureCloudRegionsCloudRegionEsrSystemInfoListEsrSystemInfo.json)
+          required: true
+          schema:
+            $ref: "#/definitions/esr-system-info"
+    patch:
+      tags:
+        - CloudInfrastructure
+      summary: update an existing esr-system-info
+      description: |
+        Update an existing esr-system-info
+        #
+        Note:  Endpoints that are not devoted to object relationships support both PUT and PATCH operations.
+        The PUT operation will entirely replace an existing object.
+        The PATCH operation sends a "description of changes" for an existing object.  The entire set of changes must be applied.  An error result means no change occurs.
+        #
+        Other differences between PUT and PATCH are:
+        #
+        - For PATCH, you can send any of the values shown in sample REQUEST body.  There are no required values.
+        - For PATCH, resource-id which is a required REQUEST body element for PUT, must not be sent.
+        - PATCH cannot be used to update relationship elements; there are dedicated PUT operations for this.
+      operationId: UpdateCloudInfrastructureCloudRegionsCloudRegionEsrSystemInfoListEsrSystemInfo
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: cloud-owner
+          in: path
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
+          required: true
+          type: string
+          example: __CLOUD-OWNER__
+        - name: cloud-region-id
+          in: path
+          description: Identifier used by the vendor for the region. Second part of composite key
+          required: true
+          type: string
+          example: __CLOUD-REGION-ID__
+        - name: esr-system-info-id
+          in: path
+          description: Unique ID of esr system info.
+          required: true
+          type: string
+          example: __ESR-SYSTEM-INFO-ID__
+        - name: body
+          in: body
+          description: esr-system-info object that needs to be updated.
+          required: true
+          schema:
+            $ref: "#/patchDefinitions/esr-system-info"
+    delete:
+      tags:
+        - CloudInfrastructure
+      summary: delete an existing esr-system-info
+      description: delete an existing esr-system-info
+      operationId: deleteCloudInfrastructureCloudRegionsCloudRegionEsrSystemInfoListEsrSystemInfo
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: cloud-owner
+          in: path
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
+          required: true
+          type: string
+          example: __CLOUD-OWNER__
+        - name: cloud-region-id
+          in: path
+          description: Identifier used by the vendor for the region. Second part of composite key
+          required: true
+          type: string
+          example: __CLOUD-REGION-ID__
+        - name: esr-system-info-id
+          in: path
+          description: Unique ID of esr system info.
+          required: true
+          type: string
+          example: __ESR-SYSTEM-INFO-ID__
+        - name: resource-version
+          in: query
+          description: resource-version for concurrency
+          required: true
+          type: string
+  /cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}/esr-system-info-list:
+    get:
+      tags:
+        - CloudInfrastructure
+      summary: returns esr-system-info-list
+      description: returns esr-system-info-list
+      operationId: getCloudInfrastructureCloudRegionsCloudRegionEsrSystemInfoList
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        "200":
+          description: successful operation
+          schema:
+              $ref: "#/getDefinitions/esr-system-info-list"
+        "default":
+          description: Response codes found in [response codes](https://wiki.onap.org/).
+      parameters:
+        - name: cloud-owner
+          in: path
+          description: Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname
+          required: true
+          type: string
+          example: __CLOUD-OWNER__
+        - name: cloud-region-id
+          in: path
+          description: Identifier used by the vendor for the region. Second part of composite key
+          required: true
+          type: string
+          example: __CLOUD-REGION-ID__
+        - name: esr-system-info-id
+          in: query
+          description:
+          required: false
+          type: string
+        - name: system-name
+          in: query
+          description:
+          required: false
+          type: string
+        - name: system-type
+          in: query
+          description:
+          required: false
+          type: string
   /cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}:
     get:
       tags:
@@ -47102,6 +47390,10 @@ definitions:
         items:
           $ref: "#/definitions/hpa-capability"
         description: List of cloud-region specific HPA Capabilities
+      esr-system-info-list:
+        type: array
+        items:
+          $ref: "#/definitions/esr-system-info"
   cloud-regions:
     properties:
       cloud-region:
@@ -47752,8 +48044,9 @@ definitions:
         type: string
         description: Used for optimistic concurrency.  Must be empty on create, valid on update and delete.
       relationship-list:
-        type: object
-        $ref: "#/definitions/relationship-list"
+        type: array
+        items:
+          $ref: "#/definitions/relationship"
   esr-system-info-list:
     description: |
       Collection of persistent block-level external system auth info.
@@ -57296,6 +57589,10 @@ getDefinitions:
         items:
           $ref: "#/getDefinitions/hpa-capability"
         description: List of cloud-region specific HPA Capabilities
+      esr-system-info-list:
+        type: array
+        items:
+          $ref: "#/getDefinitions/esr-system-info"
   cloud-regions:
     properties:
       cloud-region:
@@ -57946,8 +58243,9 @@ getDefinitions:
         type: string
         description: Used for optimistic concurrency.  Must be empty on create, valid on update and delete.
       relationship-list:
-        type: object
-        $ref: "#/getDefinitions/relationship-list"
+        type: array
+        items:
+          $ref: "#/getDefinitions/relationship"
   esr-system-info-list:
     description: |
       Collection of persistent block-level external system auth info.
