@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <xs:schema elementFormDefault="qualified" version="1.0" targetNamespace="http://org.onap.aai.inventory/v13" xmlns:tns="http://org.onap.aai.inventory/v13" xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
-    jaxb:version="2.1" 
-    xmlns:annox="http://annox.dev.java.net" 
+    jaxb:version="2.1"
+    xmlns:annox="http://annox.dev.java.net"
     jaxb:extensionBindingPrefixes="annox">
 
   <xs:element name="inventory-item-data">
@@ -75,6 +75,11 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
   </xs:element>
   <xs:element name="result-data">
     <xs:complexType>
+      <xs:annotation>
+        <xs:appinfo>
+          <annox:annotate target="class">@org.onap.aai.annotations.Metadata(description="The URL to the specific resource")</annox:annotate>
+        </xs:appinfo>
+      </xs:annotation>
       <xs:sequence>
         <xs:element name="resource-type" type="xs:string" minOccurs="0">
           <xs:annotation>
@@ -102,6 +107,11 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
   </xs:element>
   <xs:element name="relationship-data">
     <xs:complexType>
+      <xs:annotation>
+        <xs:appinfo>
+          <annox:annotate target="class">@org.onap.aai.annotations.Metadata(description="Value of the attribute.")</annox:annotate>
+        </xs:appinfo>
+      </xs:annotation>
       <xs:sequence>
         <xs:element name="relationship-key" type="xs:string">
           <xs:annotation>
@@ -122,6 +132,11 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
   </xs:element>
   <xs:element name="related-to-property">
     <xs:complexType>
+      <xs:annotation>
+        <xs:appinfo>
+          <annox:annotate target="class">@org.onap.aai.annotations.Metadata(description="Value part of a key/value pair")</annox:annotate>
+        </xs:appinfo>
+      </xs:annotation>
       <xs:sequence>
         <xs:element name="property-key" type="xs:string" minOccurs="0">
           <xs:annotation>
@@ -142,6 +157,11 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
   </xs:element>
   <xs:element name="relationship">
     <xs:complexType>
+      <xs:annotation>
+        <xs:appinfo>
+          <annox:annotate target="class">@org.onap.aai.annotations.Metadata(description="URL to the object in A&amp;AI.")</annox:annotate>
+        </xs:appinfo>
+      </xs:annotation>
       <xs:sequence>
         <xs:element name="related-to" type="xs:string" minOccurs="0">
           <xs:annotation>
@@ -1320,6 +1340,99 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
       </xs:sequence>
     </xs:complexType>
   </xs:element>
+  <xs:element name="hpa-feature-attributes">
+    <xs:complexType>
+      <xs:annotation>
+        <xs:appinfo>
+          <annox:annotate target="class">@org.onap.aai.annotations.Metadata(description="HPA Capability Feature attributes",indexedProps="hpa-attribute-key",dependentOn="hpa-capability")</annox:annotate>
+        </xs:appinfo>
+      </xs:annotation>
+      <xs:sequence>
+        <xs:element name="hpa-attribute-key" type="xs:string">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(isKey=true,description="name of the specific HPA attribute")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="hpa-attribute-value" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="JSON string specifying the value, unit and type of the specific HPA attribute")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="resource-version" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="Used for optimistic concurrency.  Must be empty on create, valid on update and delete.")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element ref="tns:relationship-list" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="hpa-capability">
+    <xs:complexType>
+      <xs:annotation>
+        <xs:appinfo>
+          <annox:annotate target="class">@org.onap.aai.annotations.Metadata(description="Represents a HPA capability",indexedProps="hpa-feature,architecture,hpa-capability-id",dependentOn="flavor,cloud-region",container="hpa-capabilities")</annox:annotate>
+        </xs:appinfo>
+      </xs:annotation>
+      <xs:sequence>
+        <xs:element name="hpa-capability-id" type="xs:string">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(isKey=true,description="UUID to uniquely identify a HPA capability")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="hpa-feature" type="xs:string">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="Name of the HPACapability")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="hpa-version" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="HPA schema version")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="architecture" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="Hardware architecture")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="resource-version" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="Used for optimistic concurrency.  Must be empty on create, valid on update and delete.")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element ref="tns:relationship-list" minOccurs="0"/>
+        <xs:element ref="tns:hpa-feature-attributes" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="hpa-capabilities">
+    <xs:complexType>
+      <xs:annotation>
+        <xs:appinfo>
+          <annox:annotate target="class">@org.onap.aai.annotations.Metadata(description="Collection of HPA Capabilities")</annox:annotate>
+        </xs:appinfo>
+      </xs:annotation>
+      <xs:sequence>
+        <xs:element ref="tns:hpa-capability" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
   <xs:element name="flavor">
     <xs:complexType>
       <xs:annotation>
@@ -1338,7 +1451,7 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
         <xs:element name="flavor-name" type="xs:string">
           <xs:annotation>
             <xs:appinfo>
-              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="Flavor name")</annox:annotate>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="Cloud Region Flavor name")</annox:annotate>
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
@@ -1395,6 +1508,13 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
           <xs:annotation>
             <xs:appinfo>
               <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="Boolean as to whether this flavor is no longer enabled")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element ref="tns:hpa-capabilities" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="List of flavor specific HPA Capabilities")</annox:annotate>
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
@@ -1862,11 +1982,175 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
       </xs:sequence>
     </xs:complexType>
   </xs:element>
+  <xs:element name="esr-system-info">
+    <xs:complexType>
+      <xs:annotation>
+        <xs:appinfo>
+          <annox:annotate target="class">@org.onap.aai.annotations.Metadata(description="Persist common address information of external systems.",indexedProps="esr-system-info-id,system-name,system-type",searchable="esr-system-info-id,system-name,system-type",container="esr-system-info-list",dependentOn="cloud-region,esr-ems,esr-vnfm,esr-thirdparty-sdnc")</annox:annotate>
+        </xs:appinfo>
+      </xs:annotation>
+      <xs:sequence>
+        <xs:element name="esr-system-info-id" type="xs:string">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(isKey=true,description="Unique ID of esr system info.")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="system-name" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="name of external system.")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="type" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="type of external systems.")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="vendor" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="vendor of external systems.")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="version" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="version of external systems.")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="service-url" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="url used to access external systems.")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="user-name" type="xs:string">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="username used to access external systems.")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="password" type="xs:string">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="password used to access external systems.")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="system-type" type="xs:string">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="it could be vim/vnfm/thirdparty-sdnc/ems-resource/ems-performance/ems-alarm.")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="protocol" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="protocol of third party SDNC, for example netconf/snmp.")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="ssl-cacert" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="ca file content if enabled ssl on auth-url.")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="ssl-insecure" type="xs:boolean" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="Whether to verify VIM's certificate.")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="ip-address" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="service IP of ftp server.")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="port" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="service port of ftp server.")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="cloud-domain" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="domain info for authentication.")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="default-tenant" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="default tenant of VIM.")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="passive" type="xs:boolean" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="ftp passive mode or not.")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="remote-path" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="resource or performance data file path.")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="system-status" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="the status of external system.")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="resource-version" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="Used for optimistic concurrency.  Must be empty on create, valid on update and delete.")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element ref="tns:relationship-list" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="esr-system-info-list">
+    <xs:complexType>
+      <xs:annotation>
+        <xs:appinfo>
+          <annox:annotate target="class">@org.onap.aai.annotations.Metadata(description="Collection of persistent block-level external system auth info.")</annox:annotate>
+        </xs:appinfo>
+      </xs:annotation>
+      <xs:sequence>
+        <xs:element ref="tns:esr-system-info" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
   <xs:element name="cloud-region">
     <xs:complexType>
       <xs:annotation>
         <xs:appinfo>
-          <annox:annotate target="class">@org.onap.aai.annotations.Metadata(description="cloud-region designates an installation of a cloud cluster or region or instantiation. In cloud, this could be an LCP or DCP. Cloud regions are uniquely identified by a composite key, cloud-owner + cloud-region-id. The format of the cloud-owner is vendor-cloudname",indexedProps="cloud-owner,cloud-region-id,cloud-type,owner-defined-type",nameProps="owner-defined-type",container="cloud-regions",namespace="cloud-infrastructure")</annox:annotate>
+          <annox:annotate target="class">@org.onap.aai.annotations.Metadata(description="cloud-region designates an installation of a cloud cluster or region or instantiation.",indexedProps="cloud-owner,cloud-region-id,cloud-type,owner-defined-type",nameProps="owner-defined-type",container="cloud-regions",namespace="cloud-infrastructure")</annox:annotate>
         </xs:appinfo>
       </xs:annotation>
       <xs:sequence>
@@ -1933,6 +2217,20 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
+        <xs:element name="cloud-extra-info" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="ESR inputs extra information about the VIM or Cloud which will be decoded by MultiVIM.")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="cloud-epa-caps" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="MultiVIM will discover and expose EPA capabilities.")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
         <xs:element name="resource-version" type="xs:string" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
@@ -1952,6 +2250,14 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
         <xs:element ref="tns:relationship-list" minOccurs="0"/>
         <xs:element ref="tns:vip-ipv4-address-list" minOccurs="0" maxOccurs="unbounded"/>
         <xs:element ref="tns:vip-ipv6-address-list" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element ref="tns:hpa-capabilities" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="List of cloud-region specific HPA Capabilities")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element ref="tns:esr-system-info-list" minOccurs="0"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -2118,6 +2424,13 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
           <xs:annotation>
             <xs:appinfo>
               <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="Trigger for operational monitoring of this resource by Service Assurance systems.")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="mac-addresss" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="MAC Address of the p-interface.")</annox:annotate>
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
@@ -2595,170 +2908,6 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
         <xs:element ref="tns:pservers" minOccurs="0"/>
         <xs:element ref="tns:virtual-data-centers" minOccurs="0"/>
         <xs:element ref="tns:operational-environments" minOccurs="0"/>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-  <xs:element name="esr-system-info">
-    <xs:complexType>
-      <xs:annotation>
-        <xs:appinfo>
-          <annox:annotate target="class">@org.onap.aai.annotations.Metadata(description="Persist common address information of external systems.",indexedProps="esr-system-info-id,system-name,system-type",searchable="esr-system-info-id,system-name,system-type",container="esr-system-info-list",dependentOn="cloud-region,esr-ems,esr-vnfm,esr-thirdparty-sdnc")</annox:annotate>
-        </xs:appinfo>
-      </xs:annotation>
-      <xs:sequence>
-        <xs:element name="esr-system-info-id" type="xs:string">
-          <xs:annotation>
-            <xs:appinfo>
-              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(isKey=true,description="Unique ID of esr system info.")</annox:annotate>
-            </xs:appinfo>
-          </xs:annotation>
-        </xs:element>
-        <xs:element name="system-name" type="xs:string" minOccurs="0">
-          <xs:annotation>
-            <xs:appinfo>
-              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="name of external system.")</annox:annotate>
-            </xs:appinfo>
-          </xs:annotation>
-        </xs:element>
-        <xs:element name="type" type="xs:string" minOccurs="0">
-          <xs:annotation>
-            <xs:appinfo>
-              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="type of external systems.")</annox:annotate>
-            </xs:appinfo>
-          </xs:annotation>
-        </xs:element>
-        <xs:element name="vendor" type="xs:string" minOccurs="0">
-          <xs:annotation>
-            <xs:appinfo>
-              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="vendor of external systems.")</annox:annotate>
-            </xs:appinfo>
-          </xs:annotation>
-        </xs:element>
-        <xs:element name="version" type="xs:string" minOccurs="0">
-          <xs:annotation>
-            <xs:appinfo>
-              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="version of external systems.")</annox:annotate>
-            </xs:appinfo>
-          </xs:annotation>
-        </xs:element>
-        <xs:element name="service-url" type="xs:string" minOccurs="0">
-          <xs:annotation>
-            <xs:appinfo>
-              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="url used to access external systems.")</annox:annotate>
-            </xs:appinfo>
-          </xs:annotation>
-        </xs:element>
-        <xs:element name="user-name" type="xs:string">
-          <xs:annotation>
-            <xs:appinfo>
-              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="username used to access external systems.")</annox:annotate>
-            </xs:appinfo>
-          </xs:annotation>
-        </xs:element>
-        <xs:element name="password" type="xs:string">
-          <xs:annotation>
-            <xs:appinfo>
-              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="password used to access external systems.")</annox:annotate>
-            </xs:appinfo>
-          </xs:annotation>
-        </xs:element>
-        <xs:element name="system-type" type="xs:string">
-          <xs:annotation>
-            <xs:appinfo>
-              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="it could be vim/vnfm/thirdparty-sdnc/ems-resource/ems-performance/ems-alarm.")</annox:annotate>
-            </xs:appinfo>
-          </xs:annotation>
-        </xs:element>
-        <xs:element name="protocol" type="xs:string" minOccurs="0">
-          <xs:annotation>
-            <xs:appinfo>
-              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="protocol of third party SDNC, for example netconf/snmp.")</annox:annotate>
-            </xs:appinfo>
-          </xs:annotation>
-        </xs:element>
-        <xs:element name="ssl-cacert" type="xs:string" minOccurs="0">
-          <xs:annotation>
-            <xs:appinfo>
-              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="ca file content if enabled ssl on auth-url.")</annox:annotate>
-            </xs:appinfo>
-          </xs:annotation>
-        </xs:element>
-        <xs:element name="ssl-insecure" type="xs:boolean" minOccurs="0">
-          <xs:annotation>
-            <xs:appinfo>
-              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="Whether to verify VIM's certificate.")</annox:annotate>
-            </xs:appinfo>
-          </xs:annotation>
-        </xs:element>
-        <xs:element name="ip-address" type="xs:string" minOccurs="0">
-          <xs:annotation>
-            <xs:appinfo>
-              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="service IP of ftp server.")</annox:annotate>
-            </xs:appinfo>
-          </xs:annotation>
-        </xs:element>
-        <xs:element name="port" type="xs:string" minOccurs="0">
-          <xs:annotation>
-            <xs:appinfo>
-              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="service port of ftp server.")</annox:annotate>
-            </xs:appinfo>
-          </xs:annotation>
-        </xs:element>
-        <xs:element name="cloud-domain" type="xs:string" minOccurs="0">
-          <xs:annotation>
-            <xs:appinfo>
-              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="domain info for authentication.")</annox:annotate>
-            </xs:appinfo>
-          </xs:annotation>
-        </xs:element>
-        <xs:element name="default-tenant" type="xs:string" minOccurs="0">
-          <xs:annotation>
-            <xs:appinfo>
-              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="default tenant of VIM.")</annox:annotate>
-            </xs:appinfo>
-          </xs:annotation>
-        </xs:element>
-        <xs:element name="passive" type="xs:boolean" minOccurs="0">
-          <xs:annotation>
-            <xs:appinfo>
-              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="ftp passive mode or not.")</annox:annotate>
-            </xs:appinfo>
-          </xs:annotation>
-        </xs:element>
-        <xs:element name="remote-path" type="xs:string" minOccurs="0">
-          <xs:annotation>
-            <xs:appinfo>
-              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="resource or performance data file path.")</annox:annotate>
-            </xs:appinfo>
-          </xs:annotation>
-        </xs:element>
-        <xs:element name="system-status" type="xs:string" minOccurs="0">
-          <xs:annotation>
-            <xs:appinfo>
-              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="the status of external system.")</annox:annotate>
-            </xs:appinfo>
-          </xs:annotation>
-        </xs:element>
-        <xs:element name="resource-version" type="xs:string" minOccurs="0">
-          <xs:annotation>
-            <xs:appinfo>
-              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="Used for optimistic concurrency.  Must be empty on create, valid on update and delete.")</annox:annotate>
-            </xs:appinfo>
-          </xs:annotation>
-        </xs:element>
-        <xs:element ref="tns:relationship-list" minOccurs="0"/>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-  <xs:element name="esr-system-info-list">
-    <xs:complexType>
-      <xs:annotation>
-        <xs:appinfo>
-          <annox:annotate target="class">@org.onap.aai.annotations.Metadata(description="Collection of persistent block-level external system auth info.")</annox:annotate>
-        </xs:appinfo>
-      </xs:annotation>
-      <xs:sequence>
-        <xs:element ref="tns:esr-system-info" minOccurs="0" maxOccurs="unbounded"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -4180,11 +4329,6 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
         <xs:element name="named-query-version" type="xs:string"/>
         <xs:element name="required-input-params" minOccurs="0">
           <xs:complexType>
-            <xs:annotation>
-              <xs:appinfo>
-                <annox:annotate target="class">@org.onap.aai.annotations.Metadata(description="TBD",nameProps="named-query-name",uniqueProps="named-query-uuid",indexedProps="named-query-uuid,named-query-name",container="named-queries",namespace="service-design-and-creation")</annox:annotate>
-              </xs:appinfo>
-            </xs:annotation>
             <xs:sequence>
               <xs:element name="required-input-param" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
             </xs:sequence>
@@ -7453,7 +7597,7 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
     <xs:complexType>
       <xs:annotation>
         <xs:appinfo>
-          <annox:annotate target="class">@org.onap.aai.annotations.Metadata(description="Generic configuration object.",indexedProps="configuration-id,model-invariant-id,model-version-id",uniqueProps="configuration-id",container="configurations",namespace="network")</annox:annotate>
+          <annox:annotate target="class">@org.onap.aai.annotations.Metadata(description="Port Mirror Configuration.",indexedProps="configuration-id,model-invariant-id,model-version-id",uniqueProps="configuration-id",container="configurations",namespace="network",nameProps="configuration-type")</annox:annotate>
         </xs:appinfo>
       </xs:annotation>
       <xs:sequence>
@@ -7506,28 +7650,28 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
-        <xs:element name="orchestration-status" type="xs:string" minOccurs="0">
+        <xs:element name="orchestration-status" type="xs:string">
           <xs:annotation>
             <xs:appinfo>
               <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="Orchestration status of the configuration.")</annox:annotate>
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
-        <xs:element name="operational-status" type="xs:string" minOccurs="0">
+        <xs:element name="operational-status" type="xs:string">
           <xs:annotation>
             <xs:appinfo>
               <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="Indicator for whether the resource is considered operational.")</annox:annotate>
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
-        <xs:element name="configuration-selflink" type="xs:string" minOccurs="0">
+        <xs:element name="configuration-selflink" type="xs:string">
           <xs:annotation>
             <xs:appinfo>
               <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="URL to endpoint where AAI can get more details from SDN-GC.")</annox:annotate>
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
-        <xs:element name="model-customization-id" type="xs:string" minOccurs="0">
+        <xs:element name="model-customization-id" type="xs:string">
           <xs:annotation>
             <xs:appinfo>
               <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="id of  the configuration used to customize the resource")</annox:annotate>
