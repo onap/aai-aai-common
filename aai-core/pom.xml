@@ -42,7 +42,7 @@
         <sonar.jacoco.reportPath>${project.build.directory}/coverage-reports/jacoco.exec</sonar.jacoco.reportPath>
         <sonar.jacoco.reportMissing.force.zero>false</sonar.jacoco.reportMissing.force.zero>
         <sonar.projectVersion>${project.version}</sonar.projectVersion>
-        <httpclient.version>4.5.1</httpclient.version>
+        <httpclient.version>4.5.5</httpclient.version>
         <jackson.version>2.2.3</jackson.version>
         <eelf.core.version>1.0.0</eelf.core.version>
         <logback.version>1.2.3</logback.version>
