@@ -22,8 +22,8 @@ package org.onap.aai.config;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.command.ActiveMQQueue;
-import org.onap.aai.dmaap.JMSConsumer;
-import org.onap.aai.dmaap.JMSProducer;
+import org.onap.aai.dmaap.AAIDmaapEventJMSConsumer;
+import org.onap.aai.dmaap.AAIDmaapEventJMSProducer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -85,13 +85,13 @@ public class DmaapConfig {
     }
 
     @Bean
-    public JMSProducer jmsProducer(){
-        return new JMSProducer();
+    public AAIDmaapEventJMSProducer jmsProducer(){
+        return new AAIDmaapEventJMSProducer();
     }
 
     @Bean
-    public JMSConsumer jmsConsumer() throws Exception {
-        return new JMSConsumer();
+    public AAIDmaapEventJMSConsumer jmsConsumer() throws Exception {
+        return new AAIDmaapEventJMSConsumer();
     }
 
     @Bean

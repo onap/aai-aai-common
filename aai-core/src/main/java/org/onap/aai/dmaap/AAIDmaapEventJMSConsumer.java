@@ -21,62 +21,52 @@ package org.onap.aai.dmaap;
 
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
 import org.apache.log4j.MDC;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.onap.aai.logging.ErrorLogHelper;
-import org.onap.aai.util.AAIConstants;
+import org.onap.aai.config.SpringContextAware;
+import org.onap.aai.logging.LogFormatTools;
 import org.onap.aai.logging.LoggingContext;
 import org.onap.aai.logging.LoggingContext.LoggingField;
 import org.onap.aai.logging.LoggingContext.StatusCode;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.env.Environment;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.web.client.RestTemplate;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
-import javax.ws.rs.core.MediaType;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Properties;
 
 public class AAIDmaapEventJMSConsumer implements MessageListener {
 
 	private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(AAIDmaapEventJMSConsumer.class);
 
-	private Client httpClient;
+	private RestTemplate restTemplate;
 
-	private Properties aaiEventProps;
-	private String aaiEventUrl = "";
+	private HttpHeaders httpHeaders;
 
-	public AAIDmaapEventJMSConsumer() throws org.apache.commons.configuration.ConfigurationException {
-		super();
-		try(FileReader reader = new FileReader(new File(AAIConstants.AAI_EVENT_DMAAP_PROPS))) {
+	private Environment environment;
 
-			if (this.httpClient == null) {
-				aaiEventProps = new Properties();
-				aaiEventProps.load(reader);
+	public AAIDmaapEventJMSConsumer() {
+        ApplicationContext applicationContext  = SpringContextAware.getApplicationContext();
 
-				String host = aaiEventProps.getProperty("host");
-				String topic = aaiEventProps.getProperty("topic");
-				String protocol = aaiEventProps.getProperty("Protocol");
-
-				aaiEventUrl = protocol + "://" + host + "/events/" + topic;
-				httpClient = Client.create();
-			}
-
-		} catch (IOException e) {
-			ErrorLogHelper.logError("AAI_4000", "Error updating dmaap config file for aai event.");
-			LOGGER.error(e.getMessage(), e);
+        if(applicationContext != null){
+			restTemplate = (RestTemplate) applicationContext.getBean("dmaapRestTemplate");
+			httpHeaders  = (HttpHeaders) applicationContext.getBean("dmaapHeaders");
+			environment  = applicationContext.getEnvironment();
 		}
-
 	}
 
 	@Override
 	public void onMessage(Message message) {
+
+	    if(restTemplate == null){
+	    	return;
+		}
 
 		String jsmMessageTxt = "";
 		String aaiEvent = "";
@@ -111,49 +101,28 @@ public class AAIDmaapEventJMSConsumer implements MessageListener {
 				MDC.put(LoggingField.STATUS_CODE.toString(), StatusCode.COMPLETE.toString());
 				MDC.put(LoggingField.RESPONSE_CODE.toString(), "0");
 				LOGGER.info(eventName + "|" + aaiEvent);
+				HttpEntity httpEntity = new HttpEntity(aaiEvent, httpHeaders);
+
+				String transportType = environment.getProperty("dmaap.ribbon.transportType", "http");
+				String baseUrl  = transportType + "://" + environment.getProperty("dmaap.ribbon.listOfServers");
+				String endpoint = "/events/" + eventName;
 
 				if ("AAI-EVENT".equals(eventName)) {
-					this.sentWithHttp(this.httpClient, this.aaiEventUrl, aaiEvent);
+                    restTemplate.exchange(baseUrl + endpoint, HttpMethod.POST, httpEntity, String.class);
 				} else {
 					LoggingContext.statusCode(StatusCode.ERROR);
 					LOGGER.error(eventName + "|Event Topic invalid.");
 				}
-			} catch (java.net.SocketException e) {
-				if (!e.getMessage().contains("Connection reset")) {
-					MDC.put(LoggingField.STATUS_CODE.toString(), StatusCode.ERROR.toString());
-					MDC.put(LoggingField.RESPONSE_CODE.toString(), "200");
-					LOGGER.error("AAI_7304 Error reaching DMaaP to send event. " + aaiEvent, e);
-				}
-			} catch (IOException e) {
-				MDC.put(LoggingField.STATUS_CODE.toString(), StatusCode.ERROR.toString());
-				MDC.put(LoggingField.RESPONSE_CODE.toString(), "200");
-				LOGGER.error("AAI_7304 Error reaching DMaaP to send event. " + aaiEvent, e);
 			} catch (JMSException | JSONException e) {
 				MDC.put(LoggingField.STATUS_CODE.toString(), StatusCode.ERROR.toString());
 				MDC.put(LoggingField.RESPONSE_CODE.toString(), "200");
-				LOGGER.error("AAI_7350 Error parsing aaievent jsm message for sending to dmaap. " + jsmMessageTxt, e);
+				LOGGER.error("AAI_7350 Error parsing aaievent jsm message for sending to dmaap. {} {}", jsmMessageTxt, LogFormatTools.getStackTop(e));
 			} catch (Exception e) {
 				MDC.put(LoggingField.STATUS_CODE.toString(), StatusCode.ERROR.toString());
 				MDC.put(LoggingField.RESPONSE_CODE.toString(), "200");
-				LOGGER.error("AAI_7350 Error sending message to dmaap. " + jsmMessageTxt, e);
+				LOGGER.error("AAI_7350 Error sending message to dmaap. {} {}" , jsmMessageTxt, LogFormatTools.getStackTop(e));
 			}
 		}
 
-	}
-
-	private boolean sentWithHttp(Client client, String url, String aaiEvent) throws IOException {
-
-		WebResource webResource = client.resource(url);
-
-		ClientResponse response = webResource
-				.accept(MediaType.APPLICATION_JSON)
-				.type(MediaType.APPLICATION_JSON)
-				.post(ClientResponse.class, aaiEvent);
-
-		if (response.getStatus() != 200) {
-			LOGGER.info("Failed : HTTP error code : " + response.getStatus());
-			return false;
-		}
-		return true;
 	}
 }
