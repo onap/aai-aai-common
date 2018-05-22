@@ -187,7 +187,7 @@ There is an error to startup esr-gui docker
 Replace the type specification in this constructor call with the diamond operator ("<>")
 
 `AAI-417 <https://jira.onap.org/browse/AAI-417>`_
-Rackspace 20170928 fails to authenticate nexus3 on 10003 during *_init.sh (sdnc for example)
+Rackspace 20170928 fails to authenticate nexus3 on 10003 during *_init.sh* (sdnc for example)
 
 `AAI-420 <https://jira.onap.org/browse/AAI-420>`_
 Can not get the MSB address in esr-server

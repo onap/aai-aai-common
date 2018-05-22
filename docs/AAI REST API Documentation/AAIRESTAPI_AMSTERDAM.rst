@@ -431,48 +431,41 @@ missing (e.g., generic-vnf) and the key data for that node type
 
 Single relationships can be PUT to the graph in the following way:
 
-https://{serverRoot}/{namespace}/{resource}
-/relationship-list/relationship
+.. code-block:: none
+
+   https://{serverRoot}/{namespace}/{resource}/relationship-list/relationship
 
 or
 
-https://{hostname}:8443/aai/v11/cloud-infrastructure/pservers/pserver/pserver-123456789-01/p-interfaces/p-interface/p-interface-name-123456789-01/l-interfaces/l-interface/l-interface-name-123456789-01/relationship-list/relationship
+.. code-block:: none
 
-with a payload containing the relationship information.
+   https://{hostname}:8443/aai/v11/cloud-infrastructure/pservers/pserver/pserver-123456789-01/p-interfaces/p-interface/p-interface-name-123456789-01/l-interfaces/l-interface/l-interface-name-123456789-01/relationship-list/relationship
 
-XML:
+with a payload containing the relationship information in XML
 
-<relationship xmlns="http://org.openecomp.aai.inventory/v11">
+.. code-block:: xml
 
-<related-to>logical-link</related-to>
+   <relationship xmlns="http://org.openecomp.aai.inventory/v11">
+   <related-to>logical-link</related-to>
+   <relationship-data>
+       <relationship-key>logical-link.link-name</relationship-key>
+       <relationship-value>logical-link-123456789-01</relationship-value>
+   </relationship-data>
+   </relationship>
 
-<relationship-data>
+or JSON.
 
-    <relationship-key>logical-link.link-name</relationship-key>
+.. code-block:: json
 
-    <relationship-value>logical-link-123456789-01</relationship-value>
-
-</relationship-data>
-
-</relationship>
-
-JSON:
-
-"related-to": "logical-link",
-
-"relationship-data": [
-
-{
-
-    "relationship-key": "logical-link.link-name",
-
-    "relationship-value": " logical-link-123456789-01"
-
-}
-
-]
-
-}
+   {
+   "related-to": "logical-link",
+   "relationship-data": [
+   	{
+           "relationship-key": "logical-link.link-name",
+           "relationship-value": " logical-link-123456789-01"
+	}
+        ]
+   }
 
 Edges
 =====
@@ -528,7 +521,9 @@ connectivity with AAI.
 
 The URL for the echo utility is:
 
-https://load-balanced-address:8443/aai/util/echo
+.. code-block:: none
+
+   https://load-balanced-address:8443/aai/util/echo
 
 If the response is unsuccessful, an error will be returned following the
 standard format.
@@ -539,56 +534,38 @@ by the client.
 Successful XML Response Payload
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-<Info>
+.. code-block:: xml
 
-<responseMessages>
-
-<responseMessage>
-
-<messageId>INF0001</messageId>
-
-<text>Success X-FromAppId=%1 X-TransactionId=%2 (msg=%3) (rc=%4)</text>
-
-<variables>
-
-<variable>XYZ</variable>
-
-<variable>XYZ123</variable>
-
-<variable>Successful health check:OK</variable>
-
-<variable>0.0.0002</variable>
-
-</variables>
-
-</responseMessage>
-
-</responseMessages>
-
-</Info>
+   <Info>
+   <responseMessages>
+   <responseMessage>
+   <messageId>INF0001</messageId>
+   <text>Success X-FromAppId=%1 X-TransactionId=%2 (msg=%3) (rc=%4)</text>
+   <variables>
+   <variable>XYZ</variable>
+   <variable>XYZ123</variable>
+   <variable>Successful health check:OK</variable>
+   <variable>0.0.0002</variable>
+   </variables>
+   </responseMessage>
+   </responseMessages>
+   </Info>
 
 Successful JSON Response Payload
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-{"responseMessages": {"responseMessage": [{
+.. code-block:: json
 
-"messageId": "INF0001",
-
-"text": "Success X-FromAppId=%1 X-TransactionId=%2 (msg=%3) (rc=%4)",
-
-"variables": {"variable": [
-
-"XYZ",
-
-"XYZ123",
-
-"Successful health check:OK",
-
-"0.0.0002"
-
-]}
-
-}]}}
+   {"responseMessages": {"responseMessage": [{
+   "messageId": "INF0001",
+   "text": "Success X-FromAppId=%1 X-TransactionId=%2 (msg=%3) (rc=%4)",
+   "variables": {"variable": [
+   "XYZ",
+   "XYZ123",
+   "Successful health check:OK",
+   "0.0.0002"
+   ]}
+   }]}}
 
 Cloud Infrastructure Domain
 ---------------------------
