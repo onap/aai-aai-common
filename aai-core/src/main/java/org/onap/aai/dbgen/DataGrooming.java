@@ -76,6 +76,8 @@ public class DataGrooming {
 	private static final String FROMAPPID = "AAI-DB";
 	private static final String TRANSID = UUID.randomUUID().toString();
 	private static int dupeGrpsDeleted = 0;
+	private static final String AAI_NODE_TYPE = "aai-node-type";
+	private static final String KEEP_VID_UNDETERMINED ="KeepVid=UNDETERMINED";
 	
 	/**
 	 * The main method.
@@ -121,11 +123,11 @@ public class DataGrooming {
 		int sleepMinutes = AAIConstants.AAI_GROOMING_DEFAULT_SLEEP_MINUTES;
 		try {
 			String maxFixStr = AAIConfig.get("aai.grooming.default.max.fix");
-			if( maxFixStr != null &&  !maxFixStr.equals("") ){
+			if( maxFixStr != null &&  !maxFixStr.isEmpty() ){
 				maxRecordsToFix = Integer.parseInt(maxFixStr);
 			}
 			String sleepStr = AAIConfig.get("aai.grooming.default.sleep.minutes");
-			if( sleepStr != null &&  !sleepStr.equals("") ){
+			if( sleepStr != null &&  !sleepStr.isEmpty() ){
 				sleepMinutes = Integer.parseInt(sleepStr);
 			}
 		}
@@ -143,29 +145,29 @@ public class DataGrooming {
 			// They passed some arguments in that will affect processing
 			for (int i = 0; i < args.length; i++) {
 				String thisArg = args[i];
-				if (thisArg.equals("-edgesOnly")) {
+				if ("-edgesOnly".equals(thisArg)) {
 					edgesOnlyFlag = true;
 				} else if (thisArg.equals("-autoFix")) {
 					doAutoFix = true;
-				} else if (thisArg.equals("-skipHostCheck")) {
+				} else if ("-skipHostCheck".equals(thisArg)) {
 					skipHostCheck = true;
-				} else if (thisArg.equals("-dontFixOrphans")) {
+				} else if ("-dontFixOrphans".equals(thisArg)) {
 					dontFixOrphansFlag = true;
-				} else if (thisArg.equals("-singleCommits")) {
+				} else if ("-singleCommits".equals(thisArg)) {
 					singleCommits = true;
-				} else if (thisArg.equals("-dupeCheckOff")) {
+				} else if ("-dupeCheckOff".equals(thisArg)) {
 					dupeCheckOff = true;
-				} else if (thisArg.equals("-dupeFixOn")) {
+				} else if ("-dupeFixOn".equals(thisArg)) {
 					dupeFixOn = true;
-				} else if (thisArg.equals("-ghost2CheckOff")) {
+				} else if ("-ghost2CheckOff".equals(thisArg)) {
 					ghost2CheckOff = true;
-				} else if (thisArg.equals("-neverUseCache")) {
+				} else if ("-neverUseCache".equals(thisArg)) {
 					neverUseCache = true;
-				} else if (thisArg.equals("-ghost2FixOn")) {
+				} else if ("-ghost2FixOn".equals(thisArg)) {
 					ghost2FixOn = true;
-				} else if (thisArg.equals("-skipEdgeChecks")) {
+				} else if ("-skipEdgeChecks".equals(thisArg)) {
 					skipEdgeCheckFlag = true;
-				} else if (thisArg.equals("-maxFix")) {
+				} else if ("-maxFix".equals(thisArg)) {
 					i++;
 					if (i >= args.length) {
 						LoggingContext.statusCode(StatusCode.ERROR);
@@ -201,7 +203,7 @@ public class DataGrooming {
 										+ nextArg + "]");
 						AAISystemExitUtil.systemExitCloseAAIGraph(0);
 					}
-				} else if (thisArg.equals("-timeWindowMinutes")) {
+				} else if ("-timeWindowMinutes".equals(thisArg)) {
 					i++;
 					if (i >= args.length) {
 						LoggingContext.statusCode(StatusCode.ERROR);
@@ -220,7 +222,7 @@ public class DataGrooming {
 						AAISystemExitUtil.systemExitCloseAAIGraph(0);
 					}
 				  	
-				} else if (thisArg.equals("-f")) {
+				} else if ("-f".equals(thisArg)) {
 					i++;
 					if (i >= args.length) {
 						LoggingContext.statusCode(StatusCode.ERROR);
@@ -501,7 +503,7 @@ public class DataGrooming {
 					// Loop through all the nodes of this Node type
 					int lastShownForNt = 0;
 					ArrayList <Vertex> tmpList = new ArrayList <> ();
-					Iterator <Vertex> iterv =  source1.V().has("aai-node-type",nType); 
+					Iterator <Vertex> iterv =  source1.V().has(AAI_NODE_TYPE,nType);
 					while (iterv.hasNext()) {
 						// We put the nodes into an ArrayList because the graph.query iterator can time out
 						tmpList.add(iterv.next());
@@ -580,10 +582,6 @@ public class DataGrooming {
 										pCount++;
 									}
 									if( pCount <= 0 ){
-									
-									
-									//List<Vertex> vertI2 = g.traversal().V(thisVtx).union(__.outE().has("isParent-REV",true).outV(),__.inE().has("isParent",true).inV()).toList();
-									//if( vertI2.isEmpty()){
 											
 										// It's Missing it's dependent/parent node 
 										depNodeOk = false;
@@ -654,7 +652,7 @@ public class DataGrooming {
 									}
 								}// end of -- else this is a dependent node  -- piece
 								
-								if( depNodeOk && (secondGetList == null || secondGetList.size() == 0) ){
+								if( depNodeOk && (secondGetList == null || secondGetList.isEmpty()) ){
 									// We could not get the node back using it's own key info. 
 									// So, it's a PHANTOM
 									if (deleteCandidateList.contains(thisVid)) {
@@ -874,7 +872,7 @@ public class DataGrooming {
 						Boolean cantGetUsingVid = false;
 						if (vIn != null) {
 							try {
-								Object ob = vIn.<Object>property("aai-node-type").orElse(null);
+								Object ob = vIn.<Object>property(AAI_NODE_TYPE).orElse(null);
 								if (ob != null) {
 									vNtI = ob.toString();
 									keysMissing = anyKeyFieldsMissing(vNtI, vIn, loader);
@@ -998,7 +996,7 @@ public class DataGrooming {
 						cantGetUsingVid = false;
 						if (vOut != null) {
 							try {
-								Object ob = vOut.<Object>property("aai-node-type").orElse(null);
+								Object ob = vOut.<Object>property(AAI_NODE_TYPE).orElse(null);
 								if (ob != null) {
 									vNtO = ob.toString();
 									keysMissing = anyKeyFieldsMissing(vNtO,
@@ -1036,14 +1034,14 @@ public class DataGrooming {
 								logger.warn(">>> WARNING trying to get edge's Out-vertex props ", err);
 							}
 						}
-						if (keysMissing || vOut == null || vNtO.equals("")
+						if (keysMissing || vOut == null || vNtO.isEmpty()
 								|| cantGetUsingVid) {
 							// this is a bad edge because it points to a vertex
 							// that isn't there anymore
 							String thisEid = e.id().toString();
 							if (deleteCandidateList.contains(thisEid) || deleteCandidateList.contains(vIdO)) {
 								boolean okFlag = true;
-								if (!vIdO.equals("")) {
+								if (!vIdO.isEmpty()) {
 									// try to get rid of the corrupted vertex
 									try {
 										if( (ghost2 != null) && ghost2FixOn ){
@@ -1331,7 +1329,7 @@ public class DataGrooming {
 							// This is the last entry which should tell us if we
 							// have a preferred keeper
 							String prefString = dupeArr[i];
-							if (prefString.equals("KeepVid=UNDETERMINED")) {
+							if (KEEP_VID_UNDETERMINED.equals(prefString)) {
 								bw.write("\n For this group of duplicates, could not tell which one to keep.\n");
 								bw.write(" >>> This group needs to be taken care of with a manual/forced-delete.\n");
 							} else {
@@ -1339,7 +1337,7 @@ public class DataGrooming {
 								// should look like, "KeepVid=12345"
 								String[] prefArr = prefString.split("=");
 								if (prefArr.length != 2
-										|| (!prefArr[0].equals("KeepVid"))) {
+										|| (!"KeepVid".equals(prefArr[0]))) {
 									throw new Exception("Bad format. Expecting KeepVid=999999");
 								} else {
 									String keepVidStr = prefArr[1];
@@ -1378,7 +1376,7 @@ public class DataGrooming {
 			bw.write("\n ------------- Got these errors while processing: \n");
 			Iterator<String> errIter = errArr.iterator();
 			while (errIter.hasNext()) {
-				String line = (String) errIter.next();
+				String line = errIter.next();
 				bw.write(line + "\n");
 			}
 
@@ -1541,7 +1539,7 @@ public class DataGrooming {
 			while (keyPropI.hasNext()) {
 				String propName = keyPropI.next();
 				Object ob = v.<Object>property(propName).orElse(null);
-				if (ob == null || ob.toString().equals("")) {
+				if (ob == null || ob.toString().isEmpty()) {
 					// It is missing a key property
 					return true;
 				}
@@ -1679,16 +1677,16 @@ public class DataGrooming {
 
 		String vtxANodeType = "";
 		String vtxBNodeType = "";
-		Object objType = vtxA.<Object>property("aai-node-type").orElse(null);
+		Object objType = vtxA.<Object>property(AAI_NODE_TYPE).orElse(null);
 		if (objType != null) {
 			vtxANodeType = objType.toString();
 		}
-		objType = vtxB.<Object>property("aai-node-type").orElse(null);
+		objType = vtxB.<Object>property(AAI_NODE_TYPE).orElse(null);
 		if (objType != null) {
 			vtxBNodeType = objType.toString();
 		}
 
-		if (vtxANodeType.equals("") || (!vtxANodeType.equals(vtxBNodeType))) {
+		if (vtxANodeType.isEmpty() || (!vtxANodeType.equals(vtxBNodeType))) {
 			// Either they're not really dupes or there's some bad data - so
 			// don't pick one
 			return nullVtx;
@@ -1748,7 +1746,7 @@ public class DataGrooming {
 				Vertex tvCon = iter.next();
 				String conVid = tvCon.id().toString();
 				String nt = "";
-				objType = tvCon.<Object>property("aai-node-type").orElse(null);
+				objType = tvCon.<Object>property(AAI_NODE_TYPE).orElse(null);
 				if (objType != null) {
 					nt = objType.toString();
 				}
@@ -1764,7 +1762,7 @@ public class DataGrooming {
 				Vertex tvCon = iter.next();
 				String conVid = tvCon.id().toString();
 				String nt = "";
-				objType = tvCon.<Object>property("aai-node-type").orElse(null);
+				objType = tvCon.<Object>property(AAI_NODE_TYPE).orElse(null);
 				if (objType != null) {
 					nt = objType.toString();
 				}
@@ -1803,7 +1801,7 @@ public class DataGrooming {
 					depNodeVtxId4B = nodeTypesConn2B.get(depNodeType);
 				}
 			}
-			if (depNodeVtxId4A.equals("")
+			if (depNodeVtxId4A.isEmpty()
 					|| (!depNodeVtxId4A.equals(depNodeVtxId4B))) {
 				// Either they're not really dupes or there's some bad data - so
 				// don't pick either one
@@ -1831,7 +1829,7 @@ public class DataGrooming {
 				// If everything is the same, but one of the two has a good 
 				// pointer to it, then save that one.  Otherwise, take the
 				// older one.
-				if( !onlyNodeThatIndexPointsToVidStr.equals("") ){
+				if( !onlyNodeThatIndexPointsToVidStr.isEmpty() ){
 					// only one is reachable via the index - choose that one.
 					if( onlyNodeThatIndexPointsToVidStr.equals(vidA.toString()) ){
 						preferredVtx = vtxA;
@@ -1860,7 +1858,7 @@ public class DataGrooming {
 				}
 			}
 			if (!missingOne) {
-				if( onlyNodeThatIndexPointsToVidStr.equals("") 
+				if( onlyNodeThatIndexPointsToVidStr.isEmpty()
 						|| onlyNodeThatIndexPointsToVidStr.equals(vidA.toString()) ){
 					preferredVtx = vtxA;
 				}
@@ -1879,7 +1877,7 @@ public class DataGrooming {
 				}
 			}
 			if (!missingOne) {
-				if( onlyNodeThatIndexPointsToVidStr.equals("") 
+				if( onlyNodeThatIndexPointsToVidStr.isEmpty()
 						|| onlyNodeThatIndexPointsToVidStr.equals(vidB.toString()) ){
 					preferredVtx = vtxB;
 				}
@@ -1978,15 +1976,14 @@ public class DataGrooming {
 				String dupesStr = "";
 				for (int i = 0; i < checkVertList.size(); i++) {
 					dupesStr = dupesStr
-							+ ((checkVertList.get(i))).id()
-									.toString() + "|";
+							+ checkVertList.get(i).id().toString() + "|";
 				}
 				if (dupesStr != "") {
 					Vertex prefV = getPreferredDupe(transId, fromAppId,
 							source, checkVertList, version, loader);
 					if (prefV == null) {
 						// We could not determine which duplicate to keep
-						dupesStr = dupesStr + "KeepVid=UNDETERMINED";
+						dupesStr = dupesStr + KEEP_VID_UNDETERMINED;
 						returnList.add(dupesStr);
 					} else {
 						dupesStr = dupesStr + "KeepVid=" + prefV.id();
@@ -2025,8 +2022,7 @@ public class DataGrooming {
 						String dupesStr = "";
 						for (int i = 0; i < thisParentsVertList.size(); i++) {
 							dupesStr = dupesStr
-									+ ((thisParentsVertList
-											.get(i))).id() + "|";
+									+ thisParentsVertList.get(i).id() + "|";
 						}
 						if (dupesStr != "") {
 							Vertex prefV = getPreferredDupe(transId,
@@ -2036,7 +2032,7 @@ public class DataGrooming {
 							if (prefV == null) {
 								// We could not determine which duplicate to
 								// keep
-								dupesStr = dupesStr + "KeepVid=UNDETERMINED";
+								dupesStr = dupesStr + KEEP_VID_UNDETERMINED;
 								returnList.add(dupesStr);
 							} else {
 								Boolean didRemove = false;
@@ -2118,7 +2114,7 @@ public class DataGrooming {
 				Vertex tmpParentVtx = getConnectedParent( g, thisVert );
 				if( tmpParentVtx != null ) {
 					String parentNt = null;
-					Object obj = tmpParentVtx.<Object>property("aai-node-type").orElse(null);
+					Object obj = tmpParentVtx.<Object>property(AAI_NODE_TYPE).orElse(null);
 					if (obj != null) {
 						parentNt = obj.toString();
 					}
@@ -2161,7 +2157,7 @@ public class DataGrooming {
 		// This assumes that the dupeInfoString is in the format of
 		// pipe-delimited vid's followed by
 		// ie. "3456|9880|keepVid=3456"
-		if (deleteCandidateList == null || deleteCandidateList.size() == 0) {
+		if (deleteCandidateList == null || deleteCandidateList.isEmpty()) {
 			// No vid's on the candidate list -- so no deleting will happen on
 			// this run
 			return false;
@@ -2179,7 +2175,7 @@ public class DataGrooming {
 				// This is the last entry which should tell us if we have a
 				// preferred keeper
 				String prefString = dupeArr[i];
-				if (prefString.equals("KeepVid=UNDETERMINED")) {
+				if (prefString.equals(KEEP_VID_UNDETERMINED)) {
 					// They sent us a bad string -- nothing should be deleted if
 					// no dupe could be tagged as preferred
 					return false;
@@ -2187,7 +2183,7 @@ public class DataGrooming {
 					// If we know which to keep, then the prefString should look
 					// like, "KeepVid=12345"
 					String[] prefArr = prefString.split("=");
-					if (prefArr.length != 2 || (!prefArr[0].equals("KeepVid"))) {
+					if (prefArr.length != 2 || (!"KeepVid".equals(prefArr[0]))) {
 						LoggingContext.statusCode(StatusCode.ERROR);
 						LoggingContext.responseCode(LoggingContext.DATA_ERROR);
 						logger.error("Bad format. Expecting KeepVid=999999");
@@ -2285,25 +2281,25 @@ public class DataGrooming {
 		try { 
 			if( topPropIndex == 0 ){
 				propsAndValuesForMsg = " (" + kName.get(0) + " = " + kVal.get(0) + ") ";
-				verts= graph.V().has(kName.get(0),kVal.get(0)).has("aai-node-type",nodeType);	
+				verts= graph.V().has(kName.get(0),kVal.get(0)).has(AAI_NODE_TYPE,nodeType);
 			}	
 			else if( topPropIndex == 1 ){
 				propsAndValuesForMsg = " (" + kName.get(0) + " = " + kVal.get(0) + ", " 
 						+ kName.get(1) + " = " + kVal.get(1) + ") ";
-				verts =  graph.V().has(kName.get(0),kVal.get(0)).has(kName.get(1),kVal.get(1)).has("aai-node-type",nodeType);	
+				verts =  graph.V().has(kName.get(0),kVal.get(0)).has(kName.get(1),kVal.get(1)).has(AAI_NODE_TYPE,nodeType);
 			}	 		
 			else if( topPropIndex == 2 ){
 				propsAndValuesForMsg = " (" + kName.get(0) + " = " + kVal.get(0) + ", " 
 						+ kName.get(1) + " = " + kVal.get(1) + ", " 
 						+ kName.get(2) + " = " + kVal.get(2) +  ") ";
-				verts= graph.V().has(kName.get(0),kVal.get(0)).has(kName.get(1),kVal.get(1)).has(kName.get(2),kVal.get(2)).has("aai-node-type",nodeType);
-			}	
+				verts= graph.V().has(kName.get(0),kVal.get(0)).has(kName.get(1),kVal.get(1)).has(kName.get(2),kVal.get(2)).has(AAI_NODE_TYPE,nodeType);
+			}
 			else if( topPropIndex == 3 ){
 				propsAndValuesForMsg = " (" + kName.get(0) + " = " + kVal.get(0) + ", " 
 						+ kName.get(1) + " = " + kVal.get(1) + ", " 
 						+ kName.get(2) + " = " + kVal.get(2) + ", " 
 						+ kName.get(3) + " = " + kVal.get(3) +  ") ";
-				verts= graph.V().has(kName.get(0),kVal.get(0)).has(kName.get(1),kVal.get(1)).has(kName.get(2),kVal.get(2)).has(kName.get(3),kVal.get(3)).has("aai-node-type",nodeType);
+				verts= graph.V().has(kName.get(0),kVal.get(0)).has(kName.get(1),kVal.get(1)).has(kName.get(2),kVal.get(2)).has(kName.get(3),kVal.get(3)).has(AAI_NODE_TYPE,nodeType);
 			}	 		
 			else {
 				throw new AAIException("AAI_6114", " We only support 4 keys per nodeType for now \n"); 
@@ -2322,7 +2318,7 @@ public class DataGrooming {
 			}
 		}
 		
-		if( retVertList.size() == 0 ){
+		if( retVertList.isEmpty() ){
 			logger.debug("DEBUG No node found for nodeType = [" + nodeType +
 					"], propsAndVal = " + propsAndValuesForMsg );
 		}
@@ -2359,7 +2355,7 @@ public class DataGrooming {
 				retArr.add(" >>> COULD NOT FIND VERTEX on the other side of this edge edgeId = " + ed.id() + " <<< ");
 			}
 			else {
-				String nType = vtx.<String>property("aai-node-type").orElse(null);
+				String nType = vtx.<String>property(AAI_NODE_TYPE).orElse(null);
 				String vid = vtx.id().toString();
 				retArr.add("Found an IN edge (" + lab + ") to this vertex from a [" + nType + "] node with VtxId = " + vid );
 				
@@ -2383,7 +2379,7 @@ public class DataGrooming {
 				retArr.add(" >>> COULD NOT FIND VERTEX on the other side of this edge edgeId = " + ed.id() + " <<< ");
 			}
 			else {
-				String nType = vtx.<String>property("aai-node-type").orElse(null);
+				String nType = vtx.<String>property(AAI_NODE_TYPE).orElse(null);
 				String vid = vtx.id().toString();
 				retArr.add("Found an OUT edge (" + lab + ") from this vertex to a [" + nType + "] node with VtxId = " + vid );
 			}
@@ -2408,7 +2404,7 @@ public class DataGrooming {
 		}
 		else {
 			String nodeType = "";
-			Object ob = tVert.<Object>property("aai-node-type").orElse(null);
+			Object ob = tVert.<Object>property(AAI_NODE_TYPE).orElse(null);
 			if( ob == null ){
 				nodeType = "null";
 			}
@@ -2452,7 +2448,7 @@ public class DataGrooming {
 	
 
 	private static ArrayList <Vertex> getConnectedChildrenOfOneType( GraphTraversalSource g, 
-			Vertex startVtx, String childNType ) throws AAIException{
+			Vertex startVtx, String childNType ) {
 		
 		ArrayList <Vertex> childList = new ArrayList <> ();
 		Iterator <Vertex> vertI =  g.V(startVtx).union(__.outE().has(EdgeProperty.CONTAINS.toString(), AAIDirection.OUT.toString()).inV(), __.inE().has(EdgeProperty.CONTAINS.toString(), AAIDirection.IN.toString()).outV());
@@ -2460,7 +2456,7 @@ public class DataGrooming {
 		Vertex tmpVtx = null;
 		while( vertI != null && vertI.hasNext() ){
 			tmpVtx = vertI.next();
-			Object ob = tmpVtx.<Object>property("aai-node-type").orElse(null);
+			Object ob = tmpVtx.<Object>property(AAI_NODE_TYPE).orElse(null);
 			if (ob != null) {
 				String tmpNt = ob.toString();
 				if( tmpNt.equals(childNType)){
@@ -2475,7 +2471,7 @@ public class DataGrooming {
 
 
 	private static Vertex getConnectedParent( GraphTraversalSource g, 
-			Vertex startVtx ) throws AAIException{
+			Vertex startVtx ) {
 		
 		Vertex parentVtx = null;
 		Iterator <Vertex> vertI = g.V(startVtx).union(__.inE().has(EdgeProperty.CONTAINS.toString(), AAIDirection.OUT.toString()).outV(), __.outE().has(EdgeProperty.CONTAINS.toString(), AAIDirection.IN.toString()).inV());
@@ -2500,9 +2496,7 @@ public class DataGrooming {
 		long unixTimeNow = System.currentTimeMillis();
 		long windowInMillis = timeWindowMinutes * 60L * 1000;
 		
-		long startTimeStamp = unixTimeNow - windowInMillis;
-		
-		return startTimeStamp;
+		return unixTimeNow - windowInMillis;
 	} // End of figureWindowStartTime()
 	
 	
@@ -2611,9 +2605,9 @@ public class DataGrooming {
 		return retString;
 	
 	}// End of getNodeKeyValString()	
-	
-	
-	static private String findJustOneUsingIndex( String transId, String fromAppId,
+
+
+	private static String findJustOneUsingIndex( String transId, String fromAppId,
 			GraphTraversalSource gts, HashMap <String,Object> keyPropValsHash, 
 			String nType, Long vidAL, Long vidBL, String apiVer){
 		
@@ -2632,7 +2626,7 @@ public class DataGrooming {
 				String thisVid = tmpV.id().toString();
 				if( thisVid.equals(vidAL.toString()) || thisVid.equals(vidBL.toString()) ){
 					String msg = " vid = " + thisVid + " is one of two that the DB can retrieve directly ------";
-					//System.out.println(msg);
+
 					logger.info(msg);
 					returnVid = thisVid;
 				}
@@ -2640,7 +2634,7 @@ public class DataGrooming {
 		}
 		catch ( AAIException ae ){
 			String emsg = "Error trying to get node just by key " + ae.getMessage();
-			//System.out.println(emsg);
+
 			logger.error(emsg);
 	  	}
 		
