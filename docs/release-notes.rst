@@ -13,7 +13,7 @@ Version: 1.2.0
 
 **New Features**
 
-The Beijing release of ONAP forcuses on platform maturity - to that
+The R2 Beijing release of ONAP forcuses on platform maturity - to that
 end, AAI has switched from Titan on hbase to JanusGraph on a
 multi-replica cassandra deployment.  We have added several
 microservices which will be fully operational in R3 Casablanca.
@@ -42,7 +42,7 @@ ONAP AAI R2 includes the following components:
 - Applications
 - Sparky (AAI User Interface)
 
-Source code of AAI is released under the following repositories at https://gerrit.onap.org .
+Source code of AAI is released under the following repositories at https://gerrit.onap.org 
 
 - aai/aai-common
 - aai/event-client
@@ -64,6 +64,7 @@ Source code of AAI is released under the following repositories at https://gerri
 - aai/traversal
 
 **Epic**
+
 - `AAI-16 <https://jira.onap.org/browse/AAI-16>`_ A&AI Platform Deployment
 
 - `AAI-17 <https://jira.onap.org/browse/AAI-17>`_ Seed code stabilization
@@ -87,198 +88,208 @@ Source code of AAI is released under the following repositories at https://gerri
 - `AAI-769 <https://jira.onap.org/browse/AAI-769>`_ Required updates to the v13 REST API
 
 **Bug Fixes**
-`AAI-129 <https://jira.onap.org/browse/AAI-129>`_ RestClientBuilder SSL protocol should be configurable
 
-`AAI-131 <https://jira.onap.org/browse/AAI-131>`_ Model-Loader service of A&AI has it's Log Provider Configuration File sealed inside the WAR
+- `AAI-129 <https://jira.onap.org/browse/AAI-129>`_ RestClientBuilder SSL protocol should be configurable
 
-`AAI-175 <https://jira.onap.org/browse/AAI-175>`_ aai core service of A&AI has it's Log Provider Configuration File configurable from startup.sh
+- `AAI-131 <https://jira.onap.org/browse/AAI-131>`_ Model-Loader service of A&AI has it's Log Provider Configuration File sealed inside the WAR
 
-`AAI-295 <https://jira.onap.org/browse/AAI-295>`_ ChampDAO tests failing in gizmo
+- `AAI-175 <https://jira.onap.org/browse/AAI-175>`_ aai core service of A&AI has it's Log Provider Configuration File configurable from startup.sh
 
-`AAI-460 <https://jira.onap.org/browse/AAI-460>`_ vm1-aai-inst1 aai-resources fails to start
+- `AAI-295 <https://jira.onap.org/browse/AAI-295>`_ ChampDAO tests failing in gizmo
 
-`AAI-463 <https://jira.onap.org/browse/AAI-463>`_ Wrong Error message when we use PUT instead of POST to create the relationship
+- `AAI-460 <https://jira.onap.org/browse/AAI-460>`_ vm1-aai-inst1 aai-resources fails to start
 
-`AAI-521 <https://jira.onap.org/browse/AAI-521>`_ A&AI resources container sporadically hangs on startup
+- `AAI-463 <https://jira.onap.org/browse/AAI-463>`_ Wrong Error message when we use PUT instead of POST to create the relationship
 
-`AAI-523 <https://jira.onap.org/browse/AAI-523>`_ Sparky UI does not display RelationshipList nodes
+- `AAI-521 <https://jira.onap.org/browse/AAI-521>`_ A&AI resources container sporadically hangs on startup
 
-`AAI-558 <https://jira.onap.org/browse/AAI-558>`_ aai-resources java daily jenkins job is failing
+- `AAI-523 <https://jira.onap.org/browse/AAI-523>`_ Sparky UI does not display RelationshipList nodes
 
-`AAI-559 <https://jira.onap.org/browse/AAI-559>`_ CSIT jobs should use a set of streams, not a list of branches
+- `AAI-558 <https://jira.onap.org/browse/AAI-558>`_ aai-resources java daily jenkins job is failing
 
-`AAI-561 <https://jira.onap.org/browse/AAI-561>`_ aai-traversal java daily jenkins job is failing
+- `AAI-559 <https://jira.onap.org/browse/AAI-559>`_ CSIT jobs should use a set of streams, not a list of branches
 
-`AAI-568 <https://jira.onap.org/browse/AAI-568>`_ aai/logging-api build fails on license.txt not found when run outside of aai/logging-service dir - for root CI builds
+- `AAI-561 <https://jira.onap.org/browse/AAI-561>`_ aai-traversal java daily jenkins job is failing
 
-`AAI-601 <https://jira.onap.org/browse/AAI-601>`_ AAI search-data-service build failing on 1.1 JAX-RS instead of required 2.0 library only on clean Ubuntu 16.04/JDK1.8.0_151
+- `AAI-568 <https://jira.onap.org/browse/AAI-568>`_ aai/logging-api build fails on license.txt not found when run outside of aai/logging-service dir - for root CI builds
 
-`AAI-603 <https://jira.onap.org/browse/AAI-603>`_ Sonar only push to master
+- `AAI-601 <https://jira.onap.org/browse/AAI-601>`_ AAI search-data-service build failing on 1.1 JAX-RS instead of required 2.0 library only on clean Ubuntu 16.04/JDK1.8.0_151
 
-`AAI-666 <https://jira.onap.org/browse/AAI-666>`_ aai/datarouter startup fails to find logback.xml
+- `AAI-603 <https://jira.onap.org/browse/AAI-603>`_ Sonar only push to master
 
-`AAI-679 <https://jira.onap.org/browse/AAI-679>`_ A&AI UI failed to search service-instance based on service-instance-id
+- `AAI-666 <https://jira.onap.org/browse/AAI-666>`_ aai/datarouter startup fails to find logback.xml
 
-`AAI-699 <https://jira.onap.org/browse/AAI-699>`_ SDC Tosca does not generate Groups from resource yaml
+- `AAI-679 <https://jira.onap.org/browse/AAI-679>`_ A&AI UI failed to search service-instance based on service-instance-id
 
-`AAI-738 <https://jira.onap.org/browse/AAI-738>`_ When register service to MSB, esr-server still will register to MSB automaticly
+- `AAI-699 <https://jira.onap.org/browse/AAI-699>`_ SDC Tosca does not generate Groups from resource yaml
 
-`AAI-788 <https://jira.onap.org/browse/AAI-788>`_ fix the cookie decryption algorithm
+- `AAI-738 <https://jira.onap.org/browse/AAI-738>`_ When register service to MSB, esr-server still will register to MSB automaticly
 
-`AAI-796 <https://jira.onap.org/browse/AAI-796>`_ AAI is logging %PARSER_ERROR instead of REMOTE_USER
+- `AAI-788 <https://jira.onap.org/browse/AAI-788>`_ fix the cookie decryption algorithm
 
-`AAI-833 <https://jira.onap.org/browse/AAI-833>`_ The url of query vim type from multiCloud is incorrect
+- `AAI-796 <https://jira.onap.org/browse/AAI-796>`_ AAI is logging %PARSER_ERROR instead of REMOTE_USER
 
-`AAI-838 <https://jira.onap.org/browse/AAI-838>`_ Add back the properties that got removed
+- `AAI-833 <https://jira.onap.org/browse/AAI-833>`_ The url of query vim type from multiCloud is incorrect
 
-`AAI-874 <https://jira.onap.org/browse/AAI-874>`_ Fix the test-config traversal aaiconfig to use proper timeout keys
+- `AAI-838 <https://jira.onap.org/browse/AAI-838>`_ Add back the properties that got removed
 
-`AAI-948 <https://jira.onap.org/browse/AAI-948>`_ aai-rest-client build fails with non-resolvable parent POM
+- `AAI-874 <https://jira.onap.org/browse/AAI-874>`_ Fix the test-config traversal aaiconfig to use proper timeout keys
 
-`AAI-961 <https://jira.onap.org/browse/AAI-961>`_ Fix aai-sparky-be-master-aai-docker-java-daily
+- `AAI-948 <https://jira.onap.org/browse/AAI-948>`_ aai-rest-client build fails with non-resolvable parent POM
 
-`AAI-985 <https://jira.onap.org/browse/AAI-985>`_ Sparky-be: Change dependency to make use of sparky-fe war file from Beijing version
+- `AAI-961 <https://jira.onap.org/browse/AAI-961>`_ Fix aai-sparky-be-master-aai-docker-java-daily
 
-`AAI-987 <https://jira.onap.org/browse/AAI-987>`_ Update ML with the latest changes
+- `AAI-985 <https://jira.onap.org/browse/AAI-985>`_ Sparky-be: Change dependency to make use of sparky-fe war file from Beijing version
 
-`AAI-993 <https://jira.onap.org/browse/AAI-993>`_ Champ docker image name incorrect
+- `AAI-987 <https://jira.onap.org/browse/AAI-987>`_ Update ML with the latest changes
 
-`AAI-994 <https://jira.onap.org/browse/AAI-994>`_ Crud-service (Gizmo) docker tag version is incorrect
+- `AAI-993 <https://jira.onap.org/browse/AAI-993>`_ Champ docker image name incorrect
 
-`AAI-995 <https://jira.onap.org/browse/AAI-995>`_ Gizmo docker image name incorrect
+- `AAI-994 <https://jira.onap.org/browse/AAI-994>`_ Crud-service (Gizmo) docker tag version is incorrect
 
-`AAI-996 <https://jira.onap.org/browse/AAI-996>`_ Change ML pom file to address build failure problems
+- `AAI-995 <https://jira.onap.org/browse/AAI-995>`_ Gizmo docker image name incorrect
 
-`AAI-1005 <https://jira.onap.org/browse/AAI-1005>`_ Fix docker-compose-db.yml in test-config
+- `AAI-996 <https://jira.onap.org/browse/AAI-996>`_ Change ML pom file to address build failure problems
 
-`AAI-1006 <https://jira.onap.org/browse/AAI-1006>`_ Babel start script does not set all required properties
+- `AAI-1005 <https://jira.onap.org/browse/AAI-1005>`_ Fix docker-compose-db.yml in test-config
 
-`AAI-1007 <https://jira.onap.org/browse/AAI-1007>`_ Babel: java.lang.NoClassDefFoundError: com/att/aft/dme2/internal/gson/JsonSyntaxException
+- `AAI-1006 <https://jira.onap.org/browse/AAI-1006>`_ Babel start script does not set all required properties
 
-`AAI-1016 <https://jira.onap.org/browse/AAI-1016>`_ Model-loader: properties files are incorrectly named and have errors
+- `AAI-1007 <https://jira.onap.org/browse/AAI-1007>`_ Babel: java.lang.NoClassDefFoundError: com/att/aft/dme2/internal/gson/JsonSyntaxException
 
-`AAI-1017 <https://jira.onap.org/browse/AAI-1017>`_ Fix Champ build - incorrect definition of Java system path
+- `AAI-1016 <https://jira.onap.org/browse/AAI-1016>`_ Model-loader: properties files are incorrectly named and have errors
 
-`AAI-1018 <https://jira.onap.org/browse/AAI-1018>`_ Model-loader: CONF_INVALID_MSG_BUS_ADDRESS
+- `AAI-1017 <https://jira.onap.org/browse/AAI-1017>`_ Fix Champ build - incorrect definition of Java system path
 
-`AAI-1019 <https://jira.onap.org/browse/AAI-1019>`_ aai-resources: does not require username/password after springboot upgrade
+- `AAI-1018 <https://jira.onap.org/browse/AAI-1018>`_ Model-loader: CONF_INVALID_MSG_BUS_ADDRESS
 
-`AAI-1020 <https://jira.onap.org/browse/AAI-1020>`_ aai-traversal: does not require username/password after springboot upgrade
+- `AAI-1019 <https://jira.onap.org/browse/AAI-1019>`_ aai-resources: does not require username/password after springboot upgrade
 
-`AAI-1024 <https://jira.onap.org/browse/AAI-1024>`_ Test-config: model-loader MSG_BUS_ADDRESSES not set
+- `AAI-1020 <https://jira.onap.org/browse/AAI-1020>`_ aai-traversal: does not require username/password after springboot upgrade
 
-`AAI-1025 <https://jira.onap.org/browse/AAI-1025>`_ Test-config: traversal updateQueryData.sh fails to update models and queries
+- `AAI-1024 <https://jira.onap.org/browse/AAI-1024>`_ Test-config: model-loader MSG_BUS_ADDRESSES not set
 
-`AAI-1026 <https://jira.onap.org/browse/AAI-1026>`_ test-config: model-loader is attempting 2-way TLS with AAI
+- `AAI-1025 <https://jira.onap.org/browse/AAI-1025>`_ Test-config: traversal updateQueryData.sh fails to update models and queries
 
-`AAI-1027 <https://jira.onap.org/browse/AAI-1027>`_ ModelLoader basic auth failure with aai-resources
+- `AAI-1026 <https://jira.onap.org/browse/AAI-1026>`_ test-config: model-loader is attempting 2-way TLS with AAI
 
-`AAI-1029 <https://jira.onap.org/browse/AAI-1029>`_ The DOC about ESR installation should be update
+- `AAI-1027 <https://jira.onap.org/browse/AAI-1027>`_ ModelLoader basic auth failure with aai-resources
 
-`AAI-1034 <https://jira.onap.org/browse/AAI-1034>`_ [sparky-be] Portal API Proxy missing from Spring Boot Sparky
+- `AAI-1029 <https://jira.onap.org/browse/AAI-1029>`_ The DOC about ESR installation should be update
 
-`AAI-1035 <https://jira.onap.org/browse/AAI-1035>`_ Security: Springboot 1.5.10 has new nexusIQ critical exceptions
+- `AAI-1034 <https://jira.onap.org/browse/AAI-1034>`_ [sparky-be] Portal API Proxy missing from Spring Boot Sparky
 
-`AAI-1038 <https://jira.onap.org/browse/AAI-1038>`_ Babel missing .gitreview file
+- `AAI-1035 <https://jira.onap.org/browse/AAI-1035>`_ Security: Springboot 1.5.10 has new nexusIQ critical exceptions
 
-`AAI-1049 <https://jira.onap.org/browse/AAI-1049>`_ [Model Loader] - Remove dependency on PowerMockito
+- `AAI-1038 <https://jira.onap.org/browse/AAI-1038>`_ Babel missing .gitreview file
 
-`AAI-1051 <https://jira.onap.org/browse/AAI-1051>`_ API Spec is specifying v12 in v13 file
+- `AAI-1049 <https://jira.onap.org/browse/AAI-1049>`_ [Model Loader] - Remove dependency on PowerMockito
 
-`AAI-1052 <https://jira.onap.org/browse/AAI-1052>`_ AAI is using -SNAPSHOT artifacts; remove -SNAPSHOT dependencies
+- `AAI-1051 <https://jira.onap.org/browse/AAI-1051>`_ API Spec is specifying v12 in v13 file
 
-`AAI-1077 <https://jira.onap.org/browse/AAI-1077>`_ [Babel] master daily build job is not creating an autorelease staging repo
+- `AAI-1052 <https://jira.onap.org/browse/AAI-1052>`_ AAI is using -SNAPSHOT artifacts; remove -SNAPSHOT dependencies
 
-`AAI-1082 <https://jira.onap.org/browse/AAI-1082>`_ Champ janus version incompatible with Resources janus version
+- `AAI-1077 <https://jira.onap.org/browse/AAI-1077>`_ [Babel] master daily build job is not creating an autorelease staging repo
 
-`AAI-1084 <https://jira.onap.org/browse/AAI-1084>`_ POST with PATCH override call is returning 405
+- `AAI-1082 <https://jira.onap.org/browse/AAI-1082>`_ Champ janus version incompatible with Resources janus version
 
-`AAI-1086 <https://jira.onap.org/browse/AAI-1086>`_ Babel: Compressed files contain proprietary markings
+- `AAI-1084 <https://jira.onap.org/browse/AAI-1084>`_ POST with PATCH override call is returning 405
 
-`AAI-1088 <https://jira.onap.org/browse/AAI-1088>`_ aai-common: version.properties refers to previous patch release
+- `AAI-1086 <https://jira.onap.org/browse/AAI-1086>`_ Babel: Compressed files contain proprietary markings
 
-`AAI-1089 <https://jira.onap.org/browse/AAI-1089>`_ haproxy, aai-resources, and aai-traversal using outdated certificate in HEAT config
+- `AAI-1088 <https://jira.onap.org/browse/AAI-1088>`_ aai-common: version.properties refers to previous patch release
 
-`AAI-1090 <https://jira.onap.org/browse/AAI-1090>`_ v13 does not support External System under cloud region
+- `AAI-1089 <https://jira.onap.org/browse/AAI-1089>`_ haproxy, aai-resources, and aai-traversal using outdated certificate in HEAT config
 
-`AAI-1091 <https://jira.onap.org/browse/AAI-1091>`_ ESR fails to register EMS
+- `AAI-1090 <https://jira.onap.org/browse/AAI-1090>`_ v13 does not support External System under cloud region
 
-`AAI-1094 <https://jira.onap.org/browse/AAI-1094>`_ Model-loader: failure to negotiate with message router in OOM
+- `AAI-1091 <https://jira.onap.org/browse/AAI-1091>`_ ESR fails to register EMS
 
-`AAI-1096 <https://jira.onap.org/browse/AAI-1096>`_ Increase length for field:password in ESR-GUI VIM registration page
+- `AAI-1094 <https://jira.onap.org/browse/AAI-1094>`_ Model-loader: failure to negotiate with message router in OOM
 
-`AAI-1100 <https://jira.onap.org/browse/AAI-1100>`_ OOM Resources and Traversal Config map missing release
+- `AAI-1096 <https://jira.onap.org/browse/AAI-1096>`_ Increase length for field:password in ESR-GUI VIM registration page
 
-`AAI-1101 <https://jira.onap.org/browse/AAI-1101>`_ haproxy, aai-resources, and aai-traversal using outdated certificate in OOM config
+- `AAI-1100 <https://jira.onap.org/browse/AAI-1100>`_ OOM Resources and Traversal Config map missing release
 
-`AAI-1105 <https://jira.onap.org/browse/AAI-1105>`_ aai-traversal job is failing when trying to start OOM
+- `AAI-1101 <https://jira.onap.org/browse/AAI-1101>`_ haproxy, aai-resources, and aai-traversal using outdated certificate in OOM config
 
-`AAI-1106 <https://jira.onap.org/browse/AAI-1106>`_ aai-resources: scripts do not work properly with spring-boot
+- `AAI-1105 <https://jira.onap.org/browse/AAI-1105>`_ aai-traversal job is failing when trying to start OOM
 
-`AAI-1107 <https://jira.onap.org/browse/AAI-1107>`_ Security: babel and m-l brings in springboot jersey starter, which includes logback 1.1.11
+- `AAI-1106 <https://jira.onap.org/browse/AAI-1106>`_ aai-resources: scripts do not work properly with spring-boot
 
-`AAI-1108 <https://jira.onap.org/browse/AAI-1108>`_ [Babel] Remove license violations in latest commit.
+- `AAI-1107 <https://jira.onap.org/browse/AAI-1107>`_ Security: babel and m-l brings in springboot jersey starter, which includes logback 1.1.11
 
-`AAI-1110 <https://jira.onap.org/browse/AAI-1110>`_ Model Loader logback.xml errors
+- `AAI-1108 <https://jira.onap.org/browse/AAI-1108>`_ [Babel] Remove license violations in latest commit.
 
-`AAI-1111 <https://jira.onap.org/browse/AAI-1111>`_ Update test-config project for Babel
+- `AAI-1110 <https://jira.onap.org/browse/AAI-1110>`_ Model Loader logback.xml errors
 
-`AAI-1113 <https://jira.onap.org/browse/AAI-1113>`_ ESR VIM registration portal: Physical Location Id does not populate any data
+- `AAI-1111 <https://jira.onap.org/browse/AAI-1111>`_ Update test-config project for Babel
 
-`AAI-1114 <https://jira.onap.org/browse/AAI-1114>`_ Security: [Champ] add Dockerfile and remove additional AJSC files
+- `AAI-1113 <https://jira.onap.org/browse/AAI-1113>`_ ESR VIM registration portal: Physical Location Id does not populate any data
 
-`AAI-1116 <https://jira.onap.org/browse/AAI-1116>`_ [Gizmo] addressing Security vulnerabilities (Nexus IQ)
+- `AAI-1114 <https://jira.onap.org/browse/AAI-1114>`_ Security: [Champ] add Dockerfile and remove additional AJSC files
 
-`AAI-1117 <https://jira.onap.org/browse/AAI-1117>`_ [Champ] addressing Security vulnerabilities (Nexus IQ)
+- `AAI-1116 <https://jira.onap.org/browse/AAI-1116>`_ [Gizmo] addressing Security vulnerabilities (Nexus IQ)
 
-`AAI-1118 <https://jira.onap.org/browse/AAI-1118>`_ [Gizmo] upgrade artefacts from aai-common to 1.2.4
+- `AAI-1117 <https://jira.onap.org/browse/AAI-1117>`_ [Champ] addressing Security vulnerabilities (Nexus IQ)
 
-`AAI-1119 <https://jira.onap.org/browse/AAI-1119>`_ [Champ] Prevent deployment of Champ service jar
+- `AAI-1118 <https://jira.onap.org/browse/AAI-1118>`_ [Gizmo] upgrade artefacts from aai-common to 1.2.4
 
-`AAI-1120 <https://jira.onap.org/browse/AAI-1120>`_ [Gizmo] Fix Jacoco configuration
+- `AAI-1119 <https://jira.onap.org/browse/AAI-1119>`_ [Champ] Prevent deployment of Champ service jar
 
-`AAI-1121 <https://jira.onap.org/browse/AAI-1121>`_ Add the default realtime clients
+- `AAI-1120 <https://jira.onap.org/browse/AAI-1120>`_ [Gizmo] Fix Jacoco configuration
 
-`AAI-1123 <https://jira.onap.org/browse/AAI-1123>`_ Babel logback.xml errors
+- `AAI-1121 <https://jira.onap.org/browse/AAI-1121>`_ Add the default realtime clients
 
-`AAI-1124 <https://jira.onap.org/browse/AAI-1124>`_ [router-core] NexusIQ reporting httpclient 4.5 vulnerability
+- `AAI-1123 <https://jira.onap.org/browse/AAI-1123>`_ Babel logback.xml errors
 
-`AAI-1125 <https://jira.onap.org/browse/AAI-1125>`_ [data-router] NexusIQ reporting httpclient 4.5 vulnerability
+- `AAI-1124 <https://jira.onap.org/browse/AAI-1124>`_ [router-core] NexusIQ reporting httpclient 4.5 vulnerability
 
-`AAI-1126 <https://jira.onap.org/browse/AAI-1126>`_ [Babel] Authorisation mechanism is not functioning
+- `AAI-1125 <https://jira.onap.org/browse/AAI-1125>`_ [data-router] NexusIQ reporting httpclient 4.5 vulnerability
 
-`AAI-1127 <https://jira.onap.org/browse/AAI-1127>`_ [sparky-be] doesn't release artifacts because it is missing the staging plugin
+- `AAI-1126 <https://jira.onap.org/browse/AAI-1126>`_ [Babel] Authorisation mechanism is not functioning
 
-`AAI-1132 <https://jira.onap.org/browse/AAI-1132>`_ AAI's OOM server certificate doesn't include all k8 names
+- `AAI-1127 <https://jira.onap.org/browse/AAI-1127>`_ [sparky-be] doesn't release artifacts because it is missing the staging plugin
 
-`AAI-1133 <https://jira.onap.org/browse/AAI-1133>`_ AAI's haproxy server config doesn't include all k8 names
+- `AAI-1132 <https://jira.onap.org/browse/AAI-1132>`_ AAI's OOM server certificate doesn't include all k8 names
 
-`AAI-1134 <https://jira.onap.org/browse/AAI-1134>`_ OOF not defined in AAI realm properties files
+- `AAI-1133 <https://jira.onap.org/browse/AAI-1133>`_ AAI's haproxy server config doesn't include all k8 names
 
-`AAI-1135 <https://jira.onap.org/browse/AAI-1135>`_ [traversal] closed loop named-query is missing property-collect-list
+- `AAI-1134 <https://jira.onap.org/browse/AAI-1134>`_ OOF not defined in AAI realm properties files
 
-`AAI-1136 <https://jira.onap.org/browse/AAI-1136>`_ Babel doesnt start in HEAT due to log directory permissions
+- `AAI-1135 <https://jira.onap.org/browse/AAI-1135>`_ [traversal] closed loop named-query is missing property-collect-list
 
-`AAI-1138 <https://jira.onap.org/browse/AAI-1138>`_ [Champ] Bump to 1.2.1-SNAPSHOT and 1.2.1 in version.properties
+- `AAI-1136 <https://jira.onap.org/browse/AAI-1136>`_ Babel doesnt start in HEAT due to log directory permissions
 
-`AAI-1139 <https://jira.onap.org/browse/AAI-1139>`_ [resources and traversal] do not release artifacts properly
+- `AAI-1138 <https://jira.onap.org/browse/AAI-1138>`_ [Champ] Bump to 1.2.1-SNAPSHOT and 1.2.1 in version.properties
 
-`AAI-1141 <https://jira.onap.org/browse/AAI-1141>`_ [champ] duplicate dependency in pom.xml
+- `AAI-1139 <https://jira.onap.org/browse/AAI-1139>`_ [resources and traversal] do not release artifacts properly
 
-`AAI-1142 <https://jira.onap.org/browse/AAI-1142>`_ [champ] doesn't create release artifacts
+- `AAI-1141 <https://jira.onap.org/browse/AAI-1141>`_ [champ] duplicate dependency in pom.xml
 
-`AAI-1143 <https://jira.onap.org/browse/AAI-1143>`_ [resources] createDbSchema.sh tries to add -SNAPSHOT version to classpath
+- `AAI-1142 <https://jira.onap.org/browse/AAI-1142>`_ [champ] doesn't create release artifacts
 
-`AAI-1144 <https://jira.onap.org/browse/AAI-1144>`_ [oom and test-config] robot-ete is missing from realtime clients list
+- `AAI-1143 <https://jira.onap.org/browse/AAI-1143>`_ [resources] createDbSchema.sh tries to add -SNAPSHOT version to classpath
 
-`AAI-1146 <https://jira.onap.org/browse/AAI-1146>`_ [champ] daily build job is 
-failing
+- `AAI-1144 <https://jira.onap.org/browse/AAI-1144>`_ [oom and test-config] robot-ete is missing from realtime clients list
 
-`AAI-1148 <https://jira.onap.org/browse/AAI-1148>`_ [Model-Loader] Rollback of VNF Images fails
+- `AAI-1146 <https://jira.onap.org/browse/AAI-1146>`_ [champ] daily build job is failing
 
-`AAI-1151 <https://jira.onap.org/browse/AAI-1151>`_ [Champ & Gizmo] Fix JJB jenkins jobs
+- `AAI-1148 <https://jira.onap.org/browse/AAI-1148>`_ [Model-Loader] Rollback of VNF Images fails
 
-`AAI-1153 <https://jira.onap.org/browse/AAI-1153>`_ [Champ] Bump to 1.2.2-SNAPSHOT and 1.2.2 in version.properties
+- `AAI-1151 <https://jira.onap.org/browse/AAI-1151>`_ [Champ & Gizmo] Fix JJB jenkins jobs
+
+- `AAI-1153 <https://jira.onap.org/browse/AAI-1153>`_ [Champ] Bump to 1.2.2-SNAPSHOT and 1.2.2 in version.properties
+
+**Security Notes**
+
+AAI code has been formally scanned during build time using NexusIQ and all Critical vulnerabilities have been addressed, items that remain open have been assessed for risk and determined to be false positive. The AAI open Critical security vulnerabilities and their risk assessment have been documented as part of the `project <https://wiki.onap.org/pages/viewpage.action?pageId=25441383>`_.
+
+Quick Links:
+
+- `AAI project page <https://wiki.onap.org/display/DW/Active+and+Available+Inventory+Project>`_
+- `Passing Badge information for AAI <https://bestpractices.coreinfrastructure.org/en/projects/1591>`_
+- `Project Vulnerability Review Table for AAI <https://wiki.onap.org/pages/viewpage.action?pageId=25441383>`_
 
 Version: 1.1.1
 --------------
@@ -287,31 +298,31 @@ Version: 1.1.1
 
 **Bug Fixes**
 
-`AAI-456 <https://jira.onap.org/browse/AAI-456>`_
+- `AAI-456 <https://jira.onap.org/browse/AAI-456>`_
 AAI named-query for policy not returning extra-properties
 
-`AAI-458 <https://jira.onap.org/browse/AAI-458>`_
+- `AAI-458 <https://jira.onap.org/browse/AAI-458>`_
 [aai] ML, Search, DR, and Sparky Jenkins jobs not creating autorelease repo
 
-`AAI-459 <https://jira.onap.org/browse/AAI-459>`_
+- `AAI-459 <https://jira.onap.org/browse/AAI-459>`_
 aai-common child pom still depends on openecomp artifacts
 
-`AAI-461 <https://jira.onap.org/browse/AAI-461>`_
+- `AAI-461 <https://jira.onap.org/browse/AAI-461>`_
 AAI mS configuration files are using old openecomp params in test-config
 
-`AAI-462 <https://jira.onap.org/browse/AAI-462>`_
+- `AAI-462 <https://jira.onap.org/browse/AAI-462>`_
 Fix the resources junit tests broken in windows environment
 
-`AAI-558 <https://jira.onap.org/browse/AAI-558>`_
+- `AAI-558 <https://jira.onap.org/browse/AAI-558>`_
 aai-resources java daily jenkins job is failing
 
-`AAI-561 <https://jira.onap.org/browse/AAI-561>`_
+- `AAI-561 <https://jira.onap.org/browse/AAI-561>`_
 aai-traversal java daily jenkins job is failing
 
-`AAI-566 <https://jira.onap.org/browse/AAI-566>`_
+- `AAI-566 <https://jira.onap.org/browse/AAI-566>`_
 AAI Eclipse build failure - aai-traversal pom as hardcoded 1.8.0_101 jdk.tools version
 
-`AAI-621 <https://jira.onap.org/browse/AAI-621>`_
+- `AAI-621 <https://jira.onap.org/browse/AAI-621>`_
 Update the snapshot in test-config for v1.1.1-SNAPSHOT
 	       
 Version: 1.1.0
@@ -370,154 +381,154 @@ Source code of AAI is released under the following repositories at https://gerri
 
 **Bug Fixes**
 
-`AAI-11 <https://jira.onap.org/browse/AAI-11>`_
+- `AAI-11 <https://jira.onap.org/browse/AAI-11>`_
 robot_vm: demo.sh failing - '200' does not match '^(201|412)$' on vanilla openstack
 
-`AAI-13 <https://jira.onap.org/browse/AAI-13>`_
+- `AAI-13 <https://jira.onap.org/browse/AAI-13>`_
 VM_init is failing to get sparky
 
-`AAI-31 <https://jira.onap.org/browse/AAI-31>`_
+- `AAI-31 <https://jira.onap.org/browse/AAI-31>`_
 Compilation failure in aai-traversal
 
-`AAI-48 <https://jira.onap.org/browse/AAI-48>`_
+- `AAI-48 <https://jira.onap.org/browse/AAI-48>`_
 AAI Common REST Client returns an error on a 204 (No Content) server response
 
-`AAI-49 <https://jira.onap.org/browse/AAI-49>`_
+- `AAI-49 <https://jira.onap.org/browse/AAI-49>`_
 Health check is failing in DFW 1.1 RS. Connection refused
 
-`AAI-62 <https://jira.onap.org/browse/AAI-62>`_
+- `AAI-62 <https://jira.onap.org/browse/AAI-62>`_
 Search Data Service should not implicitly create indexes on document write
 
-`AAI-63 <https://jira.onap.org/browse/AAI-63>`_
+- `AAI-63 <https://jira.onap.org/browse/AAI-63>`_
 Data Router must handle Search Service document create failures if index does not exit
 
-`AAI-73 <https://jira.onap.org/browse/AAI-73>`_
+- `AAI-73 <https://jira.onap.org/browse/AAI-73>`_
 Sparky sync issues
 
-`AAI-76 <https://jira.onap.org/browse/AAI-76>`_
+- `AAI-76 <https://jira.onap.org/browse/AAI-76>`_
 Jenkins stage-site builds failing on resources and traversal
 
-`AAI-94 <https://jira.onap.org/browse/AAI-94>`_
+- `AAI-94 <https://jira.onap.org/browse/AAI-94>`_
 AAI Certificate will expire 30 Nov 2017 - fyi
 
-`AAI-146 <https://jira.onap.org/browse/AAI-146>`_
+- `AAI-146 <https://jira.onap.org/browse/AAI-146>`_
 Both esr-server and esr-gui Jenkins failed
 
-`AAI-192 <https://jira.onap.org/browse/AAI-192>`_
+- `AAI-192 <https://jira.onap.org/browse/AAI-192>`_
 Model Loader depends on httpclient version 4.4.1
 
-`AAI-205 <https://jira.onap.org/browse/AAI-205>`_
+- `AAI-205 <https://jira.onap.org/browse/AAI-205>`_
 Having an invalid xml namespace for v11, named-query api returns 500 error, model query return incorrect error message
 
-`AAI-206 <https://jira.onap.org/browse/AAI-206>`_
+- `AAI-206 <https://jira.onap.org/browse/AAI-206>`_
 Model based delete is failing
 
-`AAI-217 <https://jira.onap.org/browse/AAI-217>`_
+- `AAI-217 <https://jira.onap.org/browse/AAI-217>`_
 Remove internal references from A&AI seed code
 
-`AAI-222 <https://jira.onap.org/browse/AAI-222>`_
+- `AAI-222 <https://jira.onap.org/browse/AAI-222>`_
 the version property of esr-server is incorrect
 
-`AAI-224 <https://jira.onap.org/browse/AAI-224>`_
+- `AAI-224 <https://jira.onap.org/browse/AAI-224>`_
 aai/esr-gui daily build failed
 
-`AAI-225 <https://jira.onap.org/browse/AAI-225>`_
+- `AAI-225 <https://jira.onap.org/browse/AAI-225>`_
 aai/esr-server daily build failed
 
-`AAI-265 <https://jira.onap.org/browse/AAI-265>`_
+- `AAI-265 <https://jira.onap.org/browse/AAI-265>`_
 EdgePropertyMap throws NullPointer if edge rule does not include property
 
-`AAI-266 <https://jira.onap.org/browse/AAI-266>`_
+- `AAI-266 <https://jira.onap.org/browse/AAI-266>`_
 auth-info edge rule does not include contains-other-v
 
-`AAI-273 <https://jira.onap.org/browse/AAI-273>`_
+- `AAI-273 <https://jira.onap.org/browse/AAI-273>`_
 Fix the esr-server setup error issue
 
-`AAI-278 <https://jira.onap.org/browse/AAI-278>`_
+- `AAI-278 <https://jira.onap.org/browse/AAI-278>`_
 AAI throws exception about mismatch keys adding esr-system-info to cloud-region
 
-`AAI-293 <https://jira.onap.org/browse/AAI-293>`_
+- `AAI-293 <https://jira.onap.org/browse/AAI-293>`_
 Jenkins job failing for aai-sparky-fe-master-release-version-java-daily
 
-`AAI-377 <https://jira.onap.org/browse/AAI-377>`_
+- `AAI-377 <https://jira.onap.org/browse/AAI-377>`_
 esr-gui docker build failed
 
-`AAI-393 <https://jira.onap.org/browse/AAI-393>`_
+- `AAI-393 <https://jira.onap.org/browse/AAI-393>`_
 The jjb defiend in a error way that cause CSIT build failed.
 
-`AAI-398 <https://jira.onap.org/browse/AAI-398>`_
+- `AAI-398 <https://jira.onap.org/browse/AAI-398>`_
 If a cloud-region didn't contain a external system info, there will be an null pointer error
 
-`AAI-400 <https://jira.onap.org/browse/AAI-400>`_
+- `AAI-400 <https://jira.onap.org/browse/AAI-400>`_
 Register ServiceTest to microservice
 
-`AAI-401 <https://jira.onap.org/browse/AAI-401>`_
+- `AAI-401 <https://jira.onap.org/browse/AAI-401>`_
 Remove DMaaP router duplication
 
-`AAI-407 <https://jira.onap.org/browse/AAI-407>`_
+- `AAI-407 <https://jira.onap.org/browse/AAI-407>`_
 There is an error to startup esr-gui docker
 
-`AAI-412 <https://jira.onap.org/browse/AAI-412>`_
+- `AAI-412 <https://jira.onap.org/browse/AAI-412>`_
 Replace the type specification in this constructor call with the diamond operator ("<>")
 
-`AAI-417 <https://jira.onap.org/browse/AAI-417>`_
+- `AAI-417 <https://jira.onap.org/browse/AAI-417>`_
 Rackspace 20170928 fails to authenticate nexus3 on 10003 during *_init.sh* (sdnc for example)
 
-`AAI-420 <https://jira.onap.org/browse/AAI-420>`_
+- `AAI-420 <https://jira.onap.org/browse/AAI-420>`_
 Can not get the MSB address in esr-server
 
-`AAI-422 <https://jira.onap.org/browse/AAI-422>`_
+- `AAI-422 <https://jira.onap.org/browse/AAI-422>`_
 The esr-server csit failed
 
-`AAI-424 <https://jira.onap.org/browse/AAI-424>`_
+- `AAI-424 <https://jira.onap.org/browse/AAI-424>`_
 The integration catalog is not in use, should be removed
 
-`AAI-425 <https://jira.onap.org/browse/AAI-425>`_
+- `AAI-425 <https://jira.onap.org/browse/AAI-425>`_
 Fix the artifact of esr-gui
 
-`AAI-426 <https://jira.onap.org/browse/AAI-426>`_
+- `AAI-426 <https://jira.onap.org/browse/AAI-426>`_
 Fix the artifact of esr-server
 
-`AAI-431 <https://jira.onap.org/browse/AAI-431>`_
+- `AAI-431 <https://jira.onap.org/browse/AAI-431>`_
 esr-gui files did not contained in webapp of tomcat
 
-`AAI-433 <https://jira.onap.org/browse/AAI-433>`_
+- `AAI-433 <https://jira.onap.org/browse/AAI-433>`_
 Failed to pre-load vCPE data to AAI. No response from AAI
 
-`AAI-434 <https://jira.onap.org/browse/AAI-434>`_
+- `AAI-434 <https://jira.onap.org/browse/AAI-434>`_
 Can not visit ESR portal with demo deployment
 
-`AAI-435 <https://jira.onap.org/browse/AAI-435>`_
+- `AAI-435 <https://jira.onap.org/browse/AAI-435>`_
 default tenant need be input to A&AI while register VIM
 
-`AAI-436 <https://jira.onap.org/browse/AAI-436>`_
+- `AAI-436 <https://jira.onap.org/browse/AAI-436>`_
 Call the API from MultiCloud failed
 
-`AAI-440 <https://jira.onap.org/browse/AAI-440>`_
+- `AAI-440 <https://jira.onap.org/browse/AAI-440>`_
 The version input box should be changed in a more easy to use when register a VIM
 
-`AAI-441 <https://jira.onap.org/browse/AAI-441>`_
+- `AAI-441 <https://jira.onap.org/browse/AAI-441>`_
 Can not input the vendor and version information to EMS, but there is a default data for the two parameter
 
-`AAI-442 <https://jira.onap.org/browse/AAI-442>`_
+- `AAI-442 <https://jira.onap.org/browse/AAI-442>`_
 Can't instantiate a service
 
-`AAI-444 <https://jira.onap.org/browse/AAI-444>`_
+- `AAI-444 <https://jira.onap.org/browse/AAI-444>`_
 Cannot associate multiple service-instances to PNFs
 
-`AAI-446 <https://jira.onap.org/browse/AAI-446>`_
+- `AAI-446 <https://jira.onap.org/browse/AAI-446>`_
 vnf to esr-system-info named-query is missing vnfc
 
-`AAI-448 <https://jira.onap.org/browse/AAI-448>`_
+- `AAI-448 <https://jira.onap.org/browse/AAI-448>`_
 Remove snapshot dependencies from aai-common, data-router, and rest-client
 
-`AAI-450 <https://jira.onap.org/browse/AAI-450>`_
+- `AAI-450 <https://jira.onap.org/browse/AAI-450>`_
 Named Query needs to be updated to return VNFC Info
 
-`AAI-453 <https://jira.onap.org/browse/AAI-453>`_
+- `AAI-453 <https://jira.onap.org/browse/AAI-453>`_
 Fix stage-site jenkins job for aai-common
 
-`AAI-454 <https://jira.onap.org/browse/AAI-454>`_
+- `AAI-454 <https://jira.onap.org/browse/AAI-454>`_
 LoggingContext.requestId required NULL handling in aai/aai-common (20170607) - during demo.sh init_customer
 
 **Known Issues**
