@@ -281,6 +281,10 @@ Source code of AAI is released under the following repositories at https://gerri
 
 - `AAI-1153 <https://jira.onap.org/browse/AAI-1153>`_ [Champ] Bump to 1.2.2-SNAPSHOT and 1.2.2 in version.properties
 
+**Known Issues**
+
+If the either the aai-resources or aai-traversal pod is deleted, haproxy will not automatically detect when the pod is re-instantiated.  As a temporary workaround, you can delete the haproxy pod (the one named "aai", for example, "dev-aai-8794fbff5-clx7d") and when the aai pod restarts the service should operate normally. A proposed fix is here: https://gerrit.onap.org/r/#/c/51075/1 if you want to see how to configure the haproxy service to auto-recover when the IP address of either the aai-resources or aai-traversal pod changes.
+
 **Security Notes**
 
 AAI code has been formally scanned during build time using NexusIQ and all Critical vulnerabilities have been addressed, items that remain open have been assessed for risk and determined to be false positive. The AAI open Critical security vulnerabilities and their risk assessment have been documented as part of the `project <https://wiki.onap.org/pages/viewpage.action?pageId=25441383>`_.
