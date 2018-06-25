@@ -24,19 +24,35 @@ import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.onap.aai.dmaap.AAIDmaapEventJMSConsumer;
 import org.onap.aai.dmaap.AAIDmaapEventJMSProducer;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpHeaders;
 import org.springframework.jms.connection.CachingConnectionFactory;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 
 import javax.annotation.PostConstruct;
+import org.springframework.web.client.RestTemplate;
 
 @Profile("dmaap")
 @Configuration
 public class DmaapConfig {
+
+    @Autowired
+    private ApplicationContext ctx;
+
+    @Autowired
+    @Qualifier("dmaapRestTemplate")
+    private RestTemplate dmaapRestTemplate;
+
+    @Autowired
+    @Qualifier("dmaapHeaders")
+    private HttpHeaders dmaapHeaders;
 
     @Value("${jms.bind.address}")
     private String bindAddress;
@@ -89,9 +105,9 @@ public class DmaapConfig {
         return new AAIDmaapEventJMSProducer();
     }
 
-    @Bean
+    @Bean(name="jmsConsumer")
     public AAIDmaapEventJMSConsumer jmsConsumer() throws Exception {
-        return new AAIDmaapEventJMSConsumer();
+        return new AAIDmaapEventJMSConsumer(ctx.getEnvironment(), dmaapRestTemplate, dmaapHeaders);
     }
 
     @Bean
