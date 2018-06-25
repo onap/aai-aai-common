@@ -21,25 +21,23 @@ package org.onap.aai.dmaap;
 
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
+import java.util.Objects;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageListener;
+import javax.jms.TextMessage;
 import org.apache.log4j.MDC;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.onap.aai.config.SpringContextAware;
 import org.onap.aai.logging.LogFormatTools;
 import org.onap.aai.logging.LoggingContext;
 import org.onap.aai.logging.LoggingContext.LoggingField;
 import org.onap.aai.logging.LoggingContext.StatusCode;
-import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.client.RestTemplate;
-
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageListener;
-import javax.jms.TextMessage;
 
 public class AAIDmaapEventJMSConsumer implements MessageListener {
 
@@ -51,14 +49,13 @@ public class AAIDmaapEventJMSConsumer implements MessageListener {
 
 	private Environment environment;
 
-	public AAIDmaapEventJMSConsumer() {
-        ApplicationContext applicationContext  = SpringContextAware.getApplicationContext();
-
-        if(applicationContext != null){
-			restTemplate = (RestTemplate) applicationContext.getBean("dmaapRestTemplate");
-			httpHeaders  = (HttpHeaders) applicationContext.getBean("dmaapHeaders");
-			environment  = applicationContext.getEnvironment();
-		}
+	public AAIDmaapEventJMSConsumer(Environment environment, RestTemplate restTemplate, HttpHeaders httpHeaders) {
+		Objects.nonNull(environment);
+		Objects.nonNull(restTemplate);
+		Objects.nonNull(httpHeaders);
+		this.environment = environment;
+		this.restTemplate = restTemplate;
+		this.httpHeaders = httpHeaders;
 	}
 
 	@Override
