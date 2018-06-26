@@ -56,7 +56,7 @@ public class StoreNotificationEvent {
 	 * Instantiates a new store notification event.
 	 */
 	public StoreNotificationEvent(String transactionId, String sourceOfTruth) {
-	    this.messageProducer = new AAIDmaapEventJMSProducer();
+	    this.messageProducer = AAIDmaapEventJMSProducer.Factory.createInstance();
         this.transactionId   = transactionId;
         this.sourceOfTruth   = sourceOfTruth;
 	}

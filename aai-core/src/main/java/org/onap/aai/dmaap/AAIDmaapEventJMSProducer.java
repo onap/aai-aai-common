@@ -19,35 +19,42 @@
  */
 package org.onap.aai.dmaap;
 
+import java.util.Optional;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.json.JSONObject;
-import org.onap.aai.config.SpringContextAware;
 import org.onap.aai.util.AAIConfig;
-import org.springframework.context.ApplicationContext;
 import org.springframework.jms.connection.CachingConnectionFactory;
 import org.springframework.jms.core.JmsTemplate;
 
 public class AAIDmaapEventJMSProducer implements MessageProducer {
 
-	private JmsTemplate jmsTemplate;
+	private final Optional<JmsTemplate> jmsTemplate;
 
-	private ApplicationContext applicationContext;
-
-	public AAIDmaapEventJMSProducer() {
-		if(AAIConfig.get("aai.jms.enable", "true").equals("true")){
-            this.jmsTemplate = new JmsTemplate();
-            String activeMqTcpUrl = System.getProperty("activemq.tcp.url", "tcp://localhost:61547");
-            this.jmsTemplate.setConnectionFactory(new CachingConnectionFactory(new ActiveMQConnectionFactory(activeMqTcpUrl)));
-            this.jmsTemplate.setDefaultDestination(new ActiveMQQueue("IN_QUEUE"));
-		}
+	AAIDmaapEventJMSProducer(Optional<JmsTemplate> jmsTemplate) {
+		this.jmsTemplate = jmsTemplate;
 	}
 
 	public void sendMessageToDefaultDestination(JSONObject finalJson) {
-		if(jmsTemplate != null){
+		jmsTemplate.ifPresent( jmsTemplate -> {
 			jmsTemplate.convertAndSend(finalJson.toString());
-			CachingConnectionFactory ccf = (CachingConnectionFactory) this.jmsTemplate.getConnectionFactory();
+			CachingConnectionFactory ccf = (CachingConnectionFactory) jmsTemplate.getConnectionFactory();
 			ccf.destroy();
+		});
+	}
+
+	public static class Factory {
+
+		public static AAIDmaapEventJMSProducer createInstance() {
+			JmsTemplate jmsTemplate = null;
+			if (AAIConfig.get("aai.jms.enable", "true").equals("true")) {
+				jmsTemplate = new JmsTemplate();
+				String activeMqTcpUrl = System.getProperty("activemq.tcp.url", "tcp://localhost:61547");
+				jmsTemplate.setConnectionFactory(new CachingConnectionFactory(new ActiveMQConnectionFactory(activeMqTcpUrl)));
+				jmsTemplate.setDefaultDestination(new ActiveMQQueue("IN_QUEUE"));
+			}
+
+			return new AAIDmaapEventJMSProducer(Optional.ofNullable(jmsTemplate));
 		}
 	}
 }

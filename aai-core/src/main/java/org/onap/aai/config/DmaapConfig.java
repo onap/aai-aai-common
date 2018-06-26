@@ -86,7 +86,7 @@ public class DmaapConfig {
 
     @Bean
     public AAIDmaapEventJMSProducer jmsProducer(){
-        return new AAIDmaapEventJMSProducer();
+        return AAIDmaapEventJMSProducer.Factory.createInstance();
     }
 
     @Bean
