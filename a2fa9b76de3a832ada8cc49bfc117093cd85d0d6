@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_d1b2b948",
+        "filename": "aai-core/src/main/java/org/onap/aai/config/SpringContextAware.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 75
+      },
+      "writtenOn": "2018-06-27T13:13:11Z",
+      "side": 1,
+      "message": "We need this class as this being used by resources and traversal microservice to get the beans",
+      "revId": "a2fa9b76de3a832ada8cc49bfc117093cd85d0d6",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
