@@ -22,17 +22,12 @@
 
 package org.onap.aai.edges;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.tinkerpop.gremlin.structure.Direction;
-import org.onap.aai.edges.enums.AAIDirection;
 import org.onap.aai.edges.enums.DirectionNotation;
 import org.onap.aai.edges.enums.EdgeField;
 import org.onap.aai.edges.enums.EdgeType;
@@ -49,7 +44,6 @@ import com.jayway.jsonpath.Criteria;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.Filter;
 import static com.jayway.jsonpath.Filter.filter;
-import com.jayway.jsonpath.JsonPath;
 import static com.jayway.jsonpath.Criteria.where;
 
 @Component
