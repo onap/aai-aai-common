@@ -117,26 +117,25 @@ public class PutRelationPathSet {
 		}
 	}
 	private void writeRelationsFile() {
-		File examplefilePath = new File(GenerateXsd.getYamlDir() + "/relations/" + version.name()+"/"+opId.replace("RelationshipListRelationship", "") + ".json");
 
-		logger.debug(String.join("exampleFilePath: ", examplefilePath.toString()));
-		FileOutputStream fop = null;
+		File exampleFilePath = new File(GenerateXsd.getYamlDir() + "/relations/" + version.name()+"/"+opId.replace("RelationshipListRelationship", "") + ".json");
+		logger.debug(String.join("exampleFilePath: ", exampleFilePath.toString()));
+
 		try {
-			if (!examplefilePath.exists()) {
-				examplefilePath.getParentFile().mkdirs();
-				examplefilePath.createNewFile();
+			if (!exampleFilePath.exists()) {
+				exampleFilePath.getParentFile().mkdirs();
+				exampleFilePath.createNewFile();
 			}
-			fop = new FileOutputStream(examplefilePath);
 		} catch(Exception e) {
 			e.printStackTrace();
 			return;
 		}
-		try {
+
+		try(FileOutputStream fop = new FileOutputStream(exampleFilePath)){
 			if(relations.size() > 0) {fop.write("[\n".getBytes());}
 			fop.write(String.join(",\n", relations).getBytes());
 			if(relations.size() > 0) {fop.write("\n]\n".getBytes());}
 			fop.flush();
-			fop.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 			return;

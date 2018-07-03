@@ -140,48 +140,30 @@ public class GenerateEdgeRules {
 
             Configuration configuration = new Configuration();
             Template template = configuration.getTemplate("src/main/resources/edgerulesTemplate.ftlh");
-            Writer file = new FileWriter(new File("src/main/resources/EdgeRulesWithNewLabels_v12.json"));
-            Map<String, List<EdgeRuleBean>> wrappedRules = new HashMap<>();
-    		wrappedRules.put("wrappedRules", rulesToWriteV12);
-    		template.process(wrappedRules, file);
-    		file.close();
 
-    		file = new FileWriter(new File("src/main/resources/EdgeRulesWithNewLabels_v7.json"));
-            wrappedRules = new HashMap<>();
-       		wrappedRules.put("wrappedRules", rulesToWriteV7);
-       		template.process(wrappedRules, file);
-       		file.close();
-
-    		file = new FileWriter(new File("src/main/resources/EdgeRulesWithNewLabels_v8.json"));
-            wrappedRules = new HashMap<>();
-       		wrappedRules.put("wrappedRules", rulesToWriteV8);
-       		template.process(wrappedRules, file);
-       		file.close();
-
-
-    		file = new FileWriter(new File("src/main/resources/EdgeRulesWithNewLabels_v9.json"));
-            wrappedRules = new HashMap<>();
-       		wrappedRules.put("wrappedRules", rulesToWriteV9);
-       		template.process(wrappedRules, file);
-       		file.close();
-
-    		file = new FileWriter(new File("src/main/resources/EdgeRulesWithNewLabels_v10.json"));
-            wrappedRules = new HashMap<>();
-       		wrappedRules.put("wrappedRules", rulesToWriteV10);
-       		template.process(wrappedRules, file);
-       		file.close();
-
-    		file = new FileWriter(new File("src/main/resources/EdgeRulesWithNewLabels_v11.json"));
-            wrappedRules = new HashMap<>();
-       		wrappedRules.put("wrappedRules", rulesToWriteV11);
-       		template.process(wrappedRules, file);
-       		file.close();
+            saveRulesIntoTheFile("src/main/resources/EdgeRulesWithNewLabels_v12.json", template, rulesToWriteV12);
+            saveRulesIntoTheFile("src/main/resources/EdgeRulesWithNewLabels_v7.json", template, rulesToWriteV7);
+            saveRulesIntoTheFile("src/main/resources/EdgeRulesWithNewLabels_v8.json", template, rulesToWriteV8);
+            saveRulesIntoTheFile("src/main/resources/EdgeRulesWithNewLabels_v9.json", template, rulesToWriteV9);
+            saveRulesIntoTheFile("src/main/resources/EdgeRulesWithNewLabels_v10.json", template, rulesToWriteV10);
+            saveRulesIntoTheFile("src/main/resources/EdgeRulesWithNewLabels_v11.json", template, rulesToWriteV11);
 
         } catch(Exception ex){
             ex.printStackTrace();
         }
 
 
+    }
+
+    private static void saveRulesIntoTheFile(String filePath, Template fileTemplate, List<EdgeRuleBean> rulesToWrite)
+        throws IOException, TemplateException {
+
+
+        try (Writer file = new FileWriter(new File(filePath))) {
+            Map<String, List<EdgeRuleBean>> wrappedRules = new HashMap<>();
+            wrappedRules.put("wrappedRules", rulesToWrite);
+            fileTemplate.process(wrappedRules, file);
+        }
     }
 
     private static Map<String, Integer> retrieveHeaderMap(String line){
