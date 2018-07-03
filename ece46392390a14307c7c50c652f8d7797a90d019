@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_a8c21751",
+        "filename": "aai-schema-ingest/src/main/java/org/onap/aai/edges/EdgeIngestor.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3433
+      },
+      "writtenOn": "2018-07-03T08:48:14Z",
+      "side": 1,
+      "message": "You should use valid name of commit message.\nYou removed unused imports, not refactor the code.",
+      "revId": "ece46392390a14307c7c50c652f8d7797a90d019",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
