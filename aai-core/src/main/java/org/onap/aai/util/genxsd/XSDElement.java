@@ -58,8 +58,6 @@ public class XSDElement implements Element {
             if ( attrName.equals("type")) {
              	if ( attrValue.contains(apiVersionFmt) ) {
             		addType = attrValue.substring(attrValue.lastIndexOf('.')+1);
-            		if ( addTypeV == null ) 
-            			addTypeV = new Vector<String>();
             		addTypeV.add(addType);
             	}
             		
