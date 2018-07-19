@@ -28,11 +28,12 @@ public enum Version {
 	v10,
 	v11,
 	v12,
-	v13;
+	v13,
+	v14;
 
-	public static final String VERSION_EXPRESSION = "v8|v9|v10|v11|v12|v13|latest";
-	public static final String VERSION_EXPRESSION_V8_PLUS = "v8|v9|v10|v11|v12|v13|latest";
-	public static final String VERSION_EXPRESSION_V9_PLUS = "v9|v10|v11|v12|v13|latest";
+	public static final String VERSION_EXPRESSION = "v8|v9|v10|v11|v12|v13|v14|latest";
+	public static final String VERSION_EXPRESSION_V8_PLUS = "v8|v9|v10|v11|v12|v13|v14|latest";
+	public static final String VERSION_EXPRESSION_V9_PLUS = "v9|v10|v11|v12|v13|v14|latest";
 
 	/**
 	 * Checks if v is the latest version
