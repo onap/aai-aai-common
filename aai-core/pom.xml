@@ -34,7 +34,7 @@
     <version>1.3.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <properties>
-        <gendoc.version>v12</gendoc.version>
+        <gendoc.version>v14</gendoc.version>
         <aai.wiki.link>https://wiki.onap.org/</aai.wiki.link>
         <sonar.language>java</sonar.language>
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
