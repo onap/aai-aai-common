@@ -119,11 +119,12 @@ public class HttpsAuthExternalClient {
 			
 			String alg = TrustManagerFactory.getDefaultAlgorithm();
 			TrustManagerFactory tmf = TrustManagerFactory.getInstance(alg);
-			FileInputStream tin = new FileInputStream(truststore_path);
-			KeyStore ts = KeyStore.getInstance("PKCS12");
-			char[] tpwd = truststore_password.toCharArray();
-			ts.load(tin, tpwd);
-			tmf.init(ts);
+			try(FileInputStream tin = new FileInputStream(truststore_path)) {
+				KeyStore ts = KeyStore.getInstance("PKCS12");
+				char[] tpwd = truststore_password.toCharArray();
+				ts.load(tin, tpwd);
+				tmf.init(ts);
+			}
 	
 			//ctx.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
 			// Updating key manager to null, to disable two way SSL

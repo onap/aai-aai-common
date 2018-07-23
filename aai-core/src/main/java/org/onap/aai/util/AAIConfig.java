@@ -143,8 +143,7 @@ public class AAIConfig {
         
         LOGGER.debug("Reloading config from " + propFileName);
         
-        try {
-            InputStream is = new FileInputStream(propFileName);
+        try(InputStream is = new FileInputStream(propFileName)){
             newServerProps = new Properties();
             newServerProps.load(is);
             propsInitialized = true;
