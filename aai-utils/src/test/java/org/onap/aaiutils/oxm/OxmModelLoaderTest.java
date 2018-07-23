@@ -19,14 +19,33 @@
  */
 package org.onap.aaiutils.oxm;
 
+import java.util.regex.Pattern;
+import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
+import org.junit.rules.ExpectedException;
 
 public class OxmModelLoaderTest {
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
+
     @Test
-    public void loadModels() throws Exception {
-        OxmModelLoader.loadModels();
-        assertTrue( OxmModelLoader.getVersionContextMap().size() > 0);
+    public void shouldLoadOxmModelsWhichMatchToPattern() throws Exception {
+        OxmModelLoader.loadModels("classpath*:test_aai_oxm*.xml", Pattern.compile("test_aai_oxm_(.*).xml"));
+
+        Assert.assertTrue(OxmModelLoader.getVersionContextMap().size() == 2);
+        Assert.assertFalse(OxmModelLoader.getVersionContextMap().containsKey("v7"));
+        Assert.assertTrue(OxmModelLoader.getVersionContextMap().containsKey("v8"));
+        Assert.assertTrue(OxmModelLoader.getVersionContextMap().containsKey("v9"));
     }
+
+    @Test
+    public void shouldReportAnErrorWhenOxmModelsAreNotAvailable() throws Exception {
+        thrown.expect(Exception.class);
+        thrown.expectMessage("Failed to load schema");
+
+        OxmModelLoader.loadModels("classpath*:non_existing_aai_oxm*.xml", Pattern.compile("non_existing_aai_oxm_(.*).xml"));
+    }
+
 }
