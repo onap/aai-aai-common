@@ -1,0 +1,9 @@
+Verified+1: ONAP Jobbuilder <onap-jobbuilder@jenkins.onap.org>
+Code-Review+1: Justyna Czestochowska <justyna.czestochowska@nokia.com>
+Code-Review+1: Wiktor Garbarek <wiktor.garbarek@nokia.com>
+Code-Review+2: Steven Blimkie <Steven.Blimkie@amdocs.com>
+Submitted-by: Steven Blimkie <Steven.Blimkie@amdocs.com>
+Submitted-at: Mon, 23 Jul 2018 13:42:00 +0000
+Reviewed-on: https://gerrit.onap.org/r/55249
+Project: aai/aai-common
+Branch: refs/heads/master
