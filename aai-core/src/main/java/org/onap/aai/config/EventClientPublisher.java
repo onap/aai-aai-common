@@ -67,12 +67,12 @@ public class EventClientPublisher {
     @Value("${dmaap.ribbon.contentType:application/json}")
     private String contentType;
 
-    @Bean
+    @Bean(name="dmaapRestTemplate")
     public RestTemplate dmaapRestTemplate(){
         return new RestTemplate();
     }
 
-    @Bean
+    @Bean(name="dmaapHeaders")
     public HttpHeaders dmaapHeaders() throws UnsupportedEncodingException
     {
 

@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,17 +22,13 @@ package org.onap.aai.dmaap;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.json.JSONObject;
-import org.onap.aai.config.SpringContextAware;
 import org.onap.aai.util.AAIConfig;
-import org.springframework.context.ApplicationContext;
 import org.springframework.jms.connection.CachingConnectionFactory;
 import org.springframework.jms.core.JmsTemplate;
 
 public class AAIDmaapEventJMSProducer implements MessageProducer {
 
 	private JmsTemplate jmsTemplate;
-
-	private ApplicationContext applicationContext;
 
 	public AAIDmaapEventJMSProducer() {
 		if(AAIConfig.get("aai.jms.enable", "true").equals("true")){
