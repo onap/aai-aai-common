@@ -7266,10 +7266,17 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
     <xs:complexType>
       <xs:annotation>
         <xs:appinfo>
-          <annox:annotate target="class">@org.onap.aai.annotations.Metadata(description="General mechanism for grouping instances",nameProps="description",uniqueProps="id",searchable="id,description",indexedProps="id,description,type,sub-type",container="instance-groups",namespace="network")</annox:annotate>
+          <annox:annotate target="class">@org.onap.aai.annotations.Metadata(description="General mechanism for grouping instances",nameProps="description,instance-group-name",uniqueProps="id",searchable="id,description",indexedProps="id,description,type,sub-type,model-invariant-id,model-version-id",container="instance-groups",namespace="network")</annox:annotate>
         </xs:appinfo>
       </xs:annotation>
       <xs:sequence>
+        <xs:element name="id" type="xs:string">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(isKey=true,description="Instance Group ID, UUID assigned to this instance.")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
         <xs:element name="instance-group-role" type="xs:string" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
@@ -7280,21 +7287,14 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
         <xs:element name="model-invariant-id" type="xs:string" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
-              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="ASDC model id for this resource or service model.")</annox:annotate>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="ASDC model id for this resource or service model.",visibility="deployment",requires="model-version-id",dbAlias="model-invariant-id-local")</annox:annotate>
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
         <xs:element name="model-version-id" type="xs:string" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
-              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="ASDC model version uid for this resource model.")</annox:annotate>
-            </xs:appinfo>
-          </xs:annotation>
-        </xs:element>
-        <xs:element name="id" type="xs:string">
-          <xs:annotation>
-            <xs:appinfo>
-              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(isKey=true,description="Instance Group ID, UUID assigned to this instance.")</annox:annotate>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="ASDC model version uid for this resource model.",visibility="deployment",requires="model-invariant-id",dbAlias="model-version-id-local")</annox:annotate>
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
@@ -7305,17 +7305,10 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
-        <xs:element name="type" type="xs:string">
+        <xs:element name="instance-group-type" type="xs:string">
           <xs:annotation>
             <xs:appinfo>
               <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="Only valid value today is lower case ha for high availability")</annox:annotate>
-            </xs:appinfo>
-          </xs:annotation>
-        </xs:element>
-        <xs:element name="sub-type" type="xs:string" minOccurs="0">
-          <xs:annotation>
-            <xs:appinfo>
-              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="Valid values for ha type are [geo-activeactive, geo-activestandby, local-activeactive, local-activestandby]")</annox:annotate>
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
@@ -7323,6 +7316,20 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
           <xs:annotation>
             <xs:appinfo>
               <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="Concurrency value")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="instance-group-name" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="Instance-Group Name.")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="instance-group-function" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="Instance-Group Function")</annox:annotate>
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
@@ -7831,7 +7838,7 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
         <xs:element name="model-version-id" type="xs:string" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
-              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="Model Version",visibility="deployment",requires="model-invariant-id",dbAlias="model-version-id-local",privateEdge="service-design-and-creation/models/model/{model-invariant-id}/model-vers/model-ver/{model-version-id}")</annox:annotate>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="Model Version",visibility="deployment",requires="model-invariant-id",dbAlias="model-version-id-local")</annox:annotate>
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
