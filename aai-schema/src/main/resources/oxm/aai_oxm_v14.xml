@@ -5880,6 +5880,13 @@
 		<java-type name="InstanceGroup">
 			<xml-root-element name="instance-group" />
 			<java-attributes>
+			
+			<xml-element java-attribute="id" name="id" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="Instance Group ID, UUID assigned to this instance." />
+					</xml-properties>
+				</xml-element>
+				
 				<xml-element java-attribute="instanceGroupRole" name="instance-group-role" required="false" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="role of the instance group." />
@@ -5889,17 +5896,19 @@
 				<xml-element java-attribute="modelInvariantId" name="model-invariant-id" required="false" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="ASDC model id for this resource or service model." />
+						<xml-property name="visibility" value="deployment" />
+						<xml-property name="requires" value="model-version-id" />
+						<xml-property name="dbAlias" value="model-invariant-id-local" />
 					</xml-properties>
 				</xml-element>
 
 				<xml-element java-attribute="modelVersionId" name="model-version-id" required="false" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="ASDC model version uid for this resource model." />
-					</xml-properties>
-				</xml-element>
-				<xml-element java-attribute="id" name="id" required="true" type="java.lang.String" xml-key="true">
-					<xml-properties>
-						<xml-property name="description" value="Instance Group ID, UUID assigned to this instance." />
+						<xml-property name="visibility" value="deployment" />
+						<xml-property name="requires" value="model-invariant-id" />
+						<xml-property name="dbAlias" value="model-version-id-local" />
+						<xml-property name="privateEdge" value="service-design-and-creation/models/model/{model-invariant-id}/model-vers/model-ver/{model-version-id}" />
 					</xml-properties>
 				</xml-element>
 				<xml-element java-attribute="description" name="description" required="true" type="java.lang.String">
@@ -5907,14 +5916,9 @@
 						<xml-property name="description" value="Descriptive text to help identify the usage of this instance-group" />
 					</xml-properties>
 				</xml-element>
-				<xml-element java-attribute="type" name="type" required="true" type="java.lang.String">
+				<xml-element java-attribute="instanceGroupType" name="instance-group-type" required="true" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Only valid value today is lower case ha for high availability" />
-					</xml-properties>
-				</xml-element>
-				<xml-element java-attribute="subType" name="sub-type"  type="java.lang.String">
-					<xml-properties>
-						<xml-property name="description" value="Valid values for ha type are [geo-activeactive, geo-activestandby, local-activeactive, local-activestandby]" />
 					</xml-properties>
 				</xml-element>
 				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
@@ -5922,20 +5926,31 @@
 						<xml-property name="description" value="Concurrency value" />
 					</xml-properties>
 				</xml-element>
+				
+				<xml-element java-attribute="instanceGroupName" name="instance-group-name" required="false" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Instance-Group Name." />
+					</xml-properties>
+				</xml-element>
+				
+				<xml-element java-attribute="instanceGroupFunction" name="instance-group-function" required="false" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Instance-Group Function" />
+					</xml-properties>
+				</xml-element>
 				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v14.RelationshipList" />
 			</java-attributes>
 			
 			<xml-properties>
 				<xml-property name="description" value="General mechanism for grouping instances" />
-				<xml-property name="nameProps" value="description" />
+				<xml-property name="nameProps" value="description,instance-group-name" />
 				<xml-property name="uniqueProps" value="id" />
 				<xml-property name="searchable" value="id,description"/>
-				<xml-property name="indexedProps" value="id,description,type,sub-type" />
+				<xml-property name="indexedProps" value="id,description,type,sub-type,model-invariant-id,model-version-id" />
 				<xml-property name="container" value="instance-groups" />
 				<xml-property name="namespace" value="network" />
 			</xml-properties>
 		</java-type>
-		
 
 		<java-type name="SegmentationAssignments">
 			<xml-properties>
