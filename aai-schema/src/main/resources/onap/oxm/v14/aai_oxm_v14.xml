@@ -475,6 +475,11 @@
                                                <xml-property name="description" value="the status of external system." />
                                        </xml-properties>
                                </xml-element>
+                               <xml-element java-attribute="openstackRegionId" name="openstack-region-id" type="java.lang.String">
+                                       <xml-properties>
+	                                           <xml-property name="description" value="OpenStack region ID used by MultiCloud plugin to interact with an OpenStack instance." />
+                                       </xml-properties>
+                               </xml-element>
                                <xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
                                        <xml-properties>
                                                <xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
