@@ -26,6 +26,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -143,101 +144,67 @@ public class DataGrooming {
 
 		if (args.length > 0) {
 			// They passed some arguments in that will affect processing
-			for (int i = 0; i < args.length; i++) {
-				String thisArg = args[i];
-				if ("-edgesOnly".equals(thisArg)) {
-					edgesOnlyFlag = true;
-				} else if (thisArg.equals("-autoFix")) {
-					doAutoFix = true;
-				} else if ("-skipHostCheck".equals(thisArg)) {
-					skipHostCheck = true;
-				} else if ("-dontFixOrphans".equals(thisArg)) {
-					dontFixOrphansFlag = true;
-				} else if ("-singleCommits".equals(thisArg)) {
-					singleCommits = true;
-				} else if ("-dupeCheckOff".equals(thisArg)) {
-					dupeCheckOff = true;
-				} else if ("-dupeFixOn".equals(thisArg)) {
-					dupeFixOn = true;
-				} else if ("-ghost2CheckOff".equals(thisArg)) {
-					ghost2CheckOff = true;
-				} else if ("-neverUseCache".equals(thisArg)) {
-					neverUseCache = true;
-				} else if ("-ghost2FixOn".equals(thisArg)) {
-					ghost2FixOn = true;
-				} else if ("-skipEdgeChecks".equals(thisArg)) {
-					skipEdgeCheckFlag = true;
-				} else if ("-maxFix".equals(thisArg)) {
-					i++;
-					if (i >= args.length) {
-						LoggingContext.statusCode(StatusCode.ERROR);
-						LoggingContext.responseCode(LoggingContext.BUSINESS_PROCESS_ERROR);
-						logger.error(" No value passed with -maxFix option.  ");
-						AAISystemExitUtil.systemExitCloseAAIGraph(0);
-					}
-					String nextArg = args[i];
-					try {
-						maxRecordsToFix = Integer.parseInt(nextArg);
-					} catch (Exception e) {
-						LoggingContext.statusCode(StatusCode.ERROR);
-						LoggingContext.responseCode(LoggingContext.BUSINESS_PROCESS_ERROR);
-						logger.error("Bad value passed with -maxFix option: ["
-										+ nextArg + "]");
-						AAISystemExitUtil.systemExitCloseAAIGraph(0);
-					}
-				} else if (thisArg.equals("-sleepMinutes")) {
-					i++;
-					if (i >= args.length) {
-						LoggingContext.statusCode(StatusCode.ERROR);
-						LoggingContext.responseCode(LoggingContext.BUSINESS_PROCESS_ERROR);
-						logger.error("No value passed with -sleepMinutes option.");
-						AAISystemExitUtil.systemExitCloseAAIGraph(0);
-					}
-					String nextArg = args[i];
-					try {
-						sleepMinutes = Integer.parseInt(nextArg);
-					} catch (Exception e) {
-						LoggingContext.statusCode(StatusCode.ERROR);
-						LoggingContext.responseCode(LoggingContext.BUSINESS_PROCESS_ERROR);
-						logger.error("Bad value passed with -sleepMinutes option: ["
-										+ nextArg + "]");
-						AAISystemExitUtil.systemExitCloseAAIGraph(0);
-					}
-				} else if ("-timeWindowMinutes".equals(thisArg)) {
-					i++;
-					if (i >= args.length) {
-						LoggingContext.statusCode(StatusCode.ERROR);
-						LoggingContext.responseCode(LoggingContext.BUSINESS_PROCESS_ERROR);
-						logger.error("No value passed with -timeWindowMinutes option.");
-						AAISystemExitUtil.systemExitCloseAAIGraph(0);
-					}
-					String nextArg = args[i];
-					try {
-						timeWindowMinutes = Integer.parseInt(nextArg);
-					} catch (Exception e) {
-						LoggingContext.statusCode(StatusCode.ERROR);
-						LoggingContext.responseCode(LoggingContext.BUSINESS_PROCESS_ERROR);
-						logger.error("Bad value passed with -timeWindowMinutes option: ["
-										+ nextArg + "]");
-						AAISystemExitUtil.systemExitCloseAAIGraph(0);
-					}
-				  	
-				} else if ("-f".equals(thisArg)) {
-					i++;
-					if (i >= args.length) {
-						LoggingContext.statusCode(StatusCode.ERROR);
-						LoggingContext.responseCode(LoggingContext.BUSINESS_PROCESS_ERROR);
-						logger.error(" No value passed with -f option. ");
-						AAISystemExitUtil.systemExitCloseAAIGraph(0);
-					}
-					prevFileName = args[i];
-				} else {
-					LoggingContext.statusCode(StatusCode.ERROR);
-					LoggingContext.responseCode(LoggingContext.BUSINESS_PROCESS_ERROR);
-					logger.error(" Unrecognized argument passed to DataGrooming: ["
-									+ thisArg + "]. ");
-					logger.error(" Valid values are: -f -autoFix -maxFix -edgesOnly -skipEdgeChecks -dupeFixOn -donFixOrphans -timeWindowMinutes -sleepMinutes -neverUseCache");
-					AAISystemExitUtil.systemExitCloseAAIGraph(0);
+
+			List arguments = Arrays.asList(args);
+			Iterator argsIterator = arguments.iterator();
+			while (argsIterator.hasNext()){
+				String argument = argsIterator.next().toString();
+				String nextArg;
+				switch(argument){
+					case "-edgesOnly":
+						edgesOnlyFlag = true;
+						break;
+					case "-autoFix":
+						doAutoFix = true;
+						break;
+					case "-skipHostCheck":
+						skipHostCheck = true;
+						break;
+					case "-dontFixOrphans":
+						dontFixOrphansFlag = true;
+						break;
+					case "-singleCommits":
+						singleCommits = true;
+						break;
+					case "-dupeCheckOff":
+						dupeCheckOff = true;
+						break;
+					case "-dupeFixOn":
+						dupeFixOn = true;
+						break;
+					case "-ghost2CheckOff":
+						ghost2CheckOff = true;
+						break;
+					case "-neverUseCache":
+						neverUseCache = true;
+						break;
+					case "-ghost2FixOn":
+						ghost2FixOn = true;
+						break;
+					case "-skipEdgeChecks":
+						skipEdgeCheckFlag = true;
+						break;
+					case "-maxFix":
+						handleNoPassedArgument(argsIterator, argument);
+						nextArg = argsIterator.next().toString();
+						maxRecordsToFix = handleNumericArgument(maxRecordsToFix, nextArg, argument);
+						break;
+					case "-sleepMinutes":
+						handleNoPassedArgument(argsIterator, argument);
+						nextArg = argsIterator.next().toString();
+						sleepMinutes = handleNumericArgument(sleepMinutes, nextArg, argument);
+						break;
+					case "-timeWindowMinutes":
+						handleNoPassedArgument(argsIterator, argument);
+						nextArg = argsIterator.next().toString();
+						timeWindowMinutes = handleNumericArgument(timeWindowMinutes, nextArg, argument);
+						break;
+					case "-f":
+						handleNoPassedArgument(argsIterator, argument);
+						prevFileName = argsIterator.next().toString();
+						break;
+					default:
+						handleUnrecognizedArguments(argument);
 				}
 			}
 		}
@@ -348,6 +315,37 @@ public class DataGrooming {
 		AAISystemExitUtil.systemExitCloseAAIGraph(0);
 
 	}// End of main()
+
+	private static void handleUnrecognizedArguments(String argument) {
+		LoggingContext.statusCode(StatusCode.ERROR);
+		LoggingContext.responseCode(LoggingContext.BUSINESS_PROCESS_ERROR);
+		logger.error(" Unrecognized argument passed to DataGrooming: ["
+    + argument + "]. ");
+		logger.error(" Valid values are: -f -autoFix -maxFix -edgesOnly -skipEdgeChecks -dupeFixOn -donFixOrphans -timeWindowMinutes -sleepMinutes -neverUseCache");
+		AAISystemExitUtil.systemExitCloseAAIGraph(0);
+	}
+
+	private static int handleNumericArgument(int numericArgumentValue, String nextArg, String argument) {
+		try {
+    numericArgumentValue = Integer.parseInt(nextArg);
+    } catch (Exception e) {
+    LoggingContext.statusCode(StatusCode.ERROR);
+    LoggingContext.responseCode(LoggingContext.BUSINESS_PROCESS_ERROR);
+    logger.error("Bad value passed with" + argument + "option: ["
+        + nextArg + "]");
+    AAISystemExitUtil.systemExitCloseAAIGraph(0);
+    }
+		return numericArgumentValue;
+	}
+
+	private static void handleNoPassedArgument(Iterator argsIterator, String argument) {
+		if (!argsIterator.hasNext()){
+    LoggingContext.statusCode(StatusCode.ERROR);
+    LoggingContext.responseCode(LoggingContext.BUSINESS_PROCESS_ERROR);
+    logger.error("No value passed with" + argument + "option.");
+    AAISystemExitUtil.systemExitCloseAAIGraph(0);
+    }
+	}
 
 	/**
 	 * Do the grooming.
