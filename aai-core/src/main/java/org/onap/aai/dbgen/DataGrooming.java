@@ -26,6 +26,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -72,6 +73,7 @@ import org.janusgraph.core.JanusGraph;
 
 public class DataGrooming {
 
+	public static final String AAIExceptionNumber = "AAI_6101";
 	private static EELFLogger logger;
 	private static final String FROMAPPID = "AAI-DB";
 	private static final String TRANSID = UUID.randomUUID().toString();
@@ -143,101 +145,67 @@ public class DataGrooming {
 
 		if (args.length > 0) {
 			// They passed some arguments in that will affect processing
-			for (int i = 0; i < args.length; i++) {
-				String thisArg = args[i];
-				if ("-edgesOnly".equals(thisArg)) {
-					edgesOnlyFlag = true;
-				} else if (thisArg.equals("-autoFix")) {
-					doAutoFix = true;
-				} else if ("-skipHostCheck".equals(thisArg)) {
-					skipHostCheck = true;
-				} else if ("-dontFixOrphans".equals(thisArg)) {
-					dontFixOrphansFlag = true;
-				} else if ("-singleCommits".equals(thisArg)) {
-					singleCommits = true;
-				} else if ("-dupeCheckOff".equals(thisArg)) {
-					dupeCheckOff = true;
-				} else if ("-dupeFixOn".equals(thisArg)) {
-					dupeFixOn = true;
-				} else if ("-ghost2CheckOff".equals(thisArg)) {
-					ghost2CheckOff = true;
-				} else if ("-neverUseCache".equals(thisArg)) {
-					neverUseCache = true;
-				} else if ("-ghost2FixOn".equals(thisArg)) {
-					ghost2FixOn = true;
-				} else if ("-skipEdgeChecks".equals(thisArg)) {
-					skipEdgeCheckFlag = true;
-				} else if ("-maxFix".equals(thisArg)) {
-					i++;
-					if (i >= args.length) {
-						LoggingContext.statusCode(StatusCode.ERROR);
-						LoggingContext.responseCode(LoggingContext.BUSINESS_PROCESS_ERROR);
-						logger.error(" No value passed with -maxFix option.  ");
-						AAISystemExitUtil.systemExitCloseAAIGraph(0);
-					}
-					String nextArg = args[i];
-					try {
-						maxRecordsToFix = Integer.parseInt(nextArg);
-					} catch (Exception e) {
-						LoggingContext.statusCode(StatusCode.ERROR);
-						LoggingContext.responseCode(LoggingContext.BUSINESS_PROCESS_ERROR);
-						logger.error("Bad value passed with -maxFix option: ["
-										+ nextArg + "]");
-						AAISystemExitUtil.systemExitCloseAAIGraph(0);
-					}
-				} else if (thisArg.equals("-sleepMinutes")) {
-					i++;
-					if (i >= args.length) {
-						LoggingContext.statusCode(StatusCode.ERROR);
-						LoggingContext.responseCode(LoggingContext.BUSINESS_PROCESS_ERROR);
-						logger.error("No value passed with -sleepMinutes option.");
-						AAISystemExitUtil.systemExitCloseAAIGraph(0);
-					}
-					String nextArg = args[i];
-					try {
-						sleepMinutes = Integer.parseInt(nextArg);
-					} catch (Exception e) {
-						LoggingContext.statusCode(StatusCode.ERROR);
-						LoggingContext.responseCode(LoggingContext.BUSINESS_PROCESS_ERROR);
-						logger.error("Bad value passed with -sleepMinutes option: ["
-										+ nextArg + "]");
-						AAISystemExitUtil.systemExitCloseAAIGraph(0);
-					}
-				} else if ("-timeWindowMinutes".equals(thisArg)) {
-					i++;
-					if (i >= args.length) {
-						LoggingContext.statusCode(StatusCode.ERROR);
-						LoggingContext.responseCode(LoggingContext.BUSINESS_PROCESS_ERROR);
-						logger.error("No value passed with -timeWindowMinutes option.");
-						AAISystemExitUtil.systemExitCloseAAIGraph(0);
-					}
-					String nextArg = args[i];
-					try {
-						timeWindowMinutes = Integer.parseInt(nextArg);
-					} catch (Exception e) {
-						LoggingContext.statusCode(StatusCode.ERROR);
-						LoggingContext.responseCode(LoggingContext.BUSINESS_PROCESS_ERROR);
-						logger.error("Bad value passed with -timeWindowMinutes option: ["
-										+ nextArg + "]");
-						AAISystemExitUtil.systemExitCloseAAIGraph(0);
-					}
-				  	
-				} else if ("-f".equals(thisArg)) {
-					i++;
-					if (i >= args.length) {
-						LoggingContext.statusCode(StatusCode.ERROR);
-						LoggingContext.responseCode(LoggingContext.BUSINESS_PROCESS_ERROR);
-						logger.error(" No value passed with -f option. ");
-						AAISystemExitUtil.systemExitCloseAAIGraph(0);
-					}
-					prevFileName = args[i];
-				} else {
-					LoggingContext.statusCode(StatusCode.ERROR);
-					LoggingContext.responseCode(LoggingContext.BUSINESS_PROCESS_ERROR);
-					logger.error(" Unrecognized argument passed to DataGrooming: ["
-									+ thisArg + "]. ");
-					logger.error(" Valid values are: -f -autoFix -maxFix -edgesOnly -skipEdgeChecks -dupeFixOn -donFixOrphans -timeWindowMinutes -sleepMinutes -neverUseCache");
-					AAISystemExitUtil.systemExitCloseAAIGraph(0);
+
+			List<String> arguments = Arrays.asList(args);
+			Iterator<String> argsIterator = arguments.iterator();
+			while (argsIterator.hasNext()){
+				String argument = argsIterator.next();
+				String nextArg;
+				switch(argument){
+					case "-edgesOnly":
+						edgesOnlyFlag = true;
+						break;
+					case "-autoFix":
+						doAutoFix = true;
+						break;
+					case "-skipHostCheck":
+						skipHostCheck = true;
+						break;
+					case "-dontFixOrphans":
+						dontFixOrphansFlag = true;
+						break;
+					case "-singleCommits":
+						singleCommits = true;
+						break;
+					case "-dupeCheckOff":
+						dupeCheckOff = true;
+						break;
+					case "-dupeFixOn":
+						dupeFixOn = true;
+						break;
+					case "-ghost2CheckOff":
+						ghost2CheckOff = true;
+						break;
+					case "-neverUseCache":
+						neverUseCache = true;
+						break;
+					case "-ghost2FixOn":
+						ghost2FixOn = true;
+						break;
+					case "-skipEdgeChecks":
+						skipEdgeCheckFlag = true;
+						break;
+					case "-maxFix":
+						handleNoPassedArgument(argsIterator, argument);
+						nextArg = argsIterator.next();
+						maxRecordsToFix = handleNumericArgument(maxRecordsToFix, nextArg, argument);
+						break;
+					case "-sleepMinutes":
+						handleNoPassedArgument(argsIterator, argument);
+						nextArg = argsIterator.next();
+						sleepMinutes = handleNumericArgument(sleepMinutes, nextArg, argument);
+						break;
+					case "-timeWindowMinutes":
+						handleNoPassedArgument(argsIterator, argument);
+						nextArg = argsIterator.next();
+						timeWindowMinutes = handleNumericArgument(timeWindowMinutes, nextArg, argument);
+						break;
+					case "-f":
+						handleNoPassedArgument(argsIterator, argument);
+						prevFileName = argsIterator.next();
+						break;
+					default:
+						handleUnrecognizedArguments(argument);
 				}
 			}
 		}
@@ -349,6 +317,38 @@ public class DataGrooming {
 
 	}// End of main()
 
+	private static void handleUnrecognizedArguments(String argument) {
+		LoggingContext.statusCode(StatusCode.ERROR);
+		LoggingContext.responseCode(LoggingContext.BUSINESS_PROCESS_ERROR);
+		logger.error(" Unrecognized argument passed to DataGrooming: ["
+			+ argument + "]. ");
+		logger.error(
+			" Valid values are: -f -autoFix -maxFix -edgesOnly -skipEdgeChecks -dupeFixOn -donFixOrphans -timeWindowMinutes -sleepMinutes -neverUseCache");
+		AAISystemExitUtil.systemExitCloseAAIGraph(0);
+	}
+
+	private static int handleNumericArgument(int numericArgumentValue, String nextArg, String argument) {
+		try {
+			numericArgumentValue = Integer.parseInt(nextArg);
+		} catch (Exception e) {
+			LoggingContext.statusCode(StatusCode.ERROR);
+			LoggingContext.responseCode(LoggingContext.BUSINESS_PROCESS_ERROR);
+			logger.error("Bad value passed with" + argument + "option: ["
+				+ nextArg + "]");
+			AAISystemExitUtil.systemExitCloseAAIGraph(0);
+		}
+		return numericArgumentValue;
+	}
+
+	private static void handleNoPassedArgument(Iterator argsIterator, String argument) {
+		if (!argsIterator.hasNext()) {
+			LoggingContext.statusCode(StatusCode.ERROR);
+			LoggingContext.responseCode(LoggingContext.BUSINESS_PROCESS_ERROR);
+			logger.error("No value passed with" + argument + "option.");
+			AAISystemExitUtil.systemExitCloseAAIGraph(0);
+		}
+	}
+
 	/**
 	 * Do the grooming.
 	 *
@@ -449,7 +449,7 @@ public class DataGrooming {
 			}
 			if (graph == null) {
 				String emsg = "null graph object in DataGrooming\n";
-				throw new AAIException("AAI_6101", emsg);
+				throw new AAIException(AAIExceptionNumber, emsg);
 			}
 		
 			logger.debug(" Got the graph object. ");
@@ -457,18 +457,18 @@ public class DataGrooming {
 			g = graph.newTransaction();
 			if (g == null) {
 				String emsg = "null graphTransaction object in DataGrooming\n";
-				throw new AAIException("AAI_6101", emsg);
+				throw new AAIException(AAIExceptionNumber, emsg);
 			}
 			GraphTraversalSource source1 = g.traversal();
 			
 			ArrayList<String> errArr = new ArrayList<>();
 			int totalNodeCount = 0;
-			HashMap<String, String> misMatchedHash = new HashMap<String, String>();
-			HashMap<String, Vertex> orphanNodeHash = new HashMap<String, Vertex>();
-			HashMap<String, Vertex> missingDepNodeHash = new HashMap<String, Vertex>();
-			HashMap<String, Edge> oneArmedEdgeHash = new HashMap<String, Edge>();
-			HashMap<String, String> emptyVertexHash = new HashMap<String, String>();
-			HashMap<String, Vertex> ghostNodeHash = new HashMap<String, Vertex>();
+			HashMap<String, String> misMatchedHash = new HashMap<>();
+			HashMap<String, Vertex> orphanNodeHash = new HashMap<>();
+			HashMap<String, Vertex> missingDepNodeHash = new HashMap<>();
+			HashMap<String, Edge> oneArmedEdgeHash = new HashMap<>();
+			HashMap<String, String> emptyVertexHash = new HashMap<>();
+			HashMap<String, Vertex> ghostNodeHash = new HashMap<>();
 			ArrayList<String> dupeGroups = new ArrayList<>();
 			
 			Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, AAIProperties.LATEST);
@@ -494,7 +494,7 @@ public class DataGrooming {
 					// Determine what the key fields are for this nodeType - use an arrayList so they
 					// can be gotten out in a consistent order.
 					Set <String> keyPropsSet = entry.getValue().getKeys();
-					ArrayList <String> keyProps = new ArrayList <String> ();
+					ArrayList <String> keyProps = new ArrayList<>();
 					keyProps.addAll(keyPropsSet);
 					
 					// Get the types of nodes that this nodetype depends on for uniqueness (if any)
@@ -772,14 +772,14 @@ public class DataGrooming {
 			graph2 = JanusGraphFactory.open(new AAIGraphConfig.Builder(AAIConstants.REALTIME_DB_CONFIG).forService(DataGrooming.class.getSimpleName()).withGraphType("realtime2").buildConfiguration());
 			if (graph2 == null) {
 				String emsg = "null graph2 object in DataGrooming\n";
-				throw new AAIException("AAI_6101", emsg);
+				throw new AAIException(AAIExceptionNumber, emsg);
 			} else {
 				logger.debug("Got the graph2 object... \n");
 			}
 			g2 = graph2.newTransaction();
 			if (g2 == null) {
 				String emsg = "null graphTransaction2 object in DataGrooming\n";
-				throw new AAIException("AAI_6101", emsg);
+				throw new AAIException(AAIExceptionNumber, emsg);
 			}
 			
 			ArrayList<Vertex> vertList = new ArrayList<>();
