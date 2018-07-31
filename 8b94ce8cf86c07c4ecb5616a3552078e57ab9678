@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a6a9dd7_e6af502a",
+        "filename": "aai-core/src/main/java/org/onap/aai/dbgen/DataGrooming.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 3433
+      },
+      "writtenOn": "2018-07-31T11:48:29Z",
+      "side": 1,
+      "message": "in Java there is a convention for static final variables: CAPITAL LETTERS and _ so it should be AAI_EXCEPTION_NUMBER",
+      "revId": "8b94ce8cf86c07c4ecb5616a3552078e57ab9678",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
