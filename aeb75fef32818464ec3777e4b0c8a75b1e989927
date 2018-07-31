@@ -1,0 +1,174 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a6a9dd7_0648442c",
+        "filename": "aai-core/src/main/java/org/onap/aai/dbgen/DataGrooming.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 3433
+      },
+      "writtenOn": "2018-07-31T08:14:51Z",
+      "side": 1,
+      "message": "Pls add type of element at list.\nIt should be List\u003cString\u003e",
+      "revId": "aeb75fef32818464ec3777e4b0c8a75b1e989927",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a6a9dd7_c651ecd9",
+        "filename": "aai-core/src/main/java/org/onap/aai/dbgen/DataGrooming.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 149,
+      "author": {
+        "id": 3433
+      },
+      "writtenOn": "2018-07-31T08:14:51Z",
+      "side": 1,
+      "message": "It should be Iterator\u003cString\u003e",
+      "revId": "aeb75fef32818464ec3777e4b0c8a75b1e989927",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a6a9dd7_8663f4b0",
+        "filename": "aai-core/src/main/java/org/onap/aai/dbgen/DataGrooming.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 151,
+      "author": {
+        "id": 3433
+      },
+      "writtenOn": "2018-07-31T08:14:51Z",
+      "side": 1,
+      "message": "toString is not required",
+      "revId": "aeb75fef32818464ec3777e4b0c8a75b1e989927",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a6a9dd7_2658e8f9",
+        "filename": "aai-core/src/main/java/org/onap/aai/dbgen/DataGrooming.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 189,
+      "author": {
+        "id": 3433
+      },
+      "writtenOn": "2018-07-31T08:14:51Z",
+      "side": 1,
+      "message": "toString is not required",
+      "revId": "aeb75fef32818464ec3777e4b0c8a75b1e989927",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a6a9dd7_465ddce8",
+        "filename": "aai-core/src/main/java/org/onap/aai/dbgen/DataGrooming.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 194,
+      "author": {
+        "id": 3433
+      },
+      "writtenOn": "2018-07-31T08:14:51Z",
+      "side": 1,
+      "message": "toString is not required",
+      "revId": "aeb75fef32818464ec3777e4b0c8a75b1e989927",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a6a9dd7_e6719078",
+        "filename": "aai-core/src/main/java/org/onap/aai/dbgen/DataGrooming.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 199,
+      "author": {
+        "id": 3433
+      },
+      "writtenOn": "2018-07-31T08:14:51Z",
+      "side": 1,
+      "message": "toString is not required",
+      "revId": "aeb75fef32818464ec3777e4b0c8a75b1e989927",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a6a9dd7_066fe493",
+        "filename": "aai-core/src/main/java/org/onap/aai/dbgen/DataGrooming.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 204,
+      "author": {
+        "id": 3433
+      },
+      "writtenOn": "2018-07-31T08:14:51Z",
+      "side": 1,
+      "message": "toString is not required",
+      "revId": "aeb75fef32818464ec3777e4b0c8a75b1e989927",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a6a9dd7_a66b9884",
+        "filename": "aai-core/src/main/java/org/onap/aai/dbgen/DataGrooming.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 323,
+      "author": {
+        "id": 3433
+      },
+      "writtenOn": "2018-07-31T08:14:51Z",
+      "side": 1,
+      "message": "Fix code formatting",
+      "revId": "aeb75fef32818464ec3777e4b0c8a75b1e989927",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a6a9dd7_c6680c8a",
+        "filename": "aai-core/src/main/java/org/onap/aai/dbgen/DataGrooming.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 330,
+      "author": {
+        "id": 3433
+      },
+      "writtenOn": "2018-07-31T08:14:51Z",
+      "side": 1,
+      "message": "fix code formatting",
+      "revId": "aeb75fef32818464ec3777e4b0c8a75b1e989927",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a6a9dd7_660580c1",
+        "filename": "aai-core/src/main/java/org/onap/aai/dbgen/DataGrooming.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 342,
+      "author": {
+        "id": 3433
+      },
+      "writtenOn": "2018-07-31T08:14:51Z",
+      "side": 1,
+      "message": "fix code formatting",
+      "revId": "aeb75fef32818464ec3777e4b0c8a75b1e989927",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
