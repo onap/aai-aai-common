@@ -20,13 +20,20 @@
 package org.onap.aai.dbgen;
 
 
+import com.att.eelf.configuration.EELFLogger;
+import com.att.eelf.configuration.EELFManager;
+import com.google.common.collect.Multimap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-
 import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.janusgraph.core.Cardinality;
+import org.janusgraph.core.JanusGraph;
+import org.janusgraph.core.Multiplicity;
+import org.janusgraph.core.PropertyKey;
+import org.janusgraph.core.schema.JanusGraphManagement;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
@@ -38,22 +45,16 @@ import org.onap.aai.serialization.db.EdgeRule;
 import org.onap.aai.serialization.db.EdgeRules;
 import org.onap.aai.util.AAIConfig;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
-import com.google.common.collect.Multimap;
-import org.janusgraph.core.Cardinality;
-import org.janusgraph.core.Multiplicity;
-import org.janusgraph.core.PropertyKey;
-import org.janusgraph.core.JanusGraph;
-import org.janusgraph.core.schema.JanusGraphManagement;
-
 
 
 public class SchemaGenerator{
 
 	private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(SchemaGenerator.class);
 	private static boolean addDefaultCR = true;
-	
+
+	private SchemaGenerator(){
+
+	}
 	
 	 /**
  	 * Load schema into JanusGraph.
@@ -64,23 +65,21 @@ public class SchemaGenerator{
  	 */
  	public static void loadSchemaIntoJanusGraph(final JanusGraph graph, final JanusGraphManagement graphMgmt, boolean addDefaultCloudRegion) {
 		 addDefaultCR = addDefaultCloudRegion;
-		 loadSchemaIntoJanusGraph(graph, graphMgmt);
+		 loadSchemaIntoJanusGraph(graphMgmt);
 	 }
 	
     /**
      * Load schema into JanusGraph.
      *
-     * @param graph the graph
      * @param graphMgmt the graph mgmt
      */
-    public static void loadSchemaIntoJanusGraph(final JanusGraph graph, final JanusGraphManagement graphMgmt) {
+    public static void loadSchemaIntoJanusGraph(final JanusGraphManagement graphMgmt) {
 
     	try {
     		AAIConfig.init();
     	}
     	catch (Exception ex){
 			LOGGER.error(" ERROR - Could not run AAIConfig.init(). " + LogFormatTools.getStackTop(ex));
-			System.out.println(" ERROR - Could not run AAIConfig.init(). ");
 			System.exit(1);
 		}
     	
@@ -102,91 +101,109 @@ public class SchemaGenerator{
 		}
 		
 		for( String label: labels){
-			if( graphMgmt.containsRelationType(label) ) {
-				String dmsg = " EdgeLabel  [" + label + "] already existed. ";
-            	System.out.println(dmsg);
-            	LOGGER.debug(dmsg);
-            } else {
-            	String dmsg = "Making EdgeLabel: [" + label + "]";
-            	System.out.println(dmsg);
-            	LOGGER.debug(dmsg);
-            	graphMgmt.makeEdgeLabel(label).multiplicity(Multiplicity.valueOf("MULTI")).make();
-            }
-        }     
+			addEdgeLabel(graphMgmt, label);
+		}
 
 		Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, AAIProperties.LATEST);
 		Map<String, Introspector> objs = loader.getAllObjects();
 		Map<String, PropertyKey> seenProps = new HashMap<>();
-		
+
 		for (Introspector obj : objs.values()) {
-			for (String propName : obj.getProperties()) {
-				String dbPropName = propName;
-				Optional<String> alias = obj.getPropertyMetadata(propName, PropertyMetadata.DB_ALIAS);
-				if (alias.isPresent()) {
-					dbPropName = alias.get();
+				for (String propertyName : obj.getProperties()) {
+					String dbPropertyName = propertyName;
+					Optional<String> alias = obj.getPropertyMetadata(propertyName, PropertyMetadata.DB_ALIAS);
+					if (alias.isPresent()) {
+						dbPropertyName = alias.get();
+					}
+					if (graphMgmt.containsRelationType(propertyName)) {
+						handleExistingProperty(propertyName);
+					} else {
+						handleUnknownProperty(graphMgmt, seenProps, obj, propertyName, dbPropertyName);
+					}
 				}
-				if( graphMgmt.containsRelationType(propName) ){
-	            	String dmsg = " PropertyKey  [" + propName + "] already existed in the DB. ";
-	            	System.out.println(dmsg);
-	            	LOGGER.debug(dmsg);
-	            } else {
-	            	Class<?> type = obj.getClass(propName);
-	            	Cardinality cardinality = Cardinality.SINGLE;
-	            	boolean process = false;
-	            	if (obj.isListType(propName) && obj.isSimpleGenericType(propName)) {
-	            		cardinality = Cardinality.SET;
-	            		type = obj.getGenericTypeClass(propName);
-	            		process = true;
-	            	} else if (obj.isSimpleType(propName)) {
-	            		process = true;
-	            	}
-
-	            	if (process) {
-
-		            	String imsg = "Creating PropertyKey: [" + dbPropName + "], ["+ type.getSimpleName() + "], [" + cardinality + "]";
-		            	System.out.println(imsg);
-		            	LOGGER.info(imsg);
-		            	PropertyKey propK;
-		            	if (!seenProps.containsKey(dbPropName)) {
-		            		propK = graphMgmt.makePropertyKey(dbPropName).dataType(type).cardinality(cardinality).make();
-		            		seenProps.put(dbPropName, propK);
-		            	} else {
-		            		propK = seenProps.get(dbPropName);
-		            	}
-		            	if (graphMgmt.containsGraphIndex(dbPropName)) {
-			            	String dmsg = " Index  [" + dbPropName + "] already existed in the DB. ";
-			            	System.out.println(dmsg);
-			            	LOGGER.debug(dmsg);
-		            	} else {
-		            		if( obj.getIndexedProperties().contains(propName) ){
-			                 	if( obj.getUniqueProperties().contains(propName) ){
-			 						imsg = "Add Unique index for PropertyKey: [" + dbPropName + "]";
-					            	System.out.println(imsg);
-					            	LOGGER.info(imsg);
-			                        graphMgmt.buildIndex(dbPropName,Vertex.class).addKey(propK).unique().buildCompositeIndex();
-			                     } else {
-			                     	imsg = "Add index for PropertyKey: [" + dbPropName + "]";
-					            	System.out.println(imsg);
-					            	LOGGER.info(imsg);
-			                        graphMgmt.buildIndex(dbPropName,Vertex.class).addKey(propK).buildCompositeIndex();
-			                     }
-			                 } else {
-			                 	imsg = "No index added for PropertyKey: [" + dbPropName + "]";
-				            	System.out.println(imsg);
-				            	LOGGER.info(imsg);
-			                 }
-		            	}
-	            	}
-	            }
-			}
 		}
-        
-        String imsg = "-- About to call graphMgmt commit";
-    	System.out.println(imsg);
-    	LOGGER.info(imsg);
-    	
-        graphMgmt.commit();
+
+		String imsg = "-- About to call graphMgmt commit";
+		LOGGER.info(imsg);
+
+		graphMgmt.commit();
     }// End of loadSchemaIntoJanusGraph()
+
+	private static void handleUnknownProperty(JanusGraphManagement graphMgmt, Map<String, PropertyKey> seenProps,
+		Introspector obj, String propertyName, String dbPropertyName) {
+
+		Class<?> type = obj.getClass(propertyName);
+		Cardinality cardinality = Cardinality.SINGLE;
+		boolean process = false;
+		if (obj.isListType(propertyName) && obj.isSimpleGenericType(propertyName)) {
+			cardinality = Cardinality.SET;
+			type = obj.getGenericTypeClass(propertyName);
+			process = true;
+		} else if (obj.isSimpleType(propertyName)) {
+			process = true;
+		}
+
+		if (process) {
+			String imsg =
+				"Creating PropertyKey: [" + dbPropertyName + "], [" + type.getSimpleName() + "], [" + cardinality + "]";
+			LOGGER.info(imsg);
+			PropertyKey propK;
+			propK = getPropertyKey(graphMgmt, seenProps, dbPropertyName, type, cardinality);
+			buildIndex(graphMgmt, obj, propertyName, dbPropertyName, propK);
+		}
+	}
+
+	private static void buildIndex(JanusGraphManagement graphMgmt, Introspector obj, String propertyName,
+		String dbPropertyName, PropertyKey propK) {
+		String imsg;
+		if (graphMgmt.containsGraphIndex(dbPropertyName)) {
+        String dmsg = " Index  [" + dbPropertyName + "] already existed in the DB. ";
+        LOGGER.debug(dmsg);
+    } else {
+        if( obj.getIndexedProperties().contains(propertyName) ){
+             if( obj.getUniqueProperties().contains(propertyName) ){
+             imsg = "Add Unique index for PropertyKey: [" + dbPropertyName + "]";
+             LOGGER.info(imsg);
+             graphMgmt.buildIndex(dbPropertyName, Vertex.class).addKey(propK).unique().buildCompositeIndex();
+             } else {
+             imsg = "Add index for PropertyKey: [" + dbPropertyName + "]";
+             LOGGER.info(imsg);
+             graphMgmt.buildIndex(dbPropertyName, Vertex.class).addKey(propK).buildCompositeIndex();
+             }
+         } else {
+             imsg = "No index added for PropertyKey: [" + dbPropertyName + "]";
+        LOGGER.info(imsg);
+         }
+    }
+	}
+
+	private static PropertyKey getPropertyKey(JanusGraphManagement graphMgmt, Map<String, PropertyKey> seenProps,
+		String dbPropertyName, Class<?> type, Cardinality cardinality) {
+		PropertyKey propK;
+		if (!seenProps.containsKey(dbPropertyName)) {
+        propK = graphMgmt.makePropertyKey(dbPropertyName).dataType(type).cardinality(cardinality).make();
+        seenProps.put(dbPropertyName, propK);
+    } else {
+        propK = seenProps.get(dbPropertyName);
+    }
+		return propK;
+	}
+
+	private static void handleExistingProperty(String propertyName) {
+		String dmsg = " PropertyKey  [" + propertyName + "] already existed in the DB. ";
+		LOGGER.debug(dmsg);
+	}
+
+	private static void addEdgeLabel(JanusGraphManagement graphMgmt, String label) {
+		if( graphMgmt.containsRelationType(label) ) {
+				String dmsg = " EdgeLabel  [" + label + "] already existed. ";
+            	LOGGER.debug(dmsg);
+            } else {
+            	String dmsg = "Making EdgeLabel: [" + label + "]";
+            	LOGGER.debug(dmsg);
+            	graphMgmt.makeEdgeLabel(label).multiplicity(Multiplicity.valueOf("MULTI")).make();
+            }
+	}
 
 }
 
