@@ -25,7 +25,6 @@ import java.io.InputStream;
 
 import java.util.Properties;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.tinkerpop.gremlin.structure.io.IoCore;
 import org.onap.aai.dbgen.SchemaGenerator;
 import org.onap.aai.logging.LogFormatTools;
@@ -57,7 +56,7 @@ public class InMemoryGraph {
 			JanusGraphManagement graphMgt = graph.openManagement();
             if(builder.isSchemaEnabled){
             	LOGGER.info("Schema Enabled");
-            	SchemaGenerator.loadSchemaIntoJanusGraph(graph, graphMgt);
+            	SchemaGenerator.loadSchemaIntoJanusGraph(graphMgt);
             }
 			JanusGraphTransaction transaction = graph.newTransaction();
 			LOGGER.info("Loading snapshot");
