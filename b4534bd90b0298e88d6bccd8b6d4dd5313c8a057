@@ -1,0 +1,8 @@
+Verified+1: ONAP Jobbuilder <onap-jobbuilder@jenkins.onap.org>
+Code-Review+1: Bogumil Zebek <bogumil.zebek@nokia.com>
+Code-Review+2: Venkata Harish Kajur <vk250x@att.com>
+Submitted-by: Venkata Harish Kajur <vk250x@att.com>
+Submitted-at: Thu, 02 Aug 2018 13:57:03 +0000
+Reviewed-on: https://gerrit.onap.org/r/58215
+Project: aai/aai-common
+Branch: refs/heads/master
