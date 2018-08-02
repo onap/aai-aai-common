@@ -46,7 +46,7 @@ public class ManageJanusGraphSchema {
 	private List<EdgeProperty> aaiEdgeProperties;
 	private Auditor oxmInfo = null;
 	private Auditor graphInfo = null;
-	
+
 	/**
 	 * Instantiates a new manage JanusGraph schema.
 	 *
@@ -86,28 +86,9 @@ public class ManageJanusGraphSchema {
 	 * Creates the property keys.
 	 */
 	private void createPropertyKeys() {
-		
-		
+
 		for (DBProperty prop : aaiProperties) {
-			
-			if (graphMgmt.containsPropertyKey(prop.getName())) {
-				PropertyKey key = graphMgmt.getPropertyKey(prop.getName());
-				boolean isChanged = false;
-				if (!prop.getCardinality().equals(key.cardinality())) {
-					isChanged = true;
-				}
-				if (!prop.getTypeClass().equals(key.dataType())) {
-					isChanged = true;
-				}
-				if (isChanged) {
-					//must modify!
-					this.replaceProperty(prop);
-				}
-			} else {
-				//create a new property key
-				System.out.println("Key: " + prop.getName() + " not found - adding");
-				graphMgmt.makePropertyKey(prop.getName()).dataType(prop.getTypeClass()).cardinality(prop.getCardinality()).make();
-			}
+			this.createProperty(graphMgmt, prop);
 		}
 		
 	}
@@ -126,8 +107,8 @@ public class ManageJanusGraphSchema {
 				keyList.add(graphMgmt.getPropertyKey(prop.getName()));
 			}
 			if (graphMgmt.containsGraphIndex(index.getName())) {
-				JanusGraphIndex JanusGraphIndex = graphMgmt.getGraphIndex(index.getName());
-				PropertyKey[] dbKeys = JanusGraphIndex.getFieldKeys();
+				JanusGraphIndex janusGraphIndex = graphMgmt.getGraphIndex(index.getName());
+				PropertyKey[] dbKeys = janusGraphIndex.getFieldKeys();
 				if (dbKeys.length != keyList.size()) {
 					isChanged = true;
 				} else {
@@ -143,7 +124,7 @@ public class ManageJanusGraphSchema {
 			} else {
 				isNew = true;
 			}
-			if (keyList.size() > 0) {
+			if (!keyList.isEmpty()) {
 				this.createIndex(graphMgmt, index.getName(), keyList, index.isUnique(), isNew, isChanged);
 			}
 		}
@@ -194,7 +175,7 @@ public class ManageJanusGraphSchema {
 			}
 		} else {
 			//create a new property key
-			System.out.println("Key: " + prop.getName() + " not found - adding");
+			logger.info("Key: " + prop.getName() + " not found - adding");
 			mgmt.makePropertyKey(prop.getName()).dataType(prop.getTypeClass()).cardinality(prop.getCardinality()).make();
 		}
 	}
@@ -210,15 +191,7 @@ public class ManageJanusGraphSchema {
 	 * @param isChanged the is changed
 	 */
 	private void createIndex(JanusGraphManagement mgmt, String indexName, List<PropertyKey> keys, boolean isUnique, boolean isNew, boolean isChanged) {
-		
-		/*if (isChanged) {
-			System.out.println("Changing index: " + indexName);
-			JanusGraphIndex oldIndex = mgmt.getGraphIndex(indexName);
-			mgmt.updateIndex(oldIndex, SchemaAction.DISABLE_INDEX);
-			mgmt.commit();
-			//cannot remove indexes
-			//graphMgmt.updateIndex(oldIndex, SchemaAction.REMOVE_INDEX);
-		}*/
+
 		if (isNew || isChanged) {
 			
 			if (isNew) {
@@ -230,31 +203,8 @@ public class ManageJanusGraphSchema {
 					builder.unique();
 				}
 				builder.buildCompositeIndex();
-				System.out.println("Built index for " + indexName + " with keys: " + keys);
-
-				//mgmt.commit();
+				logger.info("Built index for " + indexName + " with keys: " + keys);
 			}
-
-			//mgmt = graph.asAdmin().getManagementSystem();
-			//mgmt.updateIndex(mgmt.getGraphIndex(indexName), SchemaAction.REGISTER_INDEX);
-			//mgmt.commit();
-			
-			try {
-				//waitForCompletion(indexName);
-				//JanusGraphIndexRepair.hbaseRepair(AAIConstants.AAI_CONFIG_FILENAME, indexName, "");
-			} catch (Exception e) {
-				graph.tx().rollback();
-				graph.close();
-				logger.error(e.getMessage(),e);
-			}
-			
-			//mgmt = graph.asAdmin().getManagementSystem();
-			//mgmt.updateIndex(mgmt.getGraphIndex(indexName), SchemaAction.REINDEX);
-			
-			//mgmt.updateIndex(mgmt.getGraphIndex(indexName), SchemaAction.ENABLE_INDEX);
-			
-			//mgmt.commit();
-			
 		}
 	}
 	
@@ -279,19 +229,16 @@ public class ManageJanusGraphSchema {
 		    }
 		    mgmt.rollback();
 		}
-		System.out.println("Index REGISTERED in " + (System.currentTimeMillis() - before) + " ms");
+		logger.info("Index REGISTERED in " + (System.currentTimeMillis() - before) + " ms");
 	}
-	
+
 	/**
 	 * Replace property.
 	 *
 	 * @param key the key
 	 */
 	private void replaceProperty(DBProperty key) {
-		
-		
-		
-		
+
 	}
 
 	/**
@@ -310,7 +257,7 @@ public class ManageJanusGraphSchema {
 			keys.add(mgmt.getPropertyKey(prop.getName()));
 		}
 		if (mgmt.containsGraphIndex(index.getName())) {
-			System.out.println("index already exists");
+			logger.info("index already exists");
 			isNew = false;
 			isChanged = true;
 		} else {
