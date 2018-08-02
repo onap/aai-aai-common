@@ -19,10 +19,8 @@
  */
 package org.onap.aai.dbmap;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -158,7 +156,7 @@ public class AAIGraph {
 		JanusGraphManagement graphMgt = graph.openManagement();
 		
 		System.out.println("-- loading schema into JanusGraph");
-		SchemaGenerator.loadSchemaIntoJanusGraph( graph, graphMgt );
+		SchemaGenerator.loadSchemaIntoJanusGraph(graphMgt );
 	}
 
 	/**

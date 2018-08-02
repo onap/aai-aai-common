@@ -128,7 +128,7 @@ public class GenTester {
 	       	imsg = "-- Loading new schema elements into JanusGraph --";
        		System.out.println(imsg);
        		LOGGER.info(imsg);
-       		SchemaGenerator.loadSchemaIntoJanusGraph( graph, graphMgt, addDefaultCR );
+       		SchemaGenerator.loadSchemaIntoJanusGraph(graphMgt, addDefaultCR );
 
 	    } catch(Exception ex) {
 	    	ErrorLogHelper.logError("AAI_4000", ex.getMessage());
