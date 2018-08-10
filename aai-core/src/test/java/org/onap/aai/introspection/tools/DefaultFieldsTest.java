@@ -38,7 +38,7 @@ public class DefaultFieldsTest extends AAISetup {
 
     @Before
     public void setup() {
-        loader  = LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.getLatest());
+        loader  = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
         issue   = new Issue();
         defaultFields = new DefaultFields();
     }

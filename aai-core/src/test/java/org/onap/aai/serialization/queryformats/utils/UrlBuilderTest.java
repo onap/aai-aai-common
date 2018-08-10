@@ -25,9 +25,9 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.onap.aai.AAISetup;
-import org.onap.aai.introspection.Version;
 import org.onap.aai.serialization.db.DBSerializer;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
+import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.util.AAIConstants;
 
 import java.io.UnsupportedEncodingException;
@@ -57,29 +57,29 @@ public class UrlBuilderTest extends AAISetup {
 	}
 
 	@Test
-	public void v11Pathed() throws UnsupportedEncodingException, URISyntaxException, AAIFormatVertexException {
-		Version version = Version.v11;
-		UrlBuilder builder = new UrlBuilder(version, serializer, protocolAndHost);
+	public void v11Pathed() throws AAIFormatVertexException {
+		SchemaVersion version = new SchemaVersion("v11");
+		UrlBuilder builder = new UrlBuilder(version, serializer, protocolAndHost, schemaVersions, basePath);
 		String result = builder.pathed(v);
 		
-		assertEquals("has no protocol and host", AAIConstants.AAI_APP_ROOT + version + uri, result);
+		assertEquals("has no protocol and host", basePath + "/"+ version + uri, result);
 		
 	}
 
 	@Test
-	public void v11Id() throws UnsupportedEncodingException, URISyntaxException, AAIFormatVertexException {
-		Version version = Version.v11;
-		UrlBuilder builder = new UrlBuilder(version, serializer, protocolAndHost);
+	public void v11Id() {
+		SchemaVersion version = new SchemaVersion("v11");
+		UrlBuilder builder = new UrlBuilder(version, serializer, protocolAndHost, schemaVersions, basePath);
 		String result = builder.id(v);
 		
-		assertEquals("has no protocol and host", AAIConstants.AAI_APP_ROOT + version + "/resources/id/" + vId, result);
+		assertEquals("has no protocol and host", basePath + "/"+ version + "/resources/id/" + vId, result);
 		
 	}
 	
 	@Test
-	public void beforeV11Pathed() throws UnsupportedEncodingException, URISyntaxException, AAIFormatVertexException {
-		Version version = Version.v10;
-		UrlBuilder builder = new UrlBuilder(version, serializer, protocolAndHost);
+	public void beforeV11Pathed() throws AAIFormatVertexException {
+		SchemaVersion version = new SchemaVersion("v10");
+		UrlBuilder builder = new UrlBuilder(version, serializer, protocolAndHost, schemaVersions, basePath);
 		String result = builder.pathed(v);
 		
 		assertEquals("has protocol and host", protocolAndHost + version + uri, result);
@@ -87,9 +87,9 @@ public class UrlBuilderTest extends AAISetup {
 	}
 	
 	@Test
-	public void beforeV11Id() throws UnsupportedEncodingException, URISyntaxException, AAIFormatVertexException {
-		Version version = Version.v10;
-		UrlBuilder builder = new UrlBuilder(version, serializer, protocolAndHost);
+	public void beforeV11Id() {
+		SchemaVersion version = new SchemaVersion("v10");
+		UrlBuilder builder = new UrlBuilder(version, serializer, protocolAndHost, schemaVersions, basePath);
 		String result = builder.id(v);
 		
 		assertEquals("has protocol and host", protocolAndHost + version + "/resources/id/" + vId, result);

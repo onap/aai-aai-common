@@ -36,15 +36,16 @@
     <description>Contains all of the common code for resources and traversal repos</description>
 
     <modules>
-        <module>aai-schema</module>
         <module>aai-schema-ingest</module>
         <module>aai-annotations</module>
         <module>aai-core</module>
+        <module>aai-schema</module>
         <module>aai-auth</module>
         <module>aai-utils</module>
     </modules>
 
     <properties>
+        <aai.generate.schema>true</aai.generate.schema>
         <sitePath>/content/sites/site/org/onap/aai/aai-common/${project.artifactId}/${project.version}</sitePath>
         <onap.nexus.url>https://nexus.onap.org</onap.nexus.url>
     </properties>
@@ -59,6 +60,20 @@
                         <source>1.8</source>
                         <target>1.8</target>
                     </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>3.0.1</version>
+                    <executions>
+                        <execution>
+                            <id>attach-sources</id>
+                            <phase>deploy</phase>
+                            <goals>
+                                <goal>jar-no-fork</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -185,6 +200,7 @@
         </plugins>
     </reporting>
 
+    <!-- Start of ONAP Specific Repositories -->
     <repositories>
         <repository>
             <id>AJSC</id>
@@ -218,4 +234,5 @@
             <url>${onap.nexus.url}/content/repositories/snapshots/</url>
         </repository>
     </repositories>
+    <!-- End of ONAP Specific Repositories -->
 </project>

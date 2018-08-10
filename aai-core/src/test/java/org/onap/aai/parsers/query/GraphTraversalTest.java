@@ -32,9 +32,7 @@ import org.junit.runners.Parameterized;
 import org.onap.aai.AAISetup;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.exceptions.AAIException;
-import org.onap.aai.introspection.LoaderFactory;
 import org.onap.aai.introspection.ModelType;
-import org.onap.aai.introspection.Version;
 import org.onap.aai.rest.RestTokens;
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.serialization.engines.JanusGraphDBEngine;
@@ -67,11 +65,13 @@ public class GraphTraversalTest extends AAISetup {
 	@Parameterized.Parameters(name = "QueryStyle.{0}")
 	public static Collection<Object[]> data() {
 		return Arrays.asList(new Object[][]{
-				{QueryStyle.TRAVERSAL}
+				{QueryStyle.TRAVERSAL},
+				{QueryStyle.TRAVERSAL_URI}
 		});
 	}
 
 	@Rule public ExpectedException thrown = ExpectedException.none();
+	
 	
 	/**
 	 * Configure.
@@ -83,12 +83,12 @@ public class GraphTraversalTest extends AAISetup {
 	public void configure() throws Exception {
 		dbEngine =
 				new JanusGraphDBEngine(queryStyle,
-					LoaderFactory.createLoaderForVersion(ModelType.MOXY, AAIProperties.LATEST),
+					loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion()),
 					false);
 		
 		dbEnginev9 = 
 				new JanusGraphDBEngine(queryStyle,
-					LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.v9),
+					loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDepthVersion()),
 					false);
 	}
 	

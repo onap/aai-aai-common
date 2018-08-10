@@ -22,18 +22,24 @@ package org.onap.aai.parsers.relationship;
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 import org.apache.tinkerpop.gremlin.structure.Direction;
+import org.onap.aai.config.SpringContextAware;
+import org.onap.aai.edges.EdgeIngestor;
+import org.onap.aai.edges.EdgeRuleQuery;
+import org.onap.aai.edges.exceptions.AmbiguousRuleChoiceException;
+import org.onap.aai.edges.exceptions.EdgeRuleNotFoundException;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.*;
+import org.onap.aai.setup.SchemaVersions;
+
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.onap.aai.parsers.exceptions.AAIIdentityMapParseException;
 import org.onap.aai.parsers.exceptions.AmbiguousMapAAIException;
 import org.onap.aai.parsers.uri.URIParser;
 import org.onap.aai.schema.enums.ObjectMetadata;
-import org.onap.aai.serialization.db.AAIDirection;
-import org.onap.aai.serialization.db.EdgeRule;
-import org.onap.aai.serialization.db.EdgeRules;
-import org.onap.aai.serialization.db.EdgeType;
-import org.onap.aai.workarounds.LegacyURITransformer;
+import org.onap.aai.edges.enums.AAIDirection;
+import org.onap.aai.edges.EdgeRule;
+import org.onap.aai.edges.enums.EdgeType;
+import org.springframework.context.ApplicationContext;
 
 import javax.ws.rs.core.UriBuilder;
 import java.io.UnsupportedEncodingException;
@@ -57,11 +63,11 @@ public class RelationshipToURI {
 	
 	private ModelType modelType = null;
 	
-	private EdgeRules edgeRules = null;
-	
+	private EdgeIngestor edgeRules = null;
+
 	private URI uri = null;
-	
-	private LegacyURITransformer urlTransform = null;
+
+	private SchemaVersions schemaVersions;
 	
 	/**
 	 * Instantiates a new relationship to URI.
@@ -74,14 +80,19 @@ public class RelationshipToURI {
 	public RelationshipToURI(Loader loader, Introspector relationship) throws UnsupportedEncodingException, AAIException {
 		this.relationship = relationship;
 		this.modelType = relationship.getModelType();
-		this.edgeRules = EdgeRules.getInstance();
 		this.loader = loader;
-		this.urlTransform   = LegacyURITransformer.getInstance();
-
+		this.initEdgeIngestor();
 		this.parse();
 		
 	}
-	
+
+	protected void initEdgeIngestor() {
+		//TODO proper spring wiring, but that requires a lot of refactoring so for now we have this
+		ApplicationContext ctx = SpringContextAware.getApplicationContext();
+		edgeRules = ctx.getBean(EdgeIngestor.class);
+		schemaVersions = ctx.getBean(SchemaVersions.class);
+	}
+
 	/**
 	 * Parses the.
 	 * @throws  
@@ -93,7 +104,7 @@ public class RelationshipToURI {
 		String relatedLink = (String)relationship.getValue("related-link");
 		Optional<URI> result;
 		try {
-			if (loader.getVersion().compareTo(Version.v10) >= 0) {
+			if (loader.getVersion().compareTo(schemaVersions.getRelatedLinkVersion()) >= 0) {
 				result = processRelatedLink(relatedLink);
 				if (!result.isPresent()) {
 					result = processRelationshipData();
@@ -245,7 +256,7 @@ public class RelationshipToURI {
 		for (j = (data.size() - i) - 1; j >= 0; j--) {
 			objectType = data.get(j);
 			try {
-				rule = edgeRules.getEdgeRule(EdgeType.TREE, startType, objectType);
+				rule = edgeRules.getRule(new EdgeRuleQuery.Builder(startType, objectType).edgeType(EdgeType.TREE).build());
 				direction = rule.getDirection();
 				if (direction != null) {
 					if ((rule.getContains().equals(AAIDirection.OUT.toString()) && direction.equals(Direction.IN)) || (rule.getContains().equals(AAIDirection.IN.toString()) && direction.equals(Direction.OUT))) {
@@ -258,7 +269,7 @@ public class RelationshipToURI {
 						}
 					}
 				}
-			} catch (AAIException e) {
+			} catch (AAIException | EdgeRuleNotFoundException | AmbiguousRuleChoiceException e ) {
 				//ignore exceptions generated
 				continue;
 			}

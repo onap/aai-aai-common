@@ -19,6 +19,10 @@
  */
 package org.onap.aai.parsers.query;
 
+import com.att.eelf.configuration.EELFLogger;
+import com.att.eelf.configuration.EELFManager;
+import org.onap.aai.config.SpringContextAware;
+import org.onap.aai.edges.EdgeIngestor;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
@@ -26,7 +30,7 @@ import org.onap.aai.introspection.ModelType;
 import org.onap.aai.parsers.relationship.RelationshipToURI;
 import org.onap.aai.parsers.uri.URIParser;
 import org.onap.aai.query.builder.QueryBuilder;
-import org.onap.aai.serialization.db.EdgeRules;
+import org.springframework.context.ApplicationContext;
 
 import java.io.UnsupportedEncodingException;
 
@@ -35,11 +39,13 @@ import java.io.UnsupportedEncodingException;
  */
 public class RelationshipQueryParser extends LegacyQueryParser {
 
+	private static final EELFLogger logger = EELFManager.getInstance().getLogger(RelationshipQueryParser.class);
+
 	private Introspector relationship = null;
 	
 	private ModelType modelType = null;
 	
-	private EdgeRules edgeRules = null;
+	private EdgeIngestor edgeRules = null;
 	
 	/**
 	 * Instantiates a new relationship query parser.
@@ -54,11 +60,21 @@ public class RelationshipQueryParser extends LegacyQueryParser {
 		super(loader, queryBuilder);
 		this.relationship = obj;
 		this.modelType = obj.getModelType();
-		this.edgeRules = EdgeRules.getInstance();
+		initBeans();
 		RelationshipToURI rToUri = new RelationshipToURI(loader, obj);
 		this.uri = rToUri.getUri();
 		URIParser parser = new URIParser(loader, uri);
 		parser.parse(this);
 	}
-	
+
+	private void initBeans() {
+		ApplicationContext ctx = SpringContextAware.getApplicationContext();
+		if (ctx == null) {
+		    logger.warn("Unable to retrieve the spring context");
+		} else {
+			EdgeIngestor ei = ctx.getBean(EdgeIngestor.class);
+			this.edgeRules = ei;
+		}
+	}
+
 }

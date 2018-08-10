@@ -30,19 +30,21 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
-
+import org.onap.aai.config.SpringContextAware;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.introspection.LoaderFactory;
 import org.onap.aai.introspection.ModelType;
-import org.onap.aai.introspection.Version;
+import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.onap.aai.logging.LogFormatTools;
 
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 import com.google.common.base.CaseFormat;
+import org.onap.aai.setup.SchemaVersions;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 /**
  * The Class ListEndpoints.
@@ -51,8 +53,8 @@ public class ListEndpoints {
 
 	private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(ListEndpoints.class);
 
-	private final static String start = "inventory";
-	private final static String[] blacklist = { "search", "aai-internal" };
+	private final String start = "inventory";
+	private final String[] blacklist = { "search", "aai-internal" };
 
 	private List<String> endpoints = new ArrayList<>();
 	private Map<String, String> endpointToLogicalName = new HashMap<String, String>();
@@ -63,10 +65,24 @@ public class ListEndpoints {
 	 * @param args the arguments
 	 */
 	public static void main(String[] args) {
-		ListEndpoints endPoints = new ListEndpoints(AAIProperties.LATEST);
 
-		System.out.println(endPoints.toString("relationship-list"));
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+			"org.onap.aai.config",
+			"org.onap.aai.setup"
+		);
 
+		String schemaUriBasePath =  context.getEnvironment().getProperty("schema.uri.base.path");
+
+		if(schemaUriBasePath == null){
+			System.err.println("Unable to find the property schema.uri.base.path,"
+				+" please check if specified in system property or in schema-ingest.properties"
+			);
+		}
+
+		SchemaVersions schemaVersions = context.getBean(SchemaVersions.class);
+		ListEndpoints endPoints = new ListEndpoints(schemaUriBasePath, schemaVersions.getDefaultVersion());
+
+		LOGGER.info(endPoints.toString("relationship-list"));
 	}
 
 	/**
@@ -74,14 +90,14 @@ public class ListEndpoints {
 	 *
 	 * @param version the version
 	 */
-	public ListEndpoints(Version version) {
+	public ListEndpoints(String basePath, SchemaVersion version) {
 
-		Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, version);
+		Loader loader = SpringContextAware.getBean(LoaderFactory.class).createLoaderForVersion(ModelType.MOXY, version);
 
 		try {
 			final Introspector start = loader.introspectorFromName(this.start);
 			Set<String> startMap = new HashSet<>();
-			beginAudit(start, "/aai/" + version, startMap);
+			beginAudit(start, basePath + "/" + version, startMap);
 		} catch (AAIUnknownObjectException e) {
 			throw new RuntimeException("Failed to find object " + this.start + ", cannot run ListEndpoints audit");
 		}
@@ -97,17 +113,19 @@ public class ListEndpoints {
 
 		String currentUri = "";
 
-		if (!obj.getDbName().equals(start)) {
+		if (!obj.getDbName().equals("inventory")) {
 			currentUri = uri + obj.getGenericURI();
 		} else {
 			currentUri = uri;
 		}
-		if ("relationship-data".equals(obj.getName()) || "related-to-property".equals(obj.getName())) {
+		if (obj.getName().equals("relationship-data") || obj.getName().equals("related-to-property")) {
 			return;
 		}
 		if (!obj.isContainer()) {
 			endpoints.add(currentUri);
 		}
+		
+		String dbName = obj.getDbName();
 		
 		populateLogicalName(obj, uri, currentUri);
 		
@@ -175,7 +193,7 @@ public class ListEndpoints {
 	 */
 	private void populateLogicalName(Introspector obj, String uri, String currentUri) {
 
-		if (obj.getDbName().equals(start) || currentUri.split("/").length <= 4 || currentUri.endsWith("relationship-list")) {
+		if (obj.getDbName().equals("inventory") || currentUri.split("/").length <= 4 || currentUri.endsWith("relationship-list")) {
 			return;
 		}
 		
@@ -247,7 +265,7 @@ public class ListEndpoints {
 		List<String> result = new ArrayList<>();
 		Pattern p = null;
 		Matcher m = null;
-		if (!filterOut.isEmpty()) {
+		if (!filterOut.equals("")) {
 			p = Pattern.compile(filterOut);
 			m = null;
 		}

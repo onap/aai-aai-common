@@ -1,0 +1,106 @@
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm" package-name="inventory.aai.onap.org.v11" xml-mapping-metadata-complete="true">
+<xml-schema element-form-default="QUALIFIED">
+<xml-ns namespace-uri="http://org.onap.aai.inventory/v11" />
+</xml-schema>
+<java-types>
+<java-type name="Inventory">
+<xml-root-element name="inventory" />
+<java-attributes>
+<xml-element java-attribute="business" name="business" type="inventory.aai.onap.org.v11.Business" />
+</java-attributes>
+</java-type>
+<java-type name="Business">
+<xml-properties>
+<xml-property name="description" value="Namespace for business related constructs" />
+</xml-properties>
+<xml-root-element name="business" />
+<java-attributes>
+<xml-element java-attribute="customers" name="customers" type="inventory.aai.onap.org.v11.Customers" />
+</java-attributes>
+</java-type>
+<java-type name="Customers">
+<xml-properties>
+<xml-property name="description" value="Collection of customer identifiers to provide linkage back to BSS information." />
+</xml-properties>
+<xml-root-element name="customers" />
+<java-attributes>
+<xml-element container-type="java.util.ArrayList" java-attribute="customer" name="customer" type="inventory.aai.onap.org.v11.Customer" />
+</java-attributes>
+<xml-properties>
+<xml-property name="maximumDepth" value="0" />
+</xml-properties>
+</java-type>
+<java-type name="Customer">
+<xml-root-element name="customer" />
+<java-attributes>
+<xml-element java-attribute="globalCustomerId" name="global-customer-id" required="true" type="java.lang.String" xml-key="true">
+<xml-properties>
+<xml-property name="description" value="Global customer id used across to uniquely identify customer." />
+</xml-properties>
+</xml-element>
+<xml-element java-attribute="subscriberName" name="subscriber-name" required="true" type="java.lang.String">
+<xml-properties>
+<xml-property name="description" value="Subscriber name, an alternate way to retrieve a customer." />
+</xml-properties>
+</xml-element>
+<xml-element java-attribute="subscriberType" name="subscriber-type" required="true" type="java.lang.String">
+<xml-properties>
+<xml-property name="description" value="Subscriber type, a way to provide VID with only the INFRA customers." />
+<xml-property name="defaultValue" value="CUST" />
+</xml-properties>
+</xml-element>
+<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+<xml-properties>
+<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
+</xml-properties>
+</xml-element>
+<xml-element java-attribute="serviceSubscriptions" name="service-subscriptions" type="inventory.aai.onap.org.v11.ServiceSubscriptions" />
+</java-attributes>
+<xml-properties>
+<xml-property name="description" value="customer identifiers to provide linkage back to BSS information." />
+<xml-property name="nameProps" value="subscriber-name" />
+<xml-property name="indexedProps" value="subscriber-name,global-customer-id,subscriber-type" />
+<xml-property name="searchable" value="global-customer-id,subscriber-name" />
+<xml-property name="uniqueProps" value="global-customer-id" />
+<xml-property name="container" value="customers" />
+<xml-property name="namespace" value="business" />
+</xml-properties>
+</java-type>
+<java-type name="ServiceSubscriptions">
+<xml-properties>
+<xml-property name="description" value="Collection of objects that group service instances." />
+</xml-properties>
+<xml-root-element name="service-subscriptions" />
+<java-attributes>
+<xml-element container-type="java.util.ArrayList" java-attribute="serviceSubscription" name="service-subscription" type="inventory.aai.onap.org.v11.ServiceSubscription" />
+</java-attributes>
+</java-type>
+<java-type name="ServiceSubscription">
+<xml-root-element name="service-subscription" />
+<java-attributes>
+<xml-element java-attribute="serviceType" name="service-type" required="true" type="java.lang.String" xml-key="true">
+<xml-properties>
+<xml-property name="description" value="Value defined by orchestration to identify this service." />
+</xml-properties>
+</xml-element>
+<xml-element java-attribute="tempUbSubAccountId" name="temp-ub-sub-account-id" type="java.lang.String">
+<xml-properties>
+<xml-property name="description" value="This property will be deleted from A&amp;AI in the near future. Only stop gap solution." />
+</xml-properties>
+</xml-element>
+<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+<xml-properties>
+<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
+</xml-properties>
+</xml-element>
+</java-attributes>
+<xml-properties>
+<xml-property name="description" value="Object that group service instances." />
+<xml-property name="indexedProps" value="service-type" />
+<xml-property name="dependentOn" value="customer" />
+<xml-property name="container" value="service-subscriptions" />
+<xml-property name="crossEntityReference" value="service-instance,service-type" />
+</xml-properties>
+</java-type>
+</java-types>
+</xml-bindings>

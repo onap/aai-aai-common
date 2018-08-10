@@ -19,14 +19,14 @@
  */
 package org.onap.aai.util.genxsd;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.w3c.dom.Element;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.*;
 
 import java.util.HashMap;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
+import org.junit.Before;
+import org.junit.Test;
+import org.w3c.dom.Element;
 
 public class XSDJavaTypeTest extends XSDElementTest {
 

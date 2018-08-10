@@ -24,7 +24,6 @@ import com.att.eelf.configuration.EELFManager;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
 import org.onap.aai.logging.LogFormatTools;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatQueryResultFormatNotSupported;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
@@ -46,14 +45,14 @@ public class Formatter {
 
 	public JsonObject output(List<Object> queryResults) {
 
-		Stream<Object> stream = null;
+		Stream<Object> stream;
 		JsonObject result = new JsonObject();
 		JsonArray body = new JsonArray();
 
 		if (this.format instanceof Count) {
 			JsonObject countResult;
 			try {
-				countResult = format.formatObject(queryResults);
+				countResult = format.formatObject(queryResults).orElseThrow(() -> new AAIFormatVertexException(""));
 				body.add(countResult);
 			} catch (Exception e) {
 				LOGGER.warn("Failed to format result type of the query " + LogFormatTools.getStackTop(e));
@@ -69,7 +68,7 @@ public class Formatter {
 
 			stream.map(o -> {
 				try {
-					return Optional.<JsonObject>of(format.formatObject(o));
+					return format.formatObject(o);
 				} catch (AAIFormatVertexException e) {
 					LOGGER.warn("Failed to format vertex, returning a partial list " + LogFormatTools.getStackTop(e));
 				} catch (AAIFormatQueryResultFormatNotSupported e) {
@@ -78,8 +77,8 @@ public class Formatter {
 
 				return Optional.<JsonObject>empty();
 			})
-			.filter(Optional<JsonObject>::isPresent)
-			.map(Optional<JsonObject>::get)
+			.filter(Optional::isPresent)
+			.map(Optional::get)
 			.forEach(json -> {
 					if (isParallel) {
 						synchronized (body) {

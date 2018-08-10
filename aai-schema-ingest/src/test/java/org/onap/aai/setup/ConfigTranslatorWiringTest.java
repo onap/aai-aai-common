@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
- * Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright © 2017-18 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  * ============LICENSE_END=========================================================
- *
- * ECOMP is a trademark and service mark of AT&T Intellectual Property.
  */
 
 package org.onap.aai.setup;
@@ -37,8 +35,8 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {SchemaLocationsBean.class, ConfigTranslatorForWiringTest.class})
-@TestPropertySource(properties = {"schemaIngestPropLoc = src/test/resources/forWiringTests/schemaIngestWiringTest.properties"})
+@ContextConfiguration(classes = {SchemaLocationsBean.class, SchemaVersions.class, ConfigTranslatorForWiringTest.class})
+@TestPropertySource(properties = {"schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-wiring-test.properties"})
 @SpringBootTest
 public class ConfigTranslatorWiringTest {
 	@Autowired
@@ -47,15 +45,15 @@ public class ConfigTranslatorWiringTest {
 	@Test
 	public void test() {
 		assertNotNull(ct);
-		Map<Version, List<String>> nodes = ct.getNodeFiles();
-		assertTrue(nodes.containsKey(Version.V10));
-		assertTrue(1 == nodes.get(Version.V10).size());
-		assertTrue("src/test/resources/oxm/test_business_v10.xml".equals(nodes.get(Version.V10).get(0)));
+		Map<SchemaVersion, List<String>> nodes = ct.getNodeFiles();
+		assertTrue(nodes.containsKey(new SchemaVersion("v10")));
+		assertTrue(1 == nodes.get(new SchemaVersion("v10")).size());
+		assertTrue("src/test/resources/oxm/test_business_v10.xml".equals(nodes.get(new SchemaVersion("v10")).get(0)));
 		
-		Map<Version, List<String>> edges = ct.getEdgeFiles();
-		assertTrue(edges.containsKey(Version.V10));
-		assertTrue(1 == edges.get(Version.V10).size());
-		assertTrue("src/test/resources/edgeRules/test.json".equals(edges.get(Version.V10).get(0)));
+		Map<SchemaVersion, List<String>> edges = ct.getEdgeFiles();
+		assertTrue(edges.containsKey(new SchemaVersion("v10")));
+		assertTrue(1 == edges.get(new SchemaVersion("v10")).size());
+		assertTrue("src/test/resources/edgeRules/test.json".equals(edges.get(new SchemaVersion("v10")).get(0)));
 	}
 
 }

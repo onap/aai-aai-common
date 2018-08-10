@@ -19,8 +19,13 @@
  */
 package org.onap.aai.introspection.sideeffect;
 
+import com.att.eelf.configuration.EELFLogger;
+import com.att.eelf.configuration.EELFManager;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.onap.aai.config.SpringContextAware;
 import org.onap.aai.db.props.AAIProperties;
+import org.onap.aai.edges.exceptions.AmbiguousRuleChoiceException;
+import org.onap.aai.edges.exceptions.EdgeRuleNotFoundException;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
@@ -30,6 +35,8 @@ import org.onap.aai.introspection.sideeffect.exceptions.AAIMissingRequiredProper
 import org.onap.aai.schema.enums.PropertyMetadata;
 import org.onap.aai.serialization.db.DBSerializer;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
+import org.onap.aai.setup.SchemaVersions;
+
 
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
@@ -41,16 +48,24 @@ import java.util.regex.Pattern;
 public abstract class SideEffect {
 
 	protected static final Pattern template = Pattern.compile("\\{(.*?)\\}");
+	private static final EELFLogger logger = EELFManager.getInstance().getLogger(SideEffect.class);
+
 	protected final Introspector obj;
 	protected final TransactionalGraphEngine dbEngine;
 	protected final DBSerializer serializer;
-	protected final Loader latestLoader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, AAIProperties.LATEST);
+	protected final Loader latestLoader;
 	protected final Vertex self;
+
+	protected Set<String> templateKeys = new HashSet<>();
+
 	public SideEffect (Introspector obj, Vertex self, TransactionalGraphEngine dbEngine, DBSerializer serializer) {
 		this.obj = obj;
 		this.dbEngine = dbEngine;
 		this.serializer = serializer;
 		this.self = self;
+		LoaderFactory loaderFactory = SpringContextAware.getBean(LoaderFactory.class);
+		SchemaVersions schemaVersions = SpringContextAware.getBean(SchemaVersions.class);
+		this.latestLoader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion()) ;
 	}
 
 	protected void execute() throws UnsupportedEncodingException, URISyntaxException, AAIException {
@@ -58,7 +73,11 @@ public abstract class SideEffect {
 		for (Entry<String, String> entry : properties.entrySet()) {
 			Optional<String> populatedUri = this.replaceTemplates(obj, entry.getValue());
 			Optional<String> completeUri = this.resolveRelativePath(populatedUri);
-			this.processURI(completeUri, entry);
+			try {
+				this.processURI(completeUri, entry);
+			} catch (EdgeRuleNotFoundException | AmbiguousRuleChoiceException e) {
+			    logger.warn("Unable to execute the side effect {} due to ", e, this.getClass().getName());
+			}
 		}
 	}
 
@@ -99,13 +118,14 @@ public abstract class SideEffect {
 		return result;
 	}
 	
-	private Optional<String> replaceTemplates(Introspector obj, String uriString) throws AAIMissingRequiredPropertyException {
+	protected Optional<String> replaceTemplates(Introspector obj, String uriString) throws AAIMissingRequiredPropertyException {
 		String result = uriString;
 		final Map<String, String> propMap = this.findProperties(obj, uriString);
 		if (propMap.isEmpty()) {
 			return Optional.empty();
 		}
 		for (Entry<String, String> entry : propMap.entrySet()) {
+			templateKeys.add(entry.getKey());
 			result = result.replaceAll("\\{" + entry.getKey() + "\\}", entry.getValue());
 		}
 		//drop out wildcards if they exist
@@ -123,5 +143,5 @@ public abstract class SideEffect {
 	
 	protected abstract boolean replaceWithWildcard();
 	protected abstract PropertyMetadata getPropertyMetadata();
-	protected abstract void processURI(Optional<String> completeUri, Entry<String, String> entry) throws URISyntaxException, UnsupportedEncodingException, AAIException;
+	protected abstract void processURI(Optional<String> completeUri, Entry<String, String> entry) throws URISyntaxException, UnsupportedEncodingException, AAIException, EdgeRuleNotFoundException, AmbiguousRuleChoiceException;
 }

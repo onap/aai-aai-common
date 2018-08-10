@@ -19,14 +19,12 @@
  */
 package org.onap.aai.parsers.uri;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
-import org.onap.aai.introspection.Version;
 import org.onap.aai.schema.enums.ObjectMetadata;
-import org.onap.aai.serialization.db.EdgeType;
+import org.onap.aai.edges.enums.EdgeType;
+import org.onap.aai.setup.SchemaVersion;
 
 import javax.ws.rs.core.MultivaluedMap;
 import java.io.UnsupportedEncodingException;
@@ -39,12 +37,9 @@ import java.util.List;
  * with their keys populated based off the values in the URI.
  * 
  * It populates the keys in the order they are listed in the model.
- * 
- 
- *
  */
 public class URIToObject implements Parsable {
-	private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(URIToObject.class);
+
 	
 	private Introspector topEntity = null;
 	
@@ -58,7 +53,7 @@ public class URIToObject implements Parsable {
 	
 	private List<Object> parentList = null;
 	
-	private Version version = null;
+	private SchemaVersion version = null;
 	private Loader loader = null;
 	private final HashMap<String, Introspector> relatedObjects;
 	
@@ -166,7 +161,7 @@ public class URIToObject implements Parsable {
 	 *
 	 * @return the object version
 	 */
-	public Version getObjectVersion() {
+	public SchemaVersion getObjectVersion() {
 		return this.loader.getVersion();
 	}
 	public Loader getLoader() {
@@ -203,7 +198,6 @@ public class URIToObject implements Parsable {
 				}
 			}
 		} catch (UnsupportedEncodingException e) {
-			LOGGER.error(e.getMessage(),e);
 		}
 		this.previous = entity;
 	}

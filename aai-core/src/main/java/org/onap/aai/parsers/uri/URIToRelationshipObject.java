@@ -19,14 +19,16 @@
  */
 package org.onap.aai.parsers.uri;
 
+import org.onap.aai.config.SpringContextAware;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
-import org.onap.aai.introspection.Version;
+import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
-import org.onap.aai.serialization.db.EdgeType;
-import org.onap.aai.util.AAIApiServerURLBase;
-import org.onap.aai.workarounds.LegacyURITransformer;
+import org.onap.aai.edges.enums.EdgeType;
+import org.onap.aai.setup.SchemaVersions;
+import org.onap.aai.util.AAIConfig;
+import org.onap.aai.util.AAIConstants;
 
 import javax.ws.rs.core.MultivaluedMap;
 import java.io.UnsupportedEncodingException;
@@ -47,9 +49,7 @@ public class URIToRelationshipObject implements Parsable {
 	
 	private Introspector result = null;
 			
-	private LegacyURITransformer uriTransformer = null;
-	
-	private Version originalVersion = null;
+	private SchemaVersion originalVersion = null;
 	
 	private Introspector relationship = null;
 	
@@ -71,7 +71,6 @@ public class URIToRelationshipObject implements Parsable {
 	public URIToRelationshipObject(Loader loader, URI uri) throws AAIException {
 		
 		this.loader = loader;
-		uriTransformer = LegacyURITransformer.getInstance();
 		originalVersion = loader.getVersion();
 
 		try {
@@ -80,7 +79,7 @@ public class URIToRelationshipObject implements Parsable {
 			throw new RuntimeException("Fatal error - could not load relationship object!", e1);
 		}
 
-		this.baseURL = AAIApiServerURLBase.get(originalVersion);
+		this.baseURL = AAIConfig.get(AAIConstants.AAI_SERVER_URL_BASE);
 		this.uri = uri;
 		
 		}
@@ -132,7 +131,8 @@ public class URIToRelationshipObject implements Parsable {
 		URI originalUri = parser.getOriginalURI();
 		
 		URI relatedLink = new URI(this.baseURL + this.originalVersion + "/" + originalUri);
-		if (this.originalVersion.compareTo(Version.v10) >= 0) {
+		SchemaVersions schemaVersions = SpringContextAware.getBean(SchemaVersions.class);
+		if (this.originalVersion.compareTo(schemaVersions.getRelatedLinkVersion()) >= 0) {
 			//only return the path section of the URI past v10
 			relatedLink = new URI(relatedLink.getRawPath());
 		}
@@ -144,8 +144,7 @@ public class URIToRelationshipObject implements Parsable {
 	}
 
 	@Override
-	public void processObject(Introspector obj, EdgeType type, MultivaluedMap<String, String> uriKeys)
-			throws AAIException {
+	public void processObject(Introspector obj, EdgeType type, MultivaluedMap<String, String> uriKeys) {
 		for (String key : obj.getKeys()) {
 			try {
 				Introspector data = loader.introspectorFromName("relationship-data");

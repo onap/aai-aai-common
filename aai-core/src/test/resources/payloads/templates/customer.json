@@ -1,0 +1,27 @@
+{
+  "global-customer-id": "${global-customer-id}",
+  "subscriber-name": "example-subscriber-name-val-99675",
+  "subscriber-type": "example-subscriber-type-val-40388",
+  "service-subscriptions": {
+    "service-subscription": [
+      {
+        "service-type": "${subscription-type}",
+        "temp-ub-sub-account-id": "example-temp-ub-sub-account-id-val-64687",
+        "service-instances": {
+          "service-instance": [
+            {
+              "service-instance-id": "${service-instance-id}",
+              "service-instance-name": "example-service-instance-name-val-4896",
+              "service-type": "example-service-type-val-25453",
+              "service-role": "example-service-role-val-66197",
+              "environment-context": "example-environment-context-val-95014",
+              "workload-context": "example-workload-context-val-56102",
+              "model-invariant-id": "${model-invariant-id}",
+              "model-version-id": "${model-version-id}"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -22,7 +22,7 @@ package org.onap.aai.rest.ueb;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
-import org.onap.aai.introspection.Version;
+import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.util.StoreNotificationEvent;
 
 /**
@@ -40,7 +40,6 @@ public class NotificationEvent {
 	/**
 	 * Instantiates a new notification event.
 	 *
-	 * @param version the version
 	 * @param eventHeader the event header
 	 * @param obj the obj
 	 */
@@ -60,7 +59,7 @@ public class NotificationEvent {
 	public void trigger() throws AAIException {
 		
 		StoreNotificationEvent sne = new StoreNotificationEvent(transactionId, sourceOfTruth);
-		
+	
 		sne.storeEvent(loader, eventHeader, obj);
 
 	}
@@ -70,7 +69,7 @@ public class NotificationEvent {
 	 *
 	 * @return the notification version
 	 */
-	public Version getNotificationVersion() {
+	public SchemaVersion getNotificationVersion() {
 		return loader.getVersion();
 	}
 	

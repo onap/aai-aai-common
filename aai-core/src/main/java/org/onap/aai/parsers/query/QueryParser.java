@@ -20,10 +20,13 @@
 package org.onap.aai.parsers.query;
 
 import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.onap.aai.config.SpringContextAware;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.introspection.LoaderFactory;
 import org.onap.aai.query.builder.QueryBuilder;
+import org.onap.aai.setup.SchemaVersion;
+import org.onap.aai.setup.SchemaVersions;
 
 import java.net.URI;
 
@@ -57,7 +60,9 @@ public abstract class QueryParser {
 		this.uri = uri;
 		this.queryBuilder = queryBuilder;
 		this.loader = loader;
-		this.latestLoader = LoaderFactory.createLoaderForVersion(loader.getModelType(), AAIProperties.LATEST);
+		LoaderFactory loaderFactory = SpringContextAware.getBean(LoaderFactory.class);
+		SchemaVersion latest = SpringContextAware.getBean(SchemaVersions.class).getDefaultVersion();
+		this.latestLoader = loaderFactory.createLoaderForVersion(loader.getModelType(), latest);
 	}
 	
 	/**
@@ -69,7 +74,9 @@ public abstract class QueryParser {
 	protected QueryParser(Loader loader, QueryBuilder<Vertex> queryBuilder) {
 		this.queryBuilder = queryBuilder;
 		this.loader = loader;
-		this.latestLoader = LoaderFactory.createLoaderForVersion(loader.getModelType(), AAIProperties.LATEST);
+		LoaderFactory loaderFactory = SpringContextAware.getBean(LoaderFactory.class);
+		SchemaVersion latest = SpringContextAware.getBean(SchemaVersions.class).getDefaultVersion();
+		this.latestLoader = loaderFactory.createLoaderForVersion(loader.getModelType(), latest);
 	}
 	
 	/**

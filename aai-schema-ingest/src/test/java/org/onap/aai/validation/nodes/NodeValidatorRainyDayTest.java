@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
- * Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright © 2017-18 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  * ============LICENSE_END=========================================================
- *
- * ECOMP is a trademark and service mark of AT&T Intellectual Property.
  */
 
 package org.onap.aai.validation.nodes;
@@ -28,6 +26,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.onap.aai.nodes.NodeIngestor;
 import org.onap.aai.setup.SchemaLocationsBean;
+import org.onap.aai.setup.SchemaVersions;
 import org.onap.aai.testutils.BadNodeConfigForValidationTest;
 import org.onap.aai.validation.CheckEverythingStrategy;
 import org.onap.aai.validation.nodes.DefaultDuplicateNodeDefinitionValidationModule;
@@ -35,11 +34,13 @@ import org.onap.aai.validation.nodes.NodeValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {SchemaLocationsBean.class, BadNodeConfigForValidationTest.class, NodeIngestor.class,
+@ContextConfiguration(classes = {SchemaLocationsBean.class, SchemaVersions.class, BadNodeConfigForValidationTest.class, NodeIngestor.class,
 		CheckEverythingStrategy.class, DefaultDuplicateNodeDefinitionValidationModule.class, NodeValidator.class})
+@TestPropertySource(properties = { "schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-wiring-test.properties" })
 @SpringBootTest
 public class NodeValidatorRainyDayTest {
 	@Autowired

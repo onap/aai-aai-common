@@ -26,10 +26,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.onap.aai.AAIJunitRunner;
+import org.onap.aai.AAISetup;
 import org.onap.aai.HttpTestUtil;
 import org.onap.aai.PayloadUtil;
 import org.onap.aai.introspection.*;
+
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.skyscreamer.jsonassert.JSONAssert;
 
@@ -42,8 +43,8 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-@RunWith(value = AAIJunitRunner.class)
-public class PserverTest {
+@RunWith(value = Parameterized.class)
+public class PserverTest extends AAISetup{
 
     private static EELFLogger logger = EELFManager.getInstance().getLogger(PserverTest.class);
     private HttpTestUtil httpTestUtil;
@@ -55,9 +56,11 @@ public class PserverTest {
     @Parameterized.Parameters(name = "QueryStyle.{0}")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
-                {QueryStyle.TRAVERSAL}
+                {QueryStyle.TRAVERSAL},
+                {QueryStyle.TRAVERSAL_URI}
         });
     }
+
 
     @Before
     public void setUp(){
@@ -120,10 +123,9 @@ public class PserverTest {
         assertEquals("Expect the cloud region to be created", 200, response.getStatus());
         logger.info("Successfully retrieved the cloud region from db");
 
-        Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.getLatest());
+        Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
         Introspector in = loader.unmarshal("cloud-region", response.getEntity().toString());
 
-        System.out.println(in.marshal(true));
         String resourceVersion = JsonPath.read(response.getEntity().toString(), "$.resource-version");
 
         response = httpTestUtil.doDelete(cloudRegionUri, resourceVersion);

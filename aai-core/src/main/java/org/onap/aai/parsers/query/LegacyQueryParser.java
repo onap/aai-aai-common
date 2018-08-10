@@ -32,7 +32,7 @@ import org.onap.aai.parsers.uri.URIToObject;
 import org.onap.aai.query.builder.QueryBuilder;
 import org.onap.aai.restcore.util.URITools;
 import org.onap.aai.schema.enums.PropertyMetadata;
-import org.onap.aai.serialization.db.EdgeType;
+import org.onap.aai.edges.enums.EdgeType;
 
 import javax.ws.rs.core.MultivaluedMap;
 import java.io.UnsupportedEncodingException;

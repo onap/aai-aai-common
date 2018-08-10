@@ -25,7 +25,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.onap.aai.AAIJunitRunner;
+import org.onap.aai.AAISetup;
 import org.onap.aai.HttpTestUtil;
 import org.onap.aai.PayloadUtil;
 import org.onap.aai.exceptions.AAIException;
@@ -44,8 +44,8 @@ import static org.junit.Assert.assertEquals;
  * children nodes associated to it then you should be able to
  * remove the cloud region without removing the individual child nodes first
  */
-@RunWith(value = AAIJunitRunner.class)
-public class CloudRegionTest {
+@RunWith(value = Parameterized.class)
+public class CloudRegionTest extends AAISetup {
 
     private HttpTestUtil httpTestUtil;
 
@@ -55,7 +55,8 @@ public class CloudRegionTest {
     @Parameterized.Parameters(name = "QueryStyle.{0}")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
-                {QueryStyle.TRAVERSAL}
+                {QueryStyle.TRAVERSAL},
+                {QueryStyle.TRAVERSAL_URI}
         });
     }
 

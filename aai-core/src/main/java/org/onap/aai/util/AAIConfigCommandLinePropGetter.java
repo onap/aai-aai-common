@@ -43,8 +43,8 @@ public class AAIConfigCommandLinePropGetter {
 	 */
 	public static void main(String[] args) {
 		if (args.length != 1) {
-			System.out.println("only one property may be requested at a time");
-			System.out.println("usage: AAIConfigCommandLinePropGetter propertyname");
+	//		System.out.println("only one property may be requested at a time");
+		//	System.out.println("usage: AAIConfigCommandLinePropGetter propertyname");
 		}
 		try {
 			AAIConfig.init();
@@ -55,7 +55,7 @@ public class AAIConfigCommandLinePropGetter {
 				System.out.println("requested property could not be found");
 			}
 		} catch(AAIException e) {
-			System.out.println("exception:" + e.toString()); //TODO is this reasonable?
+			//System.out.println("exception:" + e.toString()); //TODO is this reasonable?
 		} finally {
 			System.exit(0);
 		}

@@ -54,6 +54,9 @@ public class URITools {
 				for (String section : sections) {
 					query = section.split("=");
 					key = UriUtils.decode(query[0], "UTF-8");
+					if(query[1] != null){
+						query[1] = query[1].replaceAll("\\+", "%20");
+					}
 					value = UriUtils.decode(query[1], "UTF-8");
 					if (result.containsKey(key)) {
 						result.add(key, value);

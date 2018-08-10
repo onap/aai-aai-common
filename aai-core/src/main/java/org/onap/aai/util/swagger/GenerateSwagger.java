@@ -24,7 +24,8 @@ import com.fasterxml.jackson.dataformat.yaml.snakeyaml.constructor.SafeConstruct
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import org.onap.aai.introspection.Version;
+
+import org.onap.aai.setup.SchemaVersions;
 
 import java.io.*;
 import java.util.*;
@@ -36,18 +37,31 @@ public class GenerateSwagger {
     public static final String DEFAULT_WIKI = "";
 
     public static final String DEFAULT_SCHEMA_DIR = "../aai-schema";
-    public static final String CURRENT_VERSION = Version.getLatest().toString();
     //if the program is run from aai-common, use this directory as default"
     public static final String ALT_SCHEMA_DIR = "aai-schema";
     //used to check to see if program is run from aai-core
     public static final String DEFAULT_RUN_DIR = "aai-core";
 
-    public static void main(String[] args) throws IOException, TemplateException {
+    public  static SchemaVersions schemaVersions;
+    
+    public SchemaVersions getSchemaVersions() {
+		return schemaVersions;
+	}
 
+	
+
+	public static void main(String[] args) throws IOException, TemplateException {
+
+        
+       
+
+       // SchemaVersions schemaVersions = SpringContextAware.getBean(SchemaVersions.class);
+        String CURRENT_VERSION   = schemaVersions.getDefaultVersion().toString();
         String schemaDir         = System.getProperty("aai.schema.dir");
         String versionToGenerate = System.getProperty("aai.generate.version");
         String wikiLink = System.getProperty("aai.wiki.link");
-
+        String release  = System.getProperty("aai.release", "onap");
+        
         if(schemaDir == null){
             if(System.getProperty("user.dir") != null && !System.getProperty("user.dir").contains(DEFAULT_RUN_DIR)) {
             	System.out.println("Warning: Schema directory is not set so using default schema dir: " + ALT_SCHEMA_DIR);
@@ -69,7 +83,7 @@ public class GenerateSwagger {
             wikiLink = DEFAULT_WIKI;
         }
 
-        String yamlFile = schemaDir + "/src/main/resources/aai_swagger_yaml/aai_swagger_" + versionToGenerate + ".yaml";
+        String yamlFile = schemaDir + "/src/main/resources/" + release + "/aai_swagger_yaml/aai_swagger_" + versionToGenerate + ".yaml";
         File swaggerYamlFile = new File(yamlFile);
 
         if(!swaggerYamlFile.exists()){
@@ -82,7 +96,7 @@ public class GenerateSwagger {
 
         try (BufferedReader reader = new BufferedReader(new FileReader(swaggerYamlFile))){
             swaggerMap = (Map<String, Object>) yaml.load(reader);
-        } catch(IOException ex){
+        } catch(Exception ex){
             ex.printStackTrace();
         }
 
@@ -158,7 +172,7 @@ public class GenerateSwagger {
         }
         Template template = configuration.getTemplate("swagger.html.ftl");
 
-        String outputDirStr = schemaDir + "/src/main/resources/aai_swagger_html";
+        String outputDirStr = schemaDir + "/src/main/resources/" + release + "/aai_swagger_html";
 
         File outputDir = new File(outputDirStr);
 
@@ -343,7 +357,7 @@ public class GenerateSwagger {
             .forEach((entry) -> {
 
                 Definition definition = new Definition();
-                String key = entry.getKey();
+                String key = entry.getKey();              
                 Map<String, Object> valueMap = (Map<String, Object>) entry.getValue();
 
                 definition.setDefinitionName(key);
@@ -471,3 +485,4 @@ public class GenerateSwagger {
     }
 
 }
+

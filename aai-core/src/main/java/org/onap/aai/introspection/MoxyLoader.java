@@ -23,6 +23,7 @@ import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 import com.google.common.base.CaseFormat;
 import com.google.common.collect.ImmutableMap;
+
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
@@ -31,19 +32,13 @@ import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.onap.aai.introspection.exceptions.AAIUnmarshallingException;
 import org.onap.aai.logging.ErrorLogHelper;
 import org.onap.aai.logging.LogFormatTools;
+import org.onap.aai.nodes.NodeIngestor;
 import org.onap.aai.restcore.MediaType;
-import org.onap.aai.util.AAIConstants;
+import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.workarounds.NamingExceptions;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-
-import javax.xml.XMLConstants;
+import org.springframework.stereotype.Component;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.stream.StreamSource;
 import java.io.*;
 import java.util.HashSet;
@@ -56,17 +51,20 @@ public class MoxyLoader extends Loader {
 	private EELFLogger LOGGER = EELFManager.getInstance().getLogger(MoxyLoader.class);
 	private Map<String, Introspector> allObjs = null;
 
-	/**
-	 * Instantiates a new moxy loader.
-	 *
-	 * @param version the version
-	 * @param llBuilder the ll builder
-	 */
-	protected MoxyLoader(Version version) {
+	private Map<SchemaVersion, MoxyLoader> moxyLoaderFactory;
+	
+	private NodeIngestor nodeIngestor;
+
+	public MoxyLoader(SchemaVersion version, NodeIngestor nodeIngestor) {
 		super(version, ModelType.MOXY);
+		this.nodeIngestor = nodeIngestor;
 		process(version);
 	}
 
+	public MoxyLoader getMoxyLoader(SchemaVersion v) {
+		return moxyLoaderFactory.get(v);
+
+	}
 	/**
 	 * {@inheritDoc}
 	 * @throws AAIUnknownObjectException 
@@ -112,9 +110,11 @@ public class MoxyLoader extends Loader {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void process(Version version) {
-		ModelInjestor injestor = ModelInjestor.getInstance();
-		jaxbContext = injestor.getContextForVersion(version);
+	protected void process(SchemaVersion version) {
+		/*
+		 * We need to have just same JaxbContext for each version
+		 */
+		jaxbContext = nodeIngestor.getContextForVersion(version);
 		
 	}
 
@@ -165,34 +165,12 @@ public class MoxyLoader extends Loader {
 	}
 	
 	private Set<String> objectsInVersion() {
-		final Set<String> result = new HashSet<>();
+		 Set<String> result = new HashSet<>();
 
 		try {
-			final DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-			final String fileName = ModelInjestor.getInstance().getOXMFileName(getVersion());
+	         result = nodeIngestor.getObjectsInVersion(getVersion());
 
-			docFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-
-			final DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-
-			InputStream inputStream;
-			File oxmFile = new File(AAIConstants.AAI_HOME_ETC + fileName);
-
-			if(oxmFile.exists()){
-			    LOGGER.info("Oxm file exists on the system {}", oxmFile);
-				inputStream = new FileInputStream(oxmFile);
-			} else {
-				LOGGER.warn("Unable to find oxm file {} on the system so using classloader", oxmFile);
-				inputStream = getClass().getClassLoader().getResourceAsStream(fileName);
-			}
-
-			final Document doc = docBuilder.parse(inputStream);
-			final NodeList list = doc.getElementsByTagName("java-type");
-
-			for (int i = 0; i < list.getLength(); i++) {
-				result.add(list.item(i).getAttributes().getNamedItem("name").getNodeValue());
-			}
-		} catch (ParserConfigurationException | SAXException | IOException e) {
+		} catch (Exception e) {
 			LOGGER.warn("Exception while enumerating objects for API version " + getVersion() + " (returning partial results) " + LogFormatTools.getStackTop(e));
 		}
 
@@ -204,4 +182,19 @@ public class MoxyLoader extends Loader {
 		return this.jaxbContext;
 	}
 
+	/*
+	 * Im keeping this for now - Just in case
+	 */
+	/*private static class Helper {
+		private static final Map<SchemaVersion, MoxyLoader> INSTANCEMAP = new ConcurrentHashMap<>();
+
+		private Helper() {}
+
+		private static MoxyLoader getLoaderBySchemaVersion(SchemaVersion v) {
+			if (!INSTANCEMAP.containsKey(v)) {
+				INSTANCEMAP.put(v, new MoxyLoader(v, nodeIngestor));
+			}
+			return INSTANCEMAP.get(v);
+		}
+	}*/
 }

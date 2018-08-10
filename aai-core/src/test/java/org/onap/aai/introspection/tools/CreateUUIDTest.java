@@ -38,7 +38,7 @@ public class CreateUUIDTest extends AAISetup {
     @Before
     public void setup(){
         createUUID = new CreateUUID();
-        loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.getLatest());
+        loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
     }
 
     /**

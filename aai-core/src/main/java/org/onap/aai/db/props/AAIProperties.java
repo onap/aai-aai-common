@@ -19,8 +19,6 @@
  */
 package org.onap.aai.db.props;
 
-import org.onap.aai.introspection.Version;
-
 public class AAIProperties {
 	public static final String NODE_TYPE = "aai-node-type";
 	public static final String LAST_MOD_SOURCE_OF_TRUTH = "last-mod-source-of-truth";
@@ -30,7 +28,6 @@ public class AAIProperties {
 	public static final String CREATED_TS = "aai-created-ts";
 	public static final String RESOURCE_VERSION = "resource-version";
 	public static final String AAI_URI = "aai-uri";
-	public static final Version LATEST = Version.v13;
 	public static final Integer MAXIMUM_DEPTH = 10000;
 	public static final String LINKED = "linked";
 	public static final String DB_ALIAS_SUFFIX = "-local";

@@ -19,6 +19,12 @@
  */
 package org.onap.aai.util;
 
+import java.io.StringWriter;
+import java.util.Iterator;
+import java.util.UUID;
+
+import javax.xml.bind.Marshaller;
+
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 import org.eclipse.persistence.dynamic.DynamicEntity;
@@ -35,14 +41,10 @@ import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 
-import javax.xml.bind.Marshaller;
-import java.io.StringWriter;
-import java.util.Iterator;
-import java.util.UUID;
-
 public class StoreNotificationEvent {
 
     private static final EELFLogger logger = EELFManager.getInstance().getLogger(StoreNotificationEvent.class);
+    
 	private MessageProducer messageProducer;
 	private String fromAppId = "";
 	private String transId = "";
@@ -56,7 +58,7 @@ public class StoreNotificationEvent {
 	 * Instantiates a new store notification event.
 	 */
 	public StoreNotificationEvent(String transactionId, String sourceOfTruth) {
-	    this.messageProducer = new AAIDmaapEventJMSProducer();
+		this.messageProducer = new AAIDmaapEventJMSProducer();
         this.transactionId   = transactionId;
         this.sourceOfTruth   = sourceOfTruth;
 	}
@@ -220,7 +222,6 @@ public class StoreNotificationEvent {
 			marshaller.setProperty(org.eclipse.persistence.jaxb.MarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME, false);
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, false);
 			marshaller.marshal(notificationEvent, result);
-			
 			this.sendToDmaapJmsQueue(result.toString());
 
 		} catch (Exception e) {
@@ -277,7 +278,7 @@ public class StoreNotificationEvent {
 			}
 
 			if (notificationEvent.getValue("cambria-partition") == null) {
-				notificationEvent.setValue("cambria-partition", AAIConstants.UEB_PUB_PARTITION_AAI);
+				notificationEvent.setValue("cambria-partition", AAIConfig.get("aai.notificationEvent.default.partition", AAIConstants.UEB_PUB_PARTITION_AAI));
 			}
 
 			notificationEvent.setValue("event-header", eventHeader.getUnderlyingObject());
@@ -294,6 +295,7 @@ public class StoreNotificationEvent {
 	}
 
 	private void sendToDmaapJmsQueue(String entityString) throws JSONException {
+
 		
 		JSONObject entityJsonObject = new JSONObject(entityString);
 		

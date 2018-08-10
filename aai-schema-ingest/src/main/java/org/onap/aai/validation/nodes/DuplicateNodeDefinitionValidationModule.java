@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
- * Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright © 2017-18 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  * ============LICENSE_END=========================================================
- *
- * ECOMP is a trademark and service mark of AT&T Intellectual Property.
  */
 
 package org.onap.aai.validation.nodes;
 
 import java.util.List;
 
-import org.onap.aai.setup.Version;
+import org.onap.aai.setup.SchemaVersion;
 
 /**
  * Defines rules for duplicate node definitions in a set of files
@@ -45,5 +43,5 @@ public interface DuplicateNodeDefinitionValidationModule {
 	 * 	with appropriate information about what node types
 	 *  were found
 	 */
-	public String findDuplicates(List<String> files, Version v);
+	String findDuplicates(List<String> files, SchemaVersion v);
 }

@@ -20,6 +20,7 @@
 package org.onap.aai.introspection;
 
 import org.junit.Before;
+
 import org.junit.Test;
 import org.onap.aai.AAISetup;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
@@ -27,13 +28,10 @@ import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import java.util.Set;
 
 import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 
 public class PropertyPredicatesTest extends AAISetup {
-
-	private final Version version = Version.getLatest();
 
 	private Loader loader;
 	private ModelType introspectorFactoryType = ModelType.MOXY;
@@ -41,7 +39,7 @@ public class PropertyPredicatesTest extends AAISetup {
 	
 	@Before
 	public void setup() throws Exception {
-		loader = LoaderFactory.createLoaderForVersion(introspectorFactoryType, version);
+		loader = loaderFactory.createLoaderForVersion(introspectorFactoryType, schemaVersions.getDefaultVersion());
 		obj = loader.introspectorFromName("generic-vnf");
 	}
 	

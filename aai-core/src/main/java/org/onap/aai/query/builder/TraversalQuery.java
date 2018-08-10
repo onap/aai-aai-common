@@ -19,12 +19,6 @@
  */
 package org.onap.aai.query.builder;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.util.List;
-
-import javax.ws.rs.core.MultivaluedMap;
-
 import org.apache.tinkerpop.gremlin.process.traversal.Step;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
@@ -34,7 +28,12 @@ import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.parsers.query.QueryParser;
 import org.onap.aai.parsers.query.TraversalStrategy;
-import org.onap.aai.serialization.db.EdgeRules;
+import org.onap.aai.edges.enums.EdgeType;
+
+import javax.ws.rs.core.MultivaluedMap;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.util.List;
 
 /**
  * The Class TraversalQuery.
@@ -55,34 +54,10 @@ public class TraversalQuery<E> extends GraphTraversalBuilder<E> {
 	 * Instantiates a new traversal query.
 	 *
 	 * @param loader the loader
-	 * @param source graph traversal source
-	 * @param edgeRules the edgeRules to use
-	 */
-	public TraversalQuery(Loader loader, GraphTraversalSource source, EdgeRules edgeRules) {
-		super(loader, source, edgeRules);
-		this.factory = new TraversalStrategy(this.loader, this);
-	
-	}
-	
-	/**
-	 * Instantiates a new traversal query.
-	 *
-	 * @param loader the loader
 	 * @param start the start
 	 */
 	public TraversalQuery(Loader loader, GraphTraversalSource source, Vertex start) {
 		super(loader, source, start);
-		this.factory = new TraversalStrategy(this.loader, this);
-	}
-	
-	/**
-	 * Instantiates a new traversal query.
-	 *
-	 * @param loader the loader
-	 * @param start the start
-	 */
-	public TraversalQuery(Loader loader, GraphTraversalSource source, Vertex start, EdgeRules edgeRules) {
-		super(loader, source, start, edgeRules);
 		this.factory = new TraversalStrategy(this.loader, this);
 	}
 	
@@ -147,8 +122,13 @@ public class TraversalQuery<E> extends GraphTraversalBuilder<E> {
 	
 	@Override
 	protected QueryBuilder<E> cloneQueryAtStep(int index) {
+		GraphTraversal.Admin<Vertex, E> cloneAdmin = getCloneAdmin(index);
+		return new TraversalQuery<>(cloneAdmin, loader, source, this);
+	}
+
+	protected GraphTraversal.Admin<Vertex, E> getCloneAdmin(int index) {
 		int idx = index;
-		
+
 		if (idx == 0) {
 			idx = stepIndex;
 		}
@@ -160,9 +140,9 @@ public class TraversalQuery<E> extends GraphTraversalBuilder<E> {
 		for (int i = steps.size()-1; i >= idx; i--) {
 			cloneAdmin.removeStep(i);
 		}
-		return new TraversalQuery<>(cloneAdmin, loader, source, this);
+		return cloneAdmin;
 	}
-	
+
 	@Override
 	protected QueryBuilder<E> removeQueryStepsBetween(int start, int end) {
 		GraphTraversal<Vertex, E> clone = this.traversal.asAdmin().clone();
