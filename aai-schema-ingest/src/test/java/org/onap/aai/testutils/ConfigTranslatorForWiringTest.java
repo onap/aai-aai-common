@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
- * Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright © 2017-18 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,38 +22,33 @@
 
 package org.onap.aai.testutils;
 
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import org.onap.aai.setup.ConfigTranslator;
-import org.onap.aai.setup.SchemaLocationsBean;
-import org.onap.aai.setup.Version;
+import org.onap.aai.setup.*;
 
 public class ConfigTranslatorForWiringTest extends ConfigTranslator {
 
-	public ConfigTranslatorForWiringTest(SchemaLocationsBean bean) {
-		super(bean);
+	public ConfigTranslatorForWiringTest(SchemaLocationsBean bean, SchemaVersions schemaVersions) {
+		super(bean, schemaVersions);
 	}
 
 	@Override
-	public Map<Version, List<String>> getNodeFiles() {
+	public Map<SchemaVersion, List<String>> getNodeFiles() {
 		String f = bean.getNodeDirectory() + "test_business_v10.xml";
 		List<String> files = new ArrayList<>();
 		files.add(f);
-		Map<Version, List<String>> mp = new EnumMap<>(Version.class);
-		mp.put(Version.V10, files);
+		Map<SchemaVersion, List<String>> mp = new TreeMap<>();
+		mp.put(new SchemaVersion("v10"), files);
 		return mp;
 	}
 
 	@Override
-	public Map<Version, List<String>> getEdgeFiles() {
+	public Map<SchemaVersion, List<String>> getEdgeFiles() {
 		String f = bean.getEdgeDirectory() + "test.json";
 		List<String> files = new ArrayList<>();
 		files.add(f);
-		Map<Version, List<String>> mp = new EnumMap<>(Version.class);
-		mp.put(Version.V10, files);
+		Map<SchemaVersion, List<String>> mp = new TreeMap<>();
+		mp.put(new SchemaVersion("v10"), files);
 		return mp;
 	}
 

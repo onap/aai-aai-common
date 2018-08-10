@@ -20,7 +20,6 @@
 package org.onap.aai.util;
 
 import java.io.FileInputStream;
-import java.security.KeyManagementException;
 import java.security.KeyStore;
 
 import javax.net.ssl.HostnameVerifier;
@@ -30,9 +29,7 @@ import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 
-import org.onap.aai.domain.yang.Customers;
 import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.api.json.JSONConfiguration;
@@ -40,41 +37,7 @@ import com.sun.jersey.client.urlconnection.HTTPSProperties;
 
 public class HttpsAuthExternalClient {
 
-	/**
-	 * The main method.
-	 *
-	 * @param args the arguments
-	 */
-	public static void main(String[] args) {
-		try {
-			String url = AAIConfig.get(AAIConstants.AAI_SERVER_URL) + "business/customers";
-			System.out.println("Making Jersey https call...");
-			String keystore = args[0];
-			String keypasswd = args[1];
-			Client client = HttpsAuthExternalClient.getClient(keystore, keypasswd);
-		
-			ClientResponse res = client.resource(url)
-					.accept("application/json")
-					.header("X-TransactionId", "PROV001")
-					.header("X-FromAppId",  "AAI")
-					.type("application/json")
-					.get(ClientResponse.class);
-			
-//			System.out.println("Jersey result: ");
-//			System.out.println(res.getEntity(String.class).toString());
-			
-			Customers customers = res.getEntity(Customers.class);
-			System.out.println("Jersey result: ");
-			System.out.println("Number of customers: " + customers.getCustomer().size());	
-			
-		} catch (KeyManagementException e) {
-			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 
-	
 	/**
 	 * Gets the client.
 	 *
@@ -119,12 +82,11 @@ public class HttpsAuthExternalClient {
 			
 			String alg = TrustManagerFactory.getDefaultAlgorithm();
 			TrustManagerFactory tmf = TrustManagerFactory.getInstance(alg);
-			try(FileInputStream tin = new FileInputStream(truststore_path)) {
-				KeyStore ts = KeyStore.getInstance("PKCS12");
-				char[] tpwd = truststore_password.toCharArray();
-				ts.load(tin, tpwd);
-				tmf.init(ts);
-			}
+			FileInputStream tin = new FileInputStream(truststore_path);
+			KeyStore ts = KeyStore.getInstance("PKCS12");
+			char[] tpwd = truststore_password.toCharArray();
+			ts.load(tin, tpwd);
+			tmf.init(ts);
 	
 			//ctx.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
 			// Updating key manager to null, to disable two way SSL

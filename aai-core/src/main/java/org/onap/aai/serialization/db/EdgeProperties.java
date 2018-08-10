@@ -19,6 +19,8 @@
  */
 package org.onap.aai.serialization.db;
 
+import org.onap.aai.edges.enums.EdgeProperty;
+
 public class EdgeProperties {
 
 	public static String out(EdgeProperty prop) {

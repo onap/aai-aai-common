@@ -30,23 +30,29 @@ import org.onap.aai.AAISetup;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Loader;
-import org.onap.aai.introspection.LoaderFactory;
 import org.onap.aai.introspection.ModelType;
-import org.onap.aai.serialization.db.EdgeRules;
-import org.onap.aai.serialization.db.EdgeType;
+
+import org.onap.aai.serialization.db.EdgeSerializer;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
+import org.onap.aai.edges.enums.EdgeType;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertTrue;
 
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class UntilTest extends AAISetup {
 
 	private Loader loader;
 	
+	@Autowired
+	EdgeSerializer edgeSer;
+	
 	@Before
 	public void setup() throws Exception {
-		loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, AAIProperties.LATEST);
+		loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
 	}
 	
 	private QueryBuilder<Vertex> buildTestQuery(QueryBuilder<Vertex> qb) throws AAIException{
@@ -61,16 +67,15 @@ public class UntilTest extends AAISetup {
 	@Test
 	public void gremlinQueryUntilTest() throws AAIException {
 		Graph graph = TinkerGraph.open();
-		EdgeRules rules = EdgeRules.getInstance();
 		GraphTraversalSource g = graph.traversal();
 		
 		Vertex v1 = graph.addVertex(T.id, 1, "aai-node-type", "cloud-region");
 		Vertex v2 = graph.addVertex(T.id, 2, "aai-node-type", "tenant");
 		Vertex v3 = graph.addVertex(T.id, 3, "aai-node-type", "vserver");
 		Vertex v4 = graph.addVertex(T.id, 4, "aai-node-type", "l-interface");
-		rules.addTreeEdge(g, v1, v2);
-		rules.addTreeEdge(g, v2, v3);
-		rules.addTreeEdge(g, v3, v4);
+		edgeSer.addTreeEdge(g, v1, v2);
+		edgeSer.addTreeEdge(g, v2, v3);
+		edgeSer.addTreeEdge(g, v3, v4);
 		List<Vertex> expected = new ArrayList<>();
 		expected.add(v4);
 		
@@ -85,16 +90,15 @@ public class UntilTest extends AAISetup {
 	@Test
 	public void traversalQueryUntilTest() throws AAIException {
 		Graph graph = TinkerGraph.open();
-		EdgeRules rules = EdgeRules.getInstance();
 		GraphTraversalSource g = graph.traversal();
 		
 		Vertex v1 = graph.addVertex(T.id, 1, "aai-node-type", "cloud-region");
 		Vertex v2 = graph.addVertex(T.id, 2, "aai-node-type", "tenant");
 		Vertex v3 = graph.addVertex(T.id, 3, "aai-node-type", "vserver");
 		Vertex v4 = graph.addVertex(T.id, 4, "aai-node-type", "l-interface");
-		rules.addTreeEdge(g, v1, v2);
-		rules.addTreeEdge(g, v2, v3);
-		rules.addTreeEdge(g, v3, v4);
+		edgeSer.addTreeEdge(g, v1, v2);
+		edgeSer.addTreeEdge(g, v2, v3);
+		edgeSer.addTreeEdge(g, v3, v4);
 		List<Vertex> expected = new ArrayList<>();
 		expected.add(v4);
 		

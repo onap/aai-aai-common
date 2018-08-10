@@ -38,6 +38,8 @@ import org.onap.aai.schema.enums.PropertyMetadata;
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.serialization.engines.JanusGraphDBEngine;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
+import org.onap.aai.setup.SchemaVersion;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
@@ -54,11 +56,12 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 @RunWith(value = Parameterized.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class DbAliasTest extends AAISetup {
 
 	private JanusGraph graph;
 
-	private final Version version = Version.v9;
+	private SchemaVersion version;
 	private final ModelType introspectorFactoryType = ModelType.MOXY;
 	private final DBConnectionType type = DBConnectionType.REALTIME;
 	private Loader loader;
@@ -70,14 +73,16 @@ public class DbAliasTest extends AAISetup {
 	@Parameterized.Parameters(name = "QueryStyle.{0}")
 	public static Collection<Object[]> data() {
 		return Arrays.asList(new Object[][]{
-				{QueryStyle.TRAVERSAL}
+				{QueryStyle.TRAVERSAL},
+				{QueryStyle.TRAVERSAL_URI}
 		});
 	}
 
 	@Before
 	public void setup() throws Exception {
+	    version = schemaVersions.getDepthVersion();
 		graph = JanusGraphFactory.build().set("storage.backend","inmemory").open();
-		loader = LoaderFactory.createLoaderForVersion(introspectorFactoryType, version);
+		loader = loaderFactory.createLoaderForVersion(introspectorFactoryType, version);
 		dbEngine = new JanusGraphDBEngine(
 				queryStyle,
 				type,

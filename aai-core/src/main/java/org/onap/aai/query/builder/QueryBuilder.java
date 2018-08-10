@@ -19,27 +19,31 @@
  */
 package org.onap.aai.query.builder;
 
+import org.apache.tinkerpop.gremlin.process.traversal.Path;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.apache.tinkerpop.gremlin.process.traversal.step.util.Tree;
+import org.apache.tinkerpop.gremlin.structure.Edge;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.onap.aai.config.SpringContextAware;
+import org.onap.aai.db.props.AAIProperties;
+import org.onap.aai.exceptions.AAIException;
+import org.onap.aai.introspection.Introspector;
+import org.onap.aai.introspection.Loader;
+import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
+import org.onap.aai.parsers.query.QueryParser;
+import org.onap.aai.parsers.query.QueryParserStrategy;
+import org.springframework.context.ApplicationContext;
+import org.onap.aai.edges.EdgeIngestor;
+import org.onap.aai.edges.enums.AAIDirection;
+import org.onap.aai.edges.enums.EdgeProperty;
+import org.onap.aai.edges.enums.EdgeType;
+
+import javax.ws.rs.core.MultivaluedMap;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import javax.ws.rs.core.MultivaluedMap;
-
-import org.apache.tinkerpop.gremlin.process.traversal.Path;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
-import org.apache.tinkerpop.gremlin.structure.Edge;
-import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.onap.aai.db.props.AAIProperties;
-import org.onap.aai.exceptions.AAIException;
-import org.onap.aai.introspection.Introspector;
-import org.onap.aai.introspection.Loader;
-import org.onap.aai.parsers.query.QueryParser;
-import org.onap.aai.parsers.query.QueryParserStrategy;
-import org.onap.aai.serialization.db.AAIDirection;
-import org.onap.aai.serialization.db.EdgeProperty;
-import org.onap.aai.serialization.db.EdgeType;
 
 /**
  * The Class QueryBuilder.
@@ -49,9 +53,14 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
 	protected final GraphTraversalSource source;
 	protected QueryParserStrategy factory = null;
 	protected Loader loader = null;
+	protected EdgeIngestor edgeRules;
 	protected boolean optimize = false;
 	protected Vertex start = null;
-	
+
+	protected int parentStepIndex = 0;
+	protected int containerStepIndex = 0;
+	protected int stepIndex = 0;
+
 	/**
 	 * Instantiates a new query builder.
 	 *
@@ -60,6 +69,7 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
 	public QueryBuilder(Loader loader, GraphTraversalSource source) {
 		this.loader = loader;
 		this.source = source;
+		initEdgeIngestor();
 	}
 	
 	/**
@@ -72,8 +82,15 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
 		this.loader = loader;
 		this.start = start;
 		this.source = source;
+		initEdgeIngestor();
 	}
-	
+
+	public void changeLoader(Loader loader) {
+		this.loader = loader;
+	}
+
+	protected abstract QueryBuilder<E> cloneQueryAtStep(int index);
+
 	/**
 	 * Gets the vertices by indexed property.
 	 *
@@ -111,6 +128,32 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
 	 * @return vertices that match these values
 	 */
 	public abstract QueryBuilder<Vertex> getVerticesByProperty(String key, List<?> values);
+	
+    /**
+     * Gets the vertices that have this property key.
+     *
+     * @param key the key
+     * @param value the value
+     * @return the vertices by property
+     */
+    public abstract QueryBuilder<Vertex> getVerticesByProperty(String key);
+    
+    /**
+     * Gets the vertices that do not have this property key.
+     *
+     * @param key the key
+     * @param value the value
+     * @return the vertices by property
+     */
+    public abstract QueryBuilder<Vertex> getVerticesExcludeByProperty(String key);
+
+	/**
+	 * filters by elements that start with the value for this property
+	 * @param key
+	 * @param value
+	 * @return vertices that match these values
+	 */
+	public abstract QueryBuilder<Vertex> getVerticesStartsWithProperty(String key, Object value);
 
 	/**
 	 * Gets the vertices that are excluded by property.
@@ -140,6 +183,23 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
 	public abstract QueryBuilder<Vertex> getVerticesExcludeByProperty(String key, List<?> values);
 
 	/**
+	 * filters by all the values greater than for this property  
+     * @param key
+     * @param values
+     * @return vertices that match these values
+     */
+    public abstract  QueryBuilder<Vertex> getVerticesGreaterThanProperty(String key, Object value) ;
+
+    /**
+     * filters by all the values less than for this property 
+     * @param key
+     * @param values
+     * @return vertices that match these values
+     */
+    
+    public abstract  QueryBuilder<Vertex> getVerticesLessThanProperty(String key, Object value) ;
+
+    /**
 	 * Gets the child vertices from parent.
 	 *
 	 * @param parentKey the parent key
@@ -194,7 +254,17 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
 	 * @return the query builder
 	 */
 	public abstract QueryBuilder<Vertex> createEdgeTraversal(EdgeType type, Introspector parent, Introspector child) throws AAIException;
-	
+
+	public abstract QueryBuilder<Vertex> getVerticesByBooleanProperty(String key, Object value);
+	/**
+	 * Creates the private edge traversal.
+	 *
+	 * @param parent the parent
+	 * @param child the child
+	 * @return the query builder
+	 */
+	public abstract QueryBuilder<Vertex> createPrivateEdgeTraversal(EdgeType type, Introspector parent, Introspector child) throws AAIException;
+
 	/**
 	 * Creates the edge traversal.
 	 *
@@ -206,7 +276,6 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
 		String nodeType = parent.<String>property(AAIProperties.NODE_TYPE).orElse(null);
 		this.createEdgeTraversal(type, nodeType, child.getDbName());
 		return (QueryBuilder<Vertex>) this;
-
 	}
 
 	/**
@@ -222,6 +291,45 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
 		Introspector in = loader.introspectorFromName(inNodeType);
 
 		return createEdgeTraversal(type, out, in);
+	}
+
+	public QueryBuilder<Vertex> createEdgeTraversal(String outNodeType, String inNodeType) throws AAIException {
+
+		Introspector out = loader.introspectorFromName(outNodeType);
+		Introspector in = loader.introspectorFromName(inNodeType);
+
+		QueryBuilder<Vertex> cousinBuilder = null;
+		QueryBuilder<Vertex> treeBuilder   = null;
+		QueryBuilder<Vertex> queryBuilder  = null;
+
+		try {
+			cousinBuilder = this.newInstance().createEdgeTraversal(EdgeType.COUSIN, out, in);
+		} catch (AAIException e) {
+		}
+
+		if(cousinBuilder != null){
+			try {
+				treeBuilder = this.newInstance().createEdgeTraversal(EdgeType.TREE, out, in);
+			} catch (AAIException e) {
+			}
+			if(treeBuilder != null){
+				queryBuilder = this.union(new QueryBuilder[]{cousinBuilder, treeBuilder});
+			} else {
+				queryBuilder = this.union(new QueryBuilder[]{cousinBuilder});
+			}
+		} else {
+			treeBuilder = this.newInstance().createEdgeTraversal(EdgeType.TREE, out, in);
+			queryBuilder = this.union(new QueryBuilder[]{treeBuilder});
+		}
+
+
+		return queryBuilder;
+	}
+
+	public QueryBuilder<Vertex> createPrivateEdgeTraversal(EdgeType type, String outNodeType, String inNodeType) throws AAIException {
+		Introspector out = loader.introspectorFromName(outNodeType);
+		Introspector in = loader.introspectorFromName(inNodeType);
+		return createPrivateEdgeTraversal(type, out, in);
 	}
 
 	/**
@@ -383,6 +491,8 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
 	
 	public abstract QueryBuilder<E> where(QueryBuilder<E>... builder);
 	
+	public abstract QueryBuilder<E> or(QueryBuilder<E>... builder);
+	
 	public abstract QueryBuilder<E> store(String name);
 	public abstract QueryBuilder<E> cap(String name);
 	public abstract QueryBuilder<E> unfold();
@@ -400,6 +510,7 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
 	public abstract QueryBuilder<E> groupCount();
 	public abstract QueryBuilder<E> by(String name);
 	public abstract QueryBuilder<E> both();
+	public abstract QueryBuilder<Tree> tree();
 	
 	/**
 	 * Used to prevent the traversal from repeating its path through the graph.
@@ -452,4 +563,15 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
 	}
 
 	protected abstract QueryBuilder<Edge> has(String key, String value);
+	
+	protected void initEdgeIngestor() {
+		//TODO proper spring wiring, but that requires a lot of refactoring so for now we have this
+		ApplicationContext ctx = SpringContextAware.getApplicationContext();
+		EdgeIngestor ei = ctx.getBean(EdgeIngestor.class);
+		setEdgeIngestor(ei);
+	}
+	
+	protected void setEdgeIngestor(EdgeIngestor ei) {
+		this.edgeRules = ei;
+	}
 }

@@ -22,22 +22,18 @@ package org.onap.aai.dbmap;
 import org.janusgraph.core.JanusGraphFactory;
 import org.janusgraph.core.JanusGraph;
 import org.janusgraph.core.schema.JanusGraphManagement;
-import org.hamcrest.CoreMatchers;
 import org.junit.*;
 import org.onap.aai.AAISetup;
 import org.onap.aai.util.AAIConstants;
+
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.Matchers.matchesPattern;
 import static org.junit.Assert.*;
 
 public class AAIGraphTest extends AAISetup{
-
-	private static final String SERVICE_NAME = "JUNIT";
-
 	@Before
 	public void setup() {
-		System.setProperty("aai.service.name", SERVICE_NAME);
 		AAIGraph.getInstance();
 	}
 

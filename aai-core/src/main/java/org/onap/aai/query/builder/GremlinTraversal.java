@@ -33,22 +33,12 @@ import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.parsers.query.QueryParser;
 import org.onap.aai.parsers.query.TraversalStrategy;
-import org.onap.aai.serialization.db.EdgeRules;
 
 /**
  * The Class GremlinTraversal.
  */
 public class GremlinTraversal<E> extends GremlinQueryBuilder<E> {
 
-	/**
-	 * Instantiates a new gremlin traversal.
-	 *
-	 * @param loader the loader
-	 */
-	public GremlinTraversal(Loader loader, GraphTraversalSource source, EdgeRules ers) {
-		super(loader, source, ers);
-		this.factory = new TraversalStrategy(this.loader, this);
-	}
 	
 	/**
 	 * Instantiates a new gremlin traversal.
@@ -71,16 +61,6 @@ public class GremlinTraversal<E> extends GremlinQueryBuilder<E> {
 		this.factory = new TraversalStrategy(this.loader, this);
 	}
 	
-	/**
-	 * Instantiates a new gremlin traversal.
-	 *
-	 * @param loader the loader
-	 * @param start the start
-	 */
-	public GremlinTraversal(Loader loader, GraphTraversalSource source, Vertex start, EdgeRules ers) {
-		super(loader, source, start, ers);
-		this.factory = new TraversalStrategy(this.loader, this);
-	}
 
 	protected GremlinTraversal(List<String> traversal, Loader loader, GraphTraversalSource source, GremlinQueryBuilder<E> gtb) {
 		super(loader, source);

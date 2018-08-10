@@ -19,13 +19,7 @@
  */
 package org.onap.aai.serialization.queryformats;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
-
-import java.util.Arrays;
-import java.util.List;
-
+import com.google.gson.JsonObject;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.strategy.verification.ReadOnlyStrategy;
 import org.apache.tinkerpop.gremlin.structure.Graph;
@@ -41,31 +35,36 @@ import org.onap.aai.AAISetup;
 import org.onap.aai.dbmap.DBConnectionType;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Loader;
-import org.onap.aai.introspection.LoaderFactory;
 import org.onap.aai.introspection.ModelType;
-import org.onap.aai.introspection.Version;
 import org.onap.aai.serialization.db.DBSerializer;
-import org.onap.aai.serialization.db.EdgeRules;
-import org.onap.aai.serialization.engines.QueryStyle;
+import org.onap.aai.serialization.db.EdgeSerializer;
 import org.onap.aai.serialization.engines.JanusGraphDBEngine;
+import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatQueryResultFormatNotSupported;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
 import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
+import org.onap.aai.setup.SchemaVersion;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.gson.JsonObject;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 public class CountQuerySupportTest extends AAISetup {
 
-	@Mock
-	private UrlBuilder urlBuilder;
+	@Autowired
+	private EdgeSerializer edgeSer;
 
 	private Graph graph;
 	private TransactionalGraphEngine dbEngine;
 	private Loader loader;
 	private final ModelType factoryType = ModelType.MOXY;
-	private final EdgeRules rules = EdgeRules.getInstance();
-	private Version version = Version.getLatest();
+	
+	private SchemaVersion version;
 	Vertex pserver1;
 	Vertex complex1;
 	Vertex complex2;
@@ -75,9 +74,12 @@ public class CountQuerySupportTest extends AAISetup {
 	private FormatFactory ff;
 	private Formatter formatter;
 
+	
+	
 	@Before
 	public void setUp() throws Exception {
 
+		version = schemaVersions.getDefaultVersion();
 		MockitoAnnotations.initMocks(this);
 
 		graph = TinkerGraph.open();
@@ -91,7 +93,7 @@ public class CountQuerySupportTest extends AAISetup {
 				"physical-location-id", "physical-location-id-2", "country", "US");
 
 		GraphTraversalSource g = graph.traversal();
-		rules.addEdge(g, pserver1, complex1);
+		edgeSer.addEdge(g, pserver1, complex1);
 		
 		createLoaderEngineSetup();
 
@@ -141,11 +143,12 @@ public class CountQuerySupportTest extends AAISetup {
 	public void createLoaderEngineSetup() throws AAIException {
 
 		if (loader == null) {
-			loader = LoaderFactory.createLoaderForVersion(factoryType, version);
+			loader = loaderFactory.createLoaderForVersion(factoryType, version);
+			//loader = LoaderFactory.createLoaderForVersion(factoryType, version);
 			dbEngine = spy(new JanusGraphDBEngine(QueryStyle.TRAVERSAL, DBConnectionType.CACHED, loader));
 			serializer = new DBSerializer(version, dbEngine, factoryType, "Junit");
 			
-			ff = new FormatFactory(loader, serializer);
+			ff = new FormatFactory(loader, serializer, schemaVersions, basePath);
 			formatter = ff.get(Format.count);
 
 			

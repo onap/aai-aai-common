@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
- * Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright © 2017-18 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ public enum EdgeField {
 	DELETE_OTHER_V("delete-other-v"),
 	PREVENT_DELETE("prevent-delete"),
 	DEFAULT("default"),
+	PRIVATE("private"),
 	DESCRIPTION("description");
 	private final String name;
 

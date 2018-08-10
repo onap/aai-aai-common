@@ -19,29 +19,54 @@
  */
 package org.onap.aai.util.genxsd;
 
-import com.jayway.jsonpath.DocumentContext;
-import com.jayway.jsonpath.JsonPath;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.*;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.onap.aai.edges.EdgeIngestor;
+import org.onap.aai.edges.EdgeRule;
+import org.onap.aai.edges.exceptions.EdgeRuleNotFoundException;
+import org.onap.aai.setup.ConfigTranslator;
+import org.onap.aai.setup.SchemaLocationsBean;
+import org.onap.aai.setup.SchemaVersion;
+import org.onap.aai.setup.SchemaVersions;
+import org.onap.aai.testutils.TestUtilConfigTranslatorforEdges;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.Collection;
+import com.google.common.collect.Multimap;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {SchemaVersions.class, SchemaLocationsBean.class,  TestUtilConfigTranslatorforEdges.class, EdgeIngestor.class})
+@TestPropertySource(properties = {"schemaIngestPropLoc = src/test/resources/schemaIngest/schemaIngestTest.properties"})
 
-public class EdgeDescriptionTest {
-	private DocumentContext jsonContext;
-	private EdgeRuleSet edgeSet;
-	private Collection<EdgeDescription>edges;
-	
+
+public class EdgeDescriptionTest  {
+	private static final String EDGEFILENAME = "src/test/resources/dbedgerules/EdgeDescriptionRules_test.json";
+	@Autowired
+	ConfigTranslator ct;
+	@Autowired
+	EdgeIngestor edgeIngestor;
+	String nodeName = "availability-zone";
+	String toNode = "complex";
+	SchemaVersion v10 = new SchemaVersion("v10");
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-
-	}
-
-	@Before
-	public void setUp() throws Exception {
 		String json = "{"
 				+ "	\"rules\": ["
 				+ "		{"
@@ -57,7 +82,6 @@ public class EdgeDescriptionTest {
 				+ "			\"default\": \"true\","
 				+ "			\"description\":\"this description\""
 				+ "		},"
-/*
 				+ "    {"
 				+ "			\"from\": \"availability-zone\","
 				+ "			\"to\": \"service-capability\","
@@ -90,7 +114,7 @@ public class EdgeDescriptionTest {
 				+ "			\"label\": \"org.onap.relationships.inventory.AppliesTo\","
 				+ "			\"direction\": \"OUT\","
 				+ "			\"multiplicity\": \"MANY2MANY\","
-				+ "			\"contains-other-v\": \"NONE\","
+				+ "			\"contains-other-v\": \"${direction}\","
 				+ "			\"delete-other-v\": \"NONE\","
 				+ "			\"SVC-INFRA\": \"NONE\","
 				+ "			\"prevent-delete\": \"!${direction}\","
@@ -149,55 +173,59 @@ public class EdgeDescriptionTest {
 				+ "			\"default\": \"true\","
 				+ "			\"description\":\"\""
 				+ "		},"
-*/
 				+ "	]}";
-				jsonContext = JsonPath.parse(json);
-				this.edgeSet = new EdgeRuleSet(jsonContext);
-				String nodeName = "availability-zone";
-				edges = edgeSet.getEdgeRules(nodeName);
+		BufferedWriter bw = new BufferedWriter(new FileWriter(EDGEFILENAME));
+		bw.write(json);
+		bw.close();
 	}
+	@AfterClass
+	public static void tearDownAfterClass() throws Exception {
+		File edges = new File(EDGEFILENAME);
+		edges.delete();
+	}
+	@Before
+	public void setUp() throws Exception {
 
+	}
 	@Test
-	public void testGetDeleteOtherV() {
-		String target = "availability-zone"+"|"+"complex"+"-"+"NONE";
-		for (EdgeDescription ed : edges) {
-			String modResult = ed.getRuleKey() + "-" + ed.getDeleteOtherV();
-			assertThat(modResult, is(target));
+	public void test() {
+
+		Map<SchemaVersion, List<String>> edges = ct.getEdgeFiles();
+		assertTrue(edges.containsKey(v10));
+		assertTrue(1 == edges.get(v10).size());
+		assertTrue("src/test/resources/dbedgerules/DbEdgeBusinessRules_test.json".equals(edges.get(v10).get(0)));
+	}
+	@Test
+	public void testGetDeleteOtherV() throws EdgeRuleNotFoundException {
+		String target = "availability-zone"+"|"+toNode+"-"+"NONE";
+		Multimap<String, EdgeRule> results = edgeIngestor.getAllRules(v10);
+		SortedSet<String> ss=new TreeSet<String>(results.keySet());
+		for(String key : ss) {
+			results.get(key).stream().filter((i) -> (i.getTo().equals(toNode) && (! i.isPrivateEdge()))).forEach((i) ->{ EdgeDescription ed = new EdgeDescription(i); assertThat(ed.getRuleKey()+"-"+ed.getDeleteOtherV(), is(target)); } );
 		}
 	}
 
 	@Test
-	public void testSetDeleteOtherV() {
-		String target = "availability-zone"+"|"+"complex"+"-"+"IN";
-		for (EdgeDescription ed : edges) {
-			ed.setDeleteOtherV("IN");
-			String modResult = ed.getRuleKey() + "-" + ed.getDeleteOtherV();
-			assertThat(modResult, is(target));
+	public void testGetPreventDelete() throws EdgeRuleNotFoundException {
+		String target = "availability-zone"+"|"+toNode+"-"+"IN";
+		Multimap<String, EdgeRule> results = edgeIngestor.getAllRules(v10);
+		SortedSet<String> ss=new TreeSet<String>(results.keySet());
+		for(String key : ss) {
+			results.get(key).stream().filter((i) -> (i.getTo().equals(toNode) && (! i.isPrivateEdge()))).forEach((i) ->{ EdgeDescription ed = new EdgeDescription(i); assertThat(ed.getRuleKey()+"-"+ed.getPreventDelete(), is(target)); } );
 		}
 	}
 
 	@Test
-	public void testGetPreventDelete() {
-		String target = "availability-zone"+"|"+"complex"+"-"+"IN";
-		for (EdgeDescription ed : edges) {
-			String modResult = ed.getRuleKey() + "-" + ed.getPreventDelete();
-			assertThat(modResult, is(target));
+	public void testGetAlsoDeleteFootnote() throws EdgeRuleNotFoundException {
+//		String toNode="cloud-region";
+//		String target = "availability-zone"+"|"+toNode+"-"+"(4)";
+		List<String> notedTypes = Arrays.asList("cloud-region", "ctag-pool");
+		Multimap<String, EdgeRule> results = edgeIngestor.getAllRules(v10);
+		SortedSet<String> ss=new TreeSet<String>(results.keySet());
+		for(String key : ss) {
+			results.get(key).stream().filter((i) -> (i.getTo().equals("availability-zone") && (! i.isPrivateEdge()))).forEach((i) ->{ EdgeDescription ed = new EdgeDescription(i); String target = ed.getRuleKey()+"-"+(notedTypes.contains(ed.getTo()) ? "(4)" : ""); assertThat(ed.getRuleKey()+"-"+ed.getAlsoDeleteFootnote(ed.getFrom()), is(target)); } );
 		}
-	}
-
-	@Test
-	public void testSetPreventDelete() {
-		for (EdgeDescription ed : edges) {
-			String target = "availability-zone"+"|"+"complex"+"-"+"OUT";
-			ed.setPreventDelete("OUT");
-			String modResult = ed.getRuleKey() + "-" + ed.getPreventDelete();
-			assertThat(modResult, is(target));
-		}
-	}
-
-	@Test
-	public void testGetAlsoDeleteFootnote() {
-		String target = "availability-zone"+"|"+"complex"+"-"+"";
+/*
 		for (EdgeDescription ed : edges) {
 			String modResult = ed.getRuleKey() + "-" + ed.getAlsoDeleteFootnote(ed.getFrom());
 			assertThat(modResult, is(target));
@@ -216,177 +244,109 @@ public class EdgeDescriptionTest {
 			modResult = ed.getRuleKey() + "-" + ed.getAlsoDeleteFootnote(ed.getTo());
 			assertThat(modResult, is(target));
 		}
+*/
 	}
 
 	@Test
-	public void testGetTo() {
-		String target = "availability-zone"+"|"+"complex"+"-"+"complex";
-		for (EdgeDescription ed : edges) {
-			String modResult = ed.getRuleKey() + "-" + ed.getTo();
-			assertThat(modResult, is(target));
+	public void testGetTo() throws EdgeRuleNotFoundException {
+		String target = "availability-zone"+"|"+toNode+"-"+toNode;
+		Multimap<String, EdgeRule> results = edgeIngestor.getAllRules(v10);
+		SortedSet<String> ss=new TreeSet<String>(results.keySet());
+		for(String key : ss) {
+			results.get(key).stream().filter((i) -> (i.getTo().equals(toNode) && (! i.isPrivateEdge()))).forEach((i) ->{ EdgeDescription ed = new EdgeDescription(i); assertThat(ed.getRuleKey()+"-"+ed.getTo(), is(target)); } );
 		}
 	}
 
 	@Test
-	public void testSetTo() {
-		String target = "availability-zone"+"|"+"complex"+"-"+"jazz";
-		for (EdgeDescription ed : edges) {
-			ed.setTo("jazz");
-			String modResult = ed.getRuleKey() + "-" + ed.getTo();
-			assertThat(modResult, is(target));
+	public void testGetFrom() throws EdgeRuleNotFoundException {
+		String target = "availability-zone"+"|"+toNode+"-"+"availability-zone";
+		Multimap<String, EdgeRule> results = edgeIngestor.getAllRules(v10);
+		SortedSet<String> ss=new TreeSet<String>(results.keySet());
+		for(String key : ss) {
+			results.get(key).stream().filter((i) -> (i.getTo().equals(toNode) && (! i.isPrivateEdge()))).forEach((i) ->{ EdgeDescription ed = new EdgeDescription(i); assertThat(ed.getRuleKey()+"-"+ed.getFrom(), is(target)); } );
 		}
 	}
 
 	@Test
-	public void testGetFrom() {
-		String target = "availability-zone"+"|"+"complex"+"-"+"availability-zone";
-		for (EdgeDescription ed : edges) {
-			String modResult = ed.getRuleKey() + "-" + ed.getFrom();
-			assertThat(modResult, is(target));
+	public void testGetRuleKey() throws EdgeRuleNotFoundException {
+		String target = "availability-zone"+"|"+toNode;
+		Multimap<String, EdgeRule> results = edgeIngestor.getAllRules(v10);
+		SortedSet<String> ss=new TreeSet<String>(results.keySet());
+		for(String key : ss) {
+			results.get(key).stream().filter((i) -> (i.getTo().equals(toNode) && (! i.isPrivateEdge()))).forEach((i) ->{ EdgeDescription ed = new EdgeDescription(i); assertThat(ed.getRuleKey(), is(target)); } );
 		}
 	}
 
 	@Test
-	public void testSetFrom() {
-		String target = "availability-zone"+"|"+"complex"+"-"+"jazz";
-		for (EdgeDescription ed : edges) {
-			ed.setFrom("jazz");
-			String modResult = ed.getRuleKey() + "-" + ed.getFrom();
-			assertThat(modResult, is(target));
+	public void testGetMultiplicity() throws EdgeRuleNotFoundException {
+		String target = "availability-zone"+"|"+toNode+"-"+"MANY2ONE";
+		Multimap<String, EdgeRule> results = edgeIngestor.getAllRules(v10);
+		SortedSet<String> ss=new TreeSet<String>(results.keySet());
+		for(String key : ss) {
+			results.get(key).stream().filter((i) -> (i.getTo().equals(toNode) && (! i.isPrivateEdge()))).forEach((i) ->{ EdgeDescription ed = new EdgeDescription(i); assertThat(ed.getRuleKey()+"-"+ed.getMultiplicity(), is(target)); } );
 		}
 	}
 
 	@Test
-	public void testGetRuleKey() {
-		for (EdgeDescription ed : edges) {
-			String target = ed.getFrom()+"|"+ed.getTo();
-			String modResult = ed.getRuleKey();
-			assertThat(modResult, is(target));
+	public void testGetDirection() throws EdgeRuleNotFoundException {
+		String target = "availability-zone"+"|"+toNode+"-"+"OUT";
+		Multimap<String, EdgeRule> results = edgeIngestor.getAllRules(v10);
+		SortedSet<String> ss=new TreeSet<String>(results.keySet());
+		for(String key : ss) {
+			results.get(key).stream().filter((i) -> (i.getTo().equals(toNode) && (! i.isPrivateEdge()))).forEach((i) ->{ EdgeDescription ed = new EdgeDescription(i); assertThat(ed.getRuleKey()+"-"+ed.getDirection(), is(target)); } );
 		}
 	}
 
 	@Test
-	public void testGetMultiplicity() {
-		String target = "availability-zone"+"|"+"complex"+"-"+"MANY2ONE";
-		for (EdgeDescription ed : edges) {
-			String modResult = ed.getRuleKey() + "-" + ed.getMultiplicity();
-			assertThat(modResult, is(target));
+	public void testGetDescription() throws EdgeRuleNotFoundException {
+		String target = "availability-zone"+"|"+toNode+"-"+"this description";
+		Multimap<String, EdgeRule> results = edgeIngestor.getAllRules(v10);
+		SortedSet<String> ss=new TreeSet<String>(results.keySet());
+		for(String key : ss) {
+			results.get(key).stream().filter((i) -> (i.getTo().equals(toNode) && (! i.isPrivateEdge()))).forEach((i) ->{ EdgeDescription ed = new EdgeDescription(i); assertThat(ed.getRuleKey()+"-"+ed.getDescription(), is(target)); } );
 		}
 	}
 
 	@Test
-	public void testGetDirection() {
-		for (EdgeDescription ed : edges) {
-			String target = ed.getFrom()+"|"+ed.getTo()+"-"+"OUT";
-			String modResult = ed.getRuleKey() + "-" + ed.getDirection();
-			assertThat(modResult, is(target));
+	public void testGetRelationshipDescription() throws EdgeRuleNotFoundException {
+		String target = "availability-zone"+"|"+toNode+"-"+"this description";
+		Multimap<String, EdgeRule> results = edgeIngestor.getAllRules(v10);
+		SortedSet<String> ss=new TreeSet<String>(results.keySet());
+		for(String key : ss) {
+			results.get(key).stream().filter((i) -> (i.getTo().equals(toNode) && (! i.isPrivateEdge()))).forEach((i) ->{ EdgeDescription ed = new EdgeDescription(i); assertThat(ed.getRuleKey()+"-"+ed.getDescription(), is(target)); } );
 		}
 	}
 
 	@Test
-	public void testGetDescription() {
-		for (EdgeDescription ed : edges) {
-			String target = ed.getFrom()+"|"+ed.getTo()+"-"+"this description";
-			String modResult = ed.getRuleKey() + "-" + ed.getDescription();
-			assertThat(modResult, is(target));
+	public void testGetType() throws EdgeRuleNotFoundException {
+		String toNode = "cloud-region";
+		String target = "availability-zone"+"|"+toNode+"-"+"PARENT";
+		Multimap<String, EdgeRule> results = edgeIngestor.getAllRules(v10);
+		SortedSet<String> ss=new TreeSet<String>(results.keySet());
+		for(String key : ss) {
+			results.get(key).stream().filter((i) -> (i.getTo().equals(toNode) && (! i.isPrivateEdge()))).forEach((i) ->{ EdgeDescription ed = new EdgeDescription(i); assertThat(ed.getRuleKey()+"-"+ed.getType(), is(target)); } );
 		}
 	}
 
 	@Test
-	public void testSetRuleKey() {
-		for (EdgeDescription ed : edges) {
-			ed.setRuleKey("A|B");
-			String target = "A|B";
-			String modResult = ed.getRuleKey();
-			assertThat(modResult, is(target));
-		}	}
-
-	@Test
-	public void testSetType() {
-		String target = "availability-zone"+"|"+"complex"+"-"+"CHILD";
-		for (EdgeDescription ed : edges) {
-			ed.setType(EdgeDescription.LineageType.CHILD);
-			String modResult = ed.getRuleKey() + "-" + ed.getType();
-			assertThat(modResult, is(target));
+	public void testGetLabel() throws EdgeRuleNotFoundException {
+		String target = "availability-zone"+"|"+toNode+"-"+"org.onap.relationships.inventory.LocatedIn";
+		Multimap<String, EdgeRule> results = edgeIngestor.getAllRules(v10);
+		SortedSet<String> ss=new TreeSet<String>(results.keySet());
+		for(String key : ss) {
+			results.get(key).stream().filter((i) -> (i.getTo().equals(toNode) && (! i.isPrivateEdge()))).forEach((i) ->{ EdgeDescription ed = new EdgeDescription(i); assertThat(ed.getRuleKey()+"-"+ed.getLabel(), is(target)); } );
 		}
 	}
 
 	@Test
-	public void testSetDirection() {
-		String target = "availability-zone"+"|"+"complex"+"-"+"IN";
-		for (EdgeDescription ed : edges) {
-			ed.setDirection("IN");
-			String modResult = ed.getRuleKey() + "-" + ed.getDirection();
-			assertThat(modResult, is(target));
+	public void testGetShortLabel() throws EdgeRuleNotFoundException {
+		String target = "availability-zone"+"|"+toNode+"-"+"LocatedIn";
+		Multimap<String, EdgeRule> results = edgeIngestor.getAllRules(v10);
+		SortedSet<String> ss=new TreeSet<String>(results.keySet());
+		for(String key : ss) {
+			results.get(key).stream().filter((i) -> (i.getTo().equals(toNode) && (! i.isPrivateEdge()))).forEach((i) ->{ EdgeDescription ed = new EdgeDescription(i); assertThat(ed.getRuleKey()+"-"+ed.getShortLabel(), is(target)); } );
 		}
 	}
-
-	@Test
-	public void testSetMultiplicity() {
-		String target = "availability-zone"+"|"+"complex"+"-"+"ONE2MANY";
-		for (EdgeDescription ed : edges) {
-			ed.setTo("ONE2MANY");
-			String modResult = ed.getRuleKey() + "-" + ed.getTo();
-			assertThat(modResult, is(target));
-		}
-	}
-
-	@Test
-	public void testSetDescription() {
-		for (EdgeDescription ed : edges) {
-			ed.setDescription("a new description");
-			String target = ed.getFrom()+"|"+ed.getTo()+"-"+"a new description";
-			String modResult = ed.getRuleKey() + "-" + ed.getDescription();
-			assertThat(modResult, is(target));
-		}
-	}
-
-	@Test
-	public void testGetRelationshipDescription() {
-		for (EdgeDescription ed : edges) {
-			String target = ed.getFrom()+"|"+ed.getTo()+"-"+"( availability-zone LocatedIn complex, MANY2ONE)\n      this description";
-			String modResult = ed.getRuleKey() + "-" + ed.getRelationshipDescription("FROM",ed.getTo());
-			assertThat(modResult, is(target));
-		}
-	}
-
-	@Test
-	public void testGetType() {
-		for (EdgeDescription ed : edges) {
-			String target = ed.getFrom()+"|"+ed.getTo()+"-"+"UNRELATED";
-			String modResult = ed.getRuleKey() + "-" + ed.getType();
-			assertThat(modResult, is(target));
-		}
-	}
-
-	@Test
-	public void testGetLabel() {
-		for (EdgeDescription ed : edges) {
-			String target = ed.getFrom()+"|"+ed.getTo()+"-"+"org.onap.relationships.inventory.LocatedIn";
-			String modResult = ed.getRuleKey() + "-" + ed.getLabel();
-			assertThat(modResult, is(target));
-		}
-	}
-
-	@Test
-	public void testGetShortLabel() {
-		for (EdgeDescription ed : edges) {
-			String target = ed.getFrom()+"|"+ed.getTo()+"-"+"LocatedIn";
-			String modResult = ed.getRuleKey() + "-" + ed.getShortLabel();
-			assertThat(modResult, is(target));
-		}
-	}
-
-	@Test
-	public void testSetLabel() {
-		String newLabel = "New label";
-		for (EdgeDescription ed : edges) {
-			ed.setLabel(newLabel);
-			String target = ed.getFrom()+"|"+ed.getTo()+"-"+newLabel;
-			String modResult = ed.getRuleKey() + "-" + ed.getLabel();
-			assertThat(modResult, not(equalTo("org.onap.relationships.inventory.LocatedIn")));
-			assertThat(modResult, is(target));
-		}
-	}
-
 }
+
+

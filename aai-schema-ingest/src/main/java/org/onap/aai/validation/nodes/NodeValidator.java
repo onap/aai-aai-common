@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
- * Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright © 2017-18 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import org.onap.aai.setup.ConfigTranslator;
-import org.onap.aai.setup.Version;
+import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.validation.SchemaErrorStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -46,7 +46,7 @@ public class NodeValidator {
 	
 	public boolean validate() {
 		
-		for(Entry<Version, List<String>> entry : translator.getNodeFiles().entrySet()) {
+		for(Entry<SchemaVersion, List<String>> entry : translator.getNodeFiles().entrySet()) {
 			String result = dupChecker.findDuplicates(entry.getValue(), entry.getKey());
 			if (!"".equals(result)) {
 				strat.notifyOnError(result);

@@ -20,91 +20,82 @@
 package org.onap.aai.util.genxsd;
 
 import org.apache.commons.lang3.StringUtils;
+import org.onap.aai.edges.EdgeRule;
+import org.onap.aai.edges.enums.AAIDirection;
+import org.onap.aai.edges.enums.DirectionNotation;
+import org.onap.aai.edges.enums.EdgeField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class EdgeDescription {
-	private static final Logger logger = LoggerFactory.getLogger("EdgeDescription.class");
 
+	private static final Logger logger = LoggerFactory.getLogger("EdgeDescription.class");
+	EdgeRule ed;
 	public static enum LineageType {
 		PARENT, CHILD, UNRELATED;
 	}
 	private String ruleKey;
-	private String to;
-	private String from;
-	private LineageType type = LineageType.UNRELATED;
-	private String direction;
-	private String multiplicity;
-	private String preventDelete;
-	private String deleteOtherV;
-	private String label;
-	private String description;
+//	private String to;
+//	private String from;
+	private LineageType lineageType = LineageType.UNRELATED;
+//	private String direction;
+//	private String multiplicity;
+//	private String preventDelete;
+//	private String deleteOtherV;
+//	private String label;
+//	private String description;
+	
+	public EdgeDescription(EdgeRule ed) {
+		super();
+		if ( ed.getDirection().toString().equals(ed.getContains()) &&
+				AAIDirection.getValue("OUT").equals(AAIDirection.getValue(ed.getDirection())))  {
+			this.lineageType=LineageType.PARENT;
+		} else if ( AAIDirection.getValue("IN").equals(AAIDirection.getValue(ed.getContains())) &&
+				ed.getDirection().toString().equals(ed.getContains())) {
+			this.lineageType=LineageType.CHILD;
+		} else if ( AAIDirection.getValue("OUT").equals(AAIDirection.getValue(ed.getContains())) &&
+				AAIDirection.getValue("IN").equals(AAIDirection.getValue(ed.getDirection()))) {
+			this.lineageType=LineageType.PARENT;
+		} else if ( AAIDirection.getValue("IN").equals(AAIDirection.getValue(ed.getContains())) &&
+				AAIDirection.getValue("OUT").equals(AAIDirection.getValue(ed.getDirection()))) {
+			this.lineageType=LineageType.PARENT;
+		} else {
+			this.lineageType=LineageType.UNRELATED;
+		}
+		this.ruleKey = ed.getFrom()+"|"+ed.getTo();
+		this.ed=ed;
+	}
 	/**
 	 * @return the deleteOtherV
 	 */
 	public String getDeleteOtherV() {
-		return deleteOtherV;
-	}
-	/**
-	 * @param deleteOtherV the deleteOtherV to set
-	 */
-	public void setDeleteOtherV(String deleteOtherV) {
-		logger.debug("Edge: "+this.getRuleKey());
-		logger.debug("Truth: "+(("${direction}".equals(deleteOtherV)) ? "true" : "false"));
-		logger.debug("Truth: "+(("!${direction}".equals(deleteOtherV)) ? "true" : "false"));
-
-		if("${direction}".equals(deleteOtherV) ) {
-			this.deleteOtherV = this.direction;
-		} else if("!${direction}".equals(deleteOtherV) ) {
-			this.deleteOtherV = this.direction.equals("IN") ? "OUT" : ((this.direction.equals("OUT")) ? "IN" : deleteOtherV);
-		} else {
-			this.deleteOtherV = deleteOtherV;
-		}
-		logger.debug("DeleteOtherV="+deleteOtherV+"/"+this.direction+"="+this.deleteOtherV);
+		return ed.getDeleteOtherV();
 	}
 	/**
 	 * @return the preventDelete
 	 */
 	public String getPreventDelete() {
-		return preventDelete;
-	}
-	/**
-	 * @param preventDelete the preventDelete to set
-	 */
-	public void setPreventDelete(String preventDelete) {
-		if(this.getTo().equals("flavor") || this.getFrom().equals("flavor") ){
-			logger.debug("Edge: "+this.getRuleKey());
-			logger.debug("Truth: "+(("${direction}".equals(preventDelete)) ? "true" : "false"));
-			logger.debug("Truth: "+(("!${direction}".equals(preventDelete)) ? "true" : "false"));
-		}
-
-		if("${direction}".equals(preventDelete) ) {
-			this.preventDelete = this.direction;
-		} else if("!${direction}".equals(preventDelete) ) {
-			this.preventDelete = this.direction.equals("IN") ? "OUT" : ((this.direction.equals("OUT")) ? "IN" : preventDelete);
-		} else {
-			this.preventDelete = preventDelete;
-		}
+		return ed.getPreventDelete();
 	}
 	public String getAlsoDeleteFootnote(String targetNode) {
 		String returnVal = "";
-		if(this.deleteOtherV.equals("IN") && this.to.equals(targetNode) ) {
-			logger.debug("Edge: "+this.getRuleKey());
+		if(ed.getDeleteOtherV().equals("IN") && ed.getTo().equals(targetNode) ) {
+			logger.debug("Edge: "+this.ruleKey);
 			logger.debug("IF this "+targetNode+" node is deleted, this FROM node is DELETED also");
 			returnVal = "(1)";
 		}
-		if(this.deleteOtherV.equals("OUT") && this.from.equals(targetNode) ) {
-			logger.debug("Edge: "+this.getRuleKey());
+		if(ed.getDeleteOtherV().equals("OUT") && ed.getFrom().equals(targetNode) ) {
+			logger.debug("Edge: "+this.ruleKey);
 			logger.debug("IF this "+targetNode+" is deleted, this TO node is DELETED also");
 			returnVal = "(2)";
 		}
-		if(this.deleteOtherV.equals("OUT") && this.to.equals(targetNode) ) {
-			logger.debug("Edge: "+this.getRuleKey());
+		if(ed.getDeleteOtherV().equals("OUT") && ed.getTo().equals(targetNode) ) {
+			logger.debug("Edge: "+this.ruleKey);
 			logger.debug("IF this FROM node is deleted, this "+targetNode+" is DELETED also");
 			returnVal = "(3)";
 		}
-		if(this.deleteOtherV.equals("IN") && this.from.equals(targetNode) ) {
-			logger.debug("Edge: "+this.getRuleKey());
+		if(ed.getDeleteOtherV().equals("IN") && ed.getFrom().equals(targetNode) ) {
+			logger.debug("Edge: "+this.ruleKey);
 			logger.debug("IF this TO node is deleted, this "+targetNode+" node is DELETED also");
 			returnVal = "(4)";
 		}
@@ -114,100 +105,67 @@ public class EdgeDescription {
 	 * @return the to
 	 */
 	public String getTo() {
-		return to;
-	}
-	/**
-	 * @param to the to to set
-	 */
-	public void setTo(String to) {
-		this.to = to;
+		return ed.getTo();
 	}
 	/**
 	 * @return the from
 	 */
 	public String getFrom() {
-		return from;
+		return ed.getFrom();
 	}
-	/**
-	 * @param from the from to set
-	 */
-	public void setFrom(String from) {
-		this.from = from;
-	}
-
-
 	public String getRuleKey() {
 		return ruleKey;
 	}
 	public String getMultiplicity() {
-		return multiplicity;
+		return ed.getMultiplicityRule().toString();
 	}
-	public String getDirection() {
-		return direction;
+	public AAIDirection getDirection() {
+		return AAIDirection.getValue(ed.getDirection());
 	}
 	public String getDescription() {
-		return this.description;
+		return ed.getDescription();
 	}
-	public void setRuleKey(String val) {
-		this.ruleKey=val;
-	}
-	public void setType(LineageType val) {
-		this.type=val;
-	}
-	public void setDirection(String val) {
-		this.direction = val;
-	}
-	public void setMultiplicity(String val) {
-		this.multiplicity=val;
-	}
-	
-	public void setDescription(String val) {
-		this.description = val;
-	}
-
 	public String getRelationshipDescription(String fromTo, String otherNodeName) {
 		
 		String result = "";		
 
 		if ("FROM".equals(fromTo)) {
-			if ("OUT".equals(direction)) {
-				if (LineageType.PARENT == type) {
+			if (AAIDirection.getValue("OUT").equals(AAIDirection.getValue(ed.getDirection()))) {
+				if (LineageType.PARENT == lineageType) {
 					result = " (PARENT of "+otherNodeName;
-					result = String.join(" ", result+",", this.from, this.getShortLabel(), this.to);
+					result = String.join(" ", result+",", ed.getFrom(), this.getShortLabel(), ed.getTo()+",", this.getMultiplicity());
 				} 
 			} 
 			else {
-				if (LineageType.CHILD == type) {
+				if (LineageType.CHILD == lineageType) {
 					result = " (CHILD of "+otherNodeName;
-					result = String.join(" ", result+",",  this.from, this.getShortLabel(), this.to);
+					result = String.join(" ", result+",",  ed.getFrom(), this.getShortLabel(), ed.getTo()+",", this.getMultiplicity());
 				} 
-				else if (LineageType.PARENT == type) {
+				else if (LineageType.PARENT == lineageType) {
 					result = " (PARENT of "+otherNodeName;
-					result = String.join(" ", result+",", this.from, this.getShortLabel(), this.to);
+					result = String.join(" ", result+",", ed.getFrom(), this.getShortLabel(), ed.getTo()+",", this.getMultiplicity());
 				}
 			}
-			if (result.length() == 0) result = String.join(" ", "(", this.from, this.getShortLabel(), this.to+",", this.getMultiplicity());
+			if (result.length() == 0) result = String.join(" ", "(", ed.getFrom(), this.getShortLabel(), ed.getTo()+",", this.getMultiplicity());
 		} else {
 		//if ("TO".equals(fromTo)
-			if ("OUT".equals(direction)) {
-				if (LineageType.PARENT == type) {
-					result = " (CHILD of "+otherNodeName;
-					result = String.join(" ", result+",", this.from, this.getShortLabel(), this.to+",", this.getMultiplicity());
+			if (AAIDirection.getValue("OUT").equals(AAIDirection.getValue(ed.getDirection()))) {
+				if (LineageType.PARENT == lineageType) {
+					result = " (PARENT of "+otherNodeName;
+					result = String.join(" ", result+",", ed.getFrom(), this.getShortLabel(), ed.getTo()+",", this.getMultiplicity());
 				} 
 			} else {
-				if (LineageType.PARENT == type) {
+				if (LineageType.PARENT == lineageType) {
 					result = " (PARENT of "+otherNodeName;
-					result = String.join(" ", result+",", this.from, this.getShortLabel(), this.to+",", this.getMultiplicity());
+					result = String.join(" ", result+",", ed.getFrom(), this.getShortLabel(), ed.getTo()+",", this.getMultiplicity());
 				}
 			}
-			if (result.length() == 0) result = String.join(" ", "(", this.from, this.getShortLabel(), this.to+",", this.getMultiplicity());
+			if (result.length() == 0) result = String.join(" ", "(", ed.getFrom(), this.getShortLabel(), ed.getTo()+",", this.getMultiplicity());
 		}
-//      Confusing...
-//		if (hasDelTarget()) result = result + ", will delete target node";
 
 		if (result.length() > 0) result = result + ")";
 		
-		if (description != null && description.length() > 0) result = result + "\n      "+ description; // 6 spaces is important for yaml
+		if (ed.getDescription() != null && ed.getDescription().length() > 0) result = result + "\n      "+ ed.getDescription(); // 6 spaces is important for yaml
 		
 		return result;
 	}
@@ -217,26 +175,24 @@ public class EdgeDescription {
 	 */
 	
 	public boolean hasDelTarget() {
-		return StringUtils.isNotEmpty(this.deleteOtherV) && (! "NONE".equalsIgnoreCase(this.deleteOtherV));
+		return StringUtils.isNotEmpty(ed.getDeleteOtherV()) && (! "NONE".equalsIgnoreCase(ed.getDeleteOtherV()));
 	}
 	
 	/**
 	 * @return the type
 	 */
 	public LineageType getType() {
-		return type;
+
+		return lineageType;
 	}
 	/**
 	 * @return the label
 	 */
 	public String getLabel() {
-		return label;
+		return ed.getLabel();
 	}
 	public String getShortLabel() {
 		String[] pieces = this.getLabel().split("[.]");
 		return pieces[pieces.length-1];
-	}
-	public void setLabel(String string) {
-		this.label=string;
 	}
 }

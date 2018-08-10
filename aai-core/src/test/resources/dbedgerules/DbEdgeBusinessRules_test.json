@@ -1,0 +1,39 @@
+{
+	"rules": [
+		{
+			"from": "service-subscription",
+			"to": "customer",
+			"label": "org.onap.relationships.inventory.BelongsTo",
+			"direction": "OUT",
+			"multiplicity": "MANY2ONE",
+			"contains-other-v": "!${direction}",
+			"delete-other-v": "!${direction}",
+			"prevent-delete": "NONE",
+			"default": "true",
+			"description":""
+		},
+		{
+			"from": "service-instance",
+			"to": "service-subscription",
+			"label": "org.onap.relationships.inventory.BelongsTo",
+			"direction": "OUT",
+			"multiplicity": "MANY2ONE",
+			"contains-other-v": "!${direction}",
+			"delete-other-v": "!${direction}",
+			"prevent-delete": "NONE",
+			"default": "true",
+			"description":""
+		},
+		{
+			"from": "service-subscription",
+			"to": "tenant",
+			"label": "org.onap.relationships.inventory.Uses",
+			"direction": "OUT",
+			"multiplicity": "MANY2MANY",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"prevent-delete": "NONE",
+			"default": "true",
+			"description":""
+		}	]
+}

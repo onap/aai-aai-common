@@ -36,6 +36,7 @@ public class AnnotationsTest {
 	defaultValue="",
 	searchable="",
 	uniqueProps="",
+	uriTemplate="",
 	extendsFrom="",
 	isAbstract="",
 	alternateKeys1="",

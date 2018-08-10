@@ -19,10 +19,8 @@
  */
 package org.onap.aai.serialization.queryformats;
 
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.exceptions.AAIException;
@@ -35,8 +33,10 @@ import org.onap.aai.serialization.queryformats.params.Depth;
 import org.onap.aai.serialization.queryformats.params.NodesOnly;
 import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class Resource extends MultiFormatMapper {
 
@@ -58,20 +58,23 @@ public class Resource extends MultiFormatMapper {
 	}
 
 	@Override
-	protected JsonObject getJsonFromVertex(Vertex v) throws AAIFormatVertexException {
+	protected Optional<JsonObject> getJsonFromVertex(Vertex v) throws AAIFormatVertexException {
 
 		JsonObject json = new JsonObject();
-		
+
 		if (this.includeUrl) {
 			json.addProperty("url", this.urlBuilder.pathed(v));
 		}
-		json.add(v.<String>property(AAIProperties.NODE_TYPE)
-											.orElse(null), this.vertexToJsonObject(v));
-		
-		return json;
+		Optional<JsonObject> jsonObject = this.vertexToJsonObject(v);
+		if (jsonObject.isPresent()) {
+			json.add(v.<String>property(AAIProperties.NODE_TYPE).orElse(null), jsonObject.get());
+		} else {
+			return Optional.empty();
+		}
+		return Optional.of(json);
 	}
 
-	protected JsonObject vertexToJsonObject(Vertex v) throws AAIFormatVertexException {
+	protected Optional<JsonObject> vertexToJsonObject(Vertex v) throws AAIFormatVertexException {
 		try {
 			final Introspector obj = getLoader().introspectorFromName(
 										v.<String>property(AAIProperties.NODE_TYPE)
@@ -90,9 +93,9 @@ public class Resource extends MultiFormatMapper {
 
 			final String json = obj.marshal(false);
 
-			return getParser().parse(json).getAsJsonObject();
+			return Optional.of(getParser().parse(json).getAsJsonObject());
 		} catch (AAIUnknownObjectException e) {
-			throw new AAIFormatVertexException("Failed to format vertex - unknown object", e);
+			return Optional.empty();
 		}
 	}
 

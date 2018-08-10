@@ -3,7 +3,7 @@
     ============LICENSE_START=======================================================
     org.onap.aai
     ================================================================================
-    Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+    Copyright © 2017-18 AT&T Intellectual Property. All rights reserved.
     ================================================================================
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -98,7 +98,7 @@
                     	<#if httpVerb.isConsumerEnabled()>
                     	<section class="sw-request-body">
                                 
-                                    <p><span class="label label-default">application/json</span> <span class="label label-default">application/xml</span> 
+                                    <p><span class="label label-default">application/json</span> <#if httpVerb.isOpNotPatch()><span class="label label-default">application/xml</span></#if> 
                         </p>
                         	<#if httpVerb.isBodyParametersEnabled()>
                         			<div class="row">
@@ -159,7 +159,7 @@
                         </#if>
 
                         <section class="sw-responses">
-                                <p><span class="label label-default">application/json</span> <span class="label label-default">application/xml</span> 
+                                <p><span class="label label-default">application/json</span> <#if httpVerb.isOpNotPatch()><span class="label label-default">application/xml</span></#if> 
                     </p>
                     
                             <dl>

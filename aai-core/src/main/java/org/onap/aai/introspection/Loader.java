@@ -22,12 +22,13 @@ package org.onap.aai.introspection;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.onap.aai.introspection.exceptions.AAIUnmarshallingException;
 import org.onap.aai.restcore.MediaType;
+import org.onap.aai.setup.SchemaVersion;
 
 import java.util.Map;
 
 public abstract class Loader {
 
-	private final Version version;
+	private final SchemaVersion version;
 	private final ModelType modelType;
 	
 	/**
@@ -35,9 +36,8 @@ public abstract class Loader {
 	 *
 	 * @param version the version
 	 * @param modelType the model type
-	 * @param llBuilder the ll builder
 	 */
-	public Loader (Version version, ModelType modelType) {
+	public Loader (SchemaVersion version, ModelType modelType) {
 		this.version = version;
 		this.modelType = modelType;
 	}
@@ -47,7 +47,7 @@ public abstract class Loader {
 	 *
 	 * @param version the version
 	 */
-	protected abstract void process(Version version);
+	protected abstract void process(SchemaVersion version);
 	
 	/**
 	 * Object from name.
@@ -103,7 +103,7 @@ public abstract class Loader {
 	 *
 	 * @return the version
 	 */
-	public Version getVersion() {
+	public SchemaVersion getVersion() {
 		return this.version;
 	}
 	

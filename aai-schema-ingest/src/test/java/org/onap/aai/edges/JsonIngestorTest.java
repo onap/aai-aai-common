@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
- * Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright © 2017-18 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,13 +24,10 @@ package org.onap.aai.edges;
 
 import static org.junit.Assert.*;
 
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.junit.Test;
-import org.onap.aai.setup.Version;
+import org.onap.aai.setup.SchemaVersion;
 
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.Filter;
@@ -39,6 +36,10 @@ import static com.jayway.jsonpath.Filter.filter;
 
 public class JsonIngestorTest {
 
+	private SchemaVersion LATEST = new SchemaVersion("v14");
+	private SchemaVersion V10 = new SchemaVersion("v10");
+	private SchemaVersion V11 = new SchemaVersion("v11");
+
 	@Test
 	public void test() {
 		//setup
@@ -46,29 +47,29 @@ public class JsonIngestorTest {
 		files.add("src/test/resources/edgeRules/test.json");
 		files.add("src/test/resources/edgeRules/test2.json");
 		files.add("src/test/resources/edgeRules/otherTestRules.json");
-		Map<Version, List<String>> input = new EnumMap<>(Version.class);
-		input.put(Version.getLatest(), files);
+		Map<SchemaVersion, List<String>> input = new TreeMap<>();
+		input.put(LATEST, files);
 		
 		List<String> files2 = new ArrayList<>();
 		files2.add("src/test/resources/edgeRules/test.json");
-		input.put(Version.V10, files2);
+		input.put(V10, files2);
 		
 		List<String> files3 = new ArrayList<>();
 		files3.add("src/test/resources/edgeRules/test3.json");
 		files3.add("src/test/resources/edgeRules/defaultEdgesTest.json");
-		input.put(Version.V11, files3);
+		input.put(V11, files3);
 		
 		//test
 		JsonIngestor ji = new JsonIngestor();
-		Map<Version, List<DocumentContext>> results = ji.ingest(input);
+		Map<SchemaVersion, List<DocumentContext>> results = ji.ingest(input);
 		
 		assertTrue(results.entrySet().size() == 3);
-		assertTrue(results.get(Version.getLatest()).size() == 3);
-		assertTrue(results.get(Version.V11).size() == 2);
-		assertTrue(results.get(Version.V10).size() == 1);
+		assertTrue(results.get(LATEST).size() == 3);
+		assertTrue(results.get(V11).size() == 2);
+		assertTrue(results.get(V10).size() == 1);
 		
 		Filter f = filter(where("from").is("foo").and("contains-other-v").is("NONE"));
-		List<Map<String, String>> filterRes = results.get(Version.V10).get(0).read("$.rules.[?]",f);
+		List<Map<String, String>> filterRes = results.get(V10).get(0).read("$.rules.[?]",f);
 		assertTrue(filterRes.size() == 2);
 	}
 

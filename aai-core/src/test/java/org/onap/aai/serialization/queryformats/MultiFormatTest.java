@@ -19,14 +19,8 @@
  */
 package org.onap.aai.serialization.queryformats;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
-
-import java.io.UnsupportedEncodingException;
-
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.Tree;
@@ -43,21 +37,25 @@ import org.onap.aai.AAISetup;
 import org.onap.aai.dbmap.DBConnectionType;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Loader;
-import org.onap.aai.introspection.LoaderFactory;
 import org.onap.aai.introspection.ModelType;
-import org.onap.aai.introspection.Version;
-import org.onap.aai.serialization.db.DBSerializer;
-import org.onap.aai.serialization.db.EdgeRules;
+import org.onap.aai.setup.SchemaVersion;
+import org.onap.aai.serialization.db.EdgeSerializer;
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.serialization.engines.JanusGraphDBEngine;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatQueryResultFormatNotSupported;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
 import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import java.io.UnsupportedEncodingException;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.*;
+
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class MultiFormatTest extends AAISetup {
 
 	@Mock
@@ -68,18 +66,22 @@ public class MultiFormatTest extends AAISetup {
 	private Loader loader;
 	private IdURL idFormat;
 	private final ModelType factoryType = ModelType.MOXY;
-	private final EdgeRules rules = EdgeRules.getInstance();
+	@Autowired
+	private EdgeSerializer rules;
 	private Tree<?> resultTree;
 	private Path resultPath;
-	private Version version = Version.v11;
+	private SchemaVersion version;
 	private JsonObject expectedTreeIdFormat = new JsonParser()
 			.parse("{\"nodes\":[{\"resource-type\":\"generic-vnf\",\"nodes\":[{\"resource-type\":\"vserver\",\"nodes\":[{\"resource-type\":\"pserver\"}]},{\"resource-type\":\"pserver\",\"nodes\":[{\"resource-type\":\"complex\"}]}]}]}").getAsJsonObject();
 	private JsonObject expectedPathIdFormat = new JsonParser()
 			.parse("{\"path\":[{\"resource-type\":\"generic-vnf\"},{\"resource-type\":\"vserver\"},{\"resource-type\":\"pserver\"},{\"resource-type\":\"complex\"}]}").getAsJsonObject();
 
+	
+	
 	@Before
 	public void setUp() throws Exception {
 
+	    version = schemaVersions.getAppRootVersion();
 		MockitoAnnotations.initMocks(this);
 
 		graph = TinkerGraph.open();
@@ -119,7 +121,7 @@ public class MultiFormatTest extends AAISetup {
 		assertNotNull(dbEngine.tx());
 		assertNotNull(dbEngine.asAdmin());
 
-		JsonObject json = idFormat.formatObject(resultTree);
+		JsonObject json = idFormat.formatObject(resultTree).get();
 		
 		assertEquals(this.expectedTreeIdFormat, json);
 
@@ -135,7 +137,7 @@ public class MultiFormatTest extends AAISetup {
 		assertNotNull(dbEngine.tx());
 		assertNotNull(dbEngine.asAdmin());
 
-		JsonObject json = idFormat.formatObject(resultPath);
+		JsonObject json = idFormat.formatObject(resultPath).get();
 		
 		assertEquals(this.expectedPathIdFormat, json);
 
@@ -154,7 +156,8 @@ public class MultiFormatTest extends AAISetup {
 	public void createLoaderEngineSetup() {
 
 		if (loader == null) {
-			loader = LoaderFactory.createLoaderForVersion(factoryType, version);
+			loader = loaderFactory.createLoaderForVersion(factoryType,version);
+			//loader = LoaderFactory.createLoaderForVersion(factoryType, version);
 			dbEngine = spy(new JanusGraphDBEngine(QueryStyle.TRAVERSAL, DBConnectionType.CACHED, loader));
 
 			TransactionalGraphEngine.Admin spyAdmin = spy(dbEngine.asAdmin());

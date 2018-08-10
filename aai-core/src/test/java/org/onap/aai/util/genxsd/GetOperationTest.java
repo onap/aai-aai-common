@@ -19,6 +19,12 @@
  */
 package org.onap.aai.util.genxsd;
 
+import static org.junit.Assert.*;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Vector;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,12 +33,7 @@ import org.junit.runners.Parameterized.Parameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Vector;
-
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 
 @RunWith(Parameterized.class)
 public class GetOperationTest {
@@ -48,7 +49,6 @@ public class GetOperationTest {
 	public static Collection<String []> testConditions() {
 		String inputs [][] = {
 		{"NetworkGenericVnfsGenericVnf","generic-vnf","Network","/network/generic-vnfs/generic-vnf/{vnf-id}","        - name: vnf-id\n          in: path\n          description: Unique id of VNF.  This is unique across the graph.\n          required: true\n          type: string\n          example: __VNF-ID__","  /network/generic-vnfs/generic-vnf/{vnf-id}:\n    get:\n      tags:\n        - Network\n      summary: returns generic-vnf\n      description: returns generic-vnf\n      operationId: getNetworkGenericVnfsGenericVnf\n      produces:\n        - application/json\n        - application/xml\n      responses:\n        \"200\":\n          description: successful operation\n          schema:\n              $ref: \"#/getDefinitions/generic-vnf\"\n        \"default\":\n          null      parameters:\n        - name: vnf-id\n          in: path\n          description: Unique id of VNF.  This is unique across the graph.\n          required: true\n          type: string\n          example: __VNF-ID__"},
-		{"CloudInfrastructureCloudRegionsCloudRegionTenantsTenantVserversVserver","vserver","CloudInfrastructure","/cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}/tenants/tenant/{tenant-id}/vservers/vserver/{vserver-id}","        - name: cloud-owner\n          in: path\n          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname\n          required: true\n          type: string\n          example: __CLOUD-OWNER__\n        - name: cloud-region-id\n          in: path\n          description: Identifier used by the vendor for the region. Second part of composite key\n          required: true\n          type: string\n          example: __CLOUD-REGION-ID__\n        - name: tenant-id\n          in: path\n          description: Unique id relative to the cloud-region.\n          required: true\n          type: string\n          example: __TENANT-ID__\n        - name: vserver-id\n          in: path\n          description: Unique identifier for this vserver relative to its tenant\n          required: true\n          type: string\n          example: __VSERVER-ID__","  /cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}/tenants/tenant/{tenant-id}/vservers/vserver/{vserver-id}:\n    get:\n      tags:\n        - CloudInfrastructure\n      summary: returns vserver\n      description: returns vserver\n      operationId: getCloudInfrastructureCloudRegionsCloudRegionTenantsTenantVserversVserver\n      produces:\n        - application/json\n        - application/xml\n      responses:\n        \"200\":\n          description: successful operation\n          schema:\n              $ref: \"#/getDefinitions/vserver\"\n        \"default\":\n          null      parameters:\n        - name: cloud-owner\n          in: path\n          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname\n          required: true\n          type: string\n          example: __CLOUD-OWNER__\n        - name: cloud-region-id\n          in: path\n          description: Identifier used by the vendor for the region. Second part of composite key\n          required: true\n          type: string\n          example: __CLOUD-REGION-ID__\n        - name: tenant-id\n          in: path\n          description: Unique id relative to the cloud-region.\n          required: true\n          type: string\n          example: __TENANT-ID__\n        - name: vserver-id\n          in: path\n          description: Unique identifier for this vserver relative to its tenant\n          required: true\n          type: string\n          example: __VSERVER-ID__"},
 		{"GenericVnf","generic-vnf","","/generic-vnf/{vnf-id}","        - name: vnf-id\n          in: path\n          description: Unique id of VNF.  This is unique across the graph.\n          required: true\n          type: string\n          example: __VNF-ID__",""},
 		{"CloudInfrastructurePserversPserverPInterfaces","p-interfaces","CloudInfrastructure","/cloud-infrastructure/pservers/pserver/{hostname}/p-interfaces","        - name: hostname\n          in: path\n          description: Value from executing hostname on the compute node.\n          required: true\n          type: string\n          example: __HOSTNAME__","  /cloud-infrastructure/pservers/pserver/{hostname}/p-interfaces:\n    get:\n      tags:\n        - CloudInfrastructure\n      summary: returns p-interfaces\n      description: returns p-interfaces\n      operationId: getCloudInfrastructurePserversPserverPInterfaces\n      produces:\n        - application/json\n        - application/xml\n      responses:\n        \"200\":\n          description: successful operation\n          schema:\n              $ref: \"#/getDefinitions/p-interfaces\"\n        \"default\":\n          null      parameters:\n        - name: hostname\n          in: path\n          description: Value from executing hostname on the compute node.\n          required: true\n          type: string\n          example: __HOSTNAME__        - name: interface-name\n          in: query\n          description:\n          required: false\n          type: string        - name: prov-status\n          in: query\n          description:\n          required: false\n          type: string"},
 		//		{"","ctag-pool","","","",""},

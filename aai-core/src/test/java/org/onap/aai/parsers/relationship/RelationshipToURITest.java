@@ -29,6 +29,7 @@ import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.*;
 import org.onap.aai.parsers.exceptions.AAIIdentityMapParseException;
 import org.onap.aai.parsers.exceptions.AmbiguousMapAAIException;
+import org.onap.aai.setup.SchemaVersion;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -42,15 +43,16 @@ import static org.junit.Assert.assertEquals;
 public class RelationshipToURITest extends AAISetup {
 
 	private final ModelType modelType = ModelType.MOXY;
-	private final Version version10 = Version.v10;
-	private final Version version9 = Version.v9;
+	private final SchemaVersion version10 = new SchemaVersion("v10");
+	private final SchemaVersion version9 = new SchemaVersion("v9");
+	
 	
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 	
 	@Test
 	public void onlyLink() throws AAIException, URISyntaxException, IOException {
-		Loader loader = LoaderFactory.createLoaderForVersion(modelType, version10);
+		Loader loader = loaderFactory.createLoaderForVersion(modelType, version10);
 		Introspector obj = loader.unmarshal("relationship", this.getJsonString("only-related-link.json"));
 		URI expected = new URI("/aai/v10/network/generic-vnfs/generic-vnf/key1");
 		
@@ -63,7 +65,7 @@ public class RelationshipToURITest extends AAISetup {
 	
 	@Test
 	public void onlyData() throws AAIException, URISyntaxException, IOException {
-		Loader loader = LoaderFactory.createLoaderForVersion(modelType, version10);
+		Loader loader = loaderFactory.createLoaderForVersion(modelType, version10);
 		Introspector obj = loader.unmarshal("relationship", this.getJsonString("only-relationship-data.json"));
 		URI expected = new URI("/network/generic-vnfs/generic-vnf/key1");
 
@@ -76,7 +78,7 @@ public class RelationshipToURITest extends AAISetup {
 	
 	@Test
 	public void failV10() throws AAIException, URISyntaxException, IOException {
-		Loader loader = LoaderFactory.createLoaderForVersion(modelType, version10);
+		Loader loader = loaderFactory.createLoaderForVersion(modelType, version10);
 		Introspector obj = loader.unmarshal("relationship", this.getJsonString("both-failv10-successv9.json"));
 		URI expected = new URI("/aai/v10/network/generic-vnfs/generic-vnf/key1");
 		
@@ -89,7 +91,7 @@ public class RelationshipToURITest extends AAISetup {
 	
 	@Test
 	public void successV9() throws AAIException, URISyntaxException, IOException {
-		Loader loader = LoaderFactory.createLoaderForVersion(modelType, version9);
+		Loader loader = loaderFactory.createLoaderForVersion(modelType, version9);
 		Introspector obj = loader.unmarshal("relationship", this.getJsonString("both-failv10-successv9.json"));
 		URI expected = new URI("/network/generic-vnfs/generic-vnf/key2");
 		
@@ -103,7 +105,7 @@ public class RelationshipToURITest extends AAISetup {
 	
 	@Test
 	public void failV9() throws AAIException, URISyntaxException, IOException {
-		Loader loader = LoaderFactory.createLoaderForVersion(modelType, version9);
+		Loader loader = loaderFactory.createLoaderForVersion(modelType, version9);
 		Introspector obj = loader.unmarshal("relationship", this.getJsonString("both-successv10-failv9.json"));
 		URI expected = new URI("/network/generic-vnfs/generic-vnf/key1");
 		
@@ -118,7 +120,7 @@ public class RelationshipToURITest extends AAISetup {
 	
 	@Test
 	public void failNothingToParse() throws AAIException, URISyntaxException, IOException {
-		Loader loader = LoaderFactory.createLoaderForVersion(modelType, version10);
+		Loader loader = loaderFactory.createLoaderForVersion(modelType, version10);
 		Introspector obj = loader.unmarshal("relationship", this.getJsonString("nothing-to-parse.json"));
 		URI expected = new URI("/aai/v10/network/generic-vnfs/generic-vnf/key1");
 		
@@ -132,7 +134,7 @@ public class RelationshipToURITest extends AAISetup {
 	
 	@Test
 	public void successV10() throws AAIException, URISyntaxException, IOException {
-		Loader loader = LoaderFactory.createLoaderForVersion(modelType, version10);
+		Loader loader = loaderFactory.createLoaderForVersion(modelType, version10);
 		Introspector obj = loader.unmarshal("relationship", this.getJsonString("both-successv10-failv9.json"));
 		URI expected = new URI("/aai/v10/network/generic-vnfs/generic-vnf/key1");
 		
@@ -148,7 +150,7 @@ public class RelationshipToURITest extends AAISetup {
 	
 	@Test
 	public void ambiguousRelationship() throws AAIException, URISyntaxException, IOException {
-		Loader loader = LoaderFactory.createLoaderForVersion(modelType, version10);
+		Loader loader = loaderFactory.createLoaderForVersion(modelType, version10);
 		Introspector obj = loader.unmarshal("relationship", this.getJsonString("ambiguous-relationship.json"));
 		URI expected = new URI("/aai/v10/network/generic-vnfs/generic-vnf/key1");
 		
@@ -167,7 +169,7 @@ public class RelationshipToURITest extends AAISetup {
 	@Ignore
 	@Test
 	public void moreItemsThanRequired() throws AAIException, URISyntaxException, IOException {
-		Loader loader = LoaderFactory.createLoaderForVersion(modelType, version10);
+		Loader loader = loaderFactory.createLoaderForVersion(modelType, version10);
 		Introspector obj = loader.unmarshal("relationship", this.getJsonString("too-many-items-relationship.json"));
 		URI expected = new URI("/network/generic-vnfs/generic-vnf/key1/l-interfaces/l-interface/key2");
 		
@@ -181,7 +183,7 @@ public class RelationshipToURITest extends AAISetup {
 	
 	@Test
 	public void twoTopLevelNodes() throws AAIException, URISyntaxException, IOException {
-		Loader loader = LoaderFactory.createLoaderForVersion(modelType, version10);
+		Loader loader = loaderFactory.createLoaderForVersion(modelType, version10);
 		Introspector obj = loader.unmarshal("relationship", this.getJsonString("two-top-level-relationship.json"));
 		URI expected = new URI("/network/generic-vnfs/generic-vnf/key1/l-interfaces/l-interface/key2");
 		
@@ -198,7 +200,7 @@ public class RelationshipToURITest extends AAISetup {
 	
 	@Test
 	public void topLevelWithTwoKeys() throws AAIException, URISyntaxException, IOException {
-		Loader loader = LoaderFactory.createLoaderForVersion(modelType, version10);
+		Loader loader = loaderFactory.createLoaderForVersion(modelType, version10);
 		Introspector obj = loader.unmarshal("relationship", this.getJsonString("top-level-two-keys-relationship.json"));
 		URI expected = new URI("/cloud-infrastructure/cloud-regions/cloud-region/key1/key2/availability-zones/availability-zone/key3");
 		

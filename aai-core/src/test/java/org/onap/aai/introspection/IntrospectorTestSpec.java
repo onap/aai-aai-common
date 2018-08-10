@@ -24,7 +24,7 @@ import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 
 import static org.junit.Assert.assertEquals;
 
-public class IntrospectorTestSpec extends AAISetup {
+public abstract class IntrospectorTestSpec extends AAISetup {
 
 	
 	

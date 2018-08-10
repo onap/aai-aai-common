@@ -94,17 +94,17 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "Info")
 public class Info {
 
-    protected Info.ResponseMessages responseMessages;
+    protected ResponseMessages responseMessages;
 
     /**
      * Gets the value of the responseMessages property.
      * 
      * @return
      *     possible object is
-     *     {@link Info.ResponseMessages }
+     *     {@link ResponseMessages }
      *     
      */
-    public Info.ResponseMessages getResponseMessages() {
+    public ResponseMessages getResponseMessages() {
         return responseMessages;
     }
 
@@ -113,10 +113,10 @@ public class Info {
      * 
      * @param value
      *     allowed object is
-     *     {@link Info.ResponseMessages }
+     *     {@link ResponseMessages }
      *     
      */
-    public void setResponseMessages(Info.ResponseMessages value) {
+    public void setResponseMessages(ResponseMessages value) {
         this.responseMessages = value;
     }
 
@@ -168,7 +168,7 @@ public class Info {
     })
     public static class ResponseMessages {
 
-        protected List<Info.ResponseMessages.ResponseMessage> responseMessage;
+        protected List<ResponseMessage> responseMessage;
 
         /**
          * Gets the value of the responseMessage property.
@@ -188,13 +188,13 @@ public class Info {
          * 
          * <p>
          * Objects of the following type(s) are allowed in the list
-         * {@link Info.ResponseMessages.ResponseMessage }
+         * {@link ResponseMessage }
          *
          * @return the response message
          */
-        public List<Info.ResponseMessages.ResponseMessage> getResponseMessage() {
+        public List<ResponseMessage> getResponseMessage() {
             if (responseMessage == null) {
-                responseMessage = new ArrayList<Info.ResponseMessages.ResponseMessage>();
+                responseMessage = new ArrayList<ResponseMessage>();
             }
             return this.responseMessage;
         }
@@ -244,7 +244,7 @@ public class Info {
             @XmlElement(required = true)
             protected String text;
             @XmlElement(required = true)
-            protected Info.ResponseMessages.ResponseMessage.Variables variables;
+            protected Variables variables;
 
             /**
              * Gets the value of the messageId property.
@@ -299,10 +299,10 @@ public class Info {
              * 
              * @return
              *     possible object is
-             *     {@link Info.ResponseMessages.ResponseMessage.Variables }
+             *     {@link Variables }
              *     
              */
-            public Info.ResponseMessages.ResponseMessage.Variables getVariables() {
+            public Variables getVariables() {
                 return variables;
             }
 
@@ -311,10 +311,10 @@ public class Info {
              * 
              * @param value
              *     allowed object is
-             *     {@link Info.ResponseMessages.ResponseMessage.Variables }
+             *     {@link Variables }
              *     
              */
-            public void setVariables(Info.ResponseMessages.ResponseMessage.Variables value) {
+            public void setVariables(Variables value) {
                 this.variables = value;
             }
 

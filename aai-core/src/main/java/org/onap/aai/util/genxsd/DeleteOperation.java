@@ -19,11 +19,11 @@
  */
 package org.onap.aai.util.genxsd;
 
-import org.apache.commons.lang3.StringUtils;
-import org.onap.aai.util.GenerateXsd;
-
 import java.util.HashMap;
 import java.util.StringTokenizer;
+
+import org.apache.commons.lang3.StringUtils;
+import org.onap.aai.util.GenerateXsd;
 
 public class DeleteOperation {
 	private String useOpId;

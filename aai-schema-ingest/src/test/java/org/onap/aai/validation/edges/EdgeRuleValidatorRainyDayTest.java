@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
- * Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright © 2017-18 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.onap.aai.nodes.NodeIngestor;
 import org.onap.aai.setup.SchemaLocationsBean;
+import org.onap.aai.setup.SchemaVersions;
 import org.onap.aai.testutils.BadEdgeConfigForValidationTest;
 import org.onap.aai.validation.CheckEverythingStrategy;
 import org.onap.aai.validation.edges.CousinDefaultingValidationModule;
@@ -39,13 +40,15 @@ import org.onap.aai.validation.edges.UniqueLabelValidationModule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {SchemaLocationsBean.class, BadEdgeConfigForValidationTest.class, NodeIngestor.class,
+@ContextConfiguration(classes = {SchemaLocationsBean.class, SchemaVersions.class, BadEdgeConfigForValidationTest.class, NodeIngestor.class,
 		CheckEverythingStrategy.class, DefaultEdgeFieldsValidationModule.class, UniqueLabelValidationModule.class,
 		SingleContainmentValidationModule.class, CousinDefaultingValidationModule.class, NodeTypesValidationModule.class,
 		EdgeRuleValidator.class})
+@TestPropertySource(properties = { "schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-wiring-test.properties" })
 @SpringBootTest
 public class EdgeRuleValidatorRainyDayTest {
 	@Autowired

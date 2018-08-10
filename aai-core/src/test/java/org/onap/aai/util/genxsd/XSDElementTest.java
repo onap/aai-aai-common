@@ -19,6 +19,27 @@
  */
 package org.onap.aai.util.genxsd;
 
+import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.collection.IsIn.*;
+import static org.hamcrest.CoreMatchers.both;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
+import static org.hamcrest.core.Every.everyItem;
+
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Vector;
+
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -31,20 +52,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-
-import javax.xml.XMLConstants;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.*;
-
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.collection.IsIn.in;
-import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
-import static org.hamcrest.core.Every.everyItem;
-import static org.junit.Assert.assertThat;
 
 public class XSDElementTest {
 	private static final Logger logger = LoggerFactory.getLogger("XSDElementTest.class");
@@ -122,7 +129,7 @@ public class XSDElementTest {
 		sb.append("<java-attributes>\n");
 		sb.append("<xml-element java-attribute=\"globalCustomerId\" name=\"global-customer-id\" required=\"true\" type=\"java.lang.String\" xml-key=\"true\">\n");
 		sb.append("<xml-properties>\n");
-		sb.append("<xml-property name=\"description\" value=\"Global customer id used across ECOMP to uniquely identify customer.\" />\n");
+		sb.append("<xml-property name=\"description\" value=\"Global customer id used across to uniquely identify customer.\" />\n");
 		sb.append("</xml-properties>\n");
 		sb.append("</xml-element>\n");
 		sb.append("<xml-element java-attribute=\"subscriberName\" name=\"subscriber-name\" required=\"true\" type=\"java.lang.String\">\n");
@@ -173,7 +180,7 @@ public class XSDElementTest {
 		sb.append("<java-attributes>\n");
 		sb.append("<xml-element java-attribute=\"serviceType\" name=\"service-type\" required=\"true\" type=\"java.lang.String\" xml-key=\"true\">\n");
 		sb.append("<xml-properties>\n");
-		sb.append("<xml-property name=\"description\" value=\"Value defined by orchestration to identify this service across ECOMP.\" />\n");
+		sb.append("<xml-property name=\"description\" value=\"Value defined by orchestration to identify this service.\" />\n");
 		sb.append("</xml-properties>\n");
 		sb.append("</xml-element>\n");
 		sb.append("<xml-element java-attribute=\"tempUbSubAccountId\" name=\"temp-ub-sub-account-id\" type=\"java.lang.String\">\n");
@@ -269,7 +276,7 @@ public class XSDElementTest {
 		sb.append("</xml-bindings>\n");
 	}
 	
-	public void init() throws ParserConfigurationException, SAXException, IOException, AAIException {
+	public void init() throws ParserConfigurationException, SAXException, IOException, AAIException  {
 		DocumentBuilder dBuilder = null;
 		try {	
 		    DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();

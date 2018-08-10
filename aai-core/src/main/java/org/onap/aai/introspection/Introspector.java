@@ -30,11 +30,13 @@ import org.onap.aai.logging.LogFormatTools;
 import org.onap.aai.restcore.MediaType;
 import org.onap.aai.schema.enums.ObjectMetadata;
 import org.onap.aai.schema.enums.PropertyMetadata;
+import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.workarounds.NamingExceptions;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+
 
 public abstract class Introspector implements Cloneable {
 
@@ -605,7 +607,7 @@ public abstract class Introspector implements Cloneable {
 		
 	}
 
-	public abstract Version getVersion();
+	public abstract SchemaVersion getVersion();
 	public Loader getLoader() {
 		return this.loader;
 	}

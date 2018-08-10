@@ -19,22 +19,18 @@
  */
 package org.onap.aai.serialization.engines;
 
+import org.janusgraph.core.JanusGraph;
+import org.janusgraph.core.schema.JanusGraphManagement;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.strategy.verification.ReadOnlyStrategy;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.onap.aai.dbmap.DBConnectionType;
 import org.onap.aai.introspection.Loader;
-import org.onap.aai.query.builder.GremlinTraversal;
-import org.onap.aai.query.builder.GremlinUnique;
-import org.onap.aai.query.builder.QueryBuilder;
-import org.onap.aai.query.builder.TraversalQuery;
+import org.onap.aai.query.builder.*;
 import org.onap.aai.serialization.db.GraphSingleton;
 import org.onap.aai.serialization.engines.query.GraphTraversalQueryEngine;
 import org.onap.aai.serialization.engines.query.QueryEngine;
-
-import org.janusgraph.core.JanusGraph;
-import org.janusgraph.core.schema.JanusGraphManagement;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -63,7 +59,6 @@ public abstract class TransactionalGraphEngine {
 		this.singleton = singleton;
 		this.connectionType = connectionType;
 		admin = new Admin();
-		
 	}
 	
 	public TransactionalGraphEngine (QueryStyle style, Loader loader) {
@@ -71,6 +66,7 @@ public abstract class TransactionalGraphEngine {
 		this.style = style;
 		this.connectionType = DBConnectionType.REALTIME;
 		admin = new Admin();
+		
 	}
 
 	/**
@@ -124,7 +120,7 @@ public abstract class TransactionalGraphEngine {
 			//this.queryEngine = new GremlinQueryEngine(this);
 		} else if (style.equals(QueryStyle.GREMLINPIPELINE_TRAVERSAL)) {
 			//this.queryEngine = new GremlinPipelineQueryEngine(this);
-		} else if (style.equals(QueryStyle.TRAVERSAL)) {
+		} else if (style.equals(QueryStyle.TRAVERSAL) || style.equals(QueryStyle.TRAVERSAL_URI)) {
 			
 			return new GraphTraversalQueryEngine(this.asAdmin().getTraversalSource());
 			
@@ -161,6 +157,8 @@ public abstract class TransactionalGraphEngine {
 			//return new GremlinPipelineTraversal(loader);
 		} else if (style.equals(QueryStyle.TRAVERSAL)) {
 			return new TraversalQuery<>(loader, this.asAdmin().getTraversalSource());
+		} else if (style.equals(QueryStyle.TRAVERSAL_URI)) {
+			return new TraversalURIOptimizedQuery<>(loader, this.asAdmin().getTraversalSource());
 		}  else {
 			throw new IllegalArgumentException("Query Builder type not recognized");
 		}
@@ -189,6 +187,8 @@ public abstract class TransactionalGraphEngine {
 			//return new GremlinPipelineTraversal(loader,start);
 		} else if (style.equals(QueryStyle.TRAVERSAL)) {
 			return new TraversalQuery<>(loader, this.asAdmin().getTraversalSource(), start);
+		} else if (style.equals(QueryStyle.TRAVERSAL_URI)) {
+			return new TraversalURIOptimizedQuery<>(loader, this.asAdmin().getTraversalSource(), start);
 		} else {
 			throw new IllegalArgumentException("Query Builder type not recognized");
 		}

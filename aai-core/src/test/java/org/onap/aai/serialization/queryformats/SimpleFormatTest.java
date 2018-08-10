@@ -35,18 +35,20 @@ import org.onap.aai.AAISetup;
 import org.onap.aai.dbmap.DBConnectionType;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Loader;
-import org.onap.aai.introspection.LoaderFactory;
 import org.onap.aai.introspection.ModelType;
-import org.onap.aai.introspection.Version;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.onap.aai.serialization.db.DBSerializer;
-import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.serialization.engines.JanusGraphDBEngine;
+import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
 import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
+import org.springframework.test.annotation.DirtiesContext;
 
+import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.MultivaluedMap;
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyBoolean;
@@ -55,6 +57,7 @@ import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class SimpleFormatTest extends AAISetup {
 
 	@Mock
@@ -66,8 +69,10 @@ public class SimpleFormatTest extends AAISetup {
 	private DBSerializer serializer;
 	private RawFormat simpleFormat;
 	private Vertex vfModule;
+	private Vertex unknown;
 	private final ModelType factoryType = ModelType.MOXY;
 
+	
 	@Before
 	public void setUp() throws Exception {
 
@@ -93,25 +98,58 @@ public class SimpleFormatTest extends AAISetup {
 				"widget-model-version", "example-widget--model-version-val-68205",
 				"contrail-service-instance-fqdn", "example-contrail-service-instance-fqdn-val-68205"
 		);
+
+		unknown = graph.addVertex(T.label, "unknown", T.id, "1", "aai-node-type", "unknown", "vserver-id",
+				"vserver-id-1", "vserver-name", "vserver-name-1");
 	}
 
 	@Test
 	public void testCreatePropertiesObjectReturnsProperProperties() throws AAIFormatVertexException, AAIException {
 
 	    createLoaderEngineSetup();
-		serializer = new DBSerializer(Version.v10, dbEngine, factoryType, "Junit");
+		serializer = new DBSerializer(schemaVersions.getRelatedLinkVersion(), dbEngine, factoryType, "Junit");
 		simpleFormat = new RawFormat.Builder(loader, serializer, urlBuilder).nodesOnly(true).depth(0).modelDriven().build();
 
 		assertNotNull(dbEngine.tx());
 		assertNotNull(dbEngine.asAdmin());
 
-		JsonObject json = simpleFormat.createPropertiesObject(vfModule);
+		JsonObject json = simpleFormat.createPropertiesObject(vfModule).get();
 
 		assertTrue(json.has("model-invariant-id"));
 		assertTrue(json.has("model-version-id"));
 
 		assertFalse(json.has("model-invariant-id-local"));
 		assertFalse(json.has("model-version-id-local"));
+
+	}
+
+	@Test
+	public void testUnknownVertex() throws AAIFormatVertexException, AAIException {
+
+		createLoaderEngineSetup();
+		serializer = new DBSerializer(schemaVersions.getRelatedLinkVersion(), dbEngine, factoryType, "Junit");
+		simpleFormat = new RawFormat.Builder(loader, serializer, urlBuilder).nodesOnly(true).depth(0).modelDriven().build();
+
+		assertNotNull(dbEngine.tx());
+		assertNotNull(dbEngine.asAdmin());
+
+		assertFalse(simpleFormat.getJsonFromVertex(unknown).isPresent());
+
+	}
+
+	@Test
+	public void testFormattingUnknownVertex() throws AAIException {
+
+		createLoaderEngineSetup();
+		serializer = new DBSerializer(schemaVersions.getRelatedLinkVersion(), dbEngine, factoryType, "Junit");
+
+		FormatFactory ff = new FormatFactory(loader, serializer, schemaVersions, basePath);
+		MultivaluedMap mvm = new MultivaluedHashMap();
+		mvm.add("depth","0");
+		Formatter formatter =  ff.get(Format.simple, mvm);
+
+		JsonObject json = formatter.output(Arrays.asList(unknown,vfModule));
+		
 
 	}
 
@@ -148,7 +186,7 @@ public class SimpleFormatTest extends AAISetup {
 	public void createLoaderEngineSetup(){
 
 		if(loader == null){
-			loader = LoaderFactory.createLoaderForVersion(factoryType, Version.v10);
+			loader = loaderFactory.createLoaderForVersion(factoryType, schemaVersions.getRelatedLinkVersion());
 			dbEngine = spy(new JanusGraphDBEngine(QueryStyle.TRAVERSAL, DBConnectionType.CACHED, loader));
 
 			TransactionalGraphEngine.Admin spyAdmin = spy(dbEngine.asAdmin());

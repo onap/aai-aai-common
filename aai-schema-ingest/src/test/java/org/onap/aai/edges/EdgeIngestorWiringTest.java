@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
- * Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright © 2017-18 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.onap.aai.edges.exceptions.EdgeRuleNotFoundException;
 import org.onap.aai.setup.SchemaLocationsBean;
-import org.onap.aai.setup.Version;
+import org.onap.aai.setup.SchemaVersion;
+import org.onap.aai.setup.SchemaVersions;
 import org.onap.aai.testutils.ConfigTranslatorForWiringTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -39,8 +40,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.google.common.collect.Multimap;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {SchemaLocationsBean.class, ConfigTranslatorForWiringTest.class, EdgeIngestor.class})
-@TestPropertySource(properties = {"schemaIngestPropLoc = src/test/resources/forWiringTests/schemaIngestWiringTest.properties"})
+@ContextConfiguration(classes = {SchemaLocationsBean.class, SchemaVersions.class, ConfigTranslatorForWiringTest.class, EdgeIngestor.class})
+@TestPropertySource(properties = {"schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-wiring-test.properties"})
 @SpringBootTest
 public class EdgeIngestorWiringTest {
 	@Autowired
@@ -49,7 +50,7 @@ public class EdgeIngestorWiringTest {
 	@Test
 	public void test() throws EdgeRuleNotFoundException {
 		assertNotNull(ei);
-		EdgeRuleQuery q = new EdgeRuleQuery.Builder("quux", "foo").label("dancesWith").version(Version.V10).build();
+		EdgeRuleQuery q = new EdgeRuleQuery.Builder("quux", "foo").label("dancesWith").version(new SchemaVersion("v10")).build();
 		Multimap<String, EdgeRule> results = ei.getRules(q);
 		assertTrue(results.size() == 1);
 		assertTrue(results.containsKey("foo|quux"));

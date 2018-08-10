@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
- * Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright © 2017-18 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,43 +22,44 @@
 
 package org.onap.aai.testutils;
 
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.onap.aai.setup.ConfigTranslator;
 import org.onap.aai.setup.SchemaLocationsBean;
-import org.onap.aai.setup.Version;
+import org.onap.aai.setup.SchemaVersion;
+import org.onap.aai.setup.SchemaVersions;
 
 /**
  * All schema files here are valid for sunny day validator testing
  */
 public class GoodConfigForValidationTest extends ConfigTranslator {
 
-	public GoodConfigForValidationTest(SchemaLocationsBean bean) {
-		super(bean);
+	private SchemaVersions schemaVersions;
+
+	public GoodConfigForValidationTest(SchemaLocationsBean bean, SchemaVersions schemaVersions) {
+		super(bean, schemaVersions);
+		this.schemaVersions = schemaVersions;
 	}
 
 	@Override
-	public Map<Version, List<String>> getNodeFiles() {
+	public Map<SchemaVersion, List<String>> getNodeFiles() {
 		List<String> files = new ArrayList<>();
 		files.add("src/test/resources/oxm/goodConfigForValidationTest_oxm.xml");
-		Map<Version, List<String>> input = new EnumMap<>(Version.class);
-		//input.put(Version.getLatest(), files);
-		for (Version v : Version.values()) {
+		Map<SchemaVersion, List<String>> input = new TreeMap<>();
+		//input.put(SchemaVersion.getLatest(), files);
+		for (SchemaVersion v : schemaVersions.getVersions()) {
 			input.put(v, files);
 		}
 		return input;
 	}
 
 	@Override
-	public Map<Version, List<String>> getEdgeFiles() {
-		Map<Version, List<String>> input = new EnumMap<>(Version.class);
+	public Map<SchemaVersion, List<String>> getEdgeFiles() {
+		Map<SchemaVersion, List<String>> input = new TreeMap<>();
 		List<String> files = new ArrayList<>();
 		files.add("src/test/resources/edgeRules/test3.json");
-		//input.put(Version.getLatest(), files);
-		for (Version v : Version.values()) {
+		//input.put(SchemaVersion.getLatest(), files);
+		for (SchemaVersion v : schemaVersions.getVersions()) {
 			input.put(v, files);
 		}
 		return input;

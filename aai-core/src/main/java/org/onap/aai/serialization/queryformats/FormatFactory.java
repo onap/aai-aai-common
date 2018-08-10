@@ -28,6 +28,7 @@ import org.onap.aai.serialization.db.DBSerializer;
 import org.onap.aai.serialization.queryformats.exceptions.QueryParamInjectionException;
 import org.onap.aai.serialization.queryformats.utils.QueryParamInjector;
 import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
+import org.onap.aai.setup.SchemaVersions;
 
 public class FormatFactory {
 
@@ -35,10 +36,11 @@ public class FormatFactory {
 	private final DBSerializer serializer;
 	private final UrlBuilder urlBuilder;
 	private final QueryParamInjector injector;
-	public FormatFactory (Loader loader, DBSerializer serializer) throws AAIException {
+
+	public FormatFactory (Loader loader, DBSerializer serializer, SchemaVersions schemaVersions, String basePath) throws AAIException {
 		this.loader = loader;
 		this.serializer = serializer;
-		this.urlBuilder = new UrlBuilder(loader.getVersion(), serializer);
+		this.urlBuilder = new UrlBuilder(loader.getVersion(), serializer, schemaVersions, basePath);
 		this.injector = QueryParamInjector.getInstance();
 	}
 	
@@ -57,6 +59,9 @@ public class FormatFactory {
 			case pathed :
 				formatter = new Formatter(inject(new PathedURL(loader, urlBuilder), params));
 				break;
+            case pathed_resourceversion :
+                formatter = new Formatter(inject(new PathedURL(loader, urlBuilder).includeUrl(), params));
+                break;
 			case id :
 				formatter = new Formatter(inject(new IdURL(loader, urlBuilder), params));
 				break;

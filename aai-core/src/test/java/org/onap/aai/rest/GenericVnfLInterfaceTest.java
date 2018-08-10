@@ -20,18 +20,20 @@
 package org.onap.aai.rest;
 
 import org.json.JSONObject;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.onap.aai.AAIJunitRunner;
 import org.onap.aai.AAISetup;
 import org.onap.aai.HttpTestUtil;
 import org.onap.aai.PayloadUtil;
+import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.skyscreamer.jsonassert.JSONAssert;
-
+import org.springframework.test.annotation.DirtiesContext;
 import javax.ws.rs.core.Response;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -39,10 +41,12 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
-@RunWith(value = AAIJunitRunner.class)
+@RunWith(value = Parameterized.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class GenericVnfLInterfaceTest extends AAISetup {
 
     private HttpTestUtil httpTestUtil;
+   
 
     @Parameterized.Parameter(value = 0)
     public QueryStyle queryStyle;
@@ -50,7 +54,8 @@ public class GenericVnfLInterfaceTest extends AAISetup {
     @Parameterized.Parameters(name = "QueryStyle.{0}")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
-                {QueryStyle.TRAVERSAL}
+                {QueryStyle.TRAVERSAL},
+                {QueryStyle.TRAVERSAL_URI}
         });
     }
 
@@ -77,7 +82,11 @@ public class GenericVnfLInterfaceTest extends AAISetup {
         response = httpTestUtil.doPut("/aai/v12/network/generic-vnfs/generic-vnf/vnf1", resource);
         assertEquals("Expecting the generic vnf to be updated", 200, response.getStatus());
 
-        response = httpTestUtil.doGet("/aai/v12/network/generic-vnfs/generic-vnf/vnf1");
+    }
+
+    @After
+    public void tearDown() throws IOException, AAIException {
+        Response response = httpTestUtil.doGet("/aai/v12/network/generic-vnfs/generic-vnf/vnf1");
         assertEquals("Expecting the generic vnf to be updated", 200, response.getStatus());
 
         String expected = PayloadUtil.getExpectedPayload("generic-vnf-with-lag-interface.json");

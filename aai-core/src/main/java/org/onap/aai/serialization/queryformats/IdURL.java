@@ -30,6 +30,8 @@ import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
 import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
 
+import java.util.Optional;
+
 public class IdURL extends MultiFormatMapper {
 
 	private final UrlBuilder urlBuilder;
@@ -48,7 +50,7 @@ public class IdURL extends MultiFormatMapper {
 	}
 
 	@Override
-	protected JsonObject getJsonFromVertex(Vertex v) throws AAIFormatVertexException {
+	protected Optional<JsonObject> getJsonFromVertex(Vertex v) throws AAIFormatVertexException {
 
 		try {
 			final Introspector searchResult = this.loader.introspectorFromName("result-data");
@@ -58,7 +60,7 @@ public class IdURL extends MultiFormatMapper {
 
 			final String json = searchResult.marshal(false);
 
-			return parser.parse(json).getAsJsonObject();
+			return Optional.of(parser.parse(json).getAsJsonObject());
 			
 		} catch (AAIUnknownObjectException e) {
 			throw new RuntimeException("Fatal error - result-data object does not exist!");

@@ -20,11 +20,12 @@
 package org.onap.aai.serialization.engines.query;
 
 
-import static org.onap.aai.serialization.db.AAIDirection.IN;
-import static org.onap.aai.serialization.db.AAIDirection.NONE;
-import static org.onap.aai.serialization.db.AAIDirection.OUT;
-import static org.onap.aai.serialization.db.EdgeProperty.CONTAINS;
-import static org.onap.aai.serialization.db.EdgeProperty.DELETE_OTHER_V;
+import static org.onap.aai.edges.enums.AAIDirection.IN;
+import static org.onap.aai.edges.enums.AAIDirection.NONE;
+import static org.onap.aai.edges.enums.AAIDirection.OUT;
+import static org.onap.aai.edges.enums.EdgeField.PRIVATE;
+import static org.onap.aai.edges.enums.EdgeProperty.CONTAINS;
+import static org.onap.aai.edges.enums.EdgeProperty.DELETE_OTHER_V;
 
 import java.util.List;
 import java.util.Set;
@@ -169,7 +170,7 @@ public class GraphTraversalQueryEngine extends QueryEngine {
 					__.outE().has(CONTAINS.toString(), OUT.toString()).inV(),
 					__.inE().has(CONTAINS.toString(), IN.toString()).outV())
 				);
-			
+
 		if (!nodeOnly) {
 			t.union(
 					__.identity(),
@@ -186,11 +187,23 @@ public class GraphTraversalQueryEngine extends QueryEngine {
 
 	@Override
 	public List<Edge> findEdgesForVersion(Vertex start, Loader loader) {
+	    // From the given start vertex find both the
+		// out edges that has property CONTAINS set to NONE
+		// whose in vertexes has an object that is declared in the oxm
+		// And do the same thing vice versa to get a list of edges
+		// Then check that the edge should not have the property private set to true
+		// and remove the duplicates and return the list of edges
 		final Set<String> objects = loader.getAllObjects().keySet();
-		GraphTraversal<Vertex, Edge> pipeline = this.g.V(start).union(
+		GraphTraversal<Vertex, Edge> pipeline = this.g
+			.V(start)
+			.union(
 				__.inE().has(CONTAINS.toString(), NONE.toString()).where(__.outV().has(AAIProperties.NODE_TYPE, P.within(objects))),
 				__.outE().has(CONTAINS.toString(), NONE.toString()).where(__.inV().has(AAIProperties.NODE_TYPE, P.within(objects)))
-			).dedup();
+			)
+			.not(
+				__.has("private", true)
+			)
+			.dedup();
 		
 		return pipeline.toList();
 	}
@@ -198,10 +211,27 @@ public class GraphTraversalQueryEngine extends QueryEngine {
 
 	@Override
 	public List<Vertex> findCousinVertices(Vertex start) {
-		GraphTraversal<Vertex, Vertex> pipeline = this.g.V(start).union(
-				__.inE().has(CONTAINS.toString(), NONE.toString()),
-				__.outE().has(CONTAINS.toString(), NONE.toString())).otherV().dedup();
-				
+	    // Start at the given vertex
+		// Do a union to copy the start vertex to be run against all
+		// so for the start vertex it gets all of in edges that contains other v set to none
+		// and also all the other out edges with contains other v set to none
+		// And filter the edges based on the property private not set
+        // so that means it will be a regular edge
+		// and find the other end of the vertex so if setup like this:
+		// v2 -> e1 -> v3
+		// It will return v3
+		GraphTraversal<Vertex, Vertex> pipeline = this.g
+            .V(start)
+            .union(
+                __.inE().has(CONTAINS.toString(), NONE.toString()),
+                __.outE().has(CONTAINS.toString(), NONE.toString())
+            )
+			.not(
+				__.has(PRIVATE.toString(), true)
+			)
+			.otherV()
+			.dedup();
+
 		return pipeline.toList();
 	}
 	

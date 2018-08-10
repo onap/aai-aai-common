@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
- * Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright © 2017-18 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,14 +26,13 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import org.onap.aai.edges.JsonIngestor;
 import org.onap.aai.edges.TypeAlphabetizer;
 import org.onap.aai.edges.enums.EdgeField;
 import org.onap.aai.setup.ConfigTranslator;
-import org.onap.aai.setup.Version;
+import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.validation.SchemaErrorStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -45,7 +44,7 @@ import com.jayway.jsonpath.DocumentContext;
  */
 @Component
 public class EdgeRuleValidator {
-	private Map<Version, List<DocumentContext>> versionJsonFilesMap;
+	private Map<SchemaVersion, List<DocumentContext>> versionJsonFilesMap;
 	private final SchemaErrorStrategy strat;
 	protected final EdgeFieldsValidationModule fieldValidator;
 	protected final UniqueLabelValidationModule labelValidator;
@@ -69,8 +68,8 @@ public class EdgeRuleValidator {
 	
 	public boolean validate() {
 		
-		for (Entry<Version, List<DocumentContext>> verEntry : versionJsonFilesMap.entrySet()) {
-			Version v = verEntry.getKey();
+		for (Map.Entry<SchemaVersion, List<DocumentContext>> verEntry : versionJsonFilesMap.entrySet()) {
+			SchemaVersion v = verEntry.getKey();
 			List<DocumentContext> ctxs = verEntry.getValue();
 			List<Map<String, String>> rules = collectRules(ctxs);
 			Set<String> nodeTypePairs = new HashSet<>();
@@ -89,7 +88,7 @@ public class EdgeRuleValidator {
 			
 			handleResult(typeValidator.validate(nodeTypePairs, v));
 		}
-		
+
 		return strat.isOK();
 	}
 	

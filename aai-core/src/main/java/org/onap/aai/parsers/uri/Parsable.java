@@ -21,7 +21,7 @@ package org.onap.aai.parsers.uri;
 
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
-import org.onap.aai.serialization.db.EdgeType;
+import org.onap.aai.edges.enums.EdgeType;
 
 import javax.ws.rs.core.MultivaluedMap;
 
@@ -37,7 +37,7 @@ public interface Parsable {
 	 * @param uriKeys
 	 * @throws AAIException
 	 */
-	public void processObject(Introspector obj, EdgeType type, MultivaluedMap<String, String> uriKeys) throws AAIException;
+	void processObject(Introspector obj, EdgeType type, MultivaluedMap<String, String> uriKeys) throws AAIException;
 	/**
 	 * Process container.
 	 *
@@ -46,26 +46,26 @@ public interface Parsable {
 	 * @param isFinalContainer the is final container
 	 * @throws AAIException the AAI exception
 	 */
-	public void processContainer(Introspector obj, EdgeType type, MultivaluedMap<String, String> uriKeys, boolean isFinalContainer) throws AAIException;
+	void processContainer(Introspector obj, EdgeType type, MultivaluedMap<String, String> uriKeys, boolean isFinalContainer) throws AAIException;
 
 	/**
 	 * Process namespace.
 	 *
 	 * @param obj the obj
 	 */
-	public void processNamespace(Introspector obj);
+	void processNamespace(Introspector obj);
 
 	/**
 	 * Gets the cloud region transform.
 	 *
 	 * @return the cloud region transform
 	 */
-	public String getCloudRegionTransform();
+	String getCloudRegionTransform();
 	
 	/**
 	 * Use original loader.
 	 *
 	 * @return true, if successful
 	 */
-	public boolean useOriginalLoader();
+	boolean useOriginalLoader();
 }

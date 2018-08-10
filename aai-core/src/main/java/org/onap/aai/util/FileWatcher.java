@@ -38,7 +38,7 @@ public abstract class FileWatcher extends TimerTask {
 
   /**
    * runs a timer task
-   * @see java.util.TimerTask.run
+   * @see TimerTask.run
    */
   public final void run() {
     long timeStamp = file.lastModified();
