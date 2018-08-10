@@ -19,15 +19,24 @@
  */
 package org.onap.aai.util.genxsd;
 
-import com.google.common.base.Joiner;
-import org.apache.commons.lang3.StringUtils;
-import org.onap.aai.introspection.Version;
-import org.w3c.dom.*;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
+
+import org.apache.commons.lang3.StringUtils;
+import org.onap.aai.setup.SchemaVersion;
+import org.w3c.dom.Attr;
+import org.w3c.dom.DOMException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.TypeInfo;
+import org.w3c.dom.UserDataHandler;
+
+import com.google.common.base.Joiner;
 
 public class XSDElement implements Element {
 	Element xmlElementElement;
@@ -35,6 +44,7 @@ public class XSDElement implements Element {
 	private static final int VALUE_DESCRIPTION = 1;
 	private static final int VALUE_INDEXED_PROPS = 2;
 	private static final int VALUE_CONTAINER = 3;
+	private static final int VALUE_REQUIRES = 4;
 
 	public XSDElement(Element xmlElementElement) {
 		super();
@@ -58,12 +68,48 @@ public class XSDElement implements Element {
             if ( attrName.equals("type")) {
              	if ( attrValue.contains(apiVersionFmt) ) {
             		addType = attrValue.substring(attrValue.lastIndexOf('.')+1);
+            		if ( addTypeV == null ) 
+            			addTypeV = new Vector<String>();
             		addTypeV.add(addType);
             	}
             		
             }
 		}
 		return addTypeV;
+	}
+
+	public String getRequiresProperty() {
+		String elementAlsoRequiresProperty = null;
+		NodeList xmlPropNodes = this.getElementsByTagName("xml-properties");
+
+		for ( int i = 0; i < xmlPropNodes.getLength(); ++i ) {
+			Element xmlPropElement = (Element)xmlPropNodes.item(i);
+			if (! xmlPropElement.getParentNode().getAttributes().getNamedItem("name").getNodeValue().equals(this.xmlElementElement.getAttribute("name"))){
+				continue;
+			}
+			NodeList childNodes = xmlPropElement.getElementsByTagName("xml-property");
+
+			for ( int j = 0; j < childNodes.getLength(); ++j ) {
+				Element childElement = (Element)childNodes.item(j);
+				// get name
+				int useValue = VALUE_NONE;
+				NamedNodeMap attributes = childElement.getAttributes();
+				for ( int k = 0; k < attributes.getLength(); ++k ) {
+					Attr attr = (Attr) attributes.item(k);
+					String attrName = attr.getNodeName();
+					String attrValue = attr.getNodeValue();
+					if ( attrName == null || attrValue == null )
+						continue;
+					if ( attrName.equals("name") && attrValue.equals("requires")) {
+						useValue = VALUE_REQUIRES;
+					}
+					if ( useValue == VALUE_REQUIRES && attrName.equals("value")) {
+						elementAlsoRequiresProperty = attrValue;
+					}
+				}
+			}
+		}
+		return elementAlsoRequiresProperty;
 	}
 
 	public String getPathDescriptionProperty() {
@@ -230,13 +276,13 @@ public class XSDElement implements Element {
 		return sbParameter.toString();
 	}
 	
-	public String getHTMLElement(Version v, boolean useAnnotation, HTMLfromOXM driver) {
+	public String getHTMLElement(SchemaVersion v, boolean useAnnotation, HTMLfromOXM driver) {
 		StringBuffer sbElement = new StringBuffer();
 		String elementName = this.getAttribute("name");
 		String elementType = this.getAttribute("type");
 		String elementContainerType = this.getAttribute("container-type");
 		String elementIsRequired = this.getAttribute("required");
-		String addType = elementType.contains("." + v.name() + ".") ? elementType.substring(elementType.lastIndexOf('.')+1) : null;
+		String addType = elementType.contains("." + v.toString() + ".") ? elementType.substring(elementType.lastIndexOf('.')+1) : null;
 
 		if ( addType != null ) {
 			sbElement.append("        <xs:element ref=\"tns:" + driver.getXmlRootElementName(addType)+"\"");
@@ -255,7 +301,7 @@ public class XSDElement implements Element {
 			sbElement.append(" minOccurs=\"0\"");
 		} 
 		if ( elementContainerType != null && elementContainerType.equals("java.util.ArrayList")) {
-			sbElement.append(" maxOccurs=\"unbounded\"");
+			sbElement.append(" maxOccurs=\"5000\"");
 		}
 		if(useAnnotation) {				
 			String annotation = new XSDElement(xmlElementElement).getHTMLAnnotation("field", "          ");
@@ -269,7 +315,7 @@ public class XSDElement implements Element {
 //		return sbElement.toString();
 	}
 	
-	public String getHTMLElementWrapper(String unwrappedElement, Version v, boolean useAnnotation) {
+	public String getHTMLElementWrapper(String unwrappedElement, SchemaVersion v, boolean useAnnotation) {
 		
 		NodeList childNodes = this.getElementsByTagName("xml-element-wrapper");
 		
@@ -286,7 +332,7 @@ public class XSDElement implements Element {
 		sbElement.append("        <xs:element name=\"" + xmlElementWrapper +"\"");
 		String elementType = xmlElementElement.getAttribute("type");
 		String elementIsRequired = this.getAttribute("required");
-		String addType = elementType.contains("." + v.name() + ".") ? elementType.substring(elementType.lastIndexOf('.')+1) : null;
+		String addType = elementType.contains("." + v.toString() + ".") ? elementType.substring(elementType.lastIndexOf('.')+1) : null;
 
 		if ( elementIsRequired == null || !elementIsRequired.equals("true")||addType != null) {	
 			sbElement.append(" minOccurs=\"0\"");	
@@ -368,6 +414,9 @@ public class XSDElement implements Element {
 		String attrDescription = this.getPathDescriptionProperty();
 		if ( attrDescription != null && attrDescription.length() > 0 )
 			sbProperties.append("        description: " + attrDescription + "\n");
+		String elementAlsoRequiresProperty=this.getRequiresProperty();
+		if ( StringUtils.isNotEmpty(elementAlsoRequiresProperty) )
+			sbProperties.append("        also requires: " + elementAlsoRequiresProperty + "\n");
 		return sbProperties.toString();
 	}
 	
@@ -674,3 +723,4 @@ public class XSDElement implements Element {
 
 
 }
+

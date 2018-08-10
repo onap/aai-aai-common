@@ -54,7 +54,10 @@ public class LogFormatTools {
 	 * @throws AAIException the AAI exception
 	 */
 	public static String getStackTop(Throwable e) {
-		StringBuffer stackMessage = new StringBuffer();
+	    // StringBuilder is more efficient than StringBuffer and should only
+		// StringBuffer is only supposed to be used if multiple threads are modifying
+		// the same object and since this object is created locally not necessary
+		StringBuilder stackMessage = new StringBuilder();
 		int maxStackTraceEntries = 10;
 		try {
 			maxStackTraceEntries = Integer.valueOf(AAIConfig.get(AAIConstants.LOGGING_MAX_STACK_TRACE_ENTRIES));

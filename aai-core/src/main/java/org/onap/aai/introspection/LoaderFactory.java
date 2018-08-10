@@ -19,25 +19,56 @@
  */
 package org.onap.aai.introspection;
 
+import java.util.Map;
+
+import org.onap.aai.setup.SchemaVersion;
+import org.springframework.beans.factory.annotation.Autowired;
+
 public class LoaderFactory {
+
+	@Autowired
+	public Map<SchemaVersion, MoxyLoader> moxyLoaderInstance;
+
+	public LoaderFactory(Map<SchemaVersion, MoxyLoader> moxyLoaderInstance) {
+		this.moxyLoaderInstance = moxyLoaderInstance;
+	}
 
 	/**
 	 * Creates a new Loader object.
 	 *
-	 * @param type the type
-	 * @param version the version
-	 * @param llBuilder the ll builder
+	 * @param type
+	 *            the type
+	 * @param version
+	 *            the version
+	 * @param llBuilder
+	 *            the ll builder
 	 * @return the loader
 	 */
-	public static Loader createLoaderForVersion(ModelType type, Version version) {
-		
+	public Loader createLoaderForVersion(ModelType type, SchemaVersion version) {
+
 		if (type.equals(ModelType.MOXY)) {
-			return new MoxyLoader(version);
-		} else if (type.equals(ModelType.POJO)) {
-			return new PojoLoader(version);
+			return getMoxyLoaderInstance().get(version);
 		}
-		
+
 		return null;
-		
+
 	}
+
+	public Loader getLoaderStrategy(ModelType type, SchemaVersion version) {
+
+		if (type.equals(ModelType.MOXY)) {
+			return getMoxyLoaderInstance().get(version);
+		}
+		return null;
+
+	}
+
+	public Map<SchemaVersion, MoxyLoader> getMoxyLoaderInstance() {
+		return moxyLoaderInstance;
+	}
+
+	public void setMoxyLoaderInstance(Map<SchemaVersion, MoxyLoader> moxyLoaderInstance) {
+		this.moxyLoaderInstance = moxyLoaderInstance;
+	}
+
 }

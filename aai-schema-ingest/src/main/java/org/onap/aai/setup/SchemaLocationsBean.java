@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
- * Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright © 2017-18 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  * ============LICENSE_END=========================================================
- *
- * ECOMP is a trademark and service mark of AT&T Intellectual Property.
  */
 
 package org.onap.aai.setup;
@@ -28,32 +26,47 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
+import java.util.Collections;
+import java.util.List;
+
 @Configuration
-@PropertySource(value = "classpath:schemaIngest.properties", ignoreResourceNotFound=true)
-@PropertySource(value = "file:${schemaIngestPropLoc}", ignoreResourceNotFound=true)
+@PropertySource(value = "classpath:schema-ingest.properties", ignoreResourceNotFound=true)
+@PropertySource(value = "file:${schema.ingest.file}", ignoreResourceNotFound=true)
 public class SchemaLocationsBean {
 	/*
 	 * Per Spring documentation, the last PropertySource that works will
-	 * be applied. Here, schemaIngestPropLoc will be an environment variable
+	 * be applied. Here, schema.ingest.file will be an environment variable
 	 * set on install that tells Spring where to look for the schema
 	 * ingest properties file (and the actual filename), but the former
 	 * PropertySource gives the default of looking on the classpath for
-	 * schemaIngest.properties in case that second one doesn't work.
+	 * schema-ingest.properties in case that second one doesn't work.
 	 * 
-	 * The schemaIngest.properties file (or its equivalent if you choose 
+	 * The schema-ingest.properties file (or its equivalent if you choose
 	 * to name it otherwise) must contain the entries the below @Value
 	 * annotations are looking for.
 	 */
 	
-	@Value("${schemaConfig}")
+	@Value("${schema.configuration.location}")
 	private String schemaConfigLoc;
 	
-	@Value("${nodeDir}")
+	@Value("${schema.nodes.location}")
 	private String nodeDirectory;
 	
-	@Value("${edgeDir}")
+	@Value("${schema.edges.location}")
 	private String edgeDirectory;
-	
+
+	@Value("${schema.nodes.inclusion.list:}#{T(java.util.Arrays).asList(\".*oxm(.*).xml\")}")
+	private List<String> nodesInclusionPattern;
+
+	@Value("${schema.nodes.exclusion.list:}#{T(java.util.Collections).emptyList()}")
+	private List<String> nodesExclusionPattern;
+
+	@Value("${schema.edges.inclusion.list:}#{T(java.util.Arrays).asList(\"DbEdgeRules_.*.json\")}")
+	private List<String> edgesInclusionPattern;
+
+	@Value("${schema.edges.exclusion.list:}#{T(java.util.Collections).emptyList()}")
+	private List<String> edgesExclusionPattern;
+
 	/**
 	 * @return the file name/location with the list of schema files to be ingested
 	 */
@@ -64,7 +77,7 @@ public class SchemaLocationsBean {
 	/**
 	 * Sets the name/location of the file with the list of schema files to ingest
 	 * 
-	 * @param String schemaConfigLoc - the file name/location 
+	 * @param schemaConfigLoc - the file name/location
 	 */
 	public void setSchemaConfigLocation(String schemaConfigLoc) {
 		this.schemaConfigLoc = schemaConfigLoc;
@@ -80,7 +93,7 @@ public class SchemaLocationsBean {
 	/**
 	 * Sets the location of the OXM files
 	 * 
-	 * @param String nodeDirectory - the location of the OXM files
+	 * @param nodeDirectory - the location of the OXM files
 	 */
 	public void setNodeDirectory(String nodeDirectory) {
 		this.nodeDirectory = nodeDirectory;
@@ -96,12 +109,28 @@ public class SchemaLocationsBean {
 	/**
 	 * Sets the location of the edge rule json files
 	 * 
-	 * @param String edgeDirectory - the location of the edge rule files
+	 * @param edgeDirectory - the location of the edge rule files
 	 */
 	public void setEdgeDirectory(String edgeDirectory) {
 		this.edgeDirectory = edgeDirectory;
 	}
-	
+
+	public List<String> getNodesExclusionPattern(){
+		return this.nodesExclusionPattern;
+	}
+
+	public List<String> getNodesInclusionPattern(){
+		return this.nodesInclusionPattern;
+	}
+
+	public List<String> getEdgesExclusionPattern(){
+		return this.edgesExclusionPattern;
+	}
+
+	public List<String> getEdgesInclusionPattern(){
+		return this.edgesInclusionPattern;
+	}
+
 	//this allows the code to actually read the value from the config file
 	//without this those strings get set to literally "${edgeDir}" etc
 	@Bean

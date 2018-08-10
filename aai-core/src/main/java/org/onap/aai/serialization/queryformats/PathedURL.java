@@ -30,12 +30,16 @@ import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
 import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
 
+import java.util.Optional;
+
 public final class PathedURL extends MultiFormatMapper {
 
 	private final UrlBuilder urlBuilder;
 	private final JsonParser parser;
 	private final Loader loader;
-	
+    private boolean includeUrl = false;
+
+ 
 	public PathedURL (Loader loader, UrlBuilder urlBuilder) throws AAIException {
 		this.urlBuilder = urlBuilder;
 		this.parser = new JsonParser();
@@ -47,8 +51,14 @@ public final class PathedURL extends MultiFormatMapper {
 		return 20;
 	}
 
+    public PathedURL includeUrl() {
+        this.includeUrl = true;
+        return this;
+    }
+
+    
 	@Override
-	protected JsonObject getJsonFromVertex(Vertex v) throws AAIFormatVertexException {
+	protected Optional<JsonObject> getJsonFromVertex(Vertex v) throws AAIFormatVertexException {
 
 		try {
 			final Introspector searchResult = this.loader.introspectorFromName("result-data");
@@ -56,8 +66,12 @@ public final class PathedURL extends MultiFormatMapper {
 			searchResult.setValue("resource-type", v.value(AAIProperties.NODE_TYPE));
 
 			searchResult.setValue("resource-link", this.urlBuilder.pathed(v));
+
+			if(includeUrl)
+                searchResult.setValue("resource-version", v.value(AAIProperties.RESOURCE_VERSION));
+            
 			final String json = searchResult.marshal(false);
-			return this.parser.parse(json).getAsJsonObject();
+			return Optional.of(this.parser.parse(json).getAsJsonObject());
 
 		} catch (AAIUnknownObjectException e) {
 			throw new RuntimeException("Fatal error - result-data does not exist!", e);

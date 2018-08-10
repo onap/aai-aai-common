@@ -91,7 +91,7 @@ public class NotificationEvent {
 	@XmlElement(name = "cambria.partition")
 	protected String cambriaPartition;
     @XmlElement(name = "event-header")
-    protected NotificationEvent.EventHeader eventHeader;
+    protected EventHeader eventHeader;
     @XmlAnyElement(lax = true)
     protected Object entity;
 
@@ -100,10 +100,10 @@ public class NotificationEvent {
      * 
      * @return
      *     possible object is
-     *     {@link NotificationEvent.EventHeader }
+     *     {@link EventHeader }
      *     
      */
-    public NotificationEvent.EventHeader getEventHeader() {
+    public EventHeader getEventHeader() {
         return eventHeader;
     }
 
@@ -112,10 +112,10 @@ public class NotificationEvent {
      * 
      * @param value
      *     allowed object is
-     *     {@link NotificationEvent.EventHeader }
+     *     {@link EventHeader }
      *     
      */
-    public void setEventHeader(NotificationEvent.EventHeader value) {
+    public void setEventHeader(EventHeader value) {
         this.eventHeader = value;
     }
 

@@ -27,7 +27,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.junit.Test;
-import org.onap.aai.restcore.JettyObfuscationConversionCommandLineUtil;
 
 public class JettyObfuscationConversionCommandLineUtilTest {
 
@@ -39,6 +38,7 @@ public class JettyObfuscationConversionCommandLineUtilTest {
 	@Test
 	public void test() {
 		//setup, this will catch main's print statements for evaluation
+		PrintStream oldOutputStream = System.out;
 		System.setOut(new PrintStream(testOut));
 
 		/* ------ TEST OBFUSCATION ----*/
@@ -65,7 +65,7 @@ public class JettyObfuscationConversionCommandLineUtilTest {
 		assertTrue(deobfMatch.find());
 
 		//clean up, resets to stdout
-		System.setOut(null);
+		System.setOut(oldOutputStream);
 	}
 
 }

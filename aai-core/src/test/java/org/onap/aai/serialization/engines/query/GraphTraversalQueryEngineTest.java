@@ -19,42 +19,39 @@
  */
 package org.onap.aai.serialization.engines.query;
 
-import static org.junit.Assert.*;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
+import com.jayway.jsonpath.JsonPath;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.Tree;
-import org.apache.tinkerpop.gremlin.structure.Direction;
-import org.apache.tinkerpop.gremlin.structure.Edge;
-import org.apache.tinkerpop.gremlin.structure.Element;
-import org.apache.tinkerpop.gremlin.structure.Graph;
-import org.apache.tinkerpop.gremlin.structure.T;
-import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.apache.tinkerpop.gremlin.structure.*;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
-import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerVertex;
 import org.junit.Test;
 import org.onap.aai.AAISetup;
+import org.onap.aai.edges.exceptions.AmbiguousRuleChoiceException;
+import org.onap.aai.edges.exceptions.EdgeRuleNotFoundException;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Loader;
-import org.onap.aai.introspection.LoaderFactory;
 import org.onap.aai.introspection.ModelType;
-import org.onap.aai.introspection.Version;
-import org.onap.aai.serialization.db.EdgeRules;
+import org.onap.aai.serialization.db.EdgeSerializer;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 
+import java.io.InputStream;
+import java.util.*;
+
+import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.onap.aai.edges.enums.EdgeField.CONTAINS;
+
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class GraphTraversalQueryEngineTest extends AAISetup {
+
+	@Autowired
+	EdgeSerializer edgeSer;
 
 	@Test
 	public void testFindParents() throws AAIException {
 		//setup
-		EdgeRules rules = EdgeRules.getInstance();
 		Graph graph = TinkerGraph.open();
 		
 		Vertex cloudreg = graph.addVertex(T.id, "00", "aai-node-type", "cloud-region");
@@ -63,8 +60,8 @@ public class GraphTraversalQueryEngineTest extends AAISetup {
 		
 		GraphTraversalSource g = graph.traversal();
 		
-		rules.addTreeEdge(g, cloudreg, tenant);
-		rules.addTreeEdge(g, tenant, vserver);
+		edgeSer.addTreeEdge(g, cloudreg, tenant);
+		edgeSer.addTreeEdge(g, tenant, vserver);
 		
 		//expect start vertex back plus any parents
 		List<Vertex> crExpected = new ArrayList<>(Arrays.asList(cloudreg)); //no parents
@@ -91,7 +88,6 @@ public class GraphTraversalQueryEngineTest extends AAISetup {
 	@Test
 	public void testFindAllChildren() throws AAIException {
 		//setup
-		EdgeRules rules = EdgeRules.getInstance();
 		Graph graph = TinkerGraph.open();
 		
 		Vertex cloudreg = graph.addVertex(T.id, "00", "aai-node-type", "cloud-region");
@@ -102,10 +98,10 @@ public class GraphTraversalQueryEngineTest extends AAISetup {
 		
 		GraphTraversalSource g = graph.traversal();
 		
-		rules.addTreeEdge(g, cloudreg, tenant);
-		rules.addTreeEdge(g, tenant, vserver);
-		rules.addTreeEdge(g, tenant, vserver2);
-		rules.addTreeEdge(g, cloudreg, oam);
+		edgeSer.addTreeEdge(g, cloudreg, tenant);
+		edgeSer.addTreeEdge(g, tenant, vserver);
+		edgeSer.addTreeEdge(g, tenant, vserver2);
+		edgeSer.addTreeEdge(g, cloudreg, oam);
 		
 		List<Vertex> crExpected = new ArrayList<>(Arrays.asList(cloudreg, tenant, vserver, vserver2, oam));
 		List<Vertex> vsExpected = new ArrayList<>(Arrays.asList(vserver));
@@ -123,7 +119,6 @@ public class GraphTraversalQueryEngineTest extends AAISetup {
 	@Test
 	public void testFindChildrenOfType() throws AAIException {
 		//setup
-		EdgeRules rules = EdgeRules.getInstance();
 		Graph graph = TinkerGraph.open();
 		
 		Vertex gv = graph.addVertex(T.id, "00", "aai-node-type", "generic-vnf");
@@ -134,10 +129,10 @@ public class GraphTraversalQueryEngineTest extends AAISetup {
 		
 		GraphTraversalSource g = graph.traversal();
 		
-		rules.addTreeEdge(g, gv, lint1);
-		rules.addTreeEdge(g, gv, lint2);
-		rules.addTreeEdge(g, gv, lag);
-		rules.addTreeEdge(g, lag, lint3);
+		edgeSer.addTreeEdge(g, gv, lint1);
+		edgeSer.addTreeEdge(g, gv, lint2);
+		edgeSer.addTreeEdge(g, gv, lag);
+		edgeSer.addTreeEdge(g, lag, lint3);
 		
 		List<Vertex> expected = new ArrayList<>(Arrays.asList(lint1, lint2));
 		
@@ -151,7 +146,6 @@ public class GraphTraversalQueryEngineTest extends AAISetup {
 	@Test
 	public void testFindChildren() throws AAIException {
 		//setup
-		EdgeRules rules = EdgeRules.getInstance();
 		Graph graph = TinkerGraph.open();
 		
 		Vertex gv = graph.addVertex(T.id, "00", "aai-node-type", "generic-vnf");
@@ -162,10 +156,10 @@ public class GraphTraversalQueryEngineTest extends AAISetup {
 		
 		GraphTraversalSource g = graph.traversal();
 		
-		rules.addTreeEdge(g, gv, lint1);
-		rules.addTreeEdge(g, gv, lint2);
-		rules.addTreeEdge(g, gv, lag);
-		rules.addTreeEdge(g, lag, lint3);
+		edgeSer.addTreeEdge(g, gv, lint1);
+		edgeSer.addTreeEdge(g, gv, lint2);
+		edgeSer.addTreeEdge(g, gv, lag);
+		edgeSer.addTreeEdge(g, lag, lint3);
 		
 		List<Vertex> expected = new ArrayList<>(Arrays.asList(lint1, lint2, lag));
 		
@@ -175,45 +169,10 @@ public class GraphTraversalQueryEngineTest extends AAISetup {
 		List<Vertex> results = engine.findChildren(gv);
 		assertTrue(results.containsAll(expected) && expected.containsAll(results));
 	}
-
-	@Test
-	public void testFindDeletable() throws AAIException {
-		//setup
-		EdgeRules rules = EdgeRules.getInstance("/dbedgerules/DbEdgeRules_test.json");
-		
-		Graph graph = TinkerGraph.open();
-		Vertex parent = graph.addVertex(T.id, "00", "aai-node-type", "test-parent");
-		Vertex child = graph.addVertex(T.id, "10", "aai-node-type", "test-child");
-		Vertex cousin = graph.addVertex(T.id, "20", "aai-node-type", "test-cousin");
-		Vertex grandchild = graph.addVertex(T.id, "30", "aai-node-type", "test-grandchild");
-
-		GraphTraversalSource g = graph.traversal();
-		
-		rules.addTreeEdge(g, parent, child); //delete-other-v=none, no cascade
-		rules.addTreeEdge(g, child, grandchild); //d-o-v=out, yes from child
-		rules.addEdge(g, cousin, child); //d-o-v=out, yes from cousin
-		
-		List<Vertex> parentExpected = new ArrayList<>(Arrays.asList(parent));
-		List<Vertex> childExpected = new ArrayList<>(Arrays.asList(child, grandchild));
-		List<Vertex> cousinExpected = new ArrayList<>(Arrays.asList(cousin, child, grandchild));
-		
-		GraphTraversalQueryEngine engine = new GraphTraversalQueryEngine(g);
-		
-		//tests
-		List<Vertex> parentDeletes = engine.findDeletable(parent);
-		assertTrue(parentExpected.containsAll(parentDeletes) && parentDeletes.containsAll(parentExpected));
-		
-		List<Vertex> childDeletes = engine.findDeletable(child);
-		assertTrue(childExpected.containsAll(childDeletes) && childDeletes.containsAll(childExpected));
-		
-		List<Vertex> cousinDeletes = engine.findDeletable(cousin);
-		assertTrue(cousinExpected.containsAll(cousinDeletes) && cousinDeletes.containsAll(cousinExpected));
-	}
 	
 	@Test
 	public void testFindRelatedVertices() throws AAIException {
 		//setup
-		EdgeRules rules = EdgeRules.getInstance();
 		
 		Graph graph = TinkerGraph.open();
 		
@@ -224,9 +183,9 @@ public class GraphTraversalQueryEngineTest extends AAISetup {
 		
 		GraphTraversalSource g = graph.traversal();
 		
-		rules.addTreeEdge(g, gv, lint);
-		rules.addEdge(g, lint, log);
-		rules.addEdge(g, log, lint2);
+		edgeSer.addTreeEdge(g, gv, lint);
+		edgeSer.addEdge(g, lint, log);
+		edgeSer.addEdge(g, log, lint2);
 		
 		List<Vertex> outExpected = new ArrayList<>(Arrays.asList(lint));
 		List<Vertex> inExpected = new ArrayList<>(Arrays.asList(lint, lint2));
@@ -246,9 +205,8 @@ public class GraphTraversalQueryEngineTest extends AAISetup {
 	}
 	
 	@Test
-	public void testFindSubGraph() throws AAIException {
+	public void testFindSubGraph() throws AAIException, EdgeRuleNotFoundException, AmbiguousRuleChoiceException {
 		//setup
-		EdgeRules rules = EdgeRules.getInstance();
 		Graph graph = TinkerGraph.open();
 		
 		Vertex cr = graph.addVertex(T.id, "00", "aai-node-type", "cloud-region");
@@ -264,23 +222,25 @@ public class GraphTraversalQueryEngineTest extends AAISetup {
 		Vertex lint2 = graph.addVertex(T.id, "31", "aai-node-type", "l-interface");
 		Vertex log = graph.addVertex(T.id, "80", "aai-node-type", "logical-link");
 		Vertex vnfc = graph.addVertex(T.id, "90", "aai-node-type", "vnfc");
-		
+		Vertex modelVer = graph.addVertex(T.id, "100", "aai-node-type", "model-ver");
+
 		GraphTraversalSource g = graph.traversal();
 		
-		Edge crTen = rules.addTreeEdge(g, cr, ten);
-		Edge crTen2 = rules.addTreeEdge(g, cr, ten2);
-		Edge tenVs = rules.addTreeEdge(g, ten, vs);
-		Edge tenVs2 = rules.addTreeEdge(g, ten, vs2);
-		Edge vsLInt = rules.addTreeEdge(g, vs, lint);
-		Edge lintLog = rules.addEdge(g, lint, log);
-		Edge vsGv = rules.addEdge(g, vs, gv);
-		rules.addEdge(g, gv, vnfc);
+		Edge crTen = edgeSer.addTreeEdge(g, cr, ten);
+		Edge crTen2 = edgeSer.addTreeEdge(g, cr, ten2);
+		Edge tenVs = edgeSer.addTreeEdge(g, ten, vs);
+		Edge tenVs2 = edgeSer.addTreeEdge(g, ten, vs2);
+		Edge vsLInt = edgeSer.addTreeEdge(g, vs, lint);
+		Edge lintLog = edgeSer.addEdge(g, lint, log);
+		Edge vsGv = edgeSer.addEdge(g, vs, gv);
+		edgeSer.addEdge(g, gv, vnfc);
 		
-		rules.addTreeEdge(g, gv, lag);
-		rules.addTreeEdge(g, lag, lint2);
-		
-		rules.addTreeEdge(g, comp, ctag);
-		Edge crComp = rules.addEdge(g, cr, comp);
+		edgeSer.addTreeEdge(g, gv, lag);
+		edgeSer.addTreeEdge(g, lag, lint2);
+        Edge modelVerEdge = edgeSer.addPrivateEdge(g, gv, modelVer, null);
+
+		edgeSer.addTreeEdge(g, comp, ctag);
+		Edge crComp = edgeSer.addEdge(g, cr, comp);
 		
 		//findSubGraph(cr, 0, true)
 		List<Element> expected1 = new ArrayList<>(Arrays.asList(cr));
@@ -305,7 +265,8 @@ public class GraphTraversalQueryEngineTest extends AAISetup {
 		
 		Tree<Element> res3 = engine.findSubGraph(cr);
 		Set<Element> resList3 = treeToList(res3);
-		assertTrue(resList3.containsAll(expected3) && expected3.containsAll(resList3));
+		assertThat(resList3, containsInAnyOrder(expected3.toArray()));
+//		assertTrue(resList3.containsAll(expected3) && expected3.containsAll(resList3));
 	}
 	
 	/**
@@ -326,36 +287,45 @@ public class GraphTraversalQueryEngineTest extends AAISetup {
 	}
 	
 	@Test
-	public void testFindEdgesForVersion() throws AAIException {
+	public void testFindEdgesForVersion() throws AAIException, EdgeRuleNotFoundException, AmbiguousRuleChoiceException {
 		//setup
-		EdgeRules rules = EdgeRules.getInstance();
 		Graph graph = TinkerGraph.open();
 		
 		Vertex gv = graph.addVertex(T.id, "00", "aai-node-type", "generic-vnf");
 		Vertex vnfc = graph.addVertex(T.id, "10", "aai-node-type", "vnfc");
 		Vertex lob = graph.addVertex(T.id, "20", "aai-node-type", "line-of-business");
 		Vertex lint = graph.addVertex(T.id, "30", "aai-node-type", "l-interface");
-		
+		Vertex mv = graph.addVertex(T.id, "40", "aai-node-type", "model-ver");
+		Vertex cr = graph.addVertex(T.id, "50", "aai-node-type", "cloud-region");
+		Vertex tn = graph.addVertex(T.id, "60", "aai-node-type", "tenant");
+
+		Edge cloudRegionToTenantEdge = tn
+			 .addEdge("some-edge", cr, CONTAINS.toString(), "NONE");
+
 		GraphTraversalSource g = graph.traversal();
 		
-		rules.addTreeEdge(g, gv, lint); //tree edge so shouldn't appear in results
-		Edge gvVnfc = rules.addEdge(g, gv, vnfc);
-		rules.addEdge(g, gv, lob); //v11/12 not v10
-		
+		edgeSer.addTreeEdge(g, gv, lint); //tree edge so shouldn't appear in results
+		Edge gvVnfc = edgeSer.addEdge(g, gv, vnfc);
+		edgeSer.addEdge(g, gv, lob); //v11/12 not v10
+        Edge gvMvEdge = edgeSer.addPrivateEdge(g, gv, mv, null);
+
 		List<Edge> expected = new ArrayList<>(Arrays.asList(gvVnfc));
 		
 		GraphTraversalQueryEngine engine = new GraphTraversalQueryEngine(g);
 		
 		//test
-		Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.v10);
+		Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getRelatedLinkVersion());
 		List<Edge> results = engine.findEdgesForVersion(gv, loader);
-		assertTrue(results.containsAll(expected) && expected.containsAll(results));
+		assertThat(results, containsInAnyOrder(expected.toArray()));
+
+        expected = new ArrayList<>(Arrays.asList(cloudRegionToTenantEdge));
+		results = engine.findEdgesForVersion(cr, loader);
+		assertThat(results, containsInAnyOrder(expected.toArray()));
 	}
 	
 	@Test
 	public void testFindCousinVertices() throws AAIException {
 		//setup
-		EdgeRules rules = EdgeRules.getInstance();
 		Graph graph = TinkerGraph.open();
 		
 		Vertex gv = graph.addVertex(T.id, "00", "aai-node-type", "generic-vnf");
@@ -365,9 +335,9 @@ public class GraphTraversalQueryEngineTest extends AAISetup {
 		
 		GraphTraversalSource g = graph.traversal();
 		
-		rules.addTreeEdge(g, gv, lint); //tree edge so shouldn't appear in results
-		rules.addEdge(g, gv, vnfc);
-		rules.addEdge(g, gv, lob); 
+		edgeSer.addTreeEdge(g, gv, lint); //tree edge so shouldn't appear in results
+		edgeSer.addEdge(g, gv, vnfc);
+		edgeSer.addEdge(g, gv, lob);
 		
 		List<Vertex> expected = new ArrayList<>(Arrays.asList(vnfc, lob));
 		

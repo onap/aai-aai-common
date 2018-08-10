@@ -36,6 +36,7 @@ public class ErrorObject {
 	private String restErrorCode = "3002";
 	private String errorCode;
 	private String errorText;
+	private String details;
 
 	/**
 	 * Instantiates a new error object.
@@ -274,6 +275,24 @@ public class ErrorObject {
 		this.errorText = errorText;
 	}
 
+	/**
+	 * Gets the details.
+	 *
+	 * @return the details
+	 */
+	public String getDetails() {
+		return details;
+	}
+
+	/**
+	 * Sets the details.
+	 *
+	 * @param details the new details
+	 */
+	public void setDetails(String details) {
+		this.details = details == null ? "" : details;
+	}
+	
 	/**
 	 * Gets the error code string.  This is also the string
 	 * configured in Nagios to alert on

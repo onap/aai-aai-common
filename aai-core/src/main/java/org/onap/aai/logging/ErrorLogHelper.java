@@ -363,10 +363,10 @@ public class ErrorLogHelper {
 		org.onap.aai.domain.restResponseInfo.ObjectFactory factory = new org.onap.aai.domain.restResponseInfo.ObjectFactory();
 		org.onap.aai.domain.restResponseInfo.Info info = factory.createInfo();
 		org.onap.aai.domain.restResponseInfo.Info.ResponseMessages responseMessages = factory.createInfoResponseMessages();
-		Iterator<Map.Entry<AAIException, ArrayList<String>>> it = areList.entrySet().iterator();
+		Iterator<Entry<AAIException, ArrayList<String>>> it = areList.entrySet().iterator();
 		
 		while (it.hasNext()) {
-			Map.Entry<AAIException,ArrayList<String>> pair = (Map.Entry<AAIException, ArrayList<String>>)it.next();
+			Entry<AAIException,ArrayList<String>> pair = (Entry<AAIException, ArrayList<String>>)it.next();
 			AAIException are = pair.getKey();
 			ArrayList<String> variables = pair.getValue();
 
@@ -584,7 +584,8 @@ public class ErrorLogHelper {
 											.append(errorObject.getHTTPResponseCode())
 											.append(":")
 											.append(e.getMessage())
-											.toString();
+											.toString()
+                                            .replaceAll("\\n", "^");
 
 		LoggingContext.responseCode(Integer.toString(errorObject.getHTTPResponseCode().getStatusCode()));
 		LoggingContext.responseDescription(errorMessage);

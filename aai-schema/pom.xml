@@ -33,13 +33,29 @@
     <name>aai-schema</name>
     <version>1.3.0-SNAPSHOT</version>
     <properties>
-	<onap.nexus.url>https://nexus.onap.org</onap.nexus.url>
+        <onap.nexus.url>https://nexus.onap.org</onap.nexus.url>
+        <!-- Start of Default ONAP Schema Properties -->
+        <aai.xsd.source>src/main/resources/onap/aai_schema</aai.xsd.source>
+        <aai.bindings.source>src/main/xjb/bindings-onap.xjb</aai.bindings.source>
+        <!-- End of Default ONAP Schema Properties -->
     </properties>
     <dependencies>
         <dependency>
             <groupId>org.onap.aai.aai-common</groupId>
             <artifactId>aai-annotations</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>RELEASE</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
     <build>
@@ -54,6 +70,27 @@
                         <goals>
                             <goal>xjc</goal>
                         </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/generated-sources</outputDirectory>
+                            <sources>
+                                <source>${aai.xsd.source}</source>
+                            </sources>
+                            <xjbSources>
+                                <xjbSource>${aai.bindings.source}</xjbSource>
+                            </xjbSources>
+                            <xjcSourceExcludeFilters>
+                                <filter
+                                        implementation="org.codehaus.mojo.jaxb2.shared.filters.pattern.PatternFileFilter">
+                                    <patterns>
+                                        <pattern>edgetagquery\.xsd</pattern>
+                                    </patterns>
+                                </filter>
+                            </xjcSourceExcludeFilters>
+                            <extension>true</extension>
+                            <arguments>
+                                <argument>-Xannotate</argument>
+                            </arguments>
+                        </configuration>
                     </execution>
                 </executions>
                 <dependencies>
@@ -68,25 +105,10 @@
                         <version>${project.version}</version>
                     </dependency>
                 </dependencies>
-                <configuration>
-                    <outputDirectory>${project.build.directory}/generated-sources</outputDirectory>
-                    <sources>
-                        <source>src/main/resources/aai_schema</source>
-                    </sources>
-                    <xjcSourceExcludeFilters>
-                        <filter
-                                implementation="org.codehaus.mojo.jaxb2.shared.filters.pattern.PatternFileFilter">
-                            <patterns>
-                                <pattern>edgetagquery\.xsd</pattern>
-                            </patterns>
-                        </filter>
-                    </xjcSourceExcludeFilters>
-                    <extension>true</extension>
-                    <arguments>
-                        <argument>-Xannotate</argument>
-                    </arguments>
-                    <bindingDirectory>src/main/xjb</bindingDirectory>
-                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -101,9 +123,18 @@
                 <artifactId>nexus-staging-maven-plugin</artifactId>
             </plugin>
         </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </resource>
+        </resources>
     </build>
 
-    <!-- Plugins and repositories -->
+    <!-- Start of ONAP Specific Repositories -->
     <pluginRepositories>
         <pluginRepository>
             <id>central</id>
@@ -115,5 +146,5 @@
             <url>http://www.evosuite.org/m2</url>
         </pluginRepository>
     </pluginRepositories>
-
+    <!-- End of ONAP Specific Repositories -->
 </project>

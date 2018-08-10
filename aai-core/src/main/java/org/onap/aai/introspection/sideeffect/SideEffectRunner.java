@@ -19,6 +19,8 @@
  */
 package org.onap.aai.introspection.sideeffect;
 
+import com.att.eelf.configuration.EELFLogger;
+import com.att.eelf.configuration.EELFManager;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;

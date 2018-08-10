@@ -84,6 +84,7 @@ public class AAIException extends Exception {
 
 		try {
 			this.errorObject = ErrorLogHelper.getErrorObject(getCode());
+			errorObject.setDetails(details);
 		} catch (ErrorObjectNotFoundException e) {
 			throw new RuntimeException("Failed to instantiate AAIException with code=" + getCode()
 										 + " - update error.properties before using this exception code");

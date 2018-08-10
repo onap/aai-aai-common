@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
- * Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright © 2017-18 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,41 +16,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  * ============LICENSE_END=========================================================
- *
- * ECOMP is a trademark and service mark of AT&T Intellectual Property.
  */
 
 package org.onap.aai.validation.edges;
 
 import static org.junit.Assert.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onap.aai.edges.JsonIngestor;
-import org.onap.aai.setup.Version;
-import org.onap.aai.validation.edges.UniqueLabelValidationModule;
+import org.onap.aai.setup.SchemaVersion;
 
 import com.jayway.jsonpath.DocumentContext;
 
 public class UniqueLabelValidationModuleTest {
 	private static List<DocumentContext> ctxs;
 	private static UniqueLabelValidationModule validator;
-	
+	public static final SchemaVersion LATEST = new SchemaVersion("v14");
+
 	@BeforeClass
 	public static void setup() {
-		Map<Version, List<String>> testRules = new HashMap<>();
+		Map<SchemaVersion, List<String>> testRules = new TreeMap<>();
 		List<String> testFiles = new ArrayList<>();
 		testFiles.add("src/test/resources/edgeRules/labelValidationTest1.json");
 		testFiles.add("src/test/resources/edgeRules/labelValidationTest2.json");
-		testRules.put(Version.getLatest(), testFiles);
+		testRules.put(LATEST, testFiles);
 		
 		JsonIngestor ji = new JsonIngestor();
-		ctxs = ji.ingest(testRules).get(Version.getLatest());
+		ctxs = ji.ingest(testRules).get(LATEST);
 		validator = new UniqueLabelValidationModule();
 	}
 

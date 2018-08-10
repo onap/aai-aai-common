@@ -1,0 +1,538 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+  ============LICENSE_START=======================================================
+  org.openecomp.aai
+  ================================================================================
+  Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+  ================================================================================
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  ============LICENSE_END=========================================================
+  -->
+
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm" package-name="inventory.aai.onap.org.v13" xml-mapping-metadata-complete="true">
+	<xml-schema element-form-default="QUALIFIED">
+		<xml-ns namespace-uri="http://org.onap.aai.inventory/v13" />
+	</xml-schema>
+	<java-types>
+		<java-type name="ConstrainedElementSets">
+			<xml-root-element name="constrained-element-sets" />
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="constrainedElementSet" name="constrained-element-set" type="inventory.aai.onap.org.v13.ConstrainedElementSet" />
+			</java-attributes>
+		</java-type>
+
+		<java-type name="ConstrainedElementSet">
+			<xml-properties>
+				<xml-property name="description" value="This is how we would capture constraints defining allowed sets of elements." />
+				<xml-property name="uniqueProps" value="constrained-element-set-uuid" />
+				<xml-property name="indexedProps" value="constrained-element-set-uuid" />
+				<xml-property name="allowDirectRead" value="true" />
+				<xml-property name="allowDirectWrite" value="false" />
+				<xml-property name="container" value="constrained-element-sets" />
+			</xml-properties>
+			<xml-root-element name="constrained-element-set" />
+			<java-attributes>
+				<xml-element java-attribute="constrainedElementSetUuid" name="constrained-element-set-uuid" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="autoGenerateUuid" value="true" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="constraintType" name="constraint-type" required="true" type="java.lang.String" />
+				<xml-element java-attribute="checkType" name="check-type" required="true" type="java.lang.String" />
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String" />
+				<xml-element java-attribute="elementChoiceSets" name="element-choice-sets" type="inventory.aai.onap.org.v13.ElementChoiceSets" />
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v13.RelationshipList" />
+			</java-attributes>
+		</java-type>
+
+		<java-type name="ElementChoiceSets">
+			<xml-root-element name="element-choice-sets" />
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="elementChoiceSet" name="element-choice-set" type="inventory.aai.onap.org.v13.ElementChoiceSet" />
+			</java-attributes>
+		</java-type>
+
+		<java-type name="ElementChoiceSet">
+			<xml-properties>
+				<xml-property name="description" value="This is how we would capture constraints defining allowed sets of elements." />
+				<xml-property name="uniqueProps" value="element-choice-set-uuid" />
+				<xml-property name="indexedProps" value="element-choice-set-uuid" />
+				<xml-property name="allowDirectRead" value="true" />
+				<xml-property name="allowDirectWrite" value="false" />
+				<xml-property name="container" value="element-choice-sets" />
+			</xml-properties>
+			<xml-root-element name="element-choice-set" />
+			<java-attributes>
+				<xml-element java-attribute="elementChoiceSetUuid" name="element-choice-set-uuid" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="autoGenerateUuid" value="true" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="elementChoiceSetName" name="element-choice-set-name" required="true" type="java.lang.String" />
+				<xml-element java-attribute="cardinality" name="cardinality" type="java.lang.String" />
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String" />
+				<xml-element java-attribute="modelElements" name="model-elements" type="inventory.aai.onap.org.v13.ModelElements" />
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v13.RelationshipList" />
+			</java-attributes>
+		</java-type>
+
+		<java-type name="NamedQueries">
+			<xml-root-element name="named-queries" />
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="namedQuery" name="named-query" type="inventory.aai.onap.org.v13.NamedQuery" />
+			</java-attributes>
+		</java-type>
+
+		<java-type name="NamedQuery">
+			<xml-properties>
+				<xml-property name="description" value="TBD" />
+				<xml-property name="nameProps" value="named-query-name" />
+				<xml-property name="uniqueProps" value="named-query-uuid" />
+				<xml-property name="indexedProps" value="named-query-uuid,named-query-name" />
+				<xml-property name="container" value="named-queries" />
+				<xml-property name="namespace" value="service-design-and-creation" />
+			</xml-properties>
+			<xml-root-element name="named-query" />
+			<java-attributes>
+				<xml-element java-attribute="namedQueryUuid" name="named-query-uuid" required="true" type="java.lang.String" xml-key="true" />
+				<xml-element java-attribute="namedQueryName" name="named-query-name" required="true" type="java.lang.String" />
+				<xml-element java-attribute="namedQueryVersion" name="named-query-version" required="true" type="java.lang.String" />
+				<xml-element container-type="java.util.ArrayList" java-attribute="requiredInputParams" name="required-input-param" type="java.lang.String" >
+					<xml-element-wrapper name="required-input-params" />
+				</xml-element>
+				<xml-element java-attribute="description" name="description" type="java.lang.String" />
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String" />
+				<xml-element java-attribute="namedQueryElements" name="named-query-elements" type="inventory.aai.onap.org.v13.NamedQueryElements" />
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v13.RelationshipList" />
+			</java-attributes>
+		</java-type>
+
+		<java-type name="NamedQueryElements">
+			<xml-root-element name="named-query-elements" />
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="namedQueryElement" name="named-query-element" type="inventory.aai.onap.org.v13.NamedQueryElement" />
+			</java-attributes>
+		</java-type>
+
+		<java-type name="NamedQueryElement">
+			<xml-properties>
+				<xml-property name="description" value="TBD" />
+				<xml-property name="uniqueProps" value="named-query-element-uuid" />
+				<xml-property name="indexedProps" value="named-query-element-uuid" />
+				<xml-property name="allowDirectRead" value="true" />
+				<xml-property name="allowDirectWrite" value="false" />
+				<xml-property name="container" value="named-query-elements" />
+			</xml-properties>
+			<xml-root-element name="named-query-element" />
+			<java-attributes>
+				<xml-element java-attribute="namedQueryElementUuid" name="named-query-element-uuid" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="autoGenerateUuid" value="true" />
+					</xml-properties>
+				</xml-element>
+				<xml-element container-type="java.util.ArrayList" java-attribute="propertyCollectList" name="property-collect-list" type="java.lang.String" />
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String" />
+				<xml-element java-attribute="propertyLimitDesc" name="property-limit-desc" type="java.lang.String" />
+				<xml-element java-attribute="doNotOutput" name="do-not-output" type="java.lang.String" />
+				<xml-element java-attribute="namedQueryElements" name="named-query-elements" type="inventory.aai.onap.org.v13.NamedQueryElements" />
+				<xml-element java-attribute="relatedLookups" name="related-lookups" type="inventory.aai.onap.org.v13.RelatedLookups" />
+				<xml-element java-attribute="propertyConstraints" name="property-constraints" type="inventory.aai.onap.org.v13.PropertyConstraints" />
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v13.RelationshipList" />
+			</java-attributes>
+		</java-type>
+
+		<java-type name="RelatedLookups">
+			<xml-root-element name="related-lookups" />
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="relatedLookup" name="related-lookup" type="inventory.aai.onap.org.v13.RelatedLookup" />
+			</java-attributes>
+		</java-type>
+
+		<java-type name="RelatedLookup">
+			<xml-properties>
+				<xml-property name="description" value="TBD" />
+				<xml-property name="uniqueProps" value="related-lookup-uuid" />
+				<xml-property name="indexedProps" value="related-lookup-uuid" />
+				<xml-property name="allowDirectRead" value="true" />
+				<xml-property name="allowDirectWrite" value="false" />
+				<xml-property name="container" value="related-lookups" />
+			</xml-properties>
+			<xml-root-element name="related-lookup" />
+			<java-attributes>
+				<xml-element java-attribute="relatedLookupUuid" name="related-lookup-uuid" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="autoGenerateUuid" value="true" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="sourceNodeType" name="source-node-type" required="true" type="java.lang.String" />
+				<xml-element java-attribute="sourceNodeProperty" name="source-node-property" required="true" type="java.lang.String" />
+				<xml-element java-attribute="targetNodeType" name="target-node-type" required="true" type="java.lang.String" />
+				<xml-element java-attribute="targetNodeProperty" name="target-node-property" required="true" type="java.lang.String" />
+				<xml-element container-type="java.util.ArrayList" java-attribute="propertyCollectList" name="property-collect-list" type="java.lang.String" />
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String" />
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v13.RelationshipList" />
+			</java-attributes>
+		</java-type>
+
+		<java-type name="PropertyConstraints">
+			<xml-root-element name="property-constraints" />
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="propertyConstraint" name="property-constraint" type="inventory.aai.onap.org.v13.PropertyConstraint" />
+			</java-attributes>
+		</java-type>
+
+		<java-type name="PropertyConstraint">
+			<xml-properties>
+				<xml-property name="description" value="TBD" />
+				<xml-property name="uniqueProps" value="property-constraint-uuid" />
+				<xml-property name="indexedProps" value="property-constraint-uuid" />
+				<xml-property name="allowDirectRead" value="true" />
+				<xml-property name="allowDirectWrite" value="false" />
+				<xml-property name="container" value="property-constraints" />
+			</xml-properties>
+			<xml-root-element name="property-constraint" />
+			<java-attributes>
+				<xml-element java-attribute="propertyConstraintUuid" name="property-constraint-uuid" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="autoGenerateUuid" value="true" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="constraintType" name="constraint-type" required="true" type="java.lang.String" />
+				<xml-element java-attribute="propertyName" name="property-name" required="true" type="java.lang.String" />
+				<xml-element java-attribute="propertyValue" name="property-value" required="true" type="java.lang.String" />
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String" />
+			</java-attributes>
+		</java-type>
+		<java-type name="ServiceDesignAndCreation">
+			<xml-properties>
+				<xml-property name="description" value="Namespace for objects managed by ASDC" />
+			</xml-properties>
+			<xml-root-element name="service-design-and-creation" />
+			<java-attributes>
+				<xml-element java-attribute="vnfImages" name="vnf-images" type="inventory.aai.onap.org.v13.VnfImages" />
+				<xml-element java-attribute="services" name="services" type="inventory.aai.onap.org.v13.Services" />
+				<xml-element java-attribute="serviceCapabilities" name="service-capabilities" type="inventory.aai.onap.org.v13.ServiceCapabilities" />
+				<xml-element java-attribute="models" name="models" type="inventory.aai.onap.org.v13.Models" />
+				<xml-element java-attribute="namedQueries" name="named-queries" type="inventory.aai.onap.org.v13.NamedQueries" />
+			</java-attributes>
+		</java-type>
+				<java-type name="Services">
+			<xml-properties>
+				<xml-property name="description" value="Collection of service model definitions.  Likely to be deprecated in favor of models from ASDC." />
+			</xml-properties>
+			<xml-root-element name="services" />
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="service" name="service" type="inventory.aai.onap.org.v13.Service" />
+			</java-attributes>
+		</java-type>
+		<java-type name="Service">
+			<xml-root-element name="service" />
+			<java-attributes>
+				<xml-element java-attribute="serviceId" name="service-id" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="This gets defined by others to provide a unique ID for the service, we accept what is sent." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="serviceDescription" name="service-description" required="true" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Description of the service" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="serviceSelflink" name="service-selflink" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="URL to endpoint where AAI can get more details" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="serviceVersion" name="service-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="service version" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v13.RelationshipList" />
+			</java-attributes>
+			<xml-properties>
+				<xml-property name="description" value="Stand-in for service model definitions.  Likely to be deprecated in favor of models from ASDC.  Does not strictly map to ASDC services." />
+				<xml-property name="indexedProps" value="service-description,service-id" />
+				<xml-property name="container" value="services" />
+				<xml-property name="namespace" value="service-design-and-creation" />
+			</xml-properties>
+		</java-type>
+		<java-type name="ServiceCapabilities">
+			<xml-properties>
+				<xml-property name="description" value="Collection of service capabilities." />
+			</xml-properties>
+			<xml-root-element name="service-capabilities" />
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="serviceCapability" name="service-capability" type="inventory.aai.onap.org.v13.ServiceCapability" />
+			</java-attributes>
+		</java-type>
+		<java-type name="ServiceCapability">
+			<xml-root-element name="service-capability" />
+			<java-attributes>
+				<xml-element java-attribute="serviceType" name="service-type" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="This gets defined by others to provide a unique ID for the service, we accept what is sent." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="vnfType" name="vnf-type" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="String capturing type of vnf, that was intended to identify the ASDC resource.  This field has been overloaded in service-specific ways and clients should expect changes to occur in the future to this field as ECOMP matures." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v13.RelationshipList" />
+			</java-attributes>
+			<xml-properties>
+				<xml-property name="description" value="Early definition of server/resource pairings, likely to be replaced by models.  No new use should be made of this." />
+				<xml-property name="indexedProps" value="service-type,vnf-type" />
+				<xml-property name="container" value="service-capabilities" />
+				<xml-property name="namespace" value="service-design-and-creation" />
+			</xml-properties>
+		</java-type>
+				<java-type name="VnfImages">
+			<xml-properties>
+				<xml-property name="description" value="Collection of image objects that pertain to a VNF that doesn't have associated vservers.  This is a kludge." />
+			</xml-properties>
+			<xml-root-element name="vnf-images" />
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="vnfImage" name="vnf-image" type="inventory.aai.onap.org.v13.VnfImage" />
+			</java-attributes>
+		</java-type>
+		<java-type name="VnfImage">
+			<xml-root-element name="vnf-image" />
+			<java-attributes>
+				<xml-element java-attribute="vnfImageUuid" name="vnf-image-uuid" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="Unique ID of this asset" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="application" name="application" required="true" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="The application that the image instantiates." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="applicationVendor" name="application-vendor" required="true" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="The vendor of the application." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="applicationVersion" name="application-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="The version of the application." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="selflink" name="selflink" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="URL to endpoint where AAI can get more details" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v13.RelationshipList" />
+			</java-attributes>
+			<xml-properties>
+				<xml-property name="description" value="Image object that pertain to a VNF that doesn't have associated vservers.  This is a kludge." />
+				<xml-property name="indexedProps" value="application,vnf-image-uuid,application-vendor,application-version" />
+				<xml-property name="uniqueProps" value="vnf-image-uuid" />
+				<xml-property name="container" value="vnf-images" />
+				<xml-property name="namespace" value="service-design-and-creation" />
+			</xml-properties>
+		</java-type>
+				<java-type name="Models">
+			<xml-properties>
+				<xml-property name="description" value="Collection of subgraph definitions provided by ASDC to describe the inventory assets and their connections related to ASDC models" />
+			</xml-properties>
+			<xml-root-element name="models" />
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="model" name="model" type="inventory.aai.onap.org.v13.Model" />
+			</java-attributes>
+		</java-type>
+
+		<java-type name="Model">
+			<xml-root-element name="model" />
+			<xml-properties>
+				<xml-property name="description" value="Subgraph definition provided by ASDC to describe an inventory asset and its connections related to ASDC models, independent of version" />
+				<xml-property name="nameProps" value="model-type" />
+				<xml-property name="indexedProps" value="model-invariant-id,model-type" />
+				<xml-property name="uniqueProps" value="model-invariant-id" />
+				<xml-property name="container" value="models" />
+				<xml-property name="namespace" value="service-design-and-creation" />
+			</xml-properties>
+			<java-attributes>
+				<xml-element java-attribute="modelInvariantId" name="model-invariant-id" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="Unique identifier corresponding to the main definition of a model in ASDC" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="modelType" name="model-type" required="true" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Type of the model, e.g., service, resource, widget, etc." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="modelVers" name="model-vers" type="inventory.aai.onap.org.v13.ModelVers" />
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v13.RelationshipList" />
+			</java-attributes>
+		</java-type>
+		<java-type name="ModelVers">
+			<xml-root-element name="model-vers" />
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="modelVer" name="model-ver" type="inventory.aai.onap.org.v13.ModelVer" />
+			</java-attributes>
+		</java-type>		
+		<java-type name="ModelVer">
+			<xml-root-element name="model-ver" />
+			<xml-properties>
+				<xml-property name="description" value="Subgraph definition provided by ASDC to describe a specific version of an inventory asset and its connections related to ASDC models" />
+				<xml-property name="nameProps" value="model-name" />
+				<xml-property name="indexedProps" value="model-version-id,model-name,model-version,distribution-status" />
+				<xml-property name="uniqueProps" value="model-version-id" />
+				<xml-property name="container" value="model-vers" />
+			</xml-properties>
+			<java-attributes>
+				<xml-element java-attribute="modelVersionId" name="model-version-id" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="Unique identifier corresponding to one version of a model in ASDC" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="modelName" name="model-name" required="true" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Name of the model, which can change from version to version." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="modelVersion" name="model-version" required="true" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Version" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="distributionStatus" name="distribution-status" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Distribution Status" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="modelDescription" name="model-description" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Description" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="modelElements" name="model-elements" type="inventory.aai.onap.org.v13.ModelElements" />
+				<xml-element java-attribute="metadata" name="metadata" type="inventory.aai.onap.org.v13.Metadata" />
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v13.RelationshipList" />
+			</java-attributes>
+		</java-type>
+		<java-type name="ModelElements">
+			<xml-root-element name="model-elements" />
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="modelElement" name="model-element" type="inventory.aai.onap.org.v13.ModelElement" />
+			</java-attributes>
+		</java-type>
+		<java-type name="ModelElement">
+			<xml-properties>
+				<xml-property name="description" value="Defines how other models combine to make up a higher-level model." />
+				<xml-property name="uniqueProps" value="model-element-uuid" />
+				<xml-property name="indexedProps" value="model-element-uuid" />
+				<xml-property name="allowDirectRead" value="true" />
+				<xml-property name="allowDirectWrite" value="false" />
+				<xml-property name="container" value="model-elements" />
+			</xml-properties>
+			<xml-root-element name="model-element" />
+			<java-attributes>
+				<xml-element java-attribute="modelElementUuid" name="model-element-uuid" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="autoGenerateUuid" value="true" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="newDataDelFlag" name="new-data-del-flag" required="true" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Indicates whether this element was created as part of instantiation from this model" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="cardinality" name="cardinality" required="true" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="How many of this type of element are required/allowed" />
+					</xml-properties>
+				</xml-element>
+				<xml-element container-type="java.util.ArrayList" java-attribute="linkagePoints" name="linkage-points" type="java.lang.String" >
+				</xml-element>
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="modelElements" name="model-elements" type="inventory.aai.onap.org.v13.ModelElements">
+					<xml-properties>
+						<xml-property name="description" value="Defines how other models combine to make up a higher-level model" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="modelConstraints" name="model-constraints" type="inventory.aai.onap.org.v13.ModelConstraints">
+					<xml-properties>
+						<xml-property name="description" value="Describes new constraints on this model element that are not part of that model's definition" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v13.RelationshipList" />
+			</java-attributes>
+		</java-type>
+		<java-type name="ModelConstraints">
+			<xml-root-element name="model-constraints" />
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="modelConstraint" name="model-constraint" type="inventory.aai.onap.org.v13.ModelConstraint" />
+			</java-attributes>
+		</java-type>
+		<java-type name="ModelConstraint">
+			<xml-properties>
+				<xml-property name="description" value="This is how we would capture constraints defining allowed sets of elements." />
+				<xml-property name="uniqueProps" value="model-constraint-uuid" />
+				<xml-property name="indexedProps" value="model-constraint-uuid" />
+				<xml-property name="allowDirectRead" value="true" />
+				<xml-property name="allowDirectWrite" value="false" />
+				<xml-property name="container" value="model-constraints" />
+			</xml-properties>
+			<xml-root-element name="model-constraint" />
+			<java-attributes>
+				<xml-element java-attribute="modelConstraintUuid" name="model-constraint-uuid" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="autoGenerateUuid" value="true" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="constrainedElementSetUuidToReplace" name="constrained-element-set-uuid-to-replace" required="true" type="java.lang.String" />
+				<xml-element java-attribute="constrainedElementSets" name="constrained-element-sets" type="inventory.aai.onap.org.v13.ConstrainedElementSets" />
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
+					</xml-properties>
+				</xml-element>
+			</java-attributes>
+		</java-type>
+	</java-types>
+</xml-bindings>

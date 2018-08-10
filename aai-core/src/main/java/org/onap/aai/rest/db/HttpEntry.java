@@ -19,6 +19,7 @@
  */
 package org.onap.aai.rest.db;
 
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
@@ -30,8 +31,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -40,9 +41,16 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 
+import com.att.eelf.configuration.EELFLogger;
+import com.att.eelf.configuration.EELFManager;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.fge.jsonpatch.JsonPatchException;
+import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
 import org.apache.commons.lang.StringUtils;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.janusgraph.core.JanusGraphException;
 import org.javatuples.Pair;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.dbmap.DBConnectionType;
@@ -51,37 +59,30 @@ import org.onap.aai.domain.responseMessage.AAIResponseMessageDatum;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.extensions.AAIExtensionMap;
 import org.onap.aai.extensions.ExtensionController;
-import org.onap.aai.introspection.Introspector;
-import org.onap.aai.introspection.Loader;
-import org.onap.aai.introspection.LoaderFactory;
-import org.onap.aai.introspection.MarshallerProperties;
-import org.onap.aai.introspection.ModelInjestor;
-import org.onap.aai.introspection.ModelType;
-import org.onap.aai.introspection.Version;
+import org.onap.aai.introspection.*;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.onap.aai.logging.ErrorLogHelper;
 import org.onap.aai.logging.LoggingContext;
+import org.onap.aai.nodes.NodeIngestor;
 import org.onap.aai.parsers.query.QueryParser;
 import org.onap.aai.parsers.uri.URIToExtensionInformation;
+
 import org.onap.aai.rest.ueb.UEBNotification;
 import org.onap.aai.restcore.HttpMethod;
 import org.onap.aai.schema.enums.ObjectMetadata;
 import org.onap.aai.serialization.db.DBSerializer;
-import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.serialization.engines.JanusGraphDBEngine;
+import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 import org.onap.aai.serialization.engines.query.QueryEngine;
-
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.fge.jsonpatch.JsonPatchException;
-import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
-import org.janusgraph.core.JanusGraphException;
 import org.onap.aai.serialization.queryformats.Format;
 import org.onap.aai.serialization.queryformats.FormatFactory;
 import org.onap.aai.serialization.queryformats.Formatter;
+import org.onap.aai.setup.SchemaVersion;
+import org.onap.aai.setup.SchemaVersions;
+import org.onap.aai.util.AAIConfig;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 /**
  * The Class HttpEntry.
@@ -91,40 +92,77 @@ public class HttpEntry {
 	private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(HttpEntry.class);
 	private static final String TARGET_ENTITY = "DB";
 
-	private final ModelType introspectorFactoryType;
+	private  ModelType introspectorFactoryType;
 	
-	private final QueryStyle queryStyle;
+	private  QueryStyle queryStyle;
 	
-	private final Version version;
+	private SchemaVersion version;
 	
-	private final Loader loader;
+	private Loader loader;
 	
-	private final TransactionalGraphEngine dbEngine;
+	private TransactionalGraphEngine dbEngine;
 		
 	private boolean processSingle = true;
+
+	private int paginationBucket = -1;
+	private int paginationIndex = -1;
+	private int totalVertices = 0;
+	private int totalPaginationBuckets = 0;
+
+	@Autowired
+	private NodeIngestor nodeIngestor;
+
+	@Autowired
+	private LoaderFactory loaderFactory;
+
+	@Autowired
+	private SchemaVersions schemaVersions;
+
+	@Value("${schema.uri.base.path}")
+	private String basePath;
+
+	private UEBNotification	notification;
 
 	/**
 	 * Instantiates a new http entry.
 	 *
-	 * @param version the version
 	 * @param modelType the model type
 	 * @param queryStyle the query style
-	 * @param llBuilder the ll builder
 	 */
-	public HttpEntry(Version version, ModelType modelType, QueryStyle queryStyle, DBConnectionType connectionType) {
+	public HttpEntry(ModelType modelType, QueryStyle queryStyle) {
 		this.introspectorFactoryType = modelType;
 		this.queryStyle = queryStyle;
+	}
+
+	public HttpEntry setHttpEntryProperties(SchemaVersion version, DBConnectionType connectionType){
 		this.version = version;
-		this.loader = LoaderFactory.createLoaderForVersion(introspectorFactoryType, version);
+		this.loader = loaderFactory.createLoaderForVersion(introspectorFactoryType, version);
 		this.dbEngine = new JanusGraphDBEngine(
 				queryStyle,
 				connectionType,
 				loader);
-		//start transaction on creation
-		dbEngine.startTransaction();
 
+		getDbEngine().startTransaction();
+		this.notification = new UEBNotification(loader, loaderFactory, schemaVersions);
+		return this;
+	}
+
+
+     public HttpEntry setHttpEntryProperties(SchemaVersion version, DBConnectionType connectionType, UEBNotification notification){
+		this.version = version;
+		this.loader = loaderFactory.createLoaderForVersion(introspectorFactoryType, version);
+		this.dbEngine = new JanusGraphDBEngine(
+				queryStyle,
+				connectionType,
+				loader);
+
+		this.notification = notification;
+		//start transaction on creation
+		getDbEngine().startTransaction();
+		return this;
 	}
 	
+
 	/**
 	 * Gets the introspector factory type.
 	 *
@@ -148,7 +186,7 @@ public class HttpEntry {
 	 *
 	 * @return the version
 	 */
-	public Version getVersion() {
+	public SchemaVersion getVersion() {
 		return version;
 	}
 
@@ -173,6 +211,84 @@ public class HttpEntry {
 	public Pair<Boolean, List<Pair<URI, Response>>> process (List<DBRequest> requests, String sourceOfTruth) throws AAIException {
 		return this.process(requests, sourceOfTruth, true);
 	}
+
+
+	/**
+	 * Checks the pagination bucket and pagination index variables to determine whether or not the user
+	 * requested paginated results
+	 *
+	 * @return a boolean true/false of whether the user requested paginated results
+	 */
+	public boolean isPaginated(){
+		return this.paginationBucket > -1 && this.paginationIndex > -1;
+	}
+
+	/**
+	 * Setter for the pagination bucket variable which stores in this object the size of results to return
+	 * @param pb
+	 */
+	public void setPaginationBucket(int pb){
+		this.paginationBucket = pb;
+	}
+
+	/**
+	 * Returns the pagination size
+	 * @return integer of the size of results to be returned when paginated
+	 */
+	public int getPaginationBucket(){
+		return this.paginationBucket;
+	}
+
+	/**
+	 * Sets the pagination index that was passed in by the user, to determine which index or results to retrieve when
+	 * paginated
+	 * @param pi
+	 */
+	public void setPaginationIndex(int pi){
+		if(pi == 0){
+			pi = 1;
+		}
+		this.paginationIndex = pi;
+	}
+
+	/**
+	 * Getter to return the pagination index requested by the user when requesting paginated results
+	 * @return
+	 */
+	public int getPaginationIndex(){
+		return this.paginationIndex;
+	}
+
+	/**
+	 * Sets the total vertices variables and calculates the amount of pages based on size and total vertices
+	 * @param totalVertices
+	 * @param paginationBucketSize
+	 */
+	public void setTotalsForPaging(int totalVertices, int paginationBucketSize){
+		this.totalVertices = totalVertices;
+		//set total number of buckets equal to full pages
+		this.totalPaginationBuckets = totalVertices/paginationBucketSize;
+		//conditionally add a page for the remainder
+		if(totalVertices % paginationBucketSize > 0){
+			this.totalPaginationBuckets++;
+		}
+	}
+
+	/**
+	 * @return the total amount of pages
+	 */
+	public int getTotalPaginationBuckets(){
+		return this.totalPaginationBuckets;
+	}
+
+	/**
+	 *
+	 * @return the total number of vertices when paginated
+	 */
+	public int getTotalVertices(){
+		return this.totalVertices;
+	}
+
 	/**
 	 * Process.
 	 * @param requests the requests
@@ -182,16 +298,16 @@ public class HttpEntry {
 	 * @throws AAIException the AAI exception
 	 */
 	public Pair<Boolean, List<Pair<URI, Response>>> process (List<DBRequest> requests, String sourceOfTruth, boolean enableResourceVersion) throws AAIException {
+
 		DBSerializer serializer = new DBSerializer(version, dbEngine, introspectorFactoryType, sourceOfTruth);
 		String methodName = "process";
-		Response response = null;
-		Status status = Status.NOT_FOUND;
+		Response response;
 		Introspector obj = null;
 		QueryParser query = null;
 		URI uri = null;
 		String transactionId = null;
-		UEBNotification	notification = new UEBNotification(loader);
 		int depth = AAIProperties.MAXIMUM_DEPTH;
+		Format format = null;
 		List<Pair<URI,Response>> responses = new ArrayList<>();
 		MultivaluedMap<String, String> params = null;
 		HttpMethod method = null;
@@ -200,13 +316,15 @@ public class HttpEntry {
 		QueryEngine queryEngine = dbEngine.getQueryEngine();
 		int maxRetries = 10;
 		int retry = 0;
-
+	
 		LoggingContext.save();
 		for (DBRequest request : requests) {
+			response = null;
+			Status status = Status.NOT_FOUND;
+			method = request.getMethod();
 			try {
 				for (retry = 0; retry < maxRetries; ++retry) {
 					try {
-						method = request.getMethod();
 
 						LoggingContext.targetEntity(TARGET_ENTITY);
 						LoggingContext.targetServiceName(methodName + " " + method);
@@ -216,15 +334,24 @@ public class HttpEntry {
 						transactionId = request.getTransactionId();
 						uriTemp = request.getUri().getRawPath().replaceFirst("^v\\d+/", "");
 						uri = UriBuilder.fromPath(uriTemp).build();
-
 						LoggingContext.startTime();
-
-						List<Vertex> vertices = query.getQueryBuilder().toList();
+						List<Vertex> vertTemp;
+						List<Vertex> vertices;
+						if(this.isPaginated()) {
+							vertTemp = query.getQueryBuilder().toList();
+							this.setTotalsForPaging(vertTemp.size(), this.paginationBucket);
+							vertices = vertTemp.subList(((this.paginationIndex - 1) * this.paginationBucket), Math.min((this.paginationBucket * this.paginationIndex), vertTemp.size()));
+						}else{
+							vertices = query.getQueryBuilder().toList();
+						}
 						boolean isNewVertex = false;
 						String outputMediaType = getMediaType(request.getHeaders().getAcceptableMediaTypes());
 						String result = null;
 						params = request.getInfo().getQueryParameters(false);
 						depth = setDepth(obj, params.getFirst("depth"));
+						if (params.containsKey("format")) {
+							format = Format.getFormat(params.getFirst("format"));
+						}
 						String cleanUp = params.getFirst("cleanup");
 						String requestContext = "";
 						List<String> requestContextList = request.getHeaders().getRequestHeader("aai-request-context");
@@ -253,7 +380,7 @@ public class HttpEntry {
 								isNewVertex = true;
 							} else {
 								if (enableResourceVersion) {
-									serializer.verifyResourceVersion("update", query.getResultType(), (String)vertices.get(0).<String>property("resource-version").orElse(null), resourceVersion, obj.getURI());
+									serializer.verifyResourceVersion("update", query.getResultType(), vertices.get(0).<String>property("resource-version").orElse(null), resourceVersion, obj.getURI());
 								}
 								isNewVertex = false;
 							}
@@ -274,30 +401,40 @@ public class HttpEntry {
 							case GET:
 								String nodeOnly = params.getFirst("nodes-only");
 								boolean isNodeOnly = nodeOnly != null;
-								obj = this.getObjectFromDb(vertices, serializer, query, obj, request.getUri(), depth, isNodeOnly, cleanUp);
 
-								LoggingContext.elapsedTime((long)serializer.getDBTimeMsecs(),TimeUnit.MILLISECONDS);
-								LOGGER.info ("Completed");
-								LoggingContext.restoreIfPossible();
+								if (format == null) {
+									obj = this.getObjectFromDb(vertices, serializer, query, obj, request.getUri(), depth, isNodeOnly, cleanUp);
 
-								if (obj != null) {
-									status = Status.OK;
-									MarshallerProperties properties;
-									if (!request.getMarshallerProperties().isPresent()) {
-										properties =
-												new MarshallerProperties.Builder(org.onap.aai.restcore.MediaType.getEnum(outputMediaType)).build();
-									} else {
-										properties = request.getMarshallerProperties().get();
+
+									LoggingContext.elapsedTime((long) serializer.getDBTimeMsecs(), TimeUnit.MILLISECONDS);
+									LOGGER.info ("Completed");
+									LoggingContext.restoreIfPossible();
+
+									if (obj != null) {
+										status = Status.OK;
+										MarshallerProperties properties;
+										if (!request.getMarshallerProperties().isPresent()) {
+											properties = new MarshallerProperties.Builder(org.onap.aai.restcore.MediaType.getEnum(outputMediaType)).build();
+										} else {
+											properties = request.getMarshallerProperties().get();
+										}
+										result = obj.marshal(properties);
 									}
-									result = obj.marshal(properties);
+								} else {
+									FormatFactory ff = new FormatFactory(loader, serializer, schemaVersions, basePath + "/");
+									Formatter formatter =  ff.get(format, params);
+									result = formatter.output(vertices.stream().map(vertex -> (Object) vertex).collect(Collectors.toList())).toString();
+									status = Status.OK;
 								}
 								
 								break;
 							case PUT:
+								response = this.invokeExtension(dbEngine, this.dbEngine.tx(), method, request, sourceOfTruth, version, loader, obj, uri, true);
 								if (isNewVertex) {
 									v = serializer.createNewVertex(obj);
 								}
 								serializer.serializeToDb(obj, v, query, uri.getRawPath(), requestContext);
+								this.invokeExtension(dbEngine, this.dbEngine.tx(), HttpMethod.PUT, request, sourceOfTruth, version, loader, obj, uri, false);
 								status = Status.OK;
 								if (isNewVertex) {
 									status = Status.CREATED;
@@ -306,24 +443,26 @@ public class HttpEntry {
 								if (query.isDependent()) {
 									relatedObjects = this.getRelatedObjects(serializer, queryEngine, v);
 								}
-								LoggingContext.elapsedTime((long)serializer.getDBTimeMsecs() +
+								LoggingContext.elapsedTime((long)serializer.getDBTimeMsecs() + 
 										(long)queryEngine.getDBTimeMsecs(), TimeUnit.MILLISECONDS);
-								LOGGER.info ("Completed");
+								LOGGER.info ("Completed ");
 								LoggingContext.restoreIfPossible();
-								notification.createNotificationEvent(transactionId, sourceOfTruth, status, uri, obj, relatedObjects);
+								notification.createNotificationEvent(transactionId, sourceOfTruth, status, uri, obj, relatedObjects, basePath);
 
 								break;
 							case PUT_EDGE:
 								serializer.touchStandardVertexProperties(v, false);
+								this.invokeExtension(dbEngine, this.dbEngine.tx(), method, request, sourceOfTruth, version, loader, obj, uri, true);
 								serializer.createEdge(obj, v);
-
+								
 								LoggingContext.elapsedTime((long)serializer.getDBTimeMsecs(),TimeUnit.MILLISECONDS);
 								LOGGER.info ("Completed");
 								LoggingContext.restoreIfPossible();
 								status = Status.OK;
+								notification.createNotificationEvent(transactionId, sourceOfTruth, status, new URI(uri.toString().replace("/relationship-list/relationship", "")), serializer.getLatestVersionView(v), relatedObjects, basePath);
 								break;
 							case MERGE_PATCH:
-								Introspector existingObj = (Introspector) obj.clone();
+								Introspector existingObj  = loader.introspectorFromName(obj.getDbName());
 								existingObj = this.getObjectFromDb(vertices, serializer, query, existingObj, request.getUri(), 0, false, cleanUp);
 								String existingJson = existingObj.marshal(false);
 								String newJson;
@@ -352,13 +491,13 @@ public class HttpEntry {
 									if (query.isDependent()) {
 										relatedObjects = this.getRelatedObjects(serializer, queryEngine, v);
 									}
-									LoggingContext.elapsedTime((long)serializer.getDBTimeMsecs() +
+									LoggingContext.elapsedTime((long)serializer.getDBTimeMsecs() + 
 											(long)queryEngine.getDBTimeMsecs(), TimeUnit.MILLISECONDS);
 									LOGGER.info ("Completed");
 									LoggingContext.restoreIfPossible();
-									notification.createNotificationEvent(transactionId, sourceOfTruth, status, uri, patchedObj, relatedObjects);
+									notification.createNotificationEvent(transactionId, sourceOfTruth, status, uri, patchedObj, relatedObjects, basePath);
 								} catch (IOException | JsonPatchException e) {
-
+									
 									LOGGER.info ("Caught exception: " + e.getMessage());
 									LoggingContext.restoreIfPossible();
 									throw new AAIException("AAI_3000", "could not perform patch operation");
@@ -372,14 +511,14 @@ public class HttpEntry {
 								}
 								/*
 								 * Find all Delete-other-vertex vertices and create structure for notify
-								 * findDeleatble also returns the startVertex v and we dont want to create
+								 * findDeleatble also returns the startVertex v and we dont want to create 
 								 * duplicate notification events for the same
 								 * So remove the startvertex first
 								 */
-
+								
 								List<Vertex> deletableVertices = dbEngine.getQueryEngine().findDeletable(v);
 								Long vId = (Long) v.id();
-
+								
 								/*
 								 * I am assuming vertexId cant be null
 								 */
@@ -388,41 +527,44 @@ public class HttpEntry {
 								Map<Vertex, Introspector> deleteObjects = new HashMap<>();
 								Map<String, URI> uriMap = new HashMap<>();
 								Map<String, HashMap<String, Introspector>> deleteRelatedObjects = new HashMap<>();
-
+								
 								if(isDelVerticesPresent){
 									deleteObjects = this.buildIntrospectorObjects(serializer, deletableVertices);
-
+										
 									uriMap = this.buildURIMap(serializer, deleteObjects);
 									deleteRelatedObjects = this.buildRelatedObjects(serializer, queryEngine, deleteObjects);
 								}
-
-								serializer.delete(v, resourceVersion, enableResourceVersion);
-
-								LoggingContext.elapsedTime((long)serializer.getDBTimeMsecs() +
+								
+								this.invokeExtension(dbEngine, this.dbEngine.tx(), method, request, sourceOfTruth, version, loader, obj, uri, true);
+								serializer.delete(v, deletableVertices, resourceVersion, enableResourceVersion);
+								this.invokeExtension(dbEngine, this.dbEngine.tx(), method, request, sourceOfTruth, version, loader, obj, uri, false);
+								
+								LoggingContext.elapsedTime((long)serializer.getDBTimeMsecs() + 
 										(long)queryEngine.getDBTimeMsecs(), TimeUnit.MILLISECONDS);
 								LOGGER.info ("Completed");
 								LoggingContext.restoreIfPossible();
 								status = Status.NO_CONTENT;
-								notification.createNotificationEvent(transactionId, sourceOfTruth, status, uri, obj, relatedObjects);
-
+								notification.createNotificationEvent(transactionId, sourceOfTruth, status, uri, obj, relatedObjects, basePath);
+								
 								/*
 								 * Notify delete-other-v candidates
 								 */
-
+								
 								if(isDelVerticesPresent){
 									this.buildNotificationEvent(sourceOfTruth, status, transactionId, notification, deleteObjects,
-									uriMap, deleteRelatedObjects);
+									uriMap, deleteRelatedObjects, basePath);
 								}
-
+								
 								break;
 							case DELETE_EDGE:
 								serializer.touchStandardVertexProperties(v, false);
 								serializer.deleteEdge(obj, v);
-
+								
 								LoggingContext.elapsedTime((long)serializer.getDBTimeMsecs(),TimeUnit.MILLISECONDS);
 								LOGGER.info ("Completed");
 								LoggingContext.restoreIfPossible();
 								status = Status.NO_CONTENT;
+								notification.createNotificationEvent(transactionId, sourceOfTruth, Status.OK, new URI(uri.toString().replace("/relationship-list/relationship", "")), serializer.getLatestVersionView(v), relatedObjects, basePath);
 								break;
 							default:
 								break;
@@ -439,10 +581,19 @@ public class HttpEntry {
 							|| method.equals(HttpMethod.MERGE_PATCH))
 						) {
 							String myvertid = v.id().toString();
-							response = Response.status(status)
-									.header("vertex-id", myvertid)
-									.entity(result)
-									.type(outputMediaType).build();
+							if(this.isPaginated()){
+								response = Response.status(status)
+										.header("vertex-id", myvertid)
+										.header("total-results", this.getTotalVertices())
+										.header("total-pages", this.getTotalPaginationBuckets())
+										.entity(result)
+										.type(outputMediaType).build();
+							}else {
+								response = Response.status(status)
+										.header("vertex-id", myvertid)
+										.entity(result)
+										.type(outputMediaType).build();
+							}
 						} else if (response == null) {
 							response = Response.status(status)
 									.type(outputMediaType).build();
@@ -455,7 +606,7 @@ public class HttpEntry {
 						break;
 					} catch (JanusGraphException e) {
 						this.dbEngine.rollback();
-
+						
 						LOGGER.info ("Caught exception: " + e.getMessage());
 						LoggingContext.restoreIfPossible();
 						AAIException ex = new AAIException("AAI_6142", e);
@@ -500,12 +651,11 @@ public class HttpEntry {
 				continue;
 			}
 		}
-		
 		notification.triggerEvents();
 		return Pair.with(success, responses);
 	}
 
-
+	
 	/**
 	 * Gets the media type.
 	 *
@@ -526,7 +676,6 @@ public class HttpEntry {
 	 * Gets the object from db.
 	 *
 	 * @param serializer the serializer
-	 * @param g the g
 	 * @param query the query
 	 * @param obj the obj
 	 * @param uri the uri
@@ -557,6 +706,100 @@ public class HttpEntry {
         
 	}
 
+	/**
+	 * Invoke extension.
+	 *
+	 * @param dbEngine the db engine
+	 * @param g the g
+	 * @param httpMethod the http method
+	 * @param fromAppId the from app id
+	 * @param apiVersion the api version
+	 * @param loader the loader
+	 * @param obj the obj
+	 * @param uri the uri
+	 * @param isPreprocess the is preprocess
+	 * @return the response
+	 * @throws IllegalArgumentException the illegal argument exception
+	 * @throws UnsupportedEncodingException the unsupported encoding exception
+	 * @throws AAIException the AAI exception
+	 */
+	private Response invokeExtension(TransactionalGraphEngine dbEngine, Graph g, HttpMethod httpMethod, DBRequest request, String fromAppId, SchemaVersion apiVersion, Loader loader, Introspector obj, URI uri, boolean isPreprocess) throws IllegalArgumentException, UnsupportedEncodingException, AAIException {
+		AAIExtensionMap aaiExtMap = new AAIExtensionMap();
+		//ModelInjestor injestor = ModelInjestor.getInstance();
+		Response response = null;
+		URIToExtensionInformation extensionInformation = new URIToExtensionInformation(loader, uri);
+		aaiExtMap.setHttpEntry(this);
+		aaiExtMap.setDbRequest(request);
+		aaiExtMap.setTransId(request.getTransactionId());
+		aaiExtMap.setFromAppId(fromAppId);
+		aaiExtMap.setGraph(g);
+		aaiExtMap.setApiVersion(apiVersion.toString());
+		aaiExtMap.setObjectFromRequest(obj);
+		aaiExtMap.setObjectFromRequestType(obj.getJavaClassName());
+		aaiExtMap.setObjectFromResponse(obj);
+		aaiExtMap.setObjectFromResponseType(obj.getJavaClassName());
+		aaiExtMap.setJaxbContext(nodeIngestor.getContextForVersion(apiVersion));
+		aaiExtMap.setUri(uri.getRawPath());
+		aaiExtMap.setTransactionalGraphEngine(dbEngine);
+		aaiExtMap.setLoader(loader);
+		aaiExtMap.setNamespace(extensionInformation.getNamespace());
+
+		ExtensionController ext = new ExtensionController();
+		ext.runExtension(aaiExtMap.getApiVersion(),
+				extensionInformation.getNamespace(),
+				extensionInformation.getTopObject(),
+				extensionInformation.getMethodName(httpMethod, isPreprocess),
+				aaiExtMap,
+				isPreprocess);
+
+		if (aaiExtMap.getPrecheckAddedList().size() > 0) {
+			response = notifyOnSkeletonCreation(aaiExtMap, obj, request.getHeaders());
+		}
+
+		return response;
+	}
+
+	/**
+	 * Notify on skeleton creation.
+	 *
+	 * @param aaiExtMap the aai ext map
+	 * @param input the input
+	 * @param headers the headers
+	 * @return the response
+	 */
+	//Legacy support
+	private Response notifyOnSkeletonCreation(AAIExtensionMap aaiExtMap, Introspector input, HttpHeaders headers) {
+		Response response = null;
+		HashMap<AAIException, ArrayList<String>> exceptionList = new HashMap<AAIException, ArrayList<String>>();
+
+		StringBuilder keyString = new StringBuilder();
+
+		Set<String> resourceKeys = input.getKeys();
+		for (String key : resourceKeys) {
+			keyString.append(key).append("=").append(input.getValue(key).toString()).append(" ");
+		}
+
+		for (AAIResponseMessage msg : aaiExtMap.getPrecheckResponseMessages().getAAIResponseMessage()) {
+			ArrayList<String> templateVars = new ArrayList<>();
+
+			templateVars.add("PUT " + input.getDbName());
+			templateVars.add(keyString.toString());
+			List<String> keys = new ArrayList<>();
+			templateVars.add(msg.getAaiResponseMessageResourceType());
+			for (AAIResponseMessageDatum dat : msg.getAaiResponseMessageData().getAAIResponseMessageDatum()) {
+				keys.add(dat.getAaiResponseMessageDatumKey() + "=" + dat.getAaiResponseMessageDatumValue());
+			}
+			templateVars.add(StringUtils.join(keys, ", "));
+			exceptionList.put(new AAIException("AAI_0004", msg.getAaiResponseMessageResourceType()),
+					templateVars);
+		}
+		response = Response
+				.status(Status.ACCEPTED).entity(ErrorLogHelper
+						.getRESTAPIInfoResponse(headers.getAcceptableMediaTypes(), exceptionList))
+						.build();
+
+		return response;
+	}
 	
 	/**
 	 * Creates the not found message.
@@ -580,10 +823,16 @@ public class HttpEntry {
 	 * @throws AAIException the AAI exception
 	 */
 	protected int setDepth(Introspector obj, String depthParam) throws AAIException {
-			int depth = AAIProperties.MAXIMUM_DEPTH;
+		int depth = AAIProperties.MAXIMUM_DEPTH;
+
+		String getAllRandomStr = AAIConfig.get("aai.rest.getall.depthparam", "");
+		if (depthParam != null && getAllRandomStr != null && !getAllRandomStr.isEmpty()
+				&& getAllRandomStr.equals(depthParam)) {
+			return depth;
+		}
 
         if(depthParam == null){
-			if(this.version.compareTo(Version.v9) >= 0){
+			if(this.version.compareTo(schemaVersions.getDepthVersion()) >= 0){
 				depth = 0;
 			} else {
                 depth = AAIProperties.MAXIMUM_DEPTH;
@@ -649,7 +898,7 @@ public class HttpEntry {
 		
 		return relatedVertices;
 	}
-
+	
 	private Map<Vertex, Introspector> buildIntrospectorObjects(DBSerializer serializer, Iterable<Vertex> vertices) {
 		Map<Vertex, Introspector> deleteObjectMap = new HashMap<>();
 		for (Vertex vertex : vertices) {
@@ -710,10 +959,10 @@ public class HttpEntry {
 		return relatedObjectsMap;
 
 	}
-
+	
 	private void buildNotificationEvent(String sourceOfTruth, Status status, String transactionId,
 			UEBNotification notification, Map<Vertex, Introspector> deleteObjects, Map<String, URI> uriMap,
-			Map<String, HashMap<String, Introspector>> deleteRelatedObjects) {
+			Map<String, HashMap<String, Introspector>> deleteRelatedObjects, String basePath) {
 		for (Map.Entry<Vertex, Introspector> entry : deleteObjects.entrySet()) {
 			try {
 				String vertexObjectId = "";
@@ -723,14 +972,12 @@ public class HttpEntry {
 
 					if (uriMap.containsKey(vertexObjectId) && deleteRelatedObjects.containsKey(vertexObjectId))
 						notification.createNotificationEvent(transactionId, sourceOfTruth, status,
-								uriMap.get(vertexObjectId), entry.getValue(), deleteRelatedObjects.get(vertexObjectId));
+								uriMap.get(vertexObjectId), entry.getValue(), deleteRelatedObjects.get(vertexObjectId), basePath);
 				}
 			} catch (UnsupportedEncodingException | AAIException e) {
 
-				LOGGER.warn("Error in sending otification");
+				LOGGER.warn("Error in sending notification");
 			}
 		}
 	}
-
- 	
 }

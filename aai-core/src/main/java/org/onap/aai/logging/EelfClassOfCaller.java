@@ -29,7 +29,7 @@ public class EelfClassOfCaller extends NamedConverter {
         StackTraceElement[] cda = event.getCallerData();
 
 		//If using the EELFLogger, it "hides" the calling class because it wraps the logging calls
-		//Without this, you'd only ever see "com.att.eelf.configuration.SLF4jWrapper" when using the
+		//Without this, you'd only ever see "EELF SLF4jWrapper" when using the
 		// %C pattern converter
         if (cda != null && cda.length > 2) {
             return cda[2].getClassName();

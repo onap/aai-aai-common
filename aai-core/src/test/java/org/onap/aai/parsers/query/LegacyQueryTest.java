@@ -24,13 +24,12 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.onap.aai.AAISetup;
 import org.onap.aai.exceptions.AAIException;
-import org.onap.aai.introspection.LoaderFactory;
-import org.onap.aai.introspection.ModelInjestor;
+
 import org.onap.aai.introspection.ModelType;
-import org.onap.aai.introspection.Version;
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.serialization.engines.JanusGraphDBEngine;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
+import org.onap.aai.setup.SchemaVersion;
 
 import javax.ws.rs.core.UriBuilder;
 import javax.xml.bind.JAXBException;
@@ -43,15 +42,18 @@ import static org.junit.Assert.assertEquals;
 @Ignore
 public class LegacyQueryTest extends AAISetup {
 
-	private ModelInjestor injestor = ModelInjestor.getInstance();
 
-	private TransactionalGraphEngine dbEngine =
+	private TransactionalGraphEngine dbEngine;
+	private SchemaVersion version;
+	private DynamicJAXBContext context = nodeIngestor.getContextForVersion(version);
+
+	public void setup(){
+		version = new SchemaVersion("v8");
+		dbEngine =
 			new JanusGraphDBEngine(QueryStyle.GREMLIN_TRAVERSAL,
-				LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.v8),
-				false);	
-	private final Version version = Version.v8;
-	private DynamicJAXBContext context = injestor.getContextForVersion(version);
-	
+				loaderFactory.createLoaderForVersion(ModelType.MOXY, version),
+				false);
+	}
 
 	/**
 	 * Parent query.

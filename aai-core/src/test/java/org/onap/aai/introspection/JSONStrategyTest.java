@@ -20,6 +20,7 @@
 package org.onap.aai.introspection;
 
 import org.json.simple.JSONArray;
+
 import org.json.simple.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;

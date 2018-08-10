@@ -20,7 +20,6 @@
 package org.onap.aai.introspection.sideeffect;
 
 import org.janusgraph.core.JanusGraphFactory;
-import org.janusgraph.core.schema.JanusGraphManagement;
 import org.janusgraph.core.JanusGraph;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Edge;
@@ -42,9 +41,8 @@ import org.onap.aai.dbmap.DBConnectionType;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.*;
 import org.onap.aai.parsers.query.QueryParser;
-import org.onap.aai.serialization.db.AAIDirection;
 import org.onap.aai.serialization.db.DBSerializer;
-import org.onap.aai.serialization.db.EdgeProperty;
+import org.onap.aai.edges.enums.EdgeProperty;
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.serialization.engines.JanusGraphDBEngine;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
@@ -66,7 +64,6 @@ import static org.mockito.Mockito.when;
 public class DataLinkTest extends AAISetup {
 
 	private static JanusGraph graph;
-	private final static Version version = Version.getLatest();
 	private final static ModelType introspectorFactoryType = ModelType.MOXY;
 	private final static DBConnectionType type = DBConnectionType.REALTIME;
 	private static Loader loader;
@@ -77,20 +74,23 @@ public class DataLinkTest extends AAISetup {
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
+	
+    
 	@Parameterized.Parameter(value = 0)
 	public QueryStyle queryStyle;
 
 	@Parameterized.Parameters(name = "QueryStyle.{0}")
 	public static Collection<Object[]> data() {
 		return Arrays.asList(new Object[][]{
-				{QueryStyle.TRAVERSAL}
+				{QueryStyle.TRAVERSAL},
+				{QueryStyle.TRAVERSAL_URI}
 		});
 	}
 	
 	@BeforeClass
 	public static void setup() throws NoSuchFieldException, SecurityException, Exception {
 		graph = JanusGraphFactory.build().set("storage.backend","inmemory").open();
-		loader = LoaderFactory.createLoaderForVersion(introspectorFactoryType, version);
+		
 
 		graph.traversal().addV("aai-node-type", "vpn-binding", "vpn-id", "addKey", AAIProperties.AAI_URI, "/network/vpn-bindings/vpn-binding/addKey").as("v1")
 		.addV("aai-node-type", "vpn-binding", "vpn-id", "modifyKey", AAIProperties.AAI_URI, "/network/vpn-bindings/vpn-binding/modifyKey").as("v2")
@@ -108,7 +108,10 @@ public class DataLinkTest extends AAISetup {
 		.next();
 		graph.tx().commit();
 
-		graph.traversal().V().has("aai-uri","/network/vpn-bindings/vpn-binding/deleteKey").properties().forEachRemaining(p->System.out.println(p.key() +" : " + p.value()));
+		/*Commented for SysOut issues
+		 */
+		//graph.traversal().V().has("aai-uri","/network/vpn-bindings/vpn-binding/deleteKey").properties().forEachRemaining(p->System.out.println(p.key() +" : " + p.value()));
+		 
 	}
 	
 	@AfterClass
@@ -119,6 +122,7 @@ public class DataLinkTest extends AAISetup {
 	
 	@Before
 	public void initMock() {
+		loader = loaderFactory.createLoaderForVersion(introspectorFactoryType, schemaVersions.getDefaultVersion());
 		MockitoAnnotations.initMocks(this);
 		dbEngine = new JanusGraphDBEngine(
 				queryStyle,
@@ -129,7 +133,7 @@ public class DataLinkTest extends AAISetup {
 	@Test
 	public void verifyCreationOfVertex() throws URISyntaxException, AAIException, UnsupportedEncodingException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, SecurityException, InstantiationException, NoSuchMethodException, MalformedURLException {
 		
-		final Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.v9);
+		final Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDepthVersion());
 		final Introspector obj = loader.introspectorFromName("vpn-binding");
 		obj.setValue("vpn-id", "addKey");
 		obj.setValue("global-route-target", "key1");
@@ -140,28 +144,28 @@ public class DataLinkTest extends AAISetup {
 		GraphTraversalSource traversal = g.traversal();
 //		Graph g = graph.newTransaction();
 //		GraphTraversalSource traversal = g;
-		System.out.println("Begin method inventory:");
+	//	System.out.println("Begin method inventory:");
 		Iterator<Vertex> vertexItr = traversal.V();
    		while( vertexItr != null && vertexItr.hasNext() ){
    			Vertex v = vertexItr.next();
-   			System.out.println("\nnodeType="+v.<String>property("aai-node-type"));
+   		//	System.out.println("\nnodeType="+v.<String>property("aai-node-type"));
    			for(String key: v.keys()) {
-   				System.out.println("label="+v.label()+";key= "+key+";value= "+v.value(key)+";id= "+v.id());
+   			//	System.out.println("label="+v.label()+";key= "+key+";value= "+v.value(key)+";id= "+v.id());
    			}
    			Direction d = null;
    			Iterator<Edge> edgeItr = v.edges(Direction.BOTH);
    	   		while( edgeItr != null && edgeItr.hasNext() ){
    	   			Edge e = edgeItr.next();
-   				System.out.println("outV="+e.outVertex().property(AAIProperties.NODE_TYPE)+"/"+e.outVertex().id()+";inV= "+e.inVertex().property(AAIProperties.NODE_TYPE)+"/"+e.inVertex().id());
+   				//System.out.println("outV="+e.outVertex().property(AAIProperties.NODE_TYPE)+"/"+e.outVertex().id()+";inV= "+e.inVertex().property(AAIProperties.NODE_TYPE)+"/"+e.inVertex().id());
    			}
    		}
-   		System.out.println("End method inventory:");
+   		//System.out.println("End method inventory:");
 		when(spy.asAdmin()).thenReturn(adminSpy);
 		when(adminSpy.getTraversalSource()).thenReturn(traversal);
 		when(spy.tx()).thenReturn(g);
 		when(self.<String>property(AAIProperties.AAI_URI)).thenReturn(prop);
 		when(prop.orElse(null)).thenReturn(obj.getURI());
-		DBSerializer serializer = new DBSerializer(version, spy, introspectorFactoryType, "AAI_TEST");
+		DBSerializer serializer = new DBSerializer(schemaVersions.getDefaultVersion(), spy, introspectorFactoryType, "AAI_TEST");
 		SideEffectRunner runner = new SideEffectRunner
 				.Builder(spy, serializer).addSideEffect(DataLinkWriter.class).build();
 		
@@ -176,7 +180,7 @@ public class DataLinkTest extends AAISetup {
 	@Test
 	public void verifyModificationOfVertex() throws URISyntaxException, AAIException, UnsupportedEncodingException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, SecurityException, InstantiationException, NoSuchMethodException, MalformedURLException {
 		
-		final Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.v9);
+		final Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDepthVersion());
 		final Introspector obj = loader.introspectorFromName("vpn-binding");
 		obj.setValue("vpn-id", "modifyKey");
 		obj.setValue("global-route-target", "modifyTargetKey2");
@@ -187,22 +191,21 @@ public class DataLinkTest extends AAISetup {
 //		GraphTraversalSource traversal = g;
 		Graph g = graph.newTransaction();
 		GraphTraversalSource traversal = g.traversal();
-		System.out.println("Begin method inventory:");
 		Iterator<Vertex> vertexItr = traversal.V();
    		while( vertexItr != null && vertexItr.hasNext() ){
    			Vertex v = vertexItr.next();
-   			System.out.println("\nnodeType="+v.<String>property("aai-node-type"));
+   			//System.out.println("\nnodeType="+v.<String>property("aai-node-type"));
    			for(String key: v.keys()) {
-   				System.out.println("label="+v.label()+";key= "+key+";value= "+v.value(key)+"/"+v.id());
+   				//System.out.println("label="+v.label()+";key= "+key+";value= "+v.value(key)+"/"+v.id());
    			}
    			Direction d = null;
    			Iterator<Edge> edgeItr = v.edges(Direction.BOTH);
    	   		while( edgeItr != null && edgeItr.hasNext() ){
    	   			Edge e = edgeItr.next();
-   				System.out.println("outV="+e.outVertex().property(AAIProperties.NODE_TYPE)+"/"+e.outVertex().id()+";inV= "+e.inVertex().property(AAIProperties.NODE_TYPE)+"/"+e.inVertex().id());
+   			//	System.out.println("outV="+e.outVertex().property(AAIProperties.NODE_TYPE)+"/"+e.outVertex().id()+";inV= "+e.inVertex().property(AAIProperties.NODE_TYPE)+"/"+e.inVertex().id());
    			}
    		}
-   		System.out.println("End method inventory:");
+   	//	System.out.println("End method inventory:");
 
 		when(spy.asAdmin()).thenReturn(adminSpy);
 		when(adminSpy.getTraversalSource()).thenReturn(traversal);
@@ -210,43 +213,43 @@ public class DataLinkTest extends AAISetup {
 		when(spy.tx()).thenReturn(g);
 		when(self.<String>property(AAIProperties.AAI_URI)).thenReturn(prop);
 		when(prop.orElse(null)).thenReturn(obj.getURI());
-		DBSerializer serializer = new DBSerializer(version, spy, introspectorFactoryType, "AAI_TEST");
+		DBSerializer serializer = new DBSerializer(schemaVersions.getDefaultVersion(), spy, introspectorFactoryType, "AAI_TEST");
 		SideEffectRunner runner = new SideEffectRunner
 				.Builder(spy, serializer).addSideEffect(DataLinkWriter.class).build();
-		System.out.println("Traversal Source: "+traversal.toString());
+		//System.out.println("Traversal Source: "+traversal.toString());
 		vertexItr = traversal.V();
-		System.out.println("Begin method inventory:");
+	//	System.out.println("Begin method inventory:");
    		while( vertexItr != null && vertexItr.hasNext() ){
    			Vertex v = vertexItr.next();
-   			System.out.println("\nnodeType="+v.<String>property("aai-node-type"));
+   			//System.out.println("\nnodeType="+v.<String>property("aai-node-type"));
    			for(String key: v.keys()) {
-   				System.out.println("label="+v.label()+";key= "+key+";value= "+v.value(key)+"/"+v.id());
+   			//	System.out.println("label="+v.label()+";key= "+key+";value= "+v.value(key)+"/"+v.id());
    			}
    			Iterator<Edge> edgeItr = v.edges(Direction.BOTH);
    	   		while( edgeItr != null && edgeItr.hasNext() ){
    	   			Edge e = edgeItr.next();
-   				System.out.println("outV="+e.outVertex().property(AAIProperties.NODE_TYPE)+"/"+e.outVertex().id()+";inV= "+e.inVertex().property(AAIProperties.NODE_TYPE)+"/"+e.inVertex().id());
+   				//System.out.println("outV="+e.outVertex().property(AAIProperties.NODE_TYPE)+"/"+e.outVertex().id()+";inV= "+e.inVertex().property(AAIProperties.NODE_TYPE)+"/"+e.inVertex().id());
    			}
    		}
-   		System.out.println("End method inventory:");
+   		//System.out.println("End method inventory:");
 		try {
 		runner.execute(obj, self);
 		} catch(Exception e) {
 
 		}
 //		runner.execute(obj, self);
-		System.out.println("=================\n");
+		//System.out.println("=================\n");
 		vertexItr = traversal.V();
    		while( vertexItr != null && vertexItr.hasNext() ){
    			Vertex v = vertexItr.next();
-   			System.out.println("\nnodeType="+v.<String>property("aai-node-type"));
+   			//System.out.println("\nnodeType="+v.<String>property("aai-node-type"));
    			for(String key: v.keys()) {
-   				System.out.println("label="+v.label()+";key= "+key+";value= "+v.value(key)+"/"+v.id());
+   			//	System.out.println("label="+v.label()+";key= "+key+";value= "+v.value(key)+"/"+v.id());
    			}
    			Iterator<Edge> edgeItr = v.edges(Direction.BOTH);
    	   		while( edgeItr != null && edgeItr.hasNext() ){
    	   			Edge e = edgeItr.next();
-   				System.out.println("outV="+e.outVertex().property(AAIProperties.NODE_TYPE)+"/"+e.outVertex().id()+";inV= "+e.inVertex().property(AAIProperties.NODE_TYPE)+"/"+e.inVertex().id());
+   			//	System.out.println("outV="+e.outVertex().property(AAIProperties.NODE_TYPE)+"/"+e.outVertex().id()+";inV= "+e.inVertex().property(AAIProperties.NODE_TYPE)+"/"+e.inVertex().id());
    			}
    		}
 		assertThat("new route-target vertex found with/or without link", traversal.V()
@@ -264,7 +267,7 @@ public class DataLinkTest extends AAISetup {
 	@Test
 	public void verifyDeleteOfVertex() throws URISyntaxException, AAIException, UnsupportedEncodingException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, SecurityException, InstantiationException, NoSuchMethodException, MalformedURLException {
 		
-		final Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.v9);
+		final Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDepthVersion());
 		final Introspector obj = loader.introspectorFromName("vpn-binding");
 		obj.setValue("vpn-id", "deleteKey");
 		TransactionalGraphEngine spy = spy(dbEngine);
@@ -277,7 +280,7 @@ public class DataLinkTest extends AAISetup {
 		when(spy.tx()).thenReturn(g);
 		when(self.<String>property(AAIProperties.AAI_URI)).thenReturn(prop);
 		when(prop.orElse(null)).thenReturn(obj.getURI());
-		DBSerializer serializer = new DBSerializer(version, spy, introspectorFactoryType, "AAI_TEST");
+		DBSerializer serializer = new DBSerializer(schemaVersions.getDefaultVersion(), spy, introspectorFactoryType, "AAI_TEST");
 		SideEffectRunner runner = new SideEffectRunner
 				.Builder(spy, serializer).addSideEffect(DataLinkWriter.class).build();
 		
@@ -298,7 +301,7 @@ public class DataLinkTest extends AAISetup {
 	@Test
 	public void verifyPropertyPopulation() throws URISyntaxException, AAIException, UnsupportedEncodingException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, SecurityException, InstantiationException, NoSuchMethodException, MalformedURLException {
 		
-		final Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.v9);
+		final Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDepthVersion());
 		final Introspector obj = loader.introspectorFromName("vpn-binding");
 		obj.setValue("vpn-id", "getKey");
 		TransactionalGraphEngine spy = spy(dbEngine);
@@ -310,7 +313,7 @@ public class DataLinkTest extends AAISetup {
 		when(spy.tx()).thenReturn(g);
 		when(self.<String>property(AAIProperties.AAI_URI)).thenReturn(prop);
 		when(prop.orElse(null)).thenReturn(obj.getURI());
-		DBSerializer serializer = new DBSerializer(version, spy, introspectorFactoryType, "AAI_TEST");
+		DBSerializer serializer = new DBSerializer(schemaVersions.getDefaultVersion(), spy, introspectorFactoryType, "AAI_TEST");
 		SideEffectRunner runner = new SideEffectRunner
 				.Builder(spy, serializer).addSideEffect(DataLinkReader.class).build();
 		
@@ -347,7 +350,7 @@ public class DataLinkTest extends AAISetup {
 		when(parser.isDependent()).thenReturn(false);
 		when(self.<String>property(AAIProperties.AAI_URI)).thenReturn(prop);
 		when(prop.orElse(null)).thenReturn(obj.getURI());
-		DBSerializer serializer = new DBSerializer(version, spy, introspectorFactoryType, "AAI_TEST");
+		DBSerializer serializer = new DBSerializer(schemaVersions.getDefaultVersion(), spy, introspectorFactoryType, "AAI_TEST");
 		Vertex v = serializer.createNewVertex(obj);
 		serializer.serializeToDb(obj, v, parser, obj.getURI(), "testing");
 		Vertex routeTargetOneV = traversal.V().has("global-route-target", "getTargetKeyNoLink").next();

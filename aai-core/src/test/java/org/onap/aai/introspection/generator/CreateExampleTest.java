@@ -19,6 +19,7 @@
  */
 package org.onap.aai.introspection.generator;
 
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -32,16 +33,28 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-
 public class CreateExampleTest extends AAISetup {
 	
-	private static CreateExample createExample;
-	private static Loader loader;
+	private  static CreateExample createExample;
+	private  Loader loader;
 
+	private static boolean classLoaded = false;
+	
+	
 	@BeforeClass
 	public static void setUp() {
-		loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.v11);
-		createExample = new CreateExample(loader, "edge-prop-names");
+		
+		
+	}
+	
+	
+	@Before
+	public void createLoaderVersion(){
+		if(!classLoaded){
+			loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getAppRootVersion());
+			createExample = new CreateExample(loader, "edge-prop-names");
+			classLoaded = false;
+		}
 	}
 	
 	@Test

@@ -26,7 +26,7 @@ import org.onap.aai.parsers.uri.Parsable;
 import org.onap.aai.parsers.uri.URIParser;
 import org.onap.aai.parsers.uri.URIToDBKey;
 import org.onap.aai.query.builder.QueryBuilder;
-import org.onap.aai.serialization.db.EdgeType;
+import org.onap.aai.edges.enums.EdgeType;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;

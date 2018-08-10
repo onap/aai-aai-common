@@ -95,17 +95,17 @@ import javax.xml.bind.annotation.XmlType;
 public class Fault {
 
     @XmlElement(required = true)
-    protected Fault.RequestError requestError;
+    protected RequestError requestError;
 
     /**
      * Gets the value of the requestError property.
      * 
      * @return
      *     possible object is
-     *     {@link Fault.RequestError }
+     *     {@link RequestError }
      *     
      */
-    public Fault.RequestError getRequestError() {
+    public RequestError getRequestError() {
         return requestError;
     }
 
@@ -114,10 +114,10 @@ public class Fault {
      * 
      * @param value
      *     allowed object is
-     *     {@link Fault.RequestError }
+     *     {@link RequestError }
      *     
      */
-    public void setRequestError(Fault.RequestError value) {
+    public void setRequestError(RequestError value) {
         this.requestError = value;
     }
 
@@ -170,17 +170,17 @@ public class Fault {
     public static class RequestError {
 
         @XmlElement(required = true)
-        protected Fault.RequestError.PolicyException policyException;
+        protected PolicyException policyException;
 
         /**
          * Gets the value of the policyException property.
          * 
          * @return
          *     possible object is
-         *     {@link Fault.RequestError.PolicyException }
+         *     {@link PolicyException }
          *     
          */
-        public Fault.RequestError.PolicyException getPolicyException() {
+        public PolicyException getPolicyException() {
             return policyException;
         }
 
@@ -189,10 +189,10 @@ public class Fault {
          * 
          * @param value
          *     allowed object is
-         *     {@link Fault.RequestError.PolicyException }
+         *     {@link PolicyException }
          *     
          */
-        public void setPolicyException(Fault.RequestError.PolicyException value) {
+        public void setPolicyException(PolicyException value) {
             this.policyException = value;
         }
 
@@ -241,7 +241,7 @@ public class Fault {
             @XmlElement(required = true)
             protected String text;
             @XmlElement(required = true)
-            protected Fault.RequestError.PolicyException.Variables variables;
+            protected Variables variables;
 
             /**
              * Gets the value of the messageId property.
@@ -296,10 +296,10 @@ public class Fault {
              * 
              * @return
              *     possible object is
-             *     {@link Fault.RequestError.PolicyException.Variables }
+             *     {@link Variables }
              *     
              */
-            public Fault.RequestError.PolicyException.Variables getVariables() {
+            public Variables getVariables() {
                 return variables;
             }
 
@@ -308,10 +308,10 @@ public class Fault {
              * 
              * @param value
              *     allowed object is
-             *     {@link Fault.RequestError.PolicyException.Variables }
+             *     {@link Variables }
              *     
              */
-            public void setVariables(Fault.RequestError.PolicyException.Variables value) {
+            public void setVariables(Variables value) {
                 this.variables = value;
             }
 

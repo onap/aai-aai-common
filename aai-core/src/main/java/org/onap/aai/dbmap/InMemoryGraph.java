@@ -25,7 +25,9 @@ import java.io.InputStream;
 
 import java.util.Properties;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.tinkerpop.gremlin.structure.io.IoCore;
+import org.onap.aai.dbgen.GraphSONPartialIO;
 import org.onap.aai.dbgen.SchemaGenerator;
 import org.onap.aai.logging.LogFormatTools;
 
@@ -56,15 +58,31 @@ public class InMemoryGraph {
 			JanusGraphManagement graphMgt = graph.openManagement();
             if(builder.isSchemaEnabled){
             	LOGGER.info("Schema Enabled");
-            	SchemaGenerator.loadSchemaIntoJanusGraph(graphMgt);
+            	SchemaGenerator.loadSchemaIntoJanusGraph(graph, graphMgt, graphProps.getProperty("storage.backend"));
             }
 			JanusGraphTransaction transaction = graph.newTransaction();
 			LOGGER.info("Loading snapshot");
-			transaction.io(IoCore.graphson()).readGraph(builder.graphsonLocation);
+			if(builder.isPartialGraph){
+				if ( (builder.graphsonLocation != null) && (builder.graphsonLocation.length() > 0) ) {
+					transaction.io(GraphSONPartialIO.build()).readGraph(builder.graphsonLocation);
+			    }
+				else {
+					transaction.io(GraphSONPartialIO.build()).reader().create().readGraph(builder.seqInputStream, graph);
+				}
+			}
+			else{
+				if ( (builder.graphsonLocation != null) && (builder.graphsonLocation.length() > 0) ) {
+					transaction.io(IoCore.graphson()).readGraph(builder.graphsonLocation);
+				}
+				else {
+					transaction.io(IoCore.graphson()).reader().create().readGraph(builder.seqInputStream, graph);
+				}
+			}
 			transaction.commit();
 			
 		} catch (Exception e) {
 			// TODO : Changesysout to logger
+			e.printStackTrace();
 			LOGGER.error(
 					"ERROR: Could not load datasnapshot to in memory graph. \n" + LogFormatTools.getStackTop(e));
 			throw new IllegalStateException("Could not load datasnapshot to in memory graph");
@@ -80,6 +98,9 @@ public class InMemoryGraph {
 		private String graphsonLocation = "";
 		private String propertyFile = "";
 		private boolean isSchemaEnabled = false;
+		private InputStream seqInputStream = null;
+		private boolean isPartialGraph = false;
+
 
 		/*
 		 * Builder constructor doesnt do anything
@@ -92,6 +113,31 @@ public class InMemoryGraph {
 			this.graphsonLocation = graphsonFile;
 			this.propertyFile = propertyFile;
 			this.isSchemaEnabled = isSchemaEnabled;
+			return new InMemoryGraph(this);
+		}
+		
+		public InMemoryGraph build(InputStream sis, String propertyFile, boolean isSchemaEnabled) throws IOException {
+			this.graphsonLocation = null;
+			this.propertyFile = propertyFile;
+			this.isSchemaEnabled = isSchemaEnabled;
+			this.seqInputStream = sis;
+			return new InMemoryGraph(this);
+		}
+		
+		public InMemoryGraph build(String graphsonFile, String propertyFile, boolean isSchemaEnabled, boolean isPartialGraph) throws IOException {
+			this.graphsonLocation = graphsonFile;
+			this.propertyFile = propertyFile;
+			this.isSchemaEnabled = isSchemaEnabled;
+			this.isPartialGraph = isPartialGraph;
+			return new InMemoryGraph(this);
+		}
+		
+		public InMemoryGraph build(InputStream sis, String propertyFile, boolean isSchemaEnabled, boolean isPartialGraph) throws IOException {
+			this.graphsonLocation = null;
+			this.propertyFile = propertyFile;
+			this.isSchemaEnabled = isSchemaEnabled;
+			this.seqInputStream = sis;
+			this.isPartialGraph = isPartialGraph;
 			return new InMemoryGraph(this);
 		}
 	}

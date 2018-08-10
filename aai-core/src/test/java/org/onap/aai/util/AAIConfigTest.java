@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
 
+import org.eclipse.jetty.util.security.Password;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -44,26 +45,17 @@ public class AAIConfigTest extends AAISetup {
 	}
 
 	@Test
-	public void testGetDefaultBools() {
-		HashMap<String,ArrayList<String>> res = AAIConfig.getDefaultBools();
-		assertNotNull(res);
-		assertEquals(6, res.size());
-		assertEquals("in-maint", res.get("generic-vnf").get(0));
-		assertEquals("is-closed-loop-disabled", res.get("generic-vnf").get(1));
-		assertEquals("is-bound-to-vpn", res.get("l3-network").get(0));
-		assertEquals("in-maint", res.get("pserver").get(0));
-		assertEquals("dhcp-enabled", res.get("subnet").get(0));
-		assertEquals("in-maint", res.get("vserver").get(0));
-		assertEquals("is-closed-loop-disabled", res.get("vserver").get(1));
-		assertEquals("in-maint", res.get("vnfc").get(0));
-		assertEquals("is-closed-loop-disabled", res.get("vnfc").get(1));
-	}
-
-	@Test
 	public void testGetConfigFile() {
 		String res = AAIConfig.getConfigFile();
 		assertNotNull(res);
 		assertTrue(res.endsWith("aaiconfig.properties"));
+	}
+
+	@Test
+	public void testGetStringString() {
+		String res = AAIConfig.get("aai.notificationEvent.default.sourceName", "somerandomvalue");
+		assertNotNull(res);
+		assertEquals("aai", res);
 	}
 
 	@Test
@@ -91,9 +83,22 @@ public class AAIConfigTest extends AAISetup {
 	}
 
 	@Test
-	public void testGetServerProps() {
-		Properties res = AAIConfig.getServerProps();
+	public void testGetStringPassword() throws AAIException {
+		String res = AAIConfig.get("aai.example.passwd");
 		assertNotNull(res);
+		assertEquals("changeit", res);
+	}
+
+	@Test(expected=NumberFormatException.class)
+	public void testGetIntInvalidInput() throws AAIException {
+		AAIConfig.getInt("aai.example.string");
+	}
+
+	@Test
+	public void testGetInt() throws AAIException {
+		int res = AAIConfig.getInt("aai.example.int");
+		assertNotNull(res);
+		assertEquals(7748, res);
 	}
 
 	@Test

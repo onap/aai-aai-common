@@ -19,16 +19,14 @@
  */
 package org.onap.aai.query.builder;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.google.common.base.Joiner;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
+
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.apache.tinkerpop.gremlin.process.traversal.step.util.Tree;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
@@ -38,27 +36,23 @@ import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.restcore.search.GremlinGroovyShellSingleton;
 import org.onap.aai.schema.enums.ObjectMetadata;
-import org.onap.aai.serialization.db.EdgeRule;
-import org.onap.aai.serialization.db.EdgeRules;
-import org.onap.aai.serialization.db.EdgeType;
+import org.onap.aai.edges.EdgeRule;
+import org.onap.aai.edges.EdgeRuleQuery;
+import org.onap.aai.edges.enums.EdgeType;
+import org.onap.aai.edges.exceptions.EdgeRuleNotFoundException;
 import org.onap.aai.serialization.db.exceptions.NoEdgeRuleFoundException;
 
-import com.google.common.base.Joiner;
+import java.util.*;
 
 /**
  * The Class GremlinQueryBuilder.
  */
 public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
-	
-	private EdgeRules edgeRules = EdgeRules.getInstance();
+
 	private GremlinGroovyShellSingleton gremlinGroovy = GremlinGroovyShellSingleton.getInstance();
 	private GraphTraversal<?, ?> completeTraversal = null;
 	protected List<String> list = null;
-	
-	protected int parentStepIndex = 0;
-	protected int containerStepIndex = 0;
-	protected int stepIndex = 0;
-	
+
 	/**
 	 * Instantiates a new gremlin query builder.
 	 *
@@ -68,19 +62,7 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
 		super(loader, source);
 		list = new ArrayList<>();
 	}
-	
-	/**
-	 * Instantiates a new graph gremlin builder.
-	 *
-	 * @param loader the loader
-	 */
-	public GremlinQueryBuilder(Loader loader, GraphTraversalSource source, EdgeRules edgeRules) {
-		super(loader, source);
-		this.edgeRules = edgeRules;
-		list = new ArrayList<>();
-		
-	}
-	
+
 	/**
 	 * Instantiates a new gremlin query builder.
 	 *
@@ -91,20 +73,7 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
 		super(loader, source, start);
 		list = new ArrayList<>();
 	}
-	
-	/**
-	 * Instantiates a new graph gremlin builder.
-	 *
-	 * @param loader the loader
-	 * @param start the start
-	 */
-	public GremlinQueryBuilder(Loader loader, GraphTraversalSource source, Vertex start, EdgeRules edgeRules) {
-		super(loader, source, start);
-		this.edgeRules = edgeRules;
-		list = new ArrayList<>();
-		
-	}
-	
+
 	@Override
 	public QueryBuilder<Vertex> exactMatchQuery(Introspector obj) {
 		// TODO not implemented because this is implementation is no longer used
@@ -129,14 +98,28 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
 		stepIndex++;
 		return (QueryBuilder<Vertex>) this;
 	}
-	
+
+	@Override
+	public QueryBuilder<Vertex> getVerticesByBooleanProperty(String key, Object value) {
+		boolean bValue = false;
+
+		if(value instanceof String){
+			bValue = Boolean.valueOf(value.toString());
+		} else if(value instanceof Boolean){
+			bValue = (Boolean) value;
+		}
+
+		list.add(".has('" + key + "', " + bValue + ")");
+		stepIndex++;
+		return (QueryBuilder<Vertex>) this;
+	}
+
 	/**
 	 * @{inheritDoc}
 	 */
 	@Override
 	public QueryBuilder<Vertex> getVerticesByProperty(String key, List<?> values) {
 
-		String term = "";
 		String predicate = "P.within(#!#argument#!#)";
 		List<String> arguments = new ArrayList<>();
 		for (Object item : values) {
@@ -153,6 +136,48 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
 		return (QueryBuilder<Vertex>) this;
 	}
 	
+	/**
+     * @{inheritDoc}
+     */
+    @Override
+    public QueryBuilder<Vertex> getVerticesByProperty(String key) {
+
+    	list.add(".has('" + key + "')");
+        stepIndex++;
+        return (QueryBuilder<Vertex>) this;
+    }
+    
+    /**
+     * @{inheritDoc}
+     */
+    @Override
+    public QueryBuilder<Vertex> getVerticesExcludeByProperty(String key) {
+
+        String term = "";
+        list.add(".hasNot('" + key + "')");
+        stepIndex++;
+        return (QueryBuilder<Vertex>) this;
+    }
+
+	/**
+	 * @{inheritDoc}
+	 */
+	@Override
+	public QueryBuilder<Vertex> getVerticesStartsWithProperty(String key, Object value) {
+
+		String term = "";
+		String predicate = "org.janusgraph.core.attribute.Text.textPrefix(#!#argument#!#)";
+		if (value != null && !(value instanceof String) ) {
+			term = value.toString();
+		} else {
+			term = "'" + value + "'";
+		}
+		predicate = predicate.replace("#!#argument#!#", term);
+		list.add(".has('" + key + "', " + predicate + ")");
+		stepIndex++;
+		return (QueryBuilder<Vertex>) this;
+	}
+
 	/**
 	 * @{inheritDoc}
 	 */
@@ -178,7 +203,6 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
 	@Override
 	public QueryBuilder<Vertex> getVerticesExcludeByProperty(String key, List<?> values) {
 
-		String term = "";
 		String predicate = "P.without(#!#argument#!#)";
 		List<String> arguments = new ArrayList<>();
 		for (Object item : values) {
@@ -195,6 +219,39 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
 		return (QueryBuilder<Vertex>) this;
 	}
 	
+    @Override
+    public QueryBuilder<Vertex> getVerticesGreaterThanProperty(String key, Object value) {
+        String predicate = "P.gte(#!#argument1#!#)";
+        String term;
+        if (value != null && !(value instanceof String) ) {
+            term = value.toString();
+        } else {
+            term = "'" + value + "'";
+        }
+        predicate = predicate.replace("#!#argument1#!#", term);
+        list.add(".has('" + key + "', " + predicate + ")");
+        stepIndex++;
+        return (QueryBuilder<Vertex>) this;
+    }
+    
+    @Override
+    public QueryBuilder<Vertex> getVerticesLessThanProperty(String key, Object value) {
+        String predicate = "P.lte(#!#argument1#!#)";
+        String term;
+        if (value != null && !(value instanceof String) ) {
+            term = value.toString();
+        } else {
+            term = "'" + value + "'";
+        }
+        predicate = predicate.replace("#!#argument1#!#", term);
+        list.add(".has('" + key + "', " + predicate + ")");
+        stepIndex++;
+        return (QueryBuilder<Vertex>) this;
+    }
+    
+
+
+    
 	/**
 	 * @{inheritDoc}
 	 */
@@ -259,6 +316,20 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
 			
 	}
 
+	@Override
+	public QueryBuilder createPrivateEdgeTraversal(EdgeType type, Introspector parent, Introspector child) throws AAIException{
+		String parentName = parent.getDbName();
+		String childName = child.getDbName();
+		if (parent.isContainer()) {
+			parentName = parent.getChildDBName();
+		}
+		if (child.isContainer()) {
+			childName = child.getChildDBName();
+		}
+		this.edgeQueryToVertex(type, parentName, childName, null, true);
+		return this;
+	}
+
 	/**
 	 *
 	 * @{inheritDoc}
@@ -283,6 +354,10 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
 		return (QueryBuilder<Edge>)this;
 	}
 
+	private void edgeQueryToVertex(EdgeType type, String outType, String inType, List<String> labels) throws AAIException {
+	    this.edgeQueryToVertex(type, outType, inType, labels, false);
+	}
+
 	/**
 	 * Edge query.
 	 *
@@ -291,29 +366,37 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
 	 * @throws NoEdgeRuleFoundException
 	 * @throws AAIException
 	 */
-	private void edgeQueryToVertex(EdgeType type, String outType, String inType, List<String> labels) throws AAIException {
+	private void edgeQueryToVertex(EdgeType type, String outType, String inType, List<String> labels, boolean isPrivateEdge) throws AAIException {
 		markParentBoundary();
-		Map<String, EdgeRule> rules;
-		if (labels == null) {
-			rules = edgeRules.getEdgeRules(type, outType, inType);
-		} else {
-			rules = edgeRules.getEdgeRulesWithLabels(type, outType, inType, labels);
+		Multimap<String, EdgeRule> rules = ArrayListMultimap.create();
+		EdgeRuleQuery.Builder qB = new EdgeRuleQuery.Builder(outType, inType).edgeType(type).setPrivate(isPrivateEdge);
+
+		try {
+			if (labels == null) {
+				rules.putAll(edgeRules.getRules(qB.build()));
+			} else {
+				for (String label : labels) {
+					rules.putAll(edgeRules.getRules(qB.label(label).build()));
+				}
+			}
+		} catch (EdgeRuleNotFoundException e) {
+			throw new NoEdgeRuleFoundException(e);
 		}
 
 		final List<String> inLabels = new ArrayList<>();
 		final List<String> outLabels = new ArrayList<>();
 
-		rules.forEach((k, edgeRule) -> {
-			if (labels != null && !labels.contains(k)) {
+		for (EdgeRule rule : rules.values()) {
+			if (labels != null && !labels.contains(rule.getLabel())) {
 				return;
 			} else {
-				if (edgeRule.getDirection().equals(Direction.IN)) {
-					inLabels.add(edgeRule.getLabel());
+				if (Direction.IN.equals(rule.getDirection())) {
+					inLabels.add(rule.getLabel());
 				} else {
-					outLabels.add(edgeRule.getLabel());
+					outLabels.add(rule.getLabel());
 				}
 			}
-		});
+		}
 
 		if(inLabels.isEmpty() && outLabels.isEmpty()) {
 			throw new NoEdgeRuleFoundException("no " + type.toString() + " edge rule between " + outType + " and " + inType );
@@ -340,27 +423,34 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
 	 */
 	private void edgeQuery(EdgeType type, String outType, String inType, List<String> labels) throws AAIException {
 		markParentBoundary();
-		Map<String, EdgeRule> rules;
-		if (labels == null) {
-			rules = edgeRules.getEdgeRules(type, outType, inType);
-		} else {
-			rules = edgeRules.getEdgeRulesWithLabels(type, outType, inType, labels);
+		Multimap<String, EdgeRule> rules = ArrayListMultimap.create();
+		EdgeRuleQuery.Builder qB = new EdgeRuleQuery.Builder(outType, inType).edgeType(type);
+		try {
+			if (labels == null) {
+				rules.putAll(edgeRules.getRules(qB.build()));
+			} else {
+				for (String label : labels) {
+					rules.putAll(edgeRules.getRules(qB.label(label).build()));
+				}
+			}
+		} catch (EdgeRuleNotFoundException e) {
+			throw new NoEdgeRuleFoundException(e);
 		}
 		
 		final List<String> inLabels = new ArrayList<>();
 		final List<String> outLabels = new ArrayList<>();
 
-		rules.forEach((k, edgeRule) -> {
-			if (labels != null && !labels.contains(k)) {
+		for (EdgeRule rule : rules.values()) {
+			if (labels != null && !labels.contains(rule.getLabel())) {
 				return;
 			} else {
-				if (edgeRule.getDirection().equals(Direction.IN)) {
-					inLabels.add(edgeRule.getLabel());
+				if (Direction.IN.equals(rule.getDirection())) {
+					inLabels.add(rule.getLabel());
 				} else {
-					outLabels.add(edgeRule.getLabel());
+					outLabels.add(rule.getLabel());
 				}
 			}
-		});
+		}
 
 		if(inLabels.isEmpty() && outLabels.isEmpty()) {
 			throw new NoEdgeRuleFoundException("no " + type.toString() + " edge rule between " + outType + " and " + inType );
@@ -413,7 +503,7 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
 		String[] traversals = new String[builder.length];
 		StringBuilder command = new StringBuilder();
 		for (int i = 0; i < builder.length; i++) {
-			traversals[i] = "__" + (String)builder[i].getQuery();
+			traversals[i] = "__" + builder[i].getQuery();
 		}
 		command.append(".union(");
 		command.append(Joiner.on(",").join(traversals));
@@ -429,12 +519,29 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
 		markParentBoundary();
 		List<String> traversals = new ArrayList<>();
 		for (int i = 0; i < builder.length; i++) {
-			traversals.add(".where(__" + (String)builder[i].getQuery() + ")");
+			traversals.add(".where(__" + builder[i].getQuery() + ")");
 			stepIndex++;
 		}
 		list.addAll(traversals);
 		
 		
+		return this;
+	}
+
+	@Override
+	public QueryBuilder<E> or(QueryBuilder<E>... builder) {
+		markParentBoundary();
+		String[] traversals = new String[builder.length];
+		StringBuilder command = new StringBuilder();
+		for (int i = 0; i < builder.length; i++) {
+			traversals[i] = "__" + builder[i].getQuery();
+		}
+		command.append(".or(");
+		command.append(Joiner.on(",").join(traversals));
+		command.append(")");
+		list.add(command.toString());
+		stepIndex++;
+
 		return this;
 	}
 	
@@ -508,6 +615,14 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
 		stepIndex++;
 		
 		return this;
+	}
+	
+	@Override
+	public QueryBuilder<Tree> tree() {
+		this.list.add(".tree()");
+		stepIndex++;
+		
+		return (QueryBuilder<Tree>)this;
 	}
 	
 	@Override
@@ -633,7 +748,6 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
 		this.containerStepIndex = stepIndex;
 	}
 	
-	protected abstract QueryBuilder<E> cloneQueryAtStep(int index);
 	/**
 	 * @{inheritDoc}
 	 */

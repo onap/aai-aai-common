@@ -25,10 +25,10 @@ import org.junit.rules.ExpectedException;
 import org.onap.aai.AAISetup;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Loader;
-import org.onap.aai.introspection.LoaderFactory;
 import org.onap.aai.introspection.ModelType;
-import org.onap.aai.introspection.Version;
+import org.onap.aai.setup.SchemaVersion;
 
+import javax.annotation.PostConstruct;
 import javax.ws.rs.core.UriBuilder;
 import javax.xml.bind.JAXBException;
 import java.io.UnsupportedEncodingException;
@@ -39,7 +39,7 @@ import static org.hamcrest.Matchers.is;
 
 public class URIParserTest extends AAISetup {
 
-	private Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.v8);
+	private Loader loader ;
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -52,6 +52,11 @@ public class URIParserTest extends AAISetup {
 	 * @throws IllegalArgumentException the illegal argument exception
 	 * @throws UnsupportedEncodingException the unsupported encoding exception
 	 */
+	@PostConstruct
+	public void createLoader(){
+		loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, new SchemaVersion("v8"));
+	}
+
 	@Test
     public void invalidPath() throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException {
 		URI uri = UriBuilder.fromPath("/aai/" + loader.getVersion() + "/network/tenants/tenant/key1/vservers/vserver/key2/l-interfaces/l-interface/key3").build();

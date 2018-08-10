@@ -19,22 +19,22 @@
  */
 package org.onap.aai.serialization.queryformats;
 
-import java.util.Iterator;
-import java.util.List;
-
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.Tree;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatQueryResultFormatNotSupported;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
 
 public abstract class MultiFormatMapper implements FormatMapper {
 
 	@Override
-	public JsonObject formatObject(Object input) throws AAIFormatVertexException, AAIFormatQueryResultFormatNotSupported {
+	public Optional<JsonObject> formatObject(Object input) throws AAIFormatVertexException, AAIFormatQueryResultFormatNotSupported {
 		if (input instanceof Vertex) {
 			return this.getJsonFromVertex((Vertex) input);
 		} else if (input instanceof Tree) {
@@ -46,9 +46,9 @@ public abstract class MultiFormatMapper implements FormatMapper {
 		}
 	}
 
-	protected abstract JsonObject getJsonFromVertex(Vertex input) throws AAIFormatVertexException;
+	protected abstract Optional<JsonObject> getJsonFromVertex(Vertex input) throws AAIFormatVertexException;
 
-	protected JsonObject getJsonFromPath(Path input) throws AAIFormatVertexException {
+	protected Optional<JsonObject> getJsonFromPath(Path input) throws AAIFormatVertexException {
 		List<Object> path = input.objects();
 
 		JsonObject jo = new JsonObject();
@@ -56,18 +56,18 @@ public abstract class MultiFormatMapper implements FormatMapper {
 		
 		for (Object o : path) {
 			if (o instanceof Vertex) {
-				ja.add(this.getJsonFromVertex((Vertex)o));
+				ja.add(this.getJsonFromVertex((Vertex)o).get());
 			}
 		}
 		
 		jo.add("path", ja);
-		return jo;
+		return Optional.of(jo);
 	}
 
-	protected JsonObject getJsonFomTree(Tree<?> tree) throws AAIFormatVertexException {
+	protected Optional<JsonObject> getJsonFomTree(Tree<?> tree) throws AAIFormatVertexException {
 		
 		if (tree.isEmpty()) {
-			return new JsonObject();
+			return Optional.of(new JsonObject());
 		}
 		
 		JsonObject t = new JsonObject();
@@ -76,7 +76,7 @@ public abstract class MultiFormatMapper implements FormatMapper {
 			t.add("nodes", ja);
 		}
 		
-		return t;
+		return Optional.of(t);
 	}
 	
 	private JsonArray getNodesArray (Tree<?> tree) throws AAIFormatVertexException {
@@ -88,7 +88,7 @@ public abstract class MultiFormatMapper implements FormatMapper {
 			Object o = it.next();
 			JsonObject me = new JsonObject();
 			if (o instanceof Vertex) {
-				me = this.getJsonFromVertex((Vertex) o);
+				me = this.getJsonFromVertex((Vertex) o).get();
 			}
 			JsonArray ja = this.getNodesArray((Tree<?>) tree.get(o));
 			if (ja.size() > 0) {

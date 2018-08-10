@@ -18,12 +18,11 @@
  * ============LICENSE_END=========================================================
  */
 package org.onap.aai.util.genxsd;
+import java.util.StringTokenizer;
 
 import org.apache.commons.lang3.StringUtils;
-import org.onap.aai.introspection.Version;
+import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.util.GenerateXsd;
-
-import java.util.StringTokenizer;
 
 public class PutOperation {
 	private String useOpId;
@@ -31,9 +30,9 @@ public class PutOperation {
 	private String tag;
 	private String path;
 	private String pathParams;
-	private Version version;
-		
-		public PutOperation(String useOpId, String xmlRootElementName, String tag, String path, String pathParams, Version v) {
+	private SchemaVersion version;
+
+		public PutOperation(String useOpId, String xmlRootElementName, String tag, String path, String pathParams, SchemaVersion v) {
 			super();
 			this.useOpId = useOpId;
 			this.xmlRootElementName = xmlRootElementName;
@@ -80,7 +79,7 @@ public class PutOperation {
 				pathSb.append("      summary: create or update an existing " + xmlRootElementName + "\n");
 				pathSb.append("      description: |\n        Create or update an existing " + xmlRootElementName + ".\n        #\n        Note! This PUT method has a corresponding PATCH method that can be used to update just a few of the fields of an existing object, rather than a full object replacement.  An example can be found in the [PATCH section] below\n");
 			}
-			relationshipExamplesSb.append("[Valid relationship examples shown here](apidocs/relations/"+version.name()+"/"+useOpId.replace("RelationshipListRelationship", "")+".json)");
+			relationshipExamplesSb.append("[Valid relationship examples shown here](apidocs/relations/"+version.toString()+"/"+useOpId.replace("RelationshipListRelationship", "")+".json)");
 			pathSb.append("      operationId: createOrUpdate" + useOpId + "\n");
 			pathSb.append("      consumes:\n");
 			pathSb.append("        - application/json\n");

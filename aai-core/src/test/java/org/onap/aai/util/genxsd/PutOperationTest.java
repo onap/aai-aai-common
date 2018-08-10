@@ -19,18 +19,18 @@
  */
 package org.onap.aai.util.genxsd;
 
+import static org.junit.Assert.*;
+
+import java.util.Arrays;
+import java.util.Collection;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import org.onap.aai.introspection.Version;
-
-import java.util.Arrays;
-import java.util.Collection;
+import org.onap.aai.setup.SchemaVersion;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 
 @RunWith(Parameterized.class)
 public class PutOperationTest {
@@ -40,13 +40,12 @@ public class PutOperationTest {
 	private String path;
 	private String pathParams;
 	private String result;
-	private static Version v = Version.getLatest();
+	private static SchemaVersion v = new SchemaVersion("v14");
 
 	@Parameters
 	public static Collection<String []> testConditions() {
 		String inputs [][] = {
-		{"NetworkGenericVnfsGenericVnf","generic-vnf","Network","/network/generic-vnfs/generic-vnf/{vnf-id}","        - name: vnf-id\n          in: path\n          description: Unique id of VNF.  This is unique across the graph.\n          required: true\n          type: string\n          example: __VNF-ID__","    put:\n      tags:\n        - Network\n      summary: create or update an existing generic-vnf\n      description: |\n        Create or update an existing generic-vnf.\n        #\n        Note! This PUT method has a corresponding PATCH method that can be used to update just a few of the fields of an existing object, rather than a full object replacement.  An example can be found in the [PATCH section] below\n      operationId: createOrUpdateNetworkGenericVnfsGenericVnf\n      consumes:\n        - application/json\n        - application/xml\n      produces:\n        - application/json\n        - application/xml\n      responses:\n        \"default\":\n          null      parameters:\n        - name: vnf-id\n          in: path\n          description: Unique id of VNF.  This is unique across the graph.\n          required: true\n          type: string\n          example: __VNF-ID__        - name: body\n          in: body\n          description: generic-vnf object that needs to be created or updated. [Valid relationship examples shown here](apidocs/relations/"+v.name()+"/NetworkGenericVnfsGenericVnf.json)\n          required: true\n          schema:\n            $ref: \"#/definitions/generic-vnf\"\n"},
-		{"CloudInfrastructureCloudRegionsCloudRegionTenantsTenantVserversVserver","vserver","CloudInfrastructure","/cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}/tenants/tenant/{tenant-id}/vservers/vserver/{vserver-id}","        - name: cloud-owner\n          in: path\n          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname\n          required: true\n          type: string\n          example: __CLOUD-OWNER__\n        - name: cloud-region-id\n          in: path\n          description: Identifier used by the vendor for the region. Second part of composite key\n          required: true\n          type: string\n          example: __CLOUD-REGION-ID__\n        - name: tenant-id\n          in: path\n          description: Unique id relative to the cloud-region.\n          required: true\n          type: string\n          example: __TENANT-ID__\n        - name: vserver-id\n          in: path\n          description: Unique identifier for this vserver relative to its tenant\n          required: true\n          type: string\n          example: __VSERVER-ID__","    put:\n      tags:\n        - CloudInfrastructure\n      summary: create or update an existing vserver\n      description: |\n        Create or update an existing vserver.\n        #\n        Note! This PUT method has a corresponding PATCH method that can be used to update just a few of the fields of an existing object, rather than a full object replacement.  An example can be found in the [PATCH section] below\n      operationId: createOrUpdateCloudInfrastructureCloudRegionsCloudRegionTenantsTenantVserversVserver\n      consumes:\n        - application/json\n        - application/xml\n      produces:\n        - application/json\n        - application/xml\n      responses:\n        \"default\":\n          null      parameters:\n        - name: cloud-owner\n          in: path\n          description: Identifies the vendor and cloud name, e.g., att-aic. First part of composite key should be formatted as vendor-cloudname\n          required: true\n          type: string\n          example: __CLOUD-OWNER__\n        - name: cloud-region-id\n          in: path\n          description: Identifier used by the vendor for the region. Second part of composite key\n          required: true\n          type: string\n          example: __CLOUD-REGION-ID__\n        - name: tenant-id\n          in: path\n          description: Unique id relative to the cloud-region.\n          required: true\n          type: string\n          example: __TENANT-ID__\n        - name: vserver-id\n          in: path\n          description: Unique identifier for this vserver relative to its tenant\n          required: true\n          type: string\n          example: __VSERVER-ID__        - name: body\n          in: body\n          description: vserver object that needs to be created or updated. [Valid relationship examples shown here](apidocs/relations/"+v.name()+"/CloudInfrastructureCloudRegionsCloudRegionTenantsTenantVserversVserver.json)\n          required: true\n          schema:\n            $ref: \"#/definitions/vserver\"\n"},
+		{"NetworkGenericVnfsGenericVnf","generic-vnf","Network","/network/generic-vnfs/generic-vnf/{vnf-id}","        - name: vnf-id\n          in: path\n          description: Unique id of VNF.  This is unique across the graph.\n          required: true\n          type: string\n          example: __VNF-ID__","    put:\n      tags:\n        - Network\n      summary: create or update an existing generic-vnf\n      description: |\n        Create or update an existing generic-vnf.\n        #\n        Note! This PUT method has a corresponding PATCH method that can be used to update just a few of the fields of an existing object, rather than a full object replacement.  An example can be found in the [PATCH section] below\n      operationId: createOrUpdateNetworkGenericVnfsGenericVnf\n      consumes:\n        - application/json\n        - application/xml\n      produces:\n        - application/json\n        - application/xml\n      responses:\n        \"default\":\n          null      parameters:\n        - name: vnf-id\n          in: path\n          description: Unique id of VNF.  This is unique across the graph.\n          required: true\n          type: string\n          example: __VNF-ID__        - name: body\n          in: body\n          description: generic-vnf object that needs to be created or updated. [Valid relationship examples shown here](apidocs/relations/"+v.toString()+"/NetworkGenericVnfsGenericVnf.json)\n          required: true\n          schema:\n            $ref: \"#/definitions/generic-vnf\"\n"},
 //		if ( StringUtils.isEmpty(tag) )
 		{"GenericVnf","generic-vnf","","/generic-vnf/{vnf-id}","        - name: vnf-id\n          in: path\n          description: Unique id of VNF.  This is unique across the graph.\n          required: true\n          type: string\n          example: __VNF-ID__",""},
 //		Test: if ( !path.endsWith("/relationship")  &&  !path.endsWith("}") )
@@ -76,7 +75,7 @@ public class PutOperationTest {
 
 	@Test
 	public void testToString() {
-		PutOperation put = new PutOperation(useOpId, xmlRootElementName, tag, path,  pathParams, Version.getLatest());
+		PutOperation put = new PutOperation(useOpId, xmlRootElementName, tag, path,  pathParams, v);
 		String modResult = put.toString();
 		assertThat(modResult, is(this.result));
 	}

@@ -32,30 +32,40 @@ import org.apache.tinkerpop.gremlin.structure.*;
 import org.javatuples.Pair;
 import org.javatuples.Triplet;
 import org.onap.aai.db.props.AAIProperties;
+import org.onap.aai.edges.EdgeIngestor;
+import org.onap.aai.edges.EdgeRule;
+import org.onap.aai.edges.EdgeRuleQuery;
+import org.onap.aai.edges.enums.AAIDirection;
+import org.onap.aai.edges.enums.EdgeField;
+import org.onap.aai.edges.enums.EdgeProperty;
+import org.onap.aai.edges.enums.EdgeType;
+import org.onap.aai.edges.exceptions.AmbiguousRuleChoiceException;
+import org.onap.aai.edges.exceptions.EdgeRuleNotFoundException;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.*;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
-import org.onap.aai.introspection.sideeffect.DataCopy;
-import org.onap.aai.introspection.sideeffect.DataLinkReader;
-import org.onap.aai.introspection.sideeffect.DataLinkWriter;
-import org.onap.aai.introspection.sideeffect.SideEffectRunner;
+import org.onap.aai.introspection.sideeffect.*;
 import org.onap.aai.logging.ErrorLogHelper;
 import org.onap.aai.logging.LogFormatTools;
+import org.onap.aai.logging.StopWatch;
 import org.onap.aai.parsers.query.QueryParser;
 import org.onap.aai.parsers.uri.URIParser;
 import org.onap.aai.parsers.uri.URIToRelationshipObject;
 import org.onap.aai.query.builder.QueryBuilder;
 import org.onap.aai.schema.enums.ObjectMetadata;
 import org.onap.aai.schema.enums.PropertyMetadata;
+import org.onap.aai.serialization.db.exceptions.MultipleEdgeRuleFoundException;
 import org.onap.aai.serialization.db.exceptions.NoEdgeRuleFoundException;
-import org.onap.aai.serialization.db.util.VersionChecker;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 import org.onap.aai.serialization.tinkerpop.TreeBackedVertex;
-import org.onap.aai.util.AAIApiServerURLBase;
+import org.onap.aai.setup.SchemaVersion;
+import org.onap.aai.setup.SchemaVersions;
 import org.onap.aai.util.AAIConfig;
 import org.onap.aai.util.AAIConstants;
 import org.onap.aai.workarounds.NamingExceptions;
-import org.onap.aai.logging.StopWatch;
+import org.springframework.context.ApplicationContext;
+import org.onap.aai.concurrent.AaiCallable;
+import org.onap.aai.config.SpringContextAware;
 
 import javax.ws.rs.core.UriBuilder;
 import java.io.UnsupportedEncodingException;
@@ -65,12 +75,12 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.onap.aai.serialization.engines.query.QueryEngine;
 
 public class DBSerializer {
 	
@@ -79,33 +89,66 @@ public class DBSerializer {
 	private final TransactionalGraphEngine engine;
 	private final String sourceOfTruth;
 	private final ModelType introspectionType;
-	private final Version version;
+	private final SchemaVersion version;
 	private final Loader latestLoader;
-	private final EdgeRules edgeRules = EdgeRules.getInstance();
+	private EdgeSerializer edgeSer;
+	private EdgeIngestor edgeRules;
 	private final Loader loader;
 	private final String baseURL;
 	private double dbTimeMsecs = 0;
+
+	private SchemaVersions schemaVersions;
 	/**
 	 * Instantiates a new DB serializer.
 	 *
 	 * @param version the version
 	 * @param engine the engine
-	 * @param g the g
 	 * @param introspectionType the introspection type
 	 * @param sourceOfTruth the source of truth
-	 * @param llBuilder the ll builder
-	 * @throws AAIException 
+	 * @throws AAIException
 	 */
-	public DBSerializer(Version version, TransactionalGraphEngine engine, ModelType introspectionType, String sourceOfTruth) throws AAIException {
+	public DBSerializer(SchemaVersion version, TransactionalGraphEngine engine, ModelType introspectionType, String sourceOfTruth) throws AAIException {
 		this.engine = engine;
 		this.sourceOfTruth = sourceOfTruth;
 		this.introspectionType = introspectionType;
-		this.latestLoader = LoaderFactory.createLoaderForVersion(introspectionType, AAIProperties.LATEST);
+		this.schemaVersions = SpringContextAware.getBean(SchemaVersions.class);
+		SchemaVersion LATEST = schemaVersions.getDefaultVersion();
+		this.latestLoader = SpringContextAware.getBean(LoaderFactory.class).createLoaderForVersion(introspectionType, LATEST);
 		this.version = version;
-		this.loader = LoaderFactory.createLoaderForVersion(introspectionType, version);
-		this.baseURL = AAIApiServerURLBase.get(version);
+		this.loader = SpringContextAware.getBean(LoaderFactory.class).createLoaderForVersion(introspectionType, version);
+		this.baseURL = AAIConfig.get(AAIConstants.AAI_SERVER_URL_BASE);
+		initBeans();
 	}
-	
+
+	private void initBeans() {
+		//TODO proper spring wiring, but that requires a lot of refactoring so for now we have this
+		ApplicationContext ctx = SpringContextAware.getApplicationContext();
+		EdgeIngestor ei = ctx.getBean(EdgeIngestor.class);
+		setEdgeIngestor(ei);
+		EdgeSerializer es = ctx.getBean(EdgeSerializer.class);
+		setEdgeSerializer(es);
+	}
+
+	private void backupESInit() {
+		setEdgeSerializer(new EdgeSerializer(this.edgeRules));
+	}
+
+	public void setEdgeSerializer(EdgeSerializer edgeSer) {
+		this.edgeSer = edgeSer;
+	}
+
+	public EdgeSerializer getEdgeSeriailizer() {
+	    return this.edgeSer;
+	}
+
+	public void setEdgeIngestor(EdgeIngestor ei) {
+		this.edgeRules = ei;
+	}
+
+	public EdgeIngestor getEdgeIngestor(){
+		return this.edgeRules;
+	}
+
 	/**
 	 * Touch standard vertex properties.
 	 *
@@ -223,7 +266,7 @@ public class DBSerializer {
 		try {
 			boolean isTopLevel = obj.isTopLevel();
 			if (isTopLevel) {
-				v.property(AAIProperties.AAI_URI, obj.getURI());
+				addUriIfNeeded(v, obj.getURI());
 			}
 			
 			processObject(obj, v, requestContext);
@@ -231,10 +274,7 @@ public class DBSerializer {
 				URI uri = this.getURIForVertex(v);
 				URIParser parser = new URIParser(this.loader, uri);
 				if (parser.validate()) {
-					VertexProperty<String> uriProp = v.property(AAIProperties.AAI_URI);
-					if (!uriProp.isPresent() || uriProp.isPresent() && !uriProp.value().equals(uri.toString())) {
-						v.property(AAIProperties.AAI_URI, uri.toString());
-					}
+					addUriIfNeeded(v, uri.toString());
 				}
 			}
 		} catch (SchemaViolationException e) {
@@ -244,7 +284,14 @@ public class DBSerializer {
 			dbTimeMsecs += StopWatch.stopIfStarted();
 		}
 	}
-	
+
+	private void addUriIfNeeded(Vertex v, String uri) {
+		VertexProperty<String> uriProp = v.property(AAIProperties.AAI_URI);
+		if (!uriProp.isPresent() || (uriProp.isPresent() && !uriProp.value().equals(uri))) {
+			v.property(AAIProperties.AAI_URI, uri);
+		}
+	}
+
 	/**
 	 * Process object.
 	 *
@@ -433,11 +480,15 @@ public class DBSerializer {
 			}
 			
 			if (cousinVertex != null) {
-					
-				if (!edgeRules.hasEdgeRule(v, cousinVertex, label)) {
+				String vType = (String)v.property(AAIProperties.NODE_TYPE).value();
+				String cousinType = (String)cousinVertex.property(AAIProperties.NODE_TYPE).value();
+				EdgeRuleQuery.Builder baseQ = new EdgeRuleQuery.Builder(vType, cousinType).label(label);
+
+
+				if (!edgeRules.hasRule(baseQ.build())) {
 					throw new AAIException("AAI_6120", "No EdgeRule found for passed nodeTypes: " + v.property(AAIProperties.NODE_TYPE).value().toString() + ", " 
 							+ cousinVertex.property(AAIProperties.NODE_TYPE).value().toString() + (label != null ? (" with label " + label):"")  +"."); 
-				} else if (edgeRules.hasTreeEdgeRule(v, cousinVertex) && !edgeRules.hasCousinEdgeRule(v, cousinVertex, label)) {
+				} else if (edgeRules.hasRule(baseQ.edgeType(EdgeType.TREE).build()) && !edgeRules.hasRule(baseQ.edgeType(EdgeType.COUSIN).build())) {
 					throw new AAIException("AAI_6145");
 				}
 				
@@ -456,7 +507,7 @@ public class DBSerializer {
 		}
 		for (Triplet<Vertex, Vertex, String> triplet : addEdges) {
 			 try {
-				edgeRules.addEdge(this.engine.asAdmin().getTraversalSource(), triplet.getValue0(), triplet.getValue1(), triplet.getValue2());
+				 edgeSer.addEdge(this.engine.asAdmin().getTraversalSource(), triplet.getValue0(), triplet.getValue1(), triplet.getValue2());
 			} catch (NoEdgeRuleFoundException e) {
 				throw new AAIException("AAI_6129", e);
 			}			
@@ -554,7 +605,7 @@ public class DBSerializer {
 		if (parentUri != null) {
 			String uri;
 			uri = obj.getURI();
-			child.property(AAIProperties.AAI_URI, parentUri + uri);
+			addUriIfNeeded(child, parentUri + uri);
 		}
 		processObject(obj, child, requestContext);
 		
@@ -563,25 +614,25 @@ public class DBSerializer {
 		if (e == null) {
 			String canBeLinked = obj.getMetadata(ObjectMetadata.CAN_BE_LINKED);
 			if (canBeLinked != null && canBeLinked.equals("true")) {
-				Loader ldrForCntxt = LoaderFactory.createLoaderForVersion(introspectionType, getVerForContext(requestContext));
+				Loader ldrForCntxt = SpringContextAware.getBean(LoaderFactory.class).createLoaderForVersion(introspectionType, getVerForContext(requestContext));
 				boolean isFirst = !this.engine.getQueryBuilder(ldrForCntxt, parent).createEdgeTraversal(EdgeType.TREE, parent, obj).hasNext();
 				if (isFirst) {
 					child.property(AAIProperties.LINKED, true);
 				}
 			}
-			edgeRules.addTreeEdge(this.engine.asAdmin().getTraversalSource(), parent, child);
+			edgeSer.addTreeEdge(this.engine.asAdmin().getTraversalSource(), parent, child);
 		}
 		return child;
 		
 	}
 	 
-	private Version getVerForContext(String requestContext) {
+	private SchemaVersion getVerForContext(String requestContext) {
 		Pattern pattern = Pattern.compile("v[0-9]+");
 		Matcher m = pattern.matcher(requestContext);
 		if (!m.find()) {
 			return this.version;
 		} else {
-			return Version.valueOf(requestContext);
+			return new SchemaVersion(requestContext);
 		}
 	}
  	 
@@ -635,16 +686,31 @@ public class DBSerializer {
 			
 			List<Future<Object>> futures = new ArrayList<>();
 			
-
+			QueryEngine tgEngine = this.engine.getQueryEngine();
 			for (Vertex v : vertices) {
-				Callable<Object> task = () -> {
-					Set<Vertex> seen = new HashSet<>();
-					Introspector childObject = obj.newIntrospectorInstanceOfNestedProperty(propertyName);
-					Tree<Element> tree = this.engine.getQueryEngine().findSubGraph(v, internalDepth, nodeOnly);
-					TreeBackedVertex treeVertex = new TreeBackedVertex(v, tree);
-					dbToObject(childObject, treeVertex, seen, internalDepth, nodeOnly, cleanUp);
-					return childObject.getUnderlyingObject();
-					//getList.add(childObject.getUnderlyingObject());
+
+				AaiCallable<Object> task = new AaiCallable<Object>() {
+					@Override
+					public Object process() throws UnsupportedEncodingException, AAIException {
+						Set<Vertex> seen = new HashSet<>();
+						Introspector childObject;
+						try {
+							childObject = obj.newIntrospectorInstanceOfNestedProperty(propertyName);
+						} catch (AAIUnknownObjectException e) {
+							throw e;
+						}
+						Tree<Element> tree = tgEngine.findSubGraph(v, internalDepth, nodeOnly);
+						TreeBackedVertex treeVertex = new TreeBackedVertex(v, tree);
+						try {
+							dbToObject(childObject, treeVertex, seen, internalDepth, nodeOnly, cleanUp);
+						} catch (UnsupportedEncodingException e) {
+							throw e;
+						} catch (AAIException e) {
+							throw e;
+						}
+						return childObject.getUnderlyingObject();
+						//getList.add(childObject.getUnderlyingObject());
+					}
 				};
 				futures.add(pool.submit(task));
 			}
@@ -743,7 +809,13 @@ public class DBSerializer {
 						String vType = v.<String>property(AAIProperties.NODE_TYPE).orElse(null);
 						EdgeRule rule;
 						
-						rule = edgeRules.getEdgeRule(EdgeType.TREE, vType, childDbName);
+						try {
+							rule = edgeRules.getRule(new EdgeRuleQuery.Builder(vType, childDbName).edgeType(EdgeType.TREE).build());
+						} catch (EdgeRuleNotFoundException e) {
+							throw new NoEdgeRuleFoundException(e);
+						} catch (AmbiguousRuleChoiceException e) {
+							throw new MultipleEdgeRuleFoundException(e);
+						}
 						if (!rule.getContains().equals(AAIDirection.NONE.toString())) {
 							//vertices = this.queryEngine.findRelatedVertices(v, Direction.OUT, rule.getLabel(), childDbName);
 							Direction ruleDirection = rule.getDirection();
@@ -854,14 +926,18 @@ public class DBSerializer {
 	 * @throws SecurityException the security exception
 	 */
 	private void copySimpleProperty(String property, Introspector obj, Vertex v) {
+
 		final Map<PropertyMetadata, String> metadata = obj.getPropertyMetadata(property);
 		String dbPropertyName = property;
+
 		if (metadata.containsKey(PropertyMetadata.DB_ALIAS)) {
 			dbPropertyName = metadata.get(PropertyMetadata.DB_ALIAS);
 		}
+
+
+
 		final Object temp = v.<Object>property(dbPropertyName).orElse(null);
 		if (temp != null) {
-			
 			obj.setValue(property, temp);
 		}
 	}
@@ -913,7 +989,7 @@ public class DBSerializer {
 		List<Object> relationshipObjList = obj.getValue("relationship");
 		
 		for (Vertex cousin : cousins) {
-			if (VersionChecker.apiVersionNeedsEdgeLabel(obj.getVersion())) {
+			if (obj.getVersion().compareTo(schemaVersions.getEdgeLabelVersion()) >= 0) {
 				List<Edge> edges = this.getEdgesBetween(EdgeType.COUSIN, v, cousin);
 				for (Edge e : edges) {
 					Introspector relationshipObj = obj.newIntrospectorInstanceOfNestedProperty("relationship");
@@ -944,7 +1020,6 @@ public class DBSerializer {
 	 *
 	 * @param relationshipObj the relationship obj
 	 * @param edge the edge
-	 * @param direction the direction
 	 * @param cleanUp the clean up
 	 * @return the object
 	 * @throws InstantiationException the instantiation exception
@@ -1108,38 +1183,7 @@ public class DBSerializer {
 		
 		return Optional.of(new Pair<>(results.get(results.size()-1), objs));
 	}
-	/**
-	 * Takes a list of vertices and a list of objs and assumes they are in
-	 * the order you want the URIs to be nested.
-	 * [A,B,C] creates uris [A, AB, ABC]
-	 * @param vertices
-	 * @param objs
-	 * @throws UnsupportedEncodingException
-	 * @throws URISyntaxException
-	 */
-	public void setCachedURIs(List<Vertex> vertices, List<Introspector> objs) throws UnsupportedEncodingException, URISyntaxException {
-		
-		StringBuilder uriChain = new StringBuilder();
-		for (int i = 0; i < vertices.size(); i++) {
-			String aaiUri = "";
-			Vertex v = null;
-			v = vertices.get(i);
-			aaiUri = v.<String>property(AAIProperties.AAI_URI).orElse(null);
-			if (aaiUri != null) {
-				uriChain.append(aaiUri);
-			} else {
-				URI uri = UriBuilder.fromPath(objs.get(i).getURI()).build();
-				aaiUri = uri.toString();
-				uriChain.append(aaiUri);
-				v.property(AAIProperties.AAI_URI, uriChain.toString());
-			}
-		}
-		
-		
-		
-	}
-	
-	
+
 	/**
 	 * Adds the r
 	 * @throws AAIUnknownObjectException 
@@ -1209,7 +1253,7 @@ public class DBSerializer {
 			try {
 				e = this.getEdgeBetween(EdgeType.COUSIN, inputVertex, relatedVertex, label);
 				if (e == null) {
-					edgeRules.addEdge(this.engine.asAdmin().getTraversalSource(), inputVertex, relatedVertex, label);
+					edgeSer.addEdge(this.engine.asAdmin().getTraversalSource(), inputVertex, relatedVertex, label);
 				} else {
         				//attempted to link two vertexes already linked
 				}
@@ -1239,9 +1283,19 @@ public class DBSerializer {
 			GraphTraversal<Vertex, Edge> findEdgesBetween = null;
 			findEdgesBetween = this.engine.asAdmin().getTraversalSource().V(aVertex).bothE();
 			if (EdgeType.TREE.equals(type)) {
-				findEdgesBetween = findEdgesBetween.not(__.has(EdgeProperty.CONTAINS.toString(), "NONE"));
+				findEdgesBetween = findEdgesBetween
+					.not(
+						__.or(
+							__.has(EdgeProperty.CONTAINS.toString(), "NONE"),
+							__.has(EdgeField.PRIVATE.toString(), true)
+						)
+					);
 			} else {
-				findEdgesBetween = findEdgesBetween.has(EdgeProperty.CONTAINS.toString(), "NONE");
+				findEdgesBetween = findEdgesBetween
+					.has(EdgeProperty.CONTAINS.toString(), "NONE")
+					.not(
+						__.has(EdgeField.PRIVATE.toString(), true)
+					);
 			}
 			findEdgesBetween = findEdgesBetween.filter(__.otherV().hasId(bVertex.id()));
 			result = findEdgesBetween.toList();
@@ -1263,7 +1317,17 @@ public class DBSerializer {
 		List<Edge> result = new ArrayList<>();
 		
 		if (bVertex != null) {
-			EdgeRule rule = edgeRules.getEdgeRule(type, aVertex, bVertex, label);
+			String aType = aVertex.<String>property(AAIProperties.NODE_TYPE).value();
+			String bType = bVertex.<String>property(AAIProperties.NODE_TYPE).value();
+			EdgeRuleQuery q = new EdgeRuleQuery.Builder(aType, bType).edgeType(type).label(label).build();
+			EdgeRule rule;
+			try {
+				rule = edgeRules.getRule(q);
+			} catch (EdgeRuleNotFoundException e) {
+				throw new NoEdgeRuleFoundException(e);
+			} catch (AmbiguousRuleChoiceException e) {
+				throw new MultipleEdgeRuleFoundException(e);
+			}
 			List<Edge> edges = this.getEdgesBetween(type, aVertex, bVertex);
 			for (Edge edge : edges) {
 				if (edge.label().equals(rule.getLabel())) {
@@ -1393,10 +1457,45 @@ public class DBSerializer {
 	 * @throws AAIException the AAI exception
 	 * @throws InterruptedException the interrupted exception
 	 */
+	public void delete(Vertex v, List<Vertex> deletableVertices, String resourceVersion, boolean enableResourceVersion) throws IllegalArgumentException, AAIException {
+
+		boolean result = verifyDeleteSemantics(v, resourceVersion, enableResourceVersion);
+		/*
+		 * The reason why I want to call PreventDeleteSemantics second time is to catch the prevent-deletes in a chain
+		 * These are far-fewer than seeing a prevnt-delete on the vertex to be deleted
+		 * So its better to make these in 2 steps
+		 */
+		if(result && !deletableVertices.isEmpty()){
+			result = verifyPreventDeleteSemantics(deletableVertices);
+		}
+		if (result) {
+
+			try {
+				deleteWithTraversal(v);
+			} catch (IllegalStateException e) {
+				throw new AAIException("AAI_6110", e);
+			}
+
+		}
+
+	}
+
+
+	/**
+	 * Delete.
+	 *
+	 * @param v the v
+	 * @param resourceVersion the resource version
+	 * @throws IllegalArgumentException the illegal argument exception
+	 * @throws AAIException the AAI exception
+	 * @throws InterruptedException the interrupted exception
+	 */
 	public void delete(Vertex v, String resourceVersion, boolean enableResourceVersion) throws IllegalArgumentException, AAIException {
 	
 		boolean result = verifyDeleteSemantics(v, resourceVersion, enableResourceVersion);
+
 		if (result) {
+
 			try {
 				deleteWithTraversal(v);
 			} catch (IllegalStateException e) {
@@ -1406,8 +1505,6 @@ public class DBSerializer {
 		}
 		
 	}
-	
-
 	/**
 	 * Verify delete semantics.
 	 *
@@ -1424,8 +1521,37 @@ public class DBSerializer {
 		nodeType = vertex.<String>property(AAIProperties.NODE_TYPE).orElse(null);
 		if (enableResourceVersion && !this.verifyResourceVersion("delete", nodeType, vertex.<String>property(AAIProperties.RESOURCE_VERSION).orElse(null), resourceVersion, nodeType)) {
 		}
+		List<Vertex> vertices = new ArrayList<Vertex>();
+		vertices.add(vertex);
+		result = verifyPreventDeleteSemantics(vertices);
+
+		return result;
+	}
+
+	/**
+	 * Verify Prevent delete semantics.
+	 * @param vertices the list of vertices
+	 * @return true, if successful
+	 * @throws AAIException the AAI exception
+	 */
+	private boolean verifyPreventDeleteSemantics(List<Vertex> vertices) throws AAIException {
+		boolean result = true;
+		String nodeType = "";
+		String errorDetail = " unknown delete semantic found";
+		String aaiExceptionCode = "";
+
 		StopWatch.conditionalStart();
-		List<Object> preventDeleteVertices = this.engine.asAdmin().getReadOnlyTraversalSource().V(vertex).union(__.inE().has(EdgeProperty.PREVENT_DELETE.toString(), AAIDirection.IN.toString()).outV().values(AAIProperties.NODE_TYPE), __.outE().has(EdgeProperty.PREVENT_DELETE.toString(), AAIDirection.OUT.toString()).inV().values(AAIProperties.NODE_TYPE)).dedup().toList();
+		/*
+		 * This takes in all the vertices in a cascade-delete-chain and checks if there is any edge with a "prevent-delete" condition
+		 * If yes - that should prevent the deletion of the vertex
+		 * Dedup makes sure we dont capture the prevent-delete vertices twice
+		 * The prevent-delete vertices are stored so that the error message displays what prevents the delete
+		 */
+
+		List<Object> preventDeleteVertices = this.engine.asAdmin().getReadOnlyTraversalSource().V(vertices).
+				                                     union(__.inE().has(EdgeProperty.PREVENT_DELETE.toString(), AAIDirection.IN.toString()).outV().values(AAIProperties.NODE_TYPE),
+				                                    	   __.outE().has(EdgeProperty.PREVENT_DELETE.toString(), AAIDirection.OUT.toString()).inV().values(AAIProperties.NODE_TYPE))
+				                                     .dedup().toList();
 		
 		dbTimeMsecs += StopWatch.stopIfStarted();
 		if (!preventDeleteVertices.isEmpty()) {
@@ -1466,7 +1592,6 @@ public class DBSerializer {
 		} catch (AAIException e) {
 			ErrorLogHelper.logException(e);
 		}
-		// We're only doing the resource version checks for v5 and later
 		if (enabled.equals("true")) {
 			if (!currentResourceVersion.equals(resourceVersion)) {
 				if (action.equals("create") && !resourceVersion.equals("")) {
@@ -1519,7 +1644,7 @@ public class DBSerializer {
 	private void executePreSideEffects(Introspector obj, Vertex self) throws AAIException {
 		
 		SideEffectRunner runner = new SideEffectRunner
-				.Builder(this.engine, this).addSideEffect(DataCopy.class).build();
+				.Builder(this.engine, this).addSideEffect(DataCopy.class).addSideEffect(PrivateEdge.class).build();
 		
 		runner.execute(obj, self);
 	}
@@ -1549,10 +1674,11 @@ public class DBSerializer {
 	  * This is for a one-time run with Tenant Isloation to only filter relationships 
 	  * TODO: Chnage the original dbToObject to take filter parent/cousins 
 	  *
-	  * @param vertices the vertices
 	  * @param obj the obj
+	  * @param v the vertex from the graph
 	  * @param depth the depth
-	  * @param cleanUp the clean up
+	  * @param nodeOnly specify if to exclude relationships or not
+	  * @param filterCousinNodes
 	  * @return the introspector
 	  * @throws AAIException the AAI exception
 	  * @throws IllegalAccessException the illegal access exception
@@ -1617,9 +1743,15 @@ public class DBSerializer {
 							
 							boolean isthisParentRequired = filterParentNodes.parallelStream().anyMatch(childDbName::contains);
 							
-							
-							
-							rule = edgeRules.getEdgeRule(EdgeType.TREE, vType, childDbName);
+							EdgeRuleQuery q = new EdgeRuleQuery.Builder(vType, childDbName).edgeType(EdgeType.TREE).build();
+
+							try {
+								rule = edgeRules.getRule(q);
+							} catch (EdgeRuleNotFoundException e) {
+								throw new NoEdgeRuleFoundException(e);
+							} catch (AmbiguousRuleChoiceException e) {
+								throw new MultipleEdgeRuleFoundException(e);
+							}
 							if (!rule.getContains().equals(AAIDirection.NONE.toString()) && isthisParentRequired) {
 								//vertices = this.queryEngine.findRelatedVertices(v, Direction.OUT, rule.getLabel(), childDbName);
 								Direction ruleDirection = rule.getDirection();

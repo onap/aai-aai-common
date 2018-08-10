@@ -22,6 +22,7 @@ package org.onap.aai.parsers.query;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
@@ -29,6 +30,9 @@ import org.junit.rules.ExpectedException;
 import org.onap.aai.AAISetup;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.*;
+import org.onap.aai.nodes.NodeIngestor;
+import org.onap.aai.setup.SchemaVersion;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.serialization.engines.JanusGraphDBEngine;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
@@ -45,16 +49,23 @@ import static org.junit.Assert.assertEquals;
 @Ignore
 public class RelationshipGremlinQueryTest extends AAISetup {
 
-	private ModelInjestor injestor = ModelInjestor.getInstance();
-	private TransactionalGraphEngine dbEngine = 
-			new JanusGraphDBEngine(QueryStyle.GREMLIN_TRAVERSAL, 
-				LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.v8),
-				false);
-	private final Version version = Version.v8;
+	@Autowired
+	private NodeIngestor injestor;
+	private TransactionalGraphEngine dbEngine;
+	private SchemaVersion version;
 	private DynamicJAXBContext context = injestor.getContextForVersion(version);
 	
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
+
+	@Before
+	public void setup(){
+	    version = new SchemaVersion("v8");
+		dbEngine =
+			new JanusGraphDBEngine(QueryStyle.GREMLIN_TRAVERSAL,
+				loaderFactory.createLoaderForVersion(ModelType.MOXY, version),
+				false);
+	}
 	
 	/**
 	 * Parent query.

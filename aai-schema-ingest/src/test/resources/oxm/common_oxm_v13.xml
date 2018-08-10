@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+  ============LICENSE_START=======================================================
+  org.openecomp.aai
+  ================================================================================
+  Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+  ================================================================================
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  ============LICENSE_END=========================================================
+  -->
+
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm" package-name="inventory.aai.onap.org.v13" xml-mapping-metadata-complete="true">
+	<xml-schema element-form-default="QUALIFIED">
+		<xml-ns namespace-uri="http://org.onap.aai.inventory/v13" />
+	</xml-schema>
+	<java-types>
+		<java-type name="RelationshipList">
+			<xml-root-element name="relationship-list" />
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="relationship" name="relationship" type="inventory.aai.onap.org.v13.Relationship" />
+			</java-attributes>
+		</java-type>
+		<java-type name="Relationship">
+			<xml-root-element name="relationship" />
+			<java-attributes>
+				<xml-element java-attribute="relatedTo" name="related-to" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="A keyword provided by A&amp;AI to indicate type of node." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="relationshipLabel" name="relationship-label" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="The edge label for this relationship." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="relatedLink" name="related-link" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="URL to the object in A&amp;AI." />
+					</xml-properties>
+				</xml-element>
+				<xml-element container-type="java.util.ArrayList" java-attribute="relationshipData" name="relationship-data" type="inventory.aai.onap.org.v13.RelationshipData" />
+				<xml-element container-type="java.util.ArrayList" java-attribute="relatedToProperty" name="related-to-property" type="inventory.aai.onap.org.v13.RelatedToProperty" />
+			</java-attributes>
+		</java-type>
+		<java-type name="RelatedToProperty">
+			<xml-root-element name="related-to-property" />
+			<java-attributes>
+				<xml-element java-attribute="propertyKey" name="property-key" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Key part of a key/value pair" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="propertyValue" name="property-value" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Value part of a key/value pair" />
+					</xml-properties>
+				</xml-element>
+			</java-attributes>
+		</java-type>
+		<java-type name="RelationshipData">
+			<xml-root-element name="relationship-data" />
+			<java-attributes>
+				<xml-element java-attribute="relationshipKey" name="relationship-key" required="true" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="A keyword provided by A&amp;AI to indicate an attribute." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="relationshipValue" name="relationship-value" required="true" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Value of the attribute." />
+					</xml-properties>
+				</xml-element>
+			</java-attributes>
+		</java-type>
+		<java-type name="Metadata">
+			<xml-properties>
+				<xml-property name="description" value="Collection of metadatum (key/value pairs)" />
+			</xml-properties>
+			<xml-root-element name="metadata" />
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="metadatum" name="metadatum" type="inventory.aai.onap.org.v13.Metadatum" />
+			</java-attributes>
+		</java-type>
+		<java-type name="Metadatum">
+			<xml-root-element name="metadatum" />
+			<java-attributes>
+				<xml-element java-attribute="metaname" name="metaname" required="true" type="java.lang.String" xml-key="true" />
+				<xml-element java-attribute="metaval" name="metaval" required="true" type="java.lang.String" />
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
+					</xml-properties>
+				</xml-element>
+			</java-attributes>
+			<xml-properties>
+				<xml-property name="description" value="Key/value pairs" />
+				<xml-property name="indexedProps" value="metaname" />
+				<xml-property name="dependentOn" value="tenant,image,service-instance,connector,model" />
+				<xml-property name="container" value="metadata" />
+			</xml-properties>
+		</java-type>
+			<java-type name="Collections">
+			<xml-root-element name="collections" />
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="collection" name="collection" type="inventory.aai.onap.org.v13.Collection" />
+			</java-attributes>
+		</java-type>
+		<java-type name="Collection">
+			<xml-root-element name="collection"/>
+			<java-attributes>
+				<xml-element java-attribute="collectionId" name="collection-id" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="Collection Object UUID"/>
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="modelInvariantId" name="model-invariant-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="ASDC model id for this resource or service model" />
+						<xml-property name="visibility" value="deployment" />
+						<xml-property name="requires" value="model-version-id" />
+						<xml-property name="dbAlias" value="model-invariant-id-local" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="modelVersionId" name="model-version-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Model Version" />
+						<xml-property name="visibility" value="deployment" />
+						<xml-property name="requires" value="model-invariant-id" />
+						<xml-property name="dbAlias" value="model-version-id-local" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="collectionName" name="collection-name" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="collection name" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="collectionType" name="collection-type" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Collection type" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="collectionRole" name="collection-role" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Collection Role" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="collectionFunction" name="collection-function" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Collection function" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="orchestrationStatus" name="orchestration-status" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="orchestration status" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="collectionCustomizationId" name="collection-customization-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Captures the id of all the configuration used to customize the resource for the service" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v13.RelationshipList"/>
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Used for optimistic concurrency. Must be empty on create, valid on update and delete." />
+					</xml-properties>
+				</xml-element>
+			</java-attributes>
+			<xml-properties>
+				<xml-property name="namespace" value="network" />
+				<xml-property name="description" value="represents the collection resource in the TOSCA model" />
+				<xml-property name="uniqueProps" value="collection-id" />
+				<xml-property name="indexedProps" value="collection-id,model-invariant-id,model-version-id" />
+				<xml-property name="container" value="collections" />
+			</xml-properties>
+		</java-type>
+	</java-types>
+</xml-bindings>

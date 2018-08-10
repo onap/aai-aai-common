@@ -20,39 +20,36 @@
 package org.onap.aai.introspection.validation;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.onap.aai.AAISetup;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.*;
+
 import org.onap.aai.introspection.tools.IntrospectorValidator;
 import org.onap.aai.introspection.tools.Issue;
 import org.onap.aai.introspection.tools.IssueType;
 import org.onap.aai.serialization.queryformats.QueryFormatTestHelper;
 import org.onap.aai.util.AAIConstants;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-public class IntrospectorValidationTest {
+public class IntrospectorValidationTest extends AAISetup {
 
-	
-	private final static Version version = Version.v10;
 	private final static ModelType introspectorFactoryType = ModelType.MOXY;
-	private static Loader loader;
+	private Loader loader;
 	private IntrospectorValidator validator;
-	@BeforeClass
-	public static void setUp() throws NoSuchFieldException, SecurityException, Exception {
+	@Autowired
+	private LoaderFactory loaderFactory;
+
+	@Before
+	public void createValidator() throws Exception {
 		System.setProperty("AJSC_HOME", ".");
 		System.setProperty("BUNDLECONFIG_DIR", "bundleconfig-local");
-		QueryFormatTestHelper.setFinalStatic(AAIConstants.class.getField("AAI_HOME_ETC_OXM"), "src/test/resources/org.onap.aai/introspection/");
-		
-		loader = LoaderFactory.createLoaderForVersion(introspectorFactoryType, version);
-
-	}
-	@Before
-	public void createValidator() {
+		loader = loaderFactory.createLoaderForVersion(introspectorFactoryType, schemaVersions.getRelatedLinkVersion());
 		validator = new IntrospectorValidator.Builder()
 				.validateRequired(false)
 				.restrictDepth(10000)
