@@ -4,6 +4,7 @@
     org.onap.aai
     ================================================================================
     Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+    Copyright © 2018 Huawei Technologies (Australia) Pty Ltd. All rights reserved.
     ================================================================================
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -45,252 +46,196 @@
         <span class="sw-default-value-header">Schemes:</span>
         https
     </div>
-    
-        
-        <h2 id="swagger--summary-tags">Summary</h2>
-        <#list aaiApis?keys as key>
-        	
-            <h3 id="tag-${key}" class="swagger-summary-tag">Tag: ${key}</h3>
-        	
-            <table class="table table-bordered table-condensed swagger--summary">
-                <thead>
-                <tr>
-                    <th>Operation</th>
-                    <th>Description</th>
-                </tr>
-                </thead>
-                <tbody>
-                <#list aaiApis[key] as api>
-                	<#list api.getHttpMethods() as httpVerb>
-                    <tr>
-                        <td><a href="#operation-${api.getOperation()}${httpVerb.getType()}">${httpVerb.getType()?upper_case} ${api.getPath()}</a></td>
-                        <td><p>${httpVerb.getSummary()}</p>
-        </td>
-                    </tr>
-                    </#list>
-                </#list>
-                </tbody>
-            </table>
 
-        </#list>
-    
-    
-    
-    <h2>Paths</h2>
-    
-        <#list sortedAaiApis?keys as key>
-        <#list sortedAaiApis[key] as api>
-        <#list api.getHttpMethods() as httpVerb>
-        
-        <span id="path-${api.getOperation()}"></span>
-            <div id="operation-${api.getOperation()}${httpVerb.getType()}" class="swagger--panel-operation-${httpVerb.getType()} panel">
-                <div class="panel-heading">
-                    <div class="operation-summary">${httpVerb.getSummary()}</div>
-                    <h3 class="panel-title"><span class="operation-name">${httpVerb.getType()?upper_case}</span> <strong>${api.getPath()}</strong></h3>
-                        Tags:
-                            <a href="#tag-${api.getTag()}">${api.getTag()}</a>
-                </div>
-                <div class="panel-body">
-                    <section class="sw-operation-description">
-                        <p>${httpVerb.getSummary()}</p>
-            
-                    </section>
-                    	<#if httpVerb.isConsumerEnabled()>
-                    	<section class="sw-request-body">
-                                
-                                    <p><span class="label label-default">application/json</span> <span class="label label-default">application/xml</span> 
-                        </p>
-                        	<#if httpVerb.isBodyParametersEnabled()>
-                        			<div class="row">
-                                            <div class="col-md-6">
-                                                <p><p>${httpVerb.getBodyParameters()["description"]}</p>
-                        </p>
-                                            </div>
-                                            <div class="col-md-6 sw-request-model">
-                            <div  class="panel panel-definition">
-                                <div class="panel-body">
-                                            <a class="json-schema-ref" href="${httpVerb.getSchemaLink()}">${httpVerb.getSchemaType()}</a>
-                                </div>
-                            </div></div>
-                                        </div>
-                            </#if>
-                            </section>
-                        </#if>
-                        <#if httpVerb.isParametersEnabled()>
-                        <section class="sw-request-params">
-                            <table class="table">
-                                <thead>
-                                <tr>
-                                    <th class="sw-param-name"></th>
-                                    <th class="sw-param-description"></th>
-                                    <th class="sw-param-type"></th>
-                                    <th class="sw-param-data-type"></th>
-                                    <th class="sw-param-annotation"></th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                		<#list httpVerb.getParameters() as param>
-                                        <tr>
-                                            <td>
-                                                ${param["name"]}
-                                            </td>
-                                            <td>
-                                            	<#if param['description']??>
-                                            	<p>${param["description"]}</p>
-                                            	</#if>
-                                        </td>
-                                            <td>${param["in"]}</td>
-                                            <td>
-                                            	<#if param['type']??>
-                                            	<span class="json-property-type">${param["type"]}</span>
-                                        <span class="json-property-range" title="Value limits"></span>
-                                        		</#if>
-                                            </td>
-                                            <td>
-                                            		<#if param['required']>
-                                                    <span class="json-property-required"></span>
-                                                    </#if>
-                                            </td>
-                                        </tr>
-                                        </#list>
-                                </tbody>
-                            </table>
-                        </section>
-                        </#if>
+	<h2 id="swagger--summary-tags">Summary</h2>
+	<ol>
+	<#list aaiApis?keys as key>
+	<li><a href="#tag-${key}">Tag: ${key}</a>
+	</#list>
+	<li><a href="#Paths">Paths</a>
+	<li><a href="#SchemaDefinitions">Schema definitions</a>
+	</ol>
 
-                        <section class="sw-responses">
-                                <p><span class="label label-default">application/json</span> <span class="label label-default">application/xml</span> 
-                    </p>
-                    
-                            <dl>
-                            	<#list httpVerb.getResponses() as response>
-                                    <dt class="sw-response-${response.getResponseCode()}">
-                                        ${response.getResponseCode()} OK
-                                    
-                                    </dt>
-                                    <dd class="sw-response-${response.getResponseCode()}">
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    <p>successful operation</p>
-                                            
-                                                </div>
-                                            </div>
-                                            <div class="row">
+	<#list aaiApis?keys as key>
+	<h3 id="tag-${key}" class="swagger-summary-tag">Tag: ${key}</h3>
+	<table class="table table-bordered table-condensed swagger--summary">
+		<thead><tr>
+			<th>Operation</th><th>Description</th>
+		</tr></thead>
+		<tbody>
+		<#list aaiApis[key] as api>
+		<#list api.getHttpMethods() as httpVerb>
+		<tr><td><a href="#operation-${api.getOperation()}${httpVerb.getType()}">
+			${httpVerb.getType()?upper_case} ${api.getPath()}</a></td>
+			<td><p>${httpVerb.getSummary()}</p></td>
+		</tr>
+		</#list>
+		</#list>
+		</tbody>
+	</table>
+	</#list>
 
-                                                <#if httpVerb.isHasReturnSchema()>
-                                                <div class="col-md-6 sw-response-model">
-                                                <div  class="panel panel-definition">
+	<h2 id="Paths">Paths</h2>
+	<#list sortedAaiApis?keys as key>
+	<#list sortedAaiApis[key] as api>
+	<#list api.getHttpMethods() as httpVerb>
+	<span id="path-${api.getOperation()}"></span>
+	<div id="operation-${api.getOperation()}${httpVerb.getType()}" class="swagger--panel-operation-${httpVerb.getType()} panel">
+		<div class="panel-heading">
+			<div class="operation-summary">${httpVerb.getSummary()}</div>
+			<h3 class="panel-title"><span class="operation-name">${httpVerb.getType()?upper_case}</span>
+			<strong>${api.getPath()}</strong></h3>
+			Tags: <a href="#tag-${api.getTag()}">${api.getTag()}</a>
+		</div>
+		<div class="panel-body">
+			<section class="sw-operation-description">
+				<p>${httpVerb.getSummary()}</p>
+			</section>
+			<#if httpVerb.isConsumerEnabled()>
+			<section class="sw-request-body">
+				<p><span class="label label-default">application/json</span> <span class="label label-default">application/xml</span> </p>
+				<#if httpVerb.isBodyParametersEnabled()>
+				<div class="row">
+					<div class="col-md-6">
+						<p><p>${httpVerb.getBodyParameters()["description"]}</p></p>
+					</div>
+					<div class="col-md-6 sw-request-model">
+						<div  class="panel panel-definition">
+							<div class="panel-body">
+							<a class="json-schema-ref" href="${httpVerb.getSchemaLink()}">${httpVerb.getSchemaType()}</a>
+				</div></div></div></div>
+				</#if>
+			</section>
+			</#if>
+			<#if httpVerb.isParametersEnabled()>
+			<section class="sw-request-params">
+			<table class="table">
+				<thead><tr>
+					<th class="sw-param-name"></th>
+					<th class="sw-param-description"></th>
+					<th class="sw-param-type"></th>
+					<th class="sw-param-data-type"></th>
+					<th class="sw-param-annotation"></th>
+				</tr></thead>
+				<tbody>
+					<#list httpVerb.getParameters() as param>
+					<tr><td>${param["name"]}</td>
+						<td>
+							<#if param['description']??>
+							<p>${param["description"]}</p>
+							</#if>
+						</td>
+						<td>${param["in"]}</td>
+						<td>
+							<#if param['type']??>
+							<span class="json-property-type">${param["type"]}</span>
+							<span class="json-property-range" title="Value limits"></span>
+							</#if>
+						</td>
+						<td>
+							<#if param['required']>
+							<span class="json-property-required"></span>
+							</#if>
+						</td>
+					</tr>
+					</#list>
+				</tbody>
+			</table></section>
+			</#if>
 
-                                                    <div class="panel-body">
-                                                        <a class="json-schema-ref" href="${httpVerb.getReturnSchemaLink()}">${httpVerb.getReturnSchemaObject()}</a>
-                                                    </div>
-                                                </div>
-                                                </div>
-                                                </#if>
+			<section class="sw-responses">
+				<p><span class="label label-default">application/json</span> <span class="label label-default">application/xml</span> </p>
+				<dl>
+					<#list httpVerb.getResponses() as response>
+					<dt class="sw-response-${response.getResponseCode()}">
+						${response.getResponseCode()} OK
+					</dt>
+					<dd class="sw-response-${response.getResponseCode()}">
+						<div class="row"><div class="col-md-12">
+							<p>successful operation</p>
+						</div></div>
+						<div class="row">
+							<#if httpVerb.isHasReturnSchema()>
+							<div class="col-md-6 sw-response-model">
+								<div  class="panel panel-definition">
+									<div class="panel-body">
+										<a class="json-schema-ref" href="${httpVerb.getReturnSchemaLink()}">${httpVerb.getReturnSchemaObject()}</a>
+							</div></div></div>
+							</#if>
+						</div>
+					</dd>
+					</#list>
+					<dt class="sw-response-default">default</dt>
+					<dd class="sw-response-default">
+						<div class="row"><div class="col-md-12">
+							<p>Response codes found in <a href="${wikiLink}">response codes</a>.</p>
+						</div></div>
+						<div class="row"><div class="col-md-6 sw-response-model"></div></div>
+					</dd>
+				</dl>
+			</section>
+		</div>
+	</div>
 
-                                            </div>                </dd>
-                                </#list>
-                                <dt class="sw-response-default">
-                                        default 
-                                    
-                                    </dt>
-                                    <dd class="sw-response-default">
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    <p>Response codes found in <a href="${wikiLink}">response codes</a>.</p>
-                                            
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                
-                                                <div class="col-md-6 sw-response-model">
-                                            </div>
-                                            
-                                            </div>                </dd>
-                            </dl>
-                        </section>
-                </div>
-            </div>    
-          </#list>
-          </#list>
-          </#list>
-    
-                       
-        <h2>Schema definitions</h2>
-    
-            <#list definitions as definition>
-                <div id="definition-${definition.getDefinitionName()}" class="panel panel-definition">
-                        <div class="panel-heading">
-                                <h3 class="panel-title"><a name="/definitions/${definition.getDefinitionName()}"></a>${definition.getDefinitionName()}:
-                                    <span class="json-property-type"><span class="json-property-type">object</span>
-                <span class="json-property-range" title="Value limits"></span>
-                
-                </span>
-                                </h3>
-                        </div>
-                    <div class="panel-body">
-                    		<#if definition.isHasDescription()>	
-                    			<section class="json-schema-description">
-                                    ${definition.getDefinitionDescription()}
-                            
-                                </section>
-                            </#if>
+	</#list>
+	</#list>
+	</#list>
 
-                                <section class="json-schema-properties">
-                                    <dl>
-                                    	<#list definition.getRegularPropertyList() as definitionProperty>
-                                            <dt data-property-name="${definitionProperty.getPropertyName()}">
-                                                <span class="json-property-name">${definitionProperty.getPropertyName()}:</span>
-                                                <#if definitionProperty.isHasType()>
-                                                <span class="json-property-type">${definitionProperty.getPropertyType()}</span>
-                                                </#if>
-                                                <span class="json-property-range" title="Value limits"></span>
-                                                
-                                                <#if definitionProperty.isRequired()>
-                                                 <span class="json-property-required"></span>
-                                                </#if>
-                                            </dt>
-                                            <dd>
-                                            	<#if definitionProperty.isHasPropertyDescription()>
-                                                <p>${definitionProperty.getPropertyDescription()}</p>
-                                                </#if>
-                                                <div class="json-inner-schema">
-                                                    
-                                                </div>
-                                            </dd>
-                                        </#list>
-                                        <#list definition.getSchemaPropertyList() as definitionProperty>
-                                            <dt data-property-name="${definitionProperty.getPropertyName()}">
-                                                <span class="json-property-name">${definitionProperty.getPropertyName()}:</span>
-                                                <#if definitionProperty.isHasType()>
-                                                <span class="json-property-type">${definitionProperty.getPropertyType()}</span>
-                                                </#if>
-                                                <span class="json-property-range" title="Value limits"></span>
-                                                
-                                                <#if definitionProperty.isRequired()>
-                                                 <span class="json-property-required"></span>
-                                                </#if>
-                                            </dt>
-                                            <dd>
-                                                
-                                                <div class="json-inner-schema">
-                                                    
-                                                                    <section class="json-schema-array-items">
-                                                                        <span class="json-property-type">    <a class="json-schema-ref" href="${definitionProperty.getPropertyReference()}">${definitionProperty.getPropertyReferenceObjectName()}</a>
-                                                                        </span>
-                                                                        <span class="json-property-range" title="Value limits"></span>
-                                                                        
-                                                                        <div class="json-inner-schema">
-                                                                            
-                                                                        </div>
-                                                                    </section>                </div>
-                                            </dd>
-                                        </#list>
-                                    </dl>
-                                </section>
-                    </div>
-                </div>
-			</#list>  
+	<h2 id="SchemaDefinitions">Schema definitions</h2>
+	<#list definitions as definition>
+	<div id="definition-${definition.getDefinitionName()}" class="panel panel-definition">
+		<div class="panel-heading"><h3 class="panel-title">
+			<a name="/definitions/${definition.getDefinitionName()}"></a>${definition.getDefinitionName()}:
+			<span class="json-property-type"><span class="json-property-type">object</span>
+			<span class="json-property-range" title="Value limits"></span></span>
+		</h3></div>
+		<div class="panel-body">
+			<#if definition.isHasDescription()>	
+			<section class="json-schema-description">
+				${definition.getDefinitionDescription()}
+			</section>
+			</#if>
+			<section class="json-schema-properties"><dl>
+				<#list definition.getRegularPropertyList() as definitionProperty>
+				<dt data-property-name="${definitionProperty.getPropertyName()}">
+					<span class="json-property-name">${definitionProperty.getPropertyName()}:</span>
+					<#if definitionProperty.isHasType()>
+					<span class="json-property-type">${definitionProperty.getPropertyType()}</span>
+					</#if>
+					<span class="json-property-range" title="Value limits"></span>
+					<#if definitionProperty.isRequired()>
+					<span class="json-property-required"></span>
+					</#if>
+				</dt>
+				<dd>
+					<#if definitionProperty.isHasPropertyDescription()>
+					<p>${definitionProperty.getPropertyDescription()}</p>
+					</#if>
+					<div class="json-inner-schema"></div>
+				</dd>
+				</#list>
+				<#list definition.getSchemaPropertyList() as definitionProperty>
+				<dt data-property-name="${definitionProperty.getPropertyName()}">
+					<span class="json-property-name">${definitionProperty.getPropertyName()}:</span>
+					<#if definitionProperty.isHasType()>
+					<span class="json-property-type">${definitionProperty.getPropertyType()}</span>
+					</#if>
+					<span class="json-property-range" title="Value limits"></span>
+					<#if definitionProperty.isRequired()>
+					<span class="json-property-required"></span>
+					</#if>
+				</dt>
+				<dd><div class="json-inner-schema"><section class="json-schema-array-items">
+					<span class="json-property-type">
+					<a class="json-schema-ref" href="${definitionProperty.getPropertyReference()}">${definitionProperty.getPropertyReferenceObjectName()}</a></span>
+					<span class="json-property-range" title="Value limits"></span>
+					<div class="json-inner-schema"></div>
+				</section></div></dd>
+				</#list>
+			</dl></section>
+	</div></div>
+
+	</#list>
 </div>
 </body>
 </html>
