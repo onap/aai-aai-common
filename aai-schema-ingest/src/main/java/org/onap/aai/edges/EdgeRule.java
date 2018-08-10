@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
- * Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright © 2017-18 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,6 +43,7 @@ public class EdgeRule {
 	private Map<EdgeProperty, AAIDirection> edgeFields;
 	private boolean isDefaultEdge;
 	private String description;
+	private boolean isPrivateEdge = false;
 
 	/**
 	 * Instantiates a new edge rule.
@@ -59,7 +60,7 @@ public class EdgeRule {
 		label = fieldVals.get(EdgeField.LABEL.toString());
 		direction = Direction.valueOf(fieldVals.get(EdgeField.DIRECTION.toString()));
 		multiplicityRule = MultiplicityRule.getValue(fieldVals.get(EdgeField.MULTIPLICITY.toString()));
-		
+		isPrivateEdge = Boolean.valueOf(fieldVals.getOrDefault(EdgeField.PRIVATE.toString(), "false"));
 		for (EdgeProperty prop : EdgeProperty.values()) {
 			String rawVal = fieldVals.get(prop.toString());
 			edgeFields.put(prop, convertNotation(direction, rawVal));
@@ -84,13 +85,13 @@ public class EdgeRule {
 	 * 			translates the direction notation into the correct IN/OUT
 	 */
 	private AAIDirection convertNotation(Direction dir, String rawVal) {
-		if (AAIDirection.NONE.toString().equals(rawVal)) {
+		if (AAIDirection.NONE.toString().equalsIgnoreCase(rawVal)) {
 			return AAIDirection.NONE;
-		} else if (AAIDirection.BOTH.toString().equals(rawVal)) {
+		} else if (AAIDirection.BOTH.toString().equalsIgnoreCase(rawVal)) {
 			return AAIDirection.BOTH;
-		} else if (AAIDirection.OUT.toString().equals(rawVal)) {
+		} else if (AAIDirection.OUT.toString().equalsIgnoreCase(rawVal)) {
 			return AAIDirection.OUT;
-		} else if (AAIDirection.IN.toString().equals(rawVal)) {
+		} else if (AAIDirection.IN.toString().equalsIgnoreCase(rawVal)) {
 			return AAIDirection.IN;
 		}
 		
@@ -187,5 +188,32 @@ public class EdgeRule {
 	 */
 	public String getDescription() {
 		return this.description;
+	}
+	
+	/**
+	 * Flips the direction value
+	 * IN -> OUT
+	 * OUT -> IN
+	 * BOTH -> BOTH
+	 */
+	public void flipDirection() {
+		if (Direction.OUT.equals(direction)) {
+			direction = Direction.IN;
+		} else if (Direction.IN.equals(direction)) {
+			direction = Direction.OUT;
+		}
+		//else BOTH just stays the same
+	}
+
+	public boolean isPrivateEdge() {
+		return isPrivateEdge;
+	}
+
+	public void setPrivateEdge(boolean privateEdge) {
+		isPrivateEdge = privateEdge;
+	}
+
+	public void setPrivateEdge(String isPrivateEdge){
+		this.isPrivateEdge = "true".equals(isPrivateEdge);
 	}
 }

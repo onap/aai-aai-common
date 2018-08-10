@@ -19,16 +19,17 @@
  */
 package org.onap.aai.parsers.uri;
 
+import org.onap.aai.config.SpringContextAware;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.introspection.LoaderFactory;
-import org.onap.aai.introspection.Version;
+import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.logging.ErrorLogHelper;
 import org.onap.aai.parsers.exceptions.DoesNotStartWithValidNamespaceException;
 import org.onap.aai.rest.RestTokens;
 import org.onap.aai.schema.enums.ObjectMetadata;
-import org.onap.aai.serialization.db.EdgeType;
+import org.onap.aai.edges.enums.EdgeType;
 import org.onap.aai.util.AAIConfig;
 import org.springframework.web.util.UriUtils;
 
@@ -76,7 +77,7 @@ public class URIParser {
 		//Load the latest version because we need it for cloud region
 
 			this.loader = loader;
-		}
+	}
 	
 	/**
 	 * Instantiates a new URI parser.
@@ -268,8 +269,9 @@ public class URIParser {
 		if (result.endsWith("/")) {
 			result = result.substring(0, result.length() - 1);
 		}
-		
-		result = result.replaceFirst("aai/v\\d+/", "");
+
+		// TODO - Check if this makes to do for model driven for base uri path
+		result = result.replaceFirst("[a-z][a-z]*/v\\d+/", "");
 		
 		return UriBuilder.fromPath(result).build();
 	}

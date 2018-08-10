@@ -28,11 +28,12 @@ import java.util.UUID;
 
 import javax.xml.transform.stream.StreamSource;
 
+import org.onap.aai.config.SpringContextAware;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.introspection.LoaderFactory;
 import org.onap.aai.introspection.ModelType;
-import org.onap.aai.introspection.Version;
+import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.util.AAIConfig;
 import org.onap.aai.util.AAIConstants;
 
@@ -73,8 +74,7 @@ public class CreateWidgetModels
 			System.exit(0);
 		}
 
-
-		Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.valueOf(_apiVersion));
+		Loader loader = SpringContextAware.getBean(LoaderFactory.class).createLoaderForVersion(ModelType.MOXY, new SchemaVersion(_apiVersion));
 
 		// iterate the collection of resources
 

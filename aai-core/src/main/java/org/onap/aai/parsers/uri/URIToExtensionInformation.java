@@ -25,7 +25,7 @@ import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.restcore.HttpMethod;
-import org.onap.aai.serialization.db.EdgeType;
+import org.onap.aai.edges.enums.EdgeType;
 
 import javax.ws.rs.core.MultivaluedMap;
 import java.io.UnsupportedEncodingException;

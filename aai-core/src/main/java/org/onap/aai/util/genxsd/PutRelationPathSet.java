@@ -19,45 +19,53 @@
  */
 package org.onap.aai.util.genxsd;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
 import org.apache.commons.text.similarity.LevenshteinDistance;
-import org.onap.aai.introspection.Version;
+import org.onap.aai.setup.SchemaVersion;
+import org.onap.aai.config.SpringContextAware;
+import org.onap.aai.edges.EdgeIngestor;
+import org.onap.aai.edges.EdgeRule;
+import org.onap.aai.edges.EdgeRuleQuery;
 import org.onap.aai.util.GenerateXsd;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import com.google.common.collect.Multimap;
 
 public class PutRelationPathSet {
+	EdgeIngestor ei;
 	private static final Logger logger = LoggerFactory.getLogger("PutRelationPathSet.class");
 	protected static HashMap<String, String> putRelationPaths = new HashMap<String, String>();
-	private static EdgeRuleSet edgeRuleSet = null;
 	public static void add(String useOpId, String path) {
 		putRelationPaths.put(useOpId, path);
 	}
 	
 	String apiPath;
 	String opId;
-	Version version;
+	SchemaVersion version;
 	protected ArrayList<String> relations = new ArrayList<String>();
 	String objectName = "";
 	
-	public PutRelationPathSet(Version v) {
+	public PutRelationPathSet(SchemaVersion v) {
 		this.version = v;
 	}
 
-	public PutRelationPathSet(String opId, String path, Version v) {
+	public PutRelationPathSet(String opId, String path, SchemaVersion v) {
 		this.apiPath = path.replace("/relationship-list/relationship", "");
 		this.opId = opId;
 		this.version = v;
-		objectName = DeleteOperation.deletePaths.get(apiPath);
+		objectName = DeleteOperation.deletePaths.get(apiPath);		
 		logger.debug("II-apiPath: "+apiPath+"\nPath: "+path+"\nopId="+opId+"\nobjectName="+objectName);
 	}
-	private void process() {
+	private void process(EdgeIngestor edgeIngestor) {
+		this.ei =  edgeIngestor;
 		this.toRelations();
 		this.fromRelations();
 		this.writeRelationsFile();
@@ -66,76 +74,75 @@ public class PutRelationPathSet {
 	private void toRelations() {
 		logger.debug("{“comment”: “Valid TO Relations that can be added”},");
 		logger.debug("apiPath: "+apiPath+"\nopId="+opId+"\nobjectName="+objectName);
-		Collection<EdgeDescription> toEdges = edgeRuleSet.getEdgeRulesTO(objectName);
-		
-		if(toEdges.size() > 0) {
+		try {
+
+			EdgeRuleQuery q1 = new EdgeRuleQuery.Builder("ToOnly",objectName).version(version).build();
+			Multimap<String, EdgeRule> results = ei.getRules(q1);
 			relations.add("{\"comment\": \"Valid TO Relations that can be added\"}\n");
-		}
-		for (EdgeDescription ed : toEdges) {
-			logger.debug(ed.getRuleKey()+"Type="+ed.getType());
-			String obj = ed.getRuleKey().replace(objectName,"").replace("|","");
-			String selectedRelation = "";
-			if(ed.getType() == EdgeDescription.LineageType.UNRELATED) {
-				String selectObj = getUnrelatedObjectPaths(obj, apiPath);
-				logger.debug("SelectedObj:"+selectObj);
-				selectedRelation = formatObjectRelationSet(obj,selectObj);
-				logger.debug("ObjectRelationSet"+selectedRelation);
-			} else {
-				String selectObj = getKinObjectPath(obj, apiPath);
-				logger.debug("SelectedObj:"+selectObj);
-				selectedRelation = formatObjectRelation(obj,selectObj);
-				logger.debug("ObjectRelationSet"+selectedRelation);
+			SortedSet<String> ss=new TreeSet<String>(results.keySet());
+			for(String key : ss) {
+				results.get(key).stream().filter((i) -> (! i.isPrivateEdge())).forEach((i) ->{ String rel = selectedRelation(i); relations.add(rel); logger.debug("Relation added: "+rel); } );
 			}
-			relations.add(selectedRelation);
-			logger.debug("Relation added: "+selectedRelation);
+		} catch(Exception e) {
+			logger.debug("objectName: "+objectName+"\n"+e);
 		}
+	}
+	private String selectedRelation(EdgeRule rule) {
+		String selectedRelation = "";
+		EdgeDescription ed = new EdgeDescription(rule);
+		logger.debug(ed.getRuleKey()+"Type="+ed.getType());
+		String obj = ed.getRuleKey().replace(objectName,"").replace("|","");
+		
+		if(ed.getType() == EdgeDescription.LineageType.UNRELATED) {
+			String selectObj = getUnrelatedObjectPaths(obj, apiPath);
+			logger.debug("SelectedObj"+selectObj);
+			selectedRelation = formatObjectRelationSet(obj,selectObj);
+			logger.trace("ObjectRelationSet"+selectedRelation);
+		} else {
+			String selectObj = getKinObjectPath(obj, apiPath);
+			logger.debug("SelectedObj"+selectObj);
+			selectedRelation = formatObjectRelation(obj,selectObj);
+			logger.trace("ObjectRelationSet"+selectedRelation);
+		}
+		return selectedRelation;
 	}
 	
 	private void fromRelations() {
 		logger.debug("“comment”: “Valid FROM Relations that can be added”");
-		Collection<EdgeDescription> fromEdges = edgeRuleSet.getEdgeRulesFROM(objectName);
-		if(fromEdges.size() > 0) {
+		try {
+
+			EdgeRuleQuery q1 = new EdgeRuleQuery.Builder(objectName,"FromOnly").version(version).build();
+			Multimap<String, EdgeRule> results = ei.getRules(q1);
 			relations.add("{\"comment\": \"Valid FROM Relations that can be added\"}\n");
-		}
-		for (EdgeDescription ed : fromEdges) {
-			logger.debug(ed.getRuleKey()+"Type="+ed.getType());
-			String obj = ed.getRuleKey().replace(objectName,"").replace("|","");
-			String selectedRelation = "";
-			if(ed.getType() == EdgeDescription.LineageType.UNRELATED) {
-				String selectObj = getUnrelatedObjectPaths(obj, apiPath);
-				logger.debug("SelectedObj"+selectObj);
-				selectedRelation = formatObjectRelationSet(obj,selectObj);
-				logger.trace("ObjectRelationSet"+selectedRelation);
-			} else {
-				String selectObj = getKinObjectPath(obj, apiPath);
-				logger.debug("SelectedObj"+selectObj);
-				selectedRelation = formatObjectRelation(obj,selectObj);
-				logger.trace("ObjectRelationSet"+selectedRelation);
+			SortedSet<String> ss=new TreeSet<String>(results.keySet());
+			for(String key : ss) {
+				results.get(key).stream().filter((i) -> (! i.isPrivateEdge())).forEach((i) ->{ String rel = selectedRelation(i); relations.add(rel); logger.debug("Relation added: "+rel); } );
 			}
-			relations.add(selectedRelation);
-			logger.trace(selectedRelation);
+		} catch(Exception e) {
+			logger.debug("objectName: "+objectName+"\n"+e);
 		}
 	}
 	private void writeRelationsFile() {
+		File examplefilePath = new File(GenerateXsd.getYamlDir() + "/relations/" + version.toString()+"/"+opId.replace("RelationshipListRelationship", "") + ".json");
 
-		File exampleFilePath = new File(GenerateXsd.getYamlDir() + "/relations/" + version.name()+"/"+opId.replace("RelationshipListRelationship", "") + ".json");
-		logger.debug(String.join("exampleFilePath: ", exampleFilePath.toString()));
-
+		logger.debug(String.join("exampleFilePath: ", examplefilePath.toString()));
+		FileOutputStream fop = null;
 		try {
-			if (!exampleFilePath.exists()) {
-				exampleFilePath.getParentFile().mkdirs();
-				exampleFilePath.createNewFile();
+			if (!examplefilePath.exists()) {
+				examplefilePath.getParentFile().mkdirs();
+				examplefilePath.createNewFile();
 			}
+			fop = new FileOutputStream(examplefilePath);
 		} catch(Exception e) {
 			e.printStackTrace();
 			return;
 		}
-
-		try(FileOutputStream fop = new FileOutputStream(exampleFilePath)){
+		try {
 			if(relations.size() > 0) {fop.write("[\n".getBytes());}
 			fop.write(String.join(",\n", relations).getBytes());
 			if(relations.size() > 0) {fop.write("\n]\n".getBytes());}
 			fop.flush();
+			fop.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 			return;
@@ -194,22 +201,16 @@ public class PutRelationPathSet {
 		return targetPath;
 	}
 	
-	public void generateRelations(EdgeRuleSet edgeRuleSet) {
-		
-		if(putRelationPaths == null)
-			return;
-		if(edgeRuleSet == null)
-			return;
-		else
-			PutRelationPathSet.edgeRuleSet = edgeRuleSet;
+	public void generateRelations(EdgeIngestor edgeIngestor) {
 		putRelationPaths.forEach((k,v)->{
 			logger.trace("k="+k+"\n"+"v="+v+v.equals("/business/customers/customer/{global-customer-id}/service-subscriptions/service-subscription/{service-type}/service-instances/service-instance/{service-instance-id}/allotted-resources/allotted-resource/{id}/relationship-list/relationship"));
 			logger.debug("apiPath(Operation): "+v);
 			logger.debug("Target object: "+v.replace("/relationship-list/relationship", ""));
 			logger.debug("Relations: ");
 			PutRelationPathSet prp = new PutRelationPathSet(k, v, this.version);
-			prp.process();
+			prp.process(edgeIngestor);
 		});
 	}
 
 }
+

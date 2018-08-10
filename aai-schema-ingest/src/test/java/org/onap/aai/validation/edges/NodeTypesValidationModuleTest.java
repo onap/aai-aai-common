@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
- * Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright © 2017-18 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,16 +31,18 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.onap.aai.nodes.NodeIngestor;
 import org.onap.aai.setup.SchemaLocationsBean;
-import org.onap.aai.setup.Version;
+import org.onap.aai.setup.SchemaVersion;
+import org.onap.aai.setup.SchemaVersions;
 import org.onap.aai.testutils.TestUtilConfigTranslator;
-import org.onap.aai.validation.edges.NodeTypesValidationModule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {SchemaLocationsBean.class, TestUtilConfigTranslator.class, NodeIngestor.class, NodeTypesValidationModule.class})
+@ContextConfiguration(classes = {SchemaLocationsBean.class, SchemaVersions.class, TestUtilConfigTranslator.class, NodeIngestor.class, NodeTypesValidationModule.class})
+@TestPropertySource(properties = { "schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-wiring-test.properties" })
 @SpringBootTest
 public class NodeTypesValidationModuleTest {
 	@Autowired
@@ -52,8 +54,8 @@ public class NodeTypesValidationModuleTest {
 		testPairs.add("bar|foo");
 		testPairs.add("foo|foo");
 		testPairs.add("foo|quux");
-		assertTrue("".equals(validator.validate(testPairs, Version.V11)));
-		assertTrue(validator.validate(testPairs, Version.V10).contains("Invalid node type(s) found: quux")); //bc no quux in v10
+		assertTrue("".equals(validator.validate(testPairs, new SchemaVersion("v11"))));
+		assertTrue(validator.validate(testPairs, new SchemaVersion("v10")).contains("Invalid node type(s) found: quux")); //bc no quux in v10
 	}
 
 	@Test
@@ -62,6 +64,6 @@ public class NodeTypesValidationModuleTest {
 		testPairs.add("bar|");
 		testPairs.add("|foo");
 		testPairs.add("|");
-		assertTrue("".equals(validator.validate(testPairs, Version.V11))); //bc empty just ignored
+		assertTrue("".equals(validator.validate(testPairs, new SchemaVersion("v11")))); //bc empty just ignored
 	}
 }

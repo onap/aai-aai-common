@@ -1,0 +1,26 @@
+{
+  "cloud-owner" : "${cloud-owner}",
+  "cloud-region-id" : "${cloud-region-id}",
+  "tenants" : {
+    "tenant" : [ {
+      "tenant-id" : "${tenant-id}",
+      "tenant-name" : "yhgVBcv3Pr",
+      "vservers" : {
+        "vserver" : [ {
+          "vserver-id" : "${vserver-id}",
+          "vserver-name" : "P3SJ347Uyv",
+          "vserver-name2" : "1dHd",
+          "vserver-selflink": "jfoasjdfjsaodi",
+          "relationship-list": {
+            "relationship": [
+              {
+                "related-to": "generic-vnf",
+                "related-link": "${related-link}"
+              }
+            ]
+          }
+        } ]
+      }
+    } ]
+  }
+}

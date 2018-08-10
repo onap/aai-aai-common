@@ -24,9 +24,13 @@ import org.onap.aai.dbmap.AAIGraph;
 public class AAISystemExitUtil {
 
 	public static void systemExitCloseAAIGraph(int code) {
+		if ("true".equals(System.getProperty("org.onap.aai.graphadmin.started"))) {
+        	return;
+		}
 		if (AAIGraph.isInit()) {
 			AAIGraph.getInstance().graphShutdown();
 		}
 		System.exit(code);
+
 	}
 }

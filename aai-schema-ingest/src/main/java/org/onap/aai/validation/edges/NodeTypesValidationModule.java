@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
- * Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright © 2017-18 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.onap.aai.nodes.NodeIngestor;
-import org.onap.aai.setup.Version;
+import org.onap.aai.setup.SchemaVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -50,13 +50,13 @@ public class NodeTypesValidationModule {
 	 * Validate that every node type in the given set is defined in 
 	 * the OXM for the given version
 	 * 
-	 * @param Collection<String> nodeTypes - all the node types in
+	 * @param nodeTypePairs - all the node types in
 	 * 				the edge rules for the given version being validated
-	 * @param Version v - the version being validated 
+	 * @param v - the version being validated
 	 * @return empty string if all types are present in the given version's ingested OXM, else
 	 * 	appropriate error message
 	 */
-	public String validate(Collection<String> nodeTypePairs, Version v) {
+	public String validate(Collection<String> nodeTypePairs, SchemaVersion v) {
 		//setup
 		Set<String> nodeTypes = new HashSet<>();
 		for (String pair : nodeTypePairs) {

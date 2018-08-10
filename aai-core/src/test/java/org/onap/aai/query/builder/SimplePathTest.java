@@ -27,25 +27,30 @@ import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
 import org.junit.Before;
 import org.junit.Test;
 import org.onap.aai.AAISetup;
+import org.onap.aai.edges.enums.EdgeType;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Loader;
-import org.onap.aai.introspection.LoaderFactory;
 import org.onap.aai.introspection.ModelType;
-import org.onap.aai.introspection.Version;
-import org.onap.aai.serialization.db.EdgeRules;
-import org.onap.aai.serialization.db.EdgeType;
 
+import org.onap.aai.serialization.db.EdgeSerializer;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 import java.util.List;
 
 import static org.junit.Assert.assertTrue;
 
+
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class SimplePathTest extends AAISetup {
 
 	public Loader loader;
 	
+	@Autowired
+	EdgeSerializer edgeSer;
+	
 	@Before
 	public void setup() throws Exception {
-		loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.getLatest());
+		loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
 	}
 
 	private QueryBuilder<Vertex> buildTestQuery(QueryBuilder<Vertex> qb) throws AAIException {
@@ -63,7 +68,6 @@ public class SimplePathTest extends AAISetup {
 	private GraphTraversalSource setupGraph() throws AAIException{
 		Graph graph = TinkerGraph.open();
 		GraphTraversalSource g = graph.traversal();
-		EdgeRules rules = EdgeRules.getInstance();
 		
 		Vertex gvnf1 = graph.addVertex(T.label, "generic-vnf", T.id, "00", "aai-node-type", "generic-vnf", 
 				"vnf-id", "gvnf1", "vnf-name", "genvnfname1", "nf-type", "sample-nf-type");
@@ -83,11 +87,11 @@ public class SimplePathTest extends AAISetup {
 		Vertex gvnf2 = graph.addVertex(T.label, "generic-vnf", T.id, "01", "aai-node-type", "generic-vnf", 
 				"vnf-id", "gvnf2", "vnf-name", "genvnfname2", "nf-type", "sample-nf-type");
 		
-		rules.addTreeEdge(g, gvnf1, lint1);
-		rules.addEdge(g, lint1, loglink1);
-		rules.addEdge(g, loglink1, lint2);
-		rules.addEdge(g, loglink1, lint3);
-		rules.addTreeEdge(g, gvnf2, lint3);
+		edgeSer.addTreeEdge(g, gvnf1, lint1);
+		edgeSer.addEdge(g, lint1, loglink1);
+		edgeSer.addEdge(g, loglink1, lint2);
+		edgeSer.addEdge(g, loglink1, lint3);
+		edgeSer.addTreeEdge(g, gvnf2, lint3);
 		
 		return g;
 	}

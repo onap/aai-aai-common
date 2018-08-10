@@ -21,15 +21,16 @@ package org.onap.aai.util;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.onap.aai.introspection.Version;
+import org.onap.aai.setup.SchemaVersion;
+import org.onap.aai.setup.SchemaVersions;
 import org.onap.aai.util.swagger.GenerateSwagger;
 
 import freemarker.template.TemplateException;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 public class AutoGenerateHtml {
 	
@@ -41,10 +42,19 @@ public class AutoGenerateHtml {
 
 	public static void main(String[] args) throws IOException, TemplateException {
 		String savedProperty = System.getProperty("aai.generate.version");
-		List<Version> versionsToGen = Arrays.asList(Version.values());
+
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(
+			"org.onap.aai.config",
+			"org.onap.aai.setup"
+		);
+
+
+		SchemaVersions schemaVersions = ctx.getBean(SchemaVersions.class);
+		
+		List<SchemaVersion> versionsToGen = schemaVersions.getVersions();
 		Collections.sort(versionsToGen);
 		Collections.reverse(versionsToGen);
-		ListIterator<Version> versionIterator = versionsToGen.listIterator();
+		ListIterator<SchemaVersion> versionIterator = versionsToGen.listIterator();
 		String schemaDir;
 		if(System.getProperty("user.dir") != null && !System.getProperty("user.dir").contains(DEFAULT_RUN_DIR)) {
 			schemaDir = ALT_SCHEMA_DIR;
@@ -52,11 +62,13 @@ public class AutoGenerateHtml {
   		else {
   			schemaDir = DEFAULT_SCHEMA_DIR;
   		}
+  		String release = System.getProperty("aai.release", "onap");
 		while (versionIterator.hasNext()) {
-			System.setProperty("aai.generate.version", versionIterator.next().toString());   
-	        String yamlFile = schemaDir + "/src/main/resources/aai_swagger_yaml/aai_swagger_" + System.getProperty("aai.generate.version")+ ".yaml";
+			System.setProperty("aai.generate.version", versionIterator.next().toString());
+	        String yamlFile = schemaDir + "/src/main/resources/" + release + "/aai_swagger_yaml/aai_swagger_" + System.getProperty("aai.generate.version")+ ".yaml";
 	        File swaggerYamlFile = new File(yamlFile);
 	        if(swaggerYamlFile.exists()) {
+	        	GenerateSwagger.schemaVersions = schemaVersions;
 	        	GenerateSwagger.main(args);
 	        }
 		}

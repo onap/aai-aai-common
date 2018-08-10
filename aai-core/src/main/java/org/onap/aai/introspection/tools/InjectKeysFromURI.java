@@ -19,8 +19,6 @@
  */
 package org.onap.aai.introspection.tools;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.parsers.uri.URIToObject;
@@ -28,7 +26,6 @@ import org.onap.aai.parsers.uri.URIToObject;
 import java.net.URI;
 
 public class InjectKeysFromURI  implements IssueResolver {
-	private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(InjectKeysFromURI.class);
 
 	private URI uri = null;
 	private Loader loader = null;
@@ -60,7 +57,7 @@ public class InjectKeysFromURI  implements IssueResolver {
 					result = true;
 				}
 			} catch (Exception e) {
-                LOGGER.error(e.getMessage(),e);
+				//log something probably
 				result = false;
 			}
 		}

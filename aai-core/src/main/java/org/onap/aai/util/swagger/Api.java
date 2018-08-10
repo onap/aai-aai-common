@@ -220,6 +220,9 @@ public class Api {
         public boolean isBodyParametersEnabled() {
             return bodyParametersEnabled;
         }
+        public boolean isOpNotPatch() {
+        	return type.equalsIgnoreCase("patch") ? false : true;
+        }
 
         public void setBodyParametersEnabled(boolean bodyParametersEnabled) {
             this.bodyParametersEnabled = bodyParametersEnabled;

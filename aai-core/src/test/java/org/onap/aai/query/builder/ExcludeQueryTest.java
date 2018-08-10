@@ -30,23 +30,30 @@ import org.onap.aai.AAISetup;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Loader;
-import org.onap.aai.introspection.LoaderFactory;
 import org.onap.aai.introspection.ModelType;
-import org.onap.aai.serialization.db.EdgeRules;
+/*
+ * import org.onap.aai.serialization.db.EdgeRules;
+
 import org.onap.aai.serialization.db.EdgeType;
+ */
+import org.onap.aai.serialization.db.EdgeSerializer;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.onap.aai.edges.enums.EdgeType;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertTrue;
-
 public class ExcludeQueryTest extends AAISetup {
 
+	@Autowired
+	EdgeSerializer edgeSer;
+	
 	private Loader loader;
 	
 	@Before
 	public void setup() throws Exception {
-		loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, AAIProperties.LATEST);
+		loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
 	}
 	
 	private QueryBuilder<Vertex> buildTestQuery(QueryBuilder<Vertex> qb) throws AAIException{
@@ -56,7 +63,6 @@ public class ExcludeQueryTest extends AAISetup {
 	@Test
 	public void gremlinQueryExcludeTest() throws AAIException {
 		Graph graph = TinkerGraph.open();
-		EdgeRules rules = EdgeRules.getInstance();
 		GraphTraversalSource g = graph.traversal();
 		
 		Vertex cloudregion = graph.addVertex(T.label, "cloud-region", T.id, "0", "aai-node-type", "cloud-region", "cloud-region-id", "cloud-region-id-1", "cloud-owner", "cloud-owner-1");
@@ -68,13 +74,13 @@ public class ExcludeQueryTest extends AAISetup {
 		Vertex availibityzone1 = graph.addVertex(T.label, "availability-zone", T.id, "4", "aai-node-type", "availability-zone", "availability-zone-name", "az-name-10", "hypervisor-type", "hypervisortype-10");
 		Vertex availibityzone12 = graph.addVertex(T.label, "availability-zone", T.id, "12", "aai-node-type", "availability-zone", "availability-zone-name", "az-name-12", "hypervisor-type", "hypervisortype-12");
 		
-		rules.addTreeEdge(g, cloudregion, availibityzone);
-		rules.addTreeEdge(g, cloudregion, availibityzone11);
+		edgeSer.addTreeEdge(g, cloudregion, availibityzone);
+		edgeSer.addTreeEdge(g, cloudregion, availibityzone11);
 		
 		
 		
-		rules.addTreeEdge(g, cloudregion1, availibityzone1);
-		rules.addTreeEdge(g, cloudregion1, availibityzone12);
+		edgeSer.addTreeEdge(g, cloudregion1, availibityzone1);
+		edgeSer.addTreeEdge(g, cloudregion1, availibityzone12);
 		
 		List<Vertex> expected = new ArrayList<>();
 		expected.add(availibityzone);
@@ -90,7 +96,6 @@ public class ExcludeQueryTest extends AAISetup {
 	@Test
 	public void traversalQueryExcludeTest() throws AAIException {
 		Graph graph = TinkerGraph.open();
-		EdgeRules rules = EdgeRules.getInstance();
 		GraphTraversalSource g = graph.traversal();
 		
 		
@@ -103,13 +108,13 @@ public class ExcludeQueryTest extends AAISetup {
 		Vertex availibityzone1 = graph.addVertex(T.label, "availability-zone", T.id, "4", "aai-node-type", "availability-zone", "availability-zone-name", "az-name-10", "hypervisor-type", "hypervisortype-10");
 		Vertex availibityzone12 = graph.addVertex(T.label, "availability-zone", T.id, "12", "aai-node-type", "availability-zone", "availability-zone-name", "az-name-12", "hypervisor-type", "hypervisortype-12");
 		
-		rules.addTreeEdge(g, cloudregion, availibityzone);
-		rules.addTreeEdge(g, cloudregion, availibityzone11);
+		edgeSer.addTreeEdge(g, cloudregion, availibityzone);
+		edgeSer.addTreeEdge(g, cloudregion, availibityzone11);
 		
 		
 		
-		rules.addTreeEdge(g, cloudregion1, availibityzone1);
-		rules.addTreeEdge(g, cloudregion1, availibityzone12);
+		edgeSer.addTreeEdge(g, cloudregion1, availibityzone1);
+		edgeSer.addTreeEdge(g, cloudregion1, availibityzone12);
 		
 		List<Vertex> expected = new ArrayList<>();
 		expected.add(availibityzone);
@@ -124,7 +129,7 @@ public class ExcludeQueryTest extends AAISetup {
 
 		assertTrue("results match", expected.containsAll(results) && results.containsAll(expected));
 	}
-	
-	
+
+
 
 }

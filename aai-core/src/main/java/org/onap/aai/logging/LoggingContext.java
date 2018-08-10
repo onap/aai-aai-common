@@ -47,7 +47,7 @@ public class LoggingContext {
 
 	private static final String PREVIOUS_CONTEXTS_KEY = "_PREVIOUS_CONTEXTS";
 	
-	//Response codes from ECOMP Logging Guidelines
+	//Response codes from Logging Guidelines
 	public static final String SUCCESS = "0";
 	public static final String PERMISSION_ERROR = "100";
 	public static final String AVAILABILITY_TIMEOUT_ERROR = "200";
@@ -62,7 +62,7 @@ public class LoggingContext {
         responseMap.put(SUCCESS, "Success");
         responseMap.put(UNKNOWN_ERROR, "Unknown error");
     }
-	//ECOMP Specific Log Event Fields
+	// Specific Log Event Fields
 	public static enum LoggingField {
 		START_TIME("startTime"),
 		REQUEST_ID("requestId"),
@@ -86,7 +86,7 @@ public class LoggingContext {
 		CUSTOM_FIELD_3("customField3"),
 		CUSTOM_FIELD_4("customField4"),
 		
-		//ECOMP Specific Metric Log Event Fields
+		// Specific Metric Log Event Fields
 		TARGET_ENTITY("targetEntity"),
 		TARGET_SERVICE_NAME("targetServiceName"),
 		//A&AI Specific Log Event Fields
@@ -167,7 +167,7 @@ public class LoggingContext {
 		MDC.put(LoggingField.PARTNER_NAME.toString(), partnerName);
 	}
 
-	public static void statusCode(LoggingContext.StatusCode statusCode) {
+	public static void statusCode(StatusCode statusCode) {
 		MDC.put(LoggingField.STATUS_CODE.toString(), statusCode.toString());
 	}
 
@@ -197,7 +197,7 @@ public class LoggingContext {
 
 	public static void successStatusFields() {
 		responseCode(SUCCESS);
-		statusCode(LoggingContext.StatusCode.COMPLETE);
+		statusCode(StatusCode.COMPLETE);
 		responseDescription("Success");
 	}
 	private static void serverIpAddress() {

@@ -35,7 +35,7 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.jersey.api.client.ClientResponse;
 
-public class RestController {
+public class RestController implements RestControllerInterface {
 
 	private static final String TARGET_NAME = "AAI";
 	private static EELFLogger LOGGER = EELFManager.getInstance().getLogger(RestController.class);
@@ -63,30 +63,33 @@ public class RestController {
 	public static final  String REST_APIPATH_TENANT = "cloud-infrastructure/tenants/tenant/";
 	public static final String REST_APIPATH_VIRTUAL_DATA_CENTER = "cloud-infrastructure/virtual-data-centers/virtual-data-center/";
 	public static final String REST_APIPATH_VIRTUAL_DATA_CENTERS = "cloud-infrastructure/virtual-data-centers/";
-	//network/generic-vnfs/generic-vnf/{vnf-id}
 	public static final String REST_APIPATH_GENERIC_VNF = "network/generic-vnfs/generic-vnf/";
 	public static final String REST_APIPATH_GENERIC_VNFS = "network/generic-vnfs";
 	public static final String REST_APIPATH_L3_NETWORK = "network/l3-networks/l3-network/";
 	public static final String REST_APIPATH_L3_NETWORKS = "network/l3-networks";
 	public static final String REST_APIPATH_INSTANCE_GROUP = "network/instance-groups/instance-group";
 	public static final String REST_APIPATH_INSTANCE_GROUPS = "network/instance-groups";
+	public static final String REST_APIPATH_VFMODULE = "nodes/vf-modules/vf-module/";
 	
 	public static final  String REST_APIPATH_VCE = "network/vces/vce/";
 	
 	public static final  String REST_APIPATH_SERVICE = "service-design-and-creation/services/service/";
 	public static final String REST_APIPATH_LOGICALLINKS = "network/logical-links/";
 	public static final String REST_APIPATH_LOGICALLINK = "network/logical-links/logical-link/";
-	
+
+	public RestController() throws AAIException {
+		this.initRestClient();
+	}
 	/**
 	 * Inits the rest client.
 	 *
 	 * @throws AAIException the AAI exception
 	 */
-	private static void initRestClient() throws AAIException
+	public void initRestClient() throws AAIException
 	{
 		if (client == null) {
 			try {
-				client = HttpsAuthClient.getClient();
+				client = getHttpsAuthClient();
 			}
 			catch (KeyManagementException e){
 				throw new AAIException("AAI_7117", "KeyManagementException in REST call to DB: " + e.toString());
@@ -95,6 +98,11 @@ public class RestController {
 			}
 		}
 	}
+	
+    public Client getHttpsAuthClient() throws KeyManagementException {
+        return HttpsAuthClient.getClient();
+    }
+
 	
 	/**
 	 * Sets the rest srvr base URL.
@@ -120,8 +128,8 @@ public class RestController {
 	}
 	
 	
-	public static <T> void Get(T t, String sourceID,  String transId,  String path, RestObject<T> restObject, boolean oldserver) throws AAIException {
-		RestController.<T>Get(t, sourceID, transId, path, restObject, oldserver, AAIConstants.AAI_RESOURCES_PORT);
+	public <T> void Get(T t, String sourceID,  String transId,  String path, RestObject<T> restObject, boolean oldserver) throws AAIException {
+		Get(t, sourceID, transId, path, restObject, oldserver, AAIConstants.AAI_RESOURCES_PORT);
 	}
 	/**
 	 * To do - optimization and automation.  Also make it as generic as possible.
@@ -136,7 +144,7 @@ public class RestController {
 	 * @throws AAIException the AAI exception
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> void Get(T t, String sourceID,  String transId,  String path, RestObject<T> restObject, boolean oldserver, int port) throws AAIException {
+	public <T> void Get(T t, String sourceID,  String transId,  String path, RestObject<T> restObject, boolean oldserver, int port) throws AAIException {
 		String methodName = "Get";
 		String url="";
 		transId += ":" + UUID.randomUUID().toString();
@@ -155,7 +163,65 @@ public class RestController {
 		if (oldserver)
 			url = AAIConfig.get(AAIConstants.AAI_OLDSERVER_URL) + path;
 		else
-			url = String.format(AAIConstants.AAI_LOCAL_REST, port) + path;
+			url = String.format(AAIConstants.AAI_LOCAL_REST, port, AAIConfig.get(AAIConstants.AAI_DEFAULT_API_VERSION_PROP)) + path;
+		initRestClient();
+		LOGGER.debug(url + " for the get REST API");
+		ClientResponse cres = client.resource(url)
+	         .accept("application/json")
+	         .header("X-TransactionId", transId)
+	         .header("X-FromAppId",  sourceID)
+	         .header("Real-Time", "true")
+	         .type("application/json")
+	         .get(ClientResponse.class);
+
+//			System.out.println("cres.EntityInputSream()="+cres.getEntityInputStream().toString());
+//			System.out.println("cres.tostring()="+cres.toString());
+			
+		 if (cres.getStatus() == 200) {
+//		     System.out.println(methodName + ": url=" + url);
+			 t = (T) cres.getEntity(t.getClass());
+			 restObject.set(t);
+			 LOGGER.debug(methodName + "REST api GET was successfull!");		    
+		 } else {
+		 	 LoggingContext.restore();
+//		     System.out.println(methodName + ": url=" + url + " failed with status=" + cres.getStatus());
+		     throw new AAIException("AAI_7116", methodName +" with status="+cres.getStatus()+", url="+url);
+		 }
+
+		 LoggingContext.restore();
+	}
+	
+	/**
+	 * To do - optimization and automation.  Also make it as generic as possible.
+	 *
+	 * @param <T> the generic type
+	 * @param t the t
+	 * @param sourceID the source ID
+	 * @param transId the trans id
+	 * @param path the path
+	 * @param restObject the rest object
+	 * @param oldserver the oldserver
+	 * @throws AAIException the AAI exception
+	 */
+	@SuppressWarnings("unchecked")
+	public <T> void Get(T t, String sourceID,  String transId,  String path, RestObject<T> restObject, String apiVersion) throws AAIException {
+		String methodName = "Get";
+		String url="";
+		transId += ":" + UUID.randomUUID().toString();
+
+		LoggingContext.save();
+		LoggingContext.partnerName(sourceID);
+		LoggingContext.targetEntity(TARGET_NAME);
+		LoggingContext.requestId(transId);
+		LoggingContext.serviceName(methodName);
+		LoggingContext.targetServiceName(methodName);
+		
+		LOGGER.debug(methodName + " start");
+	
+		restObject.set(t);
+		
+		url = AAIConfig.get(AAIConstants.AAI_SERVER_URL_BASE) + apiVersion + "/"+ path;
+		
 		initRestClient();
 		LOGGER.debug(url + " for the get REST API");
 		ClientResponse cres = client.resource(url)
@@ -193,7 +259,7 @@ public class RestController {
     * @return the list
     * @throws Exception the exception
     */
-   private static <T> List<T> mapJsonToObjectList(T typeDef,String json, Class clazz) throws Exception
+   private <T> List<T> mapJsonToObjectList(T typeDef,String json, Class clazz) throws Exception
    {
       List<T> list;
       ObjectMapper mapper = new ObjectMapper();
@@ -214,7 +280,7 @@ public class RestController {
 	 * @param path the path
 	 * @throws AAIException the AAI exception
 	 */
-	public static <T> void Put(T t, String sourceID,  String transId,  String path) throws AAIException {
+	public <T> void Put(T t, String sourceID,  String transId,  String path) throws AAIException {
 		Put( t, sourceID, transId, path, false, AAIConstants.AAI_RESOURCES_PORT);
 	}
 	   
@@ -228,7 +294,7 @@ public class RestController {
 	 * @param path the path
 	 * @throws AAIException the AAI exception
 	 */
-	public static <T> void Put(T t, String sourceID,  String transId,  String path, boolean oldserver) throws AAIException {
+	public <T> void Put(T t, String sourceID,  String transId,  String path, boolean oldserver) throws AAIException {
 		Put( t, sourceID, transId, path, oldserver, AAIConstants.AAI_RESOURCES_PORT);
 	}
 
@@ -243,7 +309,7 @@ public class RestController {
 	 * @param oldserver the oldserver
 	 * @throws AAIException the AAI exception
 	 */
-	public static <T> void Put(T t, String sourceID,  String transId,  String path, boolean oldserver, int port) throws AAIException {
+	public <T> void Put(T t, String sourceID,  String transId,  String path, boolean oldserver, int port) throws AAIException {
 		String methodName = "Put";
 		String url="";
 		transId += ":" + UUID.randomUUID().toString();
@@ -262,7 +328,7 @@ public class RestController {
 		if (oldserver)
 			url = AAIConfig.get(AAIConstants.AAI_OLDSERVER_URL) + path;
 		else
-			url = String.format(AAIConstants.AAI_LOCAL_REST, port) + path;
+			url = String.format(AAIConstants.AAI_LOCAL_REST, port, AAIConfig.get(AAIConstants.AAI_DEFAULT_API_VERSION_PROP)) + path;
 		
 		ClientResponse cres = client.resource(url)
 	         .accept("application/json")
@@ -285,8 +351,8 @@ public class RestController {
 		 }			 
 	}
 	
-	public static void Delete(String sourceID,  String transId,  String path) throws AAIException {
-		RestController.Delete(sourceID, transId, path, AAIConstants.AAI_RESOURCES_PORT);
+	public void Delete(String sourceID,  String transId,  String path) throws AAIException {
+		Delete(sourceID, transId, path, AAIConstants.AAI_RESOURCES_PORT);
 	}
 	/**
 	 * Delete.
@@ -296,7 +362,7 @@ public class RestController {
 	 * @param path the path
 	 * @throws AAIException the AAI exception
 	 */
-	public static void Delete(String sourceID,  String transId,  String path, int port) throws AAIException {
+	public void Delete(String sourceID,  String transId,  String path, int port) throws AAIException {
 		String methodName = "Delete";
 		String url="";
 		transId += ":" + UUID.randomUUID().toString();
@@ -312,7 +378,7 @@ public class RestController {
 		
 		initRestClient();
 		String request = "{}";
-		url = String.format(AAIConstants.AAI_LOCAL_REST, port) + path;
+		url = String.format(AAIConstants.AAI_LOCAL_REST, port, AAIConfig.get(AAIConstants.AAI_DEFAULT_API_VERSION_PROP)) + path;
 		ClientResponse cres = client.resource(url)
 		         .accept("application/json")
 		         .header("X-TransactionId", transId)
@@ -337,6 +403,9 @@ public class RestController {
 		}
 	}
 	
+	 public <T> String Post(T t, String sourceID,  String transId,  String path) throws Exception {		 
+		 return Post(t, sourceID,  transId,  path, AAIConfig.get(AAIConstants.AAI_DEFAULT_API_VERSION_PROP));   
+	 }
     /**
      * Post.
      *
@@ -345,10 +414,11 @@ public class RestController {
      * @param sourceID the source ID
      * @param transId the trans id
      * @param path the path
+     * @param apiVersion the apiVersion
      * @return the string
      * @throws Exception the exception
      */
-    public static <T> String Post(T t, String sourceID,  String transId,  String path) throws Exception {
+    public <T> String Post(T t, String sourceID,  String transId,  String path, String apiVersion) throws Exception {
         String methodName = "Post";
         String url="";
         transId += ":" + UUID.randomUUID().toString();
@@ -365,8 +435,7 @@ public class RestController {
         try {
             
             initRestClient();    
-    
-            url = AAIConfig.get(AAIConstants.AAI_SERVER_URL) + path;
+            url = AAIConfig.get(AAIConstants.AAI_SERVER_URL_BASE) + apiVersion + "/" + path;
             
             ClientResponse cres = client.resource(url)
                  .accept("application/json")
@@ -407,7 +476,7 @@ public class RestController {
      * @throws IllegalAccessException the illegal access exception
      * @throws InstantiationException the instantiation exception
      */
-    public static <T> T getInstance(Class<T> clazz) throws IllegalAccessException, InstantiationException
+    public <T> T getInstance(Class<T> clazz) throws IllegalAccessException, InstantiationException
 	{
 		return clazz.newInstance();
 	} 
@@ -440,7 +509,7 @@ public class RestController {
      *     String resourceClassName = llink.getClass().getCanonicalName();
      *     llink = RestController.DoesResourceExist("network/logical-links/logical-link/" + <encoded-link-name>, resourceClassName, fromAppId, transId);
    */
-	public static <T> T DoesResourceExist(String resourcePath, String resourceClassName, String fromAppId, String transId) {
+	public <T> T DoesResourceExist(String resourcePath, String resourceClassName, String fromAppId, String transId) {
 					
 		try {
 			
@@ -448,7 +517,7 @@ public class RestController {
 			@SuppressWarnings("unchecked")
 			T resourceObj = (T)getInstance(Class.forName(resourceClassName));
 			restObj.set(resourceObj);
-			RestController.<T>Get(resourceObj, fromAppId, transId, resourcePath, restObj, false, AAIConstants.AAI_RESOURCES_PORT);
+			Get(resourceObj, fromAppId, transId, resourcePath, restObj, false, AAIConstants.AAI_RESOURCES_PORT);
 			
 			resourceObj = restObj.get();
 			if (resourceObj != null)
@@ -465,4 +534,73 @@ public class RestController {
 		return null;
 	}
 	
+	/**
+	 * Patch.
+	 *
+	 * @param <T> the generic type
+	 * @param sourceID the source ID
+	 * @param transId the trans id
+	 * @param path the path
+	 * @throws AAIException the AAI exception
+	 */
+	public <T> void Patch(T t, String sourceID,  String transId,  String path) throws AAIException {
+		    String methodName = "Patch";
+	        String url="";
+	        transId += ":" + UUID.randomUUID().toString();
+	        
+	        LoggingContext.save();
+	        LoggingContext.partnerName(sourceID);
+			LoggingContext.targetEntity(TARGET_NAME);
+			LoggingContext.requestId(transId);
+			LoggingContext.serviceName(methodName);
+			LoggingContext.targetServiceName(methodName);
+
+
+			int numRetries = 5;
+			ClientResponse cres = null;
+			int statusCode = -1;
+
+			try {
+				url = String.format(AAIConstants.AAI_LOCAL_REST, AAIConstants.AAI_RESOURCES_PORT, AAIConfig.get(AAIConstants.AAI_DEFAULT_API_VERSION_PROP)) + path;
+			    
+	            initRestClient();    
+				do {
+		
+		            cres = client.resource(url)
+		                .accept("application/json")
+		                .header("X-TransactionId", transId)
+		                .header("X-FromAppId", sourceID)
+		                .header("X-HTTP-Method-Override", "PATCH")
+		                .type("application/merge-patch+json")
+		                .entity(t)
+		                .post(ClientResponse.class);
+		
+		            statusCode = cres.getStatus();
+		
+		            if ( statusCode >= 200 && statusCode <= 299 ) {
+		            	LOGGER.debug(methodName + "REST api PATCH was successful!");
+		                return;
+		            } else {
+		            	LOGGER.debug(methodName +  "Unable to make the patch request to url "  + url + " so retrying");
+		            }
+		
+		            numRetries--;
+		
+				} while(numRetries >= 0);
+				
+				LOGGER.debug(methodName +  "Unable to make the patch request to url "  + url + " even after trying = " + numRetries + " times.");
+				throw new AAIException("AAI_7116", methodName +" with status="+statusCode+", url="+url + ", msg=" + cres.getEntity(String.class));
+		 
+			} catch (AAIException e) {
+		        throw new AAIException("AAI_7116", methodName + " with url="+url+ ", Exception: " + e.toString());
+		    } catch (Exception e)
+		    {
+		        throw new AAIException("AAI_7116", methodName + " with url="+url+ ", Exception: " + e.toString());
+		    
+		    }
+		    finally {
+		    	LoggingContext.restore();
+		    }
+
+	}
 }

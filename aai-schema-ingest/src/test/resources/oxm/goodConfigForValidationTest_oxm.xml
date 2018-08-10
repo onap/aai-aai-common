@@ -24,6 +24,9 @@
 		<xml-ns namespace-uri="http://org.onap.aai.inventory/v12" />
 	</xml-schema>
 	<java-types>
+		<java-type name="Bloop">
+			<xml-root-element name="bloop" />
+		</java-type>
 		<java-type name="LogicalLink">
 			<xml-root-element name="logical-link" />
 			<java-attributes>

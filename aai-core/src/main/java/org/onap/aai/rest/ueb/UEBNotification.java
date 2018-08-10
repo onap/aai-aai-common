@@ -27,16 +27,18 @@ import java.util.List;
 
 import javax.ws.rs.core.Response.Status;
 
-import org.onap.aai.db.props.AAIProperties;
+import org.onap.aai.config.SpringContextAware;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.introspection.LoaderFactory;
-import org.onap.aai.introspection.Version;
+import org.onap.aai.setup.SchemaVersion;
+import org.onap.aai.setup.SchemaVersions;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.onap.aai.introspection.exceptions.AAIUnmarshallingException;
+import org.onap.aai.logging.LogFormatTools;
 import org.onap.aai.parsers.uri.URIToObject;
-import org.onap.aai.util.AAIConfig;
+
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 
@@ -49,17 +51,17 @@ public class UEBNotification {
 
 	private Loader currentVersionLoader = null;
 	protected List<NotificationEvent> events = null;
-	private Version notificationVersion = null;
-	
+	private SchemaVersion notificationVersion = null;
 	/**
 	 * Instantiates a new UEB notification.
 	 *
 	 * @param loader the loader
 	 */
-	public UEBNotification(Loader loader) {
+	public UEBNotification(Loader loader, LoaderFactory loaderFactory, SchemaVersions schemaVersions) {
 		events = new ArrayList<>();
-		currentVersionLoader = LoaderFactory.createLoaderForVersion(loader.getModelType(), AAIProperties.LATEST);
-		notificationVersion = Version.valueOf(AAIConfig.get("aai.notification.current.version","v12"));
+		SchemaVersion defaultVersion = schemaVersions.getDefaultVersion();
+		currentVersionLoader = loaderFactory.createLoaderForVersion(loader.getModelType(), defaultVersion);
+		notificationVersion = defaultVersion;
 	}
 	
 	
@@ -71,11 +73,12 @@ public class UEBNotification {
 	 * @param status the status
 	 * @param uri the uri
 	 * @param obj the obj
+	 * @param basePath base URI path
 	 * @throws AAIException the AAI exception
 	 * @throws IllegalArgumentException the illegal argument exception
 	 * @throws UnsupportedEncodingException the unsupported encoding exception
 	 */
-	public void createNotificationEvent(String transactionId, String sourceOfTruth, Status status, URI uri, Introspector obj, HashMap<String, Introspector> relatedObjects) throws AAIException, UnsupportedEncodingException {
+	public void createNotificationEvent(String transactionId, String sourceOfTruth, Status status, URI uri, Introspector obj, HashMap<String, Introspector> relatedObjects, String basePath) throws AAIException, UnsupportedEncodingException {
 		
 		String action = "UPDATE";
 		
@@ -91,12 +94,27 @@ public class UEBNotification {
 			Introspector eventHeader = currentVersionLoader.introspectorFromName("notification-event-header");
 			URIToObject parser = new URIToObject(currentVersionLoader, uri, relatedObjects);
 
-		String entityLink = "";
-		if (uri.toString().startsWith("/")) {
-			entityLink = "/aai/" + notificationVersion + uri;
-		} else {
-			entityLink = "/aai/" + notificationVersion + "/" + uri;
-		}
+			String entityLink = "";
+			if ((basePath != null) && (!basePath.isEmpty())) {
+				if (!(basePath.startsWith("/"))) {
+					basePath = "/" + basePath;
+				}
+				if (!(basePath.endsWith("/"))) {
+					basePath = basePath + "/";
+				}
+			} else {
+				// default
+				basePath = "/aai/";
+				if(LOGGER.isDebugEnabled()){
+					LOGGER.debug("Please check the schema.uri.base.path as it didn't seem to be set");
+				}
+			}
+
+			if (uri.toString().startsWith("/")) {
+				entityLink = basePath + notificationVersion + uri;
+			} else {
+				entityLink = basePath + notificationVersion + "/" + uri;
+			}
 		
 
 			eventHeader.setValue("entity-link", entityLink);
@@ -144,13 +162,12 @@ public class UEBNotification {
 					eventObject = parser.getTopEntity();
 				}
 			}
-
 			final NotificationEvent event = new NotificationEvent(currentVersionLoader, eventHeader, eventObject, transactionId, sourceOfTruth);
 			events.add(event);
 		} catch (AAIUnknownObjectException e) {
 			throw new RuntimeException("Fatal error - notification-event-header object not found!");
 		} catch (AAIUnmarshallingException e) {
-			LOGGER.error("Unmarshalling error occurred while generating UEBNotification", e);
+			LOGGER.error("Unmarshalling error occurred while generating UEBNotification " + LogFormatTools.getStackTop(e));
 		}
 	}
 	

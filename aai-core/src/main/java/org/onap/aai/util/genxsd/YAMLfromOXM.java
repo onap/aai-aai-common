@@ -19,16 +19,6 @@
  */
 package org.onap.aai.util.genxsd;
 
-import org.apache.commons.lang3.StringUtils;
-import org.onap.aai.exceptions.AAIException;
-import org.onap.aai.introspection.Version;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -37,60 +27,93 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.StringTokenizer;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.Vector;
+
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.apache.commons.lang3.StringUtils;
+import org.onap.aai.edges.EdgeIngestor;
+import org.onap.aai.edges.EdgeRule;
+import org.onap.aai.edges.EdgeRuleQuery;
+import org.onap.aai.edges.exceptions.EdgeRuleNotFoundException;
+import org.onap.aai.exceptions.AAIException;
+import org.onap.aai.setup.SchemaVersion;
+import org.onap.aai.setup.SchemaVersions;
+import org.onap.aai.nodes.NodeIngestor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+import com.google.common.collect.Multimap;
+
 
 public class YAMLfromOXM extends OxmFileProcessor {
-	private static final Logger logger = LoggerFactory.getLogger("GenerateXsd.class");
+	private static final Logger logger = LoggerFactory.getLogger("YAMLfromOXM.class");
+//	private static StringBuffer totalPathSbAccumulator = new StringBuffer();
 	private static final String root = "../aai-schema/src/main/resources";
 	private static final String autoGenRoot = "aai-schema/src/main/resources";
 	private static final String generateTypeYAML = "yaml";
 	private static final String normalStartDir = "aai-core";
 	private static final String yaml_dir = (((System.getProperty("user.dir") != null) && (!System.getProperty("user.dir").contains(normalStartDir))) ? autoGenRoot : root) + "/aai_swagger_yaml";
+	private StringBuilder inventoryDefSb = null;
+	
 
-	private File edgeFile;
-	private EdgeRuleSet edgeRuleSet = null;
-	public YAMLfromOXM(File oxmFile, Version v, File edgeFile) throws ParserConfigurationException, SAXException, IOException, AAIException, FileNotFoundException {
-		super(oxmFile, v);
-		this.edgeFile = edgeFile;
-		init();
+	private String basePath;
+	
+	public YAMLfromOXM(String basePath, SchemaVersions schemaVersions, NodeIngestor ni, EdgeIngestor ei){
+		super(schemaVersions, ni,ei);
+		this.basePath = basePath;
 	}
-	public YAMLfromOXM(String xml, Version v, File edgeFile) throws ParserConfigurationException, SAXException, IOException, AAIException, FileNotFoundException {
-		super(xml, v);
-		this.edgeFile = edgeFile;
-		init();
+	public void setOxmVersion(File oxmFile, SchemaVersion v) {
+		super.setOxmVersion(oxmFile, v);
+	}
+	public void setXmlVersion(String xml, SchemaVersion v){
+		super.setXmlVersion(xml, v);
 	}
 	
+	public void setVersion(SchemaVersion v) {
+		super.setVersion(v);
+	}
+
 	@Override
 	public String getDocumentHeader() {
 		StringBuffer sb = new StringBuffer();
 		sb.append("swagger: \"2.0\"\ninfo:\n  ");
 		sb.append("description: |");
-		sb.append("\n\n    [Differences versus the previous schema version]("+"apidocs/aai_swagger_" + v.name() + ".diff)");
-		sb.append("\n\n    Copyright &copy; 2017 AT&amp;T Intellectual Property. All rights reserved.\n\n    Licensed under the Creative Commons License, Attribution 4.0 Intl. (the &quot;License&quot;); you may not use this documentation except in compliance with the License.\n\n    You may obtain a copy of the License at\n\n    (https://creativecommons.org/licenses/by/4.0/)\n\n    Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.\n\n    ECOMP and OpenECOMP are trademarks and service marks of AT&amp;T Intellectual Property.\n\n    This document is best viewed with Firefox or Chrome. Nodes can be found by appending /#/definitions/node-type-to-find to the path to this document. Edge definitions can be found with the node definitions.\n  version: \"" + v.name() +"\"\n");
+        if ( versionSupportsSwaggerDiff(v.toString())) {
+            sb.append("\n\n    [Differences versus the previous schema version](" + "apidocs/aai_swagger_" + v.toString() + ".diff)");
+        }
+		sb.append("\n\n    Copyright &copy; 2017-18 AT&amp;T Intellectual Property. All rights reserved.\n\n    Licensed under the Creative Commons License, Attribution 4.0 Intl. (the &quot;License&quot;); you may not use this documentation except in compliance with the License.\n\n    You may obtain a copy of the License at\n\n    (https://creativecommons.org/licenses/by/4.0/)\n\n    Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.\n\n    This document is best viewed with Firefox or Chrome. Nodes can be found by appending /#/definitions/node-type-to-find to the path to this document. Edge definitions can be found with the node definitions.\n  version: \"" + v.toString() +"\"\n");
 		sb.append("  title: Active and Available Inventory REST API\n");
 		sb.append("  license:\n    name: Apache 2.0\n    url: http://www.apache.org/licenses/LICENSE-2.0.html\n");
 		sb.append("  contact:\n    name:\n    url:\n    email:\n");
-		sb.append("host:\nbasePath: /aai/" + v.name() + "\n");
+		sb.append("host:\nbasePath: " + basePath + "/" + v.toString() + "\n");
 		sb.append("schemes:\n  - https\npaths:\n");
 		return sb.toString();
 	}
 	
-	protected void init() throws ParserConfigurationException, SAXException, IOException, AAIException, FileNotFoundException {
+	protected void init() throws ParserConfigurationException, SAXException, IOException, AAIException, FileNotFoundException, EdgeRuleNotFoundException {
 		super.init();
-		edgeRuleSet = new EdgeRuleSet(edgeFile);
 	}
 
 	@Override
-	public String process() throws AAIException {
+	public String process() throws ParserConfigurationException, SAXException, IOException, AAIException, FileNotFoundException, EdgeRuleNotFoundException {
 		StringBuffer sb = new StringBuffer();
-		EdgeRuleSet edgeRuleSet = null;
-		try {
-			edgeRuleSet = new EdgeRuleSet(edgeFile);
-		} catch (Exception e) {
-			logger.warn("No valid Edge Rule Set available("+edgeFile+"): "+e.getMessage());
-		}
-
 		StringBuffer pathSb = new StringBuffer();
+		try {
+			init();
+		} catch(Exception e) {
+			logger.error( "Error initializing " + this.getClass());
+			throw e;
+		}		
 		pathSb.append(getDocumentHeader());
 		StringBuffer definitionsSb = new StringBuffer();
 		for ( int i = 0; i < javaTypeNodes.getLength(); ++ i ) {
@@ -102,6 +125,7 @@ public class YAMLfromOXM extends OxmFileProcessor {
 				logger.error(msg);
 				throw new AAIException(msg);
 			}
+			namespaceFilter.add(getXmlRootElementName(javaTypeName));
 			//Skip any type that has already been processed(recursion could be the reason)
 			if ( generatedJavaType.containsKey(getXmlRootElementName(javaTypeName)) ) {
 					continue;
@@ -113,15 +137,29 @@ public class YAMLfromOXM extends OxmFileProcessor {
 
 		sb.append(appendDefinitions());
 		PutRelationPathSet prp = new PutRelationPathSet(v);
-		prp.generateRelations(edgeRuleSet);
+		prp.generateRelations(ei);
 		return sb.toString();
 	}
 	
 	public String appendDefinitions() {
+		return appendDefinitions(null);
+	}
+	
+	public String appendDefinitions(Set<String> namespaceFilter) {
 		//append definitions
+		if ( inventoryDefSb != null ) {
+			javaTypeDefinitions.put("inventory", inventoryDefSb.toString());
+		}
 		StringBuffer sb = new StringBuffer("definitions:\n");
 		Map<String, String> sortedJavaTypeDefinitions = new TreeMap<String, String>(javaTypeDefinitions);
 		for (Map.Entry<String, String> entry : sortedJavaTypeDefinitions.entrySet()) {
+//		    logger.info("Key: "+entry.getKey()+"Value: "+ entry.getValue());
+		    if(namespaceFilter != null && entry.getKey().matches("service-capabilities")) {
+		    	for(String tally : namespaceFilter) { logger.debug("Marker: "+tally);}
+		    }
+			if(namespaceFilter != null && (! namespaceFilter.contains(entry.getKey()))) {
+				continue;
+			}
 		    logger.debug("Key: "+entry.getKey()+"Test: "+ (entry.getKey() == "relationship"));	
 		    if(entry.getKey().matches("relationship")) {
 			    String jb=entry.getValue();
@@ -140,6 +178,9 @@ public class YAMLfromOXM extends OxmFileProcessor {
 		
 		sb.append("patchDefinitions:\n");
 		for (Map.Entry<String, String> entry : sortedJavaTypeDefinitions.entrySet()) {
+			if(namespaceFilter != null && (! namespaceFilter.contains(entry.getKey()))) {
+				continue;
+			}
 		    String jb=entry.getValue().replaceAll("/definitions/", "/patchDefinitions/");
 		    int ndx=jb.indexOf("relationship-list:");
 		    if(ndx > 0) {
@@ -159,6 +200,9 @@ public class YAMLfromOXM extends OxmFileProcessor {
 		    
 		sb.append("getDefinitions:\n");
 		for (Map.Entry<String, String> entry : sortedJavaTypeDefinitions.entrySet()) {
+			if(namespaceFilter != null && (! namespaceFilter.contains(entry.getKey()))) {
+				continue;
+			}
 		    String jb=entry.getValue().replaceAll("/definitions/", "/getDefinitions/");
 		    sb.append(jb);
 		}
@@ -182,6 +226,7 @@ public class YAMLfromOXM extends OxmFileProcessor {
 			case "Business":
 			case "LicenseManagement":
 			case "CloudInfrastructure":
+			case "Common":
 				break;
 			default:
 				logger.debug("javaTypeName="+javaTypeName);
@@ -199,7 +244,6 @@ public class YAMLfromOXM extends OxmFileProcessor {
 			if ( tag == null )
 				useTag = javaTypeName;
 		}
-
 		path = xmlRootElementName.equals("inventory") ? "" : (path == null) ? "/" + xmlRootElementName : path + "/" + xmlRootElementName;
 		XSDJavaType javaType = new XSDJavaType(javaTypeElement);
 		if ( getItemName != null) {
@@ -249,7 +293,7 @@ public class YAMLfromOXM extends OxmFileProcessor {
 					continue;
 				String elementDescription=xmlElementElement.getPathDescriptionProperty();
 				if(getItemName == null) {
-					addTypeV = xmlElementElement.getAddTypes(v.name());
+					addTypeV = xmlElementElement.getAddTypes(v.toString());
 				}
 	            if ( "true".equals(xmlElementElement.getAttribute("xml-key"))) {
 	            	path += "/{" + xmlElementElement.getAttribute("name") + "}";
@@ -286,7 +330,9 @@ public class YAMLfromOXM extends OxmFileProcessor {
 			StringBuffer newPathParams = new StringBuffer((pathParams == null ? "" : pathParams.toString())+sbParameters.toString()); 
 	        for ( int k = 0; addTypeV != null && k < addTypeV.size(); ++k ) {
 	        	String addType = addTypeV.elementAt(k);
+				namespaceFilter.add(getXmlRootElementName(addType));
 				logger.debug("addType: "+ addType);
+	        
 	        	if ( opId == null || !opId.contains(addType)) {
 	        		processJavaTypeElementSwagger( addType, getJavaTypeElementSwagger(addType), 
 	    				pathSb, definitionsSb, path,  tag == null ? useTag : tag, useOpId, null,
@@ -305,13 +351,14 @@ public class YAMLfromOXM extends OxmFileProcessor {
 						++propertyCnt;
 						sbProperties.append("      " + getXmlRootElementName(addType) + ":\n");
 						sbProperties.append("        type: array\n        items:\n");
-						sbProperties.append("          $ref: \"#/definitions/" + (itemName == "" ? "aai-internal" : itemName) + "\"\n");
+						sbProperties.append("          $ref: \"#/definitions/" + (itemName == "" ? "inventory-item-data" : itemName) + "\"\n");
 						if ( StringUtils.isNotEmpty(elementDescription) )
 							sbProperties.append("        description: " + elementDescription + "\n");
 					}
 				} else {
 					if ( ("java.util.ArrayList").equals(xmlElementElement.getAttribute("container-type"))) {
 							// need properties for getXmlRootElementName(addType)
+						namespaceFilter.add(getXmlRootElementName(addType));
 						newPathParams = new StringBuffer((pathParams == null ? "" : pathParams.toString())+sbParameters.toString()); 
 						processJavaTypeElementSwagger( addType, getJavaTypeElementSwagger(addType), 
 		        				pathSb, definitionsSb, path,  tag == null ? useTag : tag, useOpId, 
@@ -323,9 +370,10 @@ public class YAMLfromOXM extends OxmFileProcessor {
 							sbProperties.append("        description: " + elementDescription + "\n");
 
 					} else {
-						if(addType.equals("AaiInternal"))  //Filter out references to AaiInternal
-							sbProperties.append("");
-						else {
+						//Make sure certain types added to the filter don't appear
+						if(nodeFilter.contains(getXmlRootElementName(addType))) {
+							;
+						} else {
 							sbProperties.append("      " + getXmlRootElementName(addType) + ":\n");
 							sbProperties.append("        type: object\n");
 							sbProperties.append("        $ref: \"#/definitions/" + getXmlRootElementName(addType) + "\"\n");
@@ -355,51 +403,75 @@ public class YAMLfromOXM extends OxmFileProcessor {
 		// add DELETE
 		DeleteOperation del = new DeleteOperation(useOpId, xmlRootElementName, tag, path, pathParams == null ? "" : pathParams.toString());
 		pathSb.append(del.toString());
-		//Write operations by Namespace(tagName)
-//		if(javaTypeName == useTag && tag == null) {
-//			pathSb.append(appendDefinitions());
-//			writeYAMLfile(javaTypeName, pathSb.toString());
-//			pathSb.delete(0, pathSb.length());
-//			javaTypeDefinitions.clear();
-//			generatedJavaType.clear();
-//		}
 		if ( generatedJavaType.containsKey(xmlRootElementName) ) {
 			logger.debug("xmlRootElementName(1)="+xmlRootElementName);
 			return null;
 		}
 	
-		definitionsSb.append("  " + xmlRootElementName + ":\n");
-		definitionsLocalSb.append("  " + xmlRootElementName + ":\n");
-		Collection<EdgeDescription> edges = edgeRuleSet.getEdgeRules(xmlRootElementName );
-		DeleteFootnoteSet footnotes = new DeleteFootnoteSet(xmlRootElementName);
-		if ( edges.size() > 0 ) {
-			StringBuffer sbEdge = new StringBuffer();
-			sbEdge.append("      ###### Related Nodes\n");
-			
-			for (EdgeDescription ed : edges) {
-				if ( ed.getRuleKey().startsWith(xmlRootElementName)) {
-				    sbEdge.append("      - TO ").append(ed.getRuleKey().substring(ed.getRuleKey().indexOf("|")+1));
-				    String footnote = ed.getAlsoDeleteFootnote(xmlRootElementName);
-				    sbEdge.append(ed.getRelationshipDescription("TO", xmlRootElementName)+footnote+"\n");				    
-				    if(StringUtils.isNotEmpty(footnote)) footnotes.add(footnote);
-				}
+		boolean processingInventoryDef = false;
+		if ( xmlRootElementName.equals("inventory")) {
+			// inventory properties for each oxm to be concatenated
+			processingInventoryDef = true;
+			if ( inventoryDefSb == null ) {
+				inventoryDefSb = new StringBuilder();
+				definitionsSb.append("  " + xmlRootElementName + ":\n");
+				definitionsLocalSb.append("  " + xmlRootElementName + ":\n");
+				definitionsLocalSb.append("    properties:\n");
 			}
-			for (EdgeDescription ed : edges) { 
-				if ( ed.getRuleKey().endsWith(xmlRootElementName)) {
-				    sbEdge.append("      - FROM ").append(ed.getRuleKey().substring(0, ed.getRuleKey().indexOf("|")));
-				    String footnote = ed.getAlsoDeleteFootnote(xmlRootElementName);
-				    sbEdge.append(ed.getRelationshipDescription("FROM", xmlRootElementName)+footnote+"\n");				    
-				    if(StringUtils.isNotEmpty(footnote)) footnotes.add(footnote);
-				}
-			}
-			footnotes.add(edgeRuleSet.preventDeleteRules(xmlRootElementName));
-			sbEdge.append(footnotes.toString());
-			validEdges = sbEdge.toString();
+
+		} else {
+			definitionsSb.append("  " + xmlRootElementName + ":\n");
+			definitionsLocalSb.append("  " + xmlRootElementName + ":\n");
 		}
+//		Collection<EdgeDescription> edges = edgeRuleSet.getEdgeRules(xmlRootElementName );
+		DeleteFootnoteSet footnotes = new DeleteFootnoteSet(xmlRootElementName);
+		StringBuffer sbEdge = new StringBuffer();
+		LinkedHashSet<String> preventDelete = new LinkedHashSet<String>();
+		String prevent=null;
+		String nodeCaption = new String("      ###### Related Nodes\n");
+		try {
+			EdgeRuleQuery q = new EdgeRuleQuery.Builder(xmlRootElementName).version(v).fromOnly().build();
+			Multimap<String, EdgeRule> results = ei.getRules(q);
+			SortedSet<String> ss=new TreeSet<String>(results.keySet());
+			sbEdge.append(nodeCaption);
+			nodeCaption="";
+			for(String key : ss) {
+				results.get(key).stream().filter((i) -> (i.getFrom().equals(xmlRootElementName) && (! i.isPrivateEdge()))).forEach((i) ->{ logger.info(new String(new StringBuffer("      - TO ").append(i.getTo()).append(i.getDirection().toString()).append(i.getContains())));} );
+				results.get(key).stream().filter((i) -> (i.getFrom().equals(xmlRootElementName) && (! i.isPrivateEdge()))).forEach((i) ->{ sbEdge.append("      - TO "+i.getTo()); EdgeDescription ed = new EdgeDescription(i);  String footnote = ed.getAlsoDeleteFootnote(xmlRootElementName); sbEdge.append(ed.getRelationshipDescription("TO", xmlRootElementName)+footnote+"\n"); if(StringUtils.isNotEmpty(footnote)) footnotes.add(footnote);} );
+				results.get(key).stream().filter((i) -> (i.getFrom().equals(xmlRootElementName) && (! i.isPrivateEdge() && i.getPreventDelete().equals("OUT")))).forEach((i) ->{ preventDelete.add(i.getTo().toUpperCase());} );
+			}
+		} catch(Exception e) {
+			logger.debug("xmlRootElementName: "+xmlRootElementName+"\n"+e);
+		}
+		try {
+			EdgeRuleQuery q1 = new EdgeRuleQuery.Builder(xmlRootElementName).version(v).toOnly().build();
+			Multimap<String, EdgeRule> results = ei.getRules(q1);
+			SortedSet<String> ss=new TreeSet<String>(results.keySet());
+			sbEdge.append(nodeCaption);
+			for(String key : ss) {
+				results.get(key).stream().filter((i) -> (i.getTo().equals(xmlRootElementName) && (! i.isPrivateEdge()))).forEach((i) ->{ sbEdge.append("      - FROM "+i.getFrom()); EdgeDescription ed = new EdgeDescription(i);  String footnote = ed.getAlsoDeleteFootnote(xmlRootElementName); sbEdge.append(ed.getRelationshipDescription("FROM", xmlRootElementName)+footnote+"\n"); if(StringUtils.isNotEmpty(footnote)) footnotes.add(footnote);} );
+				results.get(key).stream().filter((i) -> (i.getTo().equals(xmlRootElementName) && (! i.isPrivateEdge()))).forEach((i) ->{ logger.info(new String(new StringBuffer("      - FROM ").append(i.getFrom()).append(i.getDirection().toString()).append(i.getContains())));} );
+				results.get(key).stream().filter((i) -> (i.getTo().equals(xmlRootElementName) && (! i.isPrivateEdge() && i.getPreventDelete().equals("IN")))).forEach((i) ->{ preventDelete.add(i.getFrom().toUpperCase());} );
+			}
+		} catch(Exception e) {
+			logger.debug("xmlRootElementName: "+xmlRootElementName+"\n"+e);
+		}
+		if(preventDelete.size() > 0) {
+			prevent = xmlRootElementName.toUpperCase()+" cannot be deleted if related to "+String.join(",",preventDelete);
+			logger.debug(prevent);
+		}
+
+		if(StringUtils.isNotEmpty(prevent)) {
+			footnotes.add(prevent);
+		}
+		if(footnotes.footnotes.size() > 0) {
+			sbEdge.append(footnotes.toString());
+		}			
+		validEdges = sbEdge.toString();
 
 		// Handle description property.  Might have a description OR valid edges OR both OR neither.
 		// Only put a description: tag if there is at least one.
-		if (pathDescriptionProperty != null || validEdges != null) {
+		if (StringUtils.isNotEmpty(pathDescriptionProperty) || StringUtils.isNotEmpty(validEdges) ) {
 			definitionsSb.append("    description: |\n");
 			definitionsLocalSb.append("    description: |\n");      
 
@@ -407,10 +479,8 @@ public class YAMLfromOXM extends OxmFileProcessor {
 				definitionsSb.append("      " + pathDescriptionProperty	+ "\n" );
 				definitionsLocalSb.append("      " + pathDescriptionProperty	+ "\n" );
 			}
-			if (validEdges != null) {
-				definitionsSb.append(validEdges);
-				definitionsLocalSb.append(validEdges);
-			}
+			definitionsSb.append(validEdges);
+			definitionsLocalSb.append(validEdges);
 		}
 		
 		if ( requiredCnt > 0 ) {
@@ -421,22 +491,43 @@ public class YAMLfromOXM extends OxmFileProcessor {
 		if ( propertyCnt > 0 ) {
 			definitionsSb.append("    properties:\n");
 			definitionsSb.append(sbProperties);
-			definitionsLocalSb.append("    properties:\n");
+			if  ( !processingInventoryDef) {
+				definitionsLocalSb.append("    properties:\n");
+			}
 			definitionsLocalSb.append(sbProperties);
 		}
 		try {
-			javaTypeDefinitions.put(xmlRootElementName, definitionsLocalSb.toString());
+			namespaceFilter.add(xmlRootElementName);
+			if ( xmlRootElementName.equals("inventory") ) {
+				//will add to javaTypeDefinitions at end 
+				inventoryDefSb.append(definitionsLocalSb.toString());
+			} else {
+				javaTypeDefinitions.put(xmlRootElementName, definitionsLocalSb.toString());
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		if ( xmlRootElementName.equals("inventory") ) {
+			logger.trace("skip xmlRootElementName(2)="+xmlRootElementName);
+			return null;
+		}		
 		generatedJavaType.put(xmlRootElementName, null);
+/*
+		if( validTag(javaTypeName) && javaTypeName == useTag && tag == null) {
+			String nameSpaceResult = getDocumentHeader()+pathSb.toString()+appendDefinitions(namespaceFilter);
+			writeYAMLfile(javaTypeName, nameSpaceResult);
+			totalPathSbAccumulator.append(pathSb);
+			pathSb.delete(0, pathSb.length());
+			namespaceFilter.clear();
+		}
+*/
 		logger.trace("xmlRootElementName(2)="+xmlRootElementName);
 		return null;
 	}
 	
 	private void writeYAMLfile(String outfileName, String fileContent) {
 		outfileName = (StringUtils.isEmpty(outfileName)) ? "aai_swagger" : outfileName;
-		outfileName = (outfileName.lastIndexOf(File.separator) == -1) ? yaml_dir + File.separator +outfileName+"_" + v.name() + "." + generateTypeYAML : outfileName;
+		outfileName = (outfileName.lastIndexOf(File.separator) == -1) ? yaml_dir + File.separator +outfileName+"_" + v.toString() + "." + generateTypeYAML : outfileName;
 		File outfile = new File(outfileName);
 		File parentDir = outfile.getParentFile();
 		if(parentDir != null && ! parentDir.exists()) 
@@ -447,12 +538,36 @@ public class YAMLfromOXM extends OxmFileProcessor {
 			logger.error( "Exception creating output file " + outfileName);
 			e.printStackTrace();
 		}
-
-		try(BufferedWriter bw = Files.newBufferedWriter(Paths.get(outfileName),  Charset.forName("UTF-8"))){
+		BufferedWriter bw = null;
+		try {
+			Charset charset = Charset.forName("UTF-8");
+			Path path = Paths.get(outfileName);
+			bw = Files.newBufferedWriter(path, charset);
 			bw.write(fileContent);
+			if ( bw != null ) {
+				bw.close();
+			}
 		} catch ( IOException e) {
 			logger.error( "Exception writing output file " + outfileName);
 			e.printStackTrace();
 		} 
 	}
+	
+	public boolean validTag(String tag) {
+		if(tag != null) {
+			switch ( tag ) {
+			case "Network":
+//			case "Search":
+//			case "Actions":
+			case "ServiceDesignAndCreation":
+			case "Business":
+			case "LicenseManagement":
+			case "CloudInfrastructure":
+			case "Common":
+				return true;
+			}
+		}
+		return false;
+	}
+
 }

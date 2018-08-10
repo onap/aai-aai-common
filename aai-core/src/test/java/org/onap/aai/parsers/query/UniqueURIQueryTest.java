@@ -27,10 +27,9 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.onap.aai.AAISetup;
 import org.onap.aai.exceptions.AAIException;
-import org.onap.aai.introspection.LoaderFactory;
-import org.onap.aai.introspection.ModelInjestor;
+
 import org.onap.aai.introspection.ModelType;
-import org.onap.aai.introspection.Version;
+import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.serialization.engines.JanusGraphDBEngine;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
@@ -44,13 +43,10 @@ import static org.junit.Assert.assertEquals;
 @Ignore
 public class UniqueURIQueryTest extends AAISetup {
 
-	private ModelInjestor injestor = ModelInjestor.getInstance();
-	private TransactionalGraphEngine dbEngine = 
-			new JanusGraphDBEngine(QueryStyle.GREMLIN_UNIQUE, 
-				LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.v8),
-				false);
-	private final Version version = Version.v8;
-	private DynamicJAXBContext context = injestor.getContextForVersion(version);
+
+	private TransactionalGraphEngine dbEngine;
+	private SchemaVersion version;
+	private DynamicJAXBContext context = nodeIngestor.getContextForVersion(version);
 	
 	/**
 	 * Parent query.
@@ -60,6 +56,10 @@ public class UniqueURIQueryTest extends AAISetup {
 	 */
 	@Test
     public void parentQuery() throws UnsupportedEncodingException, AAIException {
+	    version = new SchemaVersion("v8");
+	    dbEngine = new JanusGraphDBEngine(QueryStyle.GREMLIN_UNIQUE,
+				loaderFactory.createLoaderForVersion(ModelType.MOXY, version),
+				false);
 		URI uri = UriBuilder.fromPath("cloud-infrastructure/complexes/complex/key1").build();
 		String key = "complex/key1";
 		QueryParser query = dbEngine.getQueryBuilder().createQueryFromURI(uri);

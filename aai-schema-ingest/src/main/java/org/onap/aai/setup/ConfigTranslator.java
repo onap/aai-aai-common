@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
- * Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright © 2017-18 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,10 +35,12 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public abstract class ConfigTranslator {
 	protected SchemaLocationsBean bean;
+	protected SchemaVersions schemaVersions;
 	
 	@Autowired
-	public ConfigTranslator(SchemaLocationsBean bean) {
-		this.bean = bean;
+	public ConfigTranslator(SchemaLocationsBean schemaLocationbean, SchemaVersions schemaVersions) {
+		this.bean = schemaLocationbean;
+		this.schemaVersions = schemaVersions;
 	}
 	
 	/**
@@ -48,7 +50,7 @@ public abstract class ConfigTranslator {
 	 * @return Map of Version to the list of (string) filenames to be 
 	 * ingested for that version
 	 */
-	public abstract Map<Version, List<String>> getNodeFiles();
+	public abstract Map<SchemaVersion, List<String>> getNodeFiles();
 	
 	/**
 	 * Translates the contents of the schema config file
@@ -57,5 +59,9 @@ public abstract class ConfigTranslator {
 	 * @return Map of Version to the List of (String) filenames to be 
 	 * ingested for that version
 	 */
-	public abstract Map<Version, List<String>> getEdgeFiles();
+	public abstract Map<SchemaVersion, List<String>> getEdgeFiles();
+
+	public SchemaVersions getSchemaVersions(){
+		return schemaVersions;
+	}
 }

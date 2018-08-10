@@ -19,51 +19,134 @@
  */
 package org.onap.aai.util.genxsd;
 
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.onap.aai.introspection.Version;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Element;
+import static org.hamcrest.CoreMatchers.is;
+
+import static org.junit.Assert.*;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.onap.aai.AAISetup;
+import org.onap.aai.config.SwaggerGenerationConfiguration;
+import org.onap.aai.setup.SchemaVersion;
+import org.onap.aai.setup.SchemaVersions;
+import org.junit.runner.RunWith;
+import org.onap.aai.edges.EdgeIngestor;
+import org.onap.aai.edges.EdgeRule;
+import org.onap.aai.edges.exceptions.EdgeRuleNotFoundException;
+import org.onap.aai.nodes.NodeIngestor;
+import org.onap.aai.serialization.queryformats.QueryFormatTestHelper;
+import org.onap.aai.setup.SchemaLocationsBean;
+import org.onap.aai.testutils.TestUtilConfigTranslatorforBusiness;
+import org.onap.aai.util.AAIConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
+import com.google.common.collect.Multimap;
+
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {
+		SchemaVersions.class,
+        SchemaLocationsBean.class,
+        TestUtilConfigTranslatorforBusiness.class,
+        SchemaVersions.class,
+        EdgeIngestor.class,
+        NodeIngestor.class,
+		SwaggerGenerationConfiguration.class
+
+})
+@TestPropertySource(properties = {
+		"schema.uri.base.path = /aai"
+})
 public class YAMLfromOXMTest {
+	@Autowired
+	EdgeIngestor edgeIngestor;
+	
+	@Autowired
+	NodeIngestor nodeIngestor;
 	private static final Logger logger = LoggerFactory.getLogger("YAMLfromOXMTest.class");
-	private String testXML;
+	private static final String OXMFILENAME = "src/test/resources/oxm/business_oxm_v11.xml";
+	private static final String EDGEFILENAME = "src/test/resources/dbedgerules/DbEdgeBusinessRules_test.json";
+	public static AnnotationConfigApplicationContext ctx = null;
+	private static String testXML;
+	protected static final String SERVICE_NAME = "JUNIT";
+    boolean first = true;
+    
+    @Autowired
+	YAMLfromOXM yamlFromOxm;
 
+    @Autowired
+    SchemaVersions schemaVersions;
+        
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
+		 System.setProperty("AJSC_HOME", ".");
+	        System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
+	        System.setProperty("aai.service.name", SERVICE_NAME);
+	        
+	        QueryFormatTestHelper.setFinalStatic(AAIConstants.class.getField("AAI_HOME_ETC_OXM"), "src/test/resources/bundleconfig-local/etc/oxm/");
+	        XSDElementTest x = new XSDElementTest();
+			x.setUp();
+			testXML = x.testXML;
+			logger.debug(testXML);
+			BufferedWriter bw = new BufferedWriter(new FileWriter(OXMFILENAME));
+			bw.write(testXML);
+			bw.close();
+			BufferedWriter bw1 = new BufferedWriter(new FileWriter(EDGEFILENAME));
+			bw1.write(EdgeDefs());
+			bw1.close();
+			
+			    
+			
+			
+	
 	}
 
 	@Before
 	public void setUp() throws Exception {
-		XSDElementTest x = new XSDElementTest();
-		x.setUp();
-		testXML = x.testXML;
-		logger.debug(testXML);
-	}
+		
+    }
 
 	@Test
+	public void AtestIngestors() throws EdgeRuleNotFoundException {
+		Multimap<String, EdgeRule> results = edgeIngestor.getAllRules(schemaVersions.getDefaultVersion());
+		SortedSet<String> ss=new TreeSet<String>(results.keySet());
+		for(String key : ss) {
+			results.get(key).stream().filter((i) -> ((! i.isPrivateEdge()))).forEach((i) ->{ EdgeDescription ed = new EdgeDescription(i); System.out.println(ed.getRuleKey()); } );
+		}		
+		Document doc = nodeIngestor.getSchema(schemaVersions.getDefaultVersion());
+		assertNotNull(doc);
+	}
+	
+	@Test
 	public void testGetDocumentHeader() {
-		Version v = Version.v11;
+		SchemaVersion v = schemaVersions.getAppRootVersion();
 		String apiVersion = v.toString();
 		String header = null;
-		File edgeRuleFile = new File("../aai-core" + "/src/main/resources/dbedgerules/DbEdgeRules_" + apiVersion + ".json");
 		try {
-			YAMLfromOXM swagger = new YAMLfromOXM(testXML, v, edgeRuleFile);
-			swagger.process();
-			header = swagger.getDocumentHeader();
+			yamlFromOxm.setXmlVersion(testXML, v);
+			yamlFromOxm.process();
+			header = yamlFromOxm.getDocumentHeader();
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -72,19 +155,19 @@ public class YAMLfromOXMTest {
 
 	@Test
 	public void testProcess() {
-		Version v = Version.v11;
+		SchemaVersion v = schemaVersions.getAppRootVersion();
 		String apiVersion = v.toString();
 		String fileContent = null;
-		File edgeRuleFile = new File("../aai-core" + "/src/main/resources/dbedgerules/DbEdgeRules_" + apiVersion + ".json");
 		try {
-			YAMLfromOXM swagger = new YAMLfromOXM(testXML, v, edgeRuleFile);
-			fileContent = swagger.process();
+			yamlFromOxm.setXmlVersion(testXML, v);
+			fileContent = yamlFromOxm.process();
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
 		assertThat("FileContent-TestProcess:\n"+fileContent,fileContent, is(YAMLresult()));
 	}
-
+	
+	
 	@Test
 	public void testYAMLfromOXMFileVersionFile() throws IOException {
 		String outfileName = "testXML.xml";
@@ -96,13 +179,12 @@ public class YAMLfromOXMTest {
 		bw = Files.newBufferedWriter(path, charset);
 		bw.write(testXML);
 		bw.close();
-		Version v = Version.v11;
+		SchemaVersion v = schemaVersions.getAppRootVersion();
 		String apiVersion = v.toString();
 		String fileContent = null;
-		File edgeRuleFile = new File("../aai-core" + "/src/main/resources/dbedgerules/DbEdgeRules_" + apiVersion + ".json");
 		try {
-			YAMLfromOXM swagger = new YAMLfromOXM(XMLfile, v, edgeRuleFile);
-			fileContent = swagger.process();
+			yamlFromOxm.setXmlVersion(testXML, v);
+			fileContent = yamlFromOxm.process();
 		} catch(Exception e) {
 			e.printStackTrace();
 		}		
@@ -112,13 +194,12 @@ public class YAMLfromOXMTest {
 
 	@Test
 	public void testYAMLfromOXMStringVersionFile() {
-		Version v = Version.v11;
+		SchemaVersion v = schemaVersions.getAppRootVersion();
 		String apiVersion = v.toString();
 		String fileContent = null;
-		File edgeRuleFile = new File("../aai-core" + "/src/main/resources/dbedgerules/DbEdgeRules_" + apiVersion + ".json");
 		try {
-			YAMLfromOXM swagger = new YAMLfromOXM(testXML, v, edgeRuleFile);
-			fileContent = swagger.process();
+			yamlFromOxm.setXmlVersion(testXML, v);
+			fileContent = yamlFromOxm.process();
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -127,14 +208,13 @@ public class YAMLfromOXMTest {
 
 	@Test
 	public void testAppendDefinitions() {
-		Version v = Version.v11;
+		SchemaVersion v = schemaVersions.getAppRootVersion();
 		String apiVersion = v.toString();
 		String definitions = null;
-		File edgeRuleFile = new File("../aai-core" + "/src/main/resources/dbedgerules/DbEdgeRules_" + apiVersion + ".json");
 		try {
-			YAMLfromOXM swagger = new YAMLfromOXM(testXML, v, edgeRuleFile);
-			swagger.process();
-			definitions = swagger.appendDefinitions();
+			yamlFromOxm.setXmlVersion(testXML, v);
+			yamlFromOxm.process();
+			definitions = yamlFromOxm.appendDefinitions();
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -144,16 +224,15 @@ public class YAMLfromOXMTest {
 	@Test
 	public void testGetXMLRootElementName() {
 		String target = "RootElement=customer";
-		Version v = Version.v11;
+		SchemaVersion v = schemaVersions.getAppRootVersion();
 		String apiVersion = v.toString();
 		Element customer = null;
 		String root = null;
-		File edgeRuleFile = new File("../aai-core" + "/src/main/resources/dbedgerules/DbEdgeRules_" + apiVersion + ".json");
 		try {
-			YAMLfromOXM swagger = new YAMLfromOXM(testXML, v, edgeRuleFile);
-			swagger.process();
-			customer = swagger.getJavaTypeElementSwagger("Customer");
-			root = swagger.getXMLRootElementName(customer);
+			yamlFromOxm.setXmlVersion(testXML, v);
+			yamlFromOxm.process();
+			customer = yamlFromOxm.getJavaTypeElementSwagger("Customer");
+			root = yamlFromOxm.getXMLRootElementName(customer);
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -163,14 +242,13 @@ public class YAMLfromOXMTest {
 	@Test
 	public void testGetXmlRootElementName() {
 		String target = "RootElement=customer";
-		Version v = Version.v11;
+		SchemaVersion v = schemaVersions.getAppRootVersion();
 		String apiVersion = v.toString();
 		String root = null;
-		File edgeRuleFile = new File("../aai-core" + "/src/main/resources/dbedgerules/DbEdgeRules_" + apiVersion + ".json");
 		try {
-			YAMLfromOXM swagger = new YAMLfromOXM(testXML, v, edgeRuleFile);
-			swagger.process();
-			root = swagger.getXmlRootElementName("Customer");
+			yamlFromOxm.setXmlVersion(testXML, v);
+			yamlFromOxm.process();
+			root = yamlFromOxm.getXmlRootElementName("Customer");
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -180,14 +258,13 @@ public class YAMLfromOXMTest {
 	@Test
 	public void testGetJavaTypeElementSwagger() {
 		String target = "Element=java-type/Customer";
-		Version v = Version.v11;
+		SchemaVersion v = schemaVersions.getAppRootVersion();
 		String apiVersion = v.toString();
 		Element customer = null;
-		File edgeRuleFile = new File("../aai-core" + "/src/main/resources/dbedgerules/DbEdgeRules_" + apiVersion + ".json");
 		try {
-			YAMLfromOXM swagger = new YAMLfromOXM(testXML, v, edgeRuleFile);
-			swagger.process();
-			customer = swagger.getJavaTypeElementSwagger("Customer");
+			yamlFromOxm.setXmlVersion(testXML, v);
+			yamlFromOxm.process();
+			customer = yamlFromOxm.getJavaTypeElementSwagger("Customer");
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -211,7 +288,7 @@ public class YAMLfromOXMTest {
 		sb.append("\n");
 		sb.append("    [Differences versus the previous schema version](apidocs/aai_swagger_v11.diff)\n");
 		sb.append("\n");
-		sb.append("    Copyright &copy; 2017 AT&amp;T Intellectual Property. All rights reserved.\n");
+		sb.append("    Copyright &copy; 2017-18 AT&amp;T Intellectual Property. All rights reserved.\n");
 		sb.append("\n");
 		sb.append("    Licensed under the Creative Commons License, Attribution 4.0 Intl. (the &quot;License&quot;); you may not use this documentation except in compliance with the License.\n");
 		sb.append("\n");
@@ -220,8 +297,6 @@ public class YAMLfromOXMTest {
 		sb.append("    (https://creativecommons.org/licenses/by/4.0/)\n");
 		sb.append("\n");
 		sb.append("    Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.\n");
-		sb.append("\n");
-		sb.append("    ECOMP and OpenECOMP are trademarks and service marks of AT&amp;T Intellectual Property.\n");
 		sb.append("\n");
 		sb.append("    This document is best viewed with Firefox or Chrome. Nodes can be found by appending /#/definitions/node-type-to-find to the path to this document. Edge definitions can be found with the node definitions.\n");
 		sb.append("  version: \"v11\"\n");
@@ -262,13 +337,13 @@ public class YAMLfromOXMTest {
 		sb.append("          null      parameters:\n");
 		sb.append("        - name: global-customer-id\n");
 		sb.append("          in: path\n");
-		sb.append("          description: Global customer id used across ECOMP to uniquely identify customer.\n");
+		sb.append("          description: Global customer id used across to uniquely identify customer.\n");
 		sb.append("          required: true\n");
 		sb.append("          type: string\n");
 		sb.append("          example: __GLOBAL-CUSTOMER-ID__\n");
 		sb.append("        - name: service-type\n");
 		sb.append("          in: path\n");
-		sb.append("          description: Value defined by orchestration to identify this service across ECOMP.\n");
+		sb.append("          description: Value defined by orchestration to identify this service.\n");
 		sb.append("          required: true\n");
 		sb.append("          type: string\n");
 		sb.append("          example: __SERVICE-TYPE__\n");
@@ -292,13 +367,13 @@ public class YAMLfromOXMTest {
 		sb.append("          null      parameters:\n");
 		sb.append("        - name: global-customer-id\n");
 		sb.append("          in: path\n");
-		sb.append("          description: Global customer id used across ECOMP to uniquely identify customer.\n");
+		sb.append("          description: Global customer id used across to uniquely identify customer.\n");
 		sb.append("          required: true\n");
 		sb.append("          type: string\n");
 		sb.append("          example: __GLOBAL-CUSTOMER-ID__\n");
 		sb.append("        - name: service-type\n");
 		sb.append("          in: path\n");
-		sb.append("          description: Value defined by orchestration to identify this service across ECOMP.\n");
+		sb.append("          description: Value defined by orchestration to identify this service.\n");
 		sb.append("          required: true\n");
 		sb.append("          type: string\n");
 		sb.append("          example: __SERVICE-TYPE__\n");
@@ -327,22 +402,20 @@ public class YAMLfromOXMTest {
 		sb.append("      operationId: UpdateBusinessCustomersCustomerServiceSubscriptionsServiceSubscription\n");
 		sb.append("      consumes:\n");
 		sb.append("        - application/json\n");
-		sb.append("        - application/xml\n");
 		sb.append("      produces:\n");
 		sb.append("        - application/json\n");
-		sb.append("        - application/xml\n");
 		sb.append("      responses:\n");
 		sb.append("        \"default\":\n");
 		sb.append("          null      parameters:\n");
 		sb.append("        - name: global-customer-id\n");
 		sb.append("          in: path\n");
-		sb.append("          description: Global customer id used across ECOMP to uniquely identify customer.\n");
+		sb.append("          description: Global customer id used across to uniquely identify customer.\n");
 		sb.append("          required: true\n");
 		sb.append("          type: string\n");
 		sb.append("          example: __GLOBAL-CUSTOMER-ID__\n");
 		sb.append("        - name: service-type\n");
 		sb.append("          in: path\n");
-		sb.append("          description: Value defined by orchestration to identify this service across ECOMP.\n");
+		sb.append("          description: Value defined by orchestration to identify this service.\n");
 		sb.append("          required: true\n");
 		sb.append("          type: string\n");
 		sb.append("          example: __SERVICE-TYPE__\n");
@@ -369,13 +442,13 @@ public class YAMLfromOXMTest {
 		sb.append("          null      parameters:\n");
 		sb.append("        - name: global-customer-id\n");
 		sb.append("          in: path\n");
-		sb.append("          description: Global customer id used across ECOMP to uniquely identify customer.\n");
+		sb.append("          description: Global customer id used across to uniquely identify customer.\n");
 		sb.append("          required: true\n");
 		sb.append("          type: string\n");
 		sb.append("          example: __GLOBAL-CUSTOMER-ID__\n");
 		sb.append("        - name: service-type\n");
 		sb.append("          in: path\n");
-		sb.append("          description: Value defined by orchestration to identify this service across ECOMP.\n");
+		sb.append("          description: Value defined by orchestration to identify this service.\n");
 		sb.append("          required: true\n");
 		sb.append("          type: string\n");
 		sb.append("          example: __SERVICE-TYPE__\n");
@@ -403,7 +476,7 @@ public class YAMLfromOXMTest {
 		sb.append("          null      parameters:\n");
 		sb.append("        - name: global-customer-id\n");
 		sb.append("          in: path\n");
-		sb.append("          description: Global customer id used across ECOMP to uniquely identify customer.\n");
+		sb.append("          description: Global customer id used across to uniquely identify customer.\n");
 		sb.append("          required: true\n");
 		sb.append("          type: string\n");
 		sb.append("          example: __GLOBAL-CUSTOMER-ID__\n");
@@ -431,7 +504,7 @@ public class YAMLfromOXMTest {
 		sb.append("          null      parameters:\n");
 		sb.append("        - name: global-customer-id\n");
 		sb.append("          in: path\n");
-		sb.append("          description: Global customer id used across ECOMP to uniquely identify customer.\n");
+		sb.append("          description: Global customer id used across to uniquely identify customer.\n");
 		sb.append("          required: true\n");
 		sb.append("          type: string\n");
 		sb.append("          example: __GLOBAL-CUSTOMER-ID__\n");
@@ -455,7 +528,7 @@ public class YAMLfromOXMTest {
 		sb.append("          null      parameters:\n");
 		sb.append("        - name: global-customer-id\n");
 		sb.append("          in: path\n");
-		sb.append("          description: Global customer id used across ECOMP to uniquely identify customer.\n");
+		sb.append("          description: Global customer id used across to uniquely identify customer.\n");
 		sb.append("          required: true\n");
 		sb.append("          type: string\n");
 		sb.append("          example: __GLOBAL-CUSTOMER-ID__\n");
@@ -484,16 +557,14 @@ public class YAMLfromOXMTest {
 		sb.append("      operationId: UpdateBusinessCustomersCustomer\n");
 		sb.append("      consumes:\n");
 		sb.append("        - application/json\n");
-		sb.append("        - application/xml\n");
 		sb.append("      produces:\n");
 		sb.append("        - application/json\n");
-		sb.append("        - application/xml\n");
 		sb.append("      responses:\n");
 		sb.append("        \"default\":\n");
 		sb.append("          null      parameters:\n");
 		sb.append("        - name: global-customer-id\n");
 		sb.append("          in: path\n");
-		sb.append("          description: Global customer id used across ECOMP to uniquely identify customer.\n");
+		sb.append("          description: Global customer id used across to uniquely identify customer.\n");
 		sb.append("          required: true\n");
 		sb.append("          type: string\n");
 		sb.append("          example: __GLOBAL-CUSTOMER-ID__\n");
@@ -520,7 +591,7 @@ public class YAMLfromOXMTest {
 		sb.append("          null      parameters:\n");
 		sb.append("        - name: global-customer-id\n");
 		sb.append("          in: path\n");
-		sb.append("          description: Global customer id used across ECOMP to uniquely identify customer.\n");
+		sb.append("          description: Global customer id used across to uniquely identify customer.\n");
 		sb.append("          required: true\n");
 		sb.append("          type: string\n");
 		sb.append("          example: __GLOBAL-CUSTOMER-ID__\n");
@@ -578,7 +649,7 @@ public class YAMLfromOXMTest {
 		sb.append("    description: |\n");
 		sb.append("      customer identifiers to provide linkage back to BSS information.\n");
 		sb.append("      ###### Related Nodes\n");
-		sb.append("      - FROM service-subscription( service-subscription BelongsTo customer, MANY2ONE)(1)\n");
+		sb.append("      - FROM service-subscription (CHILD of customer, service-subscription BelongsTo customer, MANY2ONE)(1)\n");
 		sb.append("\n");
 		sb.append("      -(1) IF this CUSTOMER node is deleted, this FROM node is DELETED also\n");
 		sb.append("    required:\n");
@@ -588,7 +659,7 @@ public class YAMLfromOXMTest {
 		sb.append("    properties:\n");
 		sb.append("      global-customer-id:\n");
 		sb.append("        type: string\n");
-		sb.append("        description: Global customer id used across ECOMP to uniquely identify customer.\n");
+		sb.append("        description: Global customer id used across to uniquely identify customer.\n");
 		sb.append("      subscriber-name:\n");
 		sb.append("        type: string\n");
 		sb.append("        description: Subscriber name, an alternate way to retrieve a customer.\n");
@@ -625,9 +696,9 @@ public class YAMLfromOXMTest {
 		sb.append("    description: |\n");
 		sb.append("      Object that group service instances.\n");
 		sb.append("      ###### Related Nodes\n");
-		sb.append("      - TO customer( service-subscription BelongsTo customer, MANY2ONE)(4)\n");
+		sb.append("      - TO customer (PARENT of service-subscription, service-subscription BelongsTo customer, MANY2ONE)(4)\n");
 		sb.append("      - TO tenant( service-subscription Uses tenant, MANY2MANY)\n");
-		sb.append("      - FROM service-instance( service-instance BelongsTo service-subscription, MANY2ONE)(1)\n");
+		sb.append("      - FROM service-instance (CHILD of service-subscription, service-instance BelongsTo service-subscription, MANY2ONE)(1)\n");
 		sb.append("\n");
 		sb.append("      -(1) IF this SERVICE-SUBSCRIPTION node is deleted, this FROM node is DELETED also\n");
 		sb.append("      -(4) IF this TO node is deleted, this SERVICE-SUBSCRIPTION is DELETED also\n");
@@ -636,7 +707,7 @@ public class YAMLfromOXMTest {
 		sb.append("    properties:\n");
 		sb.append("      service-type:\n");
 		sb.append("        type: string\n");
-		sb.append("        description: Value defined by orchestration to identify this service across ECOMP.\n");
+		sb.append("        description: Value defined by orchestration to identify this service.\n");
 		sb.append("      temp-ub-sub-account-id:\n");
 		sb.append("        type: string\n");
 		sb.append("        description: This property will be deleted from A&AI in the near future. Only stop gap solution.\n");
@@ -668,7 +739,7 @@ public class YAMLfromOXMTest {
 		sb.append("    description: |\n");
 		sb.append("      customer identifiers to provide linkage back to BSS information.\n");
 		sb.append("      ###### Related Nodes\n");
-		sb.append("      - FROM service-subscription( service-subscription BelongsTo customer, MANY2ONE)(1)\n");
+		sb.append("      - FROM service-subscription (CHILD of customer, service-subscription BelongsTo customer, MANY2ONE)(1)\n");
 		sb.append("\n");
 		sb.append("      -(1) IF this CUSTOMER node is deleted, this FROM node is DELETED also\n");
 		sb.append("    required:\n");
@@ -678,7 +749,7 @@ public class YAMLfromOXMTest {
 		sb.append("    properties:\n");
 		sb.append("      global-customer-id:\n");
 		sb.append("        type: string\n");
-		sb.append("        description: Global customer id used across ECOMP to uniquely identify customer.\n");
+		sb.append("        description: Global customer id used across to uniquely identify customer.\n");
 		sb.append("      subscriber-name:\n");
 		sb.append("        type: string\n");
 		sb.append("        description: Subscriber name, an alternate way to retrieve a customer.\n");
@@ -708,9 +779,9 @@ public class YAMLfromOXMTest {
 		sb.append("    description: |\n");
 		sb.append("      Object that group service instances.\n");
 		sb.append("      ###### Related Nodes\n");
-		sb.append("      - TO customer( service-subscription BelongsTo customer, MANY2ONE)(4)\n");
+		sb.append("      - TO customer (PARENT of service-subscription, service-subscription BelongsTo customer, MANY2ONE)(4)\n");
 		sb.append("      - TO tenant( service-subscription Uses tenant, MANY2MANY)\n");
-		sb.append("      - FROM service-instance( service-instance BelongsTo service-subscription, MANY2ONE)(1)\n");
+		sb.append("      - FROM service-instance (CHILD of service-subscription, service-instance BelongsTo service-subscription, MANY2ONE)(1)\n");
 		sb.append("\n");
 		sb.append("      -(1) IF this SERVICE-SUBSCRIPTION node is deleted, this FROM node is DELETED also\n");
 		sb.append("      -(4) IF this TO node is deleted, this SERVICE-SUBSCRIPTION is DELETED also\n");
@@ -719,7 +790,7 @@ public class YAMLfromOXMTest {
 		sb.append("    properties:\n");
 		sb.append("      service-type:\n");
 		sb.append("        type: string\n");
-		sb.append("        description: Value defined by orchestration to identify this service across ECOMP.\n");
+		sb.append("        description: Value defined by orchestration to identify this service.\n");
 		sb.append("      temp-ub-sub-account-id:\n");
 		sb.append("        type: string\n");
 		sb.append("        description: This property will be deleted from A&AI in the near future. Only stop gap solution.\n");
@@ -748,7 +819,7 @@ public class YAMLfromOXMTest {
 		sb.append("    description: |\n");
 		sb.append("      customer identifiers to provide linkage back to BSS information.\n");
 		sb.append("      ###### Related Nodes\n");
-		sb.append("      - FROM service-subscription( service-subscription BelongsTo customer, MANY2ONE)(1)\n");
+		sb.append("      - FROM service-subscription (CHILD of customer, service-subscription BelongsTo customer, MANY2ONE)(1)\n");
 		sb.append("\n");
 		sb.append("      -(1) IF this CUSTOMER node is deleted, this FROM node is DELETED also\n");
 		sb.append("    required:\n");
@@ -758,7 +829,7 @@ public class YAMLfromOXMTest {
 		sb.append("    properties:\n");
 		sb.append("      global-customer-id:\n");
 		sb.append("        type: string\n");
-		sb.append("        description: Global customer id used across ECOMP to uniquely identify customer.\n");
+		sb.append("        description: Global customer id used across to uniquely identify customer.\n");
 		sb.append("      subscriber-name:\n");
 		sb.append("        type: string\n");
 		sb.append("        description: Subscriber name, an alternate way to retrieve a customer.\n");
@@ -795,9 +866,9 @@ public class YAMLfromOXMTest {
 		sb.append("    description: |\n");
 		sb.append("      Object that group service instances.\n");
 		sb.append("      ###### Related Nodes\n");
-		sb.append("      - TO customer( service-subscription BelongsTo customer, MANY2ONE)(4)\n");
+		sb.append("      - TO customer (PARENT of service-subscription, service-subscription BelongsTo customer, MANY2ONE)(4)\n");
 		sb.append("      - TO tenant( service-subscription Uses tenant, MANY2MANY)\n");
-		sb.append("      - FROM service-instance( service-instance BelongsTo service-subscription, MANY2ONE)(1)\n");
+		sb.append("      - FROM service-instance (CHILD of service-subscription, service-instance BelongsTo service-subscription, MANY2ONE)(1)\n");
 		sb.append("\n");
 		sb.append("      -(1) IF this SERVICE-SUBSCRIPTION node is deleted, this FROM node is DELETED also\n");
 		sb.append("      -(4) IF this TO node is deleted, this SERVICE-SUBSCRIPTION is DELETED also\n");
@@ -806,7 +877,7 @@ public class YAMLfromOXMTest {
 		sb.append("    properties:\n");
 		sb.append("      service-type:\n");
 		sb.append("        type: string\n");
-		sb.append("        description: Value defined by orchestration to identify this service across ECOMP.\n");
+		sb.append("        description: Value defined by orchestration to identify this service.\n");
 		sb.append("      temp-ub-sub-account-id:\n");
 		sb.append("        type: string\n");
 		sb.append("        description: This property will be deleted from A&AI in the near future. Only stop gap solution.\n");
@@ -823,4 +894,49 @@ public class YAMLfromOXMTest {
 		sb.append("          $ref: \"#/getDefinitions/service-subscription\"\n");
 		return sb.toString();
 	}
+	public static String EdgeDefs() {
+		StringBuilder sb = new StringBuilder(8092);
+		sb.append("{\n" + 
+				"	\"rules\": [\n");
+		sb.append("		{\n");
+		sb.append("			\"from\": \"service-subscription\",\n");
+		sb.append("			\"to\": \"customer\",\n" + 
+				"			\"label\": \"org.onap.relationships.inventory.BelongsTo\",\n" + 
+				"			\"direction\": \"OUT\",\n" + 
+				"			\"multiplicity\": \"MANY2ONE\",\n" + 
+				"			\"contains-other-v\": \"!${direction}\",\n" + 
+				"			\"delete-other-v\": \"!${direction}\",\n" + 
+				"			\"prevent-delete\": \"NONE\",\n" + 
+				"			\"default\": \"true\",\n" + 
+				"			\"description\":\"\"\n");
+		sb.append("		},\n");
+		sb.append("		{\n" + 
+				"			\"from\": \"service-instance\",\n" + 
+				"			\"to\": \"service-subscription\",\n" + 
+				"			\"label\": \"org.onap.relationships.inventory.BelongsTo\",\n" + 
+				"			\"direction\": \"OUT\",\n" + 
+				"			\"multiplicity\": \"MANY2ONE\",\n" + 
+				"			\"contains-other-v\": \"!${direction}\",\n" + 
+				"			\"delete-other-v\": \"!${direction}\",\n" + 
+				"			\"prevent-delete\": \"NONE\",\n" + 
+				"			\"default\": \"true\",\n" + 
+				"			\"description\":\"\"\n" + 
+				"		},\n");
+		sb.append("		{\n" + 
+				"			\"from\": \"service-subscription\",\n" + 
+				"			\"to\": \"tenant\",\n" + 
+				"			\"label\": \"org.onap.relationships.inventory.Uses\",\n" + 
+				"			\"direction\": \"OUT\",\n" + 
+				"			\"multiplicity\": \"MANY2MANY\",\n" + 
+				"			\"contains-other-v\": \"NONE\",\n" + 
+				"			\"delete-other-v\": \"NONE\",\n" + 
+				"			\"prevent-delete\": \"NONE\",\n" + 
+				"			\"default\": \"true\",\n" + 
+				"			\"description\":\"\"\n" + 
+				"		}");
+		sb.append("	]\n" + 
+				"}\n");
+		return sb.toString();
+	}
 }
+

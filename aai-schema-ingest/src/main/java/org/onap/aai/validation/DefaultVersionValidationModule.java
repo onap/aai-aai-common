@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
- * Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright © 2017-18 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.onap.aai.setup.ConfigTranslator;
-import org.onap.aai.setup.Version;
+import org.onap.aai.setup.SchemaVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -52,12 +52,12 @@ public class DefaultVersionValidationModule implements VersionValidationModule {
 	 */
 	@Override
 	public String validate() {
-		Map<Version, List<String>> nodeConfig = config.getNodeFiles();
-		Map<Version, List<String>> edgeConfig = config.getEdgeFiles();
+		Map<SchemaVersion, List<String>> nodeConfig = config.getNodeFiles();
+		Map<SchemaVersion, List<String>> edgeConfig = config.getEdgeFiles();
 		
 		StringBuilder missingVers = new StringBuilder().append("Missing schema for the following versions: ");
 		boolean isMissing = false;
-		for (Version v : Version.values()) {
+		for (SchemaVersion v : config.getSchemaVersions().getVersions()) {
 			if (nodeConfig.get(v) == null) {
 				isMissing = true;
 				missingVers.append(v.toString()).append(" has no OXM configured. ");

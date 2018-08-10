@@ -19,10 +19,7 @@
  */
 package org.onap.aai.serialization.queryformats;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
+import com.google.gson.JsonObject;
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.Tree;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
@@ -31,24 +28,26 @@ import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatQueryResultFormatNotSupported;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
 
-import com.google.gson.JsonObject;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class Count implements FormatMapper {
 
 	@Override
-	public JsonObject formatObject(Object o) throws AAIFormatVertexException, AAIFormatQueryResultFormatNotSupported {
+	public Optional<JsonObject> formatObject(Object o) throws AAIFormatVertexException, AAIFormatQueryResultFormatNotSupported {
 		@SuppressWarnings("unchecked")
 		List<Object> list = (List<Object>) o;
 		
 		final JsonObject countResult = new JsonObject();
 		
 		list.stream().map(this::getCount)
-		.filter( Optional<Pair<String, Long>>::isPresent )
-		.map(Optional<Pair<String, Long>>::get)
+		.filter( Optional::isPresent )
+		.map(Optional::get)
 		.collect( Collectors.toConcurrentMap( Pair::getValue0, Pair::getValue1, Long::sum ) )
 		.forEach( (k,v) -> countResult.addProperty(k, v) );
 		
-		return countResult;
+		return Optional.of(countResult);
 	}
 
 	@Override

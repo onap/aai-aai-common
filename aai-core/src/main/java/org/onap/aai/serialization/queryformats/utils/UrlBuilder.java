@@ -21,33 +21,46 @@ package org.onap.aai.serialization.queryformats.utils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.net.URISyntaxException;
 
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.onap.aai.exceptions.AAIException;
-import org.onap.aai.introspection.Version;
+import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.serialization.db.DBSerializer;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
-import org.onap.aai.util.AAIApiServerURLBase;
+import org.onap.aai.setup.SchemaVersions;
+import org.onap.aai.util.AAIConfig;
 import org.onap.aai.util.AAIConstants;
-import org.onap.aai.workarounds.LegacyURITransformer;
 
 public class UrlBuilder {
 
 	private final DBSerializer serializer;
-	private final Version version;
+	private final SchemaVersion version;
 	private final String serverBase;
-	
-	public UrlBuilder (Version version, DBSerializer serializer) throws AAIException {
+	private final SchemaVersions schemaVersions;
+	private final String basePath;
+
+	public UrlBuilder (SchemaVersion version, DBSerializer serializer, SchemaVersions schemaVersions, String basePath) throws AAIException {
 		this.serializer = serializer;
 		this.version = version;
-		this.serverBase = this.getServerBase(version);
+		this.serverBase = this.getServerBase();
+		this.schemaVersions = schemaVersions;
+		if(!basePath.endsWith("/")){
+			this.basePath = basePath + "/";
+		} else {
+			this.basePath = basePath;
+		}
 	}
 	
-	public UrlBuilder (Version version, DBSerializer serializer, String serverBase) {
+	public UrlBuilder (SchemaVersion version, DBSerializer serializer, String serverBase, SchemaVersions schemaVersions, String basePath) {
 		this.serializer = serializer;
 		this.version = version;
 		this.serverBase = serverBase;
+		this.schemaVersions = schemaVersions;
+		if(!basePath.endsWith("/")){
+			this.basePath = basePath + "/";
+		} else {
+			this.basePath = basePath;
+		}
 	}
 	
 	public String pathed(Vertex v) throws AAIFormatVertexException {
@@ -55,17 +68,17 @@ public class UrlBuilder {
 		try {
 			final StringBuilder result = new StringBuilder();
 			final URI uri = this.serializer.getURIForVertex(v);
-			
-			if (this.version.compareTo(Version.v11) >= 0) {
-				result.append(AAIConstants.AAI_APP_ROOT);
+
+			if (this.version.compareTo(schemaVersions.getAppRootVersion()) >= 0) {
+				result.append(basePath);
 			} else {
 				result.append(this.serverBase);
 			}
 			result.append(this.version);
-			result.append(uri);
-
-				return result.toString();
-		} catch (UnsupportedEncodingException | IllegalArgumentException | SecurityException e) {
+			result.append(uri.getRawPath());
+			
+			return result.toString();
+	    } catch (UnsupportedEncodingException | IllegalArgumentException | SecurityException e) {
 			throw new AAIFormatVertexException(e);
 		}
 	}
@@ -75,8 +88,8 @@ public class UrlBuilder {
 
 		result.append("/resources/id/" + v.id());
 		result.insert(0, this.version);
-		if (this.version.compareTo(Version.v11) >= 0) {
-			result.insert(0, AAIConstants.AAI_APP_ROOT);
+		if (this.version.compareTo(schemaVersions.getAppRootVersion()) >= 0) {
+			result.insert(0, basePath);
 		} else {
 			result.insert(0, this.serverBase);
 		}
@@ -84,7 +97,7 @@ public class UrlBuilder {
 		return result.toString();
 	}
 	
-	protected String getServerBase(Version v) throws AAIException {
-		return AAIApiServerURLBase.get(v);
+	protected String getServerBase() throws AAIException {
+		return AAIConfig.get(AAIConstants.AAI_SERVER_URL_BASE);
 	}
 }
