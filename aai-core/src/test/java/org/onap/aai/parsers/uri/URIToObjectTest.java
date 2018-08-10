@@ -19,6 +19,8 @@
  */
 package org.onap.aai.parsers.uri;
 
+import org.onap.aai.setup.SchemaVersion;
+
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
@@ -29,6 +31,7 @@ import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.*;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 
+import javax.annotation.PostConstruct;
 import javax.ws.rs.core.UriBuilder;
 import javax.xml.bind.JAXBException;
 import java.io.UnsupportedEncodingException;
@@ -39,13 +42,11 @@ import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 
-
-
 public class URIToObjectTest extends AAISetup {
 
-	private Version version = Version.v10;
-	private Version currentVersion = AAIProperties.LATEST;
-	private Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, version);
+	private SchemaVersion version ;
+	private SchemaVersion currentVersion;
+	private Loader loader ;
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -58,6 +59,13 @@ public class URIToObjectTest extends AAISetup {
 	 * @throws IllegalArgumentException the illegal argument exception
 	 * @throws UnsupportedEncodingException the unsupported encoding exception
 	 */
+	@PostConstruct
+	public void createLoader(){
+		version = schemaVersions.getRelatedLinkVersion();
+		currentVersion = schemaVersions.getDefaultVersion();
+		loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getRelatedLinkVersion());
+	}
+	
 	@Test
     public void uri() throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException {
 		URI uri = UriBuilder.fromPath("/aai/" + loader.getVersion() + "/cloud-infrastructure/cloud-regions/cloud-region/mycloudowner/mycloudregionid/tenants/tenant/key1/vservers/vserver/key2/l-interfaces/l-interface/key3").build();
@@ -231,7 +239,7 @@ public class URIToObjectTest extends AAISetup {
 	 * @param entity the entity
 	 * @param version the version
 	 */
-	public void testSet(String json, URIToObject parse, String expected, String topEntity, String entity, Version version) {
+	public void testSet(String json, URIToObject parse, String expected, String topEntity, String entity, SchemaVersion version) {
 		assertEquals("blah", expected, json);
 		
 		assertEquals("top entity", topEntity, parse.getTopEntityName());

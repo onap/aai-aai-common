@@ -19,16 +19,15 @@
  */
 package org.onap.aai.parsers.uri;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.onap.aai.AAISetup;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Loader;
-import org.onap.aai.introspection.LoaderFactory;
 import org.onap.aai.introspection.ModelType;
-import org.onap.aai.introspection.Version;
 import org.onap.aai.restcore.HttpMethod;
+import org.onap.aai.setup.SchemaVersion;
 
+import javax.annotation.PostConstruct;
 import javax.ws.rs.core.UriBuilder;
 import javax.xml.bind.JAXBException;
 import java.io.UnsupportedEncodingException;
@@ -36,10 +35,10 @@ import java.net.URI;
 
 import static org.junit.Assert.assertEquals;
 
-
 public class URIToExtensionInformationTest extends AAISetup {
 
-	private Loader v8Loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.v10);
+	
+	private Loader v8Loader ;
 	
 	/**
 	 * Vservers V 7.
@@ -49,6 +48,12 @@ public class URIToExtensionInformationTest extends AAISetup {
 	 * @throws IllegalArgumentException the illegal argument exception
 	 * @throws UnsupportedEncodingException the unsupported encoding exception
 	 */
+	
+	@PostConstruct
+	public void createLoader(){
+		v8Loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, new SchemaVersion("v8"));
+	}
+	
 	@Test
     public void vserversV8() throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException {
 		URI uri = UriBuilder.fromPath("/aai/" + v8Loader.getVersion() + "/cloud-infrastructure/cloud-regions/cloud-region/testOwner1/testRegion1/tenants/tenant/key1/vservers/vserver/key2").build();

@@ -34,7 +34,7 @@ import org.onap.aai.parsers.query.QueryParser;
 import org.onap.aai.query.builder.QueryBuilder;
 import org.onap.aai.rest.db.DBRequest;
 import org.onap.aai.restcore.HttpMethod;
-import org.onap.aai.serialization.db.EdgeType;
+import org.onap.aai.edges.enums.EdgeType;
 
 public class OrphanLInterfaceHandler {
 	

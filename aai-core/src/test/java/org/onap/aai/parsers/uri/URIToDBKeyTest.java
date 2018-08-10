@@ -19,7 +19,6 @@
  */
 package org.onap.aai.parsers.uri;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -28,8 +27,8 @@ import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.parsers.exceptions.DoesNotStartWithValidNamespaceException;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.introspection.*;
-import org.powermock.core.classloader.annotations.PrepareForTest;
 
+import javax.annotation.PostConstruct;
 import javax.ws.rs.core.UriBuilder;
 import javax.xml.bind.JAXBException;
 import java.io.UnsupportedEncodingException;
@@ -40,11 +39,9 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 
 
-
-@PrepareForTest(ModelInjestor.class)
 public class URIToDBKeyTest extends AAISetup {
 
-	private Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, AAIProperties.LATEST);
+	private Loader loader ;
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -57,6 +54,11 @@ public class URIToDBKeyTest extends AAISetup {
 	 * @throws IllegalArgumentException the illegal argument exception
 	 * @throws UnsupportedEncodingException the unsupported encoding exception
 	 */
+	@PostConstruct
+	public void createLoader(){
+		loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
+	}
+	
 	@Test
     public void uri() throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException {
 		URI uri = UriBuilder.fromPath("/aai/" + loader.getVersion() + "/cloud-infrastructure/cloud-regions/cloud-region/cloudOwner-key/cloudRegion-key/tenants/tenant/tenantId-key/vservers/vserver/vserverId-key/l-interfaces/l-interface/key3").build();

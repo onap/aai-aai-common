@@ -29,5 +29,7 @@ public class EcompPatternLayout extends PatternLayout {
 		PatternLayout.defaultConverterMap.put("ecompErrorCategory", EcompErrorCategory.class.getName());
 		PatternLayout.defaultConverterMap.put("ecompResponseCode", EcompResponseCode.class.getName());
 		PatternLayout.defaultConverterMap.put("ecompResponseDescription", EcompResponseDescription.class.getName());
+		PatternLayout.defaultConverterMap.put("ecompStatusCode", EcompStatusCode.class.getName());
+		PatternLayout.defaultConverterMap.put("ecompServiceName", EcompServiceName.class.getName());
 	}
 }

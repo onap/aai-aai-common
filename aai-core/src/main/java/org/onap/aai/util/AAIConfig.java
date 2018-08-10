@@ -48,8 +48,6 @@ public class AAIConfig {
 	private static Properties serverProps;
     private static boolean propsInitialized = false;
     
-    // this (probably) won't change between releases, put it in the config if it gets annoying...
-    private static HashMap<String,ArrayList<String>> defaultBools = new HashMap<String,ArrayList<String>>();
     /**
      * Instantiates a new AAI config.
      */
@@ -74,30 +72,6 @@ public class AAIConfig {
 
 		LOGGER.info("Initializing AAIConfig");
 		
-		ArrayList<String> genericVnfBools = new ArrayList<String>();
-		ArrayList<String> l3NetworkBools = new ArrayList<String>();
-		ArrayList<String> pserverBools = new ArrayList<String>();
-		ArrayList<String> subnetBools = new ArrayList<String>();
-		ArrayList<String> vserverBools = new ArrayList<String>();
-		ArrayList<String> vnfcBools = new ArrayList<String>();
-
-		genericVnfBools.add("in-maint");
-		genericVnfBools.add("is-closed-loop-disabled");
-		l3NetworkBools.add("is-bound-to-vpn");
-		pserverBools.add("in-maint");
-		subnetBools.add("dhcp-enabled");
-		vserverBools.add("in-maint");
-		vserverBools.add("is-closed-loop-disabled");
-		vnfcBools.add("in-maint");
-		vnfcBools.add("is-closed-loop-disabled");
-
-		defaultBools.put("generic-vnf", genericVnfBools);
-		defaultBools.put("l3-network",  l3NetworkBools);
-		defaultBools.put("pserver", pserverBools);
-		defaultBools.put("subnet", subnetBools);
-		defaultBools.put("vserver", vserverBools);
-		defaultBools.put("vnfc", vnfcBools);
-		
         AAIConfig.getConfigFile();
         AAIConfig.reloadConfig();
         
@@ -110,26 +84,11 @@ public class AAIConfig {
     }
 
     /**
-     * Gets the default bools.
-     *
-     * @return the default bools
-     */
-    public static HashMap<String,ArrayList<String>> getDefaultBools() { 
-    	return defaultBools;
-    }
-        
-    /**
      * Gets the config file.
      *
      * @return the config file
      */
     public static String getConfigFile() {
-//        if (GlobalPropFileName == null) {
-//        	String nc = System.getProperty("aaiconfig");
-//			if (nc == null) nc = "/home/aaiadmin/etc/aaiconfig.props";
-//		    logger.info( "aaiconfig = " + nc==null?"null":nc);
-//			GlobalPropFileName = nc;
-//        }
         return GLOBAL_PROP_FILE_NAME;
     }
 
@@ -143,14 +102,11 @@ public class AAIConfig {
         
         LOGGER.debug("Reloading config from " + propFileName);
         
-        try(InputStream is = new FileInputStream(propFileName)){
+        try(InputStream is = new FileInputStream(propFileName)) {
             newServerProps = new Properties();
             newServerProps.load(is);
             propsInitialized = true;
-
             serverProps = newServerProps;
-            newServerProps = null;
-        	
         } catch (FileNotFoundException fnfe) {
         	ErrorLogHelper.logError("AAI_4001", " " + propFileName + ". Exception: "+fnfe.getMessage());
         } catch (IOException e) {
@@ -168,10 +124,11 @@ public class AAIConfig {
     public static String get(String key, String defaultValue) {
     	String result = defaultValue;
     	try {
-    			result = get (key);
+    		result = get (key);
+    	} catch ( AAIException a ) {
     	}
-    	catch ( AAIException a ) {
-    		
+    	if (result == null || result.isEmpty()) {
+    		result = defaultValue;
     	}
     	return ( result );
     }
@@ -266,5 +223,4 @@ public class AAIConfig {
 	{
 		return (s == null || s.length() == 0);
 	}
-
 }

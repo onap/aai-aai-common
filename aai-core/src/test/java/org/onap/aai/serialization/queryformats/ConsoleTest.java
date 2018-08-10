@@ -19,11 +19,11 @@
  */
 package org.onap.aai.serialization.queryformats;
 
-import static org.junit.Assert.*;
+import com.google.gson.JsonObject;
 import org.junit.Test;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
 
-import com.google.gson.JsonObject;
+import static org.junit.Assert.*;
 
 public class ConsoleTest {
 	
@@ -36,7 +36,6 @@ public class ConsoleTest {
 	
 	@Test
 	public void classConsoleInstantiateCheck() {
-		
 		try {
 				Console fm1 = new Console();
 				assertNotNull("Created class Object is null", fm1);
@@ -53,7 +52,7 @@ public class ConsoleTest {
 		
 		param=null;
 		Console fm3 = new Console();
-		resultVal = fm3.formatObject(param);
+		resultVal = fm3.formatObject(param).get();
 	}
 	
 	@Test
@@ -62,7 +61,7 @@ public class ConsoleTest {
 		try {
 			Console fm2 = new Console();
 			
-			resultVal = fm2.formatObject(param);
+			resultVal = fm2.formatObject(param).get();
 			assertNotNull("The result is null", resultVal);
 			
 			//System.out.println(resultVal);

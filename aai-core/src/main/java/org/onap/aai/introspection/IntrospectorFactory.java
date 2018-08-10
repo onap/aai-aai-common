@@ -26,17 +26,12 @@ public class IntrospectorFactory {
 	 *
 	 * @param type the type
 	 * @param o the o
-	 * @param llBuilder the ll builder
 	 * @return the introspector
 	 */
 	public static Introspector newInstance(ModelType type, Object o) {
 		
 		if (type.equals(ModelType.MOXY)) {
 			return new MoxyStrategy(o);
-		} else if (type.equals(ModelType.POJO)) {
-			return new PojoStrategy(o);
-		} else if (type.equals(ModelType.JSON)) {
-			return new JSONStrategy(o);
 		} else {
 			throw new IllegalArgumentException("Unknown class type: " + type); 
 		}
@@ -49,7 +44,6 @@ public class IntrospectorFactory {
 	 * @param type the type
 	 * @param o the o
 	 * @param namedType the named type
-	 * @param llBuilder the ll builder
 	 * @return the introspector
 	 */
 	public static Introspector newInstance(ModelType type, Object o, String namedType) {

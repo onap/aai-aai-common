@@ -23,9 +23,11 @@ import com.google.gson.JsonObject;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatQueryResultFormatNotSupported;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
 
+import java.util.Optional;
+
 public interface FormatMapper {
 
-	public JsonObject formatObject(Object o) throws AAIFormatVertexException, AAIFormatQueryResultFormatNotSupported;
+	Optional<JsonObject> formatObject(Object o) throws AAIFormatVertexException, AAIFormatQueryResultFormatNotSupported;
 	
-	public int parallelThreshold();
+	int parallelThreshold();
 }

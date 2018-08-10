@@ -19,47 +19,100 @@
  */
 package org.onap.aai.util.genxsd;
 
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.onap.aai.introspection.Version;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Element;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.*;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.onap.aai.config.SwaggerGenerationConfiguration;
+import org.onap.aai.setup.SchemaVersion;
+import org.onap.aai.setup.SchemaVersions;
+import org.junit.runner.RunWith;
+import org.onap.aai.edges.EdgeIngestor;
+import org.onap.aai.nodes.NodeIngestor;
+import org.onap.aai.serialization.queryformats.QueryFormatTestHelper;
+import org.onap.aai.setup.SchemaLocationsBean;
+import org.onap.aai.testutils.TestUtilConfigTranslatorforBusiness;
+import org.onap.aai.util.AAIConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.w3c.dom.Element;
 
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {
+		 SchemaVersions.class,
+        SchemaLocationsBean.class,
+        TestUtilConfigTranslatorforBusiness.class,
+        EdgeIngestor.class,
+        NodeIngestor.class,
+		SwaggerGenerationConfiguration.class
+
+})
+@TestPropertySource(properties = {
+		"schema.uri.base.path = /aai"
+})
 public class HTMLfromOXMTest {
 	private static final Logger logger = LoggerFactory.getLogger("HTMLfromOXMTest.class");
-	private String testXML;
-
+	private static final String OXMFILENAME = "src/test/resources/oxm/business_oxm_v11.xml";
+	public static AnnotationConfigApplicationContext ctx = null;
+	private static String testXML;
+	protected static final String SERVICE_NAME = "JUNIT";
+	
+	
+	@Autowired
+	HTMLfromOXM htmlFromOxm;
+	
+	@Autowired
+	SchemaVersions schemaVersions;
+	
 	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
+	public static void setUpContext() throws Exception {
+		
 	}
-
+	@BeforeClass
+    public static void setupBundleconfig() throws Exception {
+        System.setProperty("AJSC_HOME", ".");
+        System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
+        System.setProperty("aai.service.name", SERVICE_NAME);
+        QueryFormatTestHelper.setFinalStatic(AAIConstants.class.getField("AAI_HOME_ETC_OXM"), "src/test/resources/bundleconfig-local/etc/oxm/");
+    }
+	
 	@Before
 	public void setUp() throws Exception {
 		XSDElementTest x = new XSDElementTest();
 		x.setUp();
 		testXML = x.testXML;
+		logger.debug(testXML);
+		BufferedWriter bw = new BufferedWriter(new FileWriter(OXMFILENAME));
+		bw.write(testXML);
+		bw.close();
+		    
 	}
 
 	@Test
 	public void testGetDocumentHeader() {
-		Version v = Version.v11;
+		SchemaVersion v = schemaVersions.getAppRootVersion();
 		String header = null;
 		try {
-			HTMLfromOXM swagger = new HTMLfromOXM(testXML, v);
-			header = swagger.getDocumentHeader();
+			htmlFromOxm.setXmlVersion(testXML, v);
+			htmlFromOxm.setSchemaVersions(schemaVersions);
+			header = htmlFromOxm.getDocumentHeader();
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -70,11 +123,11 @@ public class HTMLfromOXMTest {
 
 	@Test
 	public void testProcess() {
-		Version v = Version.v11;
+		SchemaVersion v = schemaVersions.getAppRootVersion();
 		String fileContent = null;
 		try {
-			HTMLfromOXM xsd = new HTMLfromOXM(testXML, v);
-			fileContent = xsd.process();
+			htmlFromOxm.setXmlVersion(testXML, v);
+			fileContent = htmlFromOxm.process();
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -94,11 +147,11 @@ public class HTMLfromOXMTest {
 		bw = Files.newBufferedWriter(path, charset);
 		bw.write(testXML);
 		bw.close();
-		Version v = Version.v11;
+		SchemaVersion v = schemaVersions.getAppRootVersion();
 		String fileContent = null;
 		try {
-			HTMLfromOXM xsd = new HTMLfromOXM(testXML, v);
-			fileContent = xsd.process();
+			htmlFromOxm.setXmlVersion(testXML, v);
+			fileContent = htmlFromOxm.process();
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -110,11 +163,11 @@ public class HTMLfromOXMTest {
 
 	@Test
 	public void testHTMLfromOXMStringVersion() {
-		Version v = Version.v11;
+		SchemaVersion v = schemaVersions.getAppRootVersion();
 		String fileContent = null;
 		try {
-			HTMLfromOXM xsd = new HTMLfromOXM(testXML, v);
-			fileContent = xsd.process();
+			htmlFromOxm.setXmlVersion(testXML, v);
+			fileContent = htmlFromOxm.process();
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -126,12 +179,12 @@ public class HTMLfromOXMTest {
 	@Test
 	public void testProcessJavaTypeElement() {
 		String target = "Element=java-type/Customer";
-		Version v = Version.v11;
+		SchemaVersion v = schemaVersions.getAppRootVersion();
 		Element customer = null;
 		try {
-			HTMLfromOXM xsd = new HTMLfromOXM(testXML, v);
-			xsd.process();
-			customer = xsd.getJavaTypeElementSwagger("Customer");
+			htmlFromOxm.setXmlVersion(testXML, v);
+			htmlFromOxm.process();
+			customer = htmlFromOxm.getJavaTypeElementSwagger("Customer");
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -149,7 +202,7 @@ public class HTMLfromOXMTest {
 	public String HTMLheader() {
 		StringBuilder sb = new StringBuilder(1500);
 		 sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n");
-		 sb.append("<xs:schema elementFormDefault=\"qualified\" version=\"1.0\" targetNamespace=\"http://org.openecomp.aai.inventory/v11\" xmlns:tns=\"http://org.openecomp.aai.inventory/v11\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\"\nxmlns:jaxb=\"http://java.sun.com/xml/ns/jaxb\"\r\n");
+		 sb.append("<xs:schema elementFormDefault=\"qualified\" version=\"1.0\" targetNamespace=\"http://org.onap.aai.inventory/v11\" xmlns:tns=\"http://org.onap.aai.inventory/v11\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\"\nxmlns:jaxb=\"http://java.sun.com/xml/ns/jaxb\"\r\n");
 		 sb.append("    jaxb:version=\"2.1\"\r\n");
 		 sb.append("    xmlns:annox=\"http://annox.dev.java.net\"\r\n");
 		 sb.append("    jaxb:extensionBindingPrefixes=\"annox\">\n\n");
@@ -168,7 +221,7 @@ public class HTMLfromOXMTest {
 		sb.append("        <xs:element name=\"service-type\" type=\"xs:string\">\n");
 		sb.append("          <xs:annotation>\r\n");
 		sb.append("            <xs:appinfo>\r\n");
-		sb.append("              <annox:annotate target=\"field\">@org.onap.aai.annotations.Metadata(isKey=true,description=\"Value defined by orchestration to identify this service across ECOMP.\")</annox:annotate>\r\n");
+		sb.append("              <annox:annotate target=\"field\">@org.onap.aai.annotations.Metadata(isKey=true,description=\"Value defined by orchestration to identify this service.\")</annox:annotate>\r\n");
 		sb.append("            </xs:appinfo>\r\n");
 		sb.append("          </xs:annotation>\r\n");
 		sb.append("        </xs:element>\n");
@@ -197,7 +250,7 @@ public class HTMLfromOXMTest {
 		sb.append("        </xs:appinfo>\r\n");
 		sb.append("      </xs:annotation>\r\n");
 		sb.append("      <xs:sequence>\n");
-		sb.append("        <xs:element ref=\"tns:service-subscription\" minOccurs=\"0\" maxOccurs=\"unbounded\"/>\n");
+		sb.append("        <xs:element ref=\"tns:service-subscription\" minOccurs=\"0\" maxOccurs=\"5000\"/>\n");
 		sb.append("      </xs:sequence>\n");
 		sb.append("    </xs:complexType>\n");
 		sb.append("  </xs:element>\n");
@@ -212,7 +265,7 @@ public class HTMLfromOXMTest {
 		sb.append("        <xs:element name=\"global-customer-id\" type=\"xs:string\">\n");
 		sb.append("          <xs:annotation>\r\n");
 		sb.append("            <xs:appinfo>\r\n");
-		sb.append("              <annox:annotate target=\"field\">@org.onap.aai.annotations.Metadata(isKey=true,description=\"Global customer id used across ECOMP to uniquely identify customer.\")</annox:annotate>\r\n");
+		sb.append("              <annox:annotate target=\"field\">@org.onap.aai.annotations.Metadata(isKey=true,description=\"Global customer id used across to uniquely identify customer.\")</annox:annotate>\r\n");
 		sb.append("            </xs:appinfo>\r\n");
 		sb.append("          </xs:annotation>\r\n");
 		sb.append("        </xs:element>\n");
@@ -249,7 +302,7 @@ public class HTMLfromOXMTest {
 		sb.append("        </xs:appinfo>\r\n");
 		sb.append("      </xs:annotation>\r\n");
 		sb.append("      <xs:sequence>\n");
-		sb.append("        <xs:element ref=\"tns:customer\" minOccurs=\"0\" maxOccurs=\"unbounded\"/>\n");
+		sb.append("        <xs:element ref=\"tns:customer\" minOccurs=\"0\" maxOccurs=\"5000\"/>\n");
 		sb.append("      </xs:sequence>\n");
 		sb.append("    </xs:complexType>\n");
 		sb.append("  </xs:element>\n");

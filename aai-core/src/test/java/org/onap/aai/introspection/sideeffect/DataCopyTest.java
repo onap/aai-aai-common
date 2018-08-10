@@ -32,14 +32,16 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.onap.aai.AAISetup;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.dbmap.DBConnectionType;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.*;
+
 import org.onap.aai.introspection.sideeffect.exceptions.AAIMissingRequiredPropertyException;
 import org.onap.aai.parsers.query.QueryParser;
 import org.onap.aai.serialization.db.DBSerializer;
-import org.onap.aai.serialization.db.EdgeProperty;
+import org.onap.aai.edges.enums.EdgeProperty;
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.serialization.engines.JanusGraphDBEngine;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
@@ -58,10 +60,12 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 @RunWith(value = Parameterized.class)
-public class DataCopyTest {
 
+public class DataCopyTest extends AAISetup{
+
+	
+	
 	private static JanusGraph graph;
-	private final static Version version = Version.getLatest();
 	private final static ModelType introspectorFactoryType = ModelType.MOXY;
 	private final static DBConnectionType type = DBConnectionType.REALTIME;
 	private static Loader loader;
@@ -71,13 +75,16 @@ public class DataCopyTest {
 	@Mock private QueryParser uriQuery;
 	@Rule public ExpectedException thrown = ExpectedException.none();
 
+	
+    
 	@Parameterized.Parameter(value = 0)
 	public QueryStyle queryStyle;
 
 	@Parameterized.Parameters(name = "QueryStyle.{0}")
 	public static Collection<Object[]> data() {
 		return Arrays.asList(new Object[][]{
-				{QueryStyle.TRAVERSAL}
+				{QueryStyle.TRAVERSAL},
+				{QueryStyle.TRAVERSAL_URI}
 		});
 	}
 	
@@ -87,7 +94,7 @@ public class DataCopyTest {
 		graph = JanusGraphFactory.build().set("storage.backend","inmemory").open();
 		System.setProperty("AJSC_HOME", ".");
 		System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
-		loader = LoaderFactory.createLoaderForVersion(introspectorFactoryType, version);
+		
 		graph.traversal().addV("aai-node-type", "model", "model-invariant-id", "key1", AAIProperties.AAI_URI, "/service-design-and-creation/models/model/key1").as("v1")
 		.addV("aai-node-type", "model-ver", "model-ver", "myValue", "model-version-id", "key2", "model-version", "testValue", AAIProperties.AAI_URI, "/service-design-and-creation/models/model/key1/model-vers/model-ver/key2")
 				.addOutE("org.onap.relationships.inventory.BelongsTo", "v1", EdgeProperty.CONTAINS.toString(), true)
@@ -106,6 +113,7 @@ public class DataCopyTest {
 	
 	@Before
 	public void initMock() {
+		loader = loaderFactory.createLoaderForVersion(introspectorFactoryType, schemaVersions.getDefaultVersion());
 		MockitoAnnotations.initMocks(this);
 		dbEngine = new JanusGraphDBEngine(
 				queryStyle,
@@ -116,7 +124,7 @@ public class DataCopyTest {
 	@Test
 	public void runPopulatePersonaModelVer() throws URISyntaxException, AAIException, UnsupportedEncodingException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, SecurityException, InstantiationException, NoSuchMethodException, MalformedURLException {
 		
-		final Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.getLatest());
+		final Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
 		final Introspector obj = loader.introspectorFromName("generic-vnf");
 		obj.setValue("vnf-id", "myId");
 		obj.setValue("model-invariant-id", "key1");
@@ -129,7 +137,7 @@ public class DataCopyTest {
 		when(adminSpy.getTraversalSource()).thenReturn(traversal);
 		when(self.<String>property(AAIProperties.AAI_URI)).thenReturn(prop);
 		when(prop.orElse(null)).thenReturn(obj.getURI());
-		DBSerializer serializer = new DBSerializer(version, spy, introspectorFactoryType, "AAI_TEST");
+		DBSerializer serializer = new DBSerializer(schemaVersions.getDefaultVersion(), spy, introspectorFactoryType, "AAI_TEST");
 		SideEffectRunner runner = new SideEffectRunner
 				.Builder(spy, serializer).addSideEffect(DataCopy.class).build();
 		
@@ -145,7 +153,7 @@ public class DataCopyTest {
 	@Test
 	public void runPopulateModelVersionId() throws URISyntaxException, AAIException, UnsupportedEncodingException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, SecurityException, InstantiationException, NoSuchMethodException, MalformedURLException {
 		
-		final Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.v9);
+		final Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDepthVersion());
 		final Introspector obj = loader.introspectorFromName("generic-vnf");
 		obj.setValue("vnf-id", "myId");
 		obj.setValue("persona-model-id", "key1");
@@ -158,7 +166,7 @@ public class DataCopyTest {
 		when(adminSpy.getTraversalSource()).thenReturn(traversal);
 		when(self.<String>property(AAIProperties.AAI_URI)).thenReturn(prop);
 		when(prop.orElse(null)).thenReturn(obj.getURI());
-		DBSerializer serializer = new DBSerializer(version, spy, introspectorFactoryType, "AAI_TEST");
+		DBSerializer serializer = new DBSerializer(schemaVersions.getDefaultVersion(), spy, introspectorFactoryType, "AAI_TEST");
 		SideEffectRunner runner = new SideEffectRunner
 				.Builder(spy, serializer).addSideEffect(DataCopy.class).build();
 		
@@ -172,7 +180,7 @@ public class DataCopyTest {
 	@Test
 	public void verifyNestedSideEffect() throws URISyntaxException, AAIException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, SecurityException, InstantiationException, NoSuchMethodException, IOException {
 		
-		final Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.getLatest());
+		final Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
 		final Introspector obj = loader.unmarshal("customer", this.getJsonString("nested-case.json"));
 		//System.out.println(obj.marshal(true));
 		TransactionalGraphEngine spy = spy(dbEngine);
@@ -185,7 +193,7 @@ public class DataCopyTest {
 		when(self.<String>property(AAIProperties.AAI_URI)).thenReturn(prop);
 		when(prop.orElse(null)).thenReturn(obj.getURI());
 		when(uriQuery.isDependent()).thenReturn(false);
-		DBSerializer serializer = new DBSerializer(version, spy, introspectorFactoryType, "AAI_TEST");
+		DBSerializer serializer = new DBSerializer(schemaVersions.getDefaultVersion(), spy, introspectorFactoryType, "AAI_TEST");
 		Vertex v= serializer.createNewVertex(obj);
 		serializer.serializeToDb(obj, v, uriQuery, obj.getURI(), "test");
 		
@@ -198,7 +206,7 @@ public class DataCopyTest {
 	@Test
 	public void expectedMissingPropertyExceptionInURI() throws AAIException, UnsupportedEncodingException {
 		
-		final Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.getLatest());
+		final Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
 		final Introspector obj = loader.introspectorFromName("generic-vnf");
 		obj.setValue("vnf-id", "myId");
 		obj.setValue("model-invariant-id", "key1");
@@ -211,7 +219,7 @@ public class DataCopyTest {
 		when(adminSpy.getTraversalSource()).thenReturn(traversal);
 		when(self.<String>property(AAIProperties.AAI_URI)).thenReturn(prop);
 		when(prop.orElse(null)).thenReturn(obj.getURI());
-		DBSerializer serializer = new DBSerializer(version, spy, introspectorFactoryType, "AAI_TEST");
+		DBSerializer serializer = new DBSerializer(schemaVersions.getDefaultVersion(), spy, introspectorFactoryType, "AAI_TEST");
 		SideEffectRunner runner = new SideEffectRunner
 				.Builder(spy, serializer).addSideEffect(DataCopy.class).build();
 		
@@ -221,7 +229,7 @@ public class DataCopyTest {
 	
 	@Test
 	public void expectedMissingPropertyExceptionForResultingObject() throws AAIException, UnsupportedEncodingException {
-		final Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.getLatest());
+		final Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
 		final Introspector obj = loader.introspectorFromName("generic-vnf");
 		obj.setValue("vnf-id", "myId");
 		obj.setValue("model-invariant-id", "key3");
@@ -235,7 +243,7 @@ public class DataCopyTest {
 		when(adminSpy.getTraversalSource()).thenReturn(traversal);
 		when(self.<String>property(AAIProperties.AAI_URI)).thenReturn(prop);
 		when(prop.orElse(null)).thenReturn(obj.getURI());
-		DBSerializer serializer = new DBSerializer(version, spy, introspectorFactoryType, "AAI_TEST");
+		DBSerializer serializer = new DBSerializer(schemaVersions.getDefaultVersion(), spy, introspectorFactoryType, "AAI_TEST");
 		SideEffectRunner runner = new SideEffectRunner
 				.Builder(spy, serializer).addSideEffect(DataCopy.class).build();
 		
@@ -245,7 +253,7 @@ public class DataCopyTest {
 	
 	@Test
 	public void expectNoProcessingWithNoProperties() throws AAIException, UnsupportedEncodingException {
-		final Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.getLatest());
+		final Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
 		final Introspector obj = loader.introspectorFromName("generic-vnf");
 		obj.setValue("vnf-id", "myId");
 
@@ -257,7 +265,7 @@ public class DataCopyTest {
 		when(adminSpy.getTraversalSource()).thenReturn(traversal);
 		when(self.<String>property(AAIProperties.AAI_URI)).thenReturn(prop);
 		when(prop.orElse(null)).thenReturn(obj.getURI());
-		DBSerializer serializer = new DBSerializer(version, spy, introspectorFactoryType, "AAI_TEST");
+		DBSerializer serializer = new DBSerializer(schemaVersions.getDefaultVersion(), spy, introspectorFactoryType, "AAI_TEST");
 		SideEffectRunner runner = new SideEffectRunner
 				.Builder(spy, serializer).addSideEffect(DataCopy.class).build();
 		

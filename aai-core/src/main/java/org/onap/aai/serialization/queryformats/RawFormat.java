@@ -19,9 +19,10 @@
  */
 package org.onap.aai.serialization.queryformats;
 
-import java.util.Iterator;
-import java.util.List;
-
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
@@ -34,10 +35,9 @@ import org.onap.aai.serialization.queryformats.params.Depth;
 import org.onap.aai.serialization.queryformats.params.NodesOnly;
 import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
 
 
 public class RawFormat extends MultiFormatMapper {
@@ -61,7 +61,7 @@ public class RawFormat extends MultiFormatMapper {
 	}
 	
 	
-	public JsonObject createPropertiesObject(Vertex v) throws AAIFormatVertexException {
+	public Optional<JsonObject> createPropertiesObject(Vertex v) throws AAIFormatVertexException {
 		JsonObject json = new JsonObject();
 		Iterator<VertexProperty<Object>> iter = v.properties();
 
@@ -84,7 +84,7 @@ public class RawFormat extends MultiFormatMapper {
 			}
 		}
 
-		return json;
+		return Optional.of(json);
 	}
 	
 	protected JsonArray createRelationshipObject(Vertex v) throws AAIFormatVertexException {
@@ -94,18 +94,24 @@ public class RawFormat extends MultiFormatMapper {
 
 		while (inIter.hasNext()) {
 			Edge e = inIter.next();
-			jarray.add(this.getRelatedObject(e.label(), e.outVertex()));
+			Vertex outVertex = e.outVertex();
+			this.addEdge(e, outVertex, jarray);
 		}
 		
 		while (outIter.hasNext()) {
 			Edge e = outIter.next();
-			jarray.add(this.getRelatedObject(e.label(), e.inVertex()));
+			Vertex inVertex = e.inVertex();
+			this.addEdge(e, inVertex, jarray);
 		}
 
 		return jarray;
 	}
+
+	protected void addEdge(Edge e, Vertex vertex, JsonArray array) throws AAIFormatVertexException {
+		array.add(this.getRelatedObject(e.label(), vertex));
+	}
 	
-	private JsonObject getRelatedObject(String label, Vertex related) throws AAIFormatVertexException {
+	protected JsonObject getRelatedObject(String label, Vertex related) throws AAIFormatVertexException {
 		JsonObject json = new JsonObject();
 		json.addProperty("id", related.id().toString());
 		json.addProperty("relationship-label", label);
@@ -186,16 +192,21 @@ public class RawFormat extends MultiFormatMapper {
 	}
 
 	@Override
-	protected JsonObject getJsonFromVertex(Vertex v) throws AAIFormatVertexException {
+	protected Optional<JsonObject> getJsonFromVertex(Vertex v) throws AAIFormatVertexException {
 
 		JsonObject json = new JsonObject();
 		json.addProperty("id", v.id().toString());
 		json.addProperty("node-type", v.<String>value(AAIProperties.NODE_TYPE));
 		json.addProperty("url", this.urlBuilder.pathed(v));
-		json.add("properties", this.createPropertiesObject(v));
+		Optional<JsonObject> properties = this.createPropertiesObject(v);
+		if (properties.isPresent()) {
+			json.add("properties", properties.get());
+		} else {
+			return Optional.empty();
+		}
 		if (!nodesOnly) {
 			json.add("related-to", this.createRelationshipObject(v));
 		}
-		return json;
+		return Optional.of(json);
 	}
 }

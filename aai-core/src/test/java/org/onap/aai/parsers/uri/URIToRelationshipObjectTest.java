@@ -19,15 +19,15 @@
  */
 package org.onap.aai.parsers.uri;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.onap.aai.AAISetup;
-import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.*;
+import org.onap.aai.setup.SchemaVersion;
 
+import javax.annotation.PostConstruct;
 import javax.ws.rs.core.UriBuilder;
 import javax.xml.bind.JAXBException;
 import java.io.UnsupportedEncodingException;
@@ -39,15 +39,19 @@ import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertTrue;
 
-
 public class URIToRelationshipObjectTest extends AAISetup {
 
-	private Version latest = Version.v10;
-	private Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, latest);
+	private SchemaVersion latest ;
+	private Loader loader;
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
+	@PostConstruct
+	public void createLoader(){
+		latest = schemaVersions.getDefaultVersion();
+		loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, latest);
+	}
 	/**
 	 * Uri.
 	 *

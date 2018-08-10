@@ -56,7 +56,8 @@ public class ScheduledTasks {
 	public void loadAAIProperties() {
 		final UUID transId = UUID.randomUUID();
 
-		LoggingContext.init();
+		//LoggingContext.init();
+		LoggingContext.save();
 		LoggingContext.requestId(transId);
 		LoggingContext.partnerName(FROM_APP_ID);
 		LoggingContext.component(COMPONENT);
@@ -92,5 +93,6 @@ public class ScheduledTasks {
 				break;
 			}
 		}
+		LoggingContext.restoreIfPossible();
 	}
 }

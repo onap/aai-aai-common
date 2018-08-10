@@ -23,7 +23,7 @@ import com.google.common.base.Joiner;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
-import org.onap.aai.serialization.db.EdgeType;
+import org.onap.aai.edges.enums.EdgeType;
 
 import javax.ws.rs.core.MultivaluedMap;
 import java.io.UnsupportedEncodingException;
@@ -51,25 +51,10 @@ public class URIToDBKey implements Parsable {
 	 * @throws UnsupportedEncodingException the unsupported encoding exception
 	 */
 	public URIToDBKey(Loader loader, URI uri) throws IllegalArgumentException, AAIException, UnsupportedEncodingException {
-		
 		URIParser parser = new URIParser(loader, uri);
 		parser.parse(this);
 	}
-	/*
-	public URIToDBKey(Version version, String uri) throws IllegalArgumentException {
-		
-		super(version, uri);
-		try {
-			context = ModelInjestor.getInstance().getContextForVersion(version);
-			if (context == null) {
-				throw new IllegalArgumentException("could not find a context for version: " + version);
-			}
-			this.parse();
-		} catch (Exception e) {
-			throw new IllegalArgumentException("uri not valid against our model: " + uri);
-		}
-	}*/
-	
+
 	/**
 	 * @{inheritDoc}
 	 */
@@ -116,6 +101,6 @@ public class URIToDBKey implements Parsable {
 
 	@Override
 	public void processContainer(Introspector obj, EdgeType type, MultivaluedMap<String, String> uriKeys,
-			boolean isFinalContainer) throws AAIException {
+			boolean isFinalContainer) {
 	}
 }

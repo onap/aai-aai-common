@@ -26,7 +26,7 @@ import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.onap.aai.serialization.db.EdgeProperty;
+import org.onap.aai.edges.enums.EdgeProperty;
 import org.onap.aai.serialization.engines.query.GraphTraversalQueryEngine;
 
 import static org.junit.Assert.assertEquals;

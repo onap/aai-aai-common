@@ -19,10 +19,10 @@
  */
 package org.onap.aai.serialization.queryformats;
 
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import org.apache.tinkerpop.gremlin.structure.Edge;
+import org.apache.tinkerpop.gremlin.structure.Property;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.exceptions.AAIException;
@@ -30,7 +30,10 @@ import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
 
-import com.google.gson.JsonObject;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class SimpleFormat extends RawFormat {
 
@@ -46,7 +49,7 @@ public class SimpleFormat extends RawFormat {
 	}
 	
 	@Override
-	public JsonObject createPropertiesObject(Vertex v) throws AAIFormatVertexException {
+	public Optional<JsonObject> createPropertiesObject(Vertex v) throws AAIFormatVertexException {
 		try {
 			final Introspector obj = loader.introspectorFromName(
 										v.<String>property(AAIProperties.NODE_TYPE)
@@ -64,11 +67,25 @@ public class SimpleFormat extends RawFormat {
 			}
 
 			final String json = obj.marshal(false);
-			return parser.parse(json).getAsJsonObject();
+			return Optional.of(parser.parse(json).getAsJsonObject());
 		} catch (AAIUnknownObjectException e) {
-			throw new AAIFormatVertexException("Failed to format vertex - unknown object", e);
+			return Optional.empty();
 		}
 		
 
+	}
+
+	@Override
+	protected void addEdge(Edge e, Vertex v,  JsonArray array) throws AAIFormatVertexException {
+
+		Property property = e.property("private");
+
+		if(property.isPresent()){
+		    if("true".equals(e.property("private").value().toString())){
+		    	return;
+			}
+		}
+
+		super.addEdge(e, v, array);
 	}
 }

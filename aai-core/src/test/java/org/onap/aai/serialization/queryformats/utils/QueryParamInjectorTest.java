@@ -45,7 +45,7 @@ public class QueryParamInjectorTest {
 		MockitoAnnotations.initMocks(this);
 		QueryParamInjector injector = QueryParamInjector.getInstance();
 		
-		Builder b = new Resource.Builder(loader, serializer, urlBuilder);
+		Builder b = new Builder(loader, serializer, urlBuilder);
 		MultivaluedMap<String, String> params = new MultivaluedHashMap<>(); 
 		params.putSingle("nodesOnly", "true");
 		params.putSingle("depth", "10");

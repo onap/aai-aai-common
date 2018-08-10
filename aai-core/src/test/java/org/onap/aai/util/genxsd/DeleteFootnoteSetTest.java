@@ -19,17 +19,24 @@
  */
 package org.onap.aai.util.genxsd;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
 import java.util.Collection;
 
-import static org.hamcrest.CoreMatchers.is;
+import org.mockito.runners.MockitoJUnitRunner;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.CoreMatchers.is;
+import org.mockito.BDDMockito;
+import org.mockito.InjectMocks;
+import org.hamcrest.Matcher;
+import org.junit.runners.*;
+import org.junit.runners.Parameterized.Parameters;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 @RunWith(Parameterized.class)
 public class DeleteFootnoteSetTest {

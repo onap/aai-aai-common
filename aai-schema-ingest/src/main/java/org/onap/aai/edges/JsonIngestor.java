@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
- * Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright © 2017-18 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  * ============LICENSE_END=========================================================
- *
- * ECOMP is a trademark and service mark of AT&T Intellectual Property.
  */
 
 package org.onap.aai.edges;
@@ -25,13 +23,10 @@ package org.onap.aai.edges;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
-import org.onap.aai.setup.Version;
+import org.onap.aai.setup.SchemaVersion;
 
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
@@ -44,15 +39,15 @@ public class JsonIngestor {
 	/**
 	 * Reads in given json files to queryable DocumentContexts.
 	 * 
-	 * @param Map<Version, List<String>> filesToIngest - map of filenames to ingest
+	 * @param filesToIngest - map of filenames to ingest
 	 * 			per Version
-	 * @return Map<Version, List<DocumentContext>> - map of DocumentContexts per Version
+	 * @return Map<SchemaVersion, List<DocumentContext>> - map of DocumentContexts per Version
 	 */
-	public Map<Version, List<DocumentContext>> ingest(Map<Version, List<String>> filesToIngest) {
-		Map<Version, List<DocumentContext>> result = new EnumMap<>(Version.class);
+	public Map<SchemaVersion, List<DocumentContext>> ingest(Map<SchemaVersion, List<String>> filesToIngest) {
+		Map<SchemaVersion, List<DocumentContext>> result = new HashMap<>();
 		
-		for (Entry<Version, List<String>> verFiles : filesToIngest.entrySet()) {
-			Version v = verFiles.getKey();
+		for (Entry<SchemaVersion, List<String>> verFiles : filesToIngest.entrySet()) {
+			SchemaVersion v = verFiles.getKey();
 			List<String> files = verFiles.getValue();
 			
 			List<DocumentContext> docs = new ArrayList<>();

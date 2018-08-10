@@ -19,54 +19,25 @@
  */
 package org.onap.aai.restcore.search;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
-import org.codehaus.groovy.ast.ClassHelper;
-import org.codehaus.groovy.ast.expr.ClassExpression;
-import org.codehaus.groovy.ast.expr.PropertyExpression;
-import org.codehaus.groovy.control.CompilerConfiguration;
-import org.codehaus.groovy.control.customizers.ASTTransformationCustomizer;
-import org.codehaus.groovy.control.customizers.ImportCustomizer;
-
 import groovy.lang.Binding;
-import groovy.lang.GroovyShell;
 import groovy.lang.Script;
-import groovy.transform.TimedInterrupt;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
+import org.onap.aai.serialization.engines.TransactionalGraphEngine;
+
+import java.util.Map;
 
 /**
  * Creates and returns a groovy shell with the
  * configuration to statically import graph classes
  *
  */
-public class GremlinGroovyShellSingleton {
+public class GremlinGroovyShellSingleton extends AAIAbstractGroovyShell {
 
-	private final GroovyShell shell;
 	private GremlinGroovyShellSingleton() {
-		Map<String, Object> parameters = new HashMap<>();
-		parameters.put("value", 30000);
-		parameters.put("unit", new PropertyExpression(new ClassExpression(ClassHelper.make(TimeUnit.class)),"MILLISECONDS"));
-
-		ASTTransformationCustomizer custom = new ASTTransformationCustomizer(parameters, TimedInterrupt.class);
-		ImportCustomizer imports = new ImportCustomizer();
-		imports.addStaticStars(
-            "org.apache.tinkerpop.gremlin.process.traversal.P"
-		);
-		imports.addImports(
-				"org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__",
-				"org.apache.tinkerpop.gremlin.structure.T",
-				"org.apache.tinkerpop.gremlin.process.traversal.P",
-				"java.util.Map.Entry");
-		imports.addStarImports("java.util");
-		CompilerConfiguration config = new CompilerConfiguration();
-		config.addCompilationCustomizers(custom, imports);
-
-		this.shell = new GroovyShell(config);
+		super();
 	}
-	
-	 private static class Helper {
+
+	private static class Helper {
 		 private static final GremlinGroovyShellSingleton INSTANCE = new GremlinGroovyShellSingleton();
 	 }
 
@@ -76,14 +47,21 @@ public class GremlinGroovyShellSingleton {
 	 }
 
 	/** 
-	 * @param traversal
-	 * @param params
-	 * @return result of graph traversal
+	 * {@inheritDoc}
 	 */
+	@Override
 	public GraphTraversal<?, ?> executeTraversal (String traversal, Map<String, Object> params) {
 		Binding binding = new Binding(params);
 		Script script = shell.parse(traversal);
 		script.setBinding(binding);
 		return (GraphTraversal<?, ?>) script.run();
+	}
+
+	/**
+	 * @throws UnsupportedOperationException
+	 */
+	@Override
+	public String executeTraversal(TransactionalGraphEngine engine, String traversal, Map<String, Object> params) {
+		throw new UnsupportedOperationException();
 	}
 }

@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
- * Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright © 2017-18 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  * ============LICENSE_END=========================================================
- *
- * ECOMP is a trademark and service mark of AT&T Intellectual Property.
  */
 
 package org.onap.aai.edges;
@@ -36,17 +34,20 @@ import org.onap.aai.edges.enums.MultiplicityRule;
 import org.onap.aai.edges.exceptions.AmbiguousRuleChoiceException;
 import org.onap.aai.edges.exceptions.EdgeRuleNotFoundException;
 import org.onap.aai.setup.SchemaLocationsBean;
-import org.onap.aai.setup.Version;
+import org.onap.aai.setup.SchemaVersion;
+import org.onap.aai.setup.SchemaVersions;
 import org.onap.aai.testutils.TestUtilConfigTranslator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.google.common.collect.Multimap;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {SchemaLocationsBean.class, TestUtilConfigTranslator.class, EdgeIngestor.class})
+@ContextConfiguration(classes = {SchemaLocationsBean.class, SchemaVersions.class, TestUtilConfigTranslator.class, EdgeIngestor.class})
+@TestPropertySource(properties = { "schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-wiring-test.properties" })
 @SpringBootTest
 public class EdgeIngestorTest {
 	@Autowired
@@ -82,7 +83,7 @@ public class EdgeIngestorTest {
 	
 	@Test
 	public void getRulesTest2() throws EdgeRuleNotFoundException {
-		EdgeRuleQuery q = new EdgeRuleQuery.Builder("puppy", "dog").build();
+		EdgeRuleQuery q = new EdgeRuleQuery.Builder("dog", "puppy").build();
 		Multimap<String, EdgeRule> results = ei.getRules(q);
 		assertTrue(results.size() == 1);
 		assertTrue(results.containsKey("dog|puppy"));
@@ -101,8 +102,49 @@ public class EdgeIngestorTest {
 	}
 	
 	@Test
+	public void getRulesFlippedTypesTest() throws EdgeRuleNotFoundException {
+		EdgeRuleQuery q = new EdgeRuleQuery.Builder("l-interface", "logical-link").version(new SchemaVersion("v11")).build();
+		Multimap<String, EdgeRule> results = ei.getRules(q);
+		assertTrue(results.size() == 3);
+		for (EdgeRule r : results.get("l-interface|logical-link")) {
+			if ("org.onap.relationships.inventory.Source".equals(r.getLabel()) ||
+				"org.onap.relationships.inventory.Destination".equals(r.getLabel())) {
+				//these are defined with from=logical-link, to=l-interface, so they must be flipped
+				assertTrue(Direction.IN.equals(r.getDirection()));
+			} else if ("tosca.relationships.network.LinksTo".equals(r.getLabel())) {
+				//this is defined with from=l-interface, to=logical-link, so it shouldn't be flipped
+				assertTrue(Direction.OUT.equals(r.getDirection()));
+			} else {
+				fail("how did you get here");
+			}
+		}
+	}
+	
+	@Test
+	public void fromToSameFlipTests() throws EdgeRuleNotFoundException, AmbiguousRuleChoiceException {
+		//getRules, setting from and to
+		EdgeRuleQuery q = new EdgeRuleQuery.Builder("bloop","bloop").version(new SchemaVersion("v11")).build();
+		Multimap<String, EdgeRule> results = ei.getRules(q);
+		assertTrue(results.size() == 1);
+		for (EdgeRule r : results.get("bloop|bloop")) {
+			assertTrue(Direction.IN.equals(r.getDirection()));
+		}
+		
+		//getRule, setting just from
+		EdgeRuleQuery q2 = new EdgeRuleQuery.Builder("bloop").version(new SchemaVersion("v11")).build();
+		assertTrue(Direction.IN.equals(ei.getRule(q2).getDirection()));
+		
+		//getChildRules
+		Multimap<String, EdgeRule> child = ei.getChildRules("bloop", new SchemaVersion("v11"));
+		assertTrue(child.size() == 1);
+		for (EdgeRule r : child.get("bloop|bloop")) {
+			assertTrue(Direction.IN.equals(r.getDirection()));
+		}
+	}
+	
+	@Test
 	public void getRulesTest3() throws EdgeRuleNotFoundException {
-		EdgeRuleQuery q = new EdgeRuleQuery.Builder("l-interface").version(Version.V11).build();
+		EdgeRuleQuery q = new EdgeRuleQuery.Builder("l-interface").version(new SchemaVersion("v11")).build();
 		Multimap<String, EdgeRule> results = ei.getRules(q);
 		assertTrue(results.size() == 4);
 		assertTrue(results.containsKey("lag-interface|l-interface"));
@@ -120,7 +162,7 @@ public class EdgeIngestorTest {
 	
 	@Test
 	public void getRuleSimpleTest() throws EdgeRuleNotFoundException, AmbiguousRuleChoiceException {
-		EdgeRuleQuery q = new EdgeRuleQuery.Builder("notation", "parent").build();
+		EdgeRuleQuery q = new EdgeRuleQuery.Builder("parent", "notation").build();
 		EdgeRule result = ei.getRule(q);
 		assertTrue("parent".equals(result.getFrom()));
 		assertTrue("notation".equals(result.getTo()));
@@ -134,8 +176,25 @@ public class EdgeIngestorTest {
 	}
 	
 	@Test
+	public void getRuleFlippedTypesTest() throws EdgeRuleNotFoundException, AmbiguousRuleChoiceException {
+		EdgeRuleQuery q = new EdgeRuleQuery.Builder("notation", "parent").build();
+		EdgeRule result = ei.getRule(q);
+		assertTrue("parent".equals(result.getFrom()));
+		assertTrue("notation".equals(result.getTo()));
+		assertTrue("has".equals(result.getLabel()));
+		//direction flipped to match input order per old EdgeRules.java API
+		assertTrue(Direction.IN.equals(result.getDirection()));
+		assertTrue(MultiplicityRule.MANY2MANY.equals(result.getMultiplicityRule()));
+		assertTrue(AAIDirection.OUT.toString().equals(result.getContains()));
+		assertTrue(AAIDirection.NONE.toString().equals(result.getDeleteOtherV()));
+		assertTrue(AAIDirection.NONE.toString().equals(result.getPreventDelete()));
+		assertTrue("parent contains notation".equals(result.getDescription()));
+	}
+	
+	@Test
 	public void getRuleWithDefaultTest() throws EdgeRuleNotFoundException, AmbiguousRuleChoiceException {
-		EdgeRuleQuery q = new EdgeRuleQuery.Builder("l-interface","logical-link").version(Version.V11).build();	
+
+		EdgeRuleQuery q = new EdgeRuleQuery.Builder("l-interface","logical-link").version(new SchemaVersion("v11")).build();
 		EdgeRule res = ei.getRule(q);
 		assertTrue(res.isDefault());
 		assertTrue("tosca.relationships.network.LinksTo".equals(res.getLabel()));
@@ -143,7 +202,7 @@ public class EdgeIngestorTest {
 	
 	@Test
 	public void getRuleWithNonDefault() throws EdgeRuleNotFoundException, AmbiguousRuleChoiceException {
-		EdgeRuleQuery q = new EdgeRuleQuery.Builder("l-interface","logical-link").label("org.onap.relationships.inventory.Source").version(Version.V11).build();
+		EdgeRuleQuery q = new EdgeRuleQuery.Builder("l-interface","logical-link").label("org.onap.relationships.inventory.Source").version(new SchemaVersion("v11")).build();
 		EdgeRule res = ei.getRule(q);
 		assertFalse(res.isDefault());
 		assertTrue("org.onap.relationships.inventory.Source".equals(res.getLabel()));
@@ -169,7 +228,7 @@ public class EdgeIngestorTest {
 	public void getRuleAmbiguousDefaultTest() throws EdgeRuleNotFoundException, AmbiguousRuleChoiceException {
 		thrown.expect(AmbiguousRuleChoiceException.class);
 		thrown.expectMessage("Multiple defaults found.");
-		EdgeRuleQuery q = new EdgeRuleQuery.Builder("seed","plant").version(Version.V11).build();
+		EdgeRuleQuery q = new EdgeRuleQuery.Builder("seed","plant").version(new SchemaVersion("v11")).build();
 		ei.getRule(q);
 	}
 	
@@ -177,13 +236,13 @@ public class EdgeIngestorTest {
 	public void getRuleNoDefaultTest() throws EdgeRuleNotFoundException, AmbiguousRuleChoiceException {
 		thrown.expect(AmbiguousRuleChoiceException.class);
 		thrown.expectMessage("No default found.");
-		EdgeRuleQuery q = new EdgeRuleQuery.Builder("apple", "orange").version(Version.V11).build();
+		EdgeRuleQuery q = new EdgeRuleQuery.Builder("apple", "orange").version(new SchemaVersion("v11")).build();
 		ei.getRule(q);
 	}
 	
 	@Test
 	public void hasRuleTest() {
-		assertTrue(ei.hasRule(new EdgeRuleQuery.Builder("l-interface").version(Version.V11).build()));
+		assertTrue(ei.hasRule(new EdgeRuleQuery.Builder("l-interface").version(new SchemaVersion("v11")).build()));
 		assertFalse(ei.hasRule(new EdgeRuleQuery.Builder("l-interface").build()));
 	}
 	
@@ -197,7 +256,7 @@ public class EdgeIngestorTest {
 	
 	@Test
 	public void getCousinRulesWithVersionTest() {
-		Multimap<String, EdgeRule> results = ei.getCousinRules("foo", Version.V10);
+		Multimap<String, EdgeRule> results = ei.getCousinRules("foo", new SchemaVersion("v10"));
 		assertTrue(results.size() == 2);
 		assertTrue(results.containsKey("bar|foo"));
 		assertTrue(results.get("bar|foo").size() == 2);
@@ -205,16 +264,16 @@ public class EdgeIngestorTest {
 	
 	@Test
 	public void getCousinsNoneInVersionTest() {
-		Multimap<String, EdgeRule> results = ei.getCousinRules("foo", Version.V11);
+		Multimap<String, EdgeRule> results = ei.getCousinRules("foo", new SchemaVersion("v11"));
 		assertTrue(results.isEmpty());
 	}
 	
 	@Test
 	public void hasCousinTest() {
 		assertTrue(ei.hasCousinRule("foo"));
-		assertTrue(ei.hasCousinRule("foo", Version.V10));
+		assertTrue(ei.hasCousinRule("foo", new SchemaVersion("v10")));
 		assertFalse(ei.hasCousinRule("parent"));
-		assertFalse(ei.hasCousinRule("foo", Version.V11));
+		assertFalse(ei.hasCousinRule("foo", new SchemaVersion("v11")));
 	}
 
 	@Test
@@ -231,7 +290,7 @@ public class EdgeIngestorTest {
 	
 	@Test
 	public void getChildRulesWithVersionTest() {
-		Multimap<String, EdgeRule> results = ei.getChildRules("foo", Version.V10);
+		Multimap<String, EdgeRule> results = ei.getChildRules("foo", new SchemaVersion("v10"));
 		assertTrue(results.size() == 2);
 		assertTrue(results.containsKey("baz|foo"));
 		assertTrue(results.containsKey("foo|quux"));
@@ -239,16 +298,16 @@ public class EdgeIngestorTest {
 	
 	@Test
 	public void getChildRulesNoneInVersionTest() {
-		Multimap<String, EdgeRule> results = ei.getChildRules("foo", Version.V11);
+		Multimap<String, EdgeRule> results = ei.getChildRules("foo", new SchemaVersion("v11"));
 		assertTrue(results.isEmpty());
 	}
 	
 	@Test
 	public void hasChildTest() {
 		assertTrue(ei.hasChildRule("foo"));
-		assertTrue(ei.hasChildRule("foo", Version.V10));
+		assertTrue(ei.hasChildRule("foo", new SchemaVersion("v10")));
 		assertFalse(ei.hasChildRule("puppy"));
-		assertFalse(ei.hasChildRule("foo", Version.V11));
+		assertFalse(ei.hasChildRule("foo", new SchemaVersion("v11")));
 	}
 	
 	@Test
@@ -265,23 +324,23 @@ public class EdgeIngestorTest {
 	
 	@Test
 	public void getParentRulesWithVersionTest() {
-		Multimap<String, EdgeRule> results = ei.getParentRules("baz", Version.V10);
+		Multimap<String, EdgeRule> results = ei.getParentRules("baz", new SchemaVersion("v10"));
 		assertTrue(results.size() == 1);
 		assertTrue(results.containsKey("baz|foo"));
 	}
 	
 	@Test
 	public void getParentRulesNoneInVersionTest() {
-		Multimap<String, EdgeRule> results = ei.getParentRules("baz", Version.V11);
+		Multimap<String, EdgeRule> results = ei.getParentRules("baz", new SchemaVersion("v11"));
 		assertTrue(results.isEmpty());
 	}
 	
 	@Test
 	public void hasParentTest() {
 		assertTrue(ei.hasParentRule("parent"));
-		assertTrue(ei.hasParentRule("quux", Version.V10));
+		assertTrue(ei.hasParentRule("quux", new SchemaVersion("v10")));
 		assertFalse(ei.hasParentRule("puppy"));
-		assertFalse(ei.hasParentRule("foo", Version.V11));
+		assertFalse(ei.hasParentRule("foo", new SchemaVersion("v11")));
 	}
 	
 	@Test
@@ -292,7 +351,7 @@ public class EdgeIngestorTest {
 	
 	@Test
 	public void getAllRulesTest() throws EdgeRuleNotFoundException {
-		Multimap<String, EdgeRule> res = ei.getAllRules(Version.V10);
+		Multimap<String, EdgeRule> res = ei.getAllRules(new SchemaVersion("v10"));
 		assertTrue(res.size() == 4);
 		assertTrue(res.containsKey("bar|foo"));
 		assertTrue(res.get("bar|foo").size() == 2);
@@ -300,7 +359,7 @@ public class EdgeIngestorTest {
 		assertTrue(res.containsKey("foo|quux"));
 		
 		thrown.expect(EdgeRuleNotFoundException.class);
-		thrown.expectMessage("No rules found for version V9.");
-		ei.getAllRules(Version.V9);
+		thrown.expectMessage("No rules found for version v9.");
+		ei.getAllRules(new SchemaVersion("v9"));
 	}
 }

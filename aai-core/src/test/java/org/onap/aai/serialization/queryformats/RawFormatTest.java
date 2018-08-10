@@ -19,10 +19,6 @@
  */
 package org.onap.aai.serialization.queryformats;
 
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
-
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.strategy.verification.ReadOnlyStrategy;
 import org.apache.tinkerpop.gremlin.structure.Graph;
@@ -37,18 +33,24 @@ import org.onap.aai.AAISetup;
 import org.onap.aai.dbmap.DBConnectionType;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Loader;
-import org.onap.aai.introspection.LoaderFactory;
 import org.onap.aai.introspection.ModelType;
-import org.onap.aai.introspection.Version;
 import org.onap.aai.serialization.db.DBSerializer;
-import org.onap.aai.serialization.db.EdgeRules;
-import org.onap.aai.serialization.engines.QueryStyle;
+import org.onap.aai.serialization.db.EdgeSerializer;
 import org.onap.aai.serialization.engines.JanusGraphDBEngine;
+import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatQueryResultFormatNotSupported;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
 import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
+import org.onap.aai.setup.SchemaVersion;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
+
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class RawFormatTest extends AAISetup {
 
 	@Mock
@@ -59,15 +61,20 @@ public class RawFormatTest extends AAISetup {
 	private Loader loader;
 	private RawFormat rawFormat;
 	private final ModelType factoryType = ModelType.MOXY;
-	private final EdgeRules rules = EdgeRules.getInstance();
-	private Version version = Version.getLatest();
+
+	@Autowired
+	private EdgeSerializer rules;
+
+	private SchemaVersion version;
 	private Vertex pserver;
 	private Vertex complex;
 
 	private DBSerializer serializer;
-
+	
 	@Before
 	public void setUp() throws Exception {
+
+	    version = schemaVersions.getDefaultVersion();
 
 		MockitoAnnotations.initMocks(this);
 
@@ -83,9 +90,11 @@ public class RawFormatTest extends AAISetup {
 		
 		pserver = pserver1;
 		complex = complex1;
-		
-		createLoaderEngineSetup();
 
+		System.setProperty("AJSC_HOME", ".");
+		System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
+
+		createLoaderEngineSetup();
 	}
 
 	@Test
@@ -111,7 +120,8 @@ public class RawFormatTest extends AAISetup {
 	public void createLoaderEngineSetup() throws AAIException {
 
 		if (loader == null) {
-			loader = LoaderFactory.createLoaderForVersion(factoryType, version);
+			loader = loaderFactory.createLoaderForVersion(factoryType, version);
+			//loader = LoaderFactory.createLoaderForVersion(factoryType, version);
 			dbEngine = spy(new JanusGraphDBEngine(QueryStyle.TRAVERSAL, DBConnectionType.CACHED, loader));
 			serializer = new DBSerializer(version, dbEngine, factoryType, "Junit");
 			rawFormat = new RawFormat.Builder(loader, serializer, urlBuilder).build();

@@ -34,8 +34,6 @@
     <version>1.3.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <properties>
-        <gendoc.version>v14</gendoc.version>
-        <aai.wiki.link>https://wiki.onap.org/</aai.wiki.link>
         <sonar.language>java</sonar.language>
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <sonar.surefire.reportsPath>${project.build.directory}/surefire-reports</sonar.surefire.reportsPath>
@@ -51,8 +49,44 @@
         <jacoco.line.coverage.limit>0.50</jacoco.line.coverage.limit>
         <gremlin.version>3.2.2</gremlin.version>
         <jetty.version>9.4.6.v20170531</jetty.version>
+
+        <!-- Start of Default ONAP Schema Properties -->
+        <aai.wiki.link>https://wiki.onap.org/</aai.wiki.link>
+        <gendoc.version>v14</gendoc.version>
+        <aai.release>onap</aai.release>
+        <schema.uri.base.path>/aai</schema.uri.base.path>
+        <schema.configuration.location>N/A</schema.configuration.location>
+        <schema.nodes.location>aai-schema/src/main/resources/${aai.release}/oxm</schema.nodes.location>
+        <schema.edges.location>aai-schema/src/main/resources/${aai.release}/dbedgerules</schema.edges.location>
+        <schema.version.depth.start>v9</schema.version.depth.start>
+        <schema.version.related.link.start>v10</schema.version.related.link.start>
+        <schema.version.app.root.start>v11</schema.version.app.root.start>
+        <schema.version.namespace.change.start>v12</schema.version.namespace.change.start>
+        <schema.version.edge.label.start>v12</schema.version.edge.label.start>
+        <schema.version.api.default>v14</schema.version.api.default>
+        <schema.version.list>v8,v9,v10,v11,v12,v13,v14</schema.version.list>
+        <!-- End of Default ONAP Schema Properties -->
     </properties>
     <profiles>
+        <!-- Start of ONAP profile -->
+        <profile>
+            <id>onap</id>
+            <properties>
+                <aai.release>onap</aai.release>
+                <schema.configuration.location>N/A</schema.configuration.location>
+                <schema.nodes.location>aai-schema/src/main/resources/${aai.release}/oxm</schema.nodes.location>
+                <schema.edges.location>aai-schema/src/main/resources/${aai.release}/dbedgerules</schema.edges.location>
+                <schema.version.depth.start>v9</schema.version.depth.start>
+                <schema.version.related.link.start>v10</schema.version.related.link.start>
+                <schema.version.app.root.start>v11</schema.version.app.root.start>
+                <schema.version.edge.label.start>v12</schema.version.edge.label.start>
+                <schema.version.namespace.change.start>v12</schema.version.namespace.change.start>
+                <schema.version.api.default>v14</schema.version.api.default>
+                <schema.version.list>v8,v9,v10,v11,v12,v13,v14</schema.version.list>
+                <gendoc.version>v14</gendoc.version>
+            </properties>
+        </profile>
+        <!-- End of ONAP profile -->
         <profile>
             <id>generateXsd</id>
             <build>
@@ -85,6 +119,58 @@
                                         <systemProperty>
                                             <key>yamlresponses_label</key>
                                             <value></value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.configuration.location</key>
+                                            <value>${schema.configuration.location}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.nodes.location</key>
+                                            <value>${schema.nodes.location}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.edges.location</key>
+                                            <value>${schema.edges.location}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.version.list</key>
+                                            <value>${schema.version.list}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.version.depth.start</key>
+                                            <value>${schema.version.depth.start}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.version.depth.start</key>
+                                            <value>${schema.version.depth.start}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.version.related.link.start</key>
+                                            <value>${schema.version.related.link.start}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.version.app.root.start</key>
+                                            <value>${schema.version.app.root.start}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.version.edge.label.start</key>
+                                            <value>${schema.version.app.root.start}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.version.namespace.change.start</key>
+                                            <value>${schema.version.namespace.change.start}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.version.api.default</key>
+                                            <value>${schema.version.api.default}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.uri.base.path</key>
+                                            <value>${schema.uri.base.path}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>aai.release</key>
+                                            <value>${aai.release}</value>
                                         </systemProperty>
                                     </systemProperties>
                                 </configuration>
@@ -121,11 +207,64 @@
                                         </systemProperty>
                                         <systemProperty>
                                             <key>yamlresponses_url</key>
-                                            <value>${aai.wiki.link}</value>
+                                            <value>https://wiki.web.att.com/pages/viewpage.action?pageId=607391054
+                                            </value>
                                         </systemProperty>
                                         <systemProperty>
                                             <key>yamlresponses_label</key>
                                             <value>Response codes found in [response codes]</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.configuration.location</key>
+                                            <value>${schema.configuration.location}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.nodes.location</key>
+                                            <value>${schema.nodes.location}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.edges.location</key>
+                                            <value>${schema.edges.location}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.version.list</key>
+                                            <value>${schema.version.list}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.version.depth.start</key>
+                                            <value>${schema.version.depth.start}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.version.depth.start</key>
+                                            <value>${schema.version.depth.start}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.version.related.link.start</key>
+                                            <value>${schema.version.related.link.start}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.version.app.root.start</key>
+                                            <value>${schema.version.app.root.start}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.version.edge.label.start</key>
+                                            <value>${schema.version.app.root.start}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.version.namespace.change.start</key>
+                                            <value>${schema.version.namespace.change.start}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.version.api.default</key>
+                                            <value>${schema.version.api.default}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.uri.base.path</key>
+                                            <value>${schema.uri.base.path}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>aai.release</key>
+                                            <value>${aai.release}</value>
                                         </systemProperty>
                                     </systemProperties>
                                 </configuration>
@@ -160,6 +299,58 @@
                                             <key>aai.wiki.link</key>
                                             <value>${aai.wiki.link}</value>
                                         </property>
+                                        <systemProperty>
+                                            <key>schema.configuration.location</key>
+                                            <value>${schema.configuration.location}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.nodes.location</key>
+                                            <value>${schema.nodes.location}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.edges.location</key>
+                                            <value>${schema.edges.location}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.version.list</key>
+                                            <value>${schema.version.list}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.version.depth.start</key>
+                                            <value>${schema.version.depth.start}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.version.depth.start</key>
+                                            <value>${schema.version.depth.start}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.version.related.link.start</key>
+                                            <value>${schema.version.related.link.start}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.version.app.root.start</key>
+                                            <value>${schema.version.app.root.start}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.version.edge.label.start</key>
+                                            <value>${schema.version.app.root.start}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.version.namespace.change.start</key>
+                                            <value>${schema.version.namespace.change.start}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.version.api.default</key>
+                                            <value>${schema.version.api.default}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.uri.base.path</key>
+                                            <value>${schema.uri.base.path}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>aai.release</key>
+                                            <value>${aai.release}</value>
+                                        </systemProperty>
                                     </systemProperties>
                                 </configuration>
                             </execution>
@@ -171,7 +362,10 @@
         <profile>
             <id>autoGenerate</id>
             <activation>
-                <activeByDefault>true</activeByDefault>
+                <property>
+                    <name>aai.generate.schema</name>
+                    <value>!false</value>
+                </property>
             </activation>
             <build>
                 <plugins>
@@ -180,6 +374,86 @@
                         <artifactId>exec-maven-plugin</artifactId>
                         <version>1.1.1</version>
                         <executions>
+                            <execution>
+                                <id>autoGenerateXsd</id>
+                                <phase>process-classes</phase>
+                                <goals>
+                                    <goal>java</goal>
+                                </goals>
+                                <configuration>
+                                    <mainClass>org.onap.aai.util.GenerateXsd</mainClass>
+                                    <systemProperties>
+                                        <systemProperty>
+                                            <key>gen_version</key>
+                                            <value>ALL</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>gen_type</key>
+                                            <value>XSD</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>yamlresponses_url</key>
+                                            <value></value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>yamlresponses_label</key>
+                                            <value></value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.configuration.location</key>
+                                            <value>${schema.configuration.location}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.nodes.location</key>
+                                            <value>${schema.nodes.location}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.edges.location</key>
+                                            <value>${schema.edges.location}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.version.list</key>
+                                            <value>${schema.version.list}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.version.depth.start</key>
+                                            <value>${schema.version.depth.start}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.version.depth.start</key>
+                                            <value>${schema.version.depth.start}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.version.related.link.start</key>
+                                            <value>${schema.version.related.link.start}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.version.app.root.start</key>
+                                            <value>${schema.version.app.root.start}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.version.edge.label.start</key>
+                                            <value>${schema.version.app.root.start}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.version.namespace.change.start</key>
+                                            <value>${schema.version.namespace.change.start}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.version.api.default</key>
+                                            <value>${schema.version.api.default}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.uri.base.path</key>
+                                            <value>${schema.uri.base.path}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>aai.release</key>
+                                            <value>${aai.release}</value>
+                                        </systemProperty>
+                                    </systemProperties>
+                                </configuration>
+                            </execution>
                             <execution>
                                 <id>autoGenerateYaml</id>
                                 <phase>process-classes</phase>
@@ -199,11 +473,60 @@
                                         </systemProperty>
                                         <systemProperty>
                                             <key>yamlresponses_url</key>
-                                            <value>${aai.wiki.link}</value>
+                                            <value>https://wiki.web.att.com/pages/viewpage.action?pageId=607391054
+                                            </value>
                                         </systemProperty>
                                         <systemProperty>
                                             <key>yamlresponses_label</key>
                                             <value>Response codes found in [response codes]</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.configuration.location</key>
+                                            <value>${schema.configuration.location}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.nodes.location</key>
+                                            <value>${schema.nodes.location}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.edges.location</key>
+                                            <value>${schema.edges.location}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.version.list</key>
+                                            <value>${schema.version.list}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.version.depth.start</key>
+                                            <value>${schema.version.depth.start}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.version.depth.start</key>
+                                            <value>${schema.version.depth.start}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.version.related.link.start</key>
+                                            <value>${schema.version.related.link.start}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.version.app.root.start</key>
+                                            <value>${schema.version.app.root.start}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.version.edge.label.start</key>
+                                            <value>${schema.version.app.root.start}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.version.namespace.change.start</key>
+                                            <value>${schema.version.namespace.change.start}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.version.api.default</key>
+                                            <value>${schema.version.api.default}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>aai.release</key>
+                                            <value>${aai.release}</value>
                                         </systemProperty>
                                     </systemProperties>
                                 </configuration>
@@ -225,6 +548,54 @@
                                             <key>aai.wiki.link</key>
                                             <value>${aai.wiki.link}</value>
                                         </property>
+                                        <systemProperty>
+                                            <key>schema.configuration.location</key>
+                                            <value>${schema.configuration.location}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.nodes.location</key>
+                                            <value>${schema.nodes.location}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.edges.location</key>
+                                            <value>${schema.edges.location}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.version.list</key>
+                                            <value>${schema.version.list}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.version.depth.start</key>
+                                            <value>${schema.version.depth.start}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.version.depth.start</key>
+                                            <value>${schema.version.depth.start}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.version.related.link.start</key>
+                                            <value>${schema.version.related.link.start}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.version.app.root.start</key>
+                                            <value>${schema.version.app.root.start}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.version.edge.label.start</key>
+                                            <value>${schema.version.app.root.start}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.version.namespace.change.start</key>
+                                            <value>${schema.version.namespace.change.start}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>schema.version.api.default</key>
+                                            <value>${schema.version.api.default}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <key>aai.release</key>
+                                            <value>${aai.release}</value>
+                                        </systemProperty>
                                     </systemProperties>
                                 </configuration>
                             </execution>
@@ -320,26 +691,18 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.12.4</version>
-                <configuration>
-                    <argLine>-noverify ${argLine}</argLine>
-                    <runOrder>alphabetical</runOrder>
-                    <systemPropertyVariables>
-                        <AJSC_HOME>.</AJSC_HOME>
-                        <BUNDLECONFIG_DIR>bundleconfig-local</BUNDLECONFIG_DIR>
-                    </systemPropertyVariables>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
 
     <dependencies>
         <dependency>
             <groupId>org.onap.aai.aai-common</groupId>
-            <artifactId>aai-schema</artifactId>
+            <artifactId>aai-schema-ingest</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.onap.aai.aai-common</groupId>
+            <artifactId>aai-annotations</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -433,7 +796,12 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
-            <version>4.3.16.RELEASE</version>
+            <version>4.3.6.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>4.3.6.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>javax.xml.bind</groupId>

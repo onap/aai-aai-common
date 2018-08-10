@@ -19,10 +19,10 @@
  */
 package org.onap.aai.util.genxsd;
 
+import java.util.StringTokenizer;
+
 import org.apache.commons.lang3.StringUtils;
 import org.onap.aai.util.GenerateXsd;
-
-import java.util.StringTokenizer;
 
 public class PatchOperation {
 	private String useOpId;
@@ -76,7 +76,7 @@ public class PatchOperation {
 
 			if ( path.endsWith("/relationship") ) {
 				pathSb.append("      summary: see node definition for valid relationships\n");
-				relationshipExamplesSb.append("[See Examples](apidocs/relations/"+ GenerateXsd.getAPIVersion()+"/"+useOpId+".json)");
+				relationshipExamplesSb.append("[See Examples](apidocs/relations/"+GenerateXsd.getAPIVersion()+"/"+useOpId+".json)");
 			} else {
 				pathSb.append("      summary: update an existing " + xmlRootElementName + "\n");
 				pathSb.append("      description: |\n");
@@ -95,10 +95,8 @@ public class PatchOperation {
 			pathSb.append("      operationId: Update" + useOpId + "\n");
 			pathSb.append("      consumes:\n");
 			pathSb.append("        - application/json\n");
-			pathSb.append("        - application/xml\n");					
 			pathSb.append("      produces:\n");
 			pathSb.append("        - application/json\n");
-			pathSb.append("        - application/xml\n");
 			pathSb.append("      responses:\n");
 			pathSb.append("        \"default\":\n");
 			pathSb.append("          " + GenerateXsd.getResponsesUrl());

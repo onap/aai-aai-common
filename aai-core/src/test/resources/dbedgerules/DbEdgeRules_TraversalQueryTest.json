@@ -8,7 +8,6 @@
 			"multiplicity": "ONE2MANY",
 			"contains-other-v": "NONE",
 			"delete-other-v": "${direction}",
-			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE",
 			"default": "true",
 			"description": "Hard to describe"
@@ -21,7 +20,6 @@
 			"multiplicity": "ONE2MANY",
 			"contains-other-v": "NONE",
 			"delete-other-v": "${direction}",
-			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE",
 			"description": "Hard to describe"
 		},
@@ -33,7 +31,6 @@
 			"multiplicity": "ONE2MANY",
 			"contains-other-v": "NONE",
 			"delete-other-v": "${direction}",
-			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE",
 			"default": "true",
 			"description": "Hard to describe"
@@ -46,7 +43,6 @@
 			"multiplicity": "ONE2MANY",
 			"contains-other-v": "NONE",
 			"delete-other-v": "${direction}",
-			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE",
 			"default": "true",
 			"description": "Hard to describe"
@@ -59,7 +55,6 @@
 			"multiplicity": "ONE2MANY",
 			"contains-other-v": "NONE",
 			"delete-other-v": "${direction}",
-			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE",
 			"default": "true",
 			"description": "Hard to describe"
@@ -72,7 +67,6 @@
 			"multiplicity": "ONE2MANY",
 			"contains-other-v": "NONE",
 			"delete-other-v": "${direction}",
-			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE",
 			"description": "Hard to describe"
 		},
@@ -84,7 +78,6 @@
 			"multiplicity": "ONE2MANY",
 			"contains-other-v": "NONE",
 			"delete-other-v": "${direction}",
-			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE",
 			"default": "true",
 			"description": "Hard to describe"
@@ -97,7 +90,6 @@
 			"multiplicity": "ONE2MANY",
 			"contains-other-v": "NONE",
 			"delete-other-v": "${direction}",
-			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE",
 			"description": "Hard to describe"
 		},
@@ -109,7 +101,6 @@
 			"multiplicity": "MANY2MANY",
 			"contains-other-v": "NONE",
 			"delete-other-v": "${direction}",
-			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE",
 			"default": "true",
 			"description": "Hard to describe"
@@ -122,7 +113,6 @@
 			"multiplicity": "MANY2MANY",
 			"contains-other-v": "NONE",
 			"delete-other-v": "${direction}",
-			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE",
 			"default": "false",
 			"description": "Hard to describe"
@@ -135,7 +125,6 @@
 			"multiplicity": "MANY2MANY",
 			"contains-other-v": "NONE",
 			"delete-other-v": "${direction}",
-			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE",
 			"default": "false",
 			"description": "Hard to describe"
@@ -148,7 +137,6 @@
 			"multiplicity": "ONE2MANY",
 			"contains-other-v": "NONE",
 			"delete-other-v": "${direction}",
-			"SVC-INFRA": "${direction}",
 			"prevent-delete": "NONE",
 			"default": "true",
 			"description": "Hard to describe"
@@ -160,7 +148,6 @@
 			"direction": "OUT",
 			"multiplicity": "MANY2ONE",
 			"contains-other-v": "!${direction}",
-			"SVC-INFRA": "${direction}",
 			"delete-other-v": "!${direction}",
 			"prevent-delete": "NONE",
 			"default": "true"

@@ -1,0 +1,27 @@
+{
+	"rules": [
+		{
+			"from": "foo",
+			"to": "dog",
+			"label": "pets",
+			"direction": "OUT",
+			"multiplicity": "One2Many",
+			"contains-other-v": "NONE",
+			"delete-other-v": "${direction}",
+			"prevent-delete": "NONE",
+			"description": "Hard to describe"
+		},
+		{
+			"from": "dog",
+			"to": "puppy",
+			"label": "caresFor",
+			"direction": "OUT",
+			"multiplicity": "One2Many",
+			"contains-other-v": "NONE",
+			"delete-other-v": "${direction}",
+			"prevent-delete": "NONE",
+			"description": "Hard to describe",
+			"default": "true"
+		}
+	]
+}

@@ -27,76 +27,75 @@ import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 public class MapperUtil {
 
 
-  /**
-   * Read as object of.
-   *
-   * @param <T> the generic type
-   * @param clazz the clazz
-   * @param value the value
-   * @return the t
-   * @throws AAIException the AAI exception
-   */
-  public static <T> T readAsObjectOf(Class<T> clazz, String value) throws AAIException {
-	com.fasterxml.jackson.databind.ObjectMapper MAPPER = new ObjectMapper();
-    try {        
-    	return MAPPER.readValue(value, clazz);
-    } catch (Exception e) {
-    	throw new AAIException("AAI_4007", e);
+    /**
+     * Read as object of.
+     *
+     * @param <T> the generic type
+     * @param clazz the clazz
+     * @param value the value
+     * @return the t
+     * @throws AAIException the AAI exception
+     */
+    public static <T> T readAsObjectOf(Class<T> clazz, String value) throws AAIException {
+        ObjectMapper MAPPER = new ObjectMapper();
+        try {
+            return MAPPER.readValue(value, clazz);
+        } catch (Exception e) {
+            throw new AAIException("AAI_4007", e);
+        }
     }
-  }
-  
-  /**
-   * Read with dashes as object of.
-   *
-   * @param <T> the generic type
-   * @param clazz the clazz
-   * @param value the value
-   * @return the t
-   * @throws AAIException the AAI exception
-   */
-  public static <T> T readWithDashesAsObjectOf(Class<T> clazz, String value) throws AAIException {
-	  com.fasterxml.jackson.databind.ObjectMapper MAPPER = new ObjectMapper();
-	    try {
-	        MAPPER.registerModule(new JaxbAnnotationModule());
-	        MAPPER.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-	        MAPPER.configure(DeserializationFeature.UNWRAP_ROOT_VALUE, false);
-	        
-	    	return MAPPER.readValue(value, clazz);
-	    } catch (Exception e) {
-	    	throw new AAIException("AAI_4007", e);
-	    }
-	  }
 
-  /**
-   * Write as JSON string.
-   *
-   * @param obj the obj
-   * @return the string
-   * @throws AAIException the AAI exception
-   */
-  public static String writeAsJSONString(Object obj) throws AAIException  {
-	  com.fasterxml.jackson.databind.ObjectMapper MAPPER = new ObjectMapper();
-	    try {
-	     String s =  MAPPER.writeValueAsString(obj);
-	     return s;		 
-	    		 //readValue(value, clazz);
-	    } catch (Exception e) {
-	    	throw new AAIException("AAI_4008", e);
-	    }
-	  }
-  
-  /**
-   * Write as JSON string with dashes.
-   *
-   * @param obj the obj
-   * @return the string
-   * @throws AAIException the AAI exception
-   */
-  public static String writeAsJSONStringWithDashes(Object obj) throws AAIException  {
-	  com.fasterxml.jackson.databind.ObjectMapper MAPPER = new ObjectMapper();
-	    try {
-	    	MAPPER.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-            
+    /**
+     * Read with dashes as object of.
+     *
+     * @param <T> the generic type
+     * @param clazz the clazz
+     * @param value the value
+     * @return the t
+     * @throws AAIException the AAI exception
+     */
+    public static <T> T readWithDashesAsObjectOf(Class<T> clazz, String value) throws AAIException {
+        ObjectMapper MAPPER = new ObjectMapper();
+        try {
+            MAPPER.registerModule(new JaxbAnnotationModule());
+            MAPPER.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            MAPPER.configure(DeserializationFeature.UNWRAP_ROOT_VALUE, false);
+
+            return MAPPER.readValue(value, clazz);
+        } catch (Exception e) {
+            throw new AAIException("AAI_4007", e);
+        }
+    }
+
+    /**
+     * Write as JSON string.
+     *
+     * @param obj the obj
+     * @return the string
+     * @throws AAIException the AAI exception
+     */
+    public static String writeAsJSONString(Object obj) throws AAIException {
+        ObjectMapper MAPPER = new ObjectMapper();
+        try {
+            String s = MAPPER.writeValueAsString(obj);
+            return s;
+        } catch (Exception e) {
+            throw new AAIException("AAI_4008", e);
+        }
+    }
+
+    /**
+     * Write as JSON string with dashes.
+     *
+     * @param obj the obj
+     * @return the string
+     * @throws AAIException the AAI exception
+     */
+    public static String writeAsJSONStringWithDashes(Object obj) throws AAIException {
+        ObjectMapper MAPPER = new ObjectMapper();
+        try {
+            MAPPER.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
             MAPPER.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
             MAPPER.configure(SerializationFeature.INDENT_OUTPUT, false);
             MAPPER.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
@@ -105,10 +104,10 @@ public class MapperUtil {
             MAPPER.configure(DeserializationFeature.UNWRAP_ROOT_VALUE, false);
 
             MAPPER.registerModule(new JaxbAnnotationModule());
-            String s =  MAPPER.writeValueAsString(obj);
-            return s;		 
-	    } catch (Exception e) {
-	    	throw new AAIException("AAI_4008", e);
-	    }
-	  }
+            String s = MAPPER.writeValueAsString(obj);
+            return s;
+        } catch (Exception e) {
+            throw new AAIException("AAI_4008", e);
+        }
+    }
 }

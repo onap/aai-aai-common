@@ -19,8 +19,10 @@
  */
 package org.onap.aai.dbmap;
 
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -145,7 +147,7 @@ public class AAIGraph {
 					logAndPrint(logger,
 						"ERROR: Could not load datasnapshot to in memory graph. \n"
 							+ ExceptionUtils.getFullStackTrace(e));
-					System.exit(0);
+					throw new RuntimeException(e);
 				}
 			}
 		}
@@ -156,7 +158,7 @@ public class AAIGraph {
 		JanusGraphManagement graphMgt = graph.openManagement();
 		
 		System.out.println("-- loading schema into JanusGraph");
-		SchemaGenerator.loadSchemaIntoJanusGraph(graphMgt );
+		SchemaGenerator.loadSchemaIntoJanusGraph( graph, graphMgt, "inmemory");
 	}
 
 	/**

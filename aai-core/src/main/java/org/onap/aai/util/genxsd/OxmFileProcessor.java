@@ -19,37 +19,64 @@
  */
 package org.onap.aai.util.genxsd;
 
-import org.onap.aai.exceptions.AAIException;
-import org.onap.aai.introspection.Version;
-import org.w3c.dom.*;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.File;
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.HashMap;
-import java.util.Map;
 
-public abstract class OxmFileProcessor {	
+import org.onap.aai.edges.EdgeIngestor;
+import org.onap.aai.edges.exceptions.EdgeRuleNotFoundException;
+import org.onap.aai.exceptions.AAIException;
+
+import org.onap.aai.setup.SchemaVersion;
+import org.onap.aai.setup.SchemaVersions;
+import org.onap.aai.nodes.NodeIngestor;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
+import org.xml.sax.InputSource;
+
+public abstract class OxmFileProcessor {
+	EdgeIngestor ei;
+	NodeIngestor ni;
+	protected Set<String> namespaceFilter;
 	protected File oxmFile;
 	protected String xml;
-	protected Version v;
+	protected SchemaVersion v;
 	protected Document doc = null;
 	protected String apiVersion = null;
+	protected SchemaVersions schemaVersions;
+	
+	
 	protected static int annotationsStartVersion = 9; // minimum version to support annotations in xsd
-	protected static int swaggerSupportStartsVersion = 7; // minimum version to support swagger documentation
-
+	protected static int annotationsMinVersion = 6; // lower versions support annotations in xsd
+	protected static int swaggerSupportStartsVersion = 1; // minimum version to support swagger documentation
+	protected static int swaggerDiffStartVersion = 1; // minimum version to support difference
+	protected static int swaggerMinBasepath = 6; // minimum version to support difference
+	
+	
 	protected String apiVersionFmt = null;
 	protected HashMap<String, String> generatedJavaType = new HashMap<String, String>();
 	protected HashMap<String, String> appliedPaths = new HashMap<String, String>();
 	protected NodeList javaTypeNodes = null;
-	protected static Map<String,String> javaTypeDefinitions = createJavaTypeDefinitions();
-    private static Map<String, String> createJavaTypeDefinitions()
+
+	protected Map<String,String> javaTypeDefinitions = createJavaTypeDefinitions();
+    private Map<String, String> createJavaTypeDefinitions()
     {
     	StringBuffer aaiInternal = new StringBuffer();
     	StringBuffer nodes = new StringBuffer();
@@ -70,40 +97,61 @@ public abstract class OxmFileProcessor {
     	javaTypeDefinitions.put("nodes", nodes.toString());
     	return javaTypeDefinitions;
     }
+	static List<String> nodeFilter = createNodeFilter();
+    private static List<String> createNodeFilter()
+    {
+    	List<String> list = Arrays.asList("search", "actions", "aai-internal", "nodes");
+    	return list;
+    }
 
+    public OxmFileProcessor(SchemaVersions schemaVersions, NodeIngestor ni, EdgeIngestor ei){
+    	this.schemaVersions = schemaVersions;
+    	this.ni = ni;
+		this.ei = ei;
+	}
+    
+   
 
-	public OxmFileProcessor(File oxmFile, Version v) {
-		super();
+	public void setOxmVersion(File oxmFile, SchemaVersion v) {
 		this.oxmFile = oxmFile;
 		this.v = v;
 	}
 
-	public OxmFileProcessor(String xml, Version v) {
+	public void setXmlVersion(String xml, SchemaVersion v) {
 		this.xml = xml;
 		this.v = v;
 	}
-	protected void init() throws ParserConfigurationException, SAXException, IOException, AAIException {
-		DocumentBuilder dBuilder = null;
-		try {	
-		    DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-		    dbFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-		    dBuilder = dbFactory.newDocumentBuilder();
-		} catch (ParserConfigurationException e) {
-			throw e;
+	
+	public void setVersion(SchemaVersion v) {
+		this.oxmFile = null;
+		this.v = v;
+	}
+	
+	public void setNodeIngestor(NodeIngestor ni) {
+	            this.ni = ni;
+	}
+	
+    public void setEdgeIngestor(EdgeIngestor ei) {
+            this.ei = ei;
+	}
+
+    public SchemaVersions getSchemaVersions() {
+		return schemaVersions;
+	}
+
+	public void setSchemaVersions(SchemaVersions schemaVersions) {
+		this.schemaVersions = schemaVersions;
+	}
+	
+	protected void init() throws ParserConfigurationException, SAXException, IOException, AAIException, EdgeRuleNotFoundException  {
+		if(this.xml != null || this.oxmFile != null ) {			
+			createDocument();
 		}
-		try {	
-		    if ( xml == null ) {
-		    	doc = dBuilder.parse(oxmFile);
-		    } else {
-			    InputSource isInput = new InputSource(new StringReader(xml));
-			    doc = dBuilder.parse(isInput);
-		    }
-		} catch (SAXException e) {
-			throw e;
-		} catch (IOException e) {
-			throw e;
+		if(this.doc == null) {
+			this.doc = ni.getSchema(v);
 		}
-		
+		namespaceFilter = new HashSet<>();
+				
 	    NodeList bindingsNodes = doc.getElementsByTagName("xml-bindings");
 		Element bindingElement;
 		NodeList javaTypesNodes;
@@ -125,8 +173,32 @@ public abstract class OxmFileProcessor {
 			throw new AAIException("OXM file error: missing <binding-nodes><java-types><java-type> in " + oxmFile );
 		}
 	}
+
+	private void createDocument() throws ParserConfigurationException, SAXException, IOException, AAIException {
+		DocumentBuilder dBuilder = null;
+		try {	
+		    DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+		    dbFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+		    dBuilder = dbFactory.newDocumentBuilder();
+		} catch (ParserConfigurationException e) {
+			throw e;
+		}
+		try {	
+		    if ( xml == null ) {
+		    	doc = dBuilder.parse(oxmFile);
+		    } else {
+			    InputSource isInput = new InputSource(new StringReader(xml));
+			    doc = dBuilder.parse(isInput);
+		    }
+		} catch (SAXException e) {
+			throw e;
+		} catch (IOException e) {
+			throw e;
+		}
+		return;
+	}
 	public abstract String getDocumentHeader();
-	public abstract String process() throws AAIException;
+	public abstract String process() throws ParserConfigurationException, SAXException, IOException, AAIException, FileNotFoundException, EdgeRuleNotFoundException ;
 	
 	public String getXMLRootElementName(Element javaTypeElement) {
 		String xmlRootElementName=null;
@@ -194,6 +266,22 @@ public abstract class OxmFileProcessor {
 			}
 		}
 		return (Element) null;
+	}
+	
+	public boolean versionSupportsSwaggerDiff( String version) {
+		int ver = new Integer(version.substring(1)).intValue();
+		if ( ver >= HTMLfromOXM.swaggerDiffStartVersion ) {
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean versionSupportsBasePathProperty( String version) {
+		int ver = new Integer(version.substring(1)).intValue();
+		if ( ver <= HTMLfromOXM.swaggerMinBasepath ) {
+			return true;
+		}
+		return false;
 	}
 
 }

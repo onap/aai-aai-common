@@ -25,11 +25,9 @@ import org.onap.aai.AAISetup;
 import org.onap.aai.introspection.*;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertNotNull;
 
 public class RemoveNonVisiblePropertyTest extends AAISetup {
 
@@ -40,7 +38,7 @@ public class RemoveNonVisiblePropertyTest extends AAISetup {
     @Before
     public void setup(){
         rn = new RemoveNonVisibleProperty();
-        loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY, Version.getLatest());
+        loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
     }
 
     @Test

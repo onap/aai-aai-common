@@ -1,0 +1,609 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+  ============LICENSE_START=======================================================
+  org.openecomp.aai
+  ================================================================================
+  Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+  ================================================================================
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  ============LICENSE_END=========================================================
+  -->
+
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm" package-name="inventory.aai.onap.org.v13" xml-mapping-metadata-complete="true">
+	<xml-schema element-form-default="QUALIFIED">
+		<xml-ns namespace-uri="http://org.onap.aai.inventory/v13" />
+	</xml-schema>
+	<java-types>
+		<java-type name="AllottedResources">
+			<xml-properties>
+				<xml-property name="description" value="This object is used to store slices of services being offered" />
+			</xml-properties>
+			<xml-root-element name="allotted-resources" />
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="allottedResource" name="allotted-resource" type="inventory.aai.onap.org.v13.AllottedResource" />
+			</java-attributes>
+		</java-type>		
+		<java-type name="AllottedResource">
+			<xml-root-element name="allotted-resource" />
+			<java-attributes>
+				<xml-element java-attribute="id" name="id" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="Allotted Resource id UUID assigned to this instance." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="description" name="description" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="The descriptive information assigned to this allotted resource instance" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="selflink" name="selflink" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Link back to more information in the controller" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="modelInvariantId" name="model-invariant-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="the ASDC model id for this resource or service model." />
+						<xml-property name="visibility" value="deployment" />
+						<xml-property name="requires" value="model-version-id" />
+						<xml-property name="dbAlias" value="model-invariant-id-local" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="modelVersionId" name="model-version-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="the ASDC model version for this resource or service model." />
+						<xml-property name="visibility" value="deployment" />
+						<xml-property name="requires" value="model-invariant-id" />
+						<xml-property name="dbAlias" value="model-version-id-local" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="personaModelVersion" name="persona-model-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="the ASDC model version for this resource or service model." />
+						<xml-property name="visibility" value="internal" />
+						<xml-property name="dataCopy" value="service-design-and-creation/models/model/{model-invariant-id}/model-vers/model-ver/{model-version-id}#model-version" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Concurrency value" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="orchestrationStatus" name="orchestration-status" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Orchestration status" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="operationalStatus" name="operational-status" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Indicator for whether the resource is considered operational" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="type" name="type" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Generic description of the type of allotted resource." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="role" name="role" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="role in the network that this resource will be providing." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="tunnelXconnects" name="tunnel-xconnects" type="inventory.aai.onap.org.v13.TunnelXconnects" />
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v13.RelationshipList" />
+			</java-attributes>			
+			<xml-properties>
+				<xml-property name="description" value="Represents a slice or partial piece of a resource that gets separately allotted" />
+				<xml-property name="nameProps" value="description" />
+				<xml-property name="uniqueProps" value="id" />
+				<xml-property name="indexedProps" value="id,model-invariant-id,model-version-id,type,role" />
+				<xml-property name="dependentOn" value="service-instance" />
+				<xml-property name="container" value="allotted-resources" />
+				<!--  <xml-property name="namespace" value="network" /> -->
+			</xml-properties>
+		</java-type>			
+		<java-type name="Business">
+			<xml-properties>
+				<xml-property name="description" value="Namespace for business related constructs" />
+			</xml-properties>
+			<xml-root-element name="business" />
+			<java-attributes>
+				<xml-element java-attribute="connectors" name="connectors" type="inventory.aai.onap.org.v13.Connectors" />
+				<xml-element java-attribute="customers" name="customers" type="inventory.aai.onap.org.v13.Customers" />
+				<xml-element java-attribute="linesOfBusiness" name="lines-of-business" type="inventory.aai.onap.org.v13.LinesOfBusiness" />
+				<xml-element java-attribute="owningEntities" name="owning-entities" type="inventory.aai.onap.org.v13.OwningEntities" />
+				<xml-element java-attribute="platforms" name="platforms" type="inventory.aai.onap.org.v13.Platforms" />
+				<xml-element java-attribute="projects" name="projects" type="inventory.aai.onap.org.v13.Projects" />
+			</java-attributes>
+		</java-type>
+		<java-type name="Connectors">
+			<xml-properties>
+				<xml-property name="description" value="Collection of resource instances used to connect a variety of disparate inventory widgets" />
+			</xml-properties>
+			<xml-root-element name="connectors" />
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="connector" name="connector" type="inventory.aai.onap.org.v13.Connector" />
+			</java-attributes>
+		</java-type>
+		<java-type name="Connector">
+			<xml-root-element name="connector" />
+			<java-attributes>
+				<xml-element java-attribute="resourceInstanceId" name="resource-instance-id" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="Unique id of resource instance." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="modelInvariantId" name="model-invariant-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="the ASDC model id for this resource or service model." />
+						<xml-property name="visibility" value="deployment" />
+						<xml-property name="requires" value="model-version-id" />
+						<xml-property name="dbAlias" value="model-invariant-id-local" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="modelVersionId" name="model-version-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="the ASDC model version for this resource or service model." />
+						<xml-property name="visibility" value="deployment" />
+						<xml-property name="requires" value="model-invariant-id" />
+						<xml-property name="dbAlias" value="model-version-id-local" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="personaModelVersion" name="persona-model-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="the ASDC model version for this resource or service model." />
+						<xml-property name="visibility" value="internal" />
+						<xml-property name="dataCopy" value="service-design-and-creation/models/model/{model-invariant-id}/model-vers/model-ver/{model-version-id}#model-version" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="widgetModelId" name="widget-model-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="the ASDC data dictionary widget model. This maps directly to the A&amp;AI widget." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="widgetModelVersion" name="widget-model-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="the ASDC data dictionary version of the widget model.This maps directly to the A&amp;AI version of the widget." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v13.RelationshipList" />
+				<xml-element java-attribute="metadata" name="metadata" type="inventory.aai.onap.org.v13.Metadata" />
+			</java-attributes>
+			<xml-properties>
+				<xml-property name="description" value="Collection of resource instances used to connect a variety of disparate inventory widgets" />
+				<xml-property name="indexedProps" value="resource-instance-id,model-invariant-id,model-version-id,widget-model-id,widget-model-version" />
+				<xml-property name="container" value="connectors" />
+				<xml-property name="namespace" value="business" />
+			</xml-properties>
+		</java-type>
+		<java-type name="Customers">
+			<xml-properties>
+				<xml-property name="description" value="Collection of customer identifiers to provide linkage back to BSS information." />
+			</xml-properties>
+			<xml-root-element name="customers" />
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="customer" name="customer" type="inventory.aai.onap.org.v13.Customer" />
+			</java-attributes>
+			<xml-properties>
+				<xml-property name="maximumDepth" value="0" />
+			</xml-properties>
+		</java-type>
+		<java-type name="Customer">
+			<xml-root-element name="customer" />
+			<java-attributes>
+				<xml-element java-attribute="globalCustomerId" name="global-customer-id" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="Global customer id used across ECOMP to uniquely identify customer." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="subscriberName" name="subscriber-name" required="true" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Subscriber name, an alternate way to retrieve a customer." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="subscriberType" name="subscriber-type" required="true" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Subscriber type, a way to provide VID with only the INFRA customers." />
+						<xml-property name="defaultValue" value="CUST" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="serviceSubscriptions" name="service-subscriptions" type="inventory.aai.onap.org.v13.ServiceSubscriptions" />
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v13.RelationshipList" />
+			</java-attributes>
+			<xml-properties>
+				<xml-property name="description" value="customer identifiers to provide linkage back to BSS information." />
+				<xml-property name="nameProps" value="subscriber-name" />
+				<xml-property name="indexedProps" value="subscriber-name,global-customer-id,subscriber-type" />
+				<xml-property name="searchable" value="global-customer-id,subscriber-name" />
+				<xml-property name="uniqueProps" value="global-customer-id" />
+				<xml-property name="container" value="customers" />
+				<xml-property name="namespace" value="business" />
+			</xml-properties>
+		</java-type>		
+		<java-type name="LinesOfBusiness">
+			<xml-properties>
+				<xml-property name="description" value="Collection of lines-of-business" />
+			</xml-properties>
+			<xml-root-element name="lines-of-business" />
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="lineOfBusiness" name="line-of-business" type="inventory.aai.onap.org.v13.LineOfBusiness" />
+			</java-attributes>
+		</java-type>	
+		<java-type name="LineOfBusiness">
+			<xml-root-element name="line-of-business" />
+			<java-attributes>
+				<xml-element java-attribute="lineOfBusinessName" name="line-of-business-name" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="Name of the line-of-business (product)" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v13.RelationshipList" />
+			</java-attributes>
+			<xml-properties>
+				<xml-property name="description" value="describes a line-of-business" />
+				<xml-property name="indexedProps" value="line-of-business-name" />
+				<xml-property name="uniqueProps" value="line-of-business-name" />
+				<xml-property name="container" value="lines-of-business" />
+				<xml-property name="namespace" value="business" />
+			</xml-properties>
+		</java-type>		
+		<java-type name="OwningEntities">
+			<xml-properties>
+				<xml-property name="description" value="Collection of owning-entities" />
+			</xml-properties>
+			<xml-root-element name="owning-entities" />
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="owningEntity" name="owning-entity" type="inventory.aai.onap.org.v13.OwningEntity" />
+			</java-attributes>
+		</java-type>	
+		<java-type name="OwningEntity">
+			<xml-root-element name="owning-entity" />
+			<java-attributes>
+				<xml-element java-attribute="owningEntityId" name="owning-entity-id" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="UUID of an owning entity" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="owningEntityName" name="owning-entity-name" required="true" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Owning entity name" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v13.RelationshipList" />
+			</java-attributes>
+			<xml-properties>
+				<xml-property name="description" value="describes an owning-entity" />
+				<xml-property name="indexedProps" value="owning-entity-id,owning-entity-name" />
+				<xml-property name="searchable" value="owning-entity-id" />
+				<xml-property name="uniqueProps" value="owning-entity-id,owning-entity-name" />
+				<xml-property name="container" value="owning-entities" />
+				<xml-property name="namespace" value="business" />
+			</xml-properties>
+		</java-type>	
+		<java-type name="Platforms">
+			<xml-properties>
+				<xml-property name="description" value="Collection of platforms" />
+			</xml-properties>
+			<xml-root-element name="platforms" />
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="platform" name="platform" type="inventory.aai.onap.org.v13.Platform" />
+			</java-attributes>
+		</java-type>		
+		<java-type name="Platform">
+			<xml-root-element name="platform" />
+			<java-attributes>
+				<xml-element java-attribute="platformName" name="platform-name" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="Name of the platform" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v13.RelationshipList" />
+			</java-attributes>
+			<xml-properties>
+				<xml-property name="description" value="describes a platform" />
+				<xml-property name="indexedProps" value="platform-name" />
+				<xml-property name="uniqueProps" value="platform-name" />
+				<xml-property name="container" value="platforms" />
+				<xml-property name="namespace" value="business" />
+			</xml-properties>
+		</java-type>		
+		<java-type name="Projects">
+			<xml-properties>
+				<xml-property name="description" value="Collection of projects" />
+			</xml-properties>
+			<xml-root-element name="projects" />
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="project" name="project" type="inventory.aai.onap.org.v13.Project" />
+			</java-attributes>
+		</java-type>
+		<java-type name="Project">
+			<xml-root-element name="project" />
+			<java-attributes>
+				<xml-element java-attribute="projectName" name="project-name" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="Name of the project deploying a service" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v13.RelationshipList" />
+			</java-attributes>
+			<xml-properties>
+				<xml-property name="description" value="describes the project" />
+				<xml-property name="indexedProps" value="project-name" />
+				<xml-property name="uniqueProps" value="project-name" />
+				<xml-property name="container" value="projects" />
+				<xml-property name="namespace" value="business" />
+			</xml-properties>
+		</java-type>
+		<java-type name="ServiceSubscriptions">
+			<xml-properties>
+				<xml-property name="description" value="Collection of objects that group service instances." />
+			</xml-properties>
+			<xml-root-element name="service-subscriptions" />
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="serviceSubscription" name="service-subscription" type="inventory.aai.onap.org.v13.ServiceSubscription" />
+			</java-attributes>
+		</java-type>
+		<java-type name="ServiceSubscription">
+			<xml-root-element name="service-subscription" />
+			<java-attributes>
+				<xml-element java-attribute="serviceType" name="service-type" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="Value defined by orchestration to identify this service across ECOMP." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="tempUbSubAccountId" name="temp-ub-sub-account-id" type="java.lang.String">
+                    <xml-properties>
+                        <xml-property name="description" value="This property will be deleted from A&amp;AI in the near future. Only stop gap solution." />
+                    </xml-properties>
+                </xml-element>
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="serviceInstances" name="service-instances" type="inventory.aai.onap.org.v13.ServiceInstances">
+				</xml-element>
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v13.RelationshipList" />
+			</java-attributes>
+			<xml-properties>
+				<xml-property name="description" value="Object that group service instances." />
+				<xml-property name="indexedProps" value="service-type" />
+				<xml-property name="dependentOn" value="customer" />
+				<xml-property name="container" value="service-subscriptions" />
+				<xml-property name="crossEntityReference" value="service-instance,service-type" />
+			</xml-properties>
+		</java-type>
+		<java-type name="ServiceInstances">
+			<xml-properties>
+				<xml-property name="description" value="Collection of service instances" />
+			</xml-properties>
+			<xml-root-element name="service-instances" />
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="serviceInstance" name="service-instance" type="inventory.aai.onap.org.v13.ServiceInstance" />
+			</java-attributes>
+		</java-type>
+		<java-type name="ServiceInstance">
+			<xml-root-element name="service-instance" />
+			<java-attributes>
+				<xml-element java-attribute="serviceInstanceId" name="service-instance-id" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="Uniquely identifies this instance of a service" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="serviceInstanceName" name="service-instance-name" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="This field will store a name assigned to the service-instance." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="serviceType" name="service-type" required="false" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="String capturing type of service." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="serviceRole" name="service-role" required="false" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="String capturing the service role." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="environmentContext" name="environment-context" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="This field will store the environment context assigned to the service-instance." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="workloadContext" name="workload-context" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="This field will store the workload context assigned to the service-instance." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="modelInvariantId" name="model-invariant-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="the ASDC model id for this resource or service model." />
+						<xml-property name="visibility" value="deployment" />
+						<xml-property name="requires" value="model-version-id" />
+						<xml-property name="dbAlias" value="model-invariant-id-local" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="modelVersionId" name="model-version-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="the ASDC model version for this resource or service model." />
+						<xml-property name="visibility" value="deployment" />
+						<xml-property name="requires" value="model-invariant-id" />
+						<xml-property name="dbAlias" value="model-version-id-local" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="personaModelVersion" name="persona-model-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="the ASDC model version for this resource or service model." />
+						<xml-property name="visibility" value="internal" />
+						<xml-property name="dataCopy" value="service-design-and-creation/models/model/{model-invariant-id}/model-vers/model-ver/{model-version-id}#model-version" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="widgetModelId" name="widget-model-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="the ASDC data dictionary widget model. This maps directly to the A&amp;AI widget." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="widgetModelVersion" name="widget-model-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="the ASDC data dictionary version of the widget model.This maps directly to the A&amp;AI version of the widget." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="bandwidthTotal" name="bandwidth-total" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Indicates the total bandwidth to be used for this service." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="bandwidthUpWan1" name="bandwidth-up-wan1" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="indicates the upstream bandwidth this service will use on the WAN1 port of the physical device." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="bandwidthDownWan1" name="bandwidth-down-wan1" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="indicates the downstream bandwidth this service will use on the WAN1 port of the physical device." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="bandwidthUpWan2" name="bandwidth-up-wan2" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="indicates the upstream bandwidth this service will use on the WAN2 port of the physical device." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="bandwidthDownWan2" name="bandwidth-down-wan2" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="indicates the downstream bandwidth this service will use on the WAN2 port of the physical device." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="vhnPortalUrl" name="vhn-portal-url" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="URL customers will use to access the vHN Portal." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="serviceInstanceLocationId" name="service-instance-location-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="An identifier that customers assign to the location where this service is being used." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="selflink" name="selflink" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Path to the controller object." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="orchestrationStatus" name="orchestration-status" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Orchestration status of this service." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v13.RelationshipList" />
+				<xml-element java-attribute="metadata" name="metadata" type="inventory.aai.onap.org.v13.Metadata" />
+				<xml-element java-attribute="allottedResources" name="allotted-resources" type="inventory.aai.onap.org.v13.AllottedResources" />
+			</java-attributes>
+			<xml-properties>
+				<xml-property name="description" value="Instance of a service" />
+				<xml-property name="indexedProps" value="service-instance-id,model-invariant-id,model-version-id,widget-model-id,widget-model-version,service-instance-name,service-instance-location-id,orchestration-status,environment-context,workload-context" />
+				<xml-property name="nameProps" value="service-instance-name" />
+				<xml-property name="searchable" value="service-instance-id,service-instance-name" />
+				<xml-property name="uniqueProps" value="service-instance-id" />
+				<xml-property name="dependentOn" value="service-subscription" />
+				<xml-property name="container" value="service-instances" />
+			</xml-properties>
+		</java-type>
+		<java-type name="TunnelXconnects">
+			<xml-properties>
+				<xml-property name="description" value="This object is used to store the specific tunnel cross connect aspects of an allotted resource" />
+			</xml-properties>
+			<xml-root-element name="tunnel-xconnects" />
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="tunnelXconnect" name="tunnel-xconnect" type="inventory.aai.onap.org.v13.TunnelXconnect" />
+			</java-attributes>
+		</java-type>		
+		<java-type name="TunnelXconnect">
+			<xml-root-element name="tunnel-xconnect" />
+			<java-attributes>
+				<xml-element java-attribute="id" name="id" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="Allotted Resource id UUID assigned to this instance." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="bandwidthUpWan1" name="bandwidth-up-wan1" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="The WAN uplink bandwidth for WAN1" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="bandwidthDownWan1" name="bandwidth-down-wan1" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="The WAN downlink bandwidth for WAN1" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="bandwidthUpWan2" name="bandwidth-up-wan2" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="The WAN uplink bandwidth for WAN2" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="bandwidthDownWan2" name="bandwidth-down-wan2" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="The WAN downlink bandwidth for WAN2" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Concurrency value" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v13.RelationshipList" />
+			</java-attributes>			
+			<xml-properties>
+				<xml-property name="description" value="Represents the specifics of a tunnel cross connect piece of a resource that gets separately allotted" />
+				<xml-property name="uniqueProps" value="id" />
+				<xml-property name="indexedProps" value="id" />
+				<xml-property name="dependentOn" value="allotted-resource" />
+				<xml-property name="container" value="tunnel-xconnects" />
+				<!--  <xml-property name="namespace" value="network" /> -->
+			</xml-properties>
+		</java-type>
+	</java-types>
+</xml-bindings>

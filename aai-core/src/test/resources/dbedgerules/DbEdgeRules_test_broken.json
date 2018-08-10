@@ -7,7 +7,6 @@
 			"direction": "OUT",
 			"multiplicity": "One2Many",
 			"contains-other-v": "NONE",
-			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE",
 			"description": "Hard to describe"
 		},
@@ -19,7 +18,6 @@
 			"multiplicity": "One2Many",
 			"contains-other-v": "${direction}",
 			"delete-other-v": "${direction}",
-			"SVC-INFRA": "NONE",
 			"prevent-delete": "NONE",
 			"description": "Hard to describe"
 		},
