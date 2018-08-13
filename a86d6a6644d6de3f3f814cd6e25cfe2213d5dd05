@@ -1,0 +1,9 @@
+Verified+1: ONAP Jobbuilder <onap-jobbuilder@jenkins.onap.org>
+Code-Review+1: Robby Maharajh <rx2202@us.att.com>
+Code-Review+1: William LaMont <wl2432@att.com>
+Code-Review+2: James Forsyth <jf2512@att.com>
+Submitted-by: James Forsyth <jf2512@att.com>
+Submitted-at: Mon, 13 Aug 2018 15:24:53 +0000
+Reviewed-on: https://gerrit.onap.org/r/60045
+Project: aai/aai-common
+Branch: refs/heads/master
