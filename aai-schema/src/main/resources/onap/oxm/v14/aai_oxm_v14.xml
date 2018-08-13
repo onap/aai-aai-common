@@ -3462,6 +3462,61 @@
 						<xml-property name="description" value="Used to distinguish the distinct VPN routes of separate customers who connect to the provider in an MPLS network." />
 					</xml-properties>
 				</xml-element>
+				<xml-element java-attribute="accessProviderId" name="access-provider-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the id of the access provider of this vpn." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="accessClientId" name="access-client-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the id of the access client of this vpn." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="accessTopologyId" name="access-topology-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the id of the access topology of this vpn." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="srcAccessNodeId" name="src-access-node-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the id of the src-access-node of this vpn." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="srcAccessLtpId" name="src-access-ltp-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the id of the src-access-ltp of this vpn." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="dstAccessNodeId" name="dst-access-node-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the id of the dst-access-node of this vpn." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="dstAccessLtpId" name="dst-access-ltp-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the id of the dst-access-ltp of this vpn." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="operationalStatus" name="operational-status" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the operational-status for this object." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="modelCustomizationId" name="model-customization-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the model-customization-id for this object." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="modelVersionId" name="model-version-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the model-version-id for this object." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="modelInvariantId" name="model-invariant-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the model-invariant-id for this object." />
+					</xml-properties>
+				</xml-element>
 				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
@@ -3477,8 +3532,8 @@
 			<xml-properties>
 				<xml-property name="description" value="VPN binding" />
 				<xml-property name="nameProps" value="vpn-name,vpn-type" />
-				<xml-property name="indexedProps" value="vpn-name,vpn-id,vpn-type" />
-				<xml-property name="searchable" value="vpn-id,vpn-name" />
+				<xml-property name="indexedProps" value="vpn-name,vpn-id,vpn-type,operational-status" />
+				<xml-property name="searchable" value="vpn-id,vpn-name,operational-status" />
 				<xml-property name="uniqueProps" value="vpn-id" />
 				<xml-property name="container" value="vpn-bindings" />
 				<xml-property name="namespace" value="network" />
