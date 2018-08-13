@@ -3234,7 +3234,7 @@
 			</java-attributes>
 			<xml-properties>
 				<xml-property name="description" value="Logical links generally connect l-interfaces but are used to express logical connectivity between two points" />
-				<xml-property name="indexedProps" value="link-name,model-invariant-id,model-version-id,widget-model-id,widget-model-version,link-id,prov-status,circuit-id,purpose" />
+				<xml-property name="indexedProps" value="link-name,model-invariant-id,model-version-id,widget-model-id,widget-model-version,link-id,prov-status,circuit-id,purpose,operational-status" />
 				<xml-property name="uniqueProps" value="link-id" />
 				<xml-property name="container" value="logical-links" />
 				<xml-property name="namespace" value="network" />
