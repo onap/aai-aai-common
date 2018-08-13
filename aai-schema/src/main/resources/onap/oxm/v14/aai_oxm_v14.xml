@@ -6175,15 +6175,55 @@
 						<xml-property name="description" value="role in the network that this resource will be providing." />
 					</xml-properties>
 				</xml-element>
+				<xml-element java-attribute="allottedResourceName" name="allotted-resource-name" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the name of this allotted-resource." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="accessProviderId" name="access-provider-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the id of the access provider of this allotted-resource." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="accessClientId" name="access-client-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the id of the access client of this allotted-resource." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="accessTopologyId" name="access-topology-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the id of the access topology of this allotted-resource." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="accessNodeId" name="access-node-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the id of the access node of this allotted-resource." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="accessLtpId" name="access-ltp-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the id of the access ltp of this allotted-resource." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="cvlan" name="cvlan" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the cvlan of this allotted-resource." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="vpnName" name="vpn-name" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the vpn-name of this allotted-resource." />
+					</xml-properties>
+				</xml-element>
 				<xml-element java-attribute="tunnelXconnects" name="tunnel-xconnects" type="inventory.aai.onap.org.v14.TunnelXconnects" />
 				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v14.RelationshipList" />
 			</java-attributes>
 			
 			<xml-properties>
 				<xml-property name="description" value="Represents a slice or partial piece of a resource that gets separately allotted" />
-				<xml-property name="nameProps" value="description" />
+				<xml-property name="nameProps" value="description,allotted-resource-name" />
 				<xml-property name="uniqueProps" value="id" />
-				<xml-property name="indexedProps" value="id,model-invariant-id,model-version-id,type,role" />
+				<xml-property name="indexedProps" value="id,model-invariant-id,model-version-id,type,role,allotted-resource-name,access-provider-id,access-client-id,access-topology-id,access-node-id,access-ltp-id,vpn-name" />
 				<xml-property name="dependentOn" value="service-instance" />
 				<xml-property name="container" value="allotted-resources" />
 				<!--  <xml-property name="namespace" value="network" /> -->
