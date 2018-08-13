@@ -58,10 +58,12 @@ public class InMemoryGraph {
             	LOGGER.info("Schema Enabled");
             	SchemaGenerator.loadSchemaIntoJanusGraph(graphMgt);
             }
-			JanusGraphTransaction transaction = graph.newTransaction();
-			LOGGER.info("Loading snapshot");
-			transaction.io(IoCore.graphson()).readGraph(builder.graphsonLocation);
-			transaction.commit();
+
+			try(JanusGraphTransaction transaction = graph.newTransaction()) {
+				LOGGER.info("Loading snapshot");
+				transaction.io(IoCore.graphson()).readGraph(builder.graphsonLocation);
+				transaction.commit();
+			}
 			
 		} catch (Exception e) {
 			// TODO : Changesysout to logger

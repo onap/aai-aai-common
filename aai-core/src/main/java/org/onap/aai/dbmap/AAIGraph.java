@@ -105,22 +105,19 @@ public class AAIGraph {
 		// These graphs shouldn't be closed until the application shutdown
 		try {
 			PropertiesConfiguration propertiesConfiguration = new AAIGraphConfig.Builder(configPath).forService(serviceName).withGraphType(name).buildConfiguration();
-			JanusGraph graph = JanusGraphFactory.open(propertiesConfiguration);
+			try(JanusGraph graph = JanusGraphFactory.open(propertiesConfiguration)) {
 
-			Properties graphProps = new Properties();
-			propertiesConfiguration.getKeys().forEachRemaining(k -> graphProps.setProperty(k, propertiesConfiguration.getString(k)));
+				Properties graphProps = new Properties();
+				propertiesConfiguration.getKeys().forEachRemaining(k -> graphProps.setProperty(k, propertiesConfiguration.getString(k)));
 
-			if ("inmemory".equals(graphProps.get("storage.backend"))) {
-				// Load the propertyKeys, indexes and edge-Labels into the DB
-				loadSchema(graph);
-				loadSnapShotToInMemoryGraph(graph, graphProps);
+				if ("inmemory".equals(graphProps.get("storage.backend"))) {
+					// Load the propertyKeys, indexes and edge-Labels into the DB
+					loadSchema(graph);
+					loadSnapShotToInMemoryGraph(graph, graphProps);
+				}
+
+				graphs.put(name, graph);
 			}
-
-			if (graph == null) {
-				throw new AAIException("AAI_5102");
-			}
-
-			graphs.put(name, graph);
 		} catch (FileNotFoundException fnfe) {
 			throw new AAIException("AAI_4001");
 	    } catch (IOException e) {

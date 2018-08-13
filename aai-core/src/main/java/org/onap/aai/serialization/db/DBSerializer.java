@@ -656,6 +656,7 @@ public class DBSerializer {
 					dbTimeMsecs += StopWatch.stopIfStarted();
 					throw new AAIException("AAI_4000", e);
 				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
 					dbTimeMsecs += StopWatch.stopIfStarted();
 					throw new AAIException("AAI_4000", e);
 				}

@@ -20,6 +20,7 @@
 package org.onap.aai.logging;
 
 import javax.ws.rs.core.Response.Status;
+import java.io.Serializable;
 
 /**
  * 
@@ -27,8 +28,10 @@ import javax.ws.rs.core.Response.Status;
  * properties file
  *  
  */
-public class ErrorObject {
-	
+public class ErrorObject implements Serializable {
+
+	private static final long serialVersionUID = -6709129867215268561L;
+
 	private String disposition;
 	private String category;
 	private String severity;

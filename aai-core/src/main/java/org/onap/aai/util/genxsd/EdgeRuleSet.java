@@ -64,7 +64,6 @@ public class EdgeRuleSet {
 	
 	/**
 	 * Guaranteed to at least return non null but empty collection of edge descriptions
-	 * @param nodeName name of the vertex whose edge relationships to return
 	 * @return collection of node neighbors based on DbEdgeRules
 	**/
 	public Collection<EdgeDescription> getEdgeRulesFromJson( String path, boolean skipMatch ) 
@@ -129,26 +128,14 @@ public class EdgeRuleSet {
 	}
 
 	private void init() throws FileNotFoundException, IOException {
-		InputStream is = null;
-		Scanner scanner = null;
-		String jsonEdges = null;
-		try {
-			is = new FileInputStream(edgeFile);
-			scanner = new Scanner(is);
-			jsonEdges = scanner.useDelimiter("\\Z").next();
+
+		try(InputStream is = new FileInputStream(edgeFile);
+			Scanner scanner = new Scanner(is)){
+			String jsonEdges = scanner.useDelimiter("\\Z").next();
+			jsonContext = JsonPath.parse(jsonEdges);
 		} catch (Exception e) {
 			throw e;
-		} finally {
-			scanner.close();
-			if (is != null) {
-				try {
-					is.close();
-				} catch (IOException e) {
-					throw e;
-				}
-			}
 		}
-		jsonContext = JsonPath.parse(jsonEdges);
 	}
 	
 	public String preventDeleteRules(String objectName) {
@@ -179,18 +166,19 @@ public class EdgeRuleSet {
 		Collection<EdgeDescription> fromEdges = getEdgeRulesFROM(objectName);
 		LinkedHashSet<String> preventDelete = new LinkedHashSet <String>();
 		String prevent=null;
-		String also=null;
 		for (EdgeDescription ed : fromEdges) {
-//			logger.debug("{“comment”: From = "+ed.getFrom()+" To: "+ed.getTo()+" Object: "+objectName);
-//			logger.debug("{“comment”: Direction = "+ed.getDirection()+" PreventDelete: "+ed.getPreventDelete()+" DeleteOtherV: "+ed.getDeleteOtherV()+" Object: "+objectName);
 			if(ed.getPreventDelete().equals("OUT") && ed.getFrom().equals(objectName)) {
 				preventDelete.add(ed.getTo().toUpperCase());
 			}
 		}
 		if(preventDelete.size() > 0) {
 			prevent = objectName.toUpperCase()+" cannot be deleted if related to "+String.join(",",preventDelete);
-//			logger.debug(prevent);
 		}
-		return String.join((prevent == null || also == null) ? "" : "\n", prevent == null ? "" : prevent, also == null ? "" : also)+((prevent == null && also == null) ? "" : "\n");
+		return String.join(
+				prevent == null ? "" : "\n",
+				prevent == null ? "" : prevent
+		)+(
+				prevent == null ? "" : "\n"
+		);
 	}
 }

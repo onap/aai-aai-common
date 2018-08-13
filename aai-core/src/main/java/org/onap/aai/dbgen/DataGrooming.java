@@ -272,6 +272,7 @@ public class DataGrooming {
 						Thread.sleep(sleepMsec);
 					} catch (InterruptedException ie) {
 						logger.info("\n >>> Sleep Thread has been Interrupted <<< ");
+						Thread.currentThread().interrupt();
 						AAISystemExitUtil.systemExitCloseAAIGraph(0);
 					}
 

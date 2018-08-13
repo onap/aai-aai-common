@@ -147,7 +147,7 @@ public class JSONStrategy extends Introspector {
 		Object resultObject = null;
 		Class<?> resultClass = null;
 		resultObject = this.getValue(name);
-		if (resultObject.getClass().getName().equals("org.json.simple.JSONArray")) {
+		if (resultObject instanceof org.json.simple.JSONArray) {
 			resultClass = ((List)resultObject).get(0).getClass();
 		}
 		
