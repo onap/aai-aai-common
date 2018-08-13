@@ -3461,6 +3461,61 @@
 						<xml-property name="description" value="Used to distinguish the distinct VPN routes of separate customers who connect to the provider in an MPLS network." />
 					</xml-properties>
 				</xml-element>
+				<xml-element java-attribute="accessProviderId" name="access-provider-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the id of the access provider of this vpn." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="accessClientId" name="access-client-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the id of the access client of this vpn." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="accessTopologyId" name="access-topology-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the id of the access topology of this vpn." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="srcAccessNodeId" name="src-access-node-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the id of the src-access-node of this vpn." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="srcAccessLtpId" name="src-access-ltp-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the id of the src-access-ltp of this vpn." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="dstAccessNodeId" name="dst-access-node-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the id of the dst-access-node of this vpn." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="dstAccessLtpId" name="dst-access-ltp-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the id of the dst-access-ltp of this vpn." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="operationalStatus" name="operational-status" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the operational-status for this object." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="modelCustomizationId" name="model-customization-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the model-customization-id for this object." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="modelVersionId" name="model-version-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the model-version-id for this object." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="modelInvariantId" name="model-invariant-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the model-invariant-id for this object." />
+					</xml-properties>
+				</xml-element>
 				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
@@ -3476,7 +3531,7 @@
 			<xml-properties>
 				<xml-property name="description" value="VPN binding" />
 				<xml-property name="nameProps" value="vpn-name,vpn-type" />
-				<xml-property name="indexedProps" value="vpn-name,vpn-id,vpn-type" />
+				<xml-property name="indexedProps" value="vpn-name,vpn-id,vpn-type,access-provider-id,access-client-id,access-topology-id,src-access-node-id,src-access-ltp-id,dst-access-node-id,dst-access-ltp-id,operational-status" />
 				<xml-property name="searchable" value="vpn-id,vpn-name" />
 				<xml-property name="uniqueProps" value="vpn-id" />
 				<xml-property name="container" value="vpn-bindings" />
@@ -4953,6 +5008,21 @@
 						<xml-property name="description" value="Nf Role is the role performed by this instance in the network." />
 					</xml-properties>
 				</xml-element>
+				<xml-element java-attribute="adminStatus" name="admin-status" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="admin Status of this PNF" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="operationalStatus" name="operational-status" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the operational-status for this object." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="modelCustomizationId" name="model-customization-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the model-customization-id for this object." />
+					</xml-properties>
+				</xml-element>
 				<xml-element java-attribute="modelInvariantId" name="model-invariant-id" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="The ASDC model id for this resource  model."/>
@@ -4976,7 +5046,7 @@
 			</java-attributes>
 			<xml-properties>
 				<xml-property name="description" value="PNF represents a physical network function. typically equipment used in the D1 world. in 1607, this will be populated by SDN-C to represent a premises router that a uCPE connects to. But this can be used to represent any physical device that is not an AIC node or uCPE." />
-				<xml-property name="indexedProps" value="pnf-name,orchestration-status,inv-status" />
+				<xml-property name="indexedProps" value="pnf-name,orchestration-status,inv-status,operational-status,admin-status" />
 				<xml-property name="searchable" value="pnf-name" />
 				<xml-property name="uniqueProps" value="pnf-name" />
 				<xml-property name="container" value="pnfs" />
