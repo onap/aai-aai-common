@@ -3502,6 +3502,13 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
+        <xs:element name="input-parameters" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="String capturing request parameters from SO to pass to Closed Loop.")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
         <xs:element ref="tns:relationship-list" minOccurs="0"/>
         <xs:element ref="tns:metadata" minOccurs="0"/>
         <xs:element ref="tns:allotted-resources" minOccurs="0"/>
