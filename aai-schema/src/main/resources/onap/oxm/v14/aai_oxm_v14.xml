@@ -3002,6 +3002,9 @@
 				<xml-element java-attribute="configurations" name="configurations" type="inventory.aai.onap.org.v14.Configurations" />
 				<xml-element java-attribute="forwardingPaths" name="forwarding-paths" type="inventory.aai.onap.org.v14.ForwardingPaths" />
 				<xml-element java-attribute="collections" name="collections" type="inventory.aai.onap.org.v14.Collections" />
+
+				<xml-element java-attribute="connectivities" name="connectivities" type="inventory.aai.onap.org.v14.Connectivities" />
+				<xml-element java-attribute="lanPortConfigs" name="lan-port-configs" type="inventory.aai.onap.org.v14.LanPortConfigs" />
 			</java-attributes>
 		</java-type>
         <java-type name="Configurations">
@@ -3508,14 +3511,21 @@
 						<xml-property name="description" value="Store the model-customization-id for this object." />
 					</xml-properties>
 				</xml-element>
-				<xml-element java-attribute="modelVersionId" name="model-version-id" type="java.lang.String">
-					<xml-properties>
-						<xml-property name="description" value="Store the model-version-id for this object." />
-					</xml-properties>
-				</xml-element>
 				<xml-element java-attribute="modelInvariantId" name="model-invariant-id" type="java.lang.String">
 					<xml-properties>
-						<xml-property name="description" value="Store the model-invariant-id for this object." />
+						<xml-property name="description" value="the ASDC model id for this resource or service model." />
+						<xml-property name="visibility" value="deployment" />
+						<xml-property name="requires" value="model-version-id" />
+						<xml-property name="dbAlias" value="model-invariant-id-local" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="modelVersionId" name="model-version-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="the ASDC model version for this resource or service model." />
+						<xml-property name="visibility" value="deployment" />
+						<xml-property name="requires" value="model-invariant-id" />
+						<xml-property name="dbAlias" value="model-version-id-local" />
+						<xml-property name="privateEdge" value="service-design-and-creation/models/model/{model-invariant-id}/model-vers/model-ver/{model-version-id}"/>
 					</xml-properties>
 				</xml-element>
 				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
@@ -7015,6 +7025,285 @@
 				<xml-property name="indexedProps" value="collection-id,model-invariant-id,model-version-id" />
 				<xml-property name="container" value="collections" />
 			</xml-properties>
+		</java-type>
+
+		<java-type name="Connectivity">
+			<xml-root-element name="connectivity" />
+			<java-attributes>
+				<xml-element java-attribute="connectivityId" name="connectivity-id" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="Uniquely identifies this connectivity by id" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="bandwidthProfileName" name="bandwidth-profile-name" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the name of a bandwidth profile." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="vpnType" name="vpn-type" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the type of a bandwidth profile." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="cir" name="cir" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the CIR of this connectivity." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="eir" name="eir" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the EIR of this connectivity." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="cbs" name="cbs" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the CBS of this connectivity." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="ebs" name="ebs" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the EBS of this connectivity." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="colorAware" name="color-aware" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the color-awareness of this connectivity." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="couplingFlag" name="coupling-flag" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the coupling flag of this connectivity." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="ethtSvcName" name="etht-svc-name" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="The ethernet service name for this connectivity." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="accessProviderId" name="access-provider-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the id of the access provider of this connectivity." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="accessClientId" name="access-client-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the id of the access client of this connectivity." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="accessTopologyId" name="access-topology-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the id of the access topology of this connectivity." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="accessNodeId" name="access-node-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the id of the access node of this connectivity." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="accessLtpId" name="access-ltp-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the id of the access ltp of this connectivity." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="connectivitySelflink" name="connectivity-selflink" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the link to get more information for this connectivity." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="cvlan" name="cvlan" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the cvlan for this connectivity." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="operationalStatus" name="operational-status" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the operational-status for this object." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="modelCustomizationId" name="model-customization-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the model-customization-id for this object." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="modelInvariantId" name="model-invariant-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="the ASDC model id for this resource or service model." />
+						<xml-property name="visibility" value="deployment" />
+						<xml-property name="requires" value="model-version-id" />
+						<xml-property name="dbAlias" value="model-invariant-id-local" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="modelVersionId" name="model-version-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="the ASDC model version for this resource or service model." />
+						<xml-property name="visibility" value="deployment" />
+						<xml-property name="requires" value="model-invariant-id" />
+						<xml-property name="dbAlias" value="model-version-id-local" />
+						<xml-property name="privateEdge" value="service-design-and-creation/models/model/{model-invariant-id}/model-vers/model-ver/{model-version-id}"/>
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v14.RelationshipList" />
+			</java-attributes>
+			<xml-properties>
+				<xml-property name="description" value="Instance of a connectivity" />
+				<xml-property name="indexedProps" value="connectivity-id,etht-svc-name,bandwidth-profile-name,vpn-type,color-aware,coupling-flag,access-provider-id,access-client-id,access-topology-id,access-node-id,access-ltp-id,operational-status" />
+				<xml-property name="nameProps" value="etht-svc-name" />
+				<xml-property name="searchable" value="connectivity-id" />
+				<xml-property name="uniqueProps" value="connectivity-id" />
+				<xml-property name="container" value="connectivities" />
+				<xml-property name="namespace" value="network" />
+			</xml-properties>
+		</java-type>
+		<java-type name="Connectivities">
+			<xml-root-element name="connectivities" />
+			<xml-properties>
+				<xml-property name="description" value="Collection of connectivities" />
+			</xml-properties>
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="connectivity" name="connectivity" type="inventory.aai.onap.org.v14.Connectivity" />
+			</java-attributes>
+		</java-type>
+
+		<java-type name="LanPortConfig">
+			<xml-root-element name="lan-port-config" />
+			<java-attributes>
+				<xml-element java-attribute="lanPortConfigId" name="lan-port-config-id" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="Uniquely identifies this lan-port-config by id" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="lanPortConfigName" name="lan-port-config-name" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the name of this lan-port-config." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="description" name="description" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the description of this lan-port-config." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="deviceId" name="device-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the device-id of this lan-port-config." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="portId" name="port-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the port-id of this lan-port-config." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="ipAddress" name="ip-address" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the ip-address of this lan-port-config." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="vlanTag" name="vlan-tag" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the vlan-tag of this lan-port-config." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="inputBandwidth" name="input-bandwidth" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the input-bandwidth of this lan-port-config." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="outputBandwidth" name="output-bandwidth" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the output-bandwidth of this lan-port-config." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="dhcpServices" name="dhcp-services" type="inventory.aai.onap.org.v14.DhcpServices" />
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v14.RelationshipList" />
+			</java-attributes>
+			<xml-properties>
+				<xml-property name="description" value="Instance of a lan-port-config" />
+				<xml-property name="indexedProps" value="lan-port-config-id,lan-port-config-name,device-id,port-id,ip-address,vlan-tag" />
+				<xml-property name="nameProps" value="lan-port-config-name" />
+				<xml-property name="searchable" value="lan-port-config-id" />
+				<xml-property name="uniqueProps" value="lan-port-config-id" />
+				<xml-property name="container" value="lan-port-configs" />
+				<xml-property name="namespace" value="network" />
+			</xml-properties>
+		</java-type>
+		<java-type name="LanPortConfigs">
+			<xml-root-element name="lan-port-configs" />
+			<xml-properties>
+				<xml-property name="description" value="Collection of lan-port-configs" />
+			</xml-properties>
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="lanPortConfig" name="lan-port-config" type="inventory.aai.onap.org.v14.LanPortConfig" />
+			</java-attributes>
+		</java-type>
+
+		<java-type name="DhcpService">
+			<xml-root-element name="dhcp-service" />
+			<java-attributes>
+				<xml-element java-attribute="serverIpAddress" name="server-ip-address" type="java.lang.String" required="true" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="Store the server-ip-address of this dhcp-service." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="serviceEnable" name="service-enable" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the service-enable of this dhcp-service." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="dhcpServiceType" name="dhcp-service-type" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the dhcp-service-type of this dhcp-service." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="leaseTime" name="lease-time" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the lease-time of this dhcp-service." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="domainName" name="domain-name" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the domain-name of this dhcp-service." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="dns" name="dns" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the dns of this dhcp-service." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="ntpPrimary" name="ntp-primary" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the ntp-primary of this dhcp-service." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="ntpSecondary" name="ntp-secondary" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the ntp-secondary of this dhcp-service." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="nbns" name="nbns" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the nbns of this dhcp-service." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v14.RelationshipList" />
+			</java-attributes>
+			<xml-properties>
+				<xml-property name="description" value="Instance of a dhcp-service" />
+				<xml-property name="indexedProps" value="dhcp-service-type,domain-name,server-ip-address" />
+				<xml-property name="nameProps" value="domain-name" />
+				<xml-property name="searchable" value="dhcp-service-type,domain-name,server-ip-address" />
+				<xml-property name="uniqueProps" value="server-ip-address" />
+				<xml-property name="container" value="dhcp-services" />
+				<xml-property name="dependentOn" value="lan-port-config" />
+				<xml-property name="namespace" value="network" />
+			</xml-properties>
+		</java-type>
+		<java-type name="DhcpServices">
+			<xml-root-element name="dhcp-services" />
+			<xml-properties>
+				<xml-property name="description" value="Collection of dhcp-services" />
+			</xml-properties>
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="dhcpService" name="dhcp-service" type="inventory.aai.onap.org.v14.DhcpService" />
+			</java-attributes>
 		</java-type>
 
 		<java-type name="SpPartner">
