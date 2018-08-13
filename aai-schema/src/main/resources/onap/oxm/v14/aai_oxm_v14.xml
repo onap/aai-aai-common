@@ -2351,6 +2351,8 @@
 				<xml-element java-attribute="owningEntities" name="owning-entities" type="inventory.aai.onap.org.v14.OwningEntities" />
 				<xml-element java-attribute="platforms" name="platforms" type="inventory.aai.onap.org.v14.Platforms" />
 				<xml-element java-attribute="projects" name="projects" type="inventory.aai.onap.org.v14.Projects" />
+
+				<xml-element java-attribute="spPartners" name="sp-partners" type="inventory.aai.onap.org.v14.SpPartners" />
 			</java-attributes>
 		</java-type>
 
@@ -7013,6 +7015,46 @@
 				<xml-property name="indexedProps" value="collection-id,model-invariant-id,model-version-id" />
 				<xml-property name="container" value="collections" />
 			</xml-properties>
+		</java-type>
+
+		<java-type name="SpPartner">
+			<xml-root-element name="sp-partner" />
+			<java-attributes>
+				<xml-element java-attribute="spPartnerId" name="sp-partner-id" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="Uniquely identifies this sp-partner by id" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="url" name="url" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the URL of this sp-partner." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="callsource" name="callsource" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the callsource of this sp-partner." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v14.RelationshipList" />
+			</java-attributes>
+			<xml-properties>
+				<xml-property name="description" value="Instance of an sp-partner" />
+				<xml-property name="indexedProps" value="sp-partner-id,url,callsource" />
+				<xml-property name="nameProps" value="sp-partner-id" />
+				<xml-property name="searchable" value="sp-partner-id" />
+				<xml-property name="uniqueProps" value="sp-partner-id" />
+				<xml-property name="container" value="sp-partners" />
+				<xml-property name="namespace" value="business" />
+			</xml-properties>
+		</java-type>
+		<java-type name="SpPartners">
+			<xml-root-element name="sp-partners" />
+			<xml-properties>
+				<xml-property name="description" value="Collection of sp-partners" />
+			</xml-properties>
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="spPartner" name="sp-partner" type="inventory.aai.onap.org.v14.SpPartner" />
+			</java-attributes>
 		</java-type>
 
 	</java-types>
