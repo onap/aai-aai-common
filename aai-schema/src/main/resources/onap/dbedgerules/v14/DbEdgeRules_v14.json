@@ -2978,7 +2978,18 @@
 			"prevent-delete": "NONE",
 			"default": "true",
 			"description":""
-		}
-		
+		},
+		{
+			"from": "logical-link",
+			"to": "p-interface",
+			"label": "tosca.relationships.network.BindsTo",
+			"direction": "OUT",
+			"multiplicity": "ONE2MANY",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"prevent-delete": "NONE",
+			"default": "true",
+			"description":"For CCVPN Usecase"
+		}		
 	]
 }
