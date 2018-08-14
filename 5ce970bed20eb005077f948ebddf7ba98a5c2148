@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a76adc5_1d5dc521",
+        "filename": "aai-schema/src/main/resources/onap/aai_schema/aai_schema_v14.xsd",
+        "patchSetId": 3
+      },
+      "lineNbr": 4887,
+      "author": {
+        "id": 741
+      },
+      "writtenOn": "2018-08-14T09:27:04Z",
+      "side": 1,
+      "message": "i see these properties are already part of the alloted-resource and allotted-resource already having relationship with vpn-binding. so could you please check if these properties are added by mistake? thank you",
+      "range": {
+        "startLine": 4865,
+        "startChar": 8,
+        "endLine": 4887,
+        "endChar": 25
+      },
+      "revId": "5ce970bed20eb005077f948ebddf7ba98a5c2148",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
