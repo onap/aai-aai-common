@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a76adc5_3d2761b8",
+        "filename": "aai-schema/src/main/resources/onap/aai_schema/aai_schema_v14.xsd",
+        "patchSetId": 2
+      },
+      "lineNbr": 3505,
+      "author": {
+        "id": 741
+      },
+      "writtenOn": "2018-08-14T09:18:05Z",
+      "side": 1,
+      "message": "Tried to understand this by discussing with team and realized that this field is mainly for capturing the input parameters sent during the service creation. so i feel that we could make this field as generic nature, and explicitly call it as inputParameters to mean what is this property does.\n\nAlso pls update the description accordingly.\n\nThis would make any service vFW, VOLTE, CCVPN, some xxx service to use this field to store the input parameters, which user can read, update while updating the service instance.",
+      "range": {
+        "startLine": 3505,
+        "startChar": 26,
+        "endLine": 3505,
+        "endChar": 43
+      },
+      "revId": "2fcb8d380601628018345f897f7a575cc303675b",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
