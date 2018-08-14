@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a76adc5_12585431",
+        "filename": "aai-core/src/main/resources/swagger.html.ftl",
+        "patchSetId": 1
+      },
+      "lineNbr": 242,
+      "author": {
+        "id": 741
+      },
+      "writtenOn": "2018-08-14T06:57:14Z",
+      "side": 0,
+      "message": "hey, could you please share on why this section is removed ? Thanks",
+      "range": {
+        "startLine": 241,
+        "startChar": 102,
+        "endLine": 242,
+        "endChar": 107
+      },
+      "revId": "a86d6a6644d6de3f3f814cd6e25cfe2213d5dd05",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
