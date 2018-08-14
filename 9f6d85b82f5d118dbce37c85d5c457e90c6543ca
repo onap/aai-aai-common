@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a76adc5_f23cb831",
+        "filename": "aai-schema/src/main/resources/onap/oxm/v14/aai_oxm_v14.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 7022,
+      "author": {
+        "id": 741
+      },
+      "writtenOn": "2018-08-14T08:37:46Z",
+      "side": 1,
+      "message": "should this capture the credentials to connect with 3rd ONAP, currently its missing ?\n\nAlso, this model represent the another ONAP instance, so should this to be called with generic name, instead of say service provider (sp). something like remoteOnap. I have seen similar naming pattern in OpenStack heat for remote stack.",
+      "range": {
+        "startLine": 7022,
+        "startChar": 19,
+        "endLine": 7022,
+        "endChar": 28
+      },
+      "revId": "9f6d85b82f5d118dbce37c85d5c457e90c6543ca",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_321230b2",
+        "filename": "aai-schema/src/main/resources/onap/oxm/v14/aai_oxm_v14.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 7035,
+      "author": {
+        "id": 741
+      },
+      "writtenOn": "2018-08-14T08:37:46Z",
+      "side": 1,
+      "message": "could you please add more description about this prp?",
+      "range": {
+        "startLine": 7035,
+        "startChar": 33,
+        "endLine": 7035,
+        "endChar": 43
+      },
+      "revId": "9f6d85b82f5d118dbce37c85d5c457e90c6543ca",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_929304fa",
+        "filename": "aai-schema/src/main/resources/onap/oxm/v14/aai_oxm_v14.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 7049,
+      "author": {
+        "id": 741
+      },
+      "writtenOn": "2018-08-14T08:37:46Z",
+      "side": 1,
+      "message": "should this to be part of different namespace? i think business namespace is mainly used to capture the user facing models which can be customers, subscription, etc.\n\nI refer the namespace purpose in AAI  [1] and accordingly, sp partner could be part of network domain, as it brings up the connectivity across, or cloud infra, but its again an debatable. \n\n\n[1] https://onap.readthedocs.io/en/latest/submodules/aai/aai-common.git/docs/AAI%20REST%20API%20Documentation/AAIRESTAPI_AMSTERDAM.html#business-domain",
+      "range": {
+        "startLine": 7049,
+        "startChar": 42,
+        "endLine": 7049,
+        "endChar": 50
+      },
+      "revId": "9f6d85b82f5d118dbce37c85d5c457e90c6543ca",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
