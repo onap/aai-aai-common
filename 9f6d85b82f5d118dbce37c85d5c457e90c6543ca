@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "1a76adc5_12b7f487",
+        "filename": "aai-schema/src/main/resources/onap/oxm/v14/aai_oxm_v14.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 7022,
+      "author": {
+        "id": 741
+      },
+      "writtenOn": "2018-08-14T08:40:21Z",
+      "side": 1,
+      "message": "and if we look at from the deployment perspective, this 3rd ONAP can be treated as external system (ESR) ? as it will clearly define the boundry.",
+      "parentUuid": "1a76adc5_f23cb831",
+      "range": {
+        "startLine": 7022,
+        "startChar": 19,
+        "endLine": 7022,
+        "endChar": 28
+      },
+      "revId": "9f6d85b82f5d118dbce37c85d5c457e90c6543ca",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a76adc5_321230b2",
         "filename": "aai-schema/src/main/resources/onap/oxm/v14/aai_oxm_v14.xml",
         "patchSetId": 2
