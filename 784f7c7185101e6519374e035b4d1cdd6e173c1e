@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a76adc5_ab20064a",
+        "filename": "aai-schema/src/main/resources/onap/dbedgerules/v14/DbEdgeRules_v14.json",
+        "patchSetId": 1
+      },
+      "lineNbr": 3101,
+      "author": {
+        "id": 75
+      },
+      "writtenOn": "2018-08-15T13:25:14Z",
+      "side": 1,
+      "message": "Can you create a new file called DbEdgeRules_sdwan_v14.json and put the contents of this there?",
+      "revId": "784f7c7185101e6519374e035b4d1cdd6e173c1e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
