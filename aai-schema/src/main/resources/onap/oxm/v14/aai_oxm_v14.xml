@@ -3089,6 +3089,7 @@
 				<xml-element java-attribute="lanPortConfigs" name="lan-port-configs" type="inventory.aai.onap.org.v14.LanPortConfigs" />
 				<xml-element java-attribute="networkResources" name="network-resources" type="inventory.aai.onap.org.v14.NetworkResources" />
 				<xml-element java-attribute="siteResources" name="site-resources" type="inventory.aai.onap.org.v14.SiteResources" />
+				<xml-element java-attribute="sdwanVpns" name="sdwan-vpns" type="inventory.aai.onap.org.v14.SdwanVpns" />
             </java-attributes>
         </java-type>
         <java-type name="Configurations">
@@ -7807,6 +7808,93 @@
 			<java-attributes>
 				<xml-element container-type="java.util.ArrayList" java-attribute="siteResource" name="site-resource" type="inventory.aai.onap.org.v14.SiteResource" />
 			</java-attributes>
+		</java-type>
+
+		<java-type name="SdwanVpns">
+			<xml-root-element name="sdwan-vpns" />
+			<xml-properties>
+				<xml-property name="description" value="Collection of sdwan-vpns" />
+			</xml-properties>
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="sdwanVpn" name="sdwan-vpn" type="inventory.aai.onap.org.v14.SdwanVpn" />
+			</java-attributes>
+		</java-type>
+		<java-type name="SdwanVpn">
+			<xml-root-element name="sdwan-vpn" />
+			<java-attributes>
+				<xml-element java-attribute="sdwanVpnId" name="sdwan-vpn-id" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="Uniquely identifies this sdwan-vpn by id" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="sdwanVpnName" name="sdwan-vpn-name" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the name of this sdwan-vpn." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="vxlanId" name="vxlan-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the vxlan-id of this sdwan-vpn." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="topology" name="topology" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the topology of this sdwan-vpn." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="tenantId" name="tenant-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the tenant-id of this sdwan-vpn." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="vpnId" name="vpn-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the vpn-id of this sdwan-vpn." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="selflink" name="selflink" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the link to get more information for this object." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="operationalStatus" name="operational-status" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the operational-status for this object." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="modelCustomizationId" name="model-customization-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the model-customization-id for this object." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="modelInvariantId" name="model-invariant-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="the ASDC model id for this resource or service model." />
+						<xml-property name="visibility" value="deployment" />
+						<xml-property name="requires" value="model-version-id" />
+						<xml-property name="dbAlias" value="model-invariant-id-local" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="modelVersionId" name="model-version-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="the ASDC model version for this resource or service model." />
+						<xml-property name="visibility" value="deployment" />
+						<xml-property name="requires" value="model-invariant-id" />
+						<xml-property name="dbAlias" value="model-version-id-local" />
+						<xml-property name="privateEdge" value="service-design-and-creation/models/model/{model-invariant-id}/model-vers/model-ver/{model-version-id}"/>
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v14.RelationshipList" />
+			</java-attributes>
+			<xml-properties>
+				<xml-property name="description" value="Instance of an sdwan-vpn" />
+				<xml-property name="indexedProps" value="sdwan-vpn-id,sdwan-vpn-name,vxlan-id,topology,operational-status" />
+				<xml-property name="nameProps" value="sdwan-vpn-name" />
+				<xml-property name="searchable" value="sdwan-vpn-id" />
+				<xml-property name="uniqueProps" value="sdwan-vpn-id" />
+				<xml-property name="container" value="sdwan-vpns" />
+				<xml-property name="namespace" value="network" />
+			</xml-properties>
 		</java-type>
 
 	</java-types>
