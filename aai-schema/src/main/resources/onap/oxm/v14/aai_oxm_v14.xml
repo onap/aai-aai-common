@@ -3005,6 +3005,7 @@
 
 				<xml-element java-attribute="connectivities" name="connectivities" type="inventory.aai.onap.org.v14.Connectivities" />
 				<xml-element java-attribute="lanPortConfigs" name="lan-port-configs" type="inventory.aai.onap.org.v14.LanPortConfigs" />
+				<xml-element java-attribute="networkResources" name="network-resources" type="inventory.aai.onap.org.v14.NetworkResources" />
 			</java-attributes>
 		</java-type>
         <java-type name="Configurations">
@@ -7318,6 +7319,58 @@
 			</xml-properties>
 			<java-attributes>
 				<xml-element container-type="java.util.ArrayList" java-attribute="dhcpService" name="dhcp-service" type="inventory.aai.onap.org.v14.DhcpService" />
+			</java-attributes>
+		</java-type>
+
+		<java-type name="NetworkResource">
+			<xml-root-element name="network-resource" />
+			<java-attributes>
+				<xml-element java-attribute="networkId" name="network-id" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="Uniquely identifies this network-resource by id" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="providerId" name="provider-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the id of the provider of this network-resource." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="clientId" name="client-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the id of the client of this network-resource." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="teTopoId" name="te-topo-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the id of the te-topo of this network-resource." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="selflink" name="selflink" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the link to get more information for this object." />
+					</xml-properties>
+				</xml-element>
+				<!-- Want to use pnf as sub-component, but workaround is to use COUSIN edge in relationship-list.
+				<xml-element java-attribute="pnfs" name="pnfs" type="inventory.aai.onap.org.v14.Pnfs" /> -->
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v14.RelationshipList" />
+			</java-attributes>
+			<xml-properties>
+				<xml-property name="description" value="Instance of a network-resource" />
+				<xml-property name="indexedProps" value="network-id,provider-id,client-id,te-topo-id" />
+				<xml-property name="nameProps" value="network-id" />
+				<xml-property name="searchable" value="network-id" />
+				<xml-property name="uniqueProps" value="network-id" />
+				<xml-property name="container" value="network-resources" />
+				<xml-property name="namespace" value="network" />
+			</xml-properties>
+		</java-type>
+		<java-type name="NetworkResources">
+			<xml-root-element name="network-resources" />
+			<xml-properties>
+				<xml-property name="description" value="Collection of network-resources" />
+			</xml-properties>
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="networkResource" name="network-resource" type="inventory.aai.onap.org.v14.NetworkResource" />
 			</java-attributes>
 		</java-type>
 
