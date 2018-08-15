@@ -131,6 +131,18 @@
 		"prevent-delete": "NONE",
 		"default": "true",
 		"description":"For CCVPN Usecase"
+	},
+	{
+		"from": "sdwan-vpn",
+		"to": "service-instance",
+		"label": "org.onap.relationships.inventory.PartOf",
+		"direction": "OUT",
+		"multiplicity": "ONE2MANY",
+		"contains-other-v": "NONE",
+		"delete-other-v": "NONE",
+		"prevent-delete": "NONE",
+		"default": "true",
+		"description":"For CCVPN Usecase"
 	}
   ]
 }
