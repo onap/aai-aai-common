@@ -3007,6 +3007,7 @@
 				<xml-element java-attribute="connectivities" name="connectivities" type="inventory.aai.onap.org.v14.Connectivities" />
 				<xml-element java-attribute="lanPortConfigs" name="lan-port-configs" type="inventory.aai.onap.org.v14.LanPortConfigs" />
 				<xml-element java-attribute="networkResources" name="network-resources" type="inventory.aai.onap.org.v14.NetworkResources" />
+				<xml-element java-attribute="siteResources" name="site-resources" type="inventory.aai.onap.org.v14.SiteResources" />
 			</java-attributes>
 		</java-type>
         <java-type name="Configurations">
@@ -7400,5 +7401,147 @@
 			</java-attributes>
 		</java-type>
 
+		<java-type name="SiteResource">
+			<xml-root-element name="site-resource" />
+			<java-attributes>
+				<xml-element java-attribute="id" name="id" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="Uniquely identifies this site-resource by id" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="name" name="name" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the name of this site-resource." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="description" name="description" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the description of this site-resource." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="type" name="type" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the type of this site-resource." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="role" name="role" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the role of this site-resource." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="generatedSiteId" name="generated-site-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the generated-site-id of this site-resource." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="selflink" name="selflink" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the link to get more information for this object." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="operationalStatus" name="operational-status" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the operational-status for this object." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="modelCustomizationId" name="model-customization-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the model-customization-id for this object." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="modelInvariantId" name="model-invariant-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="the ASDC model id for this resource or service model." />
+						<xml-property name="visibility" value="deployment" />
+						<xml-property name="requires" value="model-version-id" />
+						<xml-property name="dbAlias" value="model-invariant-id-local" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="modelVersionId" name="model-version-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="the ASDC model version for this resource or service model." />
+						<xml-property name="visibility" value="deployment" />
+						<xml-property name="requires" value="model-invariant-id" />
+						<xml-property name="dbAlias" value="model-version-id-local" />
+						<xml-property name="privateEdge" value="service-design-and-creation/models/model/{model-invariant-id}/model-vers/model-ver/{model-version-id}"/>
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="pLocation" name="p-location" type="inventory.aai.onap.org.v14.PLocation" />
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v14.RelationshipList" />
+			</java-attributes>
+			<xml-properties>
+				<xml-property name="description" value="Instance of a site-resource" />
+				<xml-property name="indexedProps" value="id,name,type,role,generated-site-id,operational-status" />
+				<xml-property name="nameProps" value="name" />
+				<xml-property name="searchable" value="id,name,type,role,generated-site-id,operational-status" />
+				<xml-property name="uniqueProps" value="id" />
+				<xml-property name="container" value="site-resources" />
+				<xml-property name="namespace" value="network" />
+			</xml-properties>
+		</java-type>
+		<java-type name="SiteResources">
+			<xml-root-element name="site-resources" />
+			<xml-properties>
+				<xml-property name="description" value="Collection of site-resources" />
+			</xml-properties>
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="siteResource" name="site-resource" type="inventory.aai.onap.org.v14.SiteResource" />
+			</java-attributes>
+		</java-type>
+
+		<java-type name="PLocation">
+			<xml-root-element name="p-location" />
+			<java-attributes>
+				<xml-element java-attribute="locationName" name="location-name" type="java.lang.String" required="true" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="Uniquely identify this p-location by location-name." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="emails" name="emails" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the emails of this p-location." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="postcode" name="postcode" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the postcode of this p-location." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="address" name="address" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the address of this p-location." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="latitude" name="latitude" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the latitude of this p-location." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="longitude" name="longitude" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the longitude of this p-location." />
+					</xml-properties>
+				</xml-element>
+			</java-attributes>
+			<xml-properties>
+				<xml-property name="description" value="Instance of a p-location" />
+				<xml-property name="indexedProps" value="location-name,address,postcode,latitude,longitude" />
+				<xml-property name="nameProps" value="location-name" />
+				<xml-property name="searchable" value="location-name,address,postcode,latitude,longitude" />
+				<xml-property name="uniqueProps" value="location-name" />
+				<xml-property name="container" value="p-locations" />
+				<xml-property name="dependentOn" value="site-resource" />
+				<xml-property name="namespace" value="network" />
+			</xml-properties>
+		</java-type>
+		<java-type name="PLocations">
+			<xml-root-element name="p-locations" />
+			<xml-properties>
+				<xml-property name="description" value="Collection of p-locations" />
+			</xml-properties>
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="pLocation" name="p-location" type="inventory.aai.onap.org.v14.PLocation" />
+			</java-attributes>
+		</java-type>
 	</java-types>
 </xml-bindings>
