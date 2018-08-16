@@ -9024,6 +9024,49 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
       </xs:sequence>
     </xs:complexType>
   </xs:element>
+  <xs:element name="ext-aai-network">
+    <xs:complexType>
+      <xs:annotation>
+        <xs:appinfo>
+          <annox:annotate target="class">@org.onap.aai.annotations.Metadata(description="Refer to an external AAI in another ONAP.",indexedProps="aai-id",searchable="aai-id",container="ext-aai-networks",namespace="network")</annox:annotate>
+        </xs:appinfo>
+      </xs:annotation>
+      <xs:sequence>
+        <xs:element name="aai-id" type="xs:string">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(isKey=true,description="Unique ID of the referenced AAI.")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="schema-version" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="Schema version of the referenced AAI.")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element ref="tns:esr-system-info" minOccurs="0"/>
+        <xs:element ref="tns:logical-links" minOccurs="0"/>
+        <xs:element ref="tns:vpn-bindings" minOccurs="0"/>
+        <xs:element ref="tns:pnfs" minOccurs="0"/>
+        <xs:element ref="tns:connectivities" minOccurs="0"/>
+        <xs:element ref="tns:lan-port-configs" minOccurs="0"/>
+        <xs:element ref="tns:network-resources" minOccurs="0"/>
+        <xs:element ref="tns:site-resources" minOccurs="0"/>
+        <xs:element ref="tns:sdwan-vpns" minOccurs="0"/>
+        <xs:element ref="tns:devices" minOccurs="0"/>
+        <xs:element ref="tns:wan-port-configs" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ext-aai-networks">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="tns:ext-aai-network" minOccurs="0" maxOccurs="5000"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
   <xs:element name="network">
     <xs:complexType>
       <xs:annotation>
@@ -9060,6 +9103,7 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
         <xs:element ref="tns:sdwan-vpns" minOccurs="0"/>
         <xs:element ref="tns:devices" minOccurs="0"/>
         <xs:element ref="tns:wan-port-configs" minOccurs="0"/>
+        <xs:element ref="tns:ext-aai-networks" minOccurs="0"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
