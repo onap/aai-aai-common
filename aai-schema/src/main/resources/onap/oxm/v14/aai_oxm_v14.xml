@@ -3009,6 +3009,7 @@
 				<xml-element java-attribute="siteResources" name="site-resources" type="inventory.aai.onap.org.v14.SiteResources" />
 				<xml-element java-attribute="sdwanVpns" name="sdwan-vpns" type="inventory.aai.onap.org.v14.SdwanVpns" />
 				<xml-element java-attribute="devices" name="devices" type="inventory.aai.onap.org.v14.Devices" />
+				<xml-element java-attribute="wanPortConfigs" name="wan-port-configs" type="inventory.aai.onap.org.v14.WanPortConfigs" />
 			</java-attributes>
 		</java-type>
         <java-type name="Configurations">
@@ -7691,6 +7692,133 @@
 				<xml-property name="container" value="devices" />
 				<xml-property name="namespace" value="network" />
 			</xml-properties>
+		</java-type>
+
+		<java-type name="WanPortConfig">
+			<xml-root-element name="wan-port-config" />
+			<java-attributes>
+				<xml-element java-attribute="wanPortConfigId" name="wan-port-config-id" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="Uniquely identifies this wan-port-config by id" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="wanPortConfigName" name="wan-port-config-name" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the name of this wan-port-config." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="deviceId" name="device-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the id of the device of this wan-port-config." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="vlanId" name="vlan-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the id of the vlan of this wan-port-config." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="ipAddress" name="ip-address" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the ip-address of this wan-port-config." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="providerIpAddress" name="provider-ip-address" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the provider-ip-address of this wan-port-config." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="inputBandwidth" name="input-bandwidth" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the input-bandwidth of this wan-port-config." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="outputBandwidth" name="output-bandwidth" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the output-bandwidth of this wan-port-config." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="description" name="description" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the description of this wan-port-config." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="portType" name="port-type" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the port-type of this wan-port-config." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="portNumber" name="port-number" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the port-number of this wan-port-config." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="transportNetworkName" name="transport-network-name" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the transport-network-name of this wan-port-config." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="devicePortId" name="device-port-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the device-port-id of this wan-port-config." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="wanPortId" name="wan-port-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the wan-port-id of this wan-port-config." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="selflink" name="selflink" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the link to get more information for this object." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="operationalStatus" name="operational-status" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the operational-status for this object." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="modelCustomizationId" name="model-customization-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the model-customization-id for this object." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="modelInvariantId" name="model-invariant-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="the ASDC model id for this resource or service model." />
+						<xml-property name="visibility" value="deployment" />
+						<xml-property name="requires" value="model-version-id" />
+						<xml-property name="dbAlias" value="model-invariant-id-local" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="modelVersionId" name="model-version-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="the ASDC model version for this resource or service model." />
+						<xml-property name="visibility" value="deployment" />
+						<xml-property name="requires" value="model-invariant-id" />
+						<xml-property name="dbAlias" value="model-version-id-local" />
+						<xml-property name="privateEdge" value="service-design-and-creation/models/model/{model-invariant-id}/model-vers/model-ver/{model-version-id}"/>
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v14.RelationshipList" />
+			</java-attributes>
+			<xml-properties>
+				<xml-property name="description" value="Instance of a wan-port-config" />
+				<xml-property name="indexedProps" value="wan-port-config-id,wan-port-config-name,device-id,ip-address,port-type,port-number,device-port-id,wan-port-id,operational-status" />
+				<xml-property name="nameProps" value="wan-port-config-name" />
+				<xml-property name="searchable" value="wan-port-config-id" />
+				<xml-property name="uniqueProps" value="wan-port-config-id" />
+				<xml-property name="container" value="wan-port-configs" />
+				<xml-property name="namespace" value="network" />
+			</xml-properties>
+		</java-type>
+		<java-type name="WanPortConfigs">
+			<xml-root-element name="wan-port-configs" />
+			<xml-properties>
+				<xml-property name="description" value="Collection of wan-port-configs" />
+			</xml-properties>
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="wanPortConfig" name="wan-port-config" type="inventory.aai.onap.org.v14.WanPortConfig" />
+			</java-attributes>
 		</java-type>
 
 	</java-types>
