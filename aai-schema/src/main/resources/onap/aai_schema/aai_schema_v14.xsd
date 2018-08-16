@@ -2074,7 +2074,7 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
     <xs:complexType>
       <xs:annotation>
         <xs:appinfo>
-          <annox:annotate target="class">@org.onap.aai.annotations.Metadata(description="Persist common address information of external systems.",indexedProps="esr-system-info-id,system-name,system-type",searchable="esr-system-info-id,system-name,system-type",container="esr-system-info-list",dependentOn="cloud-region,esr-ems,esr-vnfm,esr-thirdparty-sdnc")</annox:annotate>
+          <annox:annotate target="class">@org.onap.aai.annotations.Metadata(description="Persist common address information of external systems.",indexedProps="esr-system-info-id,system-name,system-type",searchable="esr-system-info-id,system-name,system-type",container="esr-system-info-list",dependentOn="cloud-region,esr-ems,esr-vnfm,esr-thirdparty-sdnc,ext-aai-network")</annox:annotate>
         </xs:appinfo>
       </xs:annotation>
       <xs:sequence>
@@ -9299,6 +9299,40 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
       </xs:sequence>
     </xs:complexType>
   </xs:element>
+  <xs:element name="ext-aai-network">
+    <xs:complexType>
+      <xs:annotation>
+        <xs:appinfo>
+          <annox:annotate target="class">@org.onap.aai.annotations.Metadata(description="Refer to an external AAI in another ONAP.",indexedProps="aai-id",searchable="aai-id",container="ext-aai-networks",namespace="network")</annox:annotate>
+        </xs:appinfo>
+      </xs:annotation>
+      <xs:sequence>
+        <xs:element name="aai-id" type="xs:string">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(isKey=true,description="Unique ID of the referenced AAI.")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="schema-version" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="Schema version of the referenced AAI.")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element ref="tns:esr-system-info" minOccurs="0"/>
+        <xs:element ref="tns:relationship-list" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ext-aai-networks">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="tns:ext-aai-network" minOccurs="0" maxOccurs="5000"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
   <xs:element name="network">
     <xs:complexType>
       <xs:annotation>
@@ -9336,6 +9370,7 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
         <xs:element ref="tns:sdwan-vpns" minOccurs="0"/>
         <xs:element ref="tns:devices" minOccurs="0"/>
         <xs:element ref="tns:wan-port-configs" minOccurs="0"/>
+        <xs:element ref="tns:ext-aai-networks" minOccurs="0"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
