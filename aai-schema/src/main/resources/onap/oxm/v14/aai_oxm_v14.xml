@@ -3010,6 +3010,7 @@
 				<xml-element java-attribute="sdwanVpns" name="sdwan-vpns" type="inventory.aai.onap.org.v14.SdwanVpns" />
 				<xml-element java-attribute="devices" name="devices" type="inventory.aai.onap.org.v14.Devices" />
 				<xml-element java-attribute="wanPortConfigs" name="wan-port-configs" type="inventory.aai.onap.org.v14.WanPortConfigs" />
+				<xml-element java-attribute="extAaiNetworks" name="ext-aai-networks" type="inventory.aai.onap.org.v14.ExtAaiNetworks" />
 			</java-attributes>
 		</java-type>
         <java-type name="Configurations">
@@ -7803,6 +7804,48 @@
 			<java-attributes>
 				<xml-element container-type="java.util.ArrayList" java-attribute="wanPortConfig" name="wan-port-config" type="inventory.aai.onap.org.v14.WanPortConfig" />
 			</java-attributes>
+		</java-type>
+
+		<java-type name="ExtAaiNetworks">
+			<xml-root-element name="ext-aai-networks" />
+			<java-attributes>
+				<xml-element container-type="java.util.ArrayList" java-attribute="extAaiNetwork" name="ext-aai-network" type="inventory.aai.onap.org.v14.ExtAaiNetwork" />
+			</java-attributes>
+		</java-type>
+		<java-type name="ExtAaiNetwork">
+			<xml-root-element name="ext-aai-network" />
+			<java-attributes>
+				<xml-element java-attribute="aaiId" name="aai-id" required="true" type="java.lang.String" xml-key="true">
+					<xml-properties>
+						<xml-property name="description" value="Unique ID of the referenced AAI." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="schemaVersion" name="schema-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Schema version of the referenced AAI." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="esrSystemInfo" name="esr-system-info" type="inventory.aai.onap.org.v14.EsrSystemInfo" />
+
+				<xml-element java-attribute="logicalLinks" name="logical-links" type="inventory.aai.onap.org.v14.LogicalLinks" />
+				<xml-element java-attribute="vpnBindings" name="vpn-bindings" type="inventory.aai.onap.org.v14.VpnBindings" />
+				<xml-element java-attribute="pnfs" name="pnfs" type="inventory.aai.onap.org.v14.Pnfs" />
+
+				<xml-element java-attribute="connectivities" name="connectivities" type="inventory.aai.onap.org.v14.Connectivities" />
+				<xml-element java-attribute="lanPortConfigs" name="lan-port-configs" type="inventory.aai.onap.org.v14.LanPortConfigs" />
+				<xml-element java-attribute="networkResources" name="network-resources" type="inventory.aai.onap.org.v14.NetworkResources" />
+				<xml-element java-attribute="siteResources" name="site-resources" type="inventory.aai.onap.org.v14.SiteResources" />
+				<xml-element java-attribute="sdwanVpns" name="sdwan-vpns" type="inventory.aai.onap.org.v14.SdwanVpns" />
+				<xml-element java-attribute="devices" name="devices" type="inventory.aai.onap.org.v14.Devices" />
+				<xml-element java-attribute="wanPortConfigs" name="wan-port-configs" type="inventory.aai.onap.org.v14.WanPortConfigs" />
+				</java-attributes>
+			<xml-properties>
+				<xml-property name="description" value="Refer to an external AAI in another ONAP." />
+				<xml-property name="indexedProps" value="aai-id" />
+				<xml-property name="searchable" value="aai-id" />
+				<xml-property name="container" value="ext-aai-networks" />
+				<xml-property name="namespace" value="network" />
+			</xml-properties>
 		</java-type>
 
 	</java-types>
