@@ -39,21 +39,21 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @TestPropertySource(properties = {"schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-wiring-test.properties"})
 @SpringBootTest
 public class ConfigTranslatorWiringTest {
-	@Autowired
-	ConfigTranslator ct;
-	
-	@Test
-	public void test() {
-		assertNotNull(ct);
-		Map<SchemaVersion, List<String>> nodes = ct.getNodeFiles();
-		assertTrue(nodes.containsKey(new SchemaVersion("v10")));
-		assertTrue(1 == nodes.get(new SchemaVersion("v10")).size());
-		assertTrue("src/test/resources/oxm/test_business_v10.xml".equals(nodes.get(new SchemaVersion("v10")).get(0)));
-		
-		Map<SchemaVersion, List<String>> edges = ct.getEdgeFiles();
-		assertTrue(edges.containsKey(new SchemaVersion("v10")));
-		assertTrue(1 == edges.get(new SchemaVersion("v10")).size());
-		assertTrue("src/test/resources/edgeRules/test.json".equals(edges.get(new SchemaVersion("v10")).get(0)));
-	}
+    @Autowired
+    ConfigTranslator ct;
+    
+    @Test
+    public void test() {
+        assertNotNull(ct);
+        Map<SchemaVersion, List<String>> nodes = ct.getNodeFiles();
+        assertTrue(nodes.containsKey(new SchemaVersion("v10")));
+        assertTrue(1 == nodes.get(new SchemaVersion("v10")).size());
+        assertTrue("src/test/resources/oxm/test_business_v10.xml".equals(nodes.get(new SchemaVersion("v10")).get(0)));
+        
+        Map<SchemaVersion, List<String>> edges = ct.getEdgeFiles();
+        assertTrue(edges.containsKey(new SchemaVersion("v10")));
+        assertTrue(1 == edges.get(new SchemaVersion("v10")).size());
+        assertTrue("src/test/resources/edgeRules/test.json".equals(edges.get(new SchemaVersion("v10")).get(0)));
+    }
 
 }
