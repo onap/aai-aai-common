@@ -37,18 +37,18 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {SchemaLocationsBean.class, SchemaVersions.class, BadNodeConfigForValidationTest.class, NodeIngestor.class,
-		CheckEverythingStrategy.class, DefaultVersionValidationModule.class, VersionValidator.class})
+        CheckEverythingStrategy.class, DefaultVersionValidationModule.class, VersionValidator.class})
 @TestPropertySource(properties = { "schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-wiring-test.properties" })
 @SpringBootTest
 public class VersionValidatorRainyDayTest {
-	@Autowired
-	VersionValidator validator;
+    @Autowired
+    VersionValidator validator;
 
-	@Test
-	public void test() {
-		assertFalse(validator.validate());
-		assertTrue(validator.getErrorMsg().contains(new SchemaVersion("v12").toString()));
-		assertTrue(validator.getErrorMsg().contains(new SchemaVersion("v11").toString()));
-	}
+    @Test
+    public void test() {
+        assertFalse(validator.validate());
+        assertTrue(validator.getErrorMsg().contains(new SchemaVersion("v12").toString()));
+        assertTrue(validator.getErrorMsg().contains(new SchemaVersion("v11").toString()));
+    }
 
 }
