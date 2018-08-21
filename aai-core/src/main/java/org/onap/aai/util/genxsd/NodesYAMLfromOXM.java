@@ -64,7 +64,7 @@ public class NodesYAMLfromOXM extends OxmFileProcessor {
 	private static final String normalStartDir = "aai-core";
 	private static final String yaml_dir = (((System.getProperty("user.dir") != null) && (!System.getProperty("user.dir").contains(normalStartDir))) ? autoGenRoot : root) + "/aai_swagger_yaml";
 	private StringBuilder inventoryDefSb = null;	
-	private Map<String,String> operationDefinitions = new HashMap<String, String>();
+	private Map<String,String> operationDefinitions = new HashMap<>();
 
 	private String basePath;
 
@@ -154,7 +154,7 @@ public class NodesYAMLfromOXM extends OxmFileProcessor {
 			javaTypeDefinitions.put("inventory", inventoryDefSb.toString());
 		}			
 		StringBuffer sb = new StringBuffer("definitions:\n");
-		Map<String, String> sortedJavaTypeDefinitions = new TreeMap<String, String>(javaTypeDefinitions);
+		Map<String, String> sortedJavaTypeDefinitions = new TreeMap<>(javaTypeDefinitions);
 
 		for (Map.Entry<String, String> entry : sortedJavaTypeDefinitions.entrySet()) {
 			if(namespaceFilter != null && (! namespaceFilter.contains(entry.getKey()))) {
@@ -383,7 +383,7 @@ public class NodesYAMLfromOXM extends OxmFileProcessor {
 		try {
 			EdgeRuleQuery q = new EdgeRuleQuery.Builder(xmlRootElementName).version(v).fromOnly().build();
 			Multimap<String, EdgeRule> results = ei.getRules(q);
-			SortedSet<String> ss=new TreeSet<String>(results.keySet());
+			SortedSet<String> ss=new TreeSet<>(results.keySet());
 			sbEdge.append(nodeCaption);
 			nodeCaption="";
 			for(String key : ss) {
@@ -489,11 +489,9 @@ public class NodesYAMLfromOXM extends OxmFileProcessor {
 			logger.error( "Exception creating output file " + outfileName);
 			e.printStackTrace();
 		}
-		BufferedWriter bw = null;
-		try {
-			Charset charset = Charset.forName("UTF-8");
-			Path path = Paths.get(outfileName);
-			bw = Files.newBufferedWriter(path, charset);
+		Path path = Paths.get(outfileName);
+		Charset charset = Charset.forName("UTF-8");
+		try(BufferedWriter bw = Files.newBufferedWriter(path, charset);) {
 			bw.write(fileContent);
 			if ( bw != null ) {
 				bw.close();
