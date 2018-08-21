@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a76adc5_d38ba266",
+        "filename": "aai-core/src/test/java/org/onap/aai/util/MapperUtilTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 741
+      },
+      "writtenOn": "2018-08-21T04:44:36Z",
+      "side": 1,
+      "message": "this looks same as L70 and no difference. i think you need to test with different kind of samples.",
+      "range": {
+        "startLine": 78,
+        "startChar": 46,
+        "endLine": 78,
+        "endChar": 93
+      },
+      "revId": "a7a1310dc27f720e6c86e60b65da663998a1fcd7",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
