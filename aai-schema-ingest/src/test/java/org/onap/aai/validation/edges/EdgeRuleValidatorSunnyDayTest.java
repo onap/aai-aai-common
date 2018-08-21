@@ -43,19 +43,19 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {SchemaLocationsBean.class, SchemaVersions.class, GoodConfigForValidationTest.class, NodeIngestor.class,
-		CheckEverythingStrategy.class, DefaultEdgeFieldsValidationModule.class, UniqueLabelValidationModule.class,
-		SingleContainmentValidationModule.class, CousinDefaultingValidationModule.class, NodeTypesValidationModule.class,
-		EdgeRuleValidator.class})
+        CheckEverythingStrategy.class, DefaultEdgeFieldsValidationModule.class, UniqueLabelValidationModule.class,
+        SingleContainmentValidationModule.class, CousinDefaultingValidationModule.class, NodeTypesValidationModule.class,
+        EdgeRuleValidator.class})
 @TestPropertySource(properties = { "schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-wiring-test.properties" })
 @SpringBootTest
 public class EdgeRuleValidatorSunnyDayTest {
-	@Autowired
-	EdgeRuleValidator validator;
+    @Autowired
+    EdgeRuleValidator validator;
 
-	@Test
-	public void test() {
-		assertNotNull(validator); //verify spring wiring OK
-		assertTrue(validator.validate());
-		assertTrue("No errors found.".equals(validator.getErrorMsg()));
-	}
+    @Test
+    public void test() {
+        assertNotNull(validator); //verify spring wiring OK
+        assertTrue(validator.validate());
+        assertTrue("No errors found.".equals(validator.getErrorMsg()));
+    }
 }

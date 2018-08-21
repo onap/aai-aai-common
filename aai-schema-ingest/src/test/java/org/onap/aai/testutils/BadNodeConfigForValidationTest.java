@@ -29,30 +29,30 @@ import org.onap.aai.setup.*;
  */
 public class BadNodeConfigForValidationTest extends ConfigTranslator {
 
-	public static final SchemaVersion LATEST = new SchemaVersion("v14");
+    public static final SchemaVersion LATEST = new SchemaVersion("v14");
 
-	public BadNodeConfigForValidationTest(SchemaLocationsBean bean, SchemaVersions schemaVersions) {
-		super(bean, schemaVersions);
-	}
+    public BadNodeConfigForValidationTest(SchemaLocationsBean bean, SchemaVersions schemaVersions) {
+        super(bean, schemaVersions);
+    }
 
-	@Override
-	public Map<SchemaVersion, List<String>> getNodeFiles() {
-		List<String> files = new ArrayList<>();
-		files.add("src/test/resources/oxm/goodConfigForValidationTest_oxm.xml");
-		files.add("src/test/resources/oxm/badConfigForValidationTest_oxm.xml");
-		Map<SchemaVersion, List<String>> input = new TreeMap<>();
-		input.put(LATEST, files);
-		return input;
-	}
+    @Override
+    public Map<SchemaVersion, List<String>> getNodeFiles() {
+        List<String> files = new ArrayList<>();
+        files.add("src/test/resources/oxm/goodConfigForValidationTest_oxm.xml");
+        files.add("src/test/resources/oxm/badConfigForValidationTest_oxm.xml");
+        Map<SchemaVersion, List<String>> input = new TreeMap<>();
+        input.put(LATEST, files);
+        return input;
+    }
 
-	@Override
-	public Map<SchemaVersion, List<String>> getEdgeFiles() {
-		Map<SchemaVersion, List<String>> input = new TreeMap<>();
-		List<String> files = new ArrayList<>();
-		files.add("src/test/resources/edgeRules/test3.json");
-		input.put(LATEST, files);
-		return input;
-	}
+    @Override
+    public Map<SchemaVersion, List<String>> getEdgeFiles() {
+        Map<SchemaVersion, List<String>> input = new TreeMap<>();
+        List<String> files = new ArrayList<>();
+        files.add("src/test/resources/edgeRules/test3.json");
+        input.put(LATEST, files);
+        return input;
+    }
 
-	
+    
 }

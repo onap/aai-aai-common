@@ -29,31 +29,31 @@ import org.junit.Test;
 
 public class EdgeRuleTest {
 
-	@Test
-	public void testFlipDirection() {
-		Map<String, String> rule = new HashMap<>();
-		rule.put("from", "foo");
-		rule.put("to", "bar");
-		rule.put("label", "links");
-		rule.put("contains-other-v", "NONE");
-		rule.put("delete-other-v", "NONE");
-		rule.put("prevent-delete", "NONE");
-		rule.put("multiplicity", "ONE2ONE");
-		rule.put("direction", "OUT");
-		rule.put("default", "true");
-		rule.put("private", "true");
+    @Test
+    public void testFlipDirection() {
+        Map<String, String> rule = new HashMap<>();
+        rule.put("from", "foo");
+        rule.put("to", "bar");
+        rule.put("label", "links");
+        rule.put("contains-other-v", "NONE");
+        rule.put("delete-other-v", "NONE");
+        rule.put("prevent-delete", "NONE");
+        rule.put("multiplicity", "ONE2ONE");
+        rule.put("direction", "OUT");
+        rule.put("default", "true");
+        rule.put("private", "true");
 
-		EdgeRule r = new EdgeRule(rule);
-		
-		r.flipDirection();
-		assertTrue(Direction.IN.equals(r.getDirection()));
-		r.flipDirection();
-		assertTrue(Direction.OUT.equals(r.getDirection()));
-		
-		rule.put("direction", "BOTH");
-		EdgeRule r2 = new EdgeRule(rule);
-		r2.flipDirection();
-		assertTrue(Direction.BOTH.equals(r2.getDirection()));
-	}
+        EdgeRule r = new EdgeRule(rule);
+        
+        r.flipDirection();
+        assertTrue(Direction.IN.equals(r.getDirection()));
+        r.flipDirection();
+        assertTrue(Direction.OUT.equals(r.getDirection()));
+        
+        rule.put("direction", "BOTH");
+        EdgeRule r2 = new EdgeRule(rule);
+        r2.flipDirection();
+        assertTrue(Direction.BOTH.equals(r2.getDirection()));
+    }
 
 }

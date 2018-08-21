@@ -43,25 +43,25 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @TestPropertySource(properties = { "schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-wiring-test.properties" })
 @SpringBootTest
 public class NodeTypesValidationModuleTest {
-	@Autowired
-	NodeTypesValidationModule validator;
+    @Autowired
+    NodeTypesValidationModule validator;
 
-	@Test
-	public void test() {
-		List<String> testPairs = new ArrayList<>();
-		testPairs.add("bar|foo");
-		testPairs.add("foo|foo");
-		testPairs.add("foo|quux");
-		assertTrue("".equals(validator.validate(testPairs, new SchemaVersion("v11"))));
-		assertTrue(validator.validate(testPairs, new SchemaVersion("v10")).contains("Invalid node type(s) found: quux")); //bc no quux in v10
-	}
+    @Test
+    public void test() {
+        List<String> testPairs = new ArrayList<>();
+        testPairs.add("bar|foo");
+        testPairs.add("foo|foo");
+        testPairs.add("foo|quux");
+        assertTrue("".equals(validator.validate(testPairs, new SchemaVersion("v11"))));
+        assertTrue(validator.validate(testPairs, new SchemaVersion("v10")).contains("Invalid node type(s) found: quux")); //bc no quux in v10
+    }
 
-	@Test
-	public void testWeirdCases() {
-		List<String> testPairs = new ArrayList<>();
-		testPairs.add("bar|");
-		testPairs.add("|foo");
-		testPairs.add("|");
-		assertTrue("".equals(validator.validate(testPairs, new SchemaVersion("v11")))); //bc empty just ignored
-	}
+    @Test
+    public void testWeirdCases() {
+        List<String> testPairs = new ArrayList<>();
+        testPairs.add("bar|");
+        testPairs.add("|foo");
+        testPairs.add("|");
+        assertTrue("".equals(validator.validate(testPairs, new SchemaVersion("v11")))); //bc empty just ignored
+    }
 }

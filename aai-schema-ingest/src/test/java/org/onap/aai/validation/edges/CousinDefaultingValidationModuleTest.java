@@ -35,45 +35,45 @@ import org.onap.aai.setup.SchemaVersion;
 import com.jayway.jsonpath.DocumentContext;
 
 public class CousinDefaultingValidationModuleTest {
-	private static List<DocumentContext> ctxs;
-	private static CousinDefaultingValidationModule validator;
+    private static List<DocumentContext> ctxs;
+    private static CousinDefaultingValidationModule validator;
 
-	@BeforeClass
-	public static void setUpBeforeClass() {
-		Map<SchemaVersion, List<String>> testRules = new HashMap<>();
-		List<String> testFiles = new ArrayList<>();
-		testFiles.add("src/test/resources/edgeRules/cousinDefaultValidationTest.json");
+    @BeforeClass
+    public static void setUpBeforeClass() {
+        Map<SchemaVersion, List<String>> testRules = new HashMap<>();
+        List<String> testFiles = new ArrayList<>();
+        testFiles.add("src/test/resources/edgeRules/cousinDefaultValidationTest.json");
 
-		SchemaVersion LATEST_VERSION = new SchemaVersion("v14");
-		testRules.put(LATEST_VERSION, testFiles);
-		
-		JsonIngestor ji = new JsonIngestor();
-		ctxs = ji.ingest(testRules).get(LATEST_VERSION);
-		validator = new CousinDefaultingValidationModule();
-	}
-	
-	@Test
-	public void testValidCousins() {
-		assertTrue("".equals(validator.validate("boop|beep", ctxs)));
-	}
+        SchemaVersion LATEST_VERSION = new SchemaVersion("v14");
+        testRules.put(LATEST_VERSION, testFiles);
+        
+        JsonIngestor ji = new JsonIngestor();
+        ctxs = ji.ingest(testRules).get(LATEST_VERSION);
+        validator = new CousinDefaultingValidationModule();
+    }
+    
+    @Test
+    public void testValidCousins() {
+        assertTrue("".equals(validator.validate("boop|beep", ctxs)));
+    }
 
-	@Test
-	public void testValidBoth() {
-		assertTrue("".equals(validator.validate("monster|human", ctxs)));
-	}
+    @Test
+    public void testValidBoth() {
+        assertTrue("".equals(validator.validate("monster|human", ctxs)));
+    }
 
-	@Test
-	public void testValidSingleContains() {
-		assertTrue("".equals(validator.validate("family|baby", ctxs)));
-	}
-	
-	@Test
-	public void testInvalidTooManyDefaults() {
-		assertTrue(validator.validate("sheep|wool", ctxs).contains("Multiple set"));
-	}
-	
-	@Test
-	public void testInvalidNoDefaults() {
-		assertTrue(validator.validate("cloth|thread", ctxs).contains("None set"));
-	}
+    @Test
+    public void testValidSingleContains() {
+        assertTrue("".equals(validator.validate("family|baby", ctxs)));
+    }
+    
+    @Test
+    public void testInvalidTooManyDefaults() {
+        assertTrue(validator.validate("sheep|wool", ctxs).contains("Multiple set"));
+    }
+    
+    @Test
+    public void testInvalidNoDefaults() {
+        assertTrue(validator.validate("cloth|thread", ctxs).contains("None set"));
+    }
 }

@@ -42,16 +42,16 @@ import com.google.common.collect.Multimap;
 @TestPropertySource(properties = {"schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-wiring-test.properties"})
 @SpringBootTest
 public class EdgeIngestorWiringTest {
-	@Autowired
-	EdgeIngestor ei;
-	
-	@Test
-	public void test() throws EdgeRuleNotFoundException {
-		assertNotNull(ei);
-		EdgeRuleQuery q = new EdgeRuleQuery.Builder("quux", "foo").label("dancesWith").version(new SchemaVersion("v10")).build();
-		Multimap<String, EdgeRule> results = ei.getRules(q);
-		assertTrue(results.size() == 1);
-		assertTrue(results.containsKey("foo|quux"));
-	}
+    @Autowired
+    EdgeIngestor ei;
+    
+    @Test
+    public void test() throws EdgeRuleNotFoundException {
+        assertNotNull(ei);
+        EdgeRuleQuery q = new EdgeRuleQuery.Builder("quux", "foo").label("dancesWith").version(new SchemaVersion("v10")).build();
+        Multimap<String, EdgeRule> results = ei.getRules(q);
+        assertTrue(results.size() == 1);
+        assertTrue(results.containsKey("foo|quux"));
+    }
 
 }

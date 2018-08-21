@@ -36,23 +36,23 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
-		SchemaLocationsBean.class,
-		SchemaVersions.class,
-		GoodConfigForValidationTest.class,
-		NodeIngestor.class,
-		CheckEverythingStrategy.class,
-		DefaultVersionValidationModule.class,
-		VersionValidator.class
+        SchemaLocationsBean.class,
+        SchemaVersions.class,
+        GoodConfigForValidationTest.class,
+        NodeIngestor.class,
+        CheckEverythingStrategy.class,
+        DefaultVersionValidationModule.class,
+        VersionValidator.class
 })
 @TestPropertySource(properties = { "schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-wiring-test.properties" })
 @SpringBootTest
 public class VersionValidatorSunnyDayTest {
-	@Autowired
-	VersionValidator validator;
+    @Autowired
+    VersionValidator validator;
 
-	@Test
-	public void test() {
-		assertTrue(validator.validate());
-	}
+    @Test
+    public void test() {
+        assertTrue(validator.validate());
+    }
 
 }

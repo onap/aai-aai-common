@@ -31,14 +31,14 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:forWiringTests/testContext.xml"})
 public class SchemaLocationsBeanXMLSetterTest {
-	@Autowired
-	SchemaLocationsBean bean;
+    @Autowired
+    SchemaLocationsBean bean;
 
-	@Test
-	public void test() {
-		assertNotNull(bean);
-		assertTrue("fromXML".equals(bean.getSchemaConfigLocation()));
-		assertTrue("whatAnXML".equals(bean.getNodeDirectory()));
-		assertTrue("XMLwiringYAY".equals(bean.getEdgeDirectory()));
-	}
+    @Test
+    public void test() {
+        assertNotNull(bean);
+        assertTrue("fromXML".equals(bean.getSchemaConfigLocation()));
+        assertTrue("whatAnXML".equals(bean.getNodeDirectory()));
+        assertTrue("XMLwiringYAY".equals(bean.getEdgeDirectory()));
+    }
 }

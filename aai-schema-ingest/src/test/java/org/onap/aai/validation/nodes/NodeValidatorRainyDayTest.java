@@ -39,21 +39,21 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {SchemaLocationsBean.class, SchemaVersions.class, BadNodeConfigForValidationTest.class, NodeIngestor.class,
-		CheckEverythingStrategy.class, DefaultDuplicateNodeDefinitionValidationModule.class, NodeValidator.class})
+        CheckEverythingStrategy.class, DefaultDuplicateNodeDefinitionValidationModule.class, NodeValidator.class})
 @TestPropertySource(properties = { "schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-wiring-test.properties" })
 @SpringBootTest
 public class NodeValidatorRainyDayTest {
-	@Autowired
-	NodeValidator validator;
+    @Autowired
+    NodeValidator validator;
 
-	@Test
-	public void test() {
-		assertNotNull(validator); //check spring wiring ok
-		assertFalse(validator.validate());
-		String result = validator.getErrorMsg();
-		assertTrue(result.contains("LogicalLink"));
-		assertTrue(result.contains("LagInterface"));
-		assertFalse(result.contains("LInterface"));
-	}
+    @Test
+    public void test() {
+        assertNotNull(validator); //check spring wiring ok
+        assertFalse(validator.validate());
+        String result = validator.getErrorMsg();
+        assertTrue(result.contains("LogicalLink"));
+        assertTrue(result.contains("LagInterface"));
+        assertFalse(result.contains("LInterface"));
+    }
 
 }

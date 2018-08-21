@@ -39,18 +39,18 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {SchemaLocationsBean.class, SchemaVersions.class, GoodConfigForValidationTest.class, NodeIngestor.class,
-		CheckEverythingStrategy.class, DefaultDuplicateNodeDefinitionValidationModule.class, NodeValidator.class})
+        CheckEverythingStrategy.class, DefaultDuplicateNodeDefinitionValidationModule.class, NodeValidator.class})
 @TestPropertySource(properties = { "schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-wiring-test.properties" })
 @SpringBootTest
 public class NodeValidatorSunnyDayTest {
-	@Autowired
-	NodeValidator validator;
+    @Autowired
+    NodeValidator validator;
 
-	@Test
-	public void test() {
-		assertNotNull(validator); //check spring wiring ok
-		assertTrue(validator.validate());
-		assertTrue("No errors found.".equals(validator.getErrorMsg()));
-	}
+    @Test
+    public void test() {
+        assertNotNull(validator); //check spring wiring ok
+        assertTrue(validator.validate());
+        assertTrue("No errors found.".equals(validator.getErrorMsg()));
+    }
 
 }

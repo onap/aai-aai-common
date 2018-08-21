@@ -34,41 +34,41 @@ import static com.jayway.jsonpath.Filter.filter;
 
 public class JsonIngestorTest {
 
-	private SchemaVersion LATEST = new SchemaVersion("v14");
-	private SchemaVersion V10 = new SchemaVersion("v10");
-	private SchemaVersion V11 = new SchemaVersion("v11");
+    private SchemaVersion LATEST = new SchemaVersion("v14");
+    private SchemaVersion V10 = new SchemaVersion("v10");
+    private SchemaVersion V11 = new SchemaVersion("v11");
 
-	@Test
-	public void test() {
-		//setup
-		List<String> files = new ArrayList<>();
-		files.add("src/test/resources/edgeRules/test.json");
-		files.add("src/test/resources/edgeRules/test2.json");
-		files.add("src/test/resources/edgeRules/otherTestRules.json");
-		Map<SchemaVersion, List<String>> input = new TreeMap<>();
-		input.put(LATEST, files);
-		
-		List<String> files2 = new ArrayList<>();
-		files2.add("src/test/resources/edgeRules/test.json");
-		input.put(V10, files2);
-		
-		List<String> files3 = new ArrayList<>();
-		files3.add("src/test/resources/edgeRules/test3.json");
-		files3.add("src/test/resources/edgeRules/defaultEdgesTest.json");
-		input.put(V11, files3);
-		
-		//test
-		JsonIngestor ji = new JsonIngestor();
-		Map<SchemaVersion, List<DocumentContext>> results = ji.ingest(input);
-		
-		assertTrue(results.entrySet().size() == 3);
-		assertTrue(results.get(LATEST).size() == 3);
-		assertTrue(results.get(V11).size() == 2);
-		assertTrue(results.get(V10).size() == 1);
-		
-		Filter f = filter(where("from").is("foo").and("contains-other-v").is("NONE"));
-		List<Map<String, String>> filterRes = results.get(V10).get(0).read("$.rules.[?]",f);
-		assertTrue(filterRes.size() == 2);
-	}
+    @Test
+    public void test() {
+        //setup
+        List<String> files = new ArrayList<>();
+        files.add("src/test/resources/edgeRules/test.json");
+        files.add("src/test/resources/edgeRules/test2.json");
+        files.add("src/test/resources/edgeRules/otherTestRules.json");
+        Map<SchemaVersion, List<String>> input = new TreeMap<>();
+        input.put(LATEST, files);
+        
+        List<String> files2 = new ArrayList<>();
+        files2.add("src/test/resources/edgeRules/test.json");
+        input.put(V10, files2);
+        
+        List<String> files3 = new ArrayList<>();
+        files3.add("src/test/resources/edgeRules/test3.json");
+        files3.add("src/test/resources/edgeRules/defaultEdgesTest.json");
+        input.put(V11, files3);
+        
+        //test
+        JsonIngestor ji = new JsonIngestor();
+        Map<SchemaVersion, List<DocumentContext>> results = ji.ingest(input);
+        
+        assertTrue(results.entrySet().size() == 3);
+        assertTrue(results.get(LATEST).size() == 3);
+        assertTrue(results.get(V11).size() == 2);
+        assertTrue(results.get(V10).size() == 1);
+        
+        Filter f = filter(where("from").is("foo").and("contains-other-v").is("NONE"));
+        List<Map<String, String>> filterRes = results.get(V10).get(0).read("$.rules.[?]",f);
+        assertTrue(filterRes.size() == 2);
+    }
 
 }

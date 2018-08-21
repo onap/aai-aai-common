@@ -26,28 +26,28 @@ import org.onap.aai.setup.*;
 
 public class ConfigTranslatorForWiringTest extends ConfigTranslator {
 
-	public ConfigTranslatorForWiringTest(SchemaLocationsBean bean, SchemaVersions schemaVersions) {
-		super(bean, schemaVersions);
-	}
+    public ConfigTranslatorForWiringTest(SchemaLocationsBean bean, SchemaVersions schemaVersions) {
+        super(bean, schemaVersions);
+    }
 
-	@Override
-	public Map<SchemaVersion, List<String>> getNodeFiles() {
-		String f = bean.getNodeDirectory() + "test_business_v10.xml";
-		List<String> files = new ArrayList<>();
-		files.add(f);
-		Map<SchemaVersion, List<String>> mp = new TreeMap<>();
-		mp.put(new SchemaVersion("v10"), files);
-		return mp;
-	}
+    @Override
+    public Map<SchemaVersion, List<String>> getNodeFiles() {
+        String f = bean.getNodeDirectory() + "test_business_v10.xml";
+        List<String> files = new ArrayList<>();
+        files.add(f);
+        Map<SchemaVersion, List<String>> mp = new TreeMap<>();
+        mp.put(new SchemaVersion("v10"), files);
+        return mp;
+    }
 
-	@Override
-	public Map<SchemaVersion, List<String>> getEdgeFiles() {
-		String f = bean.getEdgeDirectory() + "test.json";
-		List<String> files = new ArrayList<>();
-		files.add(f);
-		Map<SchemaVersion, List<String>> mp = new TreeMap<>();
-		mp.put(new SchemaVersion("v10"), files);
-		return mp;
-	}
+    @Override
+    public Map<SchemaVersion, List<String>> getEdgeFiles() {
+        String f = bean.getEdgeDirectory() + "test.json";
+        List<String> files = new ArrayList<>();
+        files.add(f);
+        Map<SchemaVersion, List<String>> mp = new TreeMap<>();
+        mp.put(new SchemaVersion("v10"), files);
+        return mp;
+    }
 
 }
