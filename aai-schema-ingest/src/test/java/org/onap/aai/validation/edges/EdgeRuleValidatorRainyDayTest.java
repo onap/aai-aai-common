@@ -43,22 +43,22 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {SchemaLocationsBean.class, SchemaVersions.class, BadEdgeConfigForValidationTest.class, NodeIngestor.class,
-		CheckEverythingStrategy.class, DefaultEdgeFieldsValidationModule.class, UniqueLabelValidationModule.class,
-		SingleContainmentValidationModule.class, CousinDefaultingValidationModule.class, NodeTypesValidationModule.class,
-		EdgeRuleValidator.class})
+        CheckEverythingStrategy.class, DefaultEdgeFieldsValidationModule.class, UniqueLabelValidationModule.class,
+        SingleContainmentValidationModule.class, CousinDefaultingValidationModule.class, NodeTypesValidationModule.class,
+        EdgeRuleValidator.class})
 @TestPropertySource(properties = { "schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-wiring-test.properties" })
 @SpringBootTest
 public class EdgeRuleValidatorRainyDayTest {
-	@Autowired
-	EdgeRuleValidator validator;
+    @Autowired
+    EdgeRuleValidator validator;
 
-	@Test
-	public void test() {
-		assertNotNull(validator); //verify spring wiring OK
-		assertFalse(validator.validate());
-		String errors = validator.getErrorMsg();
-		assertTrue(errors.contains("missing required fields: delete-other-v"));
-		assertTrue(errors.contains("has multiple rules using the same label: org.onap.relationships.inventory.Source"));
-		assertTrue(errors.contains("Invalid node type(s) found: gooble"));
-	}
+    @Test
+    public void test() {
+        assertNotNull(validator); //verify spring wiring OK
+        assertFalse(validator.validate());
+        String errors = validator.getErrorMsg();
+        assertTrue(errors.contains("missing required fields: delete-other-v"));
+        assertTrue(errors.contains("has multiple rules using the same label: org.onap.relationships.inventory.Source"));
+        assertTrue(errors.contains("Invalid node type(s) found: gooble"));
+    }
 }

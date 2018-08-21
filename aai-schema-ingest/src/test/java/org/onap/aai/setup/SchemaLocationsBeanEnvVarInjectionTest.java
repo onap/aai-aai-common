@@ -33,14 +33,14 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration(classes = {SchemaLocationsBean.class})
 @TestPropertySource(properties = {"schema.ingest.file = src/test/resources/forWiringTests/schema-ingest2.properties"})
 public class SchemaLocationsBeanEnvVarInjectionTest {
-	@Autowired
-	SchemaLocationsBean bean;
-	
-	@Test
-	public void test() {
-		assertNotNull(bean);
-		assertTrue("testConfig.json".equals(bean.getSchemaConfigLocation()));
-		assertTrue("bloop/blap".equals(bean.getNodeDirectory()));
-		assertTrue("different".equals(bean.getEdgeDirectory()));
-	}
+    @Autowired
+    SchemaLocationsBean bean;
+    
+    @Test
+    public void test() {
+        assertNotNull(bean);
+        assertTrue("testConfig.json".equals(bean.getSchemaConfigLocation()));
+        assertTrue("bloop/blap".equals(bean.getNodeDirectory()));
+        assertTrue("different".equals(bean.getEdgeDirectory()));
+    }
 }

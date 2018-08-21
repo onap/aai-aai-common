@@ -32,49 +32,49 @@ import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.setup.SchemaVersions;
 
 public class TestUtilConfigTranslatorforBusiness extends ConfigTranslator {
-	
-	public TestUtilConfigTranslatorforBusiness(SchemaLocationsBean bean, SchemaVersions schemaVersions) {
-		super(bean, schemaVersions);
-	}
+    
+    public TestUtilConfigTranslatorforBusiness(SchemaLocationsBean bean, SchemaVersions schemaVersions) {
+        super(bean, schemaVersions);
+    }
 
-	@Override
-	public Map<SchemaVersion, List<String>> getNodeFiles() {
-		List<String> files10 = new ArrayList<>();
-//		files10.add("src/test/resources/oxm/test_network_v10.xml");
-//		files10.add("src/test/resources/oxm/test_business_v10.xml");
-		
-		List<String> files11 = new ArrayList<>();
-//		files11.add("src/test/resources/oxm/test_network_v11.xml");
-		files11.add("src/test/resources/oxm/business_v11.xml");
-		
-		List<String> files13 = new ArrayList<>();
-		files13.add("src/test/resources/oxm/business_oxm_v13.xml");
-		files13.add("src/test/resources/oxm/common_oxm_v13.xml");
-		files13.add("src/test/resources/oxm/serviceDesign_oxm_v13.xml");
-		files13.add("src/test/resources/oxm/network_oxm_v13.xml");
-	
-		Map<SchemaVersion, List<String>> input = new TreeMap<>();
-//		input.put(Version.V10, files10);
-		input.put(new SchemaVersion("v11"), files11);
-		input.put(schemaVersions.getDefaultVersion(), files13);
-		return input;
-	}
+    @Override
+    public Map<SchemaVersion, List<String>> getNodeFiles() {
+        List<String> files10 = new ArrayList<>();
+//      files10.add("src/test/resources/oxm/test_network_v10.xml");
+//      files10.add("src/test/resources/oxm/test_business_v10.xml");
+        
+        List<String> files11 = new ArrayList<>();
+//      files11.add("src/test/resources/oxm/test_network_v11.xml");
+        files11.add("src/test/resources/oxm/business_v11.xml");
+        
+        List<String> files13 = new ArrayList<>();
+        files13.add("src/test/resources/oxm/business_oxm_v13.xml");
+        files13.add("src/test/resources/oxm/common_oxm_v13.xml");
+        files13.add("src/test/resources/oxm/serviceDesign_oxm_v13.xml");
+        files13.add("src/test/resources/oxm/network_oxm_v13.xml");
+    
+        Map<SchemaVersion, List<String>> input = new TreeMap<>();
+//      input.put(Version.V10, files10);
+        input.put(new SchemaVersion("v11"), files11);
+        input.put(schemaVersions.getDefaultVersion(), files13);
+        return input;
+    }
 
-	@Override
-	public Map<SchemaVersion, List<String>> getEdgeFiles() {
-		List<String> files = new ArrayList<>();
-		files.add("src/test/resources/dbedgerules/DbEdgeBusinessRules_test.json");
-		Map<SchemaVersion, List<String>> input = new TreeMap<>();
-		input.put(schemaVersions.getDefaultVersion(), files);
-		
-		List<String> files2 = new ArrayList<>();
-		files2.add("src/test/resources/dbedgerules/test.json");
-//		input.put(Version.V10, files2);
-		
-		List<String> files3 = new ArrayList<>();
-		files3.add("src/test/resources/dbedgerules/DbEdgeBusinessRules_test.json");
-		input.put(new SchemaVersion("v11"), files3);
-		
-		return input;
-	}
+    @Override
+    public Map<SchemaVersion, List<String>> getEdgeFiles() {
+        List<String> files = new ArrayList<>();
+        files.add("src/test/resources/dbedgerules/DbEdgeBusinessRules_test.json");
+        Map<SchemaVersion, List<String>> input = new TreeMap<>();
+        input.put(schemaVersions.getDefaultVersion(), files);
+        
+        List<String> files2 = new ArrayList<>();
+        files2.add("src/test/resources/dbedgerules/test.json");
+//      input.put(Version.V10, files2);
+        
+        List<String> files3 = new ArrayList<>();
+        files3.add("src/test/resources/dbedgerules/DbEdgeBusinessRules_test.json");
+        input.put(new SchemaVersion("v11"), files3);
+        
+        return input;
+    }
 }
