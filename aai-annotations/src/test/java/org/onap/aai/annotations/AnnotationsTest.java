@@ -23,25 +23,25 @@ import org.onap.aai.annotations.Metadata;
 
 public class AnnotationsTest {
 
-	public AnnotationsTest() {
-	}
+    public AnnotationsTest() {
+    }
 
-	@Metadata(isKey=false,
-	description="",
-	nameProps="",
-	indexedProps="",
-	dependentOn="",
-	container="",
-	namespace="",
-	defaultValue="",
-	searchable="",
-	uniqueProps="",
-	uriTemplate="",
-	extendsFrom="",
-	isAbstract="",
-	alternateKeys1="",
-	maximumDepth="",
-	crossEntityReference="")
-	public void testAnnotation() {
-	}
+    @Metadata(isKey = false,
+        description = "",
+        nameProps = "",
+        indexedProps = "",
+        dependentOn = "",
+        container = "",
+        namespace = "",
+        defaultValue = "",
+        searchable = "",
+        uniqueProps = "",
+        uriTemplate = "",
+        extendsFrom = "",
+        isAbstract = "",
+        alternateKeys1 = "",
+        maximumDepth = "",
+        crossEntityReference = "")
+    public void testAnnotation() {
+    }
 }
