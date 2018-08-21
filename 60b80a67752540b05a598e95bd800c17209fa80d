@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a76adc5_07ab14d7",
+        "filename": "aai-core/src/main/java/org/onap/aai/util/genxsd/NodesYAMLfromOXM.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 492,
+      "author": {
+        "id": 75
+      },
+      "writtenOn": "2018-08-21T15:05:38Z",
+      "side": 1,
+      "message": "Can you remove this comment?",
+      "revId": "60b80a67752540b05a598e95bd800c17209fa80d",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
