@@ -39,25 +39,25 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration(classes = {DefaultEdgeFieldsValidationModule.class})
 @SpringBootTest
 public class DefaultEdgeFieldsValidationModuleTest {
-	@Autowired
-	EdgeFieldsValidationModule validator;
-	
-	@Test
-	public void test() {
-		Map<String, String> test = new HashMap<>();
-		for (EdgeField f : EdgeField.values()) {
-			test.put(f.toString(), "test");
-		}
-		assertTrue("".equals(validator.verifyFields(test)));
-		
-		test.remove(EdgeField.DESCRIPTION.toString());
-		assertTrue("".equals(validator.verifyFields(test))); //bc description is optional
-		
-		test.remove(EdgeField.CONTAINS.toString());
-		assertTrue(validator.verifyFields(test).contains("missing required fields: contains-other-v"));
-		
-		test.remove(EdgeField.FROM.toString());
-		assertTrue(validator.verifyFields(test).contains("missing required fields: from contains-other-v"));
-	}
+    @Autowired
+    EdgeFieldsValidationModule validator;
+    
+    @Test
+    public void test() {
+        Map<String, String> test = new HashMap<>();
+        for (EdgeField f : EdgeField.values()) {
+            test.put(f.toString(), "test");
+        }
+        assertTrue("".equals(validator.verifyFields(test)));
+        
+        test.remove(EdgeField.DESCRIPTION.toString());
+        assertTrue("".equals(validator.verifyFields(test))); //bc description is optional
+        
+        test.remove(EdgeField.CONTAINS.toString());
+        assertTrue(validator.verifyFields(test).contains("missing required fields: contains-other-v"));
+        
+        test.remove(EdgeField.FROM.toString());
+        assertTrue(validator.verifyFields(test).contains("missing required fields: from contains-other-v"));
+    }
 
 }

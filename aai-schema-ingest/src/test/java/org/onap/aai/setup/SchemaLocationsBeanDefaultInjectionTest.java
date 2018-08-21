@@ -31,14 +31,14 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {SchemaLocationsBean.class})
 public class SchemaLocationsBeanDefaultInjectionTest {
-	@Autowired
-	SchemaLocationsBean bean;
+    @Autowired
+    SchemaLocationsBean bean;
 
-	@Test
-	public void test() {
-		assertNotNull(bean);
-		assertTrue("foo".equals(bean.getSchemaConfigLocation()));
-		assertTrue("bar".equals(bean.getNodeDirectory()));
-		assertTrue("quux".equals(bean.getEdgeDirectory()));
-	}
+    @Test
+    public void test() {
+        assertNotNull(bean);
+        assertTrue("foo".equals(bean.getSchemaConfigLocation()));
+        assertTrue("bar".equals(bean.getNodeDirectory()));
+        assertTrue("quux".equals(bean.getEdgeDirectory()));
+    }
 }
