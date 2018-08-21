@@ -41,16 +41,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 @TestPropertySource(properties = {"schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-wiring-test.properties"})
 @SpringBootTest
 public class NodeIngestorWiringTest {
-	@Autowired
-	NodeIngestor ni;
-	
-	@Test
-	public void test() {
-		DynamicJAXBContext ctx10 = ni.getContextForVersion(new SchemaVersion("v10"));
-		
-		//should work bc Bar is valid in test_business_v10 schema
-		DynamicEntity bar10 = ctx10.newDynamicEntity("Bar");
-		bar10.set("barId","bar2");
-		assertTrue("bar2".equals(bar10.get("barId")));
-	}
+    @Autowired
+    NodeIngestor ni;
+    
+    @Test
+    public void test() {
+        DynamicJAXBContext ctx10 = ni.getContextForVersion(new SchemaVersion("v10"));
+        
+        //should work bc Bar is valid in test_business_v10 schema
+        DynamicEntity bar10 = ctx10.newDynamicEntity("Bar");
+        bar10.set("barId","bar2");
+        assertTrue("bar2".equals(bar10.get("barId")));
+    }
 }

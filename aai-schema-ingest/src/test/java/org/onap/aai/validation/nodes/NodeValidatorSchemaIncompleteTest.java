@@ -54,35 +54,35 @@ import javax.xml.transform.stream.StreamResult;
 @TestPropertySource(properties = { "schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-wiring-test.properties" })
 //@SpringBootTest
 public class NodeValidatorSchemaIncompleteTest {
-	@Autowired
-	NodeIngestor ni;
-	
-	//set thrown.expect to whatever a specific test needs
-	//this establishes a default of expecting no exceptions to be thrown
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+    @Autowired
+    NodeIngestor ni;
+    
+    //set thrown.expect to whatever a specific test needs
+    //this establishes a default of expecting no exceptions to be thrown
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
-	//Throws a NullPointerException because a JavaType is referenced, but not defined
-	@Test
-	public void testIncompleteCombinedSchema() throws TransformerException, IOException, IllegalStateException {
-		thrown.expect(NullPointerException.class);
+    //Throws a NullPointerException because a JavaType is referenced, but not defined
+    @Test
+    public void testIncompleteCombinedSchema() throws TransformerException, IOException, IllegalStateException {
+        thrown.expect(NullPointerException.class);
 
-		
-		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-		printDocument(ni.getSchema(new SchemaVersion("v12")),buffer);
-	}
-	
-	public static void printDocument(Document doc, OutputStream out) throws IOException, TransformerException {
-	    TransformerFactory tf = TransformerFactory.newInstance();
-	    Transformer transformer = tf.newTransformer();
-	    transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
-	    transformer.setOutputProperty(OutputKeys.METHOD, "xml");
-	    transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-	    transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-	    transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+        
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        printDocument(ni.getSchema(new SchemaVersion("v12")),buffer);
+    }
+    
+    public static void printDocument(Document doc, OutputStream out) throws IOException, TransformerException {
+        TransformerFactory tf = TransformerFactory.newInstance();
+        Transformer transformer = tf.newTransformer();
+        transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+        transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+        transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+        transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
 
-	    transformer.transform(new DOMSource(doc), 
-	         new StreamResult(new OutputStreamWriter(out, "UTF-8")));
-	}
+        transformer.transform(new DOMSource(doc), 
+             new StreamResult(new OutputStreamWriter(out, "UTF-8")));
+    }
 
 }
