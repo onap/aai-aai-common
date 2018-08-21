@@ -21,6 +21,7 @@ package org.onap.aai.util.genxsd;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -136,6 +137,13 @@ public class PutRelationPathSet {
 		} catch(Exception e) {
 			e.printStackTrace();
 			return;
+		}
+		finally{
+			try {
+				fop.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		try {
 			if(relations.size() > 0) {fop.write("[\n".getBytes());}
