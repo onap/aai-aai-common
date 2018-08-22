@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a76adc5_60e189fd",
+        "filename": "aai-schema/src/main/resources/onap/oxm/v14/aai_oxm_v14.xml",
+        "patchSetId": 4
+      },
+      "lineNbr": 7689,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2018-08-22T19:54:43Z",
+      "side": 1,
+      "message": "This should be wan-port-config-id, not id",
+      "revId": "5259261d51d85c393c8e70a0191022cb14bcd472",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_00e8d5e0",
+        "filename": "aai-schema/src/main/resources/onap/oxm/v14/aai_oxm_v14.xml",
+        "patchSetId": 4
+      },
+      "lineNbr": 7694,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2018-08-22T19:54:43Z",
+      "side": 1,
+      "message": "This should be wan-port-config-name, not name",
+      "revId": "5259261d51d85c393c8e70a0191022cb14bcd472",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
