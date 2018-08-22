@@ -2104,13 +2104,28 @@
 						<xml-property name="description" value="inventory status" />
 					</xml-properties>
 				</xml-element>
+				<xml-element java-attribute="networkRef" name="network-ref" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the network-ref of this p-interface. Derived from ietf-restconf-notification that identifies a termination-point." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="transparent" name="transparent" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the transparent value of this p-interface." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="operationalStatus" name="operational-status" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="oper Status of this p-interface." />
+					</xml-properties>
+				</xml-element>
 				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v14.RelationshipList" />
 				<xml-element java-attribute="sriovPfs" name="sriov-pfs" type="inventory.aai.onap.org.v14.SriovPfs" />
 				<xml-element java-attribute="lInterfaces" name="l-interfaces" type="inventory.aai.onap.org.v14.LInterfaces" />
 			</java-attributes>
 			<xml-properties>
 				<xml-property name="description" value="Physical interface (e.g., nic)" />
-				<xml-property name="indexedProps" value="interface-name,prov-status" />
+				<xml-property name="indexedProps" value="interface-name,prov-status,networkRef,operational-status" />
 				<xml-property name="nameProps" value="prov-status" />
 				<xml-property name="dependentOn" value="vpls-pe,pserver,pnf" />
 				<xml-property name="container" value="p-interfaces" />
