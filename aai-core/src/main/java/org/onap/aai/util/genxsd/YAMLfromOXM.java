@@ -538,14 +538,11 @@ public class YAMLfromOXM extends OxmFileProcessor {
 			logger.error( "Exception creating output file " + outfileName);
 			e.printStackTrace();
 		}
-		BufferedWriter bw = null;
 		try {
 			Charset charset = Charset.forName("UTF-8");
 			Path path = Paths.get(outfileName);
-			bw = Files.newBufferedWriter(path, charset);
-			bw.write(fileContent);
-			if ( bw != null ) {
-				bw.close();
+			try(BufferedWriter bw = Files.newBufferedWriter(path, charset)){
+				bw.write(fileContent);
 			}
 		} catch ( IOException e) {
 			logger.error( "Exception writing output file " + outfileName);

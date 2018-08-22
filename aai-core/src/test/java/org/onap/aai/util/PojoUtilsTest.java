@@ -23,6 +23,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.ArrayList;
@@ -159,7 +160,7 @@ public class PojoUtilsTest {
 	}
 	
 	@Test
-	public void testGetXmlFromObject() throws JAXBException {
+	public void testGetXmlFromObject() throws JAXBException, IOException {
 		NotificationEvent notificationEvent = new NotificationEvent();
 		notificationEvent.setCambriaPartition("partition");
 		
