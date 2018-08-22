@@ -162,16 +162,17 @@ public class PojoUtils {
 	 * @param clazz the clazz
 	 * @return the xml from object
 	 * @throws JAXBException the JAXB exception
+	 * @throws IOException 
 	 */
-	public <T> String getXmlFromObject(T clazz) throws JAXBException {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		JAXBContext jc = JAXBContext.newInstance(clazz.getClass().getPackage().getName());
-
-		Marshaller marshaller = jc.createMarshaller();
-		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-		marshaller.marshal(clazz, baos);
-
-		return baos.toString();
+	public <T> String getXmlFromObject(T clazz) throws JAXBException, IOException {
+		try(ByteArrayOutputStream baos = new ByteArrayOutputStream()){
+			JAXBContext jc = JAXBContext.newInstance(clazz.getClass().getPackage().getName());
+	
+			Marshaller marshaller = jc.createMarshaller();
+			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+			marshaller.marshal(clazz, baos);
+			return baos.toString();
+		}
 	}
 
 	/**
