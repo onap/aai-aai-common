@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a76adc5_e044b9b8",
+        "filename": "aai-core/src/main/java/org/onap/aai/util/genxsd/YAMLfromOXM.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 2381
+      },
+      "writtenOn": "2018-08-22T20:55:22Z",
+      "side": 1,
+      "message": "Exception is not logged. e.printStackTrace() doesn\u0027t log to file",
+      "revId": "1c86fbfa541099bf43e72b2486c4779351f9b02b",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
