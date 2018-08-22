@@ -4389,7 +4389,7 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
     <xs:complexType>
       <xs:annotation>
         <xs:appinfo>
-          <annox:annotate target="class">@org.onap.aai.annotations.Metadata(description="Logical links generally connect l-interfaces but are used to express logical connectivity between two points",indexedProps="link-name,model-invariant-id,model-version-id,widget-model-id,widget-model-version,link-id,prov-status,circuit-id,purpose",uniqueProps="link-id",container="logical-links",namespace="network",searchable="link-name")</annox:annotate>
+          <annox:annotate target="class">@org.onap.aai.annotations.Metadata(description="Logical links generally connect l-interfaces but are used to express logical connectivity between two points",indexedProps="link-name,model-invariant-id,model-version-id,widget-model-id,widget-model-version,link-id,prov-status,circuit-id,purpose,operational-status",uniqueProps="link-id",container="logical-links",namespace="network",searchable="link-name")</annox:annotate>
         </xs:appinfo>
       </xs:annotation>
       <xs:sequence>
