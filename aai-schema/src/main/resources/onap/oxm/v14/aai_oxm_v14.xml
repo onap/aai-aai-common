@@ -4,6 +4,7 @@
   org.onap.aai
   ================================================================================
   Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+  Copyright (C) 2018 Huawei Technologies (Australia) Pty Ltd. All rights reserved.
   ================================================================================
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -2796,6 +2797,11 @@
 				<xml-element java-attribute="orchestrationStatus" name="orchestration-status" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Orchestration status of this service." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="inputParameters" name="input-parameters" required="false" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="String capturing request parameters from SO to pass to Closed Loop." />
 					</xml-properties>
 				</xml-element>
 				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v14.RelationshipList" />
