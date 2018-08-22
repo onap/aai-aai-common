@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a76adc5_6002e970",
+        "filename": "aai-schema/src/main/resources/onap/oxm/v14/aai_oxm_v14.xml",
+        "patchSetId": 5
+      },
+      "lineNbr": 7590,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2018-08-22T20:43:40Z",
+      "side": 1,
+      "message": "This should be \"device-id\"",
+      "revId": "0ad60f5f1af3ae10ed374abeab583077797fc6ec",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_00f9b57f",
+        "filename": "aai-schema/src/main/resources/onap/oxm/v14/aai_oxm_v14.xml",
+        "patchSetId": 5
+      },
+      "lineNbr": 7600,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2018-08-22T20:43:40Z",
+      "side": 1,
+      "message": "This should probably be \"device-name\" instead of \"name\"",
+      "revId": "0ad60f5f1af3ae10ed374abeab583077797fc6ec",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
