@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a76adc5_40b56dec",
+        "filename": "aai-schema/src/main/resources/onap/oxm/v14/aai_oxm_v14.xml",
+        "patchSetId": 7
+      },
+      "lineNbr": 7023,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2018-08-22T19:57:55Z",
+      "side": 1,
+      "message": "This should be \"sp-partner-id\" not id",
+      "revId": "f40da256f36b60c93725c030f515fca0dcffc414",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
