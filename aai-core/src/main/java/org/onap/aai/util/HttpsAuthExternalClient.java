@@ -53,13 +53,11 @@ public class HttpsAuthExternalClient {
 		config.getClasses().add(org.onap.aai.restcore.CustomJacksonJaxBJsonProvider.class);
 		Client client = null;
 		SSLContext ctx = null;
-		
-		try {
-			String truststore_path = AAIConstants.AAI_HOME_ETC_AUTH + AAIConfig.get(AAIConstants.AAI_TRUSTSTORE_FILENAME);
+		String truststore_path = AAIConstants.AAI_HOME_ETC_AUTH + AAIConfig.get(AAIConstants.AAI_TRUSTSTORE_FILENAME);
+		try(FileInputStream tin = new FileInputStream(truststore_path)) {
 			String truststore_password = AAIConfig.get(AAIConstants.AAI_TRUSTSTORE_PASSWD);
 			String keystore_path = AAIConstants.AAI_HOME_ETC_AUTH + keystoreFileName;
 			String keystore_password = keystorePassword;
-
 		    //System.setProperty("javax.net.ssl.trustStore", truststore_path);
 		    //System.setProperty("javax.net.ssl.trustStorePassword", truststore_password);
 			HttpsURLConnection.setDefaultHostnameVerifier( new HostnameVerifier(){
@@ -82,7 +80,7 @@ public class HttpsAuthExternalClient {
 			
 			String alg = TrustManagerFactory.getDefaultAlgorithm();
 			TrustManagerFactory tmf = TrustManagerFactory.getInstance(alg);
-			FileInputStream tin = new FileInputStream(truststore_path);
+
 			KeyStore ts = KeyStore.getInstance("PKCS12");
 			char[] tpwd = truststore_password.toCharArray();
 			ts.load(tin, tpwd);
