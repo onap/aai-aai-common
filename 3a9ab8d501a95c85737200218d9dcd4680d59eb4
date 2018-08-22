@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a76adc5_00cf7580",
+        "filename": "aai-schema/src/main/resources/onap/oxm/v14/aai_oxm_v14.xml",
+        "patchSetId": 7
+      },
+      "lineNbr": 6178,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2018-08-22T19:58:42Z",
+      "side": 1,
+      "message": "this should probably be \"alloted-resource-name\"",
+      "revId": "3a9ab8d501a95c85737200218d9dcd4680d59eb4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
