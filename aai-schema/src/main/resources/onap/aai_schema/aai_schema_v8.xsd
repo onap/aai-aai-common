@@ -458,8 +458,8 @@
         <xs:element name="vserver-name2" type="xs:string" minOccurs="0"/>
         <xs:element name="prov-status" type="xs:string" minOccurs="0"/>
         <xs:element name="vserver-selflink" type="xs:string"/>
-        <xs:element name="in-maint" type="xs:boolean"/>
-        <xs:element name="is-closed-loop-disabled" type="xs:boolean"/>
+        <xs:element name="in-maint" type="xs:boolean" minOccurs="0"/>
+        <xs:element name="is-closed-loop-disabled" type="xs:boolean" minOccurs="0"/>
         <xs:element name="resource-version" type="xs:string" minOccurs="0"/>
         <xs:element ref="tns:volumes" minOccurs="0"/>
         <xs:element ref="tns:relationship-list" minOccurs="0"/>
@@ -717,7 +717,7 @@
         <xs:element name="serial-number" type="xs:string" minOccurs="0"/>
         <xs:element name="pserver-id" type="xs:string" minOccurs="0"/>
         <xs:element name="internet-topology" type="xs:string" minOccurs="0"/>
-        <xs:element name="in-maint" type="xs:boolean"/>
+        <xs:element name="in-maint" type="xs:boolean" minOccurs="0"/>
         <xs:element name="resource-version" type="xs:string" minOccurs="0"/>
         <xs:element name="pserver-name2" type="xs:string" minOccurs="0"/>
         <xs:element name="purpose" type="xs:string" minOccurs="0"/>
@@ -1361,8 +1361,8 @@
         <xs:element name="prov-status" type="xs:string" minOccurs="0"/>
         <xs:element name="orchestration-status" type="xs:string" minOccurs="0"/>
         <xs:element name="ipaddress-v4-oam-vip" type="xs:string" minOccurs="0"/>
-        <xs:element name="in-maint" type="xs:boolean"/>
-        <xs:element name="is-closed-loop-disabled" type="xs:boolean"/>
+        <xs:element name="in-maint" type="xs:boolean" minOccurs="0"/>
+        <xs:element name="is-closed-loop-disabled" type="xs:boolean" minOccurs="0"/>
         <xs:element name="group-notation" type="xs:string" minOccurs="0"/>
         <xs:element name="resource-version" type="xs:string" minOccurs="0"/>
         <xs:element ref="tns:relationship-list" minOccurs="0"/>
@@ -1387,7 +1387,7 @@
         <xs:element name="cidr-mask" type="xs:string" minOccurs="0"/>
         <xs:element name="ip-version" type="xs:string" minOccurs="0"/>
         <xs:element name="orchestration-status" type="xs:string" minOccurs="0"/>
-        <xs:element name="dhcp-enabled" type="xs:boolean"/>
+        <xs:element name="dhcp-enabled" type="xs:boolean" minOccurs="0"/>
         <xs:element name="dhcp-start" type="xs:string" minOccurs="0"/>
         <xs:element name="dhcp-end" type="xs:string" minOccurs="0"/>
         <xs:element name="resource-version" type="xs:string" minOccurs="0"/>
@@ -1443,7 +1443,7 @@
         <xs:element name="network-role" type="xs:string" minOccurs="0"/>
         <xs:element name="network-technology" type="xs:string" minOccurs="0"/>
         <xs:element name="neutron-network-id" type="xs:string" minOccurs="0"/>
-        <xs:element name="is-bound-to-vpn" type="xs:boolean"/>
+        <xs:element name="is-bound-to-vpn" type="xs:boolean" minOccurs="0"/>
         <xs:element name="service-id" type="xs:string" minOccurs="0"/>
         <xs:element name="network-role-instance" type="xs:unsignedInt" minOccurs="0"/>
         <xs:element name="resource-version" type="xs:string" minOccurs="0"/>
@@ -1457,9 +1457,9 @@
         <xs:element name="widget-model-id" type="xs:string" minOccurs="0"/>
         <xs:element name="widget-model-version" type="xs:string" minOccurs="0"/>
         <xs:element name="physical-network-name" type="xs:string" minOccurs="0"/>
-        <xs:element name="is-provider-network" type="xs:boolean"/>
-        <xs:element name="is-shared-network" type="xs:boolean"/>
-        <xs:element name="is-external-network" type="xs:boolean"/>
+        <xs:element name="is-provider-network" type="xs:boolean" minOccurs="0"/>
+        <xs:element name="is-shared-network" type="xs:boolean" minOccurs="0"/>
+        <xs:element name="is-external-network" type="xs:boolean" minOccurs="0"/>
         <xs:element ref="tns:subnets" minOccurs="0"/>
         <xs:element ref="tns:ctag-assignments" minOccurs="0"/>
         <xs:element ref="tns:segmentation-assignments" minOccurs="0"/>
@@ -1499,7 +1499,7 @@
         <xs:element name="vf-module-name" type="xs:string" minOccurs="0"/>
         <xs:element name="heat-stack-id" type="xs:string" minOccurs="0"/>
         <xs:element name="orchestration-status" type="xs:string" minOccurs="0"/>
-        <xs:element name="is-base-vf-module" type="xs:boolean"/>
+        <xs:element name="is-base-vf-module" type="xs:boolean" minOccurs="0"/>
         <xs:element name="resource-version" type="xs:string" minOccurs="0"/>
         <xs:element name="persona-model-id" type="xs:string" minOccurs="0"/>
         <xs:element name="persona-model-version" type="xs:string" minOccurs="0"/>
@@ -1545,8 +1545,8 @@
         <xs:element name="vmemory-units" type="xs:string" minOccurs="0"/>
         <xs:element name="vdisk" type="xs:unsignedInt" minOccurs="0"/>
         <xs:element name="vdisk-units" type="xs:string" minOccurs="0"/>
-        <xs:element name="in-maint" type="xs:boolean"/>
-        <xs:element name="is-closed-loop-disabled" type="xs:boolean"/>
+        <xs:element name="in-maint" type="xs:boolean" minOccurs="0"/>
+        <xs:element name="is-closed-loop-disabled" type="xs:boolean" minOccurs="0"/>
         <xs:element name="resource-version" type="xs:string" minOccurs="0"/>
         <xs:element name="summary-status" type="xs:string" minOccurs="0"/>
         <xs:element name="encrypted-access-flag" type="xs:boolean" minOccurs="0"/>
@@ -1630,7 +1630,7 @@
         <xs:element name="ipaddress-v4-oam" type="xs:string" minOccurs="0"/>
         <xs:element name="sw-version" type="xs:string" minOccurs="0"/>
         <xs:element name="orchestration-status" type="xs:string" minOccurs="0"/>
-        <xs:element name="in-maint" type="xs:boolean"/>
+        <xs:element name="in-maint" type="xs:boolean" minOccurs="0"/>
         <xs:element name="frame-id" type="xs:string" minOccurs="0"/>
         <xs:element name="resource-version" type="xs:string" minOccurs="0"/>
         <xs:element ref="tns:relationship-list" minOccurs="0"/>

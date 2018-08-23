@@ -297,7 +297,7 @@ public class XSDElement implements Element {
 			sbElement.append(" type=\"xs:int\"");
 		if ( elementType.equals("java.lang.Boolean"))
 			sbElement.append(" type=\"xs:boolean\"");
-		if ( elementIsRequired == null || !elementIsRequired.equals("true")||addType != null) {	
+		if ( ("java.lang.Boolean".equals(elementType)) || (elementIsRequired == null || !elementIsRequired.equals("true")||addType != null)) {	
 			sbElement.append(" minOccurs=\"0\"");
 		} 
 		if ( elementContainerType != null && elementContainerType.equals("java.util.ArrayList")) {
