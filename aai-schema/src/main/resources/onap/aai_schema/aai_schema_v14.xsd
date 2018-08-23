@@ -915,7 +915,7 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
-        <xs:element name="in-maint" type="xs:boolean">
+        <xs:element name="in-maint" type="xs:boolean" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
               <annox:annotate target="field">@org.onap.aai.annotations.Metadata(defaultValue="false",description="used to indicate whether or not this object is in maintenance mode (maintenance mode = true)")</annox:annotate>
@@ -929,7 +929,7 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
-        <xs:element name="is-ip-unnumbered" type="xs:boolean">
+        <xs:element name="is-ip-unnumbered" type="xs:boolean" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
               <annox:annotate target="field">@org.onap.aai.annotations.Metadata(defaultValue="false",description="Flag indicating the interface uses the IP Unnumbered configuration.")</annox:annotate>
@@ -1142,7 +1142,7 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
-        <xs:element name="is-port-mirrored" type="xs:boolean">
+        <xs:element name="is-port-mirrored" type="xs:boolean" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
               <annox:annotate target="field">@org.onap.aai.annotations.Metadata(defaultValue="false",description="boolean indicatating whether or not port is a mirrored.")</annox:annotate>
@@ -1156,7 +1156,7 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
-        <xs:element name="in-maint" type="xs:boolean">
+        <xs:element name="in-maint" type="xs:boolean" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
               <annox:annotate target="field">@org.onap.aai.annotations.Metadata(defaultValue="false",description="used to indicate whether or not this object is in maintenance mode (maintenance mode = true)")</annox:annotate>
@@ -1170,7 +1170,7 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
-        <xs:element name="is-ip-unnumbered" type="xs:boolean">
+        <xs:element name="is-ip-unnumbered" type="xs:boolean" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
               <annox:annotate target="field">@org.onap.aai.annotations.Metadata(defaultValue="false",description="Flag indicating the interface uses the IP Unnumbered configuration.")</annox:annotate>
@@ -1248,14 +1248,14 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
-        <xs:element name="in-maint" type="xs:boolean">
+        <xs:element name="in-maint" type="xs:boolean" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
               <annox:annotate target="field">@org.onap.aai.annotations.Metadata(defaultValue="false",description="Used to indicate whether or not this object is in maintenance mode (maintenance mode = true). This field (in conjunction with prov-status) is used to suppress alarms and vSCL on VNFs/VMs.")</annox:annotate>
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
-        <xs:element name="is-closed-loop-disabled" type="xs:boolean">
+        <xs:element name="is-closed-loop-disabled" type="xs:boolean" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
               <annox:annotate target="field">@org.onap.aai.annotations.Metadata(defaultValue="false",description="Used to indicate whether closed loop function is enabled on this node")</annox:annotate>
@@ -2210,7 +2210,7 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
-        <xs:element name="sriov-automation" type="xs:boolean">
+        <xs:element name="sriov-automation" type="xs:boolean" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
               <annox:annotate target="field">@org.onap.aai.annotations.Metadata(defaultValue="false",description="Whether the cloud region supports (true) or does not support (false) SR-IOV automation.")</annox:annotate>
@@ -2434,7 +2434,7 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
-        <xs:element name="in-maint" type="xs:boolean">
+        <xs:element name="in-maint" type="xs:boolean" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
               <annox:annotate target="field">@org.onap.aai.annotations.Metadata(defaultValue="false",description="used to indicate whether or not this object is in maintenance mode (maintenance mode = true)")</annox:annotate>
@@ -2551,7 +2551,7 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
-        <xs:element name="in-maint" type="xs:boolean">
+        <xs:element name="in-maint" type="xs:boolean" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
               <annox:annotate target="field">@org.onap.aai.annotations.Metadata(defaultValue="false",description="used to indicate whether or not this object is in maintenance mode (maintenance mode = true)")</annox:annotate>
@@ -2723,7 +2723,7 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
-        <xs:element name="in-maint" type="xs:boolean">
+        <xs:element name="in-maint" type="xs:boolean" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
               <annox:annotate target="field">@org.onap.aai.annotations.Metadata(defaultValue="false",description="used to indicate whether or not this object is in maintenance mode (maintenance mode = true). This field (in conjunction with prov-status) is used to suppress alarms and vSCL on VNFs/VMs.")</annox:annotate>
@@ -4400,7 +4400,7 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
-        <xs:element name="in-maint" type="xs:boolean">
+        <xs:element name="in-maint" type="xs:boolean" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
               <annox:annotate target="field">@org.onap.aai.annotations.Metadata(defaultValue="false",description="used to indicate whether or not this object is in maintenance mode (maintenance mode = true). This field (in conjunction with prov-status) is used to suppress alarms and vSCL on VNFs/VMs.")</annox:annotate>
@@ -5514,14 +5514,14 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
-        <xs:element name="in-maint" type="xs:boolean">
+        <xs:element name="in-maint" type="xs:boolean" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
               <annox:annotate target="field">@org.onap.aai.annotations.Metadata(defaultValue="false",description="used to indicate whether or not this object is in maintenance mode (maintenance mode = true)")</annox:annotate>
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
-        <xs:element name="is-closed-loop-disabled" type="xs:boolean">
+        <xs:element name="is-closed-loop-disabled" type="xs:boolean" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
               <annox:annotate target="field">@org.onap.aai.annotations.Metadata(defaultValue="false",description="used to indicate whether closed loop function is enabled on this node")</annox:annotate>
@@ -5692,7 +5692,7 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
-        <xs:element name="dhcp-enabled" type="xs:boolean">
+        <xs:element name="dhcp-enabled" type="xs:boolean" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
               <annox:annotate target="field">@org.onap.aai.annotations.Metadata(defaultValue="false",description="dhcp enabled")</annox:annotate>
@@ -5874,7 +5874,7 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
-        <xs:element name="is-bound-to-vpn" type="xs:boolean">
+        <xs:element name="is-bound-to-vpn" type="xs:boolean" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
               <annox:annotate target="field">@org.onap.aai.annotations.Metadata(defaultValue="false",description="Set to true if bound to VPN")</annox:annotate>
@@ -5979,21 +5979,21 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
-        <xs:element name="is-provider-network" type="xs:boolean">
+        <xs:element name="is-provider-network" type="xs:boolean" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
               <annox:annotate target="field">@org.onap.aai.annotations.Metadata(defaultValue="false",description="boolean indicatating whether or not network is a provider network.")</annox:annotate>
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
-        <xs:element name="is-shared-network" type="xs:boolean">
+        <xs:element name="is-shared-network" type="xs:boolean" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
               <annox:annotate target="field">@org.onap.aai.annotations.Metadata(defaultValue="false",description="boolean indicatating whether or not network is a shared network.")</annox:annotate>
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
-        <xs:element name="is-external-network" type="xs:boolean">
+        <xs:element name="is-external-network" type="xs:boolean" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
               <annox:annotate target="field">@org.onap.aai.annotations.Metadata(defaultValue="false",description="boolean indicatating whether or not network is an external network.")</annox:annotate>
@@ -6117,7 +6117,7 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
-        <xs:element name="is-base-vf-module" type="xs:boolean">
+        <xs:element name="is-base-vf-module" type="xs:boolean" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
               <annox:annotate target="field">@org.onap.aai.annotations.Metadata(defaultValue="false",description="used to indicate whether or not this object is base vf module")</annox:annotate>
@@ -6435,14 +6435,14 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
-        <xs:element name="in-maint" type="xs:boolean">
+        <xs:element name="in-maint" type="xs:boolean" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
               <annox:annotate target="field">@org.onap.aai.annotations.Metadata(defaultValue="false",description="used to indicate whether or not this object is in maintenance mode (maintenance mode = true). This field (in conjunction with prov-status) is used to suppress alarms and vSCL on VNFs/VMs.")</annox:annotate>
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
-        <xs:element name="is-closed-loop-disabled" type="xs:boolean">
+        <xs:element name="is-closed-loop-disabled" type="xs:boolean" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
               <annox:annotate target="field">@org.onap.aai.annotations.Metadata(defaultValue="false",description="used to indicate whether closed loop function is enabled on this node")</annox:annotate>
@@ -6884,7 +6884,7 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
-        <xs:element name="in-maint" type="xs:boolean">
+        <xs:element name="in-maint" type="xs:boolean" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>
               <annox:annotate target="field">@org.onap.aai.annotations.Metadata(defaultValue="false",description="Used to indicate whether or not this object is in maintenance mode (maintenance mode = true). This field (in conjunction with prov-status) is used to suppress alarms and vSCL on VNFs/VMs.")</annox:annotate>

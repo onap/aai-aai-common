@@ -138,13 +138,6 @@ public class PutRelationPathSet {
 			e.printStackTrace();
 			return;
 		}
-		finally{
-			try {
-				fop.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
 		try {
 			if(relations.size() > 0) {fop.write("[\n".getBytes());}
 			fop.write(String.join(",\n", relations).getBytes());
@@ -154,6 +147,13 @@ public class PutRelationPathSet {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return;
+		}
+		finally{
+			try {
+				fop.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		logger.debug(String.join(",\n", relations));
 		return;
