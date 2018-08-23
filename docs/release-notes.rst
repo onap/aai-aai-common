@@ -13,7 +13,7 @@ Version: 1.2.0
 
 **New Features**
 
-The R2 Beijing release of ONAP forcuses on platform maturity - to that
+The R2 Beijing release of ONAP focuses on platform maturity - to that
 end, AAI has switched from Titan on hbase to JanusGraph on a
 multi-replica cassandra deployment.  We have added several
 microservices which will be fully operational in R3 Casablanca.
