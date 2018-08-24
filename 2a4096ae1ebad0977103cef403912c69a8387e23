@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a76adc5_feebecad",
+        "filename": "aai-schema/src/main/resources/onap/oxm/v14/aai_oxm_v14.xml",
+        "patchSetId": 7
+      },
+      "lineNbr": 7195,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2018-08-24T16:09:08Z",
+      "side": 1,
+      "message": "most objects allow an ipv4 and ipv6 address; is that needed in this case?",
+      "revId": "2a4096ae1ebad0977103cef403912c69a8387e23",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
