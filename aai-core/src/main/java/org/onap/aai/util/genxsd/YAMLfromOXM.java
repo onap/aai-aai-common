@@ -111,7 +111,7 @@ public class YAMLfromOXM extends OxmFileProcessor {
 		try {
 			init();
 		} catch(Exception e) {
-			logger.error( "Error initializing " + this.getClass());
+			logger.error( "Error initializing " + this.getClass(),e);
 			throw e;
 		}		
 		pathSb.append(getDocumentHeader());
@@ -441,7 +441,7 @@ public class YAMLfromOXM extends OxmFileProcessor {
 				results.get(key).stream().filter((i) -> (i.getFrom().equals(xmlRootElementName) && (! i.isPrivateEdge() && i.getPreventDelete().equals("OUT")))).forEach((i) ->{ preventDelete.add(i.getTo().toUpperCase());} );
 			}
 		} catch(Exception e) {
-			logger.debug("xmlRootElementName: "+xmlRootElementName+"\n"+e);
+			logger.debug("xmlRootElementName: "+xmlRootElementName+"\n",e);
 		}
 		try {
 			EdgeRuleQuery q1 = new EdgeRuleQuery.Builder(xmlRootElementName).version(v).toOnly().build();
@@ -454,7 +454,7 @@ public class YAMLfromOXM extends OxmFileProcessor {
 				results.get(key).stream().filter((i) -> (i.getTo().equals(xmlRootElementName) && (! i.isPrivateEdge() && i.getPreventDelete().equals("IN")))).forEach((i) ->{ preventDelete.add(i.getFrom().toUpperCase());} );
 			}
 		} catch(Exception e) {
-			logger.debug("xmlRootElementName: "+xmlRootElementName+"\n"+e);
+			logger.debug("xmlRootElementName: "+xmlRootElementName+"\n",e);
 		}
 		if(preventDelete.size() > 0) {
 			prevent = xmlRootElementName.toUpperCase()+" cannot be deleted if related to "+String.join(",",preventDelete);
@@ -505,7 +505,7 @@ public class YAMLfromOXM extends OxmFileProcessor {
 				javaTypeDefinitions.put(xmlRootElementName, definitionsLocalSb.toString());
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Exception adding in javaTypeDefinitions",e);
 		}
 		if ( xmlRootElementName.equals("inventory") ) {
 			logger.trace("skip xmlRootElementName(2)="+xmlRootElementName);
@@ -535,21 +535,16 @@ public class YAMLfromOXM extends OxmFileProcessor {
 		try {
 			outfile.createNewFile();
 		} catch (IOException e) {
-			logger.error( "Exception creating output file " + outfileName);
-			e.printStackTrace();
+			logger.error( "Exception creating output file " + outfileName,e);
 		}
-		BufferedWriter bw = null;
 		try {
 			Charset charset = Charset.forName("UTF-8");
 			Path path = Paths.get(outfileName);
-			bw = Files.newBufferedWriter(path, charset);
-			bw.write(fileContent);
-			if ( bw != null ) {
-				bw.close();
+			try(BufferedWriter bw = Files.newBufferedWriter(path, charset)){
+				bw.write(fileContent);
 			}
 		} catch ( IOException e) {
-			logger.error( "Exception writing output file " + outfileName);
-			e.printStackTrace();
+			logger.error( "Exception writing output file " + outfileName,e);
 		} 
 	}
 	
