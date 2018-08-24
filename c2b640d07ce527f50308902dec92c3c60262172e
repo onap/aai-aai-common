@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a76adc5_1e06e886",
+        "filename": "aai-schema/src/main/resources/onap/oxm/v14/aai_oxm_v14.xml",
+        "patchSetId": 5
+      },
+      "lineNbr": 7704,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2018-08-24T16:10:39Z",
+      "side": 1,
+      "message": "most of our objects where we track an ip address we track both ipv4 and ipv6.  is that needed in this case?",
+      "revId": "c2b640d07ce527f50308902dec92c3c60262172e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_deff1066",
+        "filename": "aai-schema/src/main/resources/onap/oxm/v14/aai_oxm_v14.xml",
+        "patchSetId": 5
+      },
+      "lineNbr": 7709,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2018-08-24T16:10:39Z",
+      "side": 1,
+      "message": "most of our objects where we track an ip address we track both ipv4 and ipv6.  is that needed in this case?",
+      "revId": "c2b640d07ce527f50308902dec92c3c60262172e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
