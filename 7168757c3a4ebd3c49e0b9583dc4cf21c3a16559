@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a76adc5_bef49487",
+        "filename": "aai-schema/src/main/resources/onap/oxm/v14/aai_oxm_v14.xml",
+        "patchSetId": 6
+      },
+      "lineNbr": 7630,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2018-08-24T16:13:47Z",
+      "side": 1,
+      "message": "Should we track ipv4 and ipv6? also, usually we would use something like system-ipv4-address and system-ipv6-address",
+      "revId": "7168757c3a4ebd3c49e0b9583dc4cf21c3a16559",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
