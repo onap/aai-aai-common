@@ -20,9 +20,7 @@
     ============LICENSE_END=========================================================
 
 -->
-<project
-        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-        xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.onap.aai.aai-common</groupId>
@@ -114,11 +112,11 @@
                                         </systemProperty>
                                         <systemProperty>
                                             <key>yamlresponses_url</key>
-                                            <value></value>
+                                            <value/>
                                         </systemProperty>
                                         <systemProperty>
                                             <key>yamlresponses_label</key>
-                                            <value></value>
+                                            <value/>
                                         </systemProperty>
                                         <systemProperty>
                                             <key>schema.configuration.location</key>
@@ -393,11 +391,11 @@
                                         </systemProperty>
                                         <systemProperty>
                                             <key>yamlresponses_url</key>
-                                            <value></value>
+                                            <value/>
                                         </systemProperty>
                                         <systemProperty>
                                             <key>yamlresponses_label</key>
-                                            <value></value>
+                                            <value/>
                                         </systemProperty>
                                         <systemProperty>
                                             <key>schema.configuration.location</key>
@@ -770,7 +768,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>16.0</version>
+
         </dependency>
         <dependency>
             <groupId>org.janusgraph</groupId>
