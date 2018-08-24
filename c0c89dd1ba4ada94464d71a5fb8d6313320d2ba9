@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a76adc5_0b722ce5",
+        "filename": "aai-schema/src/main/resources/onap/oxm/v14/aai_oxm_v14.xml",
+        "patchSetId": 6
+      },
+      "lineNbr": 7522,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2018-08-24T14:15:39Z",
+      "side": 1,
+      "message": "I think this should be an edge to the tenant",
+      "revId": "c0c89dd1ba4ada94464d71a5fb8d6313320d2ba9",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_cb73d4e5",
+        "filename": "aai-schema/src/main/resources/onap/oxm/v14/aai_oxm_v14.xml",
+        "patchSetId": 6
+      },
+      "lineNbr": 7527,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2018-08-24T14:15:39Z",
+      "side": 1,
+      "message": "Is this one acting like a foreign key, too, similarly to the tenant-id above?",
+      "revId": "c0c89dd1ba4ada94464d71a5fb8d6313320d2ba9",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
