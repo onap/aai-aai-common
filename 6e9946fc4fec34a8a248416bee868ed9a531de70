@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "1a76adc5_6ef95c7f",
+        "filename": "aai-schema/src/main/resources/onap/dbedgerules/v14/DbEdgeRules_pnp_v14.json",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2018-08-28T18:18:44Z",
+      "side": 1,
+      "message": "So this is cousin edge?  What does software-version belong to, do i put it at the top directly under \"Network\"?",
+      "parentUuid": "1a76adc5_0e8d4831",
+      "revId": "6e9946fc4fec34a8a248416bee868ed9a531de70",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a76adc5_6e7ddc1b",
         "filename": "aai-schema/src/main/resources/onap/oxm/v14/aai_pnp_oxm_v14.xml",
         "patchSetId": 1
@@ -47,6 +65,24 @@
       "writtenOn": "2018-08-28T17:40:43Z",
       "side": 1,
       "message": "Should software version also have a software version name or description?",
+      "revId": "6e9946fc4fec34a8a248416bee868ed9a531de70",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_4eeee0b5",
+        "filename": "aai-schema/src/main/resources/onap/oxm/v14/aai_pnp_oxm_v14.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2018-08-28T18:18:44Z",
+      "side": 1,
+      "message": "I would defer to Ben on that",
+      "parentUuid": "1a76adc5_8e78782c",
       "revId": "6e9946fc4fec34a8a248416bee868ed9a531de70",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
