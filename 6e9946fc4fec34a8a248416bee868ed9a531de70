@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a76adc5_0e8d4831",
+        "filename": "aai-schema/src/main/resources/onap/dbedgerules/v14/DbEdgeRules_pnp_v14.json",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 3405
+      },
+      "writtenOn": "2018-08-28T17:40:43Z",
+      "side": 1,
+      "message": "I thought we were making the software version NOT a child of pnf, so that the same software version could be easily reused by multiple pnfs.",
+      "revId": "6e9946fc4fec34a8a248416bee868ed9a531de70",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_6e7ddc1b",
+        "filename": "aai-schema/src/main/resources/onap/oxm/v14/aai_pnp_oxm_v14.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 3405
+      },
+      "writtenOn": "2018-08-28T17:40:43Z",
+      "side": 1,
+      "message": "I thought we were making the software version NOT a child of pnf, so that the same software version could be easily reused by multiple pnfs.",
+      "revId": "6e9946fc4fec34a8a248416bee868ed9a531de70",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_8e78782c",
+        "filename": "aai-schema/src/main/resources/onap/oxm/v14/aai_pnp_oxm_v14.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 3405
+      },
+      "writtenOn": "2018-08-28T17:40:43Z",
+      "side": 1,
+      "message": "Should software version also have a software version name or description?",
+      "revId": "6e9946fc4fec34a8a248416bee868ed9a531de70",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
