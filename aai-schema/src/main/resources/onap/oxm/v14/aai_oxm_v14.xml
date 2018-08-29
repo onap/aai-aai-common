@@ -7148,6 +7148,11 @@
 						<xml-property name="privateEdge" value="service-design-and-creation/models/model/{model-invariant-id}/model-vers/model-ver/{model-version-id}"/>
 					</xml-properties>
 				</xml-element>
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete."/>
+					</xml-properties>
+				</xml-element>
 				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v14.RelationshipList" />
 			</java-attributes>
 			<xml-properties>
@@ -7221,6 +7226,11 @@
 				<xml-element java-attribute="outputBandwidth" name="output-bandwidth" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Store the output-bandwidth of this lan-port-config." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete."/>
 					</xml-properties>
 				</xml-element>
 				<xml-element java-attribute="dhcpServices" name="dhcp-services" type="inventory.aai.onap.org.v14.DhcpServices" />
@@ -7304,6 +7314,11 @@
 						<xml-property name="description" value="Store the nbns of this dhcp-service." />
 					</xml-properties>
 				</xml-element>
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete."/>
+					</xml-properties>
+				</xml-element>
 				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v14.RelationshipList" />
 			</java-attributes>
 			<xml-properties>
@@ -7355,6 +7370,12 @@
 						<xml-property name="description" value="Store the link to get more information for this object." />
 					</xml-properties>
 				</xml-element>
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete."/>
+					</xml-properties>
+				</xml-element>
+
 				<!-- Want to use pnf as sub-component, but workaround is to use COUSIN edge in relationship-list.
 				<xml-element java-attribute="pnfs" name="pnfs" type="inventory.aai.onap.org.v14.Pnfs" /> -->
 				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v14.RelationshipList" />
@@ -7395,6 +7416,11 @@
 				<xml-element java-attribute="callsource" name="callsource" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Store the callsource of this sp-partner." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete."/>
 					</xml-properties>
 				</xml-element>
 				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v14.RelationshipList" />
@@ -7482,6 +7508,11 @@
 						<xml-property name="requires" value="model-invariant-id" />
 						<xml-property name="dbAlias" value="model-version-id-local" />
 						<xml-property name="privateEdge" value="service-design-and-creation/models/model/{model-invariant-id}/model-vers/model-ver/{model-version-id}"/>
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete."/>
 					</xml-properties>
 				</xml-element>
 				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v14.RelationshipList" />
@@ -7578,6 +7609,11 @@
 						<xml-property name="requires" value="model-invariant-id" />
 						<xml-property name="dbAlias" value="model-version-id-local" />
 						<xml-property name="privateEdge" value="service-design-and-creation/models/model/{model-invariant-id}/model-vers/model-ver/{model-version-id}"/>
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete."/>
 					</xml-properties>
 				</xml-element>
 				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v14.RelationshipList" />
@@ -7680,6 +7716,11 @@
 						<xml-property name="requires" value="model-invariant-id" />
 						<xml-property name="dbAlias" value="model-version-id-local" />
 						<xml-property name="privateEdge" value="service-design-and-creation/models/model/{model-invariant-id}/model-vers/model-ver/{model-version-id}"/>
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete."/>
 					</xml-properties>
 				</xml-element>
 				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v14.RelationshipList" />
@@ -7800,6 +7841,11 @@
 						<xml-property name="privateEdge" value="service-design-and-creation/models/model/{model-invariant-id}/model-vers/model-ver/{model-version-id}"/>
 					</xml-properties>
 				</xml-element>
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete."/>
+					</xml-properties>
+				</xml-element>
 				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v14.RelationshipList" />
 			</java-attributes>
 			<xml-properties>
@@ -7839,6 +7885,11 @@
 				<xml-element java-attribute="schemaVersion" name="schema-version" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Schema version of the referenced AAI." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete."/>
 					</xml-properties>
 				</xml-element>
 				<xml-element java-attribute="esrSystemInfo" name="esr-system-info" type="inventory.aai.onap.org.v14.EsrSystemInfo" />
