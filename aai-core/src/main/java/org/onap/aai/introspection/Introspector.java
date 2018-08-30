@@ -161,7 +161,7 @@ public abstract class Introspector implements Cloneable {
 		if (obj != null) {
 	
 			try {
-				if (!obj.getClass().getName().equals(nameClass.getName())) {
+				if (!obj.getClass().isAssignableFrom(nameClass)) {
 					if (nameClass.isPrimitive()) {
 						nameClass = ClassUtils.primitiveToWrapper(nameClass);	
 						result = nameClass.getConstructor(String.class).newInstance(obj.toString());

@@ -32,7 +32,7 @@ public class AAIException extends Exception {
 	private static final long serialVersionUID = 1L;
 
 	private final String code;
-	private final ErrorObject errorObject;
+	private final transient ErrorObject errorObject;
 	private final Collection<String> templateVars;
 
 	/**
@@ -41,7 +41,7 @@ public class AAIException extends Exception {
 	public AAIException() {
 		super();
 		this.code = DEFAULT_EXCEPTION_CODE;
-		this.templateVars = new LinkedList<String> ();
+		this.templateVars = new LinkedList<> ();
 
 		try {
 			this.errorObject = ErrorLogHelper.getErrorObject(getCode());
@@ -60,7 +60,7 @@ public class AAIException extends Exception {
 		super();
 
 		this.code = code;
-		this.templateVars = new LinkedList<String> ();
+		this.templateVars = new LinkedList<> ();
 
 		try {
 			this.errorObject = ErrorLogHelper.getErrorObject(getCode());
@@ -80,7 +80,7 @@ public class AAIException extends Exception {
 		super(details);
 
 		this.code = code;
-		this.templateVars = new LinkedList<String> ();
+		this.templateVars = new LinkedList<> ();
 
 		try {
 			this.errorObject = ErrorLogHelper.getErrorObject(getCode());
@@ -101,7 +101,7 @@ public class AAIException extends Exception {
 		super(cause);
 
 		this.code = code;
-		this.templateVars = new LinkedList<String> ();
+		this.templateVars = new LinkedList<> ();
 
 		try {
 			this.errorObject = ErrorLogHelper.getErrorObject(getCode());
@@ -122,7 +122,7 @@ public class AAIException extends Exception {
 		super(details, cause);
 
 		this.code = code;
-		this.templateVars = new LinkedList<String> ();
+		this.templateVars = new LinkedList<> ();
 
 		try {
 			this.errorObject = ErrorLogHelper.getErrorObject(getCode());
