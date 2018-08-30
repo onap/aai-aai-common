@@ -465,7 +465,7 @@
                                                <xml-property name="description" value="ftp passive mode or not." />
                                        </xml-properties>
                                </xml-element>
-                               <xml-element java-attribute="remotepath" name="remote-path" type="java.lang.String">
+                               <xml-element java-attribute="remotePath" name="remote-path" type="java.lang.String">
                                        <xml-properties>
                                                <xml-property name="description" value="resource or performance data file path." />
                                        </xml-properties>
