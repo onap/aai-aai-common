@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a76adc5_40d9bf20",
+        "filename": "aai-schema/src/main/resources/onap/oxm/v14/aai_oxm_v14.xml",
+        "patchSetId": 9
+      },
+      "lineNbr": 7630,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2018-08-31T01:23:19Z",
+      "side": 1,
+      "message": "Do we need to store ipv4 and ipv6?",
+      "revId": "61f9bb414819ca9e021e03fec8d5d63c9a826a89",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
