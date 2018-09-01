@@ -7423,6 +7423,33 @@
 						<xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete."/>
 					</xml-properties>
 				</xml-element>
+				<xml-element java-attribute="operationalStatus" name="operational-status" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the operational-status for this object." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="modelCustomizationId" name="model-customization-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the model-customization-id for this object." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="modelInvariantId" name="model-invariant-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="the ASDC model id for this resource or service model." />
+						<xml-property name="visibility" value="deployment" />
+						<xml-property name="requires" value="model-version-id" />
+						<xml-property name="dbAlias" value="model-invariant-id-local" />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="modelVersionId" name="model-version-id" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="the ASDC model version for this resource or service model." />
+						<xml-property name="visibility" value="deployment" />
+						<xml-property name="requires" value="model-invariant-id" />
+						<xml-property name="dbAlias" value="model-version-id-local" />
+					</xml-properties>
+				</xml-element>
+
 				<xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v14.RelationshipList" />
 			</java-attributes>
 			<xml-properties>
