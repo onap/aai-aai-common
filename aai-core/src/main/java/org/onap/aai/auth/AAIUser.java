@@ -4,6 +4,8 @@
  * ================================================================================
  * Copyright © 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
+ * Modifications Copyright © 2018 IBM.
+ * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -72,7 +74,7 @@ public class AAIUser {
 	}
 
 	public boolean hasAccess(String aaiMethod, String httpMethod) {
-		return this.aaiFunctionToHttpMethod.getOrDefault(aaiMethod, Collections.EMPTY_SET).contains(httpMethod);
+        return this.aaiFunctionToHttpMethod.getOrDefault(aaiMethod, Collections.emptySet()).contains(httpMethod);
 	}
 
 }
