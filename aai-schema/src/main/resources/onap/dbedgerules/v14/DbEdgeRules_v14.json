@@ -2629,9 +2629,9 @@
             "description": ""
          },
 		 {
-			"from": "collection",
-			"to": "instance-group",
-			"label": "org.onap.relationships.inventory.MemberOf",
+			"from": "instance-group",
+			"to": "collection",
+			"label": "org.onap.inventory.BelongsTo",
 			"direction": "OUT",
 			"multiplicity": "ONE2ONE",
 			"contains-other-v": "NONE",
