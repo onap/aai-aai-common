@@ -4,6 +4,8 @@
  * ================================================================================
  * Copyright © 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
+ *  Modifications Copyright © 2018 IBM.
+ * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -40,6 +42,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.web.client.RestTemplate;
 
 public class AAIDmaapEventJMSConsumer implements MessageListener {
+
+	private static final String EVENT_TOPIC = "event-topic";
 
 	private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(AAIDmaapEventJMSConsumer.class);
 
@@ -85,13 +89,13 @@ public class AAIDmaapEventJMSConsumer implements MessageListener {
 				if (jo.getString("fromAppId") != null) {
 					MDC.put("partnerName", jo.getString("fromAppId"));
 				}
-				if (jo.getString("event-topic") != null) {
-					eventName = jo.getString("event-topic");
+				if (jo.getString(EVENT_TOPIC) != null) {
+					eventName = jo.getString(EVENT_TOPIC);
 				}
 
 				MDC.put ("targetEntity", "DMAAP");
-				if (jo.getString("event-topic") != null) {
-					eventName = jo.getString("event-topic");
+				if (jo.getString(EVENT_TOPIC) != null) {
+					eventName = jo.getString(EVENT_TOPIC);
 					MDC.put ("targetServiceName", eventName);
 				}
 				MDC.put ("serviceName", "AAI");
