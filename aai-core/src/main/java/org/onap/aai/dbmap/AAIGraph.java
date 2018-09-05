@@ -4,6 +4,8 @@
  * ================================================================================
  * Copyright © 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
+ *  Modifications Copyright © 2018 IBM.
+ * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,10 +21,8 @@
  */
 package org.onap.aai.dbmap;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -85,6 +85,9 @@ public class AAIGraph {
 	}
 	
 	private static class Helper {
+        private Helper(){
+        	
+        }
 		private static final AAIGraph INSTANCE = new AAIGraph();
 	}
 	
@@ -157,7 +160,7 @@ public class AAIGraph {
 		// Load the propertyKeys, indexes and edge-Labels into the DB
 		JanusGraphManagement graphMgt = graph.openManagement();
 		
-		System.out.println("-- loading schema into JanusGraph");
+		logger.info("-- loading schema into JanusGraph");
 		SchemaGenerator.loadSchemaIntoJanusGraph( graph, graphMgt, "inmemory");
 	}
 
@@ -189,16 +192,15 @@ public class AAIGraph {
 	private String getGraphName(DBConnectionType connectionType) {
 		String graphName = "";
 		if (DBConnectionType.CACHED.equals(connectionType)) {
-			graphName = this.CACHED_DB;
+			graphName = CACHED_DB;
 		} else if (DBConnectionType.REALTIME.equals(connectionType)) {
-			graphName = this.REALTIME_DB;
+			graphName = REALTIME_DB;
 		}
 		
 		return graphName;
 	}
 	
 	private void logAndPrint(EELFLogger logger, String msg) {
-		System.out.println(msg);
 		logger.info(msg);
 	}
 }
