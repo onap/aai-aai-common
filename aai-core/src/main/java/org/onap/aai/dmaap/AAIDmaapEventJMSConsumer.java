@@ -4,6 +4,8 @@
  * ================================================================================
  * Copyright © 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
+ *  Modifications Copyright © 2018 IBM.
+ * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -41,85 +43,87 @@ import org.springframework.web.client.RestTemplate;
 
 public class AAIDmaapEventJMSConsumer implements MessageListener {
 
-	private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(AAIDmaapEventJMSConsumer.class);
+    private static final String EVENT_TOPIC = "event-topic";
 
-	private RestTemplate restTemplate;
+    private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(AAIDmaapEventJMSConsumer.class);
 
-	private HttpHeaders httpHeaders;
+    private RestTemplate restTemplate;
 
-	private Environment environment;
+    private HttpHeaders httpHeaders;
 
-	public AAIDmaapEventJMSConsumer(Environment environment, RestTemplate restTemplate, HttpHeaders httpHeaders) {
-		Objects.nonNull(environment);
-		Objects.nonNull(restTemplate);
-		Objects.nonNull(httpHeaders);
-		this.environment = environment;
-		this.restTemplate = restTemplate;
-		this.httpHeaders = httpHeaders;
-	}
+    private Environment environment;
 
-	@Override
-	public void onMessage(Message message) {
+    public AAIDmaapEventJMSConsumer(Environment environment, RestTemplate restTemplate, HttpHeaders httpHeaders) {
+        Objects.nonNull(environment);
+        Objects.nonNull(restTemplate);
+        Objects.nonNull(httpHeaders);
+        this.environment = environment;
+        this.restTemplate = restTemplate;
+        this.httpHeaders = httpHeaders;
+    }
 
-	    if(restTemplate == null){
-	    	return;
-		}
+    @Override
+    public void onMessage(Message message) {
 
-		String jsmMessageTxt = "";
-		String aaiEvent = "";
-		String eventName = "";
+        if(restTemplate == null){
+            return;
+        }
 
-		if (message instanceof TextMessage) {
-			try {
-				jsmMessageTxt = ((TextMessage) message).getText();
-				JSONObject jo = new JSONObject(jsmMessageTxt);
+        String jsmMessageTxt = "";
+        String aaiEvent = "";
+        String eventName = "";
 
-				if (jo.has("aaiEventPayload")) {
-					aaiEvent = jo.getJSONObject("aaiEventPayload").toString();
-				} else {
-					return;
-				}
-				if (jo.getString("transId") != null) {
-					MDC.put("requestId", jo.getString("transId"));
-				}
-				if (jo.getString("fromAppId") != null) {
-					MDC.put("partnerName", jo.getString("fromAppId"));
-				}
-				if (jo.getString("event-topic") != null) {
-					eventName = jo.getString("event-topic");
-				}
+        if (message instanceof TextMessage) {
+            try {
+                jsmMessageTxt = ((TextMessage) message).getText();
+                JSONObject jo = new JSONObject(jsmMessageTxt);
 
-				MDC.put ("targetEntity", "DMAAP");
-				if (jo.getString("event-topic") != null) {
-					eventName = jo.getString("event-topic");
-					MDC.put ("targetServiceName", eventName);
-				}
-				MDC.put ("serviceName", "AAI");
-				MDC.put(LoggingField.STATUS_CODE.toString(), StatusCode.COMPLETE.toString());
-				MDC.put(LoggingField.RESPONSE_CODE.toString(), "0");
-				LOGGER.info(eventName + "|" + aaiEvent);
-				HttpEntity httpEntity = new HttpEntity(aaiEvent, httpHeaders);
+                if (jo.has("aaiEventPayload")) {
+                    aaiEvent = jo.getJSONObject("aaiEventPayload").toString();
+                } else {
+                    return;
+                }
+                if (jo.getString("transId") != null) {
+                    MDC.put("requestId", jo.getString("transId"));
+                }
+                if (jo.getString("fromAppId") != null) {
+                    MDC.put("partnerName", jo.getString("fromAppId"));
+                }
+                if (jo.getString(EVENT_TOPIC) != null) {
+                    eventName = jo.getString(EVENT_TOPIC);
+                }
 
-				String transportType = environment.getProperty("dmaap.ribbon.transportType", "http");
-				String baseUrl  = transportType + "://" + environment.getProperty("dmaap.ribbon.listOfServers");
-				String endpoint = "/events/" + eventName;
+                MDC.put ("targetEntity", "DMAAP");
+                if (jo.getString(EVENT_TOPIC) != null) {
+                    eventName = jo.getString(EVENT_TOPIC);
+                    MDC.put ("targetServiceName", eventName);
+                }
+                MDC.put ("serviceName", "AAI");
+                MDC.put(LoggingField.STATUS_CODE.toString(), StatusCode.COMPLETE.toString());
+                MDC.put(LoggingField.RESPONSE_CODE.toString(), "0");
+                LOGGER.info(eventName + "|" + aaiEvent);
+                HttpEntity httpEntity = new HttpEntity(aaiEvent, httpHeaders);
 
-				if ("AAI-EVENT".equals(eventName)) {
+                String transportType = environment.getProperty("dmaap.ribbon.transportType", "http");
+                String baseUrl  = transportType + "://" + environment.getProperty("dmaap.ribbon.listOfServers");
+                String endpoint = "/events/" + eventName;
+
+                if ("AAI-EVENT".equals(eventName)) {
                     restTemplate.exchange(baseUrl + endpoint, HttpMethod.POST, httpEntity, String.class);
-				} else {
-					LoggingContext.statusCode(StatusCode.ERROR);
-					LOGGER.error(eventName + "|Event Topic invalid.");
-				}
-			} catch (JMSException | JSONException e) {
-				MDC.put(LoggingField.STATUS_CODE.toString(), StatusCode.ERROR.toString());
-				MDC.put(LoggingField.RESPONSE_CODE.toString(), "200");
-				LOGGER.error("AAI_7350 Error parsing aaievent jsm message for sending to dmaap. {} {}", jsmMessageTxt, LogFormatTools.getStackTop(e));
-			} catch (Exception e) {
-				MDC.put(LoggingField.STATUS_CODE.toString(), StatusCode.ERROR.toString());
-				MDC.put(LoggingField.RESPONSE_CODE.toString(), "200");
-				LOGGER.error("AAI_7350 Error sending message to dmaap. {} {}" , jsmMessageTxt, LogFormatTools.getStackTop(e));
-			}
-		}
+                } else {
+                    LoggingContext.statusCode(StatusCode.ERROR);
+                    LOGGER.error(eventName + "|Event Topic invalid.");
+                }
+            } catch (JMSException | JSONException e) {
+                MDC.put(LoggingField.STATUS_CODE.toString(), StatusCode.ERROR.toString());
+                MDC.put(LoggingField.RESPONSE_CODE.toString(), "200");
+                LOGGER.error("AAI_7350 Error parsing aaievent jsm message for sending to dmaap. {} {}", jsmMessageTxt, LogFormatTools.getStackTop(e));
+            } catch (Exception e) {
+                MDC.put(LoggingField.STATUS_CODE.toString(), StatusCode.ERROR.toString());
+                MDC.put(LoggingField.RESPONSE_CODE.toString(), "200");
+                LOGGER.error("AAI_7350 Error sending message to dmaap. {} {}" , jsmMessageTxt, LogFormatTools.getStackTop(e));
+            }
+        }
 
-	}
+    }
 }
