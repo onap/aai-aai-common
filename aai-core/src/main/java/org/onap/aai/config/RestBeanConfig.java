@@ -4,6 +4,8 @@
  * ================================================================================
  * Copyright © 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
+ * Modifications Copyright © 2018 IBM.
+ * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -34,16 +36,13 @@ public class RestBeanConfig {
 	@Bean(name = "traversalUriHttpEntry")
 	@Scope(scopeName = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 	public HttpEntry traversalUriHttpEntry() {
-		HttpEntry httpEntry = new HttpEntry(ModelType.MOXY, QueryStyle.TRAVERSAL_URI);
-		return httpEntry;
+        return new HttpEntry(ModelType.MOXY, QueryStyle.TRAVERSAL_URI);
 	}
 	
 	@Bean(name = "traversalHttpEntry")
 	@Scope(scopeName = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 	public HttpEntry traversalHttpEntry() {
-		HttpEntry httpEntry = new HttpEntry(ModelType.MOXY, QueryStyle.TRAVERSAL);
-		
-		return httpEntry;
+        return new HttpEntry(ModelType.MOXY, QueryStyle.TRAVERSAL);
 	}
 	
 	

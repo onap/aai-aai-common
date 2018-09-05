@@ -4,6 +4,8 @@
  * ================================================================================
  * Copyright © 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
+ * Modifications Copyright © 2018 IBM.
+ * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -41,22 +43,19 @@ public class SwaggerGenerationConfiguration {
 	@Bean
 	@Scope(scopeName = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 	public NodesYAMLfromOXM nodesYamlFromOXM(SchemaVersions schemaVersions, NodeIngestor nodeIngestor, EdgeIngestor edgeIngestor) {
-		NodesYAMLfromOXM nodesYamlFromOXM = new NodesYAMLfromOXM(basePath, schemaVersions, nodeIngestor, edgeIngestor);
-		return nodesYamlFromOXM;
+        return new NodesYAMLfromOXM(basePath, schemaVersions, nodeIngestor, edgeIngestor);
 	}
 	
 	@Bean
 	@Scope(scopeName = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 	public HTMLfromOXM htmlFromOXM(SchemaVersions schemaVersions, NodeIngestor nodeIngestor, EdgeIngestor edgeIngestor) {
-		HTMLfromOXM htmlFromOXM = new HTMLfromOXM(schemaVersions, nodeIngestor, edgeIngestor);
-		return htmlFromOXM;
+        return new HTMLfromOXM(schemaVersions, nodeIngestor, edgeIngestor);
 	}
 	
 	@Bean
 	@Scope(scopeName = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 	public YAMLfromOXM yamlFromOXM(SchemaVersions schemaVersions, NodeIngestor nodeIngestor, EdgeIngestor edgeIngestor) {
-		YAMLfromOXM yamlFromOXM = new YAMLfromOXM(basePath, schemaVersions, nodeIngestor, edgeIngestor);
-		return yamlFromOXM;
+        return new YAMLfromOXM(basePath, schemaVersions, nodeIngestor, edgeIngestor);
 	}
     
 }

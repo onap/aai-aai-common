@@ -4,6 +4,8 @@
  * ================================================================================
  * Copyright © 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
+ * Modifications Copyright © 2018 IBM.
+ * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -35,23 +37,22 @@ import org.onap.aai.nodes.NodeIngestor;
 @Configuration
 public class IntrospectionConfig {
 
-	private Map<SchemaVersion, MoxyLoader> MOXYINSTANCEMAP = new ConcurrentHashMap<>();
+	private Map<SchemaVersion, MoxyLoader> moxyInstanceMap = new ConcurrentHashMap<>();
 	@Autowired
 	NodeIngestor nodeIngestor;
 
 	@Bean
 	public LoaderFactory loaderFactory(SchemaVersions schemaVersions) {
-		LoaderFactory loaderFactory = new LoaderFactory(moxyLoaderInstance(schemaVersions));
-		return loaderFactory;
+        return new LoaderFactory(moxyLoaderInstance(schemaVersions));
 	}
 
 	@Bean
 	public Map<SchemaVersion, MoxyLoader> moxyLoaderInstance(SchemaVersions schemaVersions) {
 	    for(SchemaVersion version : schemaVersions.getVersions()){
-			if (!MOXYINSTANCEMAP.containsKey(version)) {
-				MOXYINSTANCEMAP.put(version, new MoxyLoader(version, nodeIngestor));
-			}
-		}
-		return MOXYINSTANCEMAP;
+            if (!moxyInstanceMap.containsKey(version)) {
+                moxyInstanceMap.put(version, new MoxyLoader(version, nodeIngestor));
+            }
+        }
+        return moxyInstanceMap;
 	}
 }
