@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a76adc5_60bf1bab",
+        "filename": "aai-schema/src/main/resources/onap/oxm/v14/aai_oxm_v14.xml",
+        "patchSetId": 8
+      },
+      "lineNbr": 7704,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2018-09-05T21:04:31Z",
+      "side": 1,
+      "message": "Do we need ipv4 and ipv6?",
+      "revId": "f4fd6c2d499e30cea3ddc84b69887118bb27c02b",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_00e0a7cb",
+        "filename": "aai-schema/src/main/resources/onap/oxm/v14/aai_oxm_v14.xml",
+        "patchSetId": 8
+      },
+      "lineNbr": 7709,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2018-09-05T21:04:31Z",
+      "side": 1,
+      "message": "Do we need ipv4 and ipv6?",
+      "revId": "f4fd6c2d499e30cea3ddc84b69887118bb27c02b",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
