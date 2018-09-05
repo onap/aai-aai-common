@@ -2835,11 +2835,11 @@
 		{
 			"from": "l3-interface-ipv4-address-list",
 			"to": "cp",
-			"label": "org.onap.relationships.inventory.network.MemberOf",
+			"label": "org.onap.relationships.inventory.network.BelongsTo",
 			"direction": "OUT",
 			"multiplicity": "MANY2ONE",
 			"contains-other-v": "!${direction}",
-			"delete-other-v": "NONE",
+			"delete-other-v": "!${direction}",
 			"prevent-delete": "NONE",
 			"default": "true",
 			"description":""
@@ -2847,11 +2847,11 @@
 		{
 			"from": "l3-interface-ipv6-address-list",
 			"to": "cp",
-			"label": "org.onap.relationships.inventory.network.MemberOf",
+			"label": "org.onap.relationships.inventory.network.BelongsTo",
 			"direction": "OUT",
 			"multiplicity": "MANY2ONE",
 			"contains-other-v": "!${direction}",
-			"delete-other-v": "NONE",
+			"delete-other-v": "!${direction}",
 			"prevent-delete": "NONE",
 			"default": "true",
 			"description":""
@@ -2859,10 +2859,10 @@
 		{
 			"from": "vip-ipv4-address-list",
 			"to": "cp",
-			"label": "org.onap.relationships.inventory.network.MemberOf",
+			"label": "org.onap.relationships.inventory.network.Uses",
 			"direction": "OUT",
-			"multiplicity": "MANY2ONE",
-			"contains-other-v": "!${direction}",
+			"multiplicity": "MANY2MANY",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"prevent-delete": "NONE",
 			"default": "true",
@@ -2871,10 +2871,10 @@
 		{
 			"from": "vip-ipv6-address-list",
 			"to": "cp",
-			"label": "org.onap.relationships.inventory.network.MemberOf",
+			"label": "org.onap.relationships.inventory.network.Uses",
 			"direction": "OUT",
-			"multiplicity": "MANY2ONE",
-			"contains-other-v": "!${direction}",
+			"multiplicity": "MANY2MANY",
+			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"prevent-delete": "NONE",
 			"default": "true",
@@ -2909,7 +2909,7 @@
 			"to": "cp",
 			"label": "org.onap.relationships.inventory.Uses",
 			"direction": "OUT",
-			"multiplicity": "MANY2ONE",
+			"multiplicity": "MANY2MANY",
 			"contains-other-v": "NONE",
 			"delete-other-v": "NONE",
 			"prevent-delete": "NONE",
@@ -2978,7 +2978,43 @@
 			"prevent-delete": "NONE",
 			"default": "true",
 			"description":""
+		},
+		{
+			"from": "generic-vnf",
+			"to": "instance-group",
+			"label": "org.onap.relationships.inventory.Uses",
+			"direction": "OUT",
+			"multiplicity": "ONE2MANY",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"prevent-delete": "NONE",
+			"default": "false",
+			"description":""
+		},
+		{
+			"from": "instance-group",
+			"to": "generic-vnf",
+			"label": "org.onap.relationships.inventory.BelongsTo",
+			"direction": "OUT",
+			"multiplicity": "MANY2ONE",
+			"contains-other-v": "NONE",
+			"delete-other-v": "!${direction}",
+			"prevent-delete": "NONE",
+			"default": "false",
+			"description":""
+		},
+			{
+			"from": "cloud-region",
+			"to": "network-technology",
+			"label": "org.onap.relationships.inventory.Uses",
+			"direction": "OUT",
+			"multiplicity": "MANY2MANY",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"prevent-delete": "NONE",
+			"default": "true",
+			"description":""
 		}
-	
+		
 	]
 }
