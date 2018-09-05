@@ -4,6 +4,8 @@
  * ================================================================================
  * Copyright © 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
+ *  Modifications Copyright © 2018 IBM.
+ * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -28,6 +30,8 @@ import org.onap.aai.logging.ErrorObjectNotFoundException;
 
 public class AAIException extends Exception {
 
+	private static final String UPDATE_ERROR_PROPERTIES_BEFORE_USING_THIS_EXCEPTION_CODE = " - update error.properties before using this exception code";
+	private static final String FAILED_TO_INSTANTIATE_AAI_EXCEPTION_WITH_CODE = "Failed to instantiate AAIException with code=";
 	public static final String DEFAULT_EXCEPTION_CODE = "AAI_4000";
 	private static final long serialVersionUID = 1L;
 
@@ -46,8 +50,8 @@ public class AAIException extends Exception {
 		try {
 			this.errorObject = ErrorLogHelper.getErrorObject(getCode());
 		} catch (ErrorObjectNotFoundException e) {
-			throw new RuntimeException("Failed to instantiate AAIException with code=" + getCode()
-										 + " - update error.properties before using this exception code");
+			throw new RuntimeException(FAILED_TO_INSTANTIATE_AAI_EXCEPTION_WITH_CODE + getCode()
+										 + UPDATE_ERROR_PROPERTIES_BEFORE_USING_THIS_EXCEPTION_CODE);
 		}
 	}
 
@@ -65,8 +69,8 @@ public class AAIException extends Exception {
 		try {
 			this.errorObject = ErrorLogHelper.getErrorObject(getCode());
 		} catch (ErrorObjectNotFoundException e) {
-			throw new RuntimeException("Failed to instantiate AAIException with code=" + getCode()
-										 + " - update error.properties before using this exception code");
+			throw new RuntimeException(FAILED_TO_INSTANTIATE_AAI_EXCEPTION_WITH_CODE + getCode()
+										 + UPDATE_ERROR_PROPERTIES_BEFORE_USING_THIS_EXCEPTION_CODE);
 		}
 	}
 	
@@ -86,8 +90,8 @@ public class AAIException extends Exception {
 			this.errorObject = ErrorLogHelper.getErrorObject(getCode());
 			errorObject.setDetails(details);
 		} catch (ErrorObjectNotFoundException e) {
-			throw new RuntimeException("Failed to instantiate AAIException with code=" + getCode()
-										 + " - update error.properties before using this exception code");
+			throw new RuntimeException(FAILED_TO_INSTANTIATE_AAI_EXCEPTION_WITH_CODE + getCode()
+										 + UPDATE_ERROR_PROPERTIES_BEFORE_USING_THIS_EXCEPTION_CODE);
 		}
 	}
 
@@ -106,8 +110,8 @@ public class AAIException extends Exception {
 		try {
 			this.errorObject = ErrorLogHelper.getErrorObject(getCode());
 		} catch (ErrorObjectNotFoundException e) {
-			throw new RuntimeException("Failed to instantiate AAIException with code=" + getCode()
-										 + " - update error.properties before using this exception code");
+			throw new RuntimeException(FAILED_TO_INSTANTIATE_AAI_EXCEPTION_WITH_CODE + getCode()
+										 + UPDATE_ERROR_PROPERTIES_BEFORE_USING_THIS_EXCEPTION_CODE);
 		}
 	}
 	
@@ -127,8 +131,8 @@ public class AAIException extends Exception {
 		try {
 			this.errorObject = ErrorLogHelper.getErrorObject(getCode());
 		} catch (ErrorObjectNotFoundException e) {
-			throw new RuntimeException("Failed to instantiate AAIException with code=" + getCode()
-										 + " - update error.properties before using this exception code");
+			throw new RuntimeException(FAILED_TO_INSTANTIATE_AAI_EXCEPTION_WITH_CODE + getCode()
+										 + UPDATE_ERROR_PROPERTIES_BEFORE_USING_THIS_EXCEPTION_CODE);
 		}
 	}
 	
