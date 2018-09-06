@@ -4,6 +4,8 @@
  * ================================================================================
  * Copyright © 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
+ *  Modifications Copyright © 2018 IBM.
+ * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,17 +22,21 @@
 package org.onap.aai.db.props;
 
 public class AAIProperties {
-	public static final String NODE_TYPE = "aai-node-type";
-	public static final String LAST_MOD_SOURCE_OF_TRUTH = "last-mod-source-of-truth";
-	public static final String SOURCE_OF_TRUTH = "source-of-truth";
-	public static final String LAST_MOD_TS = "aai-last-mod-ts";
-	public static final String UNIQUE_KEY = "aai-unique-key";
-	public static final String CREATED_TS = "aai-created-ts";
-	public static final String RESOURCE_VERSION = "resource-version";
-	public static final String AAI_URI = "aai-uri";
-	public static final Integer MAXIMUM_DEPTH = 10000;
-	public static final String LINKED = "linked";
-	public static final String DB_ALIAS_SUFFIX = "-local";
-	public static final String AAI_UUID = "aai-uuid";
+    public static final String NODE_TYPE = "aai-node-type";
+    public static final String LAST_MOD_SOURCE_OF_TRUTH = "last-mod-source-of-truth";
+    public static final String SOURCE_OF_TRUTH = "source-of-truth";
+    public static final String LAST_MOD_TS = "aai-last-mod-ts";
+    public static final String UNIQUE_KEY = "aai-unique-key";
+    public static final String CREATED_TS = "aai-created-ts";
+    public static final String RESOURCE_VERSION = "resource-version";
+    public static final String AAI_URI = "aai-uri";
+    public static final Integer MAXIMUM_DEPTH = 10000;
+    public static final String LINKED = "linked";
+    public static final String DB_ALIAS_SUFFIX = "-local";
+    public static final String AAI_UUID = "aai-uuid";
+    
+    private AAIProperties() {
+        
+    }
 
 }
