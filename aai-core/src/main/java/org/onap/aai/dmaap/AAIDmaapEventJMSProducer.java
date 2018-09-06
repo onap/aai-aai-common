@@ -4,6 +4,8 @@
  * ================================================================================
  * Copyright © 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
+ *  Modifications Copyright © 2018 IBM.
+ * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -28,22 +30,22 @@ import org.springframework.jms.core.JmsTemplate;
 
 public class AAIDmaapEventJMSProducer implements MessageProducer {
 
-	private JmsTemplate jmsTemplate;
+    private JmsTemplate jmsTemplate;
 
-	public AAIDmaapEventJMSProducer() {
-		if(AAIConfig.get("aai.jms.enable", "true").equals("true")){
+    public AAIDmaapEventJMSProducer() {
+        if("true".equals(AAIConfig.get("aai.jms.enable", "true"))){
             this.jmsTemplate = new JmsTemplate();
             String activeMqTcpUrl = System.getProperty("activemq.tcp.url", "tcp://localhost:61547");
             this.jmsTemplate.setConnectionFactory(new CachingConnectionFactory(new ActiveMQConnectionFactory(activeMqTcpUrl)));
             this.jmsTemplate.setDefaultDestination(new ActiveMQQueue("IN_QUEUE"));
-		}
-	}
+        }
+    }
 
-	public void sendMessageToDefaultDestination(JSONObject finalJson) {
-		if(jmsTemplate != null){
-			jmsTemplate.convertAndSend(finalJson.toString());
-			CachingConnectionFactory ccf = (CachingConnectionFactory) this.jmsTemplate.getConnectionFactory();
-			ccf.destroy();
-		}
-	}
+    public void sendMessageToDefaultDestination(JSONObject finalJson) {
+        if(jmsTemplate != null){
+            jmsTemplate.convertAndSend(finalJson.toString());
+            CachingConnectionFactory ccf = (CachingConnectionFactory) this.jmsTemplate.getConnectionFactory();
+            ccf.destroy();
+        }
+    }
 }
