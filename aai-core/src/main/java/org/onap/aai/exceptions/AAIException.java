@@ -4,6 +4,8 @@
  * ================================================================================
  * Copyright © 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
+ *  Modifications Copyright © 2018 IBM.
+ * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -28,119 +30,121 @@ import org.onap.aai.logging.ErrorObjectNotFoundException;
 
 public class AAIException extends Exception {
 
-	public static final String DEFAULT_EXCEPTION_CODE = "AAI_4000";
-	private static final long serialVersionUID = 1L;
+    private static final String UPDATE_ERROR_PROPERTIES_BEFORE_USING_THIS_EXCEPTION_CODE = " - update error.properties before using this exception code";
+    private static final String FAILED_TO_INSTANTIATE_AAI_EXCEPTION_WITH_CODE = "Failed to instantiate AAIException with code=";
+    public static final String DEFAULT_EXCEPTION_CODE = "AAI_4000";
+    private static final long serialVersionUID = 1L;
 
-	private final String code;
-	private final ErrorObject errorObject;
-	private final Collection<String> templateVars;
+    private final String code;
+    private final ErrorObject errorObject;
+    private final Collection<String> templateVars;
 
-	/**
-	 * Instantiates a new AAI exception.
-	 */
-	public AAIException() {
-		super();
-		this.code = DEFAULT_EXCEPTION_CODE;
-		this.templateVars = new LinkedList<String> ();
+    /**
+     * Instantiates a new AAI exception.
+     */
+    public AAIException() {
+        super();
+        this.code = DEFAULT_EXCEPTION_CODE;
+        this.templateVars = new LinkedList<String> ();
 
-		try {
-			this.errorObject = ErrorLogHelper.getErrorObject(getCode());
-		} catch (ErrorObjectNotFoundException e) {
-			throw new RuntimeException("Failed to instantiate AAIException with code=" + getCode()
-										 + " - update error.properties before using this exception code");
-		}
-	}
+        try {
+            this.errorObject = ErrorLogHelper.getErrorObject(getCode());
+        } catch (ErrorObjectNotFoundException e) {
+            throw new RuntimeException(FAILED_TO_INSTANTIATE_AAI_EXCEPTION_WITH_CODE + getCode()
+                                         + UPDATE_ERROR_PROPERTIES_BEFORE_USING_THIS_EXCEPTION_CODE);
+        }
+    }
 
-	/**
-	 * Instantiates a new AAI exception.
-	 *
-	 * @param code the code
-	 */
-	public AAIException(String code) {
-		super();
+    /**
+     * Instantiates a new AAI exception.
+     *
+     * @param code the code
+     */
+    public AAIException(String code) {
+        super();
 
-		this.code = code;
-		this.templateVars = new LinkedList<String> ();
+        this.code = code;
+        this.templateVars = new LinkedList<String> ();
 
-		try {
-			this.errorObject = ErrorLogHelper.getErrorObject(getCode());
-		} catch (ErrorObjectNotFoundException e) {
-			throw new RuntimeException("Failed to instantiate AAIException with code=" + getCode()
-										 + " - update error.properties before using this exception code");
-		}
-	}
-	
-	/**
-	 * Instantiates a new AAI exception.
-	 *
-	 * @param code the code
-	 * @param details the details
-	 */
-	public AAIException(String code, String details) {
-		super(details);
+        try {
+            this.errorObject = ErrorLogHelper.getErrorObject(getCode());
+        } catch (ErrorObjectNotFoundException e) {
+            throw new RuntimeException(FAILED_TO_INSTANTIATE_AAI_EXCEPTION_WITH_CODE + getCode()
+                                         + UPDATE_ERROR_PROPERTIES_BEFORE_USING_THIS_EXCEPTION_CODE);
+        }
+    }
+    
+    /**
+     * Instantiates a new AAI exception.
+     *
+     * @param code the code
+     * @param details the details
+     */
+    public AAIException(String code, String details) {
+        super(details);
 
-		this.code = code;
-		this.templateVars = new LinkedList<String> ();
+        this.code = code;
+        this.templateVars = new LinkedList<String> ();
 
-		try {
-			this.errorObject = ErrorLogHelper.getErrorObject(getCode());
-			errorObject.setDetails(details);
-		} catch (ErrorObjectNotFoundException e) {
-			throw new RuntimeException("Failed to instantiate AAIException with code=" + getCode()
-										 + " - update error.properties before using this exception code");
-		}
-	}
+        try {
+            this.errorObject = ErrorLogHelper.getErrorObject(getCode());
+            errorObject.setDetails(details);
+        } catch (ErrorObjectNotFoundException e) {
+            throw new RuntimeException(FAILED_TO_INSTANTIATE_AAI_EXCEPTION_WITH_CODE + getCode()
+                                         + UPDATE_ERROR_PROPERTIES_BEFORE_USING_THIS_EXCEPTION_CODE);
+        }
+    }
 
-	/**
-	 * Instantiates a new AAI exception.
-	 *
-	 * @param code the code
-	 * @param cause the cause
-	 */
-	public AAIException(String code, Throwable cause) {
-		super(cause);
+    /**
+     * Instantiates a new AAI exception.
+     *
+     * @param code the code
+     * @param cause the cause
+     */
+    public AAIException(String code, Throwable cause) {
+        super(cause);
 
-		this.code = code;
-		this.templateVars = new LinkedList<String> ();
+        this.code = code;
+        this.templateVars = new LinkedList<String> ();
 
-		try {
-			this.errorObject = ErrorLogHelper.getErrorObject(getCode());
-		} catch (ErrorObjectNotFoundException e) {
-			throw new RuntimeException("Failed to instantiate AAIException with code=" + getCode()
-										 + " - update error.properties before using this exception code");
-		}
-	}
-	
-	/**
-	 * Instantiates a new AAI exception.
-	 *
-	 * @param code the code
-	 * @param cause the cause
-	 * @param details the details
-	 */
-	public AAIException(String code, Throwable cause, String details) {
-		super(details, cause);
+        try {
+            this.errorObject = ErrorLogHelper.getErrorObject(getCode());
+        } catch (ErrorObjectNotFoundException e) {
+            throw new RuntimeException(FAILED_TO_INSTANTIATE_AAI_EXCEPTION_WITH_CODE + getCode()
+                                         + UPDATE_ERROR_PROPERTIES_BEFORE_USING_THIS_EXCEPTION_CODE);
+        }
+    }
+    
+    /**
+     * Instantiates a new AAI exception.
+     *
+     * @param code the code
+     * @param cause the cause
+     * @param details the details
+     */
+    public AAIException(String code, Throwable cause, String details) {
+        super(details, cause);
 
-		this.code = code;
-		this.templateVars = new LinkedList<String> ();
+        this.code = code;
+        this.templateVars = new LinkedList<String> ();
 
-		try {
-			this.errorObject = ErrorLogHelper.getErrorObject(getCode());
-		} catch (ErrorObjectNotFoundException e) {
-			throw new RuntimeException("Failed to instantiate AAIException with code=" + getCode()
-										 + " - update error.properties before using this exception code");
-		}
-	}
-	
-	public String getCode() {
-		return code;
-	}
+        try {
+            this.errorObject = ErrorLogHelper.getErrorObject(getCode());
+        } catch (ErrorObjectNotFoundException e) {
+            throw new RuntimeException(FAILED_TO_INSTANTIATE_AAI_EXCEPTION_WITH_CODE + getCode()
+                                         + UPDATE_ERROR_PROPERTIES_BEFORE_USING_THIS_EXCEPTION_CODE);
+        }
+    }
+    
+    public String getCode() {
+        return code;
+    }
 
-	public ErrorObject getErrorObject() {
-		return errorObject;
-	}
+    public ErrorObject getErrorObject() {
+        return errorObject;
+    }
 
-	public Collection<String> getTemplateVars() {
-		return templateVars;
-	}
+    public Collection<String> getTemplateVars() {
+        return templateVars;
+    }
 }

@@ -4,6 +4,8 @@
  * ================================================================================
  * Copyright © 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
+ * Modifications Copyright © 2018 IBM.
+ * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,19 +25,20 @@ import org.onap.aai.exceptions.AAIException;
 
 public class AAIUnrecognizedFunctionException extends AAIException {
 
-	private static final long serialVersionUID = 3297064867724071290L;
+    private static final String AAI_3012 = "AAI_3012";
+    private static final long serialVersionUID = 3297064867724071290L;
 
-	public AAIUnrecognizedFunctionException() {}
+    public AAIUnrecognizedFunctionException() {}
 
-	public AAIUnrecognizedFunctionException(String message) {
-		super("AAI_3012", message);
-	}
+    public AAIUnrecognizedFunctionException(String message) {
+        super(AAI_3012, message);
+    }
 
-	public AAIUnrecognizedFunctionException(Throwable cause) {
-		super("AAI_3012",cause);
-	}
+    public AAIUnrecognizedFunctionException(Throwable cause) {
+        super(AAI_3012,cause);
+    }
 
-	public AAIUnrecognizedFunctionException(String message, Throwable cause) {
-		super("AAI_3012", cause, message);
-	}
+    public AAIUnrecognizedFunctionException(String message, Throwable cause) {
+        super(AAI_3012, cause, message);
+    }
 }
