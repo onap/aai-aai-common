@@ -22,6 +22,30 @@
       "revId": "54c2063e28b42cae425da390de6cbe7a82126ce8",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_41420a69",
+        "filename": "aai-schema/src/main/resources/onap/dbedgerules/v14/DbEdgeRules_v14.json",
+        "patchSetId": 2
+      },
+      "lineNbr": 2646,
+      "author": {
+        "id": 75
+      },
+      "writtenOn": "2018-09-06T13:28:21Z",
+      "side": 1,
+      "message": "Thats a good catch. I missed this.",
+      "parentUuid": "1a76adc5_76beea66",
+      "range": {
+        "startLine": 2646,
+        "startChar": 46,
+        "endLine": 2646,
+        "endChar": 54
+      },
+      "revId": "54c2063e28b42cae425da390de6cbe7a82126ce8",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
