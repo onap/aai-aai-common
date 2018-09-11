@@ -4,6 +4,8 @@
  * ================================================================================
  * Copyright © 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
+ *  Modifications Copyright © 2018 IBM.
+ * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -26,7 +28,13 @@ import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
 public class MapperUtil {
 
-
+    /**
+     * Instantiates MapperUtil.
+     */
+    private MapperUtil() {
+        // prevent instantiation
+    }
+    
     /**
      * Read as object of.
      *
@@ -37,9 +45,9 @@ public class MapperUtil {
      * @throws AAIException the AAI exception
      */
     public static <T> T readAsObjectOf(Class<T> clazz, String value) throws AAIException {
-        ObjectMapper MAPPER = new ObjectMapper();
+        ObjectMapper mapper = new ObjectMapper();
         try {
-            return MAPPER.readValue(value, clazz);
+            return mapper.readValue(value, clazz);
         } catch (Exception e) {
             throw new AAIException("AAI_4007", e);
         }
@@ -55,13 +63,13 @@ public class MapperUtil {
      * @throws AAIException the AAI exception
      */
     public static <T> T readWithDashesAsObjectOf(Class<T> clazz, String value) throws AAIException {
-        ObjectMapper MAPPER = new ObjectMapper();
+        ObjectMapper mapper = new ObjectMapper();
         try {
-            MAPPER.registerModule(new JaxbAnnotationModule());
-            MAPPER.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            MAPPER.configure(DeserializationFeature.UNWRAP_ROOT_VALUE, false);
+            mapper.registerModule(new JaxbAnnotationModule());
+            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            mapper.configure(DeserializationFeature.UNWRAP_ROOT_VALUE, false);
 
-            return MAPPER.readValue(value, clazz);
+            return mapper.readValue(value, clazz);
         } catch (Exception e) {
             throw new AAIException("AAI_4007", e);
         }
@@ -75,10 +83,9 @@ public class MapperUtil {
      * @throws AAIException the AAI exception
      */
     public static String writeAsJSONString(Object obj) throws AAIException {
-        ObjectMapper MAPPER = new ObjectMapper();
+        ObjectMapper mapper = new ObjectMapper();
         try {
-            String s = MAPPER.writeValueAsString(obj);
-            return s;
+            return mapper.writeValueAsString(obj);
         } catch (Exception e) {
             throw new AAIException("AAI_4008", e);
         }
@@ -92,20 +99,19 @@ public class MapperUtil {
      * @throws AAIException the AAI exception
      */
     public static String writeAsJSONStringWithDashes(Object obj) throws AAIException {
-        ObjectMapper MAPPER = new ObjectMapper();
+        ObjectMapper mapper = new ObjectMapper();
         try {
-            MAPPER.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+            mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
-            MAPPER.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-            MAPPER.configure(SerializationFeature.INDENT_OUTPUT, false);
-            MAPPER.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+            mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+            mapper.configure(SerializationFeature.INDENT_OUTPUT, false);
+            mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
 
-            MAPPER.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            MAPPER.configure(DeserializationFeature.UNWRAP_ROOT_VALUE, false);
+            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            mapper.configure(DeserializationFeature.UNWRAP_ROOT_VALUE, false);
 
-            MAPPER.registerModule(new JaxbAnnotationModule());
-            String s = MAPPER.writeValueAsString(obj);
-            return s;
+            mapper.registerModule(new JaxbAnnotationModule());
+            return mapper.writeValueAsString(obj);
         } catch (Exception e) {
             throw new AAIException("AAI_4008", e);
         }
