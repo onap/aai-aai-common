@@ -4,6 +4,8 @@
  * ================================================================================
  * Copyright © 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
+ *  Modifications Copyright © 2018 IBM.
+ * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -33,45 +35,46 @@ import freemarker.template.TemplateException;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 public class AutoGenerateHtml {
-	
-	public static final String DEFAULT_SCHEMA_DIR = "../aai-schema";
-	//if the program is run from aai-common, use this directory as default"
-	public static final String ALT_SCHEMA_DIR = "aai-schema";
-	//used to check to see if program is run from aai-core
-	public static final String DEFAULT_RUN_DIR = "aai-core";
+    
+    private static final String AAI_GENERATE_VERSION = "aai.generate.version";
+    public static final String DEFAULT_SCHEMA_DIR = "../aai-schema";
+    //if the program is run from aai-common, use this directory as default"
+    public static final String ALT_SCHEMA_DIR = "aai-schema";
+    //used to check to see if program is run from aai-core
+    public static final String DEFAULT_RUN_DIR = "aai-core";
 
-	public static void main(String[] args) throws IOException, TemplateException {
-		String savedProperty = System.getProperty("aai.generate.version");
+    public static void main(String[] args) throws IOException, TemplateException {
+        String savedProperty = System.getProperty(AAI_GENERATE_VERSION);
 
-		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(
-			"org.onap.aai.config",
-			"org.onap.aai.setup"
-		);
+        AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(
+            "org.onap.aai.config",
+            "org.onap.aai.setup"
+        );
 
 
-		SchemaVersions schemaVersions = ctx.getBean(SchemaVersions.class);
-		
-		List<SchemaVersion> versionsToGen = schemaVersions.getVersions();
-		Collections.sort(versionsToGen);
-		Collections.reverse(versionsToGen);
-		ListIterator<SchemaVersion> versionIterator = versionsToGen.listIterator();
-		String schemaDir;
-		if(System.getProperty("user.dir") != null && !System.getProperty("user.dir").contains(DEFAULT_RUN_DIR)) {
-			schemaDir = ALT_SCHEMA_DIR;
-  		}
-  		else {
-  			schemaDir = DEFAULT_SCHEMA_DIR;
-  		}
-  		String release = System.getProperty("aai.release", "onap");
-		while (versionIterator.hasNext()) {
-			System.setProperty("aai.generate.version", versionIterator.next().toString());
-	        String yamlFile = schemaDir + "/src/main/resources/" + release + "/aai_swagger_yaml/aai_swagger_" + System.getProperty("aai.generate.version")+ ".yaml";
-	        File swaggerYamlFile = new File(yamlFile);
-	        if(swaggerYamlFile.exists()) {
-	        	GenerateSwagger.schemaVersions = schemaVersions;
-	        	GenerateSwagger.main(args);
-	        }
-		}
-		String versionToGenerate = System.setProperty("aai.generate.version", savedProperty);	
-	}
+        SchemaVersions schemaVersions = ctx.getBean(SchemaVersions.class);
+        
+        List<SchemaVersion> versionsToGen = schemaVersions.getVersions();
+        Collections.sort(versionsToGen);
+        Collections.reverse(versionsToGen);
+        ListIterator<SchemaVersion> versionIterator = versionsToGen.listIterator();
+        String schemaDir;
+        if(System.getProperty("user.dir") != null && !System.getProperty("user.dir").contains(DEFAULT_RUN_DIR)) {
+            schemaDir = ALT_SCHEMA_DIR;
+          }
+          else {
+              schemaDir = DEFAULT_SCHEMA_DIR;
+          }
+          String release = System.getProperty("aai.release", "onap");
+        while (versionIterator.hasNext()) {
+            System.setProperty(AAI_GENERATE_VERSION, versionIterator.next().toString());
+            String yamlFile = schemaDir + "/src/main/resources/" + release + "/aai_swagger_yaml/aai_swagger_" + System.getProperty(AAI_GENERATE_VERSION)+ ".yaml";
+            File swaggerYamlFile = new File(yamlFile);
+            if(swaggerYamlFile.exists()) {
+                GenerateSwagger.schemaVersions = schemaVersions;
+                GenerateSwagger.main(args);
+            }
+        }
+        System.setProperty(AAI_GENERATE_VERSION, savedProperty);    
+    }
 }
