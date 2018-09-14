@@ -4,6 +4,8 @@
  * ================================================================================
  * Copyright © 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
+ * Modifications Copyright © 2018 IBM.
+ * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -39,39 +41,39 @@ import javax.xml.bind.annotation.XmlType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-		"aaiResponseMessageDatum",
-		"any"
+        "aaiResponseMessageDatum",
+        "any"
 })
 @XmlRootElement(name = "aai-response-message-data", namespace = "http://org.onap.aai.inventory")
 public class AAIResponseMessageData {
 
-	@XmlElement(name = "aai-response-message-datum")
-	protected List<AAIResponseMessageDatum> aaiResponseMessageDatum;
-	@XmlAnyElement(lax = true)
-	protected List<Object> any;
+    @XmlElement(name = "aai-response-message-datum")
+    protected List<AAIResponseMessageDatum> aaiResponseMessageDatum;
+    @XmlAnyElement(lax = true)
+    protected List<Object> any;
 
-	/**
-	 * Gets the AAI response message datum.
-	 *
-	 * @return the AAI response message datum
-	 */
-	public List<AAIResponseMessageDatum> getAAIResponseMessageDatum() {
-		if (aaiResponseMessageDatum == null) {
-			aaiResponseMessageDatum = new ArrayList<AAIResponseMessageDatum>();
-		}
-		return this.aaiResponseMessageDatum;
-	}
+    /**
+     * Gets the AAI response message datum.
+     *
+     * @return the AAI response message datum
+     */
+    public List<AAIResponseMessageDatum> getAAIResponseMessageDatum() {
+        if (aaiResponseMessageDatum == null) {
+            aaiResponseMessageDatum = new ArrayList<>();
+        }
+        return this.aaiResponseMessageDatum;
+    }
 
-	/**
-	 * Gets the any.
-	 *
-	 * @return the any
-	 */
-	public List<Object> getAny() {
-		if (any == null) {
-			any = new ArrayList<Object>();
-		}
-		return this.any;
-	}
+    /**
+     * Gets the any.
+     *
+     * @return the any
+     */
+    public List<Object> getAny() {
+        if (any == null) {
+            any = new ArrayList<>();
+        }
+        return this.any;
+    }
 
 }
