@@ -48,6 +48,7 @@
         <activemq.version>5.15.6</activemq.version>
         <jacoco.line.coverage.limit>0.50</jacoco.line.coverage.limit>
         <gremlin.version>3.2.2</gremlin.version>
+	<groovy.version>2.4.15</groovy.version>
         <jetty.version>9.4.11.v20180605</jetty.version>
 
         <!-- Start of Default ONAP Schema Properties -->
@@ -947,6 +948,12 @@
             <artifactId>json-patch</artifactId>
             <version>1.9</version>
         </dependency>
+	<dependency>
+	  <groupId>org.codehaus.groovy</groupId>
+	  <artifactId>groovy</artifactId>
+	  <version>${groovy.version}</version>
+	  <classifier>indy</classifier>
+	</dependency>
          <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
