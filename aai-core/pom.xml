@@ -47,7 +47,7 @@
         <freemarker.version>2.3.21</freemarker.version>
         <activemq.version>5.15.6</activemq.version>
         <jacoco.line.coverage.limit>0.50</jacoco.line.coverage.limit>
-        <gremlin.version>3.2.2</gremlin.version>
+        <gremlin.version>3.2.9</gremlin.version>
         <jetty.version>9.4.11.v20180605</jetty.version>
 
         <!-- Start of Default ONAP Schema Properties -->
