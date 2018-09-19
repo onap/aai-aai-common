@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a76adc5_95c00e51",
+        "filename": "aai-core/src/test/java/org/onap/aai/rest/RestHandlerServiceTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 75
+      },
+      "writtenOn": "2018-09-19T23:44:33Z",
+      "side": 1,
+      "message": "This unit test isn\u0027t doing anything other than checking the values set by code. Even though this is not a POJO, the unit test is not checking any logic and it provides no value.",
+      "revId": "040eb4a87c6f404b5a56fe8792408e6c3e0128ca",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
