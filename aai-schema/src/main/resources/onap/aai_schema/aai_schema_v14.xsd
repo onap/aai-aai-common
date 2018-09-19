@@ -9142,7 +9142,7 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
     <xs:complexType>
       <xs:annotation>
         <xs:appinfo>
-          <annox:annotate target="class">@org.onap.aai.annotations.Metadata(description="Instance of a device",indexedProps="device-id,device-name,esn,vendor,class,type,version,system-ip,operational-status",nameProps="device-name",searchable="device-id",uniqueProps="device-id",container="devices",namespace="network")</annox:annotate>
+          <annox:annotate target="class">@org.onap.aai.annotations.Metadata(description="Instance of a device",indexedProps="device-id,device-name,esn,vendor,class,type,version,system-ip,system-ipv4,system-ipv6,operational-status",nameProps="device-name",searchable="device-id",uniqueProps="device-id",container="devices",namespace="network")</annox:annotate>
         </xs:appinfo>
       </xs:annotation>
       <xs:sequence>
@@ -9206,6 +9206,20 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
           <xs:annotation>
             <xs:appinfo>
               <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="Store the system-ip of this device.")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="system-ipv4" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="Store the system-ipv4 of this device.")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="system-ipv6" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="Store the system-ipv6 of this device.")</annox:annotate>
             </xs:appinfo>
           </xs:annotation>
         </xs:element>

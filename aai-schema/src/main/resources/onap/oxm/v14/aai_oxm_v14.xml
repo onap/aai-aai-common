@@ -8055,6 +8055,16 @@
 						<xml-property name="description" value="Store the system-ip of this device." />
 					</xml-properties>
 				</xml-element>
+				<xml-element java-attribute="systemIpv4" name="system-ipv4" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the system-ipv4 of this device." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="systemIpv6" name="system-ipv6" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the system-ipv6 of this device." />
+					</xml-properties>
+				</xml-element>
 				<xml-element java-attribute="selflink" name="selflink" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Store the link to get more information for this object." />
@@ -8096,7 +8106,7 @@
 			</java-attributes>
 			<xml-properties>
 				<xml-property name="description" value="Instance of a device" />
-				<xml-property name="indexedProps" value="device-id,device-name,esn,vendor,class,type,version,system-ip,operational-status" />
+				<xml-property name="indexedProps" value="device-id,device-name,esn,vendor,class,type,version,system-ip,system-ipv4,system-ipv6,operational-status" />
 				<xml-property name="nameProps" value="device-name" />
 				<xml-property name="searchable" value="device-id" />
 				<xml-property name="uniqueProps" value="device-id" />
