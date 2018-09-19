@@ -5208,6 +5208,17 @@
                         <xml-property name="privateEdge" value="service-design-and-creation/models/model/{model-invariant-id}/model-vers/model-ver/{model-version-id}"/>
                     </xml-properties>
                 </xml-element>
+                <xml-element java-attribute="pnfIpv4Address" name="pnf-ipv4-address" type="java.lang.String">
+                    <xml-properties>
+                        <xml-property name="description" value="This is the IP address (IPv4) for the PNF itself. This is the IPv4 address that the PNF iself can be accessed at." />
+                    </xml-properties>
+                </xml-element>
+                <xml-element java-attribute="pnfIpv6Address" name="pnf-ipv6-address" type="java.lang.String">
+                    <xml-properties>
+                        <xml-property name="description" value="This is the IP address (IPv6) for the PNF itself. This is the IPv6 address that the PNF iself can be accessed at." />
+                    </xml-properties>
+                </xml-element>
+                <xml-element java-attribute="softwareVersions" name="software-versions" type="inventory.aai.onap.org.v14.SoftwareVersions" />
                 <xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v14.RelationshipList"/>
                 <xml-element java-attribute="pInterfaces" name="p-interfaces" type="inventory.aai.onap.org.v14.PInterfaces"/>
                 <xml-element java-attribute="lagInterfaces" name="lag-interfaces" type="inventory.aai.onap.org.v14.LagInterfaces"/>

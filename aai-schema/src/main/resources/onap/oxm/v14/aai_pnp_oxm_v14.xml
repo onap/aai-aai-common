@@ -25,22 +25,6 @@
 		<xml-ns namespace-uri="http://org.onap.aai.inventory/v14" />
 	</xml-schema>
 	<java-types>
-		<java-type name="Pnf">
-			<xml-root-element name="pnf" />
-			<java-attributes>
-				<xml-element java-attribute="pnfIpv4Address" name="pnf-ipv4-address" type="java.lang.String">
-					<xml-properties>
-						<xml-property name="description" value="This is the IP address (IPv4) for the PNF itself. This is the IPv4 address that the PNF iself can be accessed at." />
-					</xml-properties>
-				</xml-element>
-				<xml-element java-attribute="pnfIpv6Address" name="pnf-ipv6-address" type="java.lang.String">
-					<xml-properties>
-						<xml-property name="description" value="This is the IP address (IPv6) for the PNF itself. This is the IPv6 address that the PNF iself can be accessed at." />
-					</xml-properties>
-				</xml-element>
-				<xml-element java-attribute="softwareVersions" name="software-versions" type="inventory.aai.onap.org.v14.SoftwareVersions" />
-			</java-attributes>
-		</java-type>
 		<java-type name="SoftwareVersions">
 			<xml-properties>
 				<xml-property name="description" value="Collection of software versions." />
