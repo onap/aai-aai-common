@@ -4,6 +4,8 @@
  * ================================================================================
  * Copyright © 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
+ *  Modifications Copyright © 2018 IBM.
+ * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -27,44 +29,61 @@ import static org.junit.Assert.assertEquals;
 
 public class MapperUtilTest {
 
-	public class SampleClass { 
-	    private String color; 
-	    private String shape; 
- 
-	    public SampleClass(String c, String s){
-	    	color = c; 
-	    	shape = s; 
-	    }
+    
 
-		public String getColor() {
-			return color;
-		}
+    private JSONObject expectedJson;
+    private JSONObject sampleJson;
 
-		public void setColor(String color) {
-			this.color = color;
-		}
-
-		public String getShape() {
-			return shape;
-		}
-
-		public void setShape(String shape) {
-			this.shape = shape;
-		}
-	}
-
-	private JSONObject expectedJson;
-
-	@Before
-	public void setup(){
+    @Before
+    public void setup(){
        expectedJson = new JSONObject();
-	}
+       sampleJson = new JSONObject();
+    }
 
-	@Test
-	public void writeAsJSONStringTest() throws Exception {
-	    expectedJson.put("color", "black");
-		expectedJson.put("shape", "box");
-		SampleClass sample = new SampleClass("black", "box");
-		assertEquals(expectedJson.toString(), MapperUtil.writeAsJSONString(sample));
-	} 
+    @Test
+    public void writeAsJSONStringTest() throws Exception {
+        expectedJson.put("color", "black");
+        expectedJson.put("shape", "box");
+        SampleClass sample = new SampleClass("black", "box");
+        assertEquals(expectedJson.toString(), MapperUtil.writeAsJSONString(sample));
+    } 
+    
+    @Test
+    public void readAsObjectOfTest() throws Exception {
+        sampleJson.put("color", "black");
+        sampleJson.put("shape", "box");
+        SampleClass expectedObject = new SampleClass("black", "box");
+        SampleClass actualObject = MapperUtil.readAsObjectOf(SampleClass.class, sampleJson.toString());
+        assertEquals(expectedObject.getColor(), actualObject.getColor());
+        assertEquals(expectedObject.getShape(), actualObject.getShape());
+    } 
+}
+
+class SampleClass { 
+    private String color; 
+    private String shape; 
+
+    public SampleClass() {
+        
+    }
+    public SampleClass(String c, String s){
+        color = c; 
+        shape = s; 
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public String getShape() {
+        return shape;
+    }
+
+    public void setShape(String shape) {
+        this.shape = shape;
+    }
 }
