@@ -8143,9 +8143,29 @@
 						<xml-property name="description" value="Store the ip-address of this wan-port-config." />
 					</xml-properties>
 				</xml-element>
+				<xml-element java-attribute="ipv4Address" name="ipv4-address" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the ipv4-address of this wan-port-config." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="ipv6Address" name="ipv6-address" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the ipv6-address of this wan-port-config." />
+					</xml-properties>
+				</xml-element>
 				<xml-element java-attribute="providerIpAddress" name="provider-ip-address" type="java.lang.String">
 					<xml-properties>
 						<xml-property name="description" value="Store the provider-ip-address of this wan-port-config." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="providerIpv4Address" name="provider-ipv4-address" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the provider-ipv4-address of this wan-port-config." />
+					</xml-properties>
+				</xml-element>
+				<xml-element java-attribute="providerIpv6Address" name="provider-ipv6-address" type="java.lang.String">
+					<xml-properties>
+						<xml-property name="description" value="Store the provider-ipv6-address of this wan-port-config." />
 					</xml-properties>
 				</xml-element>
 				<xml-element java-attribute="inputBandwidth" name="input-bandwidth" type="java.lang.String">
@@ -8229,7 +8249,7 @@
 			</java-attributes>
 			<xml-properties>
 				<xml-property name="description" value="Instance of a wan-port-config" />
-				<xml-property name="indexedProps" value="wan-port-config-id,wan-port-config-name,device-id,ip-address,port-type,port-number,device-port-id,wan-port-id,operational-status" />
+				<xml-property name="indexedProps" value="wan-port-config-id,wan-port-config-name,device-id,ip-address,ipv4-address,ipv6-address,port-type,port-number,device-port-id,wan-port-id,operational-status" />
 				<xml-property name="nameProps" value="wan-port-config-name" />
 				<xml-property name="searchable" value="wan-port-config-id" />
 				<xml-property name="uniqueProps" value="wan-port-config-id" />
