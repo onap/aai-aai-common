@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "1a76adc5_e16f4c5e",
+        "filename": "aai-schema/src/main/resources/onap/dbedgerules/v14/DbEdgeRules_pnp_v14.json",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2018-09-19T15:37:18Z",
+      "side": 1,
+      "message": "[BEN] – The long-term solution we described as to have a software version object that A\u0026AI could associate with much like it could do with the COMPLEX object, but this required going to the modeling community to get that put in place and that couldn’t happen in R3. So in the interm we said we would put it in per PNF.",
+      "parentUuid": "1a76adc5_6ef95c7f",
+      "revId": "6e9946fc4fec34a8a248416bee868ed9a531de70",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a76adc5_6e7ddc1b",
         "filename": "aai-schema/src/main/resources/onap/oxm/v14/aai_pnp_oxm_v14.xml",
         "patchSetId": 1
@@ -48,6 +66,24 @@
       "writtenOn": "2018-08-28T17:40:43Z",
       "side": 1,
       "message": "I thought we were making the software version NOT a child of pnf, so that the same software version could be easily reused by multiple pnfs.",
+      "revId": "6e9946fc4fec34a8a248416bee868ed9a531de70",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_21c8e453",
+        "filename": "aai-schema/src/main/resources/onap/oxm/v14/aai_pnp_oxm_v14.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2018-09-19T15:37:18Z",
+      "side": 1,
+      "message": "[BEN] – The long-term solution we described as to have a software version object that A\u0026AI could associate with much like it could do with the COMPLEX object, but this required going to the modeling community to get that put in place and that couldn’t happen in R3. So in the interm we said we would put it in per PNF.",
+      "parentUuid": "1a76adc5_6e7ddc1b",
       "revId": "6e9946fc4fec34a8a248416bee868ed9a531de70",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
@@ -83,6 +119,24 @@
       "side": 1,
       "message": "I would defer to Ben on that",
       "parentUuid": "1a76adc5_8e78782c",
+      "revId": "6e9946fc4fec34a8a248416bee868ed9a531de70",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_61e9fcb5",
+        "filename": "aai-schema/src/main/resources/onap/oxm/v14/aai_pnp_oxm_v14.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2018-09-19T15:37:18Z",
+      "side": 1,
+      "message": "[BEN] – We did discuss that the S/W version should also have a version name \u0026 description, but in our meetings we said that this would be too difficult to put in R3, so we settled for just the version \u0026 a “active” Boolean. For R4 we should go to the modeling committee and ask for a S/W version object that A\u0026AI can associate with the PNF A\u0026AI entry.",
+      "parentUuid": "1a76adc5_4eeee0b5",
       "revId": "6e9946fc4fec34a8a248416bee868ed9a531de70",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
