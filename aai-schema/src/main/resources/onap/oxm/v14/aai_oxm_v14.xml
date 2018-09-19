@@ -7419,6 +7419,7 @@
 						<xml-property name="visibility" value="deployment" />
 						<xml-property name="requires" value="model-invariant-id" />
 						<xml-property name="dbAlias" value="model-version-id-local" />
+						<xml-property name="privateEdge" value="service-design-and-creation/models/model/{model-invariant-id}/model-vers/model-ver/{model-version-id}"/>
 					</xml-properties>
 				</xml-element>
 
