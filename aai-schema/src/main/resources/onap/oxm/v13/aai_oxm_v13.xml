@@ -3822,7 +3822,7 @@
                 <xml-property name="dependentOn" value="port-group"/>
                 <xml-property name="indexedProps" value="cvlan-tag"/>
                 <xml-property name="container" value="cvlan-tags"/>
-                <xml-property name="uriTemplate" value="/cvlan-tags/cvlan-tag/{cvlan-tag-cvlan-tag}"/>
+                <xml-property name="uriTemplate" value="/cvlan-tags/cvlan-tag/{cvlan-tag}"/>
             </xml-properties>
         </java-type>
 
