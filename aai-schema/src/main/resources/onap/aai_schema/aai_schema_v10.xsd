@@ -3963,7 +3963,7 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
     <xs:complexType>
       <xs:annotation>
         <xs:appinfo>
-          <annox:annotate target="class">@org.onap.aai.annotations.Metadata(dependentOn="port-group",indexedProps="cvlan-tag",container="cvlan-tags",uriTemplate="/cvlan-tags/cvlan-tag/{cvlan-tag-cvlan-tag}")</annox:annotate>
+          <annox:annotate target="class">@org.onap.aai.annotations.Metadata(dependentOn="port-group",indexedProps="cvlan-tag",container="cvlan-tags",uriTemplate="/cvlan-tags/cvlan-tag/{cvlan-tag}")</annox:annotate>
         </xs:appinfo>
       </xs:annotation>
       <xs:sequence>
