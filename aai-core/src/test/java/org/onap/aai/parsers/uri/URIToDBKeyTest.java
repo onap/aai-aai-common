@@ -41,146 +41,146 @@ import static org.junit.Assert.assertEquals;
 
 public class URIToDBKeyTest extends AAISetup {
 
-	private Loader loader ;
+    private Loader loader ;
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-	
-	/**
-	 * Uri.
-	 *
-	 * @throws JAXBException the JAXB exception
-	 * @throws AAIException the AAI exception
-	 * @throws IllegalArgumentException the illegal argument exception
-	 * @throws UnsupportedEncodingException the unsupported encoding exception
-	 */
-	@PostConstruct
-	public void createLoader(){
-		loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
-	}
-	
-	@Test
-    public void uri() throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException {
-		URI uri = UriBuilder.fromPath("/aai/" + loader.getVersion() + "/cloud-infrastructure/cloud-regions/cloud-region/cloudOwner-key/cloudRegion-key/tenants/tenant/tenantId-key/vservers/vserver/vserverId-key/l-interfaces/l-interface/key3").build();
-		URIToDBKey parse = new URIToDBKey(loader, uri);
-		Object result = parse.getResult();
-
-		String expected = "cloud-region/tenant/vserver/l-interface";
-		
-		assertEquals("blah", expected, result);
-		
-	}
-	
-	/**
-	 * Uri no version.
-	 *
-	 * @throws JAXBException the JAXB exception
-	 * @throws AAIException the AAI exception
-	 * @throws IllegalArgumentException the illegal argument exception
-	 * @throws UnsupportedEncodingException the unsupported encoding exception
-	 */
-	@Test
-    public void uriNoVersion() throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException {
-		URI uri = UriBuilder.fromPath("/cloud-infrastructure/cloud-regions/cloud-region/cloudOwner-key/cloudRegion-key/tenants/tenant/tenantId-key/vservers/vserver/vserverId-key/l-interfaces/l-interface/key3").build();
-		URIToDBKey parse = new URIToDBKey(loader, uri);
-		Object result = parse.getResult();
-		
-		String expected = "cloud-region/tenant/vserver/l-interface";
-		
-		assertEquals("blah", expected, result);
-		
-	}
-	
-
-	/**
-	 * Bad URI.
-	 *
-	 * @throws JAXBException the JAXB exception
-	 * @throws AAIException the AAI exception
-	 * @throws IllegalArgumentException the illegal argument exception
-	 * @throws UnsupportedEncodingException the unsupported encoding exception
-	 */
-	@Test
-    public void badURI() throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException {
-		URI uri = UriBuilder.fromPath("/aai/" + loader.getVersion() + "/cloud-infrastructure/tenants/tenant/key1/vservers/vserver/key2/l-interadsfaces/l-interface/key3").build();
-		
-		thrown.expect(AAIException.class);
-		thrown.expect(hasProperty("code",  is("AAI_3001")));
-		
-		new URIToDBKey(loader, uri);
-	}
-	
-	/**
-	 * NotValid namespace.
-	 *
-	 * @throws JAXBException the JAXB exception
-	 * @throws DoesNotStartWithValidNamespaceException the AAI exception
-	 * @throws IllegalArgumentException the illegal argument exception
-	 * @throws UnsupportedEncodingException the unsupported encoding exception
-	 */
-	@Test
-    public void notValidNamespace() throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException {
-		URI uri = UriBuilder.fromPath("/cloud-region/cloud-regions/cloud-region/cloudOwner-key/cloudRegion-key/tenants/tenant/tenantId-key/vservers/vserver/vserverId-key/l-interfaces/l-interface/key3").build();
-		thrown.expect(DoesNotStartWithValidNamespaceException.class);
-		URIToDBKey parse = new URIToDBKey(loader, uri);
-	}
-	
-	
-	/**
-	 * No valid tokens.
-	 *
-	 * @throws JAXBException the JAXB exception
-	 * @throws AAIException the AAI exception
-	 * @throws IllegalArgumentException the illegal argument exception
-	 * @throws UnsupportedEncodingException the unsupported encoding exception
-	 */
-	@Test
-    public void noValidTokens() throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException {
-		URI uri = UriBuilder.fromPath("/aai/" + loader.getVersion() + "/cloud/blah/blah").build();
-		
-		thrown.expect(AAIException.class);
-		thrown.expect(hasProperty("code",  is("AAI_3000")));
-		
-		new URIToDBKey(loader, uri);
-	}
-	
-	/**
-	 * Starts with valid namespace.
-	 *
-	 * @throws JAXBException the JAXB exception
-	 * @throws AAIException the AAI exception
-	 * @throws IllegalArgumentException the illegal argument exception
-	 * @throws UnsupportedEncodingException the unsupported encoding exception
-	 */
-	@Test
-    public void startsWithValidNamespace() throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException {
-		URI uri = UriBuilder.fromPath("/aai/" + loader.getVersion() + "/cloud-infrastructure/cloud-regions/cloud-region/cloudOwner-key/cloudRegion-key/tenants/tenant/tenantId-key/vservers/vserver/vserverId-key/l-interfaces/l-interface/key3").build();
-		
-		URIToDBKey parse = new URIToDBKey(loader, uri);
-		Object result = parse.getResult();
-
-		String expected = "cloud-region/tenant/vserver/l-interface";
-		
-		assertEquals("blah", expected, result);
-	}
-	
-	/**
-	 * Naming exceptions.
-	 *
-	 * @throws IllegalArgumentException the illegal argument exception
-	 * @throws AAIException the AAI exception
-	 * @throws UnsupportedEncodingException the unsupported encoding exception
-	 */
-	@Test
-    public void namingExceptions() throws IllegalArgumentException, AAIException, UnsupportedEncodingException {
-		URI uri = UriBuilder.fromPath("network/vces/vce/key1/port-groups/port-group/key2/cvlan-tags/cvlan-tag/655").build();
-		URIToDBKey parse = new URIToDBKey(loader, uri);
-		Object result = parse.getResult();
-
-		String expected = "vce/port-group/cvlan-tag";
-		
-		assertEquals("blah", expected, result);
-		
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
+    
+    /**
+     * Uri.
+     *
+     * @throws JAXBException the JAXB exception
+     * @throws AAIException the AAI exception
+     * @throws IllegalArgumentException the illegal argument exception
+     * @throws UnsupportedEncodingException the unsupported encoding exception
+     */
+    @PostConstruct
+    public void createLoader(){
+        loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
     }
-		
+    
+    @Test
+    public void uri() throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException {
+        URI uri = UriBuilder.fromPath("/aai/" + loader.getVersion() + "/cloud-infrastructure/cloud-regions/cloud-region/cloudOwner-key/cloudRegion-key/tenants/tenant/tenantId-key/vservers/vserver/vserverId-key/l-interfaces/l-interface/key3").build();
+        URIToDBKey parse = new URIToDBKey(loader, uri);
+        Object result = parse.getResult();
+
+        String expected = "cloud-region/tenant/vserver/l-interface";
+        
+        assertEquals("blah", expected, result);
+        
+    }
+    
+    /**
+     * Uri no version.
+     *
+     * @throws JAXBException the JAXB exception
+     * @throws AAIException the AAI exception
+     * @throws IllegalArgumentException the illegal argument exception
+     * @throws UnsupportedEncodingException the unsupported encoding exception
+     */
+    @Test
+    public void uriNoVersion() throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException {
+        URI uri = UriBuilder.fromPath("/cloud-infrastructure/cloud-regions/cloud-region/cloudOwner-key/cloudRegion-key/tenants/tenant/tenantId-key/vservers/vserver/vserverId-key/l-interfaces/l-interface/key3").build();
+        URIToDBKey parse = new URIToDBKey(loader, uri);
+        Object result = parse.getResult();
+        
+        String expected = "cloud-region/tenant/vserver/l-interface";
+        
+        assertEquals("blah", expected, result);
+        
+    }
+    
+
+    /**
+     * Bad URI.
+     *
+     * @throws JAXBException the JAXB exception
+     * @throws AAIException the AAI exception
+     * @throws IllegalArgumentException the illegal argument exception
+     * @throws UnsupportedEncodingException the unsupported encoding exception
+     */
+    @Test
+    public void badURI() throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException {
+        URI uri = UriBuilder.fromPath("/aai/" + loader.getVersion() + "/cloud-infrastructure/tenants/tenant/key1/vservers/vserver/key2/l-interadsfaces/l-interface/key3").build();
+        
+        thrown.expect(AAIException.class);
+        thrown.expect(hasProperty("code",  is("AAI_3001")));
+        
+        new URIToDBKey(loader, uri);
+    }
+    
+    /**
+     * NotValid namespace.
+     *
+     * @throws JAXBException the JAXB exception
+     * @throws DoesNotStartWithValidNamespaceException the AAI exception
+     * @throws IllegalArgumentException the illegal argument exception
+     * @throws UnsupportedEncodingException the unsupported encoding exception
+     */
+    @Test
+    public void notValidNamespace() throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException {
+        URI uri = UriBuilder.fromPath("/cloud-region/cloud-regions/cloud-region/cloudOwner-key/cloudRegion-key/tenants/tenant/tenantId-key/vservers/vserver/vserverId-key/l-interfaces/l-interface/key3").build();
+        thrown.expect(DoesNotStartWithValidNamespaceException.class);
+        URIToDBKey parse = new URIToDBKey(loader, uri);
+    }
+    
+    
+    /**
+     * No valid tokens.
+     *
+     * @throws JAXBException the JAXB exception
+     * @throws AAIException the AAI exception
+     * @throws IllegalArgumentException the illegal argument exception
+     * @throws UnsupportedEncodingException the unsupported encoding exception
+     */
+    @Test
+    public void noValidTokens() throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException {
+        URI uri = UriBuilder.fromPath("/aai/" + loader.getVersion() + "/cloud/blah/blah").build();
+        
+        thrown.expect(AAIException.class);
+        thrown.expect(hasProperty("code",  is("AAI_3000")));
+        
+        new URIToDBKey(loader, uri);
+    }
+    
+    /**
+     * Starts with valid namespace.
+     *
+     * @throws JAXBException the JAXB exception
+     * @throws AAIException the AAI exception
+     * @throws IllegalArgumentException the illegal argument exception
+     * @throws UnsupportedEncodingException the unsupported encoding exception
+     */
+    @Test
+    public void startsWithValidNamespace() throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException {
+        URI uri = UriBuilder.fromPath("/aai/" + loader.getVersion() + "/cloud-infrastructure/cloud-regions/cloud-region/cloudOwner-key/cloudRegion-key/tenants/tenant/tenantId-key/vservers/vserver/vserverId-key/l-interfaces/l-interface/key3").build();
+        
+        URIToDBKey parse = new URIToDBKey(loader, uri);
+        Object result = parse.getResult();
+
+        String expected = "cloud-region/tenant/vserver/l-interface";
+        
+        assertEquals("blah", expected, result);
+    }
+    
+    /**
+     * Naming exceptions.
+     *
+     * @throws IllegalArgumentException the illegal argument exception
+     * @throws AAIException the AAI exception
+     * @throws UnsupportedEncodingException the unsupported encoding exception
+     */
+    @Test
+    public void namingExceptions() throws IllegalArgumentException, AAIException, UnsupportedEncodingException {
+        URI uri = UriBuilder.fromPath("network/vces/vce/key1/port-groups/port-group/key2/cvlan-tags/cvlan-tag/655").build();
+        URIToDBKey parse = new URIToDBKey(loader, uri);
+        Object result = parse.getResult();
+
+        String expected = "vce/port-group/cvlan-tag";
+        
+        assertEquals("blah", expected, result);
+        
+    }
+        
 }

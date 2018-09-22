@@ -30,42 +30,42 @@ import org.junit.Test;
 
 public class JettyObfuscationConversionCommandLineUtilTest {
 
-	private final ByteArrayOutputStream testOut = new ByteArrayOutputStream();
+    private final ByteArrayOutputStream testOut = new ByteArrayOutputStream();
 
-	/**
-	 * Test.
-	 */
-	@Test
-	public void test() {
-		//setup, this will catch main's print statements for evaluation
-		PrintStream oldOutputStream = System.out;
-		System.setOut(new PrintStream(testOut));
+    /**
+     * Test.
+     */
+    @Test
+    public void test() {
+        //setup, this will catch main's print statements for evaluation
+        PrintStream oldOutputStream = System.out;
+        System.setOut(new PrintStream(testOut));
 
-		/* ------ TEST OBFUSCATION ----*/
-		JettyObfuscationConversionCommandLineUtil.main(new String[]{"-e", "hello world"});
-		/*
-		 * testOut was also catching any logging statements which interfered with result checking.
-		 * This regex business was the workaround - it tries to find the expected value in
-		 * the results and asserts against that.
-		 */
-		String obfResult = testOut.toString();
-		String obfExpected = "OBF:1thf1ugo1x151wfw1ylz11tr1ymf1wg21x1h1uh21th7";
-		Pattern obfExpectPat = Pattern.compile(obfExpected);
-		Matcher obfMatch = obfExpectPat.matcher(obfResult);
-		assertTrue(obfMatch.find());
+        /* ------ TEST OBFUSCATION ----*/
+        JettyObfuscationConversionCommandLineUtil.main(new String[]{"-e", "hello world"});
+        /*
+         * testOut was also catching any logging statements which interfered with result checking.
+         * This regex business was the workaround - it tries to find the expected value in
+         * the results and asserts against that.
+         */
+        String obfResult = testOut.toString();
+        String obfExpected = "OBF:1thf1ugo1x151wfw1ylz11tr1ymf1wg21x1h1uh21th7";
+        Pattern obfExpectPat = Pattern.compile(obfExpected);
+        Matcher obfMatch = obfExpectPat.matcher(obfResult);
+        assertTrue(obfMatch.find());
 
-		testOut.reset(); //clear out previous result
+        testOut.reset(); //clear out previous result
 
-		/* ------ TEST DEOBFUSCATION ----- */
-		JettyObfuscationConversionCommandLineUtil.main(new String[]{"-d", obfExpected});
-		String deobfResult = testOut.toString();
-		String deobfExpected = "hello world";
-		Pattern deobfExpectPat = Pattern.compile(deobfExpected);
-		Matcher deobfMatch = deobfExpectPat.matcher(deobfResult);
-		assertTrue(deobfMatch.find());
+        /* ------ TEST DEOBFUSCATION ----- */
+        JettyObfuscationConversionCommandLineUtil.main(new String[]{"-d", obfExpected});
+        String deobfResult = testOut.toString();
+        String deobfExpected = "hello world";
+        Pattern deobfExpectPat = Pattern.compile(deobfExpected);
+        Matcher deobfMatch = deobfExpectPat.matcher(deobfResult);
+        assertTrue(deobfMatch.find());
 
-		//clean up, resets to stdout
-		System.setOut(oldOutputStream);
-	}
+        //clean up, resets to stdout
+        System.setOut(oldOutputStream);
+    }
 
 }

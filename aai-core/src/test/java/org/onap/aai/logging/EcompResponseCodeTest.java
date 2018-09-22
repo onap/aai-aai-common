@@ -29,7 +29,7 @@ import org.junit.*;
 
 public class EcompResponseCodeTest {
 
-	EcompResponseCode _ecompResponseCode;
+    EcompResponseCode _ecompResponseCode;
     ILoggingEvent mockEvent;
 
     @Before

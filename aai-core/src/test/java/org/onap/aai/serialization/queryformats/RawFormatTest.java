@@ -53,87 +53,87 @@ import static org.mockito.Mockito.when;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class RawFormatTest extends AAISetup {
 
-	@Mock
-	private UrlBuilder urlBuilder;
+    @Mock
+    private UrlBuilder urlBuilder;
 
-	private Graph graph;
-	private TransactionalGraphEngine dbEngine;
-	private Loader loader;
-	private RawFormat rawFormat;
-	private final ModelType factoryType = ModelType.MOXY;
+    private Graph graph;
+    private TransactionalGraphEngine dbEngine;
+    private Loader loader;
+    private RawFormat rawFormat;
+    private final ModelType factoryType = ModelType.MOXY;
 
-	@Autowired
-	private EdgeSerializer rules;
+    @Autowired
+    private EdgeSerializer rules;
 
-	private SchemaVersion version;
-	private Vertex pserver;
-	private Vertex complex;
+    private SchemaVersion version;
+    private Vertex pserver;
+    private Vertex complex;
 
-	private DBSerializer serializer;
-	
-	@Before
-	public void setUp() throws Exception {
+    private DBSerializer serializer;
+    
+    @Before
+    public void setUp() throws Exception {
 
-	    version = schemaVersions.getDefaultVersion();
+        version = schemaVersions.getDefaultVersion();
 
-		MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.initMocks(this);
 
-		graph = TinkerGraph.open();
+        graph = TinkerGraph.open();
 
-		Vertex pserver1 = graph.addVertex(T.label, "pserver", T.id, "2", "aai-node-type", "pserver", "hostname",
-				"hostname-1");
-		Vertex complex1 = graph.addVertex(T.label, "complex", T.id, "3", "aai-node-type", "complex",
-				"physical-location-id", "physical-location-id-1", "country", "US");
+        Vertex pserver1 = graph.addVertex(T.label, "pserver", T.id, "2", "aai-node-type", "pserver", "hostname",
+                "hostname-1");
+        Vertex complex1 = graph.addVertex(T.label, "complex", T.id, "3", "aai-node-type", "complex",
+                "physical-location-id", "physical-location-id-1", "country", "US");
 
-		GraphTraversalSource g = graph.traversal();
-		rules.addEdge(g, pserver1, complex1);
-		
-		pserver = pserver1;
-		complex = complex1;
+        GraphTraversalSource g = graph.traversal();
+        rules.addEdge(g, pserver1, complex1);
+        
+        pserver = pserver1;
+        complex = complex1;
 
-		System.setProperty("AJSC_HOME", ".");
-		System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
+        System.setProperty("AJSC_HOME", ".");
+        System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
 
-		createLoaderEngineSetup();
-	}
+        createLoaderEngineSetup();
+    }
 
-	@Test
-	public void verifyPserverRelatedToHasEdgeLabel () throws AAIFormatVertexException, AAIException, AAIFormatQueryResultFormatNotSupported {
-		assertTrue(rawFormat.createRelationshipObject(pserver).get(0).getAsJsonObject().get("relationship-label").getAsString().equals("org.onap.relationships.inventory.LocatedIn"));
-	}
-	
-	@Test
-	public void verifyPserverRelatedToComplexLabel () throws AAIFormatVertexException, AAIException, AAIFormatQueryResultFormatNotSupported {
-		assertTrue(rawFormat.createRelationshipObject(pserver).get(0).getAsJsonObject().get("node-type").getAsString().equals("complex"));
-	}
-	
-	@Test
-	public void verifyComplexRelatedToHasEdgeLabel () throws AAIFormatVertexException, AAIException, AAIFormatQueryResultFormatNotSupported {
-		assertTrue(rawFormat.createRelationshipObject(complex).get(0).getAsJsonObject().get("relationship-label").getAsString().equals("org.onap.relationships.inventory.LocatedIn"));
-	}
-	
-	@Test
-	public void verifyComplexRelatedToPserverLabel () throws AAIFormatVertexException, AAIException, AAIFormatQueryResultFormatNotSupported {
-		assertTrue(rawFormat.createRelationshipObject(complex).get(0).getAsJsonObject().get("node-type").getAsString().equals("pserver"));
-	}
+    @Test
+    public void verifyPserverRelatedToHasEdgeLabel () throws AAIFormatVertexException, AAIException, AAIFormatQueryResultFormatNotSupported {
+        assertTrue(rawFormat.createRelationshipObject(pserver).get(0).getAsJsonObject().get("relationship-label").getAsString().equals("org.onap.relationships.inventory.LocatedIn"));
+    }
+    
+    @Test
+    public void verifyPserverRelatedToComplexLabel () throws AAIFormatVertexException, AAIException, AAIFormatQueryResultFormatNotSupported {
+        assertTrue(rawFormat.createRelationshipObject(pserver).get(0).getAsJsonObject().get("node-type").getAsString().equals("complex"));
+    }
+    
+    @Test
+    public void verifyComplexRelatedToHasEdgeLabel () throws AAIFormatVertexException, AAIException, AAIFormatQueryResultFormatNotSupported {
+        assertTrue(rawFormat.createRelationshipObject(complex).get(0).getAsJsonObject().get("relationship-label").getAsString().equals("org.onap.relationships.inventory.LocatedIn"));
+    }
+    
+    @Test
+    public void verifyComplexRelatedToPserverLabel () throws AAIFormatVertexException, AAIException, AAIFormatQueryResultFormatNotSupported {
+        assertTrue(rawFormat.createRelationshipObject(complex).get(0).getAsJsonObject().get("node-type").getAsString().equals("pserver"));
+    }
 
-	public void createLoaderEngineSetup() throws AAIException {
+    public void createLoaderEngineSetup() throws AAIException {
 
-		if (loader == null) {
-			loader = loaderFactory.createLoaderForVersion(factoryType, version);
-			//loader = LoaderFactory.createLoaderForVersion(factoryType, version);
-			dbEngine = spy(new JanusGraphDBEngine(QueryStyle.TRAVERSAL, DBConnectionType.CACHED, loader));
-			serializer = new DBSerializer(version, dbEngine, factoryType, "Junit");
-			rawFormat = new RawFormat.Builder(loader, serializer, urlBuilder).build();
+        if (loader == null) {
+            loader = loaderFactory.createLoaderForVersion(factoryType, version);
+            //loader = LoaderFactory.createLoaderForVersion(factoryType, version);
+            dbEngine = spy(new JanusGraphDBEngine(QueryStyle.TRAVERSAL, DBConnectionType.CACHED, loader));
+            serializer = new DBSerializer(version, dbEngine, factoryType, "Junit");
+            rawFormat = new RawFormat.Builder(loader, serializer, urlBuilder).build();
 
-			TransactionalGraphEngine.Admin spyAdmin = spy(dbEngine.asAdmin());
+            TransactionalGraphEngine.Admin spyAdmin = spy(dbEngine.asAdmin());
 
-			when(dbEngine.tx()).thenReturn(graph);
-			when(dbEngine.asAdmin()).thenReturn(spyAdmin);
+            when(dbEngine.tx()).thenReturn(graph);
+            when(dbEngine.asAdmin()).thenReturn(spyAdmin);
 
-			when(spyAdmin.getReadOnlyTraversalSource())
-					.thenReturn(graph.traversal(GraphTraversalSource.build().with(ReadOnlyStrategy.instance())));
-			when(spyAdmin.getTraversalSource()).thenReturn(graph.traversal());
-		}
-	}
+            when(spyAdmin.getReadOnlyTraversalSource())
+                    .thenReturn(graph.traversal(GraphTraversalSource.build().with(ReadOnlyStrategy.instance())));
+            when(spyAdmin.getTraversalSource()).thenReturn(graph.traversal());
+        }
+    }
 }

@@ -40,60 +40,60 @@ import static org.mockito.Mockito.when;
 
 public class UrlBuilderTest extends AAISetup {
 
-	@Mock
-	private DBSerializer serializer;
-	@Mock
-	private Vertex v;
+    @Mock
+    private DBSerializer serializer;
+    @Mock
+    private Vertex v;
 
-	private static final String uri = "/test/uri";
-	private static final Object vId = new Long(123);
-	private static final String protocolAndHost = "http://localhost/aai/";
+    private static final String uri = "/test/uri";
+    private static final Object vId = new Long(123);
+    private static final String protocolAndHost = "http://localhost/aai/";
 
-	@Before
-	public void before() throws UnsupportedEncodingException, URISyntaxException {
-		MockitoAnnotations.initMocks(this);
-		when(serializer.getURIForVertex(any(Vertex.class))).thenReturn(new URI(uri));
-		when(v.id()).thenReturn(vId);
-	}
+    @Before
+    public void before() throws UnsupportedEncodingException, URISyntaxException {
+        MockitoAnnotations.initMocks(this);
+        when(serializer.getURIForVertex(any(Vertex.class))).thenReturn(new URI(uri));
+        when(v.id()).thenReturn(vId);
+    }
 
-	@Test
-	public void v11Pathed() throws AAIFormatVertexException {
-		SchemaVersion version = new SchemaVersion("v11");
-		UrlBuilder builder = new UrlBuilder(version, serializer, protocolAndHost, schemaVersions, basePath);
-		String result = builder.pathed(v);
-		
-		assertEquals("has no protocol and host", basePath + "/"+ version + uri, result);
-		
-	}
+    @Test
+    public void v11Pathed() throws AAIFormatVertexException {
+        SchemaVersion version = new SchemaVersion("v11");
+        UrlBuilder builder = new UrlBuilder(version, serializer, protocolAndHost, schemaVersions, basePath);
+        String result = builder.pathed(v);
+        
+        assertEquals("has no protocol and host", basePath + "/"+ version + uri, result);
+        
+    }
 
-	@Test
-	public void v11Id() {
-		SchemaVersion version = new SchemaVersion("v11");
-		UrlBuilder builder = new UrlBuilder(version, serializer, protocolAndHost, schemaVersions, basePath);
-		String result = builder.id(v);
-		
-		assertEquals("has no protocol and host", basePath + "/"+ version + "/resources/id/" + vId, result);
-		
-	}
-	
-	@Test
-	public void beforeV11Pathed() throws AAIFormatVertexException {
-		SchemaVersion version = new SchemaVersion("v10");
-		UrlBuilder builder = new UrlBuilder(version, serializer, protocolAndHost, schemaVersions, basePath);
-		String result = builder.pathed(v);
-		
-		assertEquals("has protocol and host", protocolAndHost + version + uri, result);
-		
-	}
-	
-	@Test
-	public void beforeV11Id() {
-		SchemaVersion version = new SchemaVersion("v10");
-		UrlBuilder builder = new UrlBuilder(version, serializer, protocolAndHost, schemaVersions, basePath);
-		String result = builder.id(v);
-		
-		assertEquals("has protocol and host", protocolAndHost + version + "/resources/id/" + vId, result);
-		
-	}
-	
+    @Test
+    public void v11Id() {
+        SchemaVersion version = new SchemaVersion("v11");
+        UrlBuilder builder = new UrlBuilder(version, serializer, protocolAndHost, schemaVersions, basePath);
+        String result = builder.id(v);
+        
+        assertEquals("has no protocol and host", basePath + "/"+ version + "/resources/id/" + vId, result);
+        
+    }
+    
+    @Test
+    public void beforeV11Pathed() throws AAIFormatVertexException {
+        SchemaVersion version = new SchemaVersion("v10");
+        UrlBuilder builder = new UrlBuilder(version, serializer, protocolAndHost, schemaVersions, basePath);
+        String result = builder.pathed(v);
+        
+        assertEquals("has protocol and host", protocolAndHost + version + uri, result);
+        
+    }
+    
+    @Test
+    public void beforeV11Id() {
+        SchemaVersion version = new SchemaVersion("v10");
+        UrlBuilder builder = new UrlBuilder(version, serializer, protocolAndHost, schemaVersions, basePath);
+        String result = builder.id(v);
+        
+        assertEquals("has protocol and host", protocolAndHost + version + "/resources/id/" + vId, result);
+        
+    }
+    
 }

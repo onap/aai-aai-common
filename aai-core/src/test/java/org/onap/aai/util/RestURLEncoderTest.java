@@ -27,35 +27,35 @@ import org.junit.Test;
 
 public class RestURLEncoderTest {
 
-	@Test
-	public void testEncodeURL() throws Exception {
+    @Test
+    public void testEncodeURL() throws Exception {
 
-		String url = "nodeKeyTest&more-string strings";
-		String encodedUrl = "nodeKeyTest%26more-string%20strings";
+        String url = "nodeKeyTest&more-string strings";
+        String encodedUrl = "nodeKeyTest%26more-string%20strings";
 
-		String res = RestURLEncoder.encodeURL(url);
-		assertEquals(encodedUrl, res);
-	}
+        String res = RestURLEncoder.encodeURL(url);
+        assertEquals(encodedUrl, res);
+    }
 
-	@Test
-	public void testEncodeURL_plusSign() throws Exception {
+    @Test
+    public void testEncodeURL_plusSign() throws Exception {
 
-		String url = "nodeKeyTest+more+string";
-		String encodedUrl = "nodeKeyTest%2Bmore%2Bstring";
+        String url = "nodeKeyTest+more+string";
+        String encodedUrl = "nodeKeyTest%2Bmore%2Bstring";
 
-		String res = RestURLEncoder.encodeURL(url);
-		assertEquals(encodedUrl, res);
-	}
+        String res = RestURLEncoder.encodeURL(url);
+        assertEquals(encodedUrl, res);
+    }
 
-	@Test
-	public void testEncodeURL_noException() throws Exception {
-		// no exception expected, none thrown: passes.
-		try {
-			String encodeResult =  RestURLEncoder.encodeURL("");
+    @Test
+    public void testEncodeURL_noException() throws Exception {
+        // no exception expected, none thrown: passes.
+        try {
+            String encodeResult =  RestURLEncoder.encodeURL("");
 
-			assertNotNull("Result is not null", encodeResult);
-		} catch (Exception e) {
-			fail();
-		}
-	}
+            assertNotNull("Result is not null", encodeResult);
+        } catch (Exception e) {
+            fail();
+        }
+    }
 }

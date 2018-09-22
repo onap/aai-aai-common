@@ -40,51 +40,51 @@ import org.junit.runner.RunWith;
 
 @RunWith(Parameterized.class)
 public class DeleteFootnoteSetTest {
-	String targetNode;
-	String flavor;
-	String result;
-	DeleteFootnoteSet footnotes = null;
-	
-	@Parameters
-	public static Collection<String[]> testConditions() {
-		String inputs [][] = {
-		{"vserver","(1)", "\n      -(1) IF this VSERVER node is deleted, this FROM node is DELETED also\n"},
-		{"ctag-pool","(2)", "\n      -(2) IF this CTAG-POOL node is deleted, this TO node is DELETED also\n"},
-		{"pserver","(3)", "\n      -(3) IF this FROM node is deleted, this PSERVER is DELETED also\n"},
-		{"oam-network","(4)", "\n      -(4) IF this TO node is deleted, this OAM-NETWORK is DELETED also\n"},
-		{"dvs-switch","(1)", "\n      -(1) IF this DVS-SWITCH node is deleted, this FROM node is DELETED also\n"},
-		{"availability-zone","(3)", "\n      -(3) IF this FROM node is deleted, this AVAILABILITY-ZONE is DELETED also\n"}
-		};
-		return (Arrays.asList(inputs));
-	}
-	
-	public DeleteFootnoteSetTest(String targetNode, String flavor, String result) {
-		super();
-		this.targetNode = targetNode;
-		this.flavor = flavor;
-		this.result=result;
-	}
+    String targetNode;
+    String flavor;
+    String result;
+    DeleteFootnoteSet footnotes = null;
+    
+    @Parameters
+    public static Collection<String[]> testConditions() {
+        String inputs [][] = {
+        {"vserver","(1)", "\n      -(1) IF this VSERVER node is deleted, this FROM node is DELETED also\n"},
+        {"ctag-pool","(2)", "\n      -(2) IF this CTAG-POOL node is deleted, this TO node is DELETED also\n"},
+        {"pserver","(3)", "\n      -(3) IF this FROM node is deleted, this PSERVER is DELETED also\n"},
+        {"oam-network","(4)", "\n      -(4) IF this TO node is deleted, this OAM-NETWORK is DELETED also\n"},
+        {"dvs-switch","(1)", "\n      -(1) IF this DVS-SWITCH node is deleted, this FROM node is DELETED also\n"},
+        {"availability-zone","(3)", "\n      -(3) IF this FROM node is deleted, this AVAILABILITY-ZONE is DELETED also\n"}
+        };
+        return (Arrays.asList(inputs));
+    }
+    
+    public DeleteFootnoteSetTest(String targetNode, String flavor, String result) {
+        super();
+        this.targetNode = targetNode;
+        this.flavor = flavor;
+        this.result=result;
+    }
 
-	@Before
-	public void setUp() throws Exception {
-		footnotes = new DeleteFootnoteSet(this.targetNode);
-	}
+    @Before
+    public void setUp() throws Exception {
+        footnotes = new DeleteFootnoteSet(this.targetNode);
+    }
 
-	@Test
-	public void testDeleteFootnoteSet() {		
-		assertThat(footnotes.targetNode, is(this.targetNode));
-	}
+    @Test
+    public void testDeleteFootnoteSet() {       
+        assertThat(footnotes.targetNode, is(this.targetNode));
+    }
 
-	@Test
-	public void testAdd() {
-		footnotes.add(this.flavor);
-		assertThat(footnotes.footnotes.size(), is(1));
-	}
+    @Test
+    public void testAdd() {
+        footnotes.add(this.flavor);
+        assertThat(footnotes.footnotes.size(), is(1));
+    }
 
-	@Test
-	public void testToString() {
-		footnotes.add(this.flavor);
-		assertThat(footnotes.toString(), is(this.result));
-	}
+    @Test
+    public void testToString() {
+        footnotes.add(this.flavor);
+        assertThat(footnotes.toString(), is(this.result));
+    }
 
 }

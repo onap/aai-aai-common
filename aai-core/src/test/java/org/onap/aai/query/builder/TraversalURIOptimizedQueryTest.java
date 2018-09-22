@@ -25,49 +25,49 @@ import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 public class TraversalURIOptimizedQueryTest extends TraversalQueryTest {
 
-	@Override
-	protected QueryBuilder<Edge> getNewEdgeTraversalWithTestEdgeRules(Vertex v) {
-		return new TraversalURIOptimizedQuery<>(loader, g, v);
-	}
+    @Override
+    protected QueryBuilder<Edge> getNewEdgeTraversalWithTestEdgeRules(Vertex v) {
+        return new TraversalURIOptimizedQuery<>(loader, g, v);
+    }
 
-	@Override
-	protected QueryBuilder<Edge> getNewEdgeTraversalWithTestEdgeRules() {
-		return new TraversalURIOptimizedQuery<>(loader, g);
-	}
+    @Override
+    protected QueryBuilder<Edge> getNewEdgeTraversalWithTestEdgeRules() {
+        return new TraversalURIOptimizedQuery<>(loader, g);
+    }
 
-	@Override
-	protected QueryBuilder<Vertex> getNewVertexTraversalWithTestEdgeRules(Vertex v) {
-		return new TraversalURIOptimizedQuery<>(loader, g, v);
-	}
+    @Override
+    protected QueryBuilder<Vertex> getNewVertexTraversalWithTestEdgeRules(Vertex v) {
+        return new TraversalURIOptimizedQuery<>(loader, g, v);
+    }
 
-	@Override
-	protected QueryBuilder<Vertex> getNewVertexTraversalWithTestEdgeRules() {
-		return new TraversalURIOptimizedQuery<>(loader, g);
-	}
+    @Override
+    protected QueryBuilder<Vertex> getNewVertexTraversalWithTestEdgeRules() {
+        return new TraversalURIOptimizedQuery<>(loader, g);
+    }
 
 
-	@Override
-	protected QueryBuilder<Vertex> getNewVertexTraversal() {
-		return new TraversalURIOptimizedQuery<>(loader, g);
-	}
+    @Override
+    protected QueryBuilder<Vertex> getNewVertexTraversal() {
+        return new TraversalURIOptimizedQuery<>(loader, g);
+    }
 
-	@Override
-	protected QueryBuilder<Tree> getNewTreeTraversalWithTestEdgeRules(Vertex v) {
-		return new TraversalURIOptimizedQuery<>(loader, g, v);
-	}
+    @Override
+    protected QueryBuilder<Tree> getNewTreeTraversalWithTestEdgeRules(Vertex v) {
+        return new TraversalURIOptimizedQuery<>(loader, g, v);
+    }
 
-	@Override
-	protected QueryBuilder<Tree> getNewTreeTraversalWithTestEdgeRules() {
-		return new TraversalURIOptimizedQuery<>(loader, g);
-	}
+    @Override
+    protected QueryBuilder<Tree> getNewTreeTraversalWithTestEdgeRules() {
+        return new TraversalURIOptimizedQuery<>(loader, g);
+    }
 
-	@Override
-	protected QueryBuilder<Path> getNewPathTraversalWithTestEdgeRules(Vertex v) {
-		return new TraversalURIOptimizedQuery<>(loader, g, v);
-	}
+    @Override
+    protected QueryBuilder<Path> getNewPathTraversalWithTestEdgeRules(Vertex v) {
+        return new TraversalURIOptimizedQuery<>(loader, g, v);
+    }
 
-	@Override
-	protected QueryBuilder<Path> getNewPathTraversalWithTestEdgeRules() {
-		return new TraversalURIOptimizedQuery<>(loader, g);
-	}
+    @Override
+    protected QueryBuilder<Path> getNewPathTraversalWithTestEdgeRules() {
+        return new TraversalURIOptimizedQuery<>(loader, g);
+    }
 }

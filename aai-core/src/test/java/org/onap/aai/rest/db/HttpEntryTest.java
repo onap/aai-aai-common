@@ -163,9 +163,9 @@ public class HttpEntryTest extends AAISetup {
     @Test
     public void test1PutOnPserver() throws UnsupportedEncodingException, AAIException {
 
-    	/*
-    	 * TODO do the same with uri
-    	 */
+        /*
+         * TODO do the same with uri
+         */
         DBConnectionType type = DBConnectionType.REALTIME;
         traversalHttpEntry.setHttpEntryProperties(schemaVersions.getDefaultVersion(), type);
         Loader loader = traversalHttpEntry.getLoader();
@@ -196,7 +196,7 @@ public class HttpEntryTest extends AAISetup {
 
     @Test
     public void test3PutOnPInterface()  {
-    	try {
+        try {
         DBConnectionType type = DBConnectionType.REALTIME;
         traversalHttpEntry.setHttpEntryProperties(schemaVersions.getDefaultVersion(), type);
         Loader loader = traversalHttpEntry.getLoader();
@@ -207,10 +207,10 @@ public class HttpEntryTest extends AAISetup {
         Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, content);
         dbEngine.commit();
         assertEquals("Expected the p-interface to be created", 201, response.getStatus());
-    	} catch (UnsupportedEncodingException | AAIException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        } catch (UnsupportedEncodingException | AAIException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
 
@@ -251,9 +251,9 @@ public class HttpEntryTest extends AAISetup {
     }
     
     private int doDelete(String resourceVersion, String uri, String nodeType) throws UnsupportedEncodingException, AAIException {
-    	queryParameters.add("resource-version", resourceVersion);
-    	DBConnectionType type = DBConnectionType.REALTIME;
-    	traversalHttpEntry.setHttpEntryProperties(schemaVersions.getDefaultVersion(), type);
+        queryParameters.add("resource-version", resourceVersion);
+        DBConnectionType type = DBConnectionType.REALTIME;
+        traversalHttpEntry.setHttpEntryProperties(schemaVersions.getDefaultVersion(), type);
         Loader loader = traversalHttpEntry.getLoader();
         TransactionalGraphEngine dbEngine = traversalHttpEntry.getDbEngine();
 
@@ -296,7 +296,7 @@ public class HttpEntryTest extends AAISetup {
         JsonObject jsonObj = new JsonParser().parse(msg).getAsJsonObject();
         String resourceVersion = "";
         if ( jsonObj.isJsonObject()) {
-        	resourceVersion = jsonObj.get("resource-version").getAsString();
+            resourceVersion = jsonObj.get("resource-version").getAsString();
         }
         assertEquals("Expected the pserver to be deleted", 204, doDelete(resourceVersion, "/cloud-infrastructure/pservers/pserver/junit-test1", "pserver"));
     }
@@ -304,7 +304,7 @@ public class HttpEntryTest extends AAISetup {
     @Test
     public void test7DeleteOnPserverNoPinterface() throws UnsupportedEncodingException, AAIException {
 
-    	
+        
         DBConnectionType type = DBConnectionType.REALTIME;
         traversalHttpEntry.setHttpEntryProperties(schemaVersions.getDefaultVersion(), type);
         //HttpEntry httpEntry = new HttpEntry(Version.getLatest(), ModelType.MOXY, queryStyle, type);
@@ -319,7 +319,7 @@ public class HttpEntryTest extends AAISetup {
         JsonObject jsonObj = new JsonParser().parse(msg).getAsJsonObject();
         String resourceVersion = "";
         if ( jsonObj.isJsonObject()) {
-        	resourceVersion = jsonObj.get("resource-version").getAsString();
+            resourceVersion = jsonObj.get("resource-version").getAsString();
         }
         assertEquals("Expected the pserver to be deleted", 204, doDelete(resourceVersion, "/cloud-infrastructure/pservers/pserver/junit-test2", "pserver"));
     }
@@ -374,7 +374,7 @@ public class HttpEntryTest extends AAISetup {
     public void notificationOnRelatedToTest() throws UnsupportedEncodingException, AAIException {
 
         Loader ld = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
-    	UEBNotification uebNotification = Mockito.spy(new UEBNotification(ld, loaderFactory, schemaVersions));
+        UEBNotification uebNotification = Mockito.spy(new UEBNotification(ld, loaderFactory, schemaVersions));
         DBConnectionType type = DBConnectionType.REALTIME;
         traversalHttpEntry.setHttpEntryProperties(schemaVersions.getDefaultVersion(), type , uebNotification);
         
@@ -579,10 +579,10 @@ public class HttpEntryTest extends AAISetup {
 
     @Test
     public void setDepthTest() throws UnsupportedEncodingException, AAIException {
-		System.setProperty("AJSC_HOME", ".");
-		System.setProperty("BUNDLECONFIG_DIR", "src/main/test/resources");
+        System.setProperty("AJSC_HOME", ".");
+        System.setProperty("BUNDLECONFIG_DIR", "src/main/test/resources");
 
-		String depthParam = AAIConfig.get("aai.rest.getall.depthparam");
+        String depthParam = AAIConfig.get("aai.rest.getall.depthparam");
         DBConnectionType type = DBConnectionType.REALTIME;
         traversalHttpEntry.setHttpEntryProperties(schemaVersions.getDefaultVersion(), type);
         //HttpEntry httpEntry = new HttpEntry(Version.getLatest(), ModelType.MOXY, QueryStyle.TRAVERSAL, type);

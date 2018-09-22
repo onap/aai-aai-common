@@ -25,21 +25,21 @@ import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 
 public class MoxyEngineTest extends IntrospectorTestSpec {
 
-	/**
-	 * Container object.
-	 * @throws AAIUnknownObjectException 
-	 */
-	@Test
-	public void containerObject() throws AAIUnknownObjectException {
-		
+    /**
+     * Container object.
+     * @throws AAIUnknownObjectException 
+     */
+    @Test
+    public void containerObject() throws AAIUnknownObjectException {
+        
         Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDepthVersion());
         
         Introspector obj = loader.introspectorFromName("port-groups");
 
         this.containerTestSet(obj);
         
-	}
-	
-	
-	
+    }
+    
+    
+    
 }

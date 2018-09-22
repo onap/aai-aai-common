@@ -26,48 +26,48 @@ import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.introspection.ModelType;
 public class GremlinTraversalTest extends QueryBuilderTestAbstraction {
-	
-	@Override
-	protected QueryBuilder<Edge> getNewEdgeTraversalWithTestEdgeRules(Vertex v) {
-		loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
-		return new GremlinTraversal<>(loader, g, v);
-	}
-	
-	@Override
-	protected QueryBuilder<Edge> getNewEdgeTraversalWithTestEdgeRules() {
-		loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
-		return new GremlinTraversal<>(loader, g);
-	}
-	
-	@Override
-	protected QueryBuilder<Vertex> getNewVertexTraversalWithTestEdgeRules(Vertex v) {
-		return new GremlinTraversal<>(loader, g, v);
-	}
-	
-	@Override
-	protected QueryBuilder<Vertex> getNewVertexTraversalWithTestEdgeRules() {
-		return new GremlinTraversal<>(loader, g);
-	}
-	
-	@Override
-	protected QueryBuilder<Tree> getNewTreeTraversalWithTestEdgeRules(Vertex v) {
-		return new GremlinTraversal<>(loader, g, v);
-	}
+    
+    @Override
+    protected QueryBuilder<Edge> getNewEdgeTraversalWithTestEdgeRules(Vertex v) {
+        loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
+        return new GremlinTraversal<>(loader, g, v);
+    }
+    
+    @Override
+    protected QueryBuilder<Edge> getNewEdgeTraversalWithTestEdgeRules() {
+        loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
+        return new GremlinTraversal<>(loader, g);
+    }
+    
+    @Override
+    protected QueryBuilder<Vertex> getNewVertexTraversalWithTestEdgeRules(Vertex v) {
+        return new GremlinTraversal<>(loader, g, v);
+    }
+    
+    @Override
+    protected QueryBuilder<Vertex> getNewVertexTraversalWithTestEdgeRules() {
+        return new GremlinTraversal<>(loader, g);
+    }
+    
+    @Override
+    protected QueryBuilder<Tree> getNewTreeTraversalWithTestEdgeRules(Vertex v) {
+        return new GremlinTraversal<>(loader, g, v);
+    }
 
-	@Override
-	protected QueryBuilder<Tree> getNewTreeTraversalWithTestEdgeRules() {
-		return new GremlinTraversal<>(loader, g);
-	}
+    @Override
+    protected QueryBuilder<Tree> getNewTreeTraversalWithTestEdgeRules() {
+        return new GremlinTraversal<>(loader, g);
+    }
 
-	@Override
-	protected QueryBuilder<Path> getNewPathTraversalWithTestEdgeRules(Vertex v) {
-		return new GremlinTraversal<>(loader, g, v);
-	}
+    @Override
+    protected QueryBuilder<Path> getNewPathTraversalWithTestEdgeRules(Vertex v) {
+        return new GremlinTraversal<>(loader, g, v);
+    }
 
-	@Override
-	protected QueryBuilder<Path> getNewPathTraversalWithTestEdgeRules() {
-		return new GremlinTraversal<>(loader, g);
-	}
+    @Override
+    protected QueryBuilder<Path> getNewPathTraversalWithTestEdgeRules() {
+        return new GremlinTraversal<>(loader, g);
+    }
 
-		
+        
 }

@@ -43,116 +43,116 @@ import static org.junit.Assert.assertEquals;
 public class LegacyQueryTest extends AAISetup {
 
 
-	private TransactionalGraphEngine dbEngine;
-	private SchemaVersion version;
-	private DynamicJAXBContext context = nodeIngestor.getContextForVersion(version);
+    private TransactionalGraphEngine dbEngine;
+    private SchemaVersion version;
+    private DynamicJAXBContext context = nodeIngestor.getContextForVersion(version);
 
-	public void setup(){
-		version = new SchemaVersion("v8");
-		dbEngine =
-			new JanusGraphDBEngine(QueryStyle.GREMLIN_TRAVERSAL,
-				loaderFactory.createLoaderForVersion(ModelType.MOXY, version),
-				false);
-	}
+    public void setup(){
+        version = new SchemaVersion("v8");
+        dbEngine =
+            new JanusGraphDBEngine(QueryStyle.GREMLIN_TRAVERSAL,
+                loaderFactory.createLoaderForVersion(ModelType.MOXY, version),
+                false);
+    }
 
-	/**
-	 * Parent query.
-	 *
-	 * @throws JAXBException the JAXB exception
-	 * @throws UnsupportedEncodingException the unsupported encoding exception
-	 * @throws AAIException the AAI exception
-	 */
-	@Test
+    /**
+     * Parent query.
+     *
+     * @throws JAXBException the JAXB exception
+     * @throws UnsupportedEncodingException the unsupported encoding exception
+     * @throws AAIException the AAI exception
+     */
+    @Test
     public void parentQuery() throws JAXBException, UnsupportedEncodingException, AAIException {
-		
-		URI uri = UriBuilder.fromPath("cloud-infrastructure/pservers/pserver/key1").build();
+        
+        URI uri = UriBuilder.fromPath("cloud-infrastructure/pservers/pserver/key1").build();
 
-		QueryParser query = dbEngine.getQueryBuilder().createQueryFromURI(uri);
+        QueryParser query = dbEngine.getQueryBuilder().createQueryFromURI(uri);
 
-		String expected = 
-				".has('hostname', 'key1').has('aai-node-type', 'pserver')";
-		assertEquals(
-				"gremlin query should be " + expected,
-				expected,
-				query.getQueryBuilder().getQuery());
-		assertEquals(
-				"parent gremlin query should be equal to normal query",
-				expected,
-				query.getQueryBuilder().getParentQuery().getQuery());
-		assertEquals(
-				"result type should be pserver",
-				"pserver",
-				query.getResultType());
-		
+        String expected = 
+                ".has('hostname', 'key1').has('aai-node-type', 'pserver')";
+        assertEquals(
+                "gremlin query should be " + expected,
+                expected,
+                query.getQueryBuilder().getQuery());
+        assertEquals(
+                "parent gremlin query should be equal to normal query",
+                expected,
+                query.getQueryBuilder().getParentQuery().getQuery());
+        assertEquals(
+                "result type should be pserver",
+                "pserver",
+                query.getResultType());
+        
     }
 
-	/**
-	 * Child query.
-	 *
-	 * @throws JAXBException the JAXB exception
-	 * @throws UnsupportedEncodingException the unsupported encoding exception
-	 * @throws AAIException the AAI exception
-	 */
-	@Test
+    /**
+     * Child query.
+     *
+     * @throws JAXBException the JAXB exception
+     * @throws UnsupportedEncodingException the unsupported encoding exception
+     * @throws AAIException the AAI exception
+     */
+    @Test
     public void childQuery() throws JAXBException, UnsupportedEncodingException, AAIException {
-		URI uri = UriBuilder.fromPath("cloud-infrastructure/pservers/pserver/key1/lag-interfaces/lag-interface/key2").build();
-		QueryParser query = dbEngine.getQueryBuilder().createQueryFromURI(uri);
+        URI uri = UriBuilder.fromPath("cloud-infrastructure/pservers/pserver/key1/lag-interfaces/lag-interface/key2").build();
+        QueryParser query = dbEngine.getQueryBuilder().createQueryFromURI(uri);
 
-		String expected =
-				".has('hostname', 'key1').has('aai-node-type', 'pserver')"
-				+ ".out('hasLAGInterface').has('aai-node-type', 'lag-interface')"
-				+ ".has('interface-name', 'key2')";
-		String parentExpected = 
-				".has('hostname', 'key1').has('aai-node-type', 'pserver')";
-		assertEquals(
-				"gremlin query should be for node",
-				expected,
-				query.getQueryBuilder().getQuery());
-		assertEquals(
-				"parent gremlin query should be for parent",
-				parentExpected,
-				query.getQueryBuilder().getParentQuery().getQuery());
-		assertEquals(
-				"result type should be lag-interface",
-				"lag-interface",
-				query.getResultType());
+        String expected =
+                ".has('hostname', 'key1').has('aai-node-type', 'pserver')"
+                + ".out('hasLAGInterface').has('aai-node-type', 'lag-interface')"
+                + ".has('interface-name', 'key2')";
+        String parentExpected = 
+                ".has('hostname', 'key1').has('aai-node-type', 'pserver')";
+        assertEquals(
+                "gremlin query should be for node",
+                expected,
+                query.getQueryBuilder().getQuery());
+        assertEquals(
+                "parent gremlin query should be for parent",
+                parentExpected,
+                query.getQueryBuilder().getParentQuery().getQuery());
+        assertEquals(
+                "result type should be lag-interface",
+                "lag-interface",
+                query.getResultType());
     }
-	
-	/**
-	 * Naming exceptions.
-	 *
-	 * @throws JAXBException the JAXB exception
-	 * @throws UnsupportedEncodingException the unsupported encoding exception
-	 * @throws AAIException the AAI exception
-	 */
-	@Test
+    
+    /**
+     * Naming exceptions.
+     *
+     * @throws JAXBException the JAXB exception
+     * @throws UnsupportedEncodingException the unsupported encoding exception
+     * @throws AAIException the AAI exception
+     */
+    @Test
     public void namingExceptions() throws JAXBException, UnsupportedEncodingException, AAIException {
-		URI uri = UriBuilder.fromPath("network/vces/vce/key1/port-groups/port-group/key2/cvlan-tags/cvlan-tag/655").build();
-	
-		QueryParser query = dbEngine.getQueryBuilder().createQueryFromURI(uri);
-		String expected = 
-				".has('vnf-id', 'key1').has('aai-node-type', 'vce')"
-				+ ".in('org.onap.relationships.inventory.BelongsTo').has('aai-node-type', 'port-group')"
-				+ ".has('interface-id', 'key2')"
-				+ ".in('org.onap.relationships.inventory.BelongsTo').has('aai-node-type', 'cvlan-tag')"
-				+ ".has('cvlan-tag', 655)";
-		String expectedParent = 
-						".has('vnf-id', 'key1').has('aai-node-type', 'vce')"
-						+ ".in('org.onap.relationships.inventory.BelongsTo').has('aai-node-type', 'port-group')"
-						+ ".has('interface-id', 'key2')";
-		assertEquals(
-				"gremlin query should be " + expected,
-				expected,
-				query.getQueryBuilder().getQuery());
-		assertEquals(
-				"parent gremlin query should be equal the query for port group",
-				expectedParent,
-				query.getQueryBuilder().getParentQuery().getQuery());
-		assertEquals(
-				"result type should be cvlan-tag",
-				"cvlan-tag",
-				query.getResultType());
-		
+        URI uri = UriBuilder.fromPath("network/vces/vce/key1/port-groups/port-group/key2/cvlan-tags/cvlan-tag/655").build();
+    
+        QueryParser query = dbEngine.getQueryBuilder().createQueryFromURI(uri);
+        String expected = 
+                ".has('vnf-id', 'key1').has('aai-node-type', 'vce')"
+                + ".in('org.onap.relationships.inventory.BelongsTo').has('aai-node-type', 'port-group')"
+                + ".has('interface-id', 'key2')"
+                + ".in('org.onap.relationships.inventory.BelongsTo').has('aai-node-type', 'cvlan-tag')"
+                + ".has('cvlan-tag', 655)";
+        String expectedParent = 
+                        ".has('vnf-id', 'key1').has('aai-node-type', 'vce')"
+                        + ".in('org.onap.relationships.inventory.BelongsTo').has('aai-node-type', 'port-group')"
+                        + ".has('interface-id', 'key2')";
+        assertEquals(
+                "gremlin query should be " + expected,
+                expected,
+                query.getQueryBuilder().getQuery());
+        assertEquals(
+                "parent gremlin query should be equal the query for port group",
+                expectedParent,
+                query.getQueryBuilder().getParentQuery().getQuery());
+        assertEquals(
+                "result type should be cvlan-tag",
+                "cvlan-tag",
+                query.getResultType());
+        
     }
-	
+    
 }

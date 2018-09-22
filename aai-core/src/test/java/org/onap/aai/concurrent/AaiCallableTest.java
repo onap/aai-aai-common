@@ -27,23 +27,23 @@ import org.slf4j.MDC;
 import org.onap.aai.concurrent.AaiCallable;
 
 public class AaiCallableTest extends AAISetup {
-	@Test
-	public void testAaiCallable() {
-		MDC.put("test_name", "test_value");
-		
-		AaiCallable<Object> task = new AaiCallable<Object>() {
-			@Override
-			public Object process() {
-				String mdcValue = MDC.get("test_name");
-				assertTrue( "MDC value retained", "test_value".equals(mdcValue));
-				return (new Object());
-			}
-		};
-		try {
-			task.call();
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+    @Test
+    public void testAaiCallable() {
+        MDC.put("test_name", "test_value");
+        
+        AaiCallable<Object> task = new AaiCallable<Object>() {
+            @Override
+            public Object process() {
+                String mdcValue = MDC.get("test_name");
+                assertTrue( "MDC value retained", "test_value".equals(mdcValue));
+                return (new Object());
+            }
+        };
+        try {
+            task.call();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

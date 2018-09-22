@@ -42,184 +42,184 @@ import static org.junit.Assert.assertEquals;
 
 public class RelationshipToURITest extends AAISetup {
 
-	private final ModelType modelType = ModelType.MOXY;
-	private final SchemaVersion version10 = new SchemaVersion("v10");
-	private final SchemaVersion version9 = new SchemaVersion("v9");
-	
-	
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-	
-	@Test
-	public void onlyLink() throws AAIException, URISyntaxException, IOException {
-		Loader loader = loaderFactory.createLoaderForVersion(modelType, version10);
-		Introspector obj = loader.unmarshal("relationship", this.getJsonString("only-related-link.json"));
-		URI expected = new URI("/aai/v10/network/generic-vnfs/generic-vnf/key1");
-		
-		RelationshipToURI parse = new RelationshipToURI(loader, obj);
-		
-		URI uri = parse.getUri();
-		
-		assertEquals("related-link is equal", expected.getPath(), uri.getPath());
-	}
-	
-	@Test
-	public void onlyData() throws AAIException, URISyntaxException, IOException {
-		Loader loader = loaderFactory.createLoaderForVersion(modelType, version10);
-		Introspector obj = loader.unmarshal("relationship", this.getJsonString("only-relationship-data.json"));
-		URI expected = new URI("/network/generic-vnfs/generic-vnf/key1");
+    private final ModelType modelType = ModelType.MOXY;
+    private final SchemaVersion version10 = new SchemaVersion("v10");
+    private final SchemaVersion version9 = new SchemaVersion("v9");
+    
+    
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
+    
+    @Test
+    public void onlyLink() throws AAIException, URISyntaxException, IOException {
+        Loader loader = loaderFactory.createLoaderForVersion(modelType, version10);
+        Introspector obj = loader.unmarshal("relationship", this.getJsonString("only-related-link.json"));
+        URI expected = new URI("/aai/v10/network/generic-vnfs/generic-vnf/key1");
+        
+        RelationshipToURI parse = new RelationshipToURI(loader, obj);
+        
+        URI uri = parse.getUri();
+        
+        assertEquals("related-link is equal", expected.getPath(), uri.getPath());
+    }
+    
+    @Test
+    public void onlyData() throws AAIException, URISyntaxException, IOException {
+        Loader loader = loaderFactory.createLoaderForVersion(modelType, version10);
+        Introspector obj = loader.unmarshal("relationship", this.getJsonString("only-relationship-data.json"));
+        URI expected = new URI("/network/generic-vnfs/generic-vnf/key1");
 
-		RelationshipToURI parse = new RelationshipToURI(loader, obj);
-		
-		URI uri = parse.getUri();
-		
-		assertEquals("related-link is equal", expected, uri);
-	}
-	
-	@Test
-	public void failV10() throws AAIException, URISyntaxException, IOException {
-		Loader loader = loaderFactory.createLoaderForVersion(modelType, version10);
-		Introspector obj = loader.unmarshal("relationship", this.getJsonString("both-failv10-successv9.json"));
-		URI expected = new URI("/aai/v10/network/generic-vnfs/generic-vnf/key1");
-		
-		thrown.expect(AAIIdentityMapParseException.class);
-		thrown.expect(hasProperty("code", is("AAI_3000")));
-		RelationshipToURI parse = new RelationshipToURI(loader, obj);
-		URI uri = parse.getUri();
-		
-	}
-	
-	@Test
-	public void successV9() throws AAIException, URISyntaxException, IOException {
-		Loader loader = loaderFactory.createLoaderForVersion(modelType, version9);
-		Introspector obj = loader.unmarshal("relationship", this.getJsonString("both-failv10-successv9.json"));
-		URI expected = new URI("/network/generic-vnfs/generic-vnf/key2");
-		
-		RelationshipToURI parse = new RelationshipToURI(loader, obj);
-		URI uri = parse.getUri();
-		
-		assertEquals("related-link is equal", expected, uri);
+        RelationshipToURI parse = new RelationshipToURI(loader, obj);
+        
+        URI uri = parse.getUri();
+        
+        assertEquals("related-link is equal", expected, uri);
+    }
+    
+    @Test
+    public void failV10() throws AAIException, URISyntaxException, IOException {
+        Loader loader = loaderFactory.createLoaderForVersion(modelType, version10);
+        Introspector obj = loader.unmarshal("relationship", this.getJsonString("both-failv10-successv9.json"));
+        URI expected = new URI("/aai/v10/network/generic-vnfs/generic-vnf/key1");
+        
+        thrown.expect(AAIIdentityMapParseException.class);
+        thrown.expect(hasProperty("code", is("AAI_3000")));
+        RelationshipToURI parse = new RelationshipToURI(loader, obj);
+        URI uri = parse.getUri();
+        
+    }
+    
+    @Test
+    public void successV9() throws AAIException, URISyntaxException, IOException {
+        Loader loader = loaderFactory.createLoaderForVersion(modelType, version9);
+        Introspector obj = loader.unmarshal("relationship", this.getJsonString("both-failv10-successv9.json"));
+        URI expected = new URI("/network/generic-vnfs/generic-vnf/key2");
+        
+        RelationshipToURI parse = new RelationshipToURI(loader, obj);
+        URI uri = parse.getUri();
+        
+        assertEquals("related-link is equal", expected, uri);
 
-		
-	}
-	
-	@Test
-	public void failV9() throws AAIException, URISyntaxException, IOException {
-		Loader loader = loaderFactory.createLoaderForVersion(modelType, version9);
-		Introspector obj = loader.unmarshal("relationship", this.getJsonString("both-successv10-failv9.json"));
-		URI expected = new URI("/network/generic-vnfs/generic-vnf/key1");
-		
-		thrown.expect(AAIIdentityMapParseException.class);
-		thrown.expect(hasProperty("code", is("AAI_3000")));
-		RelationshipToURI parse = new RelationshipToURI(loader, obj);
-		
+        
+    }
+    
+    @Test
+    public void failV9() throws AAIException, URISyntaxException, IOException {
+        Loader loader = loaderFactory.createLoaderForVersion(modelType, version9);
+        Introspector obj = loader.unmarshal("relationship", this.getJsonString("both-successv10-failv9.json"));
+        URI expected = new URI("/network/generic-vnfs/generic-vnf/key1");
+        
+        thrown.expect(AAIIdentityMapParseException.class);
+        thrown.expect(hasProperty("code", is("AAI_3000")));
+        RelationshipToURI parse = new RelationshipToURI(loader, obj);
+        
 
-		URI uri = parse.getUri();
-		
-	}
-	
-	@Test
-	public void failNothingToParse() throws AAIException, URISyntaxException, IOException {
-		Loader loader = loaderFactory.createLoaderForVersion(modelType, version10);
-		Introspector obj = loader.unmarshal("relationship", this.getJsonString("nothing-to-parse.json"));
-		URI expected = new URI("/aai/v10/network/generic-vnfs/generic-vnf/key1");
-		
-		thrown.expect(AAIIdentityMapParseException.class);
-		thrown.expect(hasProperty("code", is("AAI_3000")));
-		RelationshipToURI parse = new RelationshipToURI(loader, obj);
-		
-		URI uri = parse.getUri();
-		
-	}
-	
-	@Test
-	public void successV10() throws AAIException, URISyntaxException, IOException {
-		Loader loader = loaderFactory.createLoaderForVersion(modelType, version10);
-		Introspector obj = loader.unmarshal("relationship", this.getJsonString("both-successv10-failv9.json"));
-		URI expected = new URI("/aai/v10/network/generic-vnfs/generic-vnf/key1");
-		
-		RelationshipToURI parse = new RelationshipToURI(loader, obj);
-		
+        URI uri = parse.getUri();
+        
+    }
+    
+    @Test
+    public void failNothingToParse() throws AAIException, URISyntaxException, IOException {
+        Loader loader = loaderFactory.createLoaderForVersion(modelType, version10);
+        Introspector obj = loader.unmarshal("relationship", this.getJsonString("nothing-to-parse.json"));
+        URI expected = new URI("/aai/v10/network/generic-vnfs/generic-vnf/key1");
+        
+        thrown.expect(AAIIdentityMapParseException.class);
+        thrown.expect(hasProperty("code", is("AAI_3000")));
+        RelationshipToURI parse = new RelationshipToURI(loader, obj);
+        
+        URI uri = parse.getUri();
+        
+    }
+    
+    @Test
+    public void successV10() throws AAIException, URISyntaxException, IOException {
+        Loader loader = loaderFactory.createLoaderForVersion(modelType, version10);
+        Introspector obj = loader.unmarshal("relationship", this.getJsonString("both-successv10-failv9.json"));
+        URI expected = new URI("/aai/v10/network/generic-vnfs/generic-vnf/key1");
+        
+        RelationshipToURI parse = new RelationshipToURI(loader, obj);
+        
 
-		URI uri = parse.getUri();
-		
-		assertEquals("related-link is equal", expected, uri);
+        URI uri = parse.getUri();
+        
+        assertEquals("related-link is equal", expected, uri);
 
-		
-	}
-	
-	@Test
-	public void ambiguousRelationship() throws AAIException, URISyntaxException, IOException {
-		Loader loader = loaderFactory.createLoaderForVersion(modelType, version10);
-		Introspector obj = loader.unmarshal("relationship", this.getJsonString("ambiguous-relationship.json"));
-		URI expected = new URI("/aai/v10/network/generic-vnfs/generic-vnf/key1");
-		
-		thrown.expect(AmbiguousMapAAIException.class);
-		thrown.expect(hasProperty("code", is("AAI_6146")));
-		
-		RelationshipToURI parse = new RelationshipToURI(loader, obj);
-		
-		URI uri = parse.getUri();
-		
-		assertEquals("related-link is equal", expected, uri);
+        
+    }
+    
+    @Test
+    public void ambiguousRelationship() throws AAIException, URISyntaxException, IOException {
+        Loader loader = loaderFactory.createLoaderForVersion(modelType, version10);
+        Introspector obj = loader.unmarshal("relationship", this.getJsonString("ambiguous-relationship.json"));
+        URI expected = new URI("/aai/v10/network/generic-vnfs/generic-vnf/key1");
+        
+        thrown.expect(AmbiguousMapAAIException.class);
+        thrown.expect(hasProperty("code", is("AAI_6146")));
+        
+        RelationshipToURI parse = new RelationshipToURI(loader, obj);
+        
+        URI uri = parse.getUri();
+        
+        assertEquals("related-link is equal", expected, uri);
 
-		
-	}
+        
+    }
 
-	@Ignore
-	@Test
-	public void moreItemsThanRequired() throws AAIException, URISyntaxException, IOException {
-		Loader loader = loaderFactory.createLoaderForVersion(modelType, version10);
-		Introspector obj = loader.unmarshal("relationship", this.getJsonString("too-many-items-relationship.json"));
-		URI expected = new URI("/network/generic-vnfs/generic-vnf/key1/l-interfaces/l-interface/key2");
-		
-		RelationshipToURI parse = new RelationshipToURI(loader, obj);
+    @Ignore
+    @Test
+    public void moreItemsThanRequired() throws AAIException, URISyntaxException, IOException {
+        Loader loader = loaderFactory.createLoaderForVersion(modelType, version10);
+        Introspector obj = loader.unmarshal("relationship", this.getJsonString("too-many-items-relationship.json"));
+        URI expected = new URI("/network/generic-vnfs/generic-vnf/key1/l-interfaces/l-interface/key2");
+        
+        RelationshipToURI parse = new RelationshipToURI(loader, obj);
 
-		URI uri = parse.getUri();
-		
-		assertEquals("related-link is equal", expected.toString(), uri.toString());
-		
-	}
-	
-	@Test
-	public void twoTopLevelNodes() throws AAIException, URISyntaxException, IOException {
-		Loader loader = loaderFactory.createLoaderForVersion(modelType, version10);
-		Introspector obj = loader.unmarshal("relationship", this.getJsonString("two-top-level-relationship.json"));
-		URI expected = new URI("/network/generic-vnfs/generic-vnf/key1/l-interfaces/l-interface/key2");
-		
-		thrown.expect(AmbiguousMapAAIException.class);
-		thrown.expect(hasProperty("code", is("AAI_6146")));
-		
-		RelationshipToURI parse = new RelationshipToURI(loader, obj);
-		
-		URI uri = parse.getUri();
-		
-		assertEquals("related-link is equal", expected, uri);
-		
-	}
-	
-	@Test
-	public void topLevelWithTwoKeys() throws AAIException, URISyntaxException, IOException {
-		Loader loader = loaderFactory.createLoaderForVersion(modelType, version10);
-		Introspector obj = loader.unmarshal("relationship", this.getJsonString("top-level-two-keys-relationship.json"));
-		URI expected = new URI("/cloud-infrastructure/cloud-regions/cloud-region/key1/key2/availability-zones/availability-zone/key3");
-		
-		RelationshipToURI parse = new RelationshipToURI(loader, obj);
-		
-		URI uri = parse.getUri();
-		
-		assertEquals("related-link is equal", expected.toString(), uri.toString());
-		
-	}
-	
-	
-	private String getJsonString(String filename) throws IOException {
-		
-		
-		FileInputStream is = new FileInputStream("src/test/resources/bundleconfig-local/etc/relationship/" + filename);
-		String s =  IOUtils.toString(is, "UTF-8"); 
-		IOUtils.closeQuietly(is);
-		
-		return s;
-	}
+        URI uri = parse.getUri();
+        
+        assertEquals("related-link is equal", expected.toString(), uri.toString());
+        
+    }
+    
+    @Test
+    public void twoTopLevelNodes() throws AAIException, URISyntaxException, IOException {
+        Loader loader = loaderFactory.createLoaderForVersion(modelType, version10);
+        Introspector obj = loader.unmarshal("relationship", this.getJsonString("two-top-level-relationship.json"));
+        URI expected = new URI("/network/generic-vnfs/generic-vnf/key1/l-interfaces/l-interface/key2");
+        
+        thrown.expect(AmbiguousMapAAIException.class);
+        thrown.expect(hasProperty("code", is("AAI_6146")));
+        
+        RelationshipToURI parse = new RelationshipToURI(loader, obj);
+        
+        URI uri = parse.getUri();
+        
+        assertEquals("related-link is equal", expected, uri);
+        
+    }
+    
+    @Test
+    public void topLevelWithTwoKeys() throws AAIException, URISyntaxException, IOException {
+        Loader loader = loaderFactory.createLoaderForVersion(modelType, version10);
+        Introspector obj = loader.unmarshal("relationship", this.getJsonString("top-level-two-keys-relationship.json"));
+        URI expected = new URI("/cloud-infrastructure/cloud-regions/cloud-region/key1/key2/availability-zones/availability-zone/key3");
+        
+        RelationshipToURI parse = new RelationshipToURI(loader, obj);
+        
+        URI uri = parse.getUri();
+        
+        assertEquals("related-link is equal", expected.toString(), uri.toString());
+        
+    }
+    
+    
+    private String getJsonString(String filename) throws IOException {
+        
+        
+        FileInputStream is = new FileInputStream("src/test/resources/bundleconfig-local/etc/relationship/" + filename);
+        String s =  IOUtils.toString(is, "UTF-8"); 
+        IOUtils.closeQuietly(is);
+        
+        return s;
+    }
 }

@@ -27,50 +27,50 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 public class FileWatcherTest {
-	
-	class FileWatcherExtension extends FileWatcher {
+    
+    class FileWatcherExtension extends FileWatcher {
 
-		public FileWatcherExtension(File file) {
-			super(file);
-		}
+        public FileWatcherExtension(File file) {
+            super(file);
+        }
 
-		@Override
-		protected void onChange(File file) {
-			System.out.println("do nothing");
-		}
-	}
+        @Override
+        protected void onChange(File file) {
+            System.out.println("do nothing");
+        }
+    }
 
-	@Test
-	public void testFileWatcher() {
-		File file = new File("helloworld");
-		file.setLastModified(new Long(123));
-		FileWatcher fileWatcher = new FileWatcherExtension(file);
-		assertNotNull(fileWatcher);
-		file.deleteOnExit();
-	}
-	
-	@Test(expected=NullPointerException.class)
-	public void testFileWatcher_nullConstructor() {
-		FileWatcher fileWatcher = new FileWatcherExtension(null);
-		assertNull(fileWatcher);
-	}
-	
-	@Test
-	public void testRun() {
-		// verify that code is reachable outside of conditional check in run()
-		File file = new File("helloworld");
-		file.setLastModified(new Long(100));
-		FileWatcher fileWatcher = new FileWatcherExtension(file);
-		fileWatcher.run();
-		file.deleteOnExit();
-	}
+    @Test
+    public void testFileWatcher() {
+        File file = new File("helloworld");
+        file.setLastModified(new Long(123));
+        FileWatcher fileWatcher = new FileWatcherExtension(file);
+        assertNotNull(fileWatcher);
+        file.deleteOnExit();
+    }
+    
+    @Test(expected=NullPointerException.class)
+    public void testFileWatcher_nullConstructor() {
+        FileWatcher fileWatcher = new FileWatcherExtension(null);
+        assertNull(fileWatcher);
+    }
+    
+    @Test
+    public void testRun() {
+        // verify that code is reachable outside of conditional check in run()
+        File file = new File("helloworld");
+        file.setLastModified(new Long(100));
+        FileWatcher fileWatcher = new FileWatcherExtension(file);
+        fileWatcher.run();
+        file.deleteOnExit();
+    }
 
-	@Test
-	public void testOnChange() throws Exception {
-		FileWatcher fileWatcher = Mockito.mock(FileWatcher.class, Mockito.CALLS_REAL_METHODS);
-		
-		fileWatcher.onChange(Mockito.any(File.class));
-		
-		Mockito.verify(fileWatcher).onChange(Mockito.any(File.class));
-	}
+    @Test
+    public void testOnChange() throws Exception {
+        FileWatcher fileWatcher = Mockito.mock(FileWatcher.class, Mockito.CALLS_REAL_METHODS);
+        
+        fileWatcher.onChange(Mockito.any(File.class));
+        
+        Mockito.verify(fileWatcher).onChange(Mockito.any(File.class));
+    }
 }

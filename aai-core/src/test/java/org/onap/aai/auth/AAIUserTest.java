@@ -26,28 +26,28 @@ import static org.junit.Assert.assertEquals;
 
 public class AAIUserTest extends AAISetup {
 
-	@Test
-	public void testIsAuth() {
-		AAIUser usr = new AAIUser("testUser");
-		usr.addRole("testRole");
-		usr.setUserAccess("auth", "GET");
-		usr.setUserAccess("auth", "PUT");
-		usr.setUserAccess("authentication", "PUT", "GET", "POST");
-		
-		assertEquals(true, usr.hasAccess("auth", "GET"));
-		assertEquals(true, usr.hasAccess("auth", "PUT"));
-		assertEquals(true, usr.hasAccess("authentication", "POST"));
-	}
-	
-	@Test
-	public void testIsNotAuth() {
-		AAIUser usr = new AAIUser("testUser");
-		usr.addRole("testRole");
-	
-		assertEquals(false, usr.hasAccess("auth", "GET"));
-		
-		usr.setUserAccess("auth", "GET");
-		assertEquals(false, usr.hasAccess("auth", "PUT"));
-	}
+    @Test
+    public void testIsAuth() {
+        AAIUser usr = new AAIUser("testUser");
+        usr.addRole("testRole");
+        usr.setUserAccess("auth", "GET");
+        usr.setUserAccess("auth", "PUT");
+        usr.setUserAccess("authentication", "PUT", "GET", "POST");
+        
+        assertEquals(true, usr.hasAccess("auth", "GET"));
+        assertEquals(true, usr.hasAccess("auth", "PUT"));
+        assertEquals(true, usr.hasAccess("authentication", "POST"));
+    }
+    
+    @Test
+    public void testIsNotAuth() {
+        AAIUser usr = new AAIUser("testUser");
+        usr.addRole("testRole");
+    
+        assertEquals(false, usr.hasAccess("auth", "GET"));
+        
+        usr.setUserAccess("auth", "GET");
+        assertEquals(false, usr.hasAccess("auth", "PUT"));
+    }
 
 }

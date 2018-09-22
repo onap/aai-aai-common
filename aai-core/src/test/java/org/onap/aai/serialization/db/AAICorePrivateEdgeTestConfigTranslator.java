@@ -32,24 +32,24 @@ import java.util.*;
  */
 public class AAICorePrivateEdgeTestConfigTranslator extends AbstractConfigTranslator {
 
-	public AAICorePrivateEdgeTestConfigTranslator(SchemaLocationsBean bean, SchemaVersions schemaVersions) {
-		super(bean, schemaVersions);
-	}
+    public AAICorePrivateEdgeTestConfigTranslator(SchemaLocationsBean bean, SchemaVersions schemaVersions) {
+        super(bean, schemaVersions);
+    }
 
-	/* (non-Javadoc)
-	 * @see org.onap.aai.setup.ConfigTranslator#getEdgeFiles()
-	 */
-	@Override
-	public Map<SchemaVersion, List<String>> getEdgeFiles() {
-		String file = "src/test/resources/dbedgerules/DbEdgeRules_PrivateEdges.json";
+    /* (non-Javadoc)
+     * @see org.onap.aai.setup.ConfigTranslator#getEdgeFiles()
+     */
+    @Override
+    public Map<SchemaVersion, List<String>> getEdgeFiles() {
+        String file = "src/test/resources/dbedgerules/DbEdgeRules_PrivateEdges.json";
 
-		Map<SchemaVersion, List<String>> files = new TreeMap<>();
-		List<String> container = new ArrayList<>();
-		container.add(file);
-		files.put(schemaVersions.getDefaultVersion(), container);
+        Map<SchemaVersion, List<String>> files = new TreeMap<>();
+        List<String> container = new ArrayList<>();
+        container.add(file);
+        files.put(schemaVersions.getDefaultVersion(), container);
 
-		return files;
-	}
+        return files;
+    }
 
 
 

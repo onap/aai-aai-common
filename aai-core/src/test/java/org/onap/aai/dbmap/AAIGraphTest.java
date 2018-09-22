@@ -32,41 +32,41 @@ import static org.hamcrest.Matchers.matchesPattern;
 import static org.junit.Assert.*;
 
 public class AAIGraphTest extends AAISetup{
-	@Before
-	public void setup() {
-		AAIGraph.getInstance();
-	}
+    @Before
+    public void setup() {
+        AAIGraph.getInstance();
+    }
 
-	@Test
-	public void getRealtimeInstanceConnectionName() throws Exception {
+    @Test
+    public void getRealtimeInstanceConnectionName() throws Exception {
 
-		JanusGraphManagement graphMgt = AAIGraph.getInstance().getGraph().openManagement();
-		String connectionInstanceName = graphMgt.getOpenInstances().stream().filter(c -> c.contains("current")).findFirst().get();
-		assertThat(connectionInstanceName, containsString(SERVICE_NAME));
-		assertThat(connectionInstanceName, containsString("realtime"));
-		assertThat(connectionInstanceName, matchesPattern("^\\d+_[\\w\\-\\d]+_" + SERVICE_NAME + "_realtime_\\d+\\(current\\)$"));
-		graphMgt.rollback();
-	}
+        JanusGraphManagement graphMgt = AAIGraph.getInstance().getGraph().openManagement();
+        String connectionInstanceName = graphMgt.getOpenInstances().stream().filter(c -> c.contains("current")).findFirst().get();
+        assertThat(connectionInstanceName, containsString(SERVICE_NAME));
+        assertThat(connectionInstanceName, containsString("realtime"));
+        assertThat(connectionInstanceName, matchesPattern("^\\d+_[\\w\\-\\d]+_" + SERVICE_NAME + "_realtime_\\d+\\(current\\)$"));
+        graphMgt.rollback();
+    }
 
-	@Test
-	public void getCachedInstanceConnectionName() throws Exception {
+    @Test
+    public void getCachedInstanceConnectionName() throws Exception {
 
-		JanusGraphManagement graphMgt = AAIGraph.getInstance().getGraph(DBConnectionType.CACHED).openManagement();
-		String connectionInstanceName = graphMgt.getOpenInstances().stream().filter(c -> c.contains("current")).findFirst().get();
-		assertThat(connectionInstanceName, containsString(SERVICE_NAME));
-		assertThat(connectionInstanceName, containsString("cached"));
-		assertThat(connectionInstanceName, matchesPattern("^\\d+_[\\w\\-\\d]+_" + SERVICE_NAME + "_cached_\\d+\\(current\\)$"));
-		graphMgt.rollback();
-	}
+        JanusGraphManagement graphMgt = AAIGraph.getInstance().getGraph(DBConnectionType.CACHED).openManagement();
+        String connectionInstanceName = graphMgt.getOpenInstances().stream().filter(c -> c.contains("current")).findFirst().get();
+        assertThat(connectionInstanceName, containsString(SERVICE_NAME));
+        assertThat(connectionInstanceName, containsString("cached"));
+        assertThat(connectionInstanceName, matchesPattern("^\\d+_[\\w\\-\\d]+_" + SERVICE_NAME + "_cached_\\d+\\(current\\)$"));
+        graphMgt.rollback();
+    }
 
-	@Test
-	public void JanusGraphOpenNameTest() throws Exception{
-		JanusGraph graph = JanusGraphFactory.open(new AAIGraphConfig.Builder(AAIConstants.REALTIME_DB_CONFIG).forService(SERVICE_NAME).withGraphType("graphType").buildConfiguration());
-		JanusGraphManagement graphMgt = graph.openManagement();
-		String connectionInstanceName = graphMgt.getOpenInstances().stream().filter(c -> c.contains("current")).findFirst().get();
-		assertThat(connectionInstanceName,matchesPattern("^\\d+_[\\w\\-\\d]+_" + SERVICE_NAME + "_graphType_\\d+\\(current\\)$"));
-		graphMgt.rollback();
-		graph.close();
-	}
+    @Test
+    public void JanusGraphOpenNameTest() throws Exception{
+        JanusGraph graph = JanusGraphFactory.open(new AAIGraphConfig.Builder(AAIConstants.REALTIME_DB_CONFIG).forService(SERVICE_NAME).withGraphType("graphType").buildConfiguration());
+        JanusGraphManagement graphMgt = graph.openManagement();
+        String connectionInstanceName = graphMgt.getOpenInstances().stream().filter(c -> c.contains("current")).findFirst().get();
+        assertThat(connectionInstanceName,matchesPattern("^\\d+_[\\w\\-\\d]+_" + SERVICE_NAME + "_graphType_\\d+\\(current\\)$"));
+        graphMgt.rollback();
+        graph.close();
+    }
 
 }

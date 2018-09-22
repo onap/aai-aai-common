@@ -30,72 +30,72 @@ import org.w3c.dom.Element;
 
 public class XSDJavaTypeTest extends XSDElementTest {
 
-	@Before
-	public void setUp() throws Exception {
-		super.setUp();
-	}
+    @Before
+    public void setUp() throws Exception {
+        super.setUp();
+    }
 
-	@Test
-	public void testXSDJavaTypeElement() {
-		HashMap<String,String> map = new HashMap<String,String>();
-		HashMap<String,String> target = new HashMap<String,String>();
-		target.put("Customer", "global-customer-id");
-		target.put("Business", "customers");
-		target.put("Inventory", "business");
-		target.put("Customers","customer");
-		target.put("ServiceSubscriptions", "service-subscription");
-		target.put("ServiceSubscription", "service-type");
+    @Test
+    public void testXSDJavaTypeElement() {
+        HashMap<String,String> map = new HashMap<String,String>();
+        HashMap<String,String> target = new HashMap<String,String>();
+        target.put("Customer", "global-customer-id");
+        target.put("Business", "customers");
+        target.put("Inventory", "business");
+        target.put("Customers","customer");
+        target.put("ServiceSubscriptions", "service-subscription");
+        target.put("ServiceSubscription", "service-type");
 
-		for ( int i = 0; i < javaTypeNodes.getLength(); ++ i ) {
-			XSDElement javaTypeElement = new XSDElement((Element) javaTypeNodes.item(i));
-			XSDJavaType javaType = new XSDJavaType(javaTypeElement);
-			map.put(javaType.name(),javaType.getItemName());
-		}
-		for(String key : map.keySet()) {
-			assertThat("For key: "+key,map.get(key),equalTo(target.get(key)));
-		}
-	}
+        for ( int i = 0; i < javaTypeNodes.getLength(); ++ i ) {
+            XSDElement javaTypeElement = new XSDElement((Element) javaTypeNodes.item(i));
+            XSDJavaType javaType = new XSDJavaType(javaTypeElement);
+            map.put(javaType.name(),javaType.getItemName());
+        }
+        for(String key : map.keySet()) {
+            assertThat("For key: "+key,map.get(key),equalTo(target.get(key)));
+        }
+    }
 
-	@Test
-	public void testGetItemName() {
-		HashMap<String,String> map = new HashMap<String,String>();
-		HashMap<String,String> target = new HashMap<String,String>();
-		target.put("Customer", "global-customer-id");
-		target.put("Business", "customers");
-		target.put("Inventory", "business");
-		target.put("Customers","customer");
-		target.put("ServiceSubscriptions", "service-subscription");
-		target.put("ServiceSubscription", "service-type");
+    @Test
+    public void testGetItemName() {
+        HashMap<String,String> map = new HashMap<String,String>();
+        HashMap<String,String> target = new HashMap<String,String>();
+        target.put("Customer", "global-customer-id");
+        target.put("Business", "customers");
+        target.put("Inventory", "business");
+        target.put("Customers","customer");
+        target.put("ServiceSubscriptions", "service-subscription");
+        target.put("ServiceSubscription", "service-type");
 
-		for ( int i = 0; i < javaTypeNodes.getLength(); ++ i ) {
-			XSDElement javaTypeElement = new XSDElement((Element) javaTypeNodes.item(i));
-			XSDJavaType javaType = new XSDJavaType(javaTypeElement);
-			map.put(javaType.name(),javaType.getItemName());
-		}
-		for(String key : map.keySet()) {
-			assertThat("For key: "+key,map.get(key),equalTo(target.get(key)));
-		}
-	}
+        for ( int i = 0; i < javaTypeNodes.getLength(); ++ i ) {
+            XSDElement javaTypeElement = new XSDElement((Element) javaTypeNodes.item(i));
+            XSDJavaType javaType = new XSDJavaType(javaTypeElement);
+            map.put(javaType.name(),javaType.getItemName());
+        }
+        for(String key : map.keySet()) {
+            assertThat("For key: "+key,map.get(key),equalTo(target.get(key)));
+        }
+    }
 
-	@Test
-	public void testGetArrayType() {
-		HashMap<String,String> map = new HashMap<String,String>();
-		HashMap<String,String> target = new HashMap<String,String>();
-		target.put("Customer", null);
-		target.put("Business", null);
-		target.put("Inventory", null);
-		target.put("Customers","customer");
-		target.put("ServiceSubscriptions", "service-subscription");
-		target.put("ServiceSubscription", null);
+    @Test
+    public void testGetArrayType() {
+        HashMap<String,String> map = new HashMap<String,String>();
+        HashMap<String,String> target = new HashMap<String,String>();
+        target.put("Customer", null);
+        target.put("Business", null);
+        target.put("Inventory", null);
+        target.put("Customers","customer");
+        target.put("ServiceSubscriptions", "service-subscription");
+        target.put("ServiceSubscription", null);
 
-		for ( int i = 0; i < javaTypeNodes.getLength(); ++ i ) {
-			XSDElement javaTypeElement = new XSDElement((Element) javaTypeNodes.item(i));
-			XSDJavaType javaType = new XSDJavaType(javaTypeElement);
-			map.put(javaType.name(),javaType.getArrayType());
-		}
-		for(String key : map.keySet()) {
-			assertThat(map.get(key),equalTo(target.get(key)));
-		}
-	}
+        for ( int i = 0; i < javaTypeNodes.getLength(); ++ i ) {
+            XSDElement javaTypeElement = new XSDElement((Element) javaTypeNodes.item(i));
+            XSDJavaType javaType = new XSDJavaType(javaTypeElement);
+            map.put(javaType.name(),javaType.getArrayType());
+        }
+        for(String key : map.keySet()) {
+            assertThat(map.get(key),equalTo(target.get(key)));
+        }
+    }
 
 }

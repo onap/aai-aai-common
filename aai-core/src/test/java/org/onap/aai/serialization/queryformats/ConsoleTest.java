@@ -26,55 +26,55 @@ import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexExcepti
 import static org.junit.Assert.*;
 
 public class ConsoleTest {
-	
-	
-	Console fM1 = new Console();
-	
-	String param = "abcd";
-	
-	JsonObject resultVal;
-	
-	@Test
-	public void classConsoleInstantiateCheck() {
-		try {
-				Console fm1 = new Console();
-				assertNotNull("Created class Object is null", fm1);
-    	}
-    	 catch(Exception e) {
-    		 fail();
-    	 }
+    
+    
+    Console fM1 = new Console();
+    
+    String param = "abcd";
+    
+    JsonObject resultVal;
+    
+    @Test
+    public void classConsoleInstantiateCheck() {
+        try {
+                Console fm1 = new Console();
+                assertNotNull("Created class Object is null", fm1);
+        }
+         catch(Exception e) {
+             fail();
+         }
     }
-	
-	//Below method is expecting to throw an exception
-	
-	@Test(expected=NullPointerException.class)
+    
+    //Below method is expecting to throw an exception
+    
+    @Test(expected=NullPointerException.class)
     public void formatObjectParamNullCheck() throws AAIFormatVertexException {
-		
-		param=null;
-		Console fm3 = new Console();
-		resultVal = fm3.formatObject(param).get();
-	}
-	
-	@Test
+        
+        param=null;
+        Console fm3 = new Console();
+        resultVal = fm3.formatObject(param).get();
+    }
+    
+    @Test
     public void formatObjectResultCheck() {
-		
-		try {
-			Console fm2 = new Console();
-			
-			resultVal = fm2.formatObject(param).get();
-			assertNotNull("The result is null", resultVal);
-			
-			//System.out.println(resultVal);
-			
-			JsonObject jsonObj = new JsonObject();
-			jsonObj.addProperty("result", "abcd");
-			
-			assertEquals(jsonObj, resultVal);
-			
-		} 
-		catch (Exception e) {
-			fail();
-		}
-	}
-	
+        
+        try {
+            Console fm2 = new Console();
+            
+            resultVal = fm2.formatObject(param).get();
+            assertNotNull("The result is null", resultVal);
+            
+            //System.out.println(resultVal);
+            
+            JsonObject jsonObj = new JsonObject();
+            jsonObj.addProperty("result", "abcd");
+            
+            assertEquals(jsonObj, resultVal);
+            
+        } 
+        catch (Exception e) {
+            fail();
+        }
+    }
+    
 }

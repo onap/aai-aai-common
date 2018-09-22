@@ -29,20 +29,20 @@ import static org.junit.Assert.*;
 
 public class FormatTest extends AAISetup {
 
-	@Rule
-	public ExpectedException expectedEx = ExpectedException.none();
+    @Rule
+    public ExpectedException expectedEx = ExpectedException.none();
 
-	@Test
-	public void validFormatTest() throws AAIException {
-		assertEquals(Format.count, Format.getFormat("count"));
-	}
+    @Test
+    public void validFormatTest() throws AAIException {
+        assertEquals(Format.count, Format.getFormat("count"));
+    }
 
-	@Test
-	public void invalidFormatTest() throws AAIException {
-		String format = "test";
-		expectedEx.expect(AAIException.class);
-		expectedEx.expectMessage("Unsupported format query parameter " + format + " in request.");
-		Format.getFormat(format);
-	}
+    @Test
+    public void invalidFormatTest() throws AAIException {
+        String format = "test";
+        expectedEx.expect(AAIException.class);
+        expectedEx.expectMessage("Unsupported format query parameter " + format + " in request.");
+        Format.getFormat(format);
+    }
 
 }

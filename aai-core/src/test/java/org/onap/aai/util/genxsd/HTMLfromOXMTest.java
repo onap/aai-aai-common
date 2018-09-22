@@ -56,276 +56,276 @@ import org.w3c.dom.Element;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
-		 SchemaVersions.class,
+         SchemaVersions.class,
         SchemaLocationsBean.class,
         TestUtilConfigTranslatorforBusiness.class,
         EdgeIngestor.class,
         NodeIngestor.class,
-		SwaggerGenerationConfiguration.class
+        SwaggerGenerationConfiguration.class
 
 })
 @TestPropertySource(properties = {
-		"schema.uri.base.path = /aai"
+        "schema.uri.base.path = /aai"
 })
 public class HTMLfromOXMTest {
-	private static final Logger logger = LoggerFactory.getLogger("HTMLfromOXMTest.class");
-	private static final String OXMFILENAME = "src/test/resources/oxm/business_oxm_v11.xml";
-	public static AnnotationConfigApplicationContext ctx = null;
-	private static String testXML;
-	protected static final String SERVICE_NAME = "JUNIT";
-	
-	
-	@Autowired
-	HTMLfromOXM htmlFromOxm;
-	
-	@Autowired
-	SchemaVersions schemaVersions;
-	
-	@BeforeClass
-	public static void setUpContext() throws Exception {
-		
-	}
-	@BeforeClass
+    private static final Logger logger = LoggerFactory.getLogger("HTMLfromOXMTest.class");
+    private static final String OXMFILENAME = "src/test/resources/oxm/business_oxm_v11.xml";
+    public static AnnotationConfigApplicationContext ctx = null;
+    private static String testXML;
+    protected static final String SERVICE_NAME = "JUNIT";
+    
+    
+    @Autowired
+    HTMLfromOXM htmlFromOxm;
+    
+    @Autowired
+    SchemaVersions schemaVersions;
+    
+    @BeforeClass
+    public static void setUpContext() throws Exception {
+        
+    }
+    @BeforeClass
     public static void setupBundleconfig() throws Exception {
         System.setProperty("AJSC_HOME", ".");
         System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
         System.setProperty("aai.service.name", SERVICE_NAME);
         QueryFormatTestHelper.setFinalStatic(AAIConstants.class.getField("AAI_HOME_ETC_OXM"), "src/test/resources/bundleconfig-local/etc/oxm/");
     }
-	
-	@Before
-	public void setUp() throws Exception {
-		XSDElementTest x = new XSDElementTest();
-		x.setUp();
-		testXML = x.testXML;
-		logger.debug(testXML);
-		BufferedWriter bw = new BufferedWriter(new FileWriter(OXMFILENAME));
-		bw.write(testXML);
-		bw.close();
-		    
-	}
+    
+    @Before
+    public void setUp() throws Exception {
+        XSDElementTest x = new XSDElementTest();
+        x.setUp();
+        testXML = x.testXML;
+        logger.debug(testXML);
+        BufferedWriter bw = new BufferedWriter(new FileWriter(OXMFILENAME));
+        bw.write(testXML);
+        bw.close();
+            
+    }
 
-	@Test
-	public void testGetDocumentHeader() {
-		SchemaVersion v = schemaVersions.getAppRootVersion();
-		String header = null;
-		try {
-			htmlFromOxm.setXmlVersion(testXML, v);
-			htmlFromOxm.setSchemaVersions(schemaVersions);
-			header = htmlFromOxm.getDocumentHeader();
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-		logger.debug("Header:");
-		logger.debug(header);
-		assertThat(header, is(HTMLheader()));
-	}
+    @Test
+    public void testGetDocumentHeader() {
+        SchemaVersion v = schemaVersions.getAppRootVersion();
+        String header = null;
+        try {
+            htmlFromOxm.setXmlVersion(testXML, v);
+            htmlFromOxm.setSchemaVersions(schemaVersions);
+            header = htmlFromOxm.getDocumentHeader();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        logger.debug("Header:");
+        logger.debug(header);
+        assertThat(header, is(HTMLheader()));
+    }
 
-	@Test
-	public void testProcess() {
-		SchemaVersion v = schemaVersions.getAppRootVersion();
-		String fileContent = null;
-		try {
-			htmlFromOxm.setXmlVersion(testXML, v);
-			fileContent = htmlFromOxm.process();
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-		logger.debug("FileContent-I:");
-		logger.debug(fileContent);
-		assertThat(fileContent, is(HTMLresult()));
-	}
+    @Test
+    public void testProcess() {
+        SchemaVersion v = schemaVersions.getAppRootVersion();
+        String fileContent = null;
+        try {
+            htmlFromOxm.setXmlVersion(testXML, v);
+            fileContent = htmlFromOxm.process();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        logger.debug("FileContent-I:");
+        logger.debug(fileContent);
+        assertThat(fileContent, is(HTMLresult()));
+    }
 
-	@Test
-	public void testHTMLfromOXMFileVersion() throws IOException {
-		String outfileName = "testXML.xml";
-		File XMLfile = new File(outfileName);
-		XMLfile.createNewFile();
-		BufferedWriter bw = null;
-		Charset charset = Charset.forName("UTF-8");
-		Path path = Paths.get(outfileName);
-		bw = Files.newBufferedWriter(path, charset);
-		bw.write(testXML);
-		bw.close();
-		SchemaVersion v = schemaVersions.getAppRootVersion();
-		String fileContent = null;
-		try {
-			htmlFromOxm.setXmlVersion(testXML, v);
-			fileContent = htmlFromOxm.process();
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-		XMLfile.delete();
-		logger.debug("FileContent-I:");
-		logger.debug(fileContent);
-		assertThat(fileContent, is(HTMLresult()));
-	}
+    @Test
+    public void testHTMLfromOXMFileVersion() throws IOException {
+        String outfileName = "testXML.xml";
+        File XMLfile = new File(outfileName);
+        XMLfile.createNewFile();
+        BufferedWriter bw = null;
+        Charset charset = Charset.forName("UTF-8");
+        Path path = Paths.get(outfileName);
+        bw = Files.newBufferedWriter(path, charset);
+        bw.write(testXML);
+        bw.close();
+        SchemaVersion v = schemaVersions.getAppRootVersion();
+        String fileContent = null;
+        try {
+            htmlFromOxm.setXmlVersion(testXML, v);
+            fileContent = htmlFromOxm.process();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        XMLfile.delete();
+        logger.debug("FileContent-I:");
+        logger.debug(fileContent);
+        assertThat(fileContent, is(HTMLresult()));
+    }
 
-	@Test
-	public void testHTMLfromOXMStringVersion() {
-		SchemaVersion v = schemaVersions.getAppRootVersion();
-		String fileContent = null;
-		try {
-			htmlFromOxm.setXmlVersion(testXML, v);
-			fileContent = htmlFromOxm.process();
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-		logger.debug("FileContent-II:");
-		logger.debug(fileContent);
-		assertThat(fileContent, is(HTMLresult()));
-	}
+    @Test
+    public void testHTMLfromOXMStringVersion() {
+        SchemaVersion v = schemaVersions.getAppRootVersion();
+        String fileContent = null;
+        try {
+            htmlFromOxm.setXmlVersion(testXML, v);
+            fileContent = htmlFromOxm.process();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        logger.debug("FileContent-II:");
+        logger.debug(fileContent);
+        assertThat(fileContent, is(HTMLresult()));
+    }
 
-	@Test
-	public void testProcessJavaTypeElement() {
-		String target = "Element=java-type/Customer";
-		SchemaVersion v = schemaVersions.getAppRootVersion();
-		Element customer = null;
-		try {
-			htmlFromOxm.setXmlVersion(testXML, v);
-			htmlFromOxm.process();
-			customer = htmlFromOxm.getJavaTypeElementSwagger("Customer");
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-		logger.debug("Element:");
-		logger.debug("Element="+customer.getNodeName()+"/"+customer.getAttribute("name"));
-		assertThat("Element="+customer.getNodeName()+"/"+customer.getAttribute("name"), is(target));	}
-	
-	public String HTMLresult() {
-		StringBuilder sb = new StringBuilder(32368);
-		sb.append(HTMLheader());
-		sb.append(HTMLdefs());
-		return sb.toString();
-	}
-	
-	public String HTMLheader() {
-		StringBuilder sb = new StringBuilder(1500);
-		 sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n");
-		 sb.append("<xs:schema elementFormDefault=\"qualified\" version=\"1.0\" targetNamespace=\"http://org.onap.aai.inventory/v11\" xmlns:tns=\"http://org.onap.aai.inventory/v11\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\"\nxmlns:jaxb=\"http://java.sun.com/xml/ns/jaxb\"\r\n");
-		 sb.append("    jaxb:version=\"2.1\"\r\n");
-		 sb.append("    xmlns:annox=\"http://annox.dev.java.net\"\r\n");
-		 sb.append("    jaxb:extensionBindingPrefixes=\"annox\">\n\n");
-		return sb.toString();
-	}
-	public String HTMLdefs() {
-		StringBuilder sb = new StringBuilder(1500);
-		sb.append("  <xs:element name=\"service-subscription\">\n");
-		sb.append("    <xs:complexType>\n");
-		sb.append("      <xs:annotation>\r\n");
-		sb.append("        <xs:appinfo>\r\n");
-		sb.append("          <annox:annotate target=\"class\">@org.onap.aai.annotations.Metadata(description=\"Object that group service instances.\",indexedProps=\"service-type\",dependentOn=\"customer\",container=\"service-subscriptions\",crossEntityReference=\"service-instance,service-type\")</annox:annotate>\r\n");
-		sb.append("        </xs:appinfo>\r\n");
-		sb.append("      </xs:annotation>\r\n");
-		sb.append("      <xs:sequence>\n");
-		sb.append("        <xs:element name=\"service-type\" type=\"xs:string\">\n");
-		sb.append("          <xs:annotation>\r\n");
-		sb.append("            <xs:appinfo>\r\n");
-		sb.append("              <annox:annotate target=\"field\">@org.onap.aai.annotations.Metadata(isKey=true,description=\"Value defined by orchestration to identify this service.\")</annox:annotate>\r\n");
-		sb.append("            </xs:appinfo>\r\n");
-		sb.append("          </xs:annotation>\r\n");
-		sb.append("        </xs:element>\n");
-		sb.append("        <xs:element name=\"temp-ub-sub-account-id\" type=\"xs:string\" minOccurs=\"0\">\n");
-		sb.append("          <xs:annotation>\r\n");
-		sb.append("            <xs:appinfo>\r\n");
-		sb.append("              <annox:annotate target=\"field\">@org.onap.aai.annotations.Metadata(description=\"This property will be deleted from A&amp;AI in the near future. Only stop gap solution.\")</annox:annotate>\r\n");
-		sb.append("            </xs:appinfo>\r\n");
-		sb.append("          </xs:annotation>\r\n");
-		sb.append("        </xs:element>\n");
-		sb.append("        <xs:element name=\"resource-version\" type=\"xs:string\" minOccurs=\"0\">\n");
-		sb.append("          <xs:annotation>\r\n");
-		sb.append("            <xs:appinfo>\r\n");
-		sb.append("              <annox:annotate target=\"field\">@org.onap.aai.annotations.Metadata(description=\"Used for optimistic concurrency.  Must be empty on create, valid on update and delete.\")</annox:annotate>\r\n");
-		sb.append("            </xs:appinfo>\r\n");
-		sb.append("          </xs:annotation>\r\n");
-		sb.append("        </xs:element>\n");
-		sb.append("      </xs:sequence>\n");
-		sb.append("    </xs:complexType>\n");
-		sb.append("  </xs:element>\n");
-		sb.append("  <xs:element name=\"service-subscriptions\">\n");
-		sb.append("    <xs:complexType>\n");
-		sb.append("      <xs:annotation>\r\n");
-		sb.append("        <xs:appinfo>\r\n");
-		sb.append("          <annox:annotate target=\"class\">@org.onap.aai.annotations.Metadata(description=\"Collection of objects that group service instances.\")</annox:annotate>\r\n");
-		sb.append("        </xs:appinfo>\r\n");
-		sb.append("      </xs:annotation>\r\n");
-		sb.append("      <xs:sequence>\n");
-		sb.append("        <xs:element ref=\"tns:service-subscription\" minOccurs=\"0\" maxOccurs=\"5000\"/>\n");
-		sb.append("      </xs:sequence>\n");
-		sb.append("    </xs:complexType>\n");
-		sb.append("  </xs:element>\n");
-		sb.append("  <xs:element name=\"customer\">\n");
-		sb.append("    <xs:complexType>\n");
-		sb.append("      <xs:annotation>\r\n");
-		sb.append("        <xs:appinfo>\r\n");
-		sb.append("          <annox:annotate target=\"class\">@org.onap.aai.annotations.Metadata(description=\"customer identifiers to provide linkage back to BSS information.\",nameProps=\"subscriber-name\",indexedProps=\"subscriber-name,global-customer-id,subscriber-type\",searchable=\"global-customer-id,subscriber-name\",uniqueProps=\"global-customer-id\",container=\"customers\",namespace=\"business\")</annox:annotate>\r\n");
-		sb.append("        </xs:appinfo>\r\n");
-		sb.append("      </xs:annotation>\r\n");
-		sb.append("      <xs:sequence>\n");
-		sb.append("        <xs:element name=\"global-customer-id\" type=\"xs:string\">\n");
-		sb.append("          <xs:annotation>\r\n");
-		sb.append("            <xs:appinfo>\r\n");
-		sb.append("              <annox:annotate target=\"field\">@org.onap.aai.annotations.Metadata(isKey=true,description=\"Global customer id used across to uniquely identify customer.\")</annox:annotate>\r\n");
-		sb.append("            </xs:appinfo>\r\n");
-		sb.append("          </xs:annotation>\r\n");
-		sb.append("        </xs:element>\n");
-		sb.append("        <xs:element name=\"subscriber-name\" type=\"xs:string\">\n");
-		sb.append("          <xs:annotation>\r\n");
-		sb.append("            <xs:appinfo>\r\n");
-		sb.append("              <annox:annotate target=\"field\">@org.onap.aai.annotations.Metadata(description=\"Subscriber name, an alternate way to retrieve a customer.\")</annox:annotate>\r\n");
-		sb.append("            </xs:appinfo>\r\n");
-		sb.append("          </xs:annotation>\r\n");
-		sb.append("        </xs:element>\n");
-		sb.append("        <xs:element name=\"subscriber-type\" type=\"xs:string\">\n");
-		sb.append("          <xs:annotation>\r\n");
-		sb.append("            <xs:appinfo>\r\n");
-		sb.append("              <annox:annotate target=\"field\">@org.onap.aai.annotations.Metadata(description=\"Subscriber type, a way to provide VID with only the INFRA customers.\",defaultValue=\"CUST\")</annox:annotate>\r\n");
-		sb.append("            </xs:appinfo>\r\n");
-		sb.append("          </xs:annotation>\r\n");
-		sb.append("        </xs:element>\n");
-		sb.append("        <xs:element name=\"resource-version\" type=\"xs:string\" minOccurs=\"0\">\n");
-		sb.append("          <xs:annotation>\r\n");
-		sb.append("            <xs:appinfo>\r\n");
-		sb.append("              <annox:annotate target=\"field\">@org.onap.aai.annotations.Metadata(description=\"Used for optimistic concurrency.  Must be empty on create, valid on update and delete.\")</annox:annotate>\r\n");
-		sb.append("            </xs:appinfo>\r\n");
-		sb.append("          </xs:annotation>\r\n");
-		sb.append("        </xs:element>\n");
-		sb.append("        <xs:element ref=\"tns:service-subscriptions\" minOccurs=\"0\"/>\n");
-		sb.append("      </xs:sequence>\n");
-		sb.append("    </xs:complexType>\n");
-		sb.append("  </xs:element>\n");
-		sb.append("  <xs:element name=\"customers\">\n");
-		sb.append("    <xs:complexType>\n");
-		sb.append("      <xs:annotation>\r\n");
-		sb.append("        <xs:appinfo>\r\n");
-		sb.append("          <annox:annotate target=\"class\">@org.onap.aai.annotations.Metadata(description=\"Collection of customer identifiers to provide linkage back to BSS information.\")</annox:annotate>\r\n");
-		sb.append("        </xs:appinfo>\r\n");
-		sb.append("      </xs:annotation>\r\n");
-		sb.append("      <xs:sequence>\n");
-		sb.append("        <xs:element ref=\"tns:customer\" minOccurs=\"0\" maxOccurs=\"5000\"/>\n");
-		sb.append("      </xs:sequence>\n");
-		sb.append("    </xs:complexType>\n");
-		sb.append("  </xs:element>\n");
-		sb.append("  <xs:element name=\"business\">\n");
-		sb.append("    <xs:complexType>\n");
-		sb.append("      <xs:annotation>\r\n");
-		sb.append("        <xs:appinfo>\r\n");
-		sb.append("          <annox:annotate target=\"class\">@org.onap.aai.annotations.Metadata(description=\"Namespace for business related constructs\")</annox:annotate>\r\n");
-		sb.append("        </xs:appinfo>\r\n");
-		sb.append("      </xs:annotation>\r\n");
-		sb.append("      <xs:sequence>\n");
-		sb.append("        <xs:element ref=\"tns:customers\" minOccurs=\"0\"/>\n");
-		sb.append("      </xs:sequence>\n");
-		sb.append("    </xs:complexType>\n");
-		sb.append("  </xs:element>\n");
-		sb.append("  <xs:element name=\"inventory\">\n");
-		sb.append("    <xs:complexType>\n");
-		sb.append("      <xs:sequence>\n");
-		sb.append("        <xs:element ref=\"tns:business\" minOccurs=\"0\"/>\n");
-		sb.append("      </xs:sequence>\n");
-		sb.append("    </xs:complexType>\n");
-		sb.append("  </xs:element>\n");
-		sb.append("</xs:schema>\n");
-		return sb.toString();
-	}
+    @Test
+    public void testProcessJavaTypeElement() {
+        String target = "Element=java-type/Customer";
+        SchemaVersion v = schemaVersions.getAppRootVersion();
+        Element customer = null;
+        try {
+            htmlFromOxm.setXmlVersion(testXML, v);
+            htmlFromOxm.process();
+            customer = htmlFromOxm.getJavaTypeElementSwagger("Customer");
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        logger.debug("Element:");
+        logger.debug("Element="+customer.getNodeName()+"/"+customer.getAttribute("name"));
+        assertThat("Element="+customer.getNodeName()+"/"+customer.getAttribute("name"), is(target));    }
+    
+    public String HTMLresult() {
+        StringBuilder sb = new StringBuilder(32368);
+        sb.append(HTMLheader());
+        sb.append(HTMLdefs());
+        return sb.toString();
+    }
+    
+    public String HTMLheader() {
+        StringBuilder sb = new StringBuilder(1500);
+         sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n");
+         sb.append("<xs:schema elementFormDefault=\"qualified\" version=\"1.0\" targetNamespace=\"http://org.onap.aai.inventory/v11\" xmlns:tns=\"http://org.onap.aai.inventory/v11\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\"\nxmlns:jaxb=\"http://java.sun.com/xml/ns/jaxb\"\r\n");
+         sb.append("    jaxb:version=\"2.1\"\r\n");
+         sb.append("    xmlns:annox=\"http://annox.dev.java.net\"\r\n");
+         sb.append("    jaxb:extensionBindingPrefixes=\"annox\">\n\n");
+        return sb.toString();
+    }
+    public String HTMLdefs() {
+        StringBuilder sb = new StringBuilder(1500);
+        sb.append("  <xs:element name=\"service-subscription\">\n");
+        sb.append("    <xs:complexType>\n");
+        sb.append("      <xs:annotation>\r\n");
+        sb.append("        <xs:appinfo>\r\n");
+        sb.append("          <annox:annotate target=\"class\">@org.onap.aai.annotations.Metadata(description=\"Object that group service instances.\",indexedProps=\"service-type\",dependentOn=\"customer\",container=\"service-subscriptions\",crossEntityReference=\"service-instance,service-type\")</annox:annotate>\r\n");
+        sb.append("        </xs:appinfo>\r\n");
+        sb.append("      </xs:annotation>\r\n");
+        sb.append("      <xs:sequence>\n");
+        sb.append("        <xs:element name=\"service-type\" type=\"xs:string\">\n");
+        sb.append("          <xs:annotation>\r\n");
+        sb.append("            <xs:appinfo>\r\n");
+        sb.append("              <annox:annotate target=\"field\">@org.onap.aai.annotations.Metadata(isKey=true,description=\"Value defined by orchestration to identify this service.\")</annox:annotate>\r\n");
+        sb.append("            </xs:appinfo>\r\n");
+        sb.append("          </xs:annotation>\r\n");
+        sb.append("        </xs:element>\n");
+        sb.append("        <xs:element name=\"temp-ub-sub-account-id\" type=\"xs:string\" minOccurs=\"0\">\n");
+        sb.append("          <xs:annotation>\r\n");
+        sb.append("            <xs:appinfo>\r\n");
+        sb.append("              <annox:annotate target=\"field\">@org.onap.aai.annotations.Metadata(description=\"This property will be deleted from A&amp;AI in the near future. Only stop gap solution.\")</annox:annotate>\r\n");
+        sb.append("            </xs:appinfo>\r\n");
+        sb.append("          </xs:annotation>\r\n");
+        sb.append("        </xs:element>\n");
+        sb.append("        <xs:element name=\"resource-version\" type=\"xs:string\" minOccurs=\"0\">\n");
+        sb.append("          <xs:annotation>\r\n");
+        sb.append("            <xs:appinfo>\r\n");
+        sb.append("              <annox:annotate target=\"field\">@org.onap.aai.annotations.Metadata(description=\"Used for optimistic concurrency.  Must be empty on create, valid on update and delete.\")</annox:annotate>\r\n");
+        sb.append("            </xs:appinfo>\r\n");
+        sb.append("          </xs:annotation>\r\n");
+        sb.append("        </xs:element>\n");
+        sb.append("      </xs:sequence>\n");
+        sb.append("    </xs:complexType>\n");
+        sb.append("  </xs:element>\n");
+        sb.append("  <xs:element name=\"service-subscriptions\">\n");
+        sb.append("    <xs:complexType>\n");
+        sb.append("      <xs:annotation>\r\n");
+        sb.append("        <xs:appinfo>\r\n");
+        sb.append("          <annox:annotate target=\"class\">@org.onap.aai.annotations.Metadata(description=\"Collection of objects that group service instances.\")</annox:annotate>\r\n");
+        sb.append("        </xs:appinfo>\r\n");
+        sb.append("      </xs:annotation>\r\n");
+        sb.append("      <xs:sequence>\n");
+        sb.append("        <xs:element ref=\"tns:service-subscription\" minOccurs=\"0\" maxOccurs=\"5000\"/>\n");
+        sb.append("      </xs:sequence>\n");
+        sb.append("    </xs:complexType>\n");
+        sb.append("  </xs:element>\n");
+        sb.append("  <xs:element name=\"customer\">\n");
+        sb.append("    <xs:complexType>\n");
+        sb.append("      <xs:annotation>\r\n");
+        sb.append("        <xs:appinfo>\r\n");
+        sb.append("          <annox:annotate target=\"class\">@org.onap.aai.annotations.Metadata(description=\"customer identifiers to provide linkage back to BSS information.\",nameProps=\"subscriber-name\",indexedProps=\"subscriber-name,global-customer-id,subscriber-type\",searchable=\"global-customer-id,subscriber-name\",uniqueProps=\"global-customer-id\",container=\"customers\",namespace=\"business\")</annox:annotate>\r\n");
+        sb.append("        </xs:appinfo>\r\n");
+        sb.append("      </xs:annotation>\r\n");
+        sb.append("      <xs:sequence>\n");
+        sb.append("        <xs:element name=\"global-customer-id\" type=\"xs:string\">\n");
+        sb.append("          <xs:annotation>\r\n");
+        sb.append("            <xs:appinfo>\r\n");
+        sb.append("              <annox:annotate target=\"field\">@org.onap.aai.annotations.Metadata(isKey=true,description=\"Global customer id used across to uniquely identify customer.\")</annox:annotate>\r\n");
+        sb.append("            </xs:appinfo>\r\n");
+        sb.append("          </xs:annotation>\r\n");
+        sb.append("        </xs:element>\n");
+        sb.append("        <xs:element name=\"subscriber-name\" type=\"xs:string\">\n");
+        sb.append("          <xs:annotation>\r\n");
+        sb.append("            <xs:appinfo>\r\n");
+        sb.append("              <annox:annotate target=\"field\">@org.onap.aai.annotations.Metadata(description=\"Subscriber name, an alternate way to retrieve a customer.\")</annox:annotate>\r\n");
+        sb.append("            </xs:appinfo>\r\n");
+        sb.append("          </xs:annotation>\r\n");
+        sb.append("        </xs:element>\n");
+        sb.append("        <xs:element name=\"subscriber-type\" type=\"xs:string\">\n");
+        sb.append("          <xs:annotation>\r\n");
+        sb.append("            <xs:appinfo>\r\n");
+        sb.append("              <annox:annotate target=\"field\">@org.onap.aai.annotations.Metadata(description=\"Subscriber type, a way to provide VID with only the INFRA customers.\",defaultValue=\"CUST\")</annox:annotate>\r\n");
+        sb.append("            </xs:appinfo>\r\n");
+        sb.append("          </xs:annotation>\r\n");
+        sb.append("        </xs:element>\n");
+        sb.append("        <xs:element name=\"resource-version\" type=\"xs:string\" minOccurs=\"0\">\n");
+        sb.append("          <xs:annotation>\r\n");
+        sb.append("            <xs:appinfo>\r\n");
+        sb.append("              <annox:annotate target=\"field\">@org.onap.aai.annotations.Metadata(description=\"Used for optimistic concurrency.  Must be empty on create, valid on update and delete.\")</annox:annotate>\r\n");
+        sb.append("            </xs:appinfo>\r\n");
+        sb.append("          </xs:annotation>\r\n");
+        sb.append("        </xs:element>\n");
+        sb.append("        <xs:element ref=\"tns:service-subscriptions\" minOccurs=\"0\"/>\n");
+        sb.append("      </xs:sequence>\n");
+        sb.append("    </xs:complexType>\n");
+        sb.append("  </xs:element>\n");
+        sb.append("  <xs:element name=\"customers\">\n");
+        sb.append("    <xs:complexType>\n");
+        sb.append("      <xs:annotation>\r\n");
+        sb.append("        <xs:appinfo>\r\n");
+        sb.append("          <annox:annotate target=\"class\">@org.onap.aai.annotations.Metadata(description=\"Collection of customer identifiers to provide linkage back to BSS information.\")</annox:annotate>\r\n");
+        sb.append("        </xs:appinfo>\r\n");
+        sb.append("      </xs:annotation>\r\n");
+        sb.append("      <xs:sequence>\n");
+        sb.append("        <xs:element ref=\"tns:customer\" minOccurs=\"0\" maxOccurs=\"5000\"/>\n");
+        sb.append("      </xs:sequence>\n");
+        sb.append("    </xs:complexType>\n");
+        sb.append("  </xs:element>\n");
+        sb.append("  <xs:element name=\"business\">\n");
+        sb.append("    <xs:complexType>\n");
+        sb.append("      <xs:annotation>\r\n");
+        sb.append("        <xs:appinfo>\r\n");
+        sb.append("          <annox:annotate target=\"class\">@org.onap.aai.annotations.Metadata(description=\"Namespace for business related constructs\")</annox:annotate>\r\n");
+        sb.append("        </xs:appinfo>\r\n");
+        sb.append("      </xs:annotation>\r\n");
+        sb.append("      <xs:sequence>\n");
+        sb.append("        <xs:element ref=\"tns:customers\" minOccurs=\"0\"/>\n");
+        sb.append("      </xs:sequence>\n");
+        sb.append("    </xs:complexType>\n");
+        sb.append("  </xs:element>\n");
+        sb.append("  <xs:element name=\"inventory\">\n");
+        sb.append("    <xs:complexType>\n");
+        sb.append("      <xs:sequence>\n");
+        sb.append("        <xs:element ref=\"tns:business\" minOccurs=\"0\"/>\n");
+        sb.append("      </xs:sequence>\n");
+        sb.append("    </xs:complexType>\n");
+        sb.append("  </xs:element>\n");
+        sb.append("</xs:schema>\n");
+        return sb.toString();
+    }
 }

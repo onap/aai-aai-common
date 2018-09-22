@@ -34,52 +34,52 @@ import org.onap.aai.util.AAIConstants;
  */
 public abstract class AbstractConfigTranslator extends ConfigTranslator {
 
-	public AbstractConfigTranslator(SchemaLocationsBean bean, SchemaVersions schemaVersions) {
-		super(bean, schemaVersions);
-	}
+    public AbstractConfigTranslator(SchemaLocationsBean bean, SchemaVersions schemaVersions) {
+        super(bean, schemaVersions);
+    }
 
-	
+    
 
-	/* (non-Javadoc)
-	 * @see org.onap.aai.setup.ConfigTranslator#getNodeFiles()
-	 */
-	@Override
-	public Map<SchemaVersion, List<String>> getNodeFiles() {
-		String prefix = bean.getNodeDirectory() + AAIConstants.AAI_FILESEP ;
-		
-		String suffix = ".xml";
-		
-		Map<SchemaVersion, List<String>> files = new TreeMap<>();
-		for (SchemaVersion v : schemaVersions.getVersions()) {
-			
-			List<String> container = getVersionNodeFiles(v);
-			
-			
-			files.put(v, container);
-		}
-		
-		return files;
-	}
-	
-
-	public List<String> getVersionNodeFiles(SchemaVersion v) {
-		Pattern p = Pattern.compile("aai(.*)"+"_oxm_(.*).xml" );
-		
-		List<String> container = new ArrayList<>();
-		String directoryName = bean.getNodeDirectory() + AAIConstants.AAI_FILESEP  + v.toString() + AAIConstants.AAI_FILESEP ;
-		
-		File[] files = new File(directoryName).listFiles();
-		for (File f : files) {
-			String fileName = f.getName();
-			Matcher m = p.matcher(fileName);
-			if (m.find()) {
-				String file = directoryName + m.group();
-				container.add(file.toString());
-			}
+    /* (non-Javadoc)
+     * @see org.onap.aai.setup.ConfigTranslator#getNodeFiles()
+     */
+    @Override
+    public Map<SchemaVersion, List<String>> getNodeFiles() {
+        String prefix = bean.getNodeDirectory() + AAIConstants.AAI_FILESEP ;
+        
+        String suffix = ".xml";
+        
+        Map<SchemaVersion, List<String>> files = new TreeMap<>();
+        for (SchemaVersion v : schemaVersions.getVersions()) {
             
-		}
-		return container;
-		
-	}
+            List<String> container = getVersionNodeFiles(v);
+            
+            
+            files.put(v, container);
+        }
+        
+        return files;
+    }
+    
+
+    public List<String> getVersionNodeFiles(SchemaVersion v) {
+        Pattern p = Pattern.compile("aai(.*)"+"_oxm_(.*).xml" );
+        
+        List<String> container = new ArrayList<>();
+        String directoryName = bean.getNodeDirectory() + AAIConstants.AAI_FILESEP  + v.toString() + AAIConstants.AAI_FILESEP ;
+        
+        File[] files = new File(directoryName).listFiles();
+        for (File f : files) {
+            String fileName = f.getName();
+            Matcher m = p.matcher(fileName);
+            if (m.find()) {
+                String file = directoryName + m.group();
+                container.add(file.toString());
+            }
+            
+        }
+        return container;
+        
+    }
 
 }

@@ -27,80 +27,80 @@ import static org.junit.Assert.*;
 
 public class LoggingContextTest {
 
-	private static final int MAX_STORED_CONTEXTS = 100;
+    private static final int MAX_STORED_CONTEXTS = 100;
 
-	@Test
-	public void testStopWatch() {
-		try {
-			LoggingContext.stopWatchStop();
-			throw new AssertionError("No exception thrown when LoggingContext.stopWatchStop() called without a prior LoggingContext.stopWatchStart()");
-		} catch (StopWatchNotStartedException e) {
-			//Expected
-		}
+    @Test
+    public void testStopWatch() {
+        try {
+            LoggingContext.stopWatchStop();
+            throw new AssertionError("No exception thrown when LoggingContext.stopWatchStop() called without a prior LoggingContext.stopWatchStart()");
+        } catch (StopWatchNotStartedException e) {
+            //Expected
+        }
 
-		LoggingContext.stopWatchStart();
+        LoggingContext.stopWatchStart();
 
-		assertTrue(LoggingContext.stopWatchStop() >= 0);
+        assertTrue(LoggingContext.stopWatchStop() >= 0);
 
-		try {
-			LoggingContext.stopWatchStop();
-			throw new AssertionError("No exception thrown when LoggingContext.stopWatchStop() twice in succession");
-		} catch (StopWatchNotStartedException e) {
-			//Expected
-		}
-	}
+        try {
+            LoggingContext.stopWatchStop();
+            throw new AssertionError("No exception thrown when LoggingContext.stopWatchStop() twice in succession");
+        } catch (StopWatchNotStartedException e) {
+            //Expected
+        }
+    }
 
-	@Test
-	public void testRequestId() { //AKA Transaction ID
-		final String sUuid = "57d51eaa-edc6-4f50-a69d-f2d4d2445120";
+    @Test
+    public void testRequestId() { //AKA Transaction ID
+        final String sUuid = "57d51eaa-edc6-4f50-a69d-f2d4d2445120";
 
-		LoggingContext.requestId(sUuid);
+        LoggingContext.requestId(sUuid);
 
-		assertEquals(LoggingContext.requestId(), UUID.fromString(sUuid));
+        assertEquals(LoggingContext.requestId(), UUID.fromString(sUuid));
 
-		final UUID uuid = UUID.randomUUID();
+        final UUID uuid = UUID.randomUUID();
 
-		LoggingContext.requestId(uuid);
+        LoggingContext.requestId(uuid);
 
-		assertEquals(LoggingContext.requestId(), uuid);
+        assertEquals(LoggingContext.requestId(), uuid);
 
-		LoggingContext.requestId("foo"); //Illegal - this will result in a new, randomly
-										//generated UUID as per the logging spec
+        LoggingContext.requestId("foo"); //Illegal - this will result in a new, randomly
+                                        //generated UUID as per the logging spec
 
-		assertNotNull(LoggingContext.requestId()); //Make sure ANY UUID was assigned
-		assertNotEquals(LoggingContext.requestId(), uuid); //Make sure it actually changed from the last
-															//known valid UUID
-	}
+        assertNotNull(LoggingContext.requestId()); //Make sure ANY UUID was assigned
+        assertNotEquals(LoggingContext.requestId(), uuid); //Make sure it actually changed from the last
+                                                            //known valid UUID
+    }
 
-	@Test
-	public void testClear() {
-		LoggingContext.init();
-		LoggingContext.clear();
+    @Test
+    public void testClear() {
+        LoggingContext.init();
+        LoggingContext.clear();
 
-		assertEquals(Collections.emptyMap(), LoggingContext.getCopy());
-	}
+        assertEquals(Collections.emptyMap(), LoggingContext.getCopy());
+    }
 
-	@Test
-	public void testSaveRestore() {
+    @Test
+    public void testSaveRestore() {
 
-		final Deque<Map<String, String>> contexts  = new LinkedList<Map<String, String>> ();
+        final Deque<Map<String, String>> contexts  = new LinkedList<Map<String, String>> ();
 
-		LoggingContext.init();
+        LoggingContext.init();
 
-		for (int i = 0; i < MAX_STORED_CONTEXTS; i++) {
-			LoggingContext.customField1(String.valueOf(i));
-	
-			assertEquals(LoggingContext.customField1(), String.valueOf(i));
+        for (int i = 0; i < MAX_STORED_CONTEXTS; i++) {
+            LoggingContext.customField1(String.valueOf(i));
+    
+            assertEquals(LoggingContext.customField1(), String.valueOf(i));
 
-			LoggingContext.save();
+            LoggingContext.save();
 
-			contexts.push(LoggingContext.getCopy());
-		}
+            contexts.push(LoggingContext.getCopy());
+        }
 
-		while (contexts.peek() != null) {
-			LoggingContext.restore();
+        while (contexts.peek() != null) {
+            LoggingContext.restore();
 
-			assertEquals(LoggingContext.getCopy(), contexts.pop());
-		}
-	}
+            assertEquals(LoggingContext.getCopy(), contexts.pop());
+        }
+    }
 }

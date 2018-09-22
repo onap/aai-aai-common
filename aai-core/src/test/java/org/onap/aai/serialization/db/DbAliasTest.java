@@ -59,92 +59,92 @@ import static org.mockito.Mockito.when;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class DbAliasTest extends AAISetup {
 
-	private JanusGraph graph;
+    private JanusGraph graph;
 
-	private SchemaVersion version;
-	private final ModelType introspectorFactoryType = ModelType.MOXY;
-	private final DBConnectionType type = DBConnectionType.REALTIME;
-	private Loader loader;
-	private TransactionalGraphEngine dbEngine;
+    private SchemaVersion version;
+    private final ModelType introspectorFactoryType = ModelType.MOXY;
+    private final DBConnectionType type = DBConnectionType.REALTIME;
+    private Loader loader;
+    private TransactionalGraphEngine dbEngine;
 
-	@Parameterized.Parameter(value = 0)
-	public QueryStyle queryStyle;
+    @Parameterized.Parameter(value = 0)
+    public QueryStyle queryStyle;
 
-	@Parameterized.Parameters(name = "QueryStyle.{0}")
-	public static Collection<Object[]> data() {
-		return Arrays.asList(new Object[][]{
-				{QueryStyle.TRAVERSAL},
-				{QueryStyle.TRAVERSAL_URI}
-		});
-	}
+    @Parameterized.Parameters(name = "QueryStyle.{0}")
+    public static Collection<Object[]> data() {
+        return Arrays.asList(new Object[][]{
+                {QueryStyle.TRAVERSAL},
+                {QueryStyle.TRAVERSAL_URI}
+        });
+    }
 
-	@Before
-	public void setup() throws Exception {
-	    version = schemaVersions.getDepthVersion();
-		graph = JanusGraphFactory.build().set("storage.backend","inmemory").open();
-		loader = loaderFactory.createLoaderForVersion(introspectorFactoryType, version);
-		dbEngine = new JanusGraphDBEngine(
-				queryStyle,
-				type,
-				loader);
-	}
+    @Before
+    public void setup() throws Exception {
+        version = schemaVersions.getDepthVersion();
+        graph = JanusGraphFactory.build().set("storage.backend","inmemory").open();
+        loader = loaderFactory.createLoaderForVersion(introspectorFactoryType, version);
+        dbEngine = new JanusGraphDBEngine(
+                queryStyle,
+                type,
+                loader);
+    }
 
-	@After
-	public void tearDown() {
-		graph.tx().rollback();
-		graph.close();
-	}
+    @After
+    public void tearDown() {
+        graph.tx().rollback();
+        graph.close();
+    }
 
-	@Test
-	public void checkOnWrite() throws AAIException, UnsupportedEncodingException, URISyntaxException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException, NoSuchMethodException, InterruptedException {
-		final String property = "persona-model-customization-id";
-		String dbPropertyName = property;
-		TransactionalGraphEngine spy = spy(this.dbEngine);
-		TransactionalGraphEngine.Admin adminSpy = spy(dbEngine.asAdmin());
-		Graph g = graph.newTransaction();
-		GraphTraversalSource traversal = g.traversal();
-		when(spy.asAdmin()).thenReturn(adminSpy);
-		when(adminSpy.getTraversalSource()).thenReturn(traversal);
-		DBSerializer serializer = new DBSerializer(version, spy, introspectorFactoryType, "AAI_TEST");
-		QueryParser uriQuery = spy.getQueryBuilder().createQueryFromURI(new URI("network/generic-vnfs/generic-vnf/key1"));
-		Introspector obj = loader.introspectorFromName("generic-vnf");
-		Vertex v = g.addVertex();
-		Object id = v.id();
-		obj.setValue("vnf-id", "key1");
-		obj.setValue(property, "hello");
-		serializer.serializeToDb(obj, v, uriQuery, "", "");
-		g.tx().commit();
-		v = graph.traversal().V(id).next();
-		Map<PropertyMetadata, String> map = obj.getPropertyMetadata(property);
-		if (map.containsKey(PropertyMetadata.DB_ALIAS)) {
-			dbPropertyName = map.get(PropertyMetadata.DB_ALIAS);
-		}
+    @Test
+    public void checkOnWrite() throws AAIException, UnsupportedEncodingException, URISyntaxException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException, NoSuchMethodException, InterruptedException {
+        final String property = "persona-model-customization-id";
+        String dbPropertyName = property;
+        TransactionalGraphEngine spy = spy(this.dbEngine);
+        TransactionalGraphEngine.Admin adminSpy = spy(dbEngine.asAdmin());
+        Graph g = graph.newTransaction();
+        GraphTraversalSource traversal = g.traversal();
+        when(spy.asAdmin()).thenReturn(adminSpy);
+        when(adminSpy.getTraversalSource()).thenReturn(traversal);
+        DBSerializer serializer = new DBSerializer(version, spy, introspectorFactoryType, "AAI_TEST");
+        QueryParser uriQuery = spy.getQueryBuilder().createQueryFromURI(new URI("network/generic-vnfs/generic-vnf/key1"));
+        Introspector obj = loader.introspectorFromName("generic-vnf");
+        Vertex v = g.addVertex();
+        Object id = v.id();
+        obj.setValue("vnf-id", "key1");
+        obj.setValue(property, "hello");
+        serializer.serializeToDb(obj, v, uriQuery, "", "");
+        g.tx().commit();
+        v = graph.traversal().V(id).next();
+        Map<PropertyMetadata, String> map = obj.getPropertyMetadata(property);
+        if (map.containsKey(PropertyMetadata.DB_ALIAS)) {
+            dbPropertyName = map.get(PropertyMetadata.DB_ALIAS);
+        }
 
-		assertEquals("dbAlias is ", "model-customization-id", dbPropertyName);
-		assertEquals("dbAlias property exists", "hello", v.property(dbPropertyName).orElse(""));
-		assertEquals("model property does not", "missing", v.property(property).orElse("missing"));
+        assertEquals("dbAlias is ", "model-customization-id", dbPropertyName);
+        assertEquals("dbAlias property exists", "hello", v.property(dbPropertyName).orElse(""));
+        assertEquals("model property does not", "missing", v.property(property).orElse("missing"));
 
-	}
+    }
 
-	@Test
-	public void checkOnRead() throws AAIException, UnsupportedEncodingException, URISyntaxException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException, NoSuchMethodException, InterruptedException, MalformedURLException {
-		final String property = "persona-model-customization-id";
+    @Test
+    public void checkOnRead() throws AAIException, UnsupportedEncodingException, URISyntaxException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException, NoSuchMethodException, InterruptedException, MalformedURLException {
+        final String property = "persona-model-customization-id";
 
-		TransactionalGraphEngine spy = spy(dbEngine);
-		TransactionalGraphEngine.Admin adminSpy = spy(dbEngine.asAdmin());
-		Vertex v = graph.traversal().addV("vnf-id", "key1", "model-customization-id", "hello").next();
-		graph.tx().commit();
-		Graph g = graph.newTransaction();
-		GraphTraversalSource traversal = g.traversal();
-		when(spy.asAdmin()).thenReturn(adminSpy);
-		when(adminSpy.getTraversalSource()).thenReturn(traversal);
-		DBSerializer serializer = new DBSerializer(version, spy, introspectorFactoryType, "AAI_TEST");
-		Introspector obj = loader.introspectorFromName("generic-vnf");
-		serializer.dbToObject(Collections.singletonList(v), obj, 0, true, "false");
+        TransactionalGraphEngine spy = spy(dbEngine);
+        TransactionalGraphEngine.Admin adminSpy = spy(dbEngine.asAdmin());
+        Vertex v = graph.traversal().addV("vnf-id", "key1", "model-customization-id", "hello").next();
+        graph.tx().commit();
+        Graph g = graph.newTransaction();
+        GraphTraversalSource traversal = g.traversal();
+        when(spy.asAdmin()).thenReturn(adminSpy);
+        when(adminSpy.getTraversalSource()).thenReturn(traversal);
+        DBSerializer serializer = new DBSerializer(version, spy, introspectorFactoryType, "AAI_TEST");
+        Introspector obj = loader.introspectorFromName("generic-vnf");
+        serializer.dbToObject(Collections.singletonList(v), obj, 0, true, "false");
 
-		assertEquals("dbAlias property exists", "hello", obj.getValue(property));
+        assertEquals("dbAlias property exists", "hello", obj.getValue(property));
 
-	}
+    }
 
 
 }

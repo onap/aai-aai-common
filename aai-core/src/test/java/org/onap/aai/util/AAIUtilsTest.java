@@ -38,51 +38,51 @@ import org.junit.Test;
 
 public class AAIUtilsTest {
 
-	@Test
-	public void testNullCheckWithNull() {
-		List<String> newList = null;
-		Iterable<String> res = AAIUtils.nullCheck(newList);
-		assertNotNull("nullCheck() should return empty list", res);
-		assertEquals(Collections.<String>emptyList(), res);
-	}
+    @Test
+    public void testNullCheckWithNull() {
+        List<String> newList = null;
+        Iterable<String> res = AAIUtils.nullCheck(newList);
+        assertNotNull("nullCheck() should return empty list", res);
+        assertEquals(Collections.<String>emptyList(), res);
+    }
 
-	@Test
-	public void testNullCheckWithList() {
-		List<String> newList = new ArrayList<String>();
-		newList.add("testString");
+    @Test
+    public void testNullCheckWithList() {
+        List<String> newList = new ArrayList<String>();
+        newList.add("testString");
 
-		Iterable<String> res = AAIUtils.nullCheck(newList);
+        Iterable<String> res = AAIUtils.nullCheck(newList);
 
-		assertNotNull("nullCheck() should return back list", res);
-		assertEquals(newList, res);
-	}
+        assertNotNull("nullCheck() should return back list", res);
+        assertEquals(newList, res);
+    }
 
-	@Test
-	public void testGenDate() {
+    @Test
+    public void testGenDate() {
 
-		Date d1 = new Date(0);
+        Date d1 = new Date(0);
 
-		DateFormat formatter = new SimpleDateFormat("YYMMdd-HH:mm:ss:SSS");
-		formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
-		formatter.setLenient(false);
+        DateFormat formatter = new SimpleDateFormat("YYMMdd-HH:mm:ss:SSS");
+        formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
+        formatter.setLenient(false);
 
-		Date d2 = null;
+        Date d2 = null;
 
-		try {
-			d2 = formatter.parse(AAIUtils.genDate());
-		} catch (ParseException e) {
-			fail("Date parsing exception");
-			e.printStackTrace();
-		}
+        try {
+            d2 = formatter.parse(AAIUtils.genDate());
+        } catch (ParseException e) {
+            fail("Date parsing exception");
+            e.printStackTrace();
+        }
 
-		try {
-			TimeUnit.SECONDS.sleep(1);
-		} catch (InterruptedException e1) {}
+        try {
+            TimeUnit.SECONDS.sleep(1);
+        } catch (InterruptedException e1) {}
 
-		Date d3 = new Date();
+        Date d3 = new Date();
 
-		assertTrue("Generated date is not after a past date", d2.after(d1));
-		assertTrue("Generated date is not before a future date", d2.before(d3));
-	}
+        assertTrue("Generated date is not after a past date", d2.after(d1));
+        assertTrue("Generated date is not before a future date", d2.before(d3));
+    }
 
 }
