@@ -197,7 +197,7 @@
 		"to": "service-instance",
 		"label": "org.onap.relationships.inventory.PartOf",
 		"direction": "OUT",
-		"multiplicity": "ONE2MANY",
+		"multiplicity": "MANY2MANY",
 		"contains-other-v": "NONE",
 		"delete-other-v": "NONE",
 		"prevent-delete": "NONE",
