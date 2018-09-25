@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a76adc5_46b5d77c",
+        "filename": "aai-core/src/main/java/org/onap/aai/config/SwaggerGenerationConfiguration.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 75
+      },
+      "writtenOn": "2018-09-25T19:53:28Z",
+      "side": 0,
+      "message": "Can you make sure you don\u0027t remove the IBM copyright",
+      "revId": "dce5708124f72b9276791024e2d7add51e2e236b",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
