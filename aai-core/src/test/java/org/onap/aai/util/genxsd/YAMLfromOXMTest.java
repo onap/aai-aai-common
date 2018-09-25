@@ -76,7 +76,8 @@ import com.google.common.collect.Multimap;
 
 })
 @TestPropertySource(properties = {
-		"schema.uri.base.path = /aai"
+		"schema.uri.base.path = /aai",
+		"schema.xsd.maxoccurs = 5000"
 })
 public class YAMLfromOXMTest {
 	@Autowired

@@ -64,7 +64,8 @@ import org.w3c.dom.Element;
 
 })
 @TestPropertySource(properties = {
-		"schema.uri.base.path = /aai"
+		"schema.uri.base.path = /aai",
+		"schema.xsd.maxoccurs = 5000"
 })
 public class NodesYAMLfromOXMTest {
 //public class NodesYAMLfromOXMTest extends AAISetup {
