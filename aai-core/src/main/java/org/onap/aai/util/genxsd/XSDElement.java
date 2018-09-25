@@ -40,16 +40,25 @@ import com.google.common.base.Joiner;
 
 public class XSDElement implements Element {
 	Element xmlElementElement;
+	String maxOccurs;
 	private static final int VALUE_NONE = 0;
 	private static final int VALUE_DESCRIPTION = 1;
 	private static final int VALUE_INDEXED_PROPS = 2;
 	private static final int VALUE_CONTAINER = 3;
 	private static final int VALUE_REQUIRES = 4;
 
+	public XSDElement(Element xmlElementElement, String maxOccurs) {
+		super();
+		this.xmlElementElement = xmlElementElement;
+		this.maxOccurs = maxOccurs;
+	}
+	
 	public XSDElement(Element xmlElementElement) {
 		super();
 		this.xmlElementElement = xmlElementElement;
+		this.maxOccurs = null;
 	}
+	
 	public String name() {
 		return this.getAttribute("name");
 	}
@@ -297,14 +306,14 @@ public class XSDElement implements Element {
 			sbElement.append(" type=\"xs:int\"");
 		if ( elementType.equals("java.lang.Boolean"))
 			sbElement.append(" type=\"xs:boolean\"");
-		if ( ("java.lang.Boolean".equals(elementType)) || (elementIsRequired == null || !elementIsRequired.equals("true")||addType != null)) {	
+		if ( addType != null || elementType.startsWith("java.lang.") ) {	
 			sbElement.append(" minOccurs=\"0\"");
 		} 
 		if ( elementContainerType != null && elementContainerType.equals("java.util.ArrayList")) {
-			sbElement.append(" maxOccurs=\"5000\"");
+			sbElement.append(" maxOccurs=\"" + maxOccurs + "\"");
 		}
 		if(useAnnotation) {				
-			String annotation = new XSDElement(xmlElementElement).getHTMLAnnotation("field", "          ");
+			String annotation = new XSDElement(xmlElementElement, maxOccurs).getHTMLAnnotation("field", "          ");
 			sbElement.append(StringUtils.isNotEmpty(annotation) ? ">\n" : "");
 				sbElement.append(annotation);
 				sbElement.append(StringUtils.isNotEmpty(annotation) ? "        </xs:element>\n" : "/>\n" );
@@ -340,7 +349,7 @@ public class XSDElement implements Element {
 		sbElement.append(">\n");
 		sbElement.append("          <xs:complexType>\n");
 		if(useAnnotation) {
-			XSDElement javaTypeElement = new XSDElement((Element)this.getParentNode());
+			XSDElement javaTypeElement = new XSDElement((Element)this.getParentNode(), maxOccurs);
 			sbElement.append(javaTypeElement.getHTMLAnnotation("class", "            "));
 		}
 		sbElement.append("            <xs:sequence>\n");

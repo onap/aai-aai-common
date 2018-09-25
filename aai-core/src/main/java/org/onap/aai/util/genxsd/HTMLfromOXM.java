@@ -22,10 +22,13 @@ package org.onap.aai.util.genxsd;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-
+import org.apache.commons.lang.StringUtils;
 import org.onap.aai.config.SpringContextAware;
 import org.onap.aai.edges.EdgeIngestor;
 import org.onap.aai.edges.exceptions.EdgeRuleNotFoundException;
@@ -39,17 +42,22 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+
+import com.google.common.base.CaseFormat;
 
 public class HTMLfromOXM extends OxmFileProcessor {
 
 	private static final Logger logger = LoggerFactory.getLogger("HTMLfromOXM.class");
+	public static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
+	private String maxOccurs;
 	
-	
-	public HTMLfromOXM(SchemaVersions schemaVersions, NodeIngestor ni, EdgeIngestor ei ){
+	public HTMLfromOXM(String maxOccurs, SchemaVersions schemaVersions, NodeIngestor ni, EdgeIngestor ei ){
 		super(schemaVersions, ni,ei);
+		this.maxOccurs = maxOccurs;
 	}
 	public void setOxmVersion(File oxmFile, SchemaVersion v) {
 		super.setOxmVersion(oxmFile, v);
@@ -88,6 +96,7 @@ public class HTMLfromOXM extends OxmFileProcessor {
 		}
 		return sb.toString();
 	}
+	
 
 	@Override
 	public String process() throws ParserConfigurationException, SAXException, IOException, AAIException, FileNotFoundException, EdgeRuleNotFoundException {
@@ -100,9 +109,21 @@ public class HTMLfromOXM extends OxmFileProcessor {
 		}
 		sb.append(getDocumentHeader());
 		StringBuilder sbInventory = new StringBuilder();
+		Element elem;
+		String javaTypeName;
+		combinedJavaTypes = new HashMap();
 		for ( int i = 0; i < javaTypeNodes.getLength(); ++ i ) {
-			XSDElement javaTypeElement = new XSDElement((Element)javaTypeNodes.item(i));
-			String javaTypeName = javaTypeElement.name();
+			elem = (Element)javaTypeNodes.item(i);
+			javaTypeName = elem.getAttribute("name");
+			if ( !"Inventory".equals(javaTypeName ) ) {
+				if ( generatedJavaType.containsKey(javaTypeName) ) {
+					continue;
+				}
+				// will combine all matching java-types
+				elem = getJavaTypeElement(javaTypeName,false );
+			}
+			XSDElement javaTypeElement = new XSDElement(elem, maxOccurs);
+			//javaTypeName = javaTypeElement.name();
 			if ( javaTypeName == null ) {
 				String msg = "Invalid OXM file: <java-type> has no name attribute in " + oxmFile; 
 				logger.error(msg);
@@ -112,11 +133,8 @@ public class HTMLfromOXM extends OxmFileProcessor {
 				logger.debug("skipping Nodes entry (temporary feature)");
 				continue;
 			}
-			//Skip any type that has already been processed(recursion could be the reason)
 			logger.debug(getXmlRootElementName(javaTypeName)+" vs "+ javaTypeName+":"+generatedJavaType.containsKey(getXmlRootElementName(javaTypeName)));
-			if ( generatedJavaType.containsKey(javaTypeName) ) {
-					continue;
-			}
+
 			if ( !"Inventory".equals(javaTypeName)) {
 				generatedJavaType.put(javaTypeName, null);
 			}
@@ -127,11 +145,19 @@ public class HTMLfromOXM extends OxmFileProcessor {
 		sb.append("    </xs:complexType>\n");
 		sb.append("  </xs:element>\n");			
 		sb.append("</xs:schema>\n");
+		StringBuilder invalidSb = new StringBuilder();
 		return sb.toString();
+	}
+	
+	protected boolean isValidName( String name ) {
+		if ( name == null || name.length() == 0 ) {
+			return false;
+		}
+		String pattern = "^[a-z0-9-]*$";
+		return name.matches(pattern);
 	}
 
 	public String processJavaTypeElement( String javaTypeName, Element javaType_Element, StringBuilder sbInventory) {
-	
 		String xmlRootElementName = getXMLRootElementName(javaType_Element);
 
 		NodeList parentNodes = javaType_Element.getElementsByTagName("java-attributes");
@@ -160,16 +186,17 @@ public class HTMLfromOXM extends OxmFileProcessor {
 				sb1.append("  <xs:element name=\"" + xmlRootElementName + "\">\n");
 				sb1.append("    <xs:complexType>\n");
 
-				XSDElement javaTypeElement = new XSDElement(javaType_Element);
+				XSDElement javaTypeElement = new XSDElement(javaType_Element, maxOccurs);
 				logger.debug("XSDElement name: "+javaTypeElement.name());
 				if(versionUsesAnnotations(v.toString())) {
 					sb1.append(javaTypeElement.getHTMLAnnotation("class", "      "));
 				}
 				sb1.append("      <xs:sequence>\n");
 			}
+			Element javatypeElement;
 			for ( int i = 0; i < xmlElementNodes.getLength(); ++i ) {
 			
-				XSDElement xmlElementElement = new XSDElement((Element)xmlElementNodes.item(i));
+				XSDElement xmlElementElement = new XSDElement((Element)xmlElementNodes.item(i), maxOccurs);
 
 //				String elementName = xmlElementElement.getAttribute("name");
 				String elementType = xmlElementElement.getAttribute("type");
@@ -177,7 +204,9 @@ public class HTMLfromOXM extends OxmFileProcessor {
 				String addType = elementType.contains("." + v.toString() + ".") ? elementType.substring(elementType.lastIndexOf('.')+1) : null;
     			if ( elementType.contains("." + v.toString() + ".") && !generatedJavaType.containsKey(addType) ) {
     				generatedJavaType.put(addType, elementType);
-    				sb.append(processJavaTypeElement( addType, getJavaTypeElement(addType), null ));	
+    				javatypeElement = getJavaTypeElement(addType, processingInventory);
+
+    				sb.append(processJavaTypeElement( addType, javatypeElement, null ));	
     			}
         		if ("Nodes".equals(addType)) {
         			logger.trace("Skipping nodes, temporary testing");
@@ -210,11 +239,13 @@ public class HTMLfromOXM extends OxmFileProcessor {
 		return sb.toString();
 	}
 	
-	private Element getJavaTypeElement( String javaTypeName )
+	private Element getJavaTypeElement( String javaTypeName, boolean processingInventory )
 	{		
 		String attrName, attrValue;
 		Attr attr;
 		Element javaTypeElement;
+		
+		List<Element> combineElementList = new ArrayList<Element>();
 		for ( int i = 0; i < javaTypeNodes.getLength(); ++ i ) {
 			javaTypeElement = (Element) javaTypeNodes.item(i);
 			NamedNodeMap attributes = javaTypeElement.getAttributes();
@@ -222,12 +253,24 @@ public class HTMLfromOXM extends OxmFileProcessor {
 	            attr = (Attr) attributes.item(j);
 	            attrName = attr.getNodeName();
 	            attrValue = attr.getNodeValue();
-	            if ( attrName.equals("name") && attrValue.equals(javaTypeName))
-	            	return javaTypeElement;
+	            if ( attrName.equals("name") && attrValue.equals(javaTypeName)) {
+	            	if ( processingInventory ) {
+	            		return javaTypeElement;
+	            	} else {
+	            		combineElementList.add(javaTypeElement);
+	            	}
+	            }
 			}
 		}
-		logger.error( "oxm file format error, missing java-type " + javaTypeName);
-		return (Element) null;
+		if ( combineElementList.size() == 0 ) {
+			logger.error( "oxm file format error, missing java-type " + javaTypeName);
+			return (Element) null;
+		} else if ( combineElementList.size() > 1 ) {
+			// need to combine java-attributes
+			return combineElements( javaTypeName, combineElementList);
+		}
+		return combineElementList.get(0);
+		
 	}
 
 	private boolean versionUsesAnnotations( String version) {

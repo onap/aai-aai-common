@@ -70,16 +70,25 @@ public class XSDElementTest {
 
 	@Before
 	public void setUp() throws Exception {
-			StringBuilder sb = new StringBuilder(maxSizeForXml);
-			addNamespace(sb);
-			addBusiness(sb);
-			addCustomers(sb);
-			addCustomer(sb);
-			addServiceSubscriptions(sb);
-			addServiceSubscription(sb);
-			addEndOfXML(sb);
-			testXML = sb.toString();
-			init();
+			setUp(0);
+	}
+	
+	public void setUp(int sbopt) throws Exception {
+		StringBuilder sb = new StringBuilder(maxSizeForXml);
+		addNamespace(sb);
+		addBusiness(sb);
+		addCustomers(sb);		
+		if ( sbopt == 0 ) {
+			addCustomer(sb);	
+		} else {
+			addCustomerNoSubscriberType(sb);
+			addCustomerSubscriberType(sb);
+		}
+		addServiceSubscriptions(sb);
+		addServiceSubscription(sb);
+		addEndOfXML(sb);
+		testXML = sb.toString();
+		init();
 	}
 	
 	private void addNamespace(StringBuilder sb){
@@ -159,6 +168,58 @@ public class XSDElementTest {
 		sb.append("<xml-property name=\"uniqueProps\" value=\"global-customer-id\" />\n");
 		sb.append("<xml-property name=\"container\" value=\"customers\" />\n");
 		sb.append("<xml-property name=\"namespace\" value=\"business\" />\n");
+		sb.append("</xml-properties>\n");
+		sb.append("</java-type>\n");		
+	}
+	
+	private void addCustomerNoSubscriberType(StringBuilder sb){
+		sb.append("<java-type name=\"Customer\">\n");
+		sb.append("<xml-root-element name=\"customer\" />\n");
+		sb.append("<java-attributes>\n");
+		sb.append("<xml-element java-attribute=\"globalCustomerId\" name=\"global-customer-id\" required=\"true\" type=\"java.lang.String\" xml-key=\"true\">\n");
+		sb.append("<xml-properties>\n");
+		sb.append("<xml-property name=\"description\" value=\"Global customer id used across to uniquely identify customer.\" />\n");
+		sb.append("</xml-properties>\n");
+		sb.append("</xml-element>\n");
+		sb.append("<xml-element java-attribute=\"subscriberName\" name=\"subscriber-name\" required=\"true\" type=\"java.lang.String\">\n");
+		sb.append("<xml-properties>\n");
+		sb.append("<xml-property name=\"description\" value=\"Subscriber name, an alternate way to retrieve a customer.\" />\n");
+		sb.append("</xml-properties>\n");
+		sb.append("</xml-element>\n");
+		sb.append("<xml-element java-attribute=\"resourceVersion\" name=\"resource-version\" type=\"java.lang.String\">\n");
+		sb.append("<xml-properties>\n");
+		sb.append("<xml-property name=\"description\" value=\"Used for optimistic concurrency.  Must be empty on create, valid on update and delete.\" />\n");
+		sb.append("</xml-properties>\n");
+		sb.append("</xml-element>\n");
+		sb.append("<xml-element java-attribute=\"serviceSubscriptions\" name=\"service-subscriptions\" type=\"inventory.aai.onap.org.v11.ServiceSubscriptions\" />\n");
+//		sb.append("<xml-element java-attribute=\"relationshipList\" name=\"relationship-list\" type=\"inventory.aai.onap.org.v11.RelationshipList\" />\n");
+		sb.append("</java-attributes>\n");
+		sb.append("<xml-properties>\n");
+		sb.append("<xml-property name=\"description\" value=\"customer identifiers to provide linkage back to BSS information.\" />\n");
+		sb.append("<xml-property name=\"nameProps\" value=\"subscriber-name\" />\n");
+		sb.append("<xml-property name=\"indexedProps\" value=\"subscriber-name,global-customer-id\" />\n");
+		sb.append("<xml-property name=\"searchable\" value=\"global-customer-id,subscriber-name\" />\n");
+		sb.append("<xml-property name=\"uniqueProps\" value=\"global-customer-id\" />\n");
+		sb.append("<xml-property name=\"container\" value=\"customers\" />\n");
+		sb.append("<xml-property name=\"namespace\" value=\"business\" />\n");
+		sb.append("</xml-properties>\n");
+		sb.append("</java-type>\n");		
+	}
+	
+	private void addCustomerSubscriberType(StringBuilder sb){
+		sb.append("<java-type name=\"Customer\">\n");
+		sb.append("<xml-root-element name=\"customer\" />\n");
+		sb.append("<java-attributes>\n");
+		sb.append("<xml-element java-attribute=\"subscriberType\" name=\"subscriber-type\" required=\"true\" type=\"java.lang.String\">\n");
+		sb.append("<xml-properties>\n");
+		sb.append("<xml-property name=\"description\" value=\"Subscriber type, a way to provide VID with only the INFRA customers.\" />\n");
+		sb.append("<xml-property name=\"defaultValue\" value=\"CUST\" />\n");
+		sb.append("</xml-properties>\n");
+		sb.append("</xml-element>\n");
+		sb.append("</java-attributes>\n");
+		sb.append("<xml-properties>\n");
+		sb.append("<xml-property name=\"indexedProps\" value=\"subscriber-type\" />\n");
+		sb.append("<xml-property name=\"container\" value=\"customers\" />\n");
 		sb.append("</xml-properties>\n");
 		sb.append("</java-type>\n");		
 	}

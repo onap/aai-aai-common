@@ -27,6 +27,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -111,25 +112,33 @@ public class YAMLfromOXM extends OxmFileProcessor {
 		try {
 			init();
 		} catch(Exception e) {
-			logger.error( "Error initializing " + this.getClass(),e);
+			logger.error( "Error initializing " + this.getClass());
 			throw e;
 		}		
 		pathSb.append(getDocumentHeader());
 		StringBuffer definitionsSb = new StringBuffer();
+		Element elem;
+		String javaTypeName;
+		combinedJavaTypes = new HashMap();
 		for ( int i = 0; i < javaTypeNodes.getLength(); ++ i ) {
-			XSDElement javaTypeElement = new XSDElement((Element)javaTypeNodes.item(i));
-			logger.debug("External: "+javaTypeElement.getAttribute("name"));
-			String javaTypeName = javaTypeElement.name();
+			elem = (Element)javaTypeNodes.item(i);
+			javaTypeName = elem.getAttribute("name");
+			if ( !"Inventory".equals(javaTypeName ) ) {
+				if ( generatedJavaType.containsKey(getXmlRootElementName(javaTypeName) ) ) {
+					continue;
+				}
+				// will combine all matching java-types
+				elem = getJavaTypeElementSwagger(javaTypeName );
+			}			
+			
+			XSDElement javaTypeElement = new XSDElement(elem);
 			if ( javaTypeName == null ) {
 				String msg = "Invalid OXM file: <java-type> has no name attribute in " + oxmFile; 
 				logger.error(msg);
 				throw new AAIException(msg);
 			}
 			namespaceFilter.add(getXmlRootElementName(javaTypeName));
-			//Skip any type that has already been processed(recursion could be the reason)
-			if ( generatedJavaType.containsKey(getXmlRootElementName(javaTypeName)) ) {
-					continue;
-			}
+
 			processJavaTypeElementSwagger( javaTypeName, javaTypeElement, pathSb,
 				definitionsSb, null, null, null, null, null, null);
 		}
@@ -160,8 +169,8 @@ public class YAMLfromOXM extends OxmFileProcessor {
 			if(namespaceFilter != null && (! namespaceFilter.contains(entry.getKey()))) {
 				continue;
 			}
-		    logger.debug("Key: "+entry.getKey()+"Test: "+ (entry.getKey() == "relationship"));	
-		    if(entry.getKey().matches("relationship")) {
+		    logger.debug("Key: "+entry.getKey()+"Test: "+ (entry.getKey() == "relationship-dict"));	
+		    if(entry.getKey().matches("relationship-dict")) {
 			    String jb=entry.getValue();
 		    	logger.debug("Value: "+jb);
 			    int ndx=jb.indexOf("related-to-property:");
@@ -209,10 +218,24 @@ public class YAMLfromOXM extends OxmFileProcessor {
 		return sb.toString();
 	}
 	
+	private String getDictionary(String resource ) {
+		StringBuffer dictSb = new StringBuffer();
+		dictSb.append("  " + resource + ":\n");
+		dictSb.append("    description: |\n");
+		dictSb.append("      dictionary of " + resource	+ "\n" );
+		dictSb.append("    type: object\n");
+		dictSb.append("    properties:\n");
+		dictSb.append("      " + resource + ":\n");
+		dictSb.append("        type: array\n");
+		dictSb.append("        items:\n");
+		dictSb.append("          $ref: \"#/definitions/" + resource + "-dict\"\n");
+		return dictSb.toString();
+	}
+	
 	private String processJavaTypeElementSwagger( String javaTypeName, Element javaTypeElement,
 			StringBuffer pathSb, StringBuffer definitionsSb, String path, String tag, String opId,
 			String getItemName, StringBuffer pathParams, String validEdges) {
-		
+
 		String xmlRootElementName = getXMLRootElementName(javaTypeElement);
 		StringBuilder definitionsLocalSb = new StringBuilder(256);
 		
@@ -409,6 +432,7 @@ public class YAMLfromOXM extends OxmFileProcessor {
 		}
 	
 		boolean processingInventoryDef = false;
+		String dict = null;
 		if ( xmlRootElementName.equals("inventory")) {
 			// inventory properties for each oxm to be concatenated
 			processingInventoryDef = true;
@@ -418,7 +442,10 @@ public class YAMLfromOXM extends OxmFileProcessor {
 				definitionsLocalSb.append("  " + xmlRootElementName + ":\n");
 				definitionsLocalSb.append("    properties:\n");
 			}
-
+		} else if ( xmlRootElementName.equals("relationship")) {
+			definitionsSb.append("  " + "relationship-dict" + ":\n");
+			definitionsLocalSb.append("  " + "relationship-dict" + ":\n");
+			dict = getDictionary(xmlRootElementName);
 		} else {
 			definitionsSb.append("  " + xmlRootElementName + ":\n");
 			definitionsLocalSb.append("  " + xmlRootElementName + ":\n");
@@ -441,7 +468,7 @@ public class YAMLfromOXM extends OxmFileProcessor {
 				results.get(key).stream().filter((i) -> (i.getFrom().equals(xmlRootElementName) && (! i.isPrivateEdge() && i.getPreventDelete().equals("OUT")))).forEach((i) ->{ preventDelete.add(i.getTo().toUpperCase());} );
 			}
 		} catch(Exception e) {
-			logger.debug("xmlRootElementName: "+xmlRootElementName+"\n",e);
+			logger.debug("xmlRootElementName: "+xmlRootElementName+"\n"+e);
 		}
 		try {
 			EdgeRuleQuery q1 = new EdgeRuleQuery.Builder(xmlRootElementName).version(v).toOnly().build();
@@ -454,7 +481,7 @@ public class YAMLfromOXM extends OxmFileProcessor {
 				results.get(key).stream().filter((i) -> (i.getTo().equals(xmlRootElementName) && (! i.isPrivateEdge() && i.getPreventDelete().equals("IN")))).forEach((i) ->{ preventDelete.add(i.getFrom().toUpperCase());} );
 			}
 		} catch(Exception e) {
-			logger.debug("xmlRootElementName: "+xmlRootElementName+"\n",e);
+			logger.debug("xmlRootElementName: "+xmlRootElementName+"\n"+e);
 		}
 		if(preventDelete.size() > 0) {
 			prevent = xmlRootElementName.toUpperCase()+" cannot be deleted if related to "+String.join(",",preventDelete);
@@ -501,11 +528,14 @@ public class YAMLfromOXM extends OxmFileProcessor {
 			if ( xmlRootElementName.equals("inventory") ) {
 				//will add to javaTypeDefinitions at end 
 				inventoryDefSb.append(definitionsLocalSb.toString());
+			} else if ( xmlRootElementName.equals("relationship") ){
+				javaTypeDefinitions.put(xmlRootElementName, dict);
+				javaTypeDefinitions.put(xmlRootElementName+ "-dict", definitionsLocalSb.toString());			
 			} else {
 				javaTypeDefinitions.put(xmlRootElementName, definitionsLocalSb.toString());
 			}
 		} catch (Exception e) {
-			logger.error("Exception adding in javaTypeDefinitions",e);
+			e.printStackTrace();
 		}
 		if ( xmlRootElementName.equals("inventory") ) {
 			logger.trace("skip xmlRootElementName(2)="+xmlRootElementName);
@@ -535,16 +565,21 @@ public class YAMLfromOXM extends OxmFileProcessor {
 		try {
 			outfile.createNewFile();
 		} catch (IOException e) {
-			logger.error( "Exception creating output file " + outfileName,e);
+			logger.error( "Exception creating output file " + outfileName);
+			e.printStackTrace();
 		}
+		BufferedWriter bw = null;
+		Charset charset = Charset.forName("UTF-8");
+		Path path = Paths.get(outfileName);
 		try {
-			Charset charset = Charset.forName("UTF-8");
-			Path path = Paths.get(outfileName);
-			try(BufferedWriter bw = Files.newBufferedWriter(path, charset)){
-				bw.write(fileContent);
+			bw = Files.newBufferedWriter(path, charset);
+			bw.write(fileContent);
+			if ( bw != null ) {
+				bw.close();
 			}
 		} catch ( IOException e) {
-			logger.error( "Exception writing output file " + outfileName,e);
+			logger.error( "Exception writing output file " + outfileName);
+			e.printStackTrace();
 		} 
 	}
 	

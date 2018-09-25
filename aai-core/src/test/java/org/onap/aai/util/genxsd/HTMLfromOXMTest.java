@@ -65,7 +65,8 @@ import org.w3c.dom.Element;
 
 })
 @TestPropertySource(properties = {
-		"schema.uri.base.path = /aai"
+		"schema.uri.base.path = /aai",
+		"schema.xsd.maxoccurs = 5000"
 })
 public class HTMLfromOXMTest {
 	private static final Logger logger = LoggerFactory.getLogger("HTMLfromOXMTest.class");
@@ -95,14 +96,18 @@ public class HTMLfromOXMTest {
 	
 	@Before
 	public void setUp() throws Exception {
+		setUp(0);    
+	}
+	
+	public void setUp(int sbopt) throws Exception
+	{
 		XSDElementTest x = new XSDElementTest();
-		x.setUp();
+		x.setUp(sbopt);
 		testXML = x.testXML;
 		logger.debug(testXML);
 		BufferedWriter bw = new BufferedWriter(new FileWriter(OXMFILENAME));
 		bw.write(testXML);
 		bw.close();
-		    
 	}
 
 	@Test
@@ -133,7 +138,23 @@ public class HTMLfromOXMTest {
 		}
 		logger.debug("FileContent-I:");
 		logger.debug(fileContent);
-		assertThat(fileContent, is(HTMLresult()));
+		assertThat(fileContent, is(HTMLresult(0)));
+	}
+	
+	@Test
+	public void testProcessWithCombiningJavaTypes() {
+		SchemaVersion v = schemaVersions.getAppRootVersion();
+		String fileContent = null;
+		try {
+			setUp(1);
+			htmlFromOxm.setXmlVersion(testXML, v);
+			fileContent = htmlFromOxm.process();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		logger.debug("FileContent-I:");
+		logger.debug(fileContent);
+		assertThat(fileContent, is(HTMLresult(1)));
 	}
 
 	@Test
@@ -158,7 +179,7 @@ public class HTMLfromOXMTest {
 		XMLfile.delete();
 		logger.debug("FileContent-I:");
 		logger.debug(fileContent);
-		assertThat(fileContent, is(HTMLresult()));
+		assertThat(fileContent, is(HTMLresult(0)));
 	}
 
 	@Test
@@ -173,7 +194,7 @@ public class HTMLfromOXMTest {
 		}
 		logger.debug("FileContent-II:");
 		logger.debug(fileContent);
-		assertThat(fileContent, is(HTMLresult()));
+		assertThat(fileContent, is(HTMLresult(0)));
 	}
 
 	@Test
@@ -193,9 +214,13 @@ public class HTMLfromOXMTest {
 		assertThat("Element="+customer.getNodeName()+"/"+customer.getAttribute("name"), is(target));	}
 	
 	public String HTMLresult() {
+		return HTMLresult(0);
+	}
+	
+	public String HTMLresult(int sbopt) {
 		StringBuilder sb = new StringBuilder(32368);
 		sb.append(HTMLheader());
-		sb.append(HTMLdefs());
+		sb.append(HTMLdefs(sbopt));
 		return sb.toString();
 	}
 	
@@ -208,7 +233,11 @@ public class HTMLfromOXMTest {
 		 sb.append("    jaxb:extensionBindingPrefixes=\"annox\">\n\n");
 		return sb.toString();
 	}
+	
 	public String HTMLdefs() {
+		return HTMLdefs(0);
+	}
+	public String HTMLdefs(int sbopt) {
 		StringBuilder sb = new StringBuilder(1500);
 		sb.append("  <xs:element name=\"service-subscription\">\n");
 		sb.append("    <xs:complexType>\n");
@@ -218,7 +247,7 @@ public class HTMLfromOXMTest {
 		sb.append("        </xs:appinfo>\r\n");
 		sb.append("      </xs:annotation>\r\n");
 		sb.append("      <xs:sequence>\n");
-		sb.append("        <xs:element name=\"service-type\" type=\"xs:string\">\n");
+		sb.append("        <xs:element name=\"service-type\" type=\"xs:string\" minOccurs=\"0\">\n");
 		sb.append("          <xs:annotation>\r\n");
 		sb.append("            <xs:appinfo>\r\n");
 		sb.append("              <annox:annotate target=\"field\">@org.onap.aai.annotations.Metadata(isKey=true,description=\"Value defined by orchestration to identify this service.\")</annox:annotate>\r\n");
@@ -258,38 +287,60 @@ public class HTMLfromOXMTest {
 		sb.append("    <xs:complexType>\n");
 		sb.append("      <xs:annotation>\r\n");
 		sb.append("        <xs:appinfo>\r\n");
-		sb.append("          <annox:annotate target=\"class\">@org.onap.aai.annotations.Metadata(description=\"customer identifiers to provide linkage back to BSS information.\",nameProps=\"subscriber-name\",indexedProps=\"subscriber-name,global-customer-id,subscriber-type\",searchable=\"global-customer-id,subscriber-name\",uniqueProps=\"global-customer-id\",container=\"customers\",namespace=\"business\")</annox:annotate>\r\n");
+		if ( sbopt == 0 ) {
+			sb.append("          <annox:annotate target=\"class\">@org.onap.aai.annotations.Metadata(description=\"customer identifiers to provide linkage back to BSS information.\",nameProps=\"subscriber-name\",indexedProps=\"subscriber-name,global-customer-id,subscriber-type\",searchable=\"global-customer-id,subscriber-name\",uniqueProps=\"global-customer-id\",container=\"customers\",namespace=\"business\")</annox:annotate>\r\n");
+		} else {
+			sb.append("          <annox:annotate target=\"class\">@org.onap.aai.annotations.Metadata(description=\"customer identifiers to provide linkage back to BSS information.\",nameProps=\"subscriber-name\",indexedProps=\"subscriber-type,subscriber-name,global-customer-id\",searchable=\"global-customer-id,subscriber-name\",uniqueProps=\"global-customer-id\",container=\"customers\",namespace=\"business\")</annox:annotate>\r\n");
+		}
 		sb.append("        </xs:appinfo>\r\n");
 		sb.append("      </xs:annotation>\r\n");
 		sb.append("      <xs:sequence>\n");
-		sb.append("        <xs:element name=\"global-customer-id\" type=\"xs:string\">\n");
+		sb.append("        <xs:element name=\"global-customer-id\" type=\"xs:string\" minOccurs=\"0\">\n");
 		sb.append("          <xs:annotation>\r\n");
 		sb.append("            <xs:appinfo>\r\n");
 		sb.append("              <annox:annotate target=\"field\">@org.onap.aai.annotations.Metadata(isKey=true,description=\"Global customer id used across to uniquely identify customer.\")</annox:annotate>\r\n");
 		sb.append("            </xs:appinfo>\r\n");
 		sb.append("          </xs:annotation>\r\n");
 		sb.append("        </xs:element>\n");
-		sb.append("        <xs:element name=\"subscriber-name\" type=\"xs:string\">\n");
+		sb.append("        <xs:element name=\"subscriber-name\" type=\"xs:string\" minOccurs=\"0\">\n");
 		sb.append("          <xs:annotation>\r\n");
 		sb.append("            <xs:appinfo>\r\n");
 		sb.append("              <annox:annotate target=\"field\">@org.onap.aai.annotations.Metadata(description=\"Subscriber name, an alternate way to retrieve a customer.\")</annox:annotate>\r\n");
 		sb.append("            </xs:appinfo>\r\n");
 		sb.append("          </xs:annotation>\r\n");
 		sb.append("        </xs:element>\n");
-		sb.append("        <xs:element name=\"subscriber-type\" type=\"xs:string\">\n");
-		sb.append("          <xs:annotation>\r\n");
-		sb.append("            <xs:appinfo>\r\n");
-		sb.append("              <annox:annotate target=\"field\">@org.onap.aai.annotations.Metadata(description=\"Subscriber type, a way to provide VID with only the INFRA customers.\",defaultValue=\"CUST\")</annox:annotate>\r\n");
-		sb.append("            </xs:appinfo>\r\n");
-		sb.append("          </xs:annotation>\r\n");
-		sb.append("        </xs:element>\n");
-		sb.append("        <xs:element name=\"resource-version\" type=\"xs:string\" minOccurs=\"0\">\n");
-		sb.append("          <xs:annotation>\r\n");
-		sb.append("            <xs:appinfo>\r\n");
-		sb.append("              <annox:annotate target=\"field\">@org.onap.aai.annotations.Metadata(description=\"Used for optimistic concurrency.  Must be empty on create, valid on update and delete.\")</annox:annotate>\r\n");
-		sb.append("            </xs:appinfo>\r\n");
-		sb.append("          </xs:annotation>\r\n");
-		sb.append("        </xs:element>\n");
+		if ( sbopt == 0 ) {
+			sb.append("        <xs:element name=\"subscriber-type\" type=\"xs:string\" minOccurs=\"0\">\n");
+			sb.append("          <xs:annotation>\r\n");
+			sb.append("            <xs:appinfo>\r\n");
+			sb.append("              <annox:annotate target=\"field\">@org.onap.aai.annotations.Metadata(description=\"Subscriber type, a way to provide VID with only the INFRA customers.\",defaultValue=\"CUST\")</annox:annotate>\r\n");
+			sb.append("            </xs:appinfo>\r\n");
+			sb.append("          </xs:annotation>\r\n");
+			sb.append("        </xs:element>\n");
+			sb.append("        <xs:element name=\"resource-version\" type=\"xs:string\" minOccurs=\"0\">\n");
+			sb.append("          <xs:annotation>\r\n");
+			sb.append("            <xs:appinfo>\r\n");
+			sb.append("              <annox:annotate target=\"field\">@org.onap.aai.annotations.Metadata(description=\"Used for optimistic concurrency.  Must be empty on create, valid on update and delete.\")</annox:annotate>\r\n");
+			sb.append("            </xs:appinfo>\r\n");
+			sb.append("          </xs:annotation>\r\n");
+			sb.append("        </xs:element>\n");
+		} else {
+			sb.append("        <xs:element name=\"resource-version\" type=\"xs:string\" minOccurs=\"0\">\n");
+			sb.append("          <xs:annotation>\r\n");
+			sb.append("            <xs:appinfo>\r\n");
+			sb.append("              <annox:annotate target=\"field\">@org.onap.aai.annotations.Metadata(description=\"Used for optimistic concurrency.  Must be empty on create, valid on update and delete.\")</annox:annotate>\r\n");
+			sb.append("            </xs:appinfo>\r\n");
+			sb.append("          </xs:annotation>\r\n");
+			sb.append("        </xs:element>\n");
+			sb.append("        <xs:element name=\"subscriber-type\" type=\"xs:string\" minOccurs=\"0\">\n");
+			sb.append("          <xs:annotation>\r\n");
+			sb.append("            <xs:appinfo>\r\n");
+			sb.append("              <annox:annotate target=\"field\">@org.onap.aai.annotations.Metadata(description=\"Subscriber type, a way to provide VID with only the INFRA customers.\",defaultValue=\"CUST\")</annox:annotate>\r\n");
+			sb.append("            </xs:appinfo>\r\n");
+			sb.append("          </xs:annotation>\r\n");
+			sb.append("        </xs:element>\n");			
+			
+		}
 		sb.append("        <xs:element ref=\"tns:service-subscriptions\" minOccurs=\"0\"/>\n");
 		sb.append("      </xs:sequence>\n");
 		sb.append("    </xs:complexType>\n");

@@ -117,9 +117,21 @@ public class NodesYAMLfromOXM extends OxmFileProcessor {
 		}
 		pathSb.append(getDocumentHeader());
 		StringBuffer definitionsSb = new StringBuffer();
+		Element elem;
+		String javaTypeName;
 		for ( int i = 0; i < javaTypeNodes.getLength(); ++ i ) {
-			XSDElement javaTypeElement = new XSDElement((Element)javaTypeNodes.item(i));
-			String javaTypeName = javaTypeElement.name();
+			elem = (Element)javaTypeNodes.item(i);
+			javaTypeName = elem.getAttribute("name");
+			if ( !"Inventory".equals(javaTypeName ) ) {
+				if ( generatedJavaType.containsKey(javaTypeName) ) {
+					continue;
+				}
+				// will combine all matching java-types
+				elem = getJavaTypeElementSwagger(javaTypeName );
+			}			
+			
+			XSDElement javaTypeElement = new XSDElement(elem);
+			
 			
 			logger.debug("External: "+javaTypeElement.getAttribute("name")+"/"+getXmlRootElementName(javaTypeName));
 			if ( javaTypeName == null ) {
@@ -128,10 +140,7 @@ public class NodesYAMLfromOXM extends OxmFileProcessor {
 				throw new AAIException(msg);
 			}
 			namespaceFilter.add(getXmlRootElementName(javaTypeName));
-			//Skip any type that has already been processed(recursion could be the reason)
-			if ( generatedJavaType.containsKey(getXmlRootElementName(javaTypeName)) ) {
-					continue;
-			}
+
 			processJavaTypeElementSwagger( javaTypeName, javaTypeElement, pathSb,
 				definitionsSb, null, null, null, null, null, null);
 		}
@@ -491,7 +500,8 @@ public class NodesYAMLfromOXM extends OxmFileProcessor {
 		}
 		Path path = Paths.get(outfileName);
 		Charset charset = Charset.forName("UTF-8");
-		try(BufferedWriter bw = Files.newBufferedWriter(path, charset);) {
+		try {
+			BufferedWriter bw = Files.newBufferedWriter(path, charset);
 			bw.write(fileContent);
 			if ( bw != null ) {
 				bw.close();
