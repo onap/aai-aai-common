@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a76adc5_7a397b40",
+        "filename": "aai-core/src/test/java/org/onap/aai/rest/RestHandlerTest.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 703
+      },
+      "writtenOn": "2018-09-27T09:42:09Z",
+      "side": 1,
+      "message": "Are these actually thrown by any of the code you\u0027re testing?",
+      "range": {
+        "startLine": 34,
+        "startChar": 34,
+        "endLine": 34,
+        "endChar": 66
+      },
+      "revId": "ce48ee46528124cb29200846b39b91e5d2c5e2c1",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_da476fbb",
+        "filename": "aai-core/src/test/java/org/onap/aai/rest/RestHandlerTest.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 703
+      },
+      "writtenOn": "2018-09-27T09:42:09Z",
+      "side": 1,
+      "message": "This is a unreliable way of asserting that the two objects are actually the same instance. If the objects have overridden the equals() method, then there will be a risk that the assert will pass even if the two objects are not the same instance.\n\nA safer way would be to use assertTrue, with a direct \"\u003d\u003d\" operator.",
+      "range": {
+        "startLine": 40,
+        "startChar": 7,
+        "endLine": 40,
+        "endChar": 51
+      },
+      "revId": "ce48ee46528124cb29200846b39b91e5d2c5e2c1",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
