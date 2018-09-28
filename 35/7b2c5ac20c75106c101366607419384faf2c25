@@ -1,0 +1,8 @@
+Verified+1: ONAP Jobbuilder <onap-jobbuilder@jenkins.onap.org>
+Code-Review+2: Tian Lee <TianL@amdocs.com>
+Code-Review+1: Jessica Wagantall <jwagantall@linuxfoundation.org>
+Submitted-by: James Forsyth <jf2512@att.com>
+Submitted-at: Fri, 28 Sep 2018 13:12:03 +0000
+Reviewed-on: https://gerrit.onap.org/r/68853
+Project: aai/aai-common
+Branch: refs/heads/master
