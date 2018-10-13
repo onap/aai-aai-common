@@ -31,6 +31,8 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.Matchers.matchesPattern;
 import static org.junit.Assert.*;
 
+import java.io.FileNotFoundException;
+
 public class AAIGraphTest extends AAISetup{
 	@Before
 	public void setup() {
@@ -62,6 +64,16 @@ public class AAIGraphTest extends AAISetup{
 	@Test
 	public void JanusGraphOpenNameTest() throws Exception{
 		JanusGraph graph = JanusGraphFactory.open(new AAIGraphConfig.Builder(AAIConstants.REALTIME_DB_CONFIG).forService(SERVICE_NAME).withGraphType("graphType").buildConfiguration());
+		JanusGraphManagement graphMgt = graph.openManagement();
+		String connectionInstanceName = graphMgt.getOpenInstances().stream().filter(c -> c.contains("current")).findFirst().get();
+		assertThat(connectionInstanceName,matchesPattern("^\\d+_[\\w\\-\\d]+_" + SERVICE_NAME + "_graphType_\\d+\\(current\\)$"));
+		graphMgt.rollback();
+		graph.close();
+	}
+	
+	@Test (expected=FileNotFoundException.class)
+	public void JanusGraphOpenNameWithInvalidFilePathTest() throws Exception{
+		JanusGraph graph = JanusGraphFactory.open(new AAIGraphConfig.Builder("invalid").forService(SERVICE_NAME).withGraphType("graphType").buildConfiguration());
 		JanusGraphManagement graphMgt = graph.openManagement();
 		String connectionInstanceName = graphMgt.getOpenInstances().stream().filter(c -> c.contains("current")).findFirst().get();
 		assertThat(connectionInstanceName,matchesPattern("^\\d+_[\\w\\-\\d]+_" + SERVICE_NAME + "_graphType_\\d+\\(current\\)$"));
