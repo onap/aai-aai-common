@@ -23,6 +23,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -34,6 +36,13 @@ import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
 
 import org.onap.aai.edges.EdgeIngestor;
 import org.onap.aai.edges.exceptions.EdgeRuleNotFoundException;
@@ -46,6 +55,7 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -61,6 +71,8 @@ public abstract class OxmFileProcessor {
 	protected Document doc = null;
 	protected String apiVersion = null;
 	protected SchemaVersions schemaVersions;
+	
+	protected Map combinedJavaTypes;
 	
 	
 	protected static int annotationsStartVersion = 9; // minimum version to support annotations in xsd
@@ -248,12 +260,22 @@ public abstract class OxmFileProcessor {
 		return null;
 	}
 	
+	public Map getCombinedJavaTypes() {
+		return combinedJavaTypes;
+	}
+	
+	public void setCombinedJavaTypes(Map combinedJavaTypes) {
+		this.combinedJavaTypes = combinedJavaTypes;
+	}
+	
 	public Element getJavaTypeElementSwagger( String javaTypeName )
 	{
 		
 		String attrName, attrValue;
 		Attr attr;
 		Element javaTypeElement;
+		
+		List<Element> combineElementList = new ArrayList<Element>();
 		for ( int i = 0; i < javaTypeNodes.getLength(); ++ i ) {
 			javaTypeElement = (Element) javaTypeNodes.item(i);
 			NamedNodeMap attributes = javaTypeElement.getAttributes();
@@ -261,11 +283,18 @@ public abstract class OxmFileProcessor {
 	            attr = (Attr) attributes.item(j);
 	            attrName = attr.getNodeName();
 	            attrValue = attr.getNodeValue();
-	            if ( attrName.equals("name") && attrValue.equals(javaTypeName))
-	            	return javaTypeElement;
+	            if ( attrName.equals("name") && attrValue.equals(javaTypeName)) {
+	            	combineElementList.add(javaTypeElement);
+	            }
 			}
 		}
-		return (Element) null;
+		if ( combineElementList.size() == 0 ) {
+			return (Element) null;
+		} else if ( combineElementList.size() > 1 ) {
+			// need to combine java-attributes
+			return combineElements( javaTypeName, combineElementList);
+		}
+		return combineElementList.get(0);
 	}
 	
 	public boolean versionSupportsSwaggerDiff( String version) {
@@ -284,4 +313,211 @@ public abstract class OxmFileProcessor {
 		return false;
 	}
 
+	protected void updateParentXmlElements(Element parentElement, NodeList moreXmlElementNodes) {
+		Element xmlElement;
+		NodeList childNodes;
+		Node childNode;
+
+		Node refChild = null;
+		// find childNode with attributes and no children, insert children before that node
+		childNodes = parentElement.getChildNodes();
+		if ( childNodes == null || childNodes.getLength() == 0 ) {
+			// should not happen since the base parent was chosen if it had children
+			return;
+		}
+
+		for ( int i = 0; i < childNodes.getLength(); ++i ) {
+			refChild = childNodes.item(i);
+			if ( refChild.hasAttributes() && !refChild.hasChildNodes()) {
+				break;
+			}
+
+		}
+
+		for ( int i = 0; i < moreXmlElementNodes.getLength(); ++i ) {
+			xmlElement = (Element)moreXmlElementNodes.item(i);
+			childNode = xmlElement.cloneNode(true);			
+			parentElement.insertBefore(childNode, refChild);
+		}
+	}
+	
+	protected Node getXmlPropertiesNode(Element javaTypeElement ) {
+		NodeList nl = javaTypeElement.getChildNodes();
+		Node child;
+		for ( int i = 0; i < nl.getLength(); ++i ) {
+			child = nl.item(i);
+			if ( "xml-properties".equals(child.getNodeName())) {
+				return child;
+			}
+		}
+		return null;
+	}
+	
+	protected Node merge( NodeList nl, Node mergeNode ) {
+		NamedNodeMap nnm = mergeNode.getAttributes();
+		Node childNode;
+		NamedNodeMap childNnm;
+
+		String mergeName = nnm.getNamedItem("name").getNodeValue();
+		String mergeValue = nnm.getNamedItem("value").getNodeValue();
+		String childName;
+		String childValue;
+		for ( int j = 0; j < nl.getLength(); ++j ) {
+			childNode = nl.item(j);
+			if ( "xml-property".equals(childNode.getNodeName())) {
+				childNnm = childNode.getAttributes();
+				childName = childNnm.getNamedItem("name").getNodeValue();
+				childValue = childNnm.getNamedItem("value").getNodeValue();
+				if ( childName.equals(mergeName)) {
+					// attribute exists
+					// keep, replace or update
+					if ( childValue.contains(mergeValue) ) {
+						return null;
+					}
+					if ( mergeValue.contains(childValue) ) {
+						childNnm.getNamedItem("value").setTextContent(mergeValue);
+						return null;
+					}
+					childNnm.getNamedItem("value").setTextContent(mergeValue + "," + childValue);
+					return null;
+				}
+			}
+		}
+		childNode = mergeNode.cloneNode(true);
+		return childNode;
+	}
+	
+	protected void mergeXmlProperties(Node useChildProperties, NodeList propertiesToMerge ) {
+		NodeList nl = useChildProperties.getChildNodes();
+		Node childNode;
+		Node newNode;
+		for ( int i = 0; i < propertiesToMerge.getLength(); ++i ) {
+			childNode = propertiesToMerge.item(i);
+			if ( "xml-property".equals(childNode.getNodeName()) ) {
+				newNode = merge(nl, childNode);
+				if ( newNode != null ) {
+					useChildProperties.appendChild(newNode);
+				}
+			}
+			
+		}
+	}
+	
+	protected void combineXmlProperties(int useElement, List<Element> combineElementList) {
+		// add or update xml-properties to the referenced element from the combined list
+		Element javaTypeElement = combineElementList.get(useElement);
+		NodeList nl = javaTypeElement.getChildNodes();
+		Node useChildProperties = getXmlPropertiesNode( javaTypeElement);
+		int cloneChild = -1;
+		Node childProperties;
+		if ( useChildProperties == null ) {
+			// find xml-properties to clone
+			for ( int i = 0; i < combineElementList.size(); ++i ) {
+				if ( i == useElement ) {
+					continue;
+				}
+				childProperties = getXmlPropertiesNode(combineElementList.get(i));
+				if ( childProperties != null ) {
+					useChildProperties = childProperties.cloneNode(true);
+					javaTypeElement.appendChild(useChildProperties);
+					cloneChild = i;
+				}
+			}
+		}
+		NodeList cnl;
+		// find other xml-properties
+		for ( int i = 0; i < combineElementList.size(); ++i ) {
+			if ( i == useElement|| ( cloneChild >= 0 && i <= cloneChild )) {
+				continue;
+			}
+			childProperties = getXmlPropertiesNode(combineElementList.get(i));
+			if ( childProperties == null ) {
+				continue;
+			}
+			cnl = childProperties.getChildNodes();
+			mergeXmlProperties( useChildProperties, cnl);
+		}
+
+	}
+	
+	protected Element combineElements( String javaTypeName, List<Element> combineElementList ) {
+		Element javaTypeElement;
+		NodeList parentNodes;
+		Element parentElement = null;
+		NodeList xmlElementNodes;
+
+		int useElement = -1;
+		if ( combinedJavaTypes.containsKey( javaTypeName) ) {
+			return combineElementList.get((int)combinedJavaTypes.get(javaTypeName));
+		}
+		for ( int i = 0; i < combineElementList.size(); ++i ) {
+			javaTypeElement = combineElementList.get(i);
+			parentNodes = javaTypeElement.getElementsByTagName("java-attributes");
+			if ( parentNodes.getLength() == 0 ) {
+				continue;
+			}
+			parentElement = (Element)parentNodes.item(0);
+			xmlElementNodes = parentElement.getElementsByTagName("xml-element");
+			if ( xmlElementNodes.getLength() <= 0 ) {
+				continue;
+			}
+			useElement = i;
+			break;
+		}
+		boolean doCombineElements = true;
+		if ( useElement < 0 ) {
+			useElement = 0;
+			doCombineElements = false;
+		} else if ( useElement == combineElementList.size() - 1) {
+			doCombineElements = false;
+		}
+		if ( doCombineElements ) {
+			// get xml-element from other javaTypeElements
+			Element otherParentElement = null;
+			for ( int i = 0; i < combineElementList.size(); ++i ) {
+				if ( i == useElement ) {
+					continue;
+				}
+				javaTypeElement = combineElementList.get(i);
+				parentNodes = javaTypeElement.getElementsByTagName("java-attributes");
+				if ( parentNodes.getLength() == 0 ) {
+					continue;
+				}				
+				otherParentElement = (Element)parentNodes.item(0);
+				xmlElementNodes = otherParentElement.getElementsByTagName("xml-element");
+				if ( xmlElementNodes.getLength() <= 0 ) {
+					continue;
+				}
+				// xml-element that are not present
+				updateParentXmlElements( parentElement, xmlElementNodes);
+				
+			}
+		}
+		// need to combine xml-properties
+		combineXmlProperties(useElement, combineElementList );
+		combinedJavaTypes.put( javaTypeName, useElement);
+		return combineElementList.get(useElement);
+	}
+	
+
+    private static void prettyPrint(Node node, String tab)
+	{
+    	// for debugging
+		try {
+			// Set up the output transformer
+			TransformerFactory transfac = TransformerFactory.newInstance();
+			Transformer trans = transfac.newTransformer();
+			trans.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+			trans.setOutputProperty(OutputKeys.INDENT, "yes");
+			StringWriter sw = new StringWriter();
+			StreamResult result = new StreamResult(sw);
+			DOMSource source = new DOMSource(node);
+			trans.transform(source, result);
+			String xmlString = sw.toString();
+			System.out.println(xmlString);
+	    }
+	    catch (TransformerException e) {
+			e.printStackTrace();
+	    }
+	}
 }

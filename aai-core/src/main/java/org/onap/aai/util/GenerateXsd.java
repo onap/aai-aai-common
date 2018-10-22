@@ -236,6 +236,7 @@ public class GenerateXsd {
 		        	logger.error( "Exception creating output file " + outfileName);
 		        	logger.error( e.getMessage());
 		        	e.printStackTrace();
+		        	System.exit(-1);
 				}
 			} else if ( versionSupportsSwagger(apiVersion )) {
 				outfileName = yaml_dir + "/aai_swagger_" + apiVersion + "." + generateTypeYAML;
@@ -244,8 +245,10 @@ public class GenerateXsd {
 					YAMLfromOXM swagger = (YAMLfromOXM) ctx.getBean(YAMLfromOXM.class);
 					swagger.setVersion(v);
 					fileContent = swagger.process();
+					Map combinedJavaTypes = swagger.getCombinedJavaTypes();
 					NodesYAMLfromOXM nodesSwagger = ctx.getBean(NodesYAMLfromOXM.class);
 					nodesSwagger.setVersion(v);
+					nodesSwagger.setCombinedJavaTypes(combinedJavaTypes);
 					nodesContent = nodesSwagger.process();
 				} catch(Exception e) {
 		        	logger.error( "Exception creating output file " + outfileName);
