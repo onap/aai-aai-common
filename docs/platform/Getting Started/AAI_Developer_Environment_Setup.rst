@@ -97,7 +97,7 @@ Set up repos
 
 - If you did not originally create a settings.xml file when setting
   up the dev environment, you may get an error on some of the repos
-  saying that oparent is unresolvable.  Using the example
+  saying that operant is unresolvable.  Using the example
   settings.xml file should solve this problem:
   `Setting Up Your Development Environment#MavenExamplesettings.xml <https://wiki.onap.org/display/DW/Setting+Up+Your+Development+Environment#SettingUpYourDevelopmentEnvironment-MavenExamplesettings.xml>`__
 
