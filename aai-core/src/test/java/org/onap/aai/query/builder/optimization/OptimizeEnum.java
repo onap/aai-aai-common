@@ -20,5 +20,5 @@
 package org.onap.aai.query.builder.optimization;
 
 public enum OptimizeEnum {
-	URI,NONE
+    URI,NONE
 }

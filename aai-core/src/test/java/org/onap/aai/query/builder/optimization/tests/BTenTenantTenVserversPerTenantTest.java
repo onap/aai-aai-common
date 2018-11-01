@@ -26,28 +26,28 @@ import org.onap.aai.query.builder.optimization.AbstractGraphTraversalBuilderTest
 @Ignore
 public class BTenTenantTenVserversPerTenantTest extends AbstractGraphTraversalBuilderTestQueryiesToRun {
 
-	private static int tenantNum = 10;
-	private static int vserverPerTenantNum = 10;
-	private static String prefix = BTenTenantTenVserversPerTenantTest.class.getSimpleName() + "-";
+    private static int tenantNum = 10;
+    private static int vserverPerTenantNum = 10;
+    private static String prefix = BTenTenantTenVserversPerTenantTest.class.getSimpleName() + "-";
 
-	@BeforeClass
-	public void setup() throws Exception {
-		setupData(tenantNum,vserverPerTenantNum, prefix);
-	}
+    @BeforeClass
+    public void setup() throws Exception {
+        setupData(tenantNum,vserverPerTenantNum, prefix);
+    }
 
-	@Override
-	protected int getTenantNum() {
-		return tenantNum;
-	}
+    @Override
+    protected int getTenantNum() {
+        return tenantNum;
+    }
 
-	@Override
-	protected int getVserverNumPerTenant() {
-		return vserverPerTenantNum;
-	}
+    @Override
+    protected int getVserverNumPerTenant() {
+        return vserverPerTenantNum;
+    }
 
-	@Override
-	protected String getPrefix() {
-		return prefix;
-	}
+    @Override
+    protected String getPrefix() {
+        return prefix;
+    }
 
 }

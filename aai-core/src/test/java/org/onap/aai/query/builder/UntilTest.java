@@ -45,71 +45,71 @@ import static org.junit.Assert.assertTrue;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class UntilTest extends AAISetup {
 
-	private Loader loader;
-	
-	@Autowired
-	EdgeSerializer edgeSer;
-	
-	@Before
-	public void setup() throws Exception {
-		loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
-	}
-	
-	private QueryBuilder<Vertex> buildTestQuery(QueryBuilder<Vertex> qb) throws AAIException{
-		return qb.until(qb.newInstance().getVerticesByProperty("aai-node-type", "l-interface")).repeat(
-				qb.newInstance().union(
-						qb.newInstance().createEdgeTraversal(EdgeType.TREE, "cloud-region", "tenant"),
-						qb.newInstance().createEdgeTraversal(EdgeType.TREE, "tenant", "vserver"),
-						qb.newInstance().createEdgeTraversal(EdgeType.TREE, "vserver", "l-interface")
-			)).store("x").cap("x").unfold().dedup();
-	}
-	
-	@Test
-	public void gremlinQueryUntilTest() throws AAIException {
-		Graph graph = TinkerGraph.open();
-		GraphTraversalSource g = graph.traversal();
-		
-		Vertex v1 = graph.addVertex(T.id, 1, "aai-node-type", "cloud-region");
-		Vertex v2 = graph.addVertex(T.id, 2, "aai-node-type", "tenant");
-		Vertex v3 = graph.addVertex(T.id, 3, "aai-node-type", "vserver");
-		Vertex v4 = graph.addVertex(T.id, 4, "aai-node-type", "l-interface");
-		edgeSer.addTreeEdge(g, v1, v2);
-		edgeSer.addTreeEdge(g, v2, v3);
-		edgeSer.addTreeEdge(g, v3, v4);
-		List<Vertex> expected = new ArrayList<>();
-		expected.add(v4);
-		
-		GremlinTraversal<Vertex> qb =  new GremlinTraversal<>(loader, g, v1);
-		QueryBuilder q = buildTestQuery(qb);
-		
-		List<Vertex> results = q.toList();
+    private Loader loader;
+    
+    @Autowired
+    EdgeSerializer edgeSer;
+    
+    @Before
+    public void setup() throws Exception {
+        loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
+    }
+    
+    private QueryBuilder<Vertex> buildTestQuery(QueryBuilder<Vertex> qb) throws AAIException{
+        return qb.until(qb.newInstance().getVerticesByProperty("aai-node-type", "l-interface")).repeat(
+                qb.newInstance().union(
+                        qb.newInstance().createEdgeTraversal(EdgeType.TREE, "cloud-region", "tenant"),
+                        qb.newInstance().createEdgeTraversal(EdgeType.TREE, "tenant", "vserver"),
+                        qb.newInstance().createEdgeTraversal(EdgeType.TREE, "vserver", "l-interface")
+            )).store("x").cap("x").unfold().dedup();
+    }
+    
+    @Test
+    public void gremlinQueryUntilTest() throws AAIException {
+        Graph graph = TinkerGraph.open();
+        GraphTraversalSource g = graph.traversal();
+        
+        Vertex v1 = graph.addVertex(T.id, 1, "aai-node-type", "cloud-region");
+        Vertex v2 = graph.addVertex(T.id, 2, "aai-node-type", "tenant");
+        Vertex v3 = graph.addVertex(T.id, 3, "aai-node-type", "vserver");
+        Vertex v4 = graph.addVertex(T.id, 4, "aai-node-type", "l-interface");
+        edgeSer.addTreeEdge(g, v1, v2);
+        edgeSer.addTreeEdge(g, v2, v3);
+        edgeSer.addTreeEdge(g, v3, v4);
+        List<Vertex> expected = new ArrayList<>();
+        expected.add(v4);
+        
+        GremlinTraversal<Vertex> qb =  new GremlinTraversal<>(loader, g, v1);
+        QueryBuilder q = buildTestQuery(qb);
+        
+        List<Vertex> results = q.toList();
 
-		assertTrue("results match", expected.containsAll(results) && results.containsAll(expected));
-	}
+        assertTrue("results match", expected.containsAll(results) && results.containsAll(expected));
+    }
 
-	@Test
-	public void traversalQueryUntilTest() throws AAIException {
-		Graph graph = TinkerGraph.open();
-		GraphTraversalSource g = graph.traversal();
-		
-		Vertex v1 = graph.addVertex(T.id, 1, "aai-node-type", "cloud-region");
-		Vertex v2 = graph.addVertex(T.id, 2, "aai-node-type", "tenant");
-		Vertex v3 = graph.addVertex(T.id, 3, "aai-node-type", "vserver");
-		Vertex v4 = graph.addVertex(T.id, 4, "aai-node-type", "l-interface");
-		edgeSer.addTreeEdge(g, v1, v2);
-		edgeSer.addTreeEdge(g, v2, v3);
-		edgeSer.addTreeEdge(g, v3, v4);
-		List<Vertex> expected = new ArrayList<>();
-		expected.add(v4);
-		
-		TraversalQuery<Vertex> qb =  new TraversalQuery<>(loader, g, v1);
-		QueryBuilder<Vertex> q = buildTestQuery(qb);
-		
-		List<Vertex> results = q.toList();
+    @Test
+    public void traversalQueryUntilTest() throws AAIException {
+        Graph graph = TinkerGraph.open();
+        GraphTraversalSource g = graph.traversal();
+        
+        Vertex v1 = graph.addVertex(T.id, 1, "aai-node-type", "cloud-region");
+        Vertex v2 = graph.addVertex(T.id, 2, "aai-node-type", "tenant");
+        Vertex v3 = graph.addVertex(T.id, 3, "aai-node-type", "vserver");
+        Vertex v4 = graph.addVertex(T.id, 4, "aai-node-type", "l-interface");
+        edgeSer.addTreeEdge(g, v1, v2);
+        edgeSer.addTreeEdge(g, v2, v3);
+        edgeSer.addTreeEdge(g, v3, v4);
+        List<Vertex> expected = new ArrayList<>();
+        expected.add(v4);
+        
+        TraversalQuery<Vertex> qb =  new TraversalQuery<>(loader, g, v1);
+        QueryBuilder<Vertex> q = buildTestQuery(qb);
+        
+        List<Vertex> results = q.toList();
 
-		assertTrue("results match", expected.containsAll(results) && results.containsAll(expected));
-	}
-	
-	
+        assertTrue("results match", expected.containsAll(results) && results.containsAll(expected));
+    }
+    
+    
 
 }

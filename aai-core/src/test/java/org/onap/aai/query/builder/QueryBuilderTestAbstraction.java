@@ -63,14 +63,14 @@ import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
-		SchemaLocationsBean.class,
-		SchemaVersions.class,
-		QueryTestsConfigTranslator.class,
-		NodeIngestor.class,
-		EdgeIngestor.class,
-		EdgeSerializer.class,
-		SpringContextAware.class,
-		IntrospectionConfig.class
+        SchemaLocationsBean.class,
+        SchemaVersions.class,
+        QueryTestsConfigTranslator.class,
+        NodeIngestor.class,
+        EdgeIngestor.class,
+        EdgeSerializer.class,
+        SpringContextAware.class,
+        IntrospectionConfig.class
 })
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @TestPropertySource(properties = {
@@ -80,668 +80,668 @@ import static org.junit.Assert.*;
 })
 public abstract class QueryBuilderTestAbstraction {
 
-	protected   Loader loader;
-	protected static Graph graph;
-	protected GraphTraversalSource g;
+    protected   Loader loader;
+    protected static Graph graph;
+    protected GraphTraversalSource g;
 
-	@Autowired
-	protected EdgeSerializer testEdgeSer;
+    @Autowired
+    protected EdgeSerializer testEdgeSer;
 
-	@Autowired
-	protected LoaderFactory loaderFactory;
+    @Autowired
+    protected LoaderFactory loaderFactory;
 
-	@Autowired
-	protected SchemaVersions schemaVersions;
+    @Autowired
+    protected SchemaVersions schemaVersions;
 
-	@BeforeClass
-	public static void setup() throws Exception {
-		System.setProperty("AJSC_HOME", ".");
-		System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
-		QueryFormatTestHelper.setFinalStatic(AAIConstants.class.getField("AAI_HOME_ETC_OXM"), "src/test/resources/bundleconfig-local/etc/oxm/");
-		graph = JanusGraphFactory.build().set("storage.backend", "inmemory").open();
-	}
+    @BeforeClass
+    public static void setup() throws Exception {
+        System.setProperty("AJSC_HOME", ".");
+        System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
+        QueryFormatTestHelper.setFinalStatic(AAIConstants.class.getField("AAI_HOME_ETC_OXM"), "src/test/resources/bundleconfig-local/etc/oxm/");
+        graph = JanusGraphFactory.build().set("storage.backend", "inmemory").open();
+    }
 
-	@Before
-	public void configure() throws Exception {
-	    loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
+    @Before
+    public void configure() throws Exception {
+        loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
 
 
-		g = graph.traversal();
-	}
+        g = graph.traversal();
+    }
 
-	@After
-	public void deConfigure() throws Exception {
-		g.tx().rollback();
-	}
+    @After
+    public void deConfigure() throws Exception {
+        g.tx().rollback();
+    }
 
-	@AfterClass
-	public static void teardown() throws Exception {
-		graph.close();
-	}
+    @AfterClass
+    public static void teardown() throws Exception {
+        graph.close();
+    }
 
-	@Test
-	public void createEdgeGVnfToVnfcTraversal() throws AAIException {
+    @Test
+    public void createEdgeGVnfToVnfcTraversal() throws AAIException {
 
-		Vertex gvnf = g.addV("aai-node-type","generic-vnf","vnf-id","myvnf").next();
-		Vertex vnfc = g.addV("aai-node-type","vnfc","vnfc-name","a-name").next();
-		testEdgeSer.addEdge(g, gvnf, vnfc, "uses");
+        Vertex gvnf = g.addV("aai-node-type","generic-vnf","vnf-id","myvnf").next();
+        Vertex vnfc = g.addV("aai-node-type","vnfc","vnfc-name","a-name").next();
+        testEdgeSer.addEdge(g, gvnf, vnfc, "uses");
 
-		QueryBuilder<Vertex> tQ = getNewVertexTraversalWithTestEdgeRules(gvnf);
-		tQ.createEdgeTraversal(EdgeType.COUSIN, "generic-vnf", "vnfc");
+        QueryBuilder<Vertex> tQ = getNewVertexTraversalWithTestEdgeRules(gvnf);
+        tQ.createEdgeTraversal(EdgeType.COUSIN, "generic-vnf", "vnfc");
 
-		assertEquals(vnfc, tQ.next());
+        assertEquals(vnfc, tQ.next());
 
 
-	}
+    }
 
-	@Test
-	public void createEdgeLinterfaceToLogicalLinkTraversal() throws AAIException {
+    @Test
+    public void createEdgeLinterfaceToLogicalLinkTraversal() throws AAIException {
 
-		Vertex lInterface = g.addV("aai-node-type","l-interface","interface-name","l-interface-a").next();
-		Vertex logicalLink = g.addV("aai-node-type","logical-link","link-name","logical-link-a").next();
-		testEdgeSer.addEdge(g, lInterface, logicalLink, "sourceLInterface");
+        Vertex lInterface = g.addV("aai-node-type","l-interface","interface-name","l-interface-a").next();
+        Vertex logicalLink = g.addV("aai-node-type","logical-link","link-name","logical-link-a").next();
+        testEdgeSer.addEdge(g, lInterface, logicalLink, "sourceLInterface");
 
-		QueryBuilder<Vertex> tQ = getNewVertexTraversalWithTestEdgeRules(lInterface);
-		tQ.createEdgeTraversal(EdgeType.COUSIN, "l-interface", "logical-link");
+        QueryBuilder<Vertex> tQ = getNewVertexTraversalWithTestEdgeRules(lInterface);
+        tQ.createEdgeTraversal(EdgeType.COUSIN, "l-interface", "logical-link");
 
-		Vertex next = tQ.next();
+        Vertex next = tQ.next();
 
-		assertEquals(logicalLink, next);
+        assertEquals(logicalLink, next);
 
 
-	}
+    }
 
-	@SuppressWarnings("rawtypes")
-	@Test
-	public void createEdgeLinterfaceToLogicalLinkTraversal_tree() throws AAIException {
-		Vertex lInterface = g.addV("aai-node-type","l-interface","interface-name","l-interface-a").next();
-		Vertex logicalLink = g.addV("aai-node-type","logical-link","link-name","logical-link-a").next();
-		testEdgeSer.addEdge(g, lInterface, logicalLink, "sourceLInterface");
+    @SuppressWarnings("rawtypes")
+    @Test
+    public void createEdgeLinterfaceToLogicalLinkTraversal_tree() throws AAIException {
+        Vertex lInterface = g.addV("aai-node-type","l-interface","interface-name","l-interface-a").next();
+        Vertex logicalLink = g.addV("aai-node-type","logical-link","link-name","logical-link-a").next();
+        testEdgeSer.addEdge(g, lInterface, logicalLink, "sourceLInterface");
 
-		QueryBuilder<Tree> tQ = getNewTreeTraversalWithTestEdgeRules(lInterface).createEdgeTraversal(EdgeType.COUSIN,
-				loader.introspectorFromName("l-interface" ), loader.introspectorFromName("logical-link")).tree();
+        QueryBuilder<Tree> tQ = getNewTreeTraversalWithTestEdgeRules(lInterface).createEdgeTraversal(EdgeType.COUSIN,
+                loader.introspectorFromName("l-interface" ), loader.introspectorFromName("logical-link")).tree();
 
-		Vertex lInterfaceExpected = graph.traversal().V().has("aai-node-type","l-interface").has("interface-name","l-interface-a").next();
-		Vertex logicalLinkExpected = graph.traversal().V().has("aai-node-type", "logical-link").has("link-name","logical-link-a").next();
-		Tree tree = tQ.next();
-		assertTrue(tree.containsKey(lInterfaceExpected));
-		assertTrue(((Tree) tree.get(lInterfaceExpected)).containsKey(logicalLinkExpected));
-	}
+        Vertex lInterfaceExpected = graph.traversal().V().has("aai-node-type","l-interface").has("interface-name","l-interface-a").next();
+        Vertex logicalLinkExpected = graph.traversal().V().has("aai-node-type", "logical-link").has("link-name","logical-link-a").next();
+        Tree tree = tQ.next();
+        assertTrue(tree.containsKey(lInterfaceExpected));
+        assertTrue(((Tree) tree.get(lInterfaceExpected)).containsKey(logicalLinkExpected));
+    }
 
-	@SuppressWarnings("rawtypes")
-	@Test
-	public void createEdgeLinterfaceToLogicalLinkTraversal_Path() throws AAIException {
-		Vertex pInterface = g.addV("aai-node-type","p-interface","interface-name","p-interface-a").next();
-		Vertex lInterface = g.addV("aai-node-type","l-interface","interface-name","l-interface-a").next();
-		Vertex logicalLink = g.addV("aai-node-type","logical-link","link-name","logical-link-a").next();
-		testEdgeSer.addEdge(g, lInterface, logicalLink);
-		testEdgeSer.addTreeEdge(g, pInterface, lInterface);
+    @SuppressWarnings("rawtypes")
+    @Test
+    public void createEdgeLinterfaceToLogicalLinkTraversal_Path() throws AAIException {
+        Vertex pInterface = g.addV("aai-node-type","p-interface","interface-name","p-interface-a").next();
+        Vertex lInterface = g.addV("aai-node-type","l-interface","interface-name","l-interface-a").next();
+        Vertex logicalLink = g.addV("aai-node-type","logical-link","link-name","logical-link-a").next();
+        testEdgeSer.addEdge(g, lInterface, logicalLink);
+        testEdgeSer.addTreeEdge(g, pInterface, lInterface);
 
-		QueryBuilder<Path> tQ = getNewPathTraversalWithTestEdgeRules(pInterface).createEdgeTraversal(EdgeType.TREE,
-				loader.introspectorFromName("p-interface" ), loader.introspectorFromName("l-interface")).createEdgeTraversal(EdgeType.COUSIN,
-				loader.introspectorFromName("l-interface" ), loader.introspectorFromName("logical-link")).path();
+        QueryBuilder<Path> tQ = getNewPathTraversalWithTestEdgeRules(pInterface).createEdgeTraversal(EdgeType.TREE,
+                loader.introspectorFromName("p-interface" ), loader.introspectorFromName("l-interface")).createEdgeTraversal(EdgeType.COUSIN,
+                loader.introspectorFromName("l-interface" ), loader.introspectorFromName("logical-link")).path();
 
-		Path path = tQ.next();
-		assertThat(path.objects(), contains(pInterface, lInterface, logicalLink));
-	}
+        Path path = tQ.next();
+        assertThat(path.objects(), contains(pInterface, lInterface, logicalLink));
+    }
 
-	@SuppressWarnings("rawtypes")
-	@Test
-	public void parentVertexTest() throws AAIException {
-		Vertex pInterface = g.addV("aai-node-type","p-interface","interface-name","p-interface-a").next();
-		Vertex lInterface = g.addV("aai-node-type","l-interface","interface-name","l-interface-a").next();
+    @SuppressWarnings("rawtypes")
+    @Test
+    public void parentVertexTest() throws AAIException {
+        Vertex pInterface = g.addV("aai-node-type","p-interface","interface-name","p-interface-a").next();
+        Vertex lInterface = g.addV("aai-node-type","l-interface","interface-name","l-interface-a").next();
 
-		testEdgeSer.addTreeEdge(g, pInterface, lInterface);
+        testEdgeSer.addTreeEdge(g, pInterface, lInterface);
 
-		QueryBuilder<Vertex> tQ = getNewEdgeTraversalWithTestEdgeRules(lInterface).getParentVertex();
+        QueryBuilder<Vertex> tQ = getNewEdgeTraversalWithTestEdgeRules(lInterface).getParentVertex();
 
-		Vertex parent = tQ.next();
-		assertThat(parent, is(pInterface));
-	}
+        Vertex parent = tQ.next();
+        assertThat(parent, is(pInterface));
+    }
 
 
-	@Test
-	public void createEdgeLinterfaceToLogicalLinkIntrospectorTraversal() throws AAIException {
+    @Test
+    public void createEdgeLinterfaceToLogicalLinkIntrospectorTraversal() throws AAIException {
 
-		Vertex lInterface = g.addV("aai-node-type","l-interface","interface-name","l-interface-a").next();
-		Vertex logicalLink = g.addV("aai-node-type","logical-link","link-name","logical-link-a").next();
-		testEdgeSer.addEdge(g, lInterface, logicalLink, "sourceLInterface");
+        Vertex lInterface = g.addV("aai-node-type","l-interface","interface-name","l-interface-a").next();
+        Vertex logicalLink = g.addV("aai-node-type","logical-link","link-name","logical-link-a").next();
+        testEdgeSer.addEdge(g, lInterface, logicalLink, "sourceLInterface");
 
-		QueryBuilder<Vertex> tQ = getNewVertexTraversalWithTestEdgeRules(lInterface);
-		tQ.createEdgeTraversal(EdgeType.COUSIN, loader.introspectorFromName("l-interface"), loader.introspectorFromName("logical-link"));
+        QueryBuilder<Vertex> tQ = getNewVertexTraversalWithTestEdgeRules(lInterface);
+        tQ.createEdgeTraversal(EdgeType.COUSIN, loader.introspectorFromName("l-interface"), loader.introspectorFromName("logical-link"));
 
-		Vertex next = tQ.next();
+        Vertex next = tQ.next();
 
-		assertEquals(logicalLink, next);
+        assertEquals(logicalLink, next);
 
 
-	}
+    }
 
-	@Test
-	public void createEdgeLinterfaceToLogicalLinkVertexToIntrospectorTraversal() throws AAIException {
+    @Test
+    public void createEdgeLinterfaceToLogicalLinkVertexToIntrospectorTraversal() throws AAIException {
 
-		Vertex lInterface = g.addV("aai-node-type","l-interface","interface-name","l-interface-a").next();
-		Vertex logicalLink = g.addV("aai-node-type","logical-link","link-name","logical-link-a").next();
-		testEdgeSer.addEdge(g, lInterface, logicalLink, "sourceLInterface");
+        Vertex lInterface = g.addV("aai-node-type","l-interface","interface-name","l-interface-a").next();
+        Vertex logicalLink = g.addV("aai-node-type","logical-link","link-name","logical-link-a").next();
+        testEdgeSer.addEdge(g, lInterface, logicalLink, "sourceLInterface");
 
-		QueryBuilder<Vertex> tQ = getNewVertexTraversalWithTestEdgeRules(lInterface);
-		tQ.createEdgeTraversal(EdgeType.COUSIN, lInterface, loader.introspectorFromName("logical-link"));
+        QueryBuilder<Vertex> tQ = getNewVertexTraversalWithTestEdgeRules(lInterface);
+        tQ.createEdgeTraversal(EdgeType.COUSIN, lInterface, loader.introspectorFromName("logical-link"));
 
-		Vertex next = tQ.next();
+        Vertex next = tQ.next();
 
-		assertEquals(logicalLink, next);
+        assertEquals(logicalLink, next);
 
 
-	}
+    }
 
-	@Test
-	public void edgeToVertexTraversalTest() throws AAIException {
+    @Test
+    public void edgeToVertexTraversalTest() throws AAIException {
 
-		Vertex gvnf = g.addV("aai-node-type","generic-vnf","vnf-id","gvnf").next();
-		Vertex vnfc1 = g.addV("aai-node-type","vnfc","vnfc-name","a-name").next();
+        Vertex gvnf = g.addV("aai-node-type","generic-vnf","vnf-id","gvnf").next();
+        Vertex vnfc1 = g.addV("aai-node-type","vnfc","vnfc-name","a-name").next();
 
-		testEdgeSer.addEdge(g, gvnf, vnfc1);
+        testEdgeSer.addEdge(g, gvnf, vnfc1);
 
-		QueryBuilder<Vertex> tQ = getNewVertexTraversalWithTestEdgeRules(gvnf);
-		tQ.createEdgeTraversal(EdgeType.COUSIN, "generic-vnf", "vnfc");
+        QueryBuilder<Vertex> tQ = getNewVertexTraversalWithTestEdgeRules(gvnf);
+        tQ.createEdgeTraversal(EdgeType.COUSIN, "generic-vnf", "vnfc");
 
-		List<Vertex> list = tQ.toList();
+        List<Vertex> list = tQ.toList();
 
-		assertEquals("Has 1 vertexes ", 1, list.size());
-		assertTrue("Has vertex on the default edge ", list.contains(vnfc1));
+        assertEquals("Has 1 vertexes ", 1, list.size());
+        assertTrue("Has vertex on the default edge ", list.contains(vnfc1));
 
 
-	}
+    }
 
-	@Test
-	public void edgeToVertexTraversalSingleOutRuleTest() throws AAIException {
+    @Test
+    public void edgeToVertexTraversalSingleOutRuleTest() throws AAIException {
 
-		Vertex vce = g.addV("aai-node-type","vce","vnf-id","vce").next();
-		Vertex vnfc1 = g.addV("aai-node-type","vnfc","vnfc-name","a-name").next();
+        Vertex vce = g.addV("aai-node-type","vce","vnf-id","vce").next();
+        Vertex vnfc1 = g.addV("aai-node-type","vnfc","vnfc-name","a-name").next();
 
-		testEdgeSer.addEdge(g, vce, vnfc1);
+        testEdgeSer.addEdge(g, vce, vnfc1);
 
-		QueryBuilder<Vertex> tQ1 = getNewVertexTraversalWithTestEdgeRules(vce);
-		tQ1.createEdgeTraversal(EdgeType.COUSIN, "vce", "vnfc");
+        QueryBuilder<Vertex> tQ1 = getNewVertexTraversalWithTestEdgeRules(vce);
+        tQ1.createEdgeTraversal(EdgeType.COUSIN, "vce", "vnfc");
 
-		QueryBuilder<Vertex> tQ2 = getNewVertexTraversalWithTestEdgeRules(vnfc1);
-		tQ2.createEdgeTraversal(EdgeType.COUSIN, "vnfc", "vce");
+        QueryBuilder<Vertex> tQ2 = getNewVertexTraversalWithTestEdgeRules(vnfc1);
+        tQ2.createEdgeTraversal(EdgeType.COUSIN, "vnfc", "vce");
 
-		List<Vertex> list1 = tQ1.toList();
-		List<Vertex> list2 = tQ2.toList();
+        List<Vertex> list1 = tQ1.toList();
+        List<Vertex> list2 = tQ2.toList();
 
-		assertEquals("1 - Has 1 vertexes ", 1, list1.size());
-		assertTrue("1 - traversal results in vnfc ", list1.contains(vnfc1));
-		assertEquals("2 - Has 1 vertexes ", 1, list2.size());
-		assertTrue("2 - traversal results in vce ", list2.contains(vce));
+        assertEquals("1 - Has 1 vertexes ", 1, list1.size());
+        assertTrue("1 - traversal results in vnfc ", list1.contains(vnfc1));
+        assertEquals("2 - Has 1 vertexes ", 1, list2.size());
+        assertTrue("2 - traversal results in vce ", list2.contains(vce));
 
 
-	}
+    }
 
-	@Test
-	public void edgeToVertexTraversalSingleInRuleTest() throws AAIException {
+    @Test
+    public void edgeToVertexTraversalSingleInRuleTest() throws AAIException {
 
-		Vertex vce = g.addV("aai-node-type","vce","vnf-id","vce").next();
-		Vertex pserver = g.addV("aai-node-type","pserver","hostname","a-name").next();
+        Vertex vce = g.addV("aai-node-type","vce","vnf-id","vce").next();
+        Vertex pserver = g.addV("aai-node-type","pserver","hostname","a-name").next();
 
-		testEdgeSer.addEdge(g, vce, pserver);
+        testEdgeSer.addEdge(g, vce, pserver);
 
-		QueryBuilder<Vertex> tQ1 = getNewVertexTraversalWithTestEdgeRules(vce);
-		tQ1.createEdgeTraversal(EdgeType.COUSIN, "vce", "pserver");
+        QueryBuilder<Vertex> tQ1 = getNewVertexTraversalWithTestEdgeRules(vce);
+        tQ1.createEdgeTraversal(EdgeType.COUSIN, "vce", "pserver");
 
-		List<Vertex> list = tQ1.toList();
+        List<Vertex> list = tQ1.toList();
 
-		assertEquals("1 - Has 1 vertexes ", 1, list.size());
-		assertTrue("1 - traversal results in vnfc ", list.contains(pserver));
+        assertEquals("1 - Has 1 vertexes ", 1, list.size());
+        assertTrue("1 - traversal results in vnfc ", list.contains(pserver));
 
 
-	}
+    }
 
-	@Test
-	public void edgeToVertexMultiRuleTraversalTest() throws AAIException {
+    @Test
+    public void edgeToVertexMultiRuleTraversalTest() throws AAIException {
 
-		Vertex gvnf = g.addV("aai-node-type","generic-vnf","vnf-id","gvnf").next();
-		Vertex vnfc1 = g.addV("aai-node-type","vnfc","vnfc-name","a-name").next();
-		Vertex vnfc2 = g.addV("aai-node-type","vnfc","vnfc-name","b-name").next();
+        Vertex gvnf = g.addV("aai-node-type","generic-vnf","vnf-id","gvnf").next();
+        Vertex vnfc1 = g.addV("aai-node-type","vnfc","vnfc-name","a-name").next();
+        Vertex vnfc2 = g.addV("aai-node-type","vnfc","vnfc-name","b-name").next();
 
-		testEdgeSer.addEdge(g, gvnf, vnfc1);
-		testEdgeSer.addEdge(g, gvnf, vnfc2, "re-uses");
+        testEdgeSer.addEdge(g, gvnf, vnfc1);
+        testEdgeSer.addEdge(g, gvnf, vnfc2, "re-uses");
 
-		QueryBuilder<Vertex> tQ = getNewVertexTraversalWithTestEdgeRules(gvnf);
-		tQ.createEdgeTraversal(EdgeType.COUSIN, "generic-vnf", "vnfc");
+        QueryBuilder<Vertex> tQ = getNewVertexTraversalWithTestEdgeRules(gvnf);
+        tQ.createEdgeTraversal(EdgeType.COUSIN, "generic-vnf", "vnfc");
 
-		List<Vertex> list = tQ.toList();
+        List<Vertex> list = tQ.toList();
 
-		assertEquals("Has 2 vertexes ", 2, list.size());
-		assertTrue("Has vertex on the default edge ", list.contains(vnfc1));
-		assertTrue("Has vertex on the re-uses edge ", list.contains(vnfc2));
+        assertEquals("Has 2 vertexes ", 2, list.size());
+        assertTrue("Has vertex on the default edge ", list.contains(vnfc1));
+        assertTrue("Has vertex on the re-uses edge ", list.contains(vnfc2));
 
 
-	}
+    }
 
-	@Test
-	public void edgeToVertexMultiLabelTest() throws AAIException {
+    @Test
+    public void edgeToVertexMultiLabelTest() throws AAIException {
 
-		Vertex gvnf = g.addV("aai-node-type","generic-vnf","vnf-id","gvnf").next();
-		Vertex pserver = g.addV("aai-node-type","pserver","hostname","a-name").next();
-		Vertex vnfc1 = g.addV("aai-node-type","vnfc","vnfc-name","a-name").next();
+        Vertex gvnf = g.addV("aai-node-type","generic-vnf","vnf-id","gvnf").next();
+        Vertex pserver = g.addV("aai-node-type","pserver","hostname","a-name").next();
+        Vertex vnfc1 = g.addV("aai-node-type","vnfc","vnfc-name","a-name").next();
 
-		testEdgeSer.addEdge(g, gvnf, vnfc1);
-		testEdgeSer.addEdge(g, pserver, vnfc1);
+        testEdgeSer.addEdge(g, gvnf, vnfc1);
+        testEdgeSer.addEdge(g, pserver, vnfc1);
 
-		QueryBuilder<Vertex> tQ = getNewVertexTraversalWithTestEdgeRules(vnfc1);
-		tQ.createEdgeTraversal(EdgeType.COUSIN, "vnfc", "generic-vnf");
+        QueryBuilder<Vertex> tQ = getNewVertexTraversalWithTestEdgeRules(vnfc1);
+        tQ.createEdgeTraversal(EdgeType.COUSIN, "vnfc", "generic-vnf");
 
-		List<Vertex> list = tQ.toList();
+        List<Vertex> list = tQ.toList();
 
-		assertEquals("Has 1 vertexes ", 1, list.size());
-		assertTrue("Only returns the generic vnf vertex", list.contains(gvnf));
+        assertEquals("Has 1 vertexes ", 1, list.size());
+        assertTrue("Only returns the generic vnf vertex", list.contains(gvnf));
 
 
-	}
+    }
 
-	@Test
-	public void limitTraversalTest() throws AAIException {
+    @Test
+    public void limitTraversalTest() throws AAIException {
 
-		g.addV("aai-node-type","vnfc","vnfc-name","a-name").next();
-		g.addV("aai-node-type","vnfc","vnfc-name","b-name").next();
+        g.addV("aai-node-type","vnfc","vnfc-name","a-name").next();
+        g.addV("aai-node-type","vnfc","vnfc-name","b-name").next();
 
-		QueryBuilder<Vertex> tQ = new GremlinTraversal<>(loader, g);
-		tQ.getVerticesByProperty("aai-node-type","vnfc").limit(1);
+        QueryBuilder<Vertex> tQ = new GremlinTraversal<>(loader, g);
+        tQ.getVerticesByProperty("aai-node-type","vnfc").limit(1);
 
-		List<Vertex> list = tQ.toList();
+        List<Vertex> list = tQ.toList();
 
-		assertEquals("Has 1 vertexes ", 1, list.size());
+        assertEquals("Has 1 vertexes ", 1, list.size());
 
 
-	}
+    }
 
-	@Test
-	public void getVertexesByPropertiesTraversalTest() throws AAIException {
+    @Test
+    public void getVertexesByPropertiesTraversalTest() throws AAIException {
 
-		g.addV("aai-node-type","vnfc","vnfc-name","a-name").next();
-		g.addV("aai-node-type","vnfc","vnfc-name","b-name").next();
+        g.addV("aai-node-type","vnfc","vnfc-name","a-name").next();
+        g.addV("aai-node-type","vnfc","vnfc-name","b-name").next();
 
-		QueryBuilder<Vertex> tQ = new GremlinTraversal<>(loader, g);
-		tQ.getVerticesByProperty("vnfc-name", Arrays.asList("a-name", "b-name"));
+        QueryBuilder<Vertex> tQ = new GremlinTraversal<>(loader, g);
+        tQ.getVerticesByProperty("vnfc-name", Arrays.asList("a-name", "b-name"));
 
-		List<Vertex> list = tQ.toList();
+        List<Vertex> list = tQ.toList();
 
-		assertEquals("Has 2 vertexes ", 2, list.size());
+        assertEquals("Has 2 vertexes ", 2, list.size());
 
 
-	}
+    }
 
-	@Test
-	public void getVertexesByIndexedPropertyTraversalTest() throws AAIException {
+    @Test
+    public void getVertexesByIndexedPropertyTraversalTest() throws AAIException {
 
-		g.addV("aai-node-type","vnfc","vnfc-name","a-name").next();
-		g.addV("aai-node-type","vnfc","vnfc-name","b-name").next();
+        g.addV("aai-node-type","vnfc","vnfc-name","a-name").next();
+        g.addV("aai-node-type","vnfc","vnfc-name","b-name").next();
 
-		QueryBuilder<Vertex> tQ = new GremlinTraversal<>(loader, g);
-		tQ.getVerticesByIndexedProperty("aai-node-type","vnfc");
+        QueryBuilder<Vertex> tQ = new GremlinTraversal<>(loader, g);
+        tQ.getVerticesByIndexedProperty("aai-node-type","vnfc");
 
-		List<Vertex> list = tQ.toList();
+        List<Vertex> list = tQ.toList();
 
-		assertEquals("Has 2 vertexes ", 2, list.size());
+        assertEquals("Has 2 vertexes ", 2, list.size());
 
 
-	}
+    }
 
-	@Test
-	public void dedupTraversalTest() throws AAIException {
+    @Test
+    public void dedupTraversalTest() throws AAIException {
 
-		Vertex gvnf = g.addV("aai-node-type","generic-vnf","vnf-id","gvnf").next();
-		Vertex pserver = g.addV("aai-node-type","pserver","hostname","a-name").next();
+        Vertex gvnf = g.addV("aai-node-type","generic-vnf","vnf-id","gvnf").next();
+        Vertex pserver = g.addV("aai-node-type","pserver","hostname","a-name").next();
 
-		testEdgeSer.addEdge(g, gvnf, pserver);
-		testEdgeSer.addEdge(g, gvnf, pserver, "generic-vnf-pserver-B");
+        testEdgeSer.addEdge(g, gvnf, pserver);
+        testEdgeSer.addEdge(g, gvnf, pserver, "generic-vnf-pserver-B");
 
-		QueryBuilder<Vertex> tQ = getNewVertexTraversalWithTestEdgeRules(gvnf);
-		tQ.createEdgeTraversal(EdgeType.COUSIN, "generic-vnf", "pserver").dedup();
+        QueryBuilder<Vertex> tQ = getNewVertexTraversalWithTestEdgeRules(gvnf);
+        tQ.createEdgeTraversal(EdgeType.COUSIN, "generic-vnf", "pserver").dedup();
 
-		List<Vertex> list = tQ.toList();
+        List<Vertex> list = tQ.toList();
 
-		assertEquals("Has 2 vertexes ", 1, list.size());
-		assertTrue("result has pserver ", list.contains(pserver));
+        assertEquals("Has 2 vertexes ", 1, list.size());
+        assertTrue("result has pserver ", list.contains(pserver));
 
 
-	}
+    }
 
-	@Test
-	public void storeCapTraversalTest() throws AAIException {
+    @Test
+    public void storeCapTraversalTest() throws AAIException {
 
-		Vertex gvnf = g.addV("aai-node-type","generic-vnf","vnf-id","gvnf").next();
-		Vertex pserver = g.addV("aai-node-type","pserver","hostname","a-name").next();
+        Vertex gvnf = g.addV("aai-node-type","generic-vnf","vnf-id","gvnf").next();
+        Vertex pserver = g.addV("aai-node-type","pserver","hostname","a-name").next();
 
-		testEdgeSer.addEdge(g, gvnf, pserver);
-		testEdgeSer.addEdge(g, gvnf, pserver, "generic-vnf-pserver-B");
+        testEdgeSer.addEdge(g, gvnf, pserver);
+        testEdgeSer.addEdge(g, gvnf, pserver, "generic-vnf-pserver-B");
 
-		GremlinTraversal<BulkSet<Vertex>> tQ = new GremlinTraversal<>(loader, g, gvnf);
-		tQ.createEdgeTraversal(EdgeType.COUSIN, "generic-vnf", "pserver").store("x").cap("x");
+        GremlinTraversal<BulkSet<Vertex>> tQ = new GremlinTraversal<>(loader, g, gvnf);
+        tQ.createEdgeTraversal(EdgeType.COUSIN, "generic-vnf", "pserver").store("x").cap("x");
 
-		List<BulkSet<Vertex>> list = tQ.toList();
+        List<BulkSet<Vertex>> list = tQ.toList();
 
-		assertEquals("Has 2 vertexes ", 1, list.size());
-		assertEquals("result has pserver ",pserver, list.get(0).iterator().next());
+        assertEquals("Has 2 vertexes ", 1, list.size());
+        assertEquals("result has pserver ",pserver, list.get(0).iterator().next());
 
 
-	}
+    }
 
-	@Test
-	public void storeCapUnfoldTraversalTest() throws AAIException {
+    @Test
+    public void storeCapUnfoldTraversalTest() throws AAIException {
 
-		Vertex gvnf = g.addV("aai-node-type","generic-vnf","vnf-id","gvnf").next();
-		Vertex pserver = g.addV("aai-node-type","pserver","hostname","a-name").next();
+        Vertex gvnf = g.addV("aai-node-type","generic-vnf","vnf-id","gvnf").next();
+        Vertex pserver = g.addV("aai-node-type","pserver","hostname","a-name").next();
 
-		testEdgeSer.addEdge(g, gvnf, pserver);
-		testEdgeSer.addEdge(g, gvnf, pserver, "generic-vnf-pserver-B");
+        testEdgeSer.addEdge(g, gvnf, pserver);
+        testEdgeSer.addEdge(g, gvnf, pserver, "generic-vnf-pserver-B");
 
-		QueryBuilder<Vertex> tQ = getNewVertexTraversalWithTestEdgeRules(gvnf);
-		tQ.createEdgeTraversal(EdgeType.COUSIN, "generic-vnf", "pserver").store("x").cap("x").unfold();
+        QueryBuilder<Vertex> tQ = getNewVertexTraversalWithTestEdgeRules(gvnf);
+        tQ.createEdgeTraversal(EdgeType.COUSIN, "generic-vnf", "pserver").store("x").cap("x").unfold();
 
-		List<Vertex> list = tQ.toList();
+        List<Vertex> list = tQ.toList();
 
-		assertEquals("Has 2 vertexes ", 2, list.size());
-		assertTrue("result has pserver ", list.contains(pserver));
+        assertEquals("Has 2 vertexes ", 2, list.size());
+        assertTrue("result has pserver ", list.contains(pserver));
 
 
-	}
+    }
 
-	@Test
-	public void nextAndHasNextTraversalTest() throws AAIException {
+    @Test
+    public void nextAndHasNextTraversalTest() throws AAIException {
 
-		Vertex v1 = g.addV("aai-node-type","vnfc","vnfc-name","a-name").next();
-		Vertex v2 = g.addV("aai-node-type","vnfc","vnfc-name","b-name").next();
+        Vertex v1 = g.addV("aai-node-type","vnfc","vnfc-name","a-name").next();
+        Vertex v2 = g.addV("aai-node-type","vnfc","vnfc-name","b-name").next();
 
-		QueryBuilder<Vertex> tQ = new GremlinTraversal<>(loader, g);
-		tQ.getVerticesByProperty("aai-node-type","vnfc");
+        QueryBuilder<Vertex> tQ = new GremlinTraversal<>(loader, g);
+        tQ.getVerticesByProperty("aai-node-type","vnfc");
 
-		List<Vertex> list = new ArrayList<>();
+        List<Vertex> list = new ArrayList<>();
 
-		assertTrue("Has next 1 ",tQ.hasNext());
-		list.add(tQ.next());
-		assertTrue("Has next 2 ",tQ.hasNext());
-		list.add(tQ.next());
-		assertFalse("Has next 3 ",tQ.hasNext());
-		assertTrue("Has all the vertexes", list.contains(v1) && list.remove(v2));
+        assertTrue("Has next 1 ",tQ.hasNext());
+        list.add(tQ.next());
+        assertTrue("Has next 2 ",tQ.hasNext());
+        list.add(tQ.next());
+        assertFalse("Has next 3 ",tQ.hasNext());
+        assertTrue("Has all the vertexes", list.contains(v1) && list.remove(v2));
 
-	}
+    }
 
-	@Test
-	public void edgeToVertexMultiRuleOutTraversalTest() throws AAIException {
+    @Test
+    public void edgeToVertexMultiRuleOutTraversalTest() throws AAIException {
 
-		Vertex gvnf = g.addV("aai-node-type","generic-vnf","vnf-id","gvnf").next();
-		Vertex pserver = g.addV("aai-node-type","pserver","hostname","a-name").next();
+        Vertex gvnf = g.addV("aai-node-type","generic-vnf","vnf-id","gvnf").next();
+        Vertex pserver = g.addV("aai-node-type","pserver","hostname","a-name").next();
 
-		testEdgeSer.addEdge(g, gvnf, pserver);
-		testEdgeSer.addEdge(g, gvnf, pserver, "generic-vnf-pserver-B");
+        testEdgeSer.addEdge(g, gvnf, pserver);
+        testEdgeSer.addEdge(g, gvnf, pserver, "generic-vnf-pserver-B");
 
-		QueryBuilder<Vertex> tQ = getNewVertexTraversalWithTestEdgeRules(gvnf);
-		tQ.createEdgeTraversal(EdgeType.COUSIN, "generic-vnf", "pserver");
+        QueryBuilder<Vertex> tQ = getNewVertexTraversalWithTestEdgeRules(gvnf);
+        tQ.createEdgeTraversal(EdgeType.COUSIN, "generic-vnf", "pserver");
 
-		List<Vertex> list = tQ.toList();
+        List<Vertex> list = tQ.toList();
 
-		assertEquals("Has 2 vertexes ", 2, list.size());
-		assertTrue("result has pserver ", list.contains(pserver));
+        assertEquals("Has 2 vertexes ", 2, list.size());
+        assertTrue("result has pserver ", list.contains(pserver));
 
 
-	}
+    }
 
-	@Test
-	public void edgeToVertexMultiRuleInTraversalTest() throws AAIException {
+    @Test
+    public void edgeToVertexMultiRuleInTraversalTest() throws AAIException {
 
-		Vertex gvnf = g.addV("aai-node-type","generic-vnf","vnf-id","gvnf").next();
-		Vertex complex = g.addV("aai-node-type","complex","physical-location-id","a-name").next();
+        Vertex gvnf = g.addV("aai-node-type","generic-vnf","vnf-id","gvnf").next();
+        Vertex complex = g.addV("aai-node-type","complex","physical-location-id","a-name").next();
 
-		testEdgeSer.addEdge(g, gvnf, complex);
-		testEdgeSer.addEdge(g, gvnf, complex, "complex-generic-vnf-B");
+        testEdgeSer.addEdge(g, gvnf, complex);
+        testEdgeSer.addEdge(g, gvnf, complex, "complex-generic-vnf-B");
 
-		QueryBuilder<Vertex> tQ = getNewVertexTraversalWithTestEdgeRules(gvnf);
-		tQ.createEdgeTraversal(EdgeType.COUSIN, "generic-vnf", "complex");
+        QueryBuilder<Vertex> tQ = getNewVertexTraversalWithTestEdgeRules(gvnf);
+        tQ.createEdgeTraversal(EdgeType.COUSIN, "generic-vnf", "complex");
 
-		List<Vertex> list = tQ.toList();
+        List<Vertex> list = tQ.toList();
 
-		assertEquals("Has 2 vertexes ", 2, list.size());
-		assertTrue("result has pserver ", list.contains(complex));
+        assertEquals("Has 2 vertexes ", 2, list.size());
+        assertTrue("result has pserver ", list.contains(complex));
 
 
-	}
+    }
 
-	@Test
-	public void edgeTraversalSingleInRuleTest() throws AAIException {
+    @Test
+    public void edgeTraversalSingleInRuleTest() throws AAIException {
 
-		Vertex vce = g.addV("aai-node-type","vce","vnf-id","vce").next();
-		Vertex pserver = g.addV("aai-node-type","pserver","hostname","a-name").next();
+        Vertex vce = g.addV("aai-node-type","vce","vnf-id","vce").next();
+        Vertex pserver = g.addV("aai-node-type","pserver","hostname","a-name").next();
 
-		Edge e = testEdgeSer.addEdge(g, vce, pserver);
+        Edge e = testEdgeSer.addEdge(g, vce, pserver);
 
-		QueryBuilder<Edge> tQ1 = getNewEdgeTraversalWithTestEdgeRules(vce);
-		tQ1.getEdgesBetween(EdgeType.COUSIN, "vce", "pserver");
+        QueryBuilder<Edge> tQ1 = getNewEdgeTraversalWithTestEdgeRules(vce);
+        tQ1.getEdgesBetween(EdgeType.COUSIN, "vce", "pserver");
 
-		List<Edge> list = tQ1.toList();
+        List<Edge> list = tQ1.toList();
 
-		assertEquals("1 - Has 1 edge ", 1, list.size());
-		assertTrue("1 - traversal results in edge ", list.contains(e));
+        assertEquals("1 - Has 1 edge ", 1, list.size());
+        assertTrue("1 - traversal results in edge ", list.contains(e));
 
 
-	}
+    }
 
-	@Test
-	public void edgeTraversalSingleOutRuleTest() throws AAIException {
+    @Test
+    public void edgeTraversalSingleOutRuleTest() throws AAIException {
 
-		Vertex vce = g.addV("aai-node-type","vce","vnf-id","vce").next();
-		Vertex vnfc1 = g.addV("aai-node-type","vnfc","vnfc-name","a-name").next();
+        Vertex vce = g.addV("aai-node-type","vce","vnf-id","vce").next();
+        Vertex vnfc1 = g.addV("aai-node-type","vnfc","vnfc-name","a-name").next();
 
-		Edge e = testEdgeSer.addEdge(g, vce, vnfc1);
+        Edge e = testEdgeSer.addEdge(g, vce, vnfc1);
 
-		QueryBuilder<Edge> tQ1 = getNewEdgeTraversalWithTestEdgeRules(vce);
-		tQ1.getEdgesBetween(EdgeType.COUSIN, "vce", "vnfc");
+        QueryBuilder<Edge> tQ1 = getNewEdgeTraversalWithTestEdgeRules(vce);
+        tQ1.getEdgesBetween(EdgeType.COUSIN, "vce", "vnfc");
 
-		List<Edge> list1 = tQ1.toList();
+        List<Edge> list1 = tQ1.toList();
 
-		assertEquals("1 - Has 1 edge ", 1, list1.size());
-		assertTrue("1 - traversal results in edge ", list1.contains(e));
+        assertEquals("1 - Has 1 edge ", 1, list1.size());
+        assertTrue("1 - traversal results in edge ", list1.contains(e));
 
 
-	}
+    }
 
-	@Test
-	public void edgeTraversalMultiRuleOutTraversalTest() throws AAIException {
+    @Test
+    public void edgeTraversalMultiRuleOutTraversalTest() throws AAIException {
 
-		Vertex gvnf = g.addV("aai-node-type","generic-vnf","vnf-id","gvnf").next();
-		Vertex pserver = g.addV("aai-node-type","pserver","hostname","a-name").next();
+        Vertex gvnf = g.addV("aai-node-type","generic-vnf","vnf-id","gvnf").next();
+        Vertex pserver = g.addV("aai-node-type","pserver","hostname","a-name").next();
 
-		Edge e1 = testEdgeSer.addEdge(g, gvnf, pserver);
-		Edge e2 = testEdgeSer.addEdge(g, gvnf, pserver, "generic-vnf-pserver-B");
+        Edge e1 = testEdgeSer.addEdge(g, gvnf, pserver);
+        Edge e2 = testEdgeSer.addEdge(g, gvnf, pserver, "generic-vnf-pserver-B");
 
-		QueryBuilder<Edge> tQ = getNewEdgeTraversalWithTestEdgeRules(gvnf);
-		tQ.getEdgesBetween(EdgeType.COUSIN, "generic-vnf", "pserver");
+        QueryBuilder<Edge> tQ = getNewEdgeTraversalWithTestEdgeRules(gvnf);
+        tQ.getEdgesBetween(EdgeType.COUSIN, "generic-vnf", "pserver");
 
-		List<Edge> list = tQ.toList();
+        List<Edge> list = tQ.toList();
 
-		assertEquals("Has 2 edges ", 2, list.size());
-		assertTrue("result has default edge ", list.contains(e1));
-		assertTrue("result has other edge ", list.contains(e2));
+        assertEquals("Has 2 edges ", 2, list.size());
+        assertTrue("result has default edge ", list.contains(e1));
+        assertTrue("result has other edge ", list.contains(e2));
 
 
-	}
+    }
 
-	@Test
-	public void edgeTraversalMultiRuleInTraversalTest() throws AAIException {
+    @Test
+    public void edgeTraversalMultiRuleInTraversalTest() throws AAIException {
 
-		Vertex gvnf = g.addV("aai-node-type","generic-vnf","vnf-id","gvnf").next();
-		Vertex complex = g.addV("aai-node-type","complex","physical-location-id","a-name").next();
+        Vertex gvnf = g.addV("aai-node-type","generic-vnf","vnf-id","gvnf").next();
+        Vertex complex = g.addV("aai-node-type","complex","physical-location-id","a-name").next();
 
-		Edge e1 = testEdgeSer.addEdge(g, gvnf, complex);
-		Edge e2 = testEdgeSer.addEdge(g, gvnf, complex, "complex-generic-vnf-B");
+        Edge e1 = testEdgeSer.addEdge(g, gvnf, complex);
+        Edge e2 = testEdgeSer.addEdge(g, gvnf, complex, "complex-generic-vnf-B");
 
-		QueryBuilder<Edge> tQ = getNewEdgeTraversalWithTestEdgeRules(gvnf);
-		tQ.getEdgesBetween(EdgeType.COUSIN, "generic-vnf", "complex");
+        QueryBuilder<Edge> tQ = getNewEdgeTraversalWithTestEdgeRules(gvnf);
+        tQ.getEdgesBetween(EdgeType.COUSIN, "generic-vnf", "complex");
 
-		List<Edge> list = tQ.toList();
+        List<Edge> list = tQ.toList();
 
-		assertEquals("Has 2 edges ", 2, list.size());
-		assertTrue("result has default edge ", list.contains(e1));
-		assertTrue("result has other edge ", list.contains(e2));
+        assertEquals("Has 2 edges ", 2, list.size());
+        assertTrue("result has default edge ", list.contains(e1));
+        assertTrue("result has other edge ", list.contains(e2));
 
 
-	}
+    }
 
-	@Test
-	public void edgeTraversalMultiRuleTraversalTest() throws AAIException {
+    @Test
+    public void edgeTraversalMultiRuleTraversalTest() throws AAIException {
 
-		Vertex gvnf = g.addV("aai-node-type","generic-vnf","vnf-id","gvnf").next();
-		Vertex vnfc1 = g.addV("aai-node-type","vnfc","vnfc-name","a-name").next();
-		Vertex vnfc2 = g.addV("aai-node-type","vnfc","vnfc-name","b-name").next();
+        Vertex gvnf = g.addV("aai-node-type","generic-vnf","vnf-id","gvnf").next();
+        Vertex vnfc1 = g.addV("aai-node-type","vnfc","vnfc-name","a-name").next();
+        Vertex vnfc2 = g.addV("aai-node-type","vnfc","vnfc-name","b-name").next();
 
-		Edge e1 = testEdgeSer.addEdge(g, gvnf, vnfc1);
-		Edge e2 = testEdgeSer.addEdge(g, gvnf, vnfc2, "re-uses");
+        Edge e1 = testEdgeSer.addEdge(g, gvnf, vnfc1);
+        Edge e2 = testEdgeSer.addEdge(g, gvnf, vnfc2, "re-uses");
 
-		QueryBuilder<Edge> tQ = getNewEdgeTraversalWithTestEdgeRules(gvnf);
-		tQ.getEdgesBetween(EdgeType.COUSIN, "generic-vnf", "vnfc");
+        QueryBuilder<Edge> tQ = getNewEdgeTraversalWithTestEdgeRules(gvnf);
+        tQ.getEdgesBetween(EdgeType.COUSIN, "generic-vnf", "vnfc");
 
-		List<Edge> list = tQ.toList();
+        List<Edge> list = tQ.toList();
 
-		assertEquals("Has 2 edges ", 2, list.size());
-		assertTrue("result has default edge ", list.contains(e1));
-		assertTrue("result has other edge ", list.contains(e2));
+        assertEquals("Has 2 edges ", 2, list.size());
+        assertTrue("result has default edge ", list.contains(e1));
+        assertTrue("result has other edge ", list.contains(e2));
 
 
-	}
+    }
 
-	@Ignore("This test is failing for TraversalQueryTest and Optimized but it passes for GremlinQueryTest")
-	@Test (expected = NoEdgeRuleFoundException.class)
-	public void getEdgesBetweenWithLabelsEmptyListTest() throws AAIException {
+    @Ignore("This test is failing for TraversalQueryTest and Optimized but it passes for GremlinQueryTest")
+    @Test (expected = NoEdgeRuleFoundException.class)
+    public void getEdgesBetweenWithLabelsEmptyListTest() throws AAIException {
 
-		Vertex gvnf = g.addV("aai-node-type","generic-vnf","vnf-id","gvnf").next();
-		Vertex pserver = g.addV("aai-node-type","pserver","hostname","a-name").next();
+        Vertex gvnf = g.addV("aai-node-type","generic-vnf","vnf-id","gvnf").next();
+        Vertex pserver = g.addV("aai-node-type","pserver","hostname","a-name").next();
 
-		testEdgeSer.addEdge(g, gvnf, pserver);
-		testEdgeSer.addEdge(g, gvnf, pserver, "generic-vnf-pserver-B");
+        testEdgeSer.addEdge(g, gvnf, pserver);
+        testEdgeSer.addEdge(g, gvnf, pserver, "generic-vnf-pserver-B");
 
-		QueryBuilder<Edge> tQ = getNewEdgeTraversalWithTestEdgeRules(gvnf);
-		tQ.getEdgesBetweenWithLabels(EdgeType.COUSIN, "generic-vnf", "pserver", Collections.emptyList());
+        QueryBuilder<Edge> tQ = getNewEdgeTraversalWithTestEdgeRules(gvnf);
+        tQ.getEdgesBetweenWithLabels(EdgeType.COUSIN, "generic-vnf", "pserver", Collections.emptyList());
 
-	}
+    }
 
-	@Test
-	public void getEdgesBetweenWithLabelsSingleItemTest() throws AAIException {
+    @Test
+    public void getEdgesBetweenWithLabelsSingleItemTest() throws AAIException {
 
-		Vertex gvnf = g.addV("aai-node-type","generic-vnf","vnf-id","gvnf").next();
-		Vertex pserver = g.addV("aai-node-type","pserver","hostname","a-name").next();
+        Vertex gvnf = g.addV("aai-node-type","generic-vnf","vnf-id","gvnf").next();
+        Vertex pserver = g.addV("aai-node-type","pserver","hostname","a-name").next();
 
-		Edge e1 = testEdgeSer.addEdge(g, gvnf, pserver);
-		Edge e2 = testEdgeSer.addEdge(g, gvnf, pserver, "generic-vnf-pserver-B");
+        Edge e1 = testEdgeSer.addEdge(g, gvnf, pserver);
+        Edge e2 = testEdgeSer.addEdge(g, gvnf, pserver, "generic-vnf-pserver-B");
 
-		QueryBuilder<Edge> tQ = getNewEdgeTraversalWithTestEdgeRules(gvnf);
-		tQ.getEdgesBetweenWithLabels(EdgeType.COUSIN, "generic-vnf", "pserver", Collections.singletonList("generic-vnf-pserver-B"));
+        QueryBuilder<Edge> tQ = getNewEdgeTraversalWithTestEdgeRules(gvnf);
+        tQ.getEdgesBetweenWithLabels(EdgeType.COUSIN, "generic-vnf", "pserver", Collections.singletonList("generic-vnf-pserver-B"));
 
-		List<Edge> list = tQ.toList();
+        List<Edge> list = tQ.toList();
 
-		assertEquals("Has 1 edges ", 1, list.size());
-		assertFalse("result does not have default edge ", list.contains(e1));
-		assertTrue("result has other edge ", list.contains(e2));
+        assertEquals("Has 1 edges ", 1, list.size());
+        assertFalse("result does not have default edge ", list.contains(e1));
+        assertTrue("result has other edge ", list.contains(e2));
 
-	}
+    }
 
-	@Test
-	public void getEdgesBetweenWithLabelsMultipleItemTest() throws AAIException {
+    @Test
+    public void getEdgesBetweenWithLabelsMultipleItemTest() throws AAIException {
 
-		Vertex gvnf = g.addV("aai-node-type","generic-vnf","vnf-id","gvnf").next();
-		Vertex pserver = g.addV("aai-node-type","pserver","hostname","a-name").next();
+        Vertex gvnf = g.addV("aai-node-type","generic-vnf","vnf-id","gvnf").next();
+        Vertex pserver = g.addV("aai-node-type","pserver","hostname","a-name").next();
 
-		Edge e1 = testEdgeSer.addEdge(g, gvnf, pserver);
-		Edge e2 = testEdgeSer.addEdge(g, gvnf, pserver, "generic-vnf-pserver-B");
+        Edge e1 = testEdgeSer.addEdge(g, gvnf, pserver);
+        Edge e2 = testEdgeSer.addEdge(g, gvnf, pserver, "generic-vnf-pserver-B");
 
-		QueryBuilder<Edge> tQ = getNewEdgeTraversalWithTestEdgeRules(gvnf);
-		tQ.getEdgesBetweenWithLabels(EdgeType.COUSIN, "generic-vnf", "pserver", Arrays.asList("generic-vnf-pserver-B", "generic-vnf-pserver-A"));
+        QueryBuilder<Edge> tQ = getNewEdgeTraversalWithTestEdgeRules(gvnf);
+        tQ.getEdgesBetweenWithLabels(EdgeType.COUSIN, "generic-vnf", "pserver", Arrays.asList("generic-vnf-pserver-B", "generic-vnf-pserver-A"));
 
-		List<Edge> list = tQ.toList();
+        List<Edge> list = tQ.toList();
 
-		assertEquals("Has 2 edges ", 2, list.size());
-		assertTrue("result has generic-vnf-pserver-A edge ", list.contains(e1));
-		assertTrue("result has generic-vnf-pserver-B edge ", list.contains(e2));
+        assertEquals("Has 2 edges ", 2, list.size());
+        assertTrue("result has generic-vnf-pserver-A edge ", list.contains(e1));
+        assertTrue("result has generic-vnf-pserver-B edge ", list.contains(e2));
 
-	}
+    }
 
-	@Ignore("This test is failing for TraversalQueryTest and Optimized but it passes for GremlinQueryTest")
-	@Test (expected = NoEdgeRuleFoundException.class)
-	public void createEdgeTraversalWithLabelsEmptyListTest() throws AAIException {
+    @Ignore("This test is failing for TraversalQueryTest and Optimized but it passes for GremlinQueryTest")
+    @Test (expected = NoEdgeRuleFoundException.class)
+    public void createEdgeTraversalWithLabelsEmptyListTest() throws AAIException {
 
-		Vertex gvnf = getVertex();
+        Vertex gvnf = getVertex();
 
-		QueryBuilder<Edge> tQ = getNewEdgeTraversalWithTestEdgeRules(gvnf);
-		tQ.getEdgesBetweenWithLabels(EdgeType.COUSIN, "generic-vnf", "pserver", Collections.emptyList());
+        QueryBuilder<Edge> tQ = getNewEdgeTraversalWithTestEdgeRules(gvnf);
+        tQ.getEdgesBetweenWithLabels(EdgeType.COUSIN, "generic-vnf", "pserver", Collections.emptyList());
 
-		tQ.toList();
+        tQ.toList();
 
 
-	}
+    }
 
-	private Vertex getVertex() throws AAIException {
-		Vertex gvnf = g.addV("aai-node-type","generic-vnf","vnf-id","gvnf").next();
-		Vertex pserver = g.addV("aai-node-type","pserver","hostname","a-name").next();
+    private Vertex getVertex() throws AAIException {
+        Vertex gvnf = g.addV("aai-node-type","generic-vnf","vnf-id","gvnf").next();
+        Vertex pserver = g.addV("aai-node-type","pserver","hostname","a-name").next();
 
-		testEdgeSer.addEdge(g, gvnf, pserver);
-		testEdgeSer.addEdge(g, gvnf, pserver, "generic-vnf-pserver-B");
-		return gvnf;
-	}
+        testEdgeSer.addEdge(g, gvnf, pserver);
+        testEdgeSer.addEdge(g, gvnf, pserver, "generic-vnf-pserver-B");
+        return gvnf;
+    }
 
-	@Test
-	public void createEdgeTraversalWithLabelsSingleItemTest() throws AAIException {
+    @Test
+    public void createEdgeTraversalWithLabelsSingleItemTest() throws AAIException {
 
-		Vertex gvnf = g.addV("aai-node-type","generic-vnf","vnf-id","gvnf").next();
-		Vertex pserver = g.addV("aai-node-type","pserver","hostname","a-name").next();
+        Vertex gvnf = g.addV("aai-node-type","generic-vnf","vnf-id","gvnf").next();
+        Vertex pserver = g.addV("aai-node-type","pserver","hostname","a-name").next();
 
-		Edge e1 = testEdgeSer.addEdge(g, gvnf, pserver);
-		Edge e2 = testEdgeSer.addEdge(g, gvnf, pserver, "generic-vnf-pserver-B");
+        Edge e1 = testEdgeSer.addEdge(g, gvnf, pserver);
+        Edge e2 = testEdgeSer.addEdge(g, gvnf, pserver, "generic-vnf-pserver-B");
 
-		QueryBuilder<Edge> tQ = getNewEdgeTraversalWithTestEdgeRules(gvnf);
-		tQ.getEdgesBetweenWithLabels(EdgeType.COUSIN, "generic-vnf", "pserver", Collections.singletonList("generic-vnf-pserver-B"));
+        QueryBuilder<Edge> tQ = getNewEdgeTraversalWithTestEdgeRules(gvnf);
+        tQ.getEdgesBetweenWithLabels(EdgeType.COUSIN, "generic-vnf", "pserver", Collections.singletonList("generic-vnf-pserver-B"));
 
-		List<Edge> list = tQ.toList();
+        List<Edge> list = tQ.toList();
 
-		assertEquals("Has 1 edges ", 1, list.size());
-		assertFalse("result does not have default edge ", list.contains(e1));
-		assertTrue("result has other edge ", list.contains(e2));
+        assertEquals("Has 1 edges ", 1, list.size());
+        assertFalse("result does not have default edge ", list.contains(e1));
+        assertTrue("result has other edge ", list.contains(e2));
 
-	}
+    }
 
-	@Test
-	public void createEdgeTraversalWithLabelsMultipleItemTest() throws AAIException {
+    @Test
+    public void createEdgeTraversalWithLabelsMultipleItemTest() throws AAIException {
 
-		Vertex gvnf = g.addV("aai-node-type","generic-vnf","vnf-id","gvnf").next();
-		Vertex pserver = g.addV("aai-node-type","pserver","hostname","a-name").next();
+        Vertex gvnf = g.addV("aai-node-type","generic-vnf","vnf-id","gvnf").next();
+        Vertex pserver = g.addV("aai-node-type","pserver","hostname","a-name").next();
 
-		Edge e1 = testEdgeSer.addEdge(g, gvnf, pserver);
-		Edge e2 = testEdgeSer.addEdge(g, gvnf, pserver, "generic-vnf-pserver-B");
+        Edge e1 = testEdgeSer.addEdge(g, gvnf, pserver);
+        Edge e2 = testEdgeSer.addEdge(g, gvnf, pserver, "generic-vnf-pserver-B");
 
-		QueryBuilder<Edge> tQ = getNewEdgeTraversalWithTestEdgeRules(gvnf);
-		tQ.getEdgesBetweenWithLabels(EdgeType.COUSIN, "generic-vnf", "pserver", Arrays.asList("generic-vnf-pserver-B", "generic-vnf-pserver-A"));
+        QueryBuilder<Edge> tQ = getNewEdgeTraversalWithTestEdgeRules(gvnf);
+        tQ.getEdgesBetweenWithLabels(EdgeType.COUSIN, "generic-vnf", "pserver", Arrays.asList("generic-vnf-pserver-B", "generic-vnf-pserver-A"));
 
-		List<Edge> list = tQ.toList();
+        List<Edge> list = tQ.toList();
 
-		assertEquals("Has 2 edges ", 2, list.size());
-		assertTrue("result has generic-vnf-pserver-A edge ", list.contains(e1));
-		assertTrue("result has generic-vnf-pserver-B edge ", list.contains(e2));
+        assertEquals("Has 2 edges ", 2, list.size());
+        assertTrue("result has generic-vnf-pserver-A edge ", list.contains(e1));
+        assertTrue("result has generic-vnf-pserver-B edge ", list.contains(e2));
 
-	}
+    }
 
-	protected abstract QueryBuilder<Edge> getNewEdgeTraversalWithTestEdgeRules(Vertex v);
+    protected abstract QueryBuilder<Edge> getNewEdgeTraversalWithTestEdgeRules(Vertex v);
 
-	protected abstract QueryBuilder<Edge> getNewEdgeTraversalWithTestEdgeRules();
+    protected abstract QueryBuilder<Edge> getNewEdgeTraversalWithTestEdgeRules();
 
-	protected abstract QueryBuilder<Vertex> getNewVertexTraversalWithTestEdgeRules(Vertex v);
+    protected abstract QueryBuilder<Vertex> getNewVertexTraversalWithTestEdgeRules(Vertex v);
 
-	protected abstract QueryBuilder<Vertex> getNewVertexTraversalWithTestEdgeRules();
+    protected abstract QueryBuilder<Vertex> getNewVertexTraversalWithTestEdgeRules();
 
-	protected abstract QueryBuilder<Tree> getNewTreeTraversalWithTestEdgeRules(Vertex v);
+    protected abstract QueryBuilder<Tree> getNewTreeTraversalWithTestEdgeRules(Vertex v);
 
-	protected abstract QueryBuilder<Tree> getNewTreeTraversalWithTestEdgeRules();
+    protected abstract QueryBuilder<Tree> getNewTreeTraversalWithTestEdgeRules();
 
-	protected abstract QueryBuilder<Path> getNewPathTraversalWithTestEdgeRules(Vertex v);
+    protected abstract QueryBuilder<Path> getNewPathTraversalWithTestEdgeRules(Vertex v);
 
-	protected abstract QueryBuilder<Path> getNewPathTraversalWithTestEdgeRules();
+    protected abstract QueryBuilder<Path> getNewPathTraversalWithTestEdgeRules();
 
 }
