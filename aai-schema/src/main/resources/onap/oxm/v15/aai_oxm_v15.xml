@@ -2330,7 +2330,67 @@
                 <xml-property name="uriTemplate" value="/lag-interfaces/lag-interface/{interface-name}"/>
             </xml-properties>
         </java-type>
+        
+        <java-type name="Vrfs">
+            <xml-root-element name="vrfs"/>
+            <java-attributes>
+                <xml-element container-type="java.util.ArrayList" java-attribute="vrf" name="vrf" type="inventory.aai.onap.org.v15.Vrf"/>
+            </java-attributes>
+            <xml-properties>
+            </xml-properties>
+        </java-type>
 
+        <java-type name="Vrf">
+            <xml-root-element name="vrf"/>
+            <java-attributes>
+                <xml-element java-attribute="vrfId" name="vrf-id" required="true" type="java.lang.String" xml-key="true">
+                    <xml-properties>
+                        <xml-property name="description" value="VRF UUID."/>
+                    </xml-properties>
+                </xml-element>
+                <xml-element java-attribute="vrfName" name="vrf-name" required="true" type="java.lang.String">
+                    <xml-properties>
+                        <xml-property name="description" value="VRF Name"/>
+                    </xml-properties>
+                </xml-element>
+                <xml-element java-attribute="vrfDescription" name="vrf-description" type="java.lang.String">
+                    <xml-properties>
+                        <xml-property name="description" value="VRF Description"/>
+                    </xml-properties>
+                </xml-element>
+                <xml-element java-attribute="routeDistinguisher" name="route-distinguisher" type="java.lang.String">
+                    <xml-properties>
+                        <xml-property name="description" value="Route Distinguisher"/>
+                    </xml-properties>
+                </xml-element>
+                <xml-element java-attribute="vrfType" name="vrf-type" type="java.lang.String">
+                    <xml-properties>
+                        <xml-property name="description" value="The type of vrf (bridge-domain as an example)"/>
+                    </xml-properties>
+                </xml-element>
+                <xml-element java-attribute="vrfAddressFamily" name="vrf-address-family" type="java.lang.String">
+                    <xml-properties>
+                        <xml-property name="description" value="IP address family (v6/v4/both)"/>
+                    </xml-properties>
+                </xml-element>
+                <xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+                    <xml-properties>
+                        <xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete."/>
+                    </xml-properties>
+                </xml-element>
+                <xml-element java-attribute="routeTargets" name="route-targets" type="inventory.aai.onap.org.v15.RouteTargets"/>
+                <xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v15.RelationshipList"/>
+            </java-attributes>
+            <xml-properties>
+                <xml-property name="description" value="Definition of vrf"/>
+                <xml-property name="indexedProps" value="vrf-id"/>
+                <xml-property name="nameProps" value="vrf-name"/>
+                <xml-property name="dependentOn" value="pnf"/>
+                <xml-property name="container" value="vrfs"/>
+                <xml-property name="uriTemplate" value="/vrfs/vrf/{vrf-id}"/>
+            </xml-properties>
+        </java-type>
+        
         <java-type name="OamNetworks">
             <xml-properties>
                 <xml-property name="description" value="Collection of OAM networks, to be deprecated shortly.  Do not use for new purposes. "/>
@@ -5222,6 +5282,7 @@
                 <xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v15.RelationshipList"/>
                 <xml-element java-attribute="pInterfaces" name="p-interfaces" type="inventory.aai.onap.org.v15.PInterfaces"/>
                 <xml-element java-attribute="lagInterfaces" name="lag-interfaces" type="inventory.aai.onap.org.v15.LagInterfaces"/>
+                <xml-element java-attribute="vrfs" name="vrfs" type="inventory.aai.onap.org.v15.Vrfs"/>
             </java-attributes>
             <xml-properties>
                 <xml-property name="description" value="PNF represents a physical network function. typically equipment used in the D1 world. in 1607, this will be populated by SDN-C to represent a premises router that a uCPE connects to. But this can be used to represent any physical device that is not an AIC node or uCPE."/>

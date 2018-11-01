@@ -3014,6 +3014,83 @@
 			"prevent-delete": "NONE",
 			"default": "true",
 			"description":""
+		},
+				{
+			"from": "vrf",
+			"to": "pnf",
+			"label": "org.onap.relationships.inventory.BelongsTo",
+			"direction": "OUT",
+			"multiplicity": "MANY2ONE",
+			"contains-other-v": "!${direction}",
+			"delete-other-v": "!${direction}",
+			"SVC-INFRA": "NONE",
+			"prevent-delete": "NONE",
+			"default": "true",
+			"description":"A vrf belongs to a pnf."
+		},
+		{
+			"from": "vrf",
+			"to": "vpn-binding",
+			"label": "org.onap.relationships.inventory.AppliesTo",
+			"direction": "OUT",
+			"multiplicity": "MANY2ONE",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"SVC-INFRA": "NONE",
+			"prevent-delete": "NONE",
+			"default": "true",
+			"description":"A vrf uses a vpn-binding."
+		},
+		{
+			"from": "vrf",
+			"to": "l3-network",
+			"label": "org.onap.relationships.inventory.Uses",
+			"direction": "OUT",
+			"multiplicity": "ONE2MANY",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"SVC-INFRA": "NONE",
+			"prevent-delete": "NONE",
+			"default": "true",
+			"description":"A vrf uses many l3-networks"
+		},
+		{
+			"from": "configuration",
+			"to": "vrf",
+			"label": "org.onap.relationships.inventory.Uses",
+			"direction": "OUT",
+			"multiplicity": "ONE2MANY",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"prevent-delete": "NONE",
+			"default": "true",
+			"description":"A Configuration uses VRFs"	
+		},
+		{
+			"from": "vrf",
+			"to": "l-interface",
+			"label": "org.onap.relationships.inventory.Uses",
+			"direction": "OUT",
+			"multiplicity": "ONE2MANY",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"SVC-INFRA": "NONE",
+			"prevent-delete": "NONE",
+			"default": "true",
+			"description":""
+		},
+		{
+			"from": "route-target",
+			"to": "vrf",
+			"label": "org.onap.relationships.inventory.BelongsTo",
+			"direction": "OUT",
+			"multiplicity": "MANY2ONE",
+			"contains-other-v": "!${direction}",
+			"delete-other-v": "!${direction}",
+			"SVC-INFRA": "NONE",
+			"prevent-delete": "NONE",
+			"default": "true",
+			"description":""
 		}
 		
 	]
