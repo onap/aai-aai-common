@@ -53,10 +53,10 @@ public abstract class AAISetupForSwagger {
     public final SpringMethodRule springMethodRule = new SpringMethodRule();
 
    
-	@Autowired
-	protected NodeIngestor nodeIngestor;
-	
-	
+    @Autowired
+    protected NodeIngestor nodeIngestor;
+    
+    
     protected static final String SERVICE_NAME = "JUNIT";
 
     @BeforeClass
@@ -66,7 +66,7 @@ public abstract class AAISetupForSwagger {
         System.setProperty("aai.service.name", SERVICE_NAME);
         QueryFormatTestHelper.setFinalStatic(AAIConstants.class.getField("AAI_HOME_ETC_OXM"), "src/test/resources/bundleconfig-local/etc/oxm/");
     }
-	
-	
-	
+    
+    
+    
 }

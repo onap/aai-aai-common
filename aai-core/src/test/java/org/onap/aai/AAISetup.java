@@ -69,26 +69,26 @@ public abstract class AAISetup {
     public final SpringMethodRule springMethodRule = new SpringMethodRule();
 
     @Autowired
-	protected  Map<SchemaVersion, MoxyLoader>  moxyLoaderInstance;
-	
-	@Autowired
-	protected HttpEntry traversalHttpEntry;
-	
-	@Autowired
-	protected HttpEntry traversalUriHttpEntry;
-	
-	@Autowired
-	protected NodeIngestor nodeIngestor;
-	
-	@Autowired
-	protected LoaderFactory loaderFactory;
+    protected  Map<SchemaVersion, MoxyLoader>  moxyLoaderInstance;
+    
+    @Autowired
+    protected HttpEntry traversalHttpEntry;
+    
+    @Autowired
+    protected HttpEntry traversalUriHttpEntry;
+    
+    @Autowired
+    protected NodeIngestor nodeIngestor;
+    
+    @Autowired
+    protected LoaderFactory loaderFactory;
 
-	@Autowired
-	protected SchemaVersions schemaVersions;
+    @Autowired
+    protected SchemaVersions schemaVersions;
 
-	@Value("${schema.uri.base.path}")
-	protected String basePath;
-	
+    @Value("${schema.uri.base.path}")
+    protected String basePath;
+    
     protected static final String SERVICE_NAME = "JUNIT";
 
     @BeforeClass
@@ -98,7 +98,7 @@ public abstract class AAISetup {
         System.setProperty("aai.service.name", SERVICE_NAME);
         QueryFormatTestHelper.setFinalStatic(AAIConstants.class.getField("AAI_HOME_ETC_OXM"), "src/test/resources/bundleconfig-local/etc/oxm/");
     }
-	
-	
-	
+    
+    
+    
 }

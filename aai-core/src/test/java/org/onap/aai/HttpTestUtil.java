@@ -52,11 +52,11 @@ import static org.mockito.Mockito.when;
 
 public class HttpTestUtil extends RESTAPI {
 
-	
-	protected HttpEntry traversalHttpEntry;
-	
-	protected HttpEntry traversalUriHttpEntry;
-	
+    
+    protected HttpEntry traversalHttpEntry;
+    
+    protected HttpEntry traversalUriHttpEntry;
+    
     private static final EELFLogger logger = EELFManager.getInstance().getLogger(HttpTestUtil.class);
 
     protected static final MediaType APPLICATION_JSON = MediaType.valueOf("application/json");
@@ -179,9 +179,9 @@ public class HttpTestUtil extends RESTAPI {
             response = responsesTuple.getValue1().get(0).getValue1();
 
         } catch (AAIException e) {
-			response = this.consumerExceptionResponseGenerator(httpHeaders, uriInfo, HttpMethod.PUT, e);
-			success = false;
-		} catch(Exception e){
+            response = this.consumerExceptionResponseGenerator(httpHeaders, uriInfo, HttpMethod.PUT, e);
+            success = false;
+        } catch(Exception e){
             AAIException ex = new AAIException("AAI_4000", e);
             response = this.consumerExceptionResponseGenerator(httpHeaders, uriInfo, HttpMethod.PUT, ex);
             success = false;
