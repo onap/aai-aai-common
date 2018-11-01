@@ -37,6 +37,7 @@
 				<xml-element java-attribute="network" name="network" type="inventory.aai.onap.org.v15.Network" />
 				<xml-element java-attribute="aaiInternal" name="aai-internal" type="inventory.aai.onap.org.v15.AaiInternal" />
 				<xml-element java-attribute="nodes" name="nodes" type="inventory.aai.onap.org.v15.Nodes"/>
+				<xml-element java-attribute="common" name="common" type="inventory.aai.onap.org.v15.Common"/>
 			</java-attributes>
 		</java-type>
 
@@ -8430,5 +8431,62 @@
 			</xml-properties>
 		</java-type>
 
+        <java-type name="Common">
+            <xml-properties>
+                <xml-property name="description" value="Namespace for common inventory resources."/>
+            </xml-properties>
+            <xml-root-element name="common"/>
+            <java-attributes>
+            	<xml-element java-attribute="contacts" name="contacts" type="inventory.aai.onap.org.v15.Contacts"/>
+            </java-attributes>
+		</java-type>
+		
+		<java-type name="Contacts">
+            <xml-properties>
+                <xml-property name="description" value="Collection of contacts"/>
+            </xml-properties>
+            <xml-root-element name="contacts"/>
+            <java-attributes>
+                <xml-element container-type="java.util.ArrayList" java-attribute="contact" name="contact" type="inventory.aai.onap.org.v15.Contact"/>
+            </java-attributes>
+		</java-type>
+		<java-type name="Contact">
+            <xml-root-element name="contact"/>
+            <java-attributes>
+                <xml-element java-attribute="contactName" name="contact-name" required="true" type="java.lang.String" xml-key="true">
+                    <xml-properties>
+                        <xml-property name="description" value="Name of the contact"/>
+                    </xml-properties>
+                </xml-element>
+				<xml-element java-attribute="contactTelephone" name="contact-telephone" type="java.lang.String">
+                    <xml-properties>
+                        <xml-property name="description" value="Tel no. of contact"/>
+                    </xml-properties>
+                </xml-element>
+				<xml-element java-attribute="contactEmail" name="contact-email" type="java.lang.String">
+                    <xml-properties>
+                        <xml-property name="description" value="e-mail of contact"/>
+                    </xml-properties>
+                </xml-element>
+				<xml-element java-attribute="vendorType" name="vendor-type" type="java.lang.String">
+                    <xml-properties>
+                        <xml-property name="description" value="NI (Network Integrator)SI (System Integrator) 3rd Party LCM"/>
+                    </xml-properties>
+                </xml-element>
+                <xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+                    <xml-properties>
+                        <xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete."/>
+                    </xml-properties>
+                </xml-element>
+            </java-attributes>
+            <xml-properties>
+                <xml-property name="description" value="Contacts store the vendor information and have a relationship to the generic-vnf.  In 1902, this will be populated by SDN-GC"/>
+                <xml-property name="uniqueProps" value="contact-name"/>
+                <xml-property name="container" value="contacts"/>
+                <xml-property name="namespace" value="common"/>
+                <xml-property name="nameProps" value="contact-name,vendor-type"/>
+                <xml-property name="uriTemplate" value="/common/contacts/contact/{contact-name}"/>
+            </xml-properties>
+		</java-type>		
 	</java-types>
 </xml-bindings>

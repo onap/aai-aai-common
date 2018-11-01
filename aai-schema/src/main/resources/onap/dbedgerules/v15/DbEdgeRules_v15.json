@@ -3091,6 +3091,19 @@
 			"prevent-delete": "NONE",
 			"default": "true",
 			"description":""
+		},
+		{
+			"from": "contact",
+			"to": "generic-vnf",
+			"label": "org.onap.relationships.inventory.supports",
+			"direction": "OUT",
+			"multiplicity": "MANY2MANY",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"SVC-INFRA": "NONE",
+			"prevent-delete": "NONE",
+			"default": "true",
+			"description":""
 		}
 		
 	]
