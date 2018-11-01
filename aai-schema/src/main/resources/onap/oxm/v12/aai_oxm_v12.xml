@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!--
   ============LICENSE_START=======================================================
   org.onap.aai
@@ -18,7 +17,7 @@
   limitations under the License.
   ============LICENSE_END=========================================================
   -->
-<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm" package-name="inventory.aai.onap.org.v12" xml-mapping-metadata-complete="true">
+  <xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm" package-name="inventory.aai.onap.org.v12" xml-mapping-metadata-complete="true">
     <xml-schema element-form-default="QUALIFIED">
         <xml-ns namespace-uri="http://org.onap.aai.inventory/v12"/>
     </xml-schema>
@@ -29,7 +28,7 @@
                 <xml-element java-attribute="search" name="search" type="inventory.aai.onap.org.v12.Search"/>
                 <xml-element java-attribute="actions" name="actions" type="inventory.aai.onap.org.v12.Actions"/>
                 <xml-element java-attribute="cloudInfrastructure" name="cloud-infrastructure" type="inventory.aai.onap.org.v12.CloudInfrastructure"/>
-				<xml-element java-attribute="externalSystem" name="external-system" type="inventory.aai.onap.org.v12.ExternalSystem" />
+				<xml-element java-attribute="externalSystem" name="external-system" type="inventory.aai.onap.org.v12.ExternalSystem"/>
                 <xml-element java-attribute="business" name="business" type="inventory.aai.onap.org.v12.Business"/>
                 <xml-element java-attribute="serviceDesignAndCreation" name="service-design-and-creation" type="inventory.aai.onap.org.v12.ServiceDesignAndCreation"/>
                 <xml-element java-attribute="network" name="network" type="inventory.aai.onap.org.v12.Network"/>
@@ -172,6 +171,7 @@
         <java-type name="Update">
             <xml-properties>
                 <xml-property name="description" value="Serves a PATCH like function.  Does not enforce concurrency control.  Clear each usage with AAI team."/>
+            <xml-property name="requiredProps" value="update-node-type"/>
             </xml-properties>
             <xml-root-element name="update"/>
             <java-attributes>
@@ -227,266 +227,270 @@
 
                <java-type name="ExternalSystem">
                        <xml-properties>
-                               <xml-property name="description" value="Namespace for external system." />
+                               <xml-property name="description" value="Namespace for external system."/>
                        </xml-properties>
-                       <xml-root-element name="external-system" />
+                       <xml-root-element name="external-system"/>
                        <java-attributes>
-                               <xml-element java-attribute="esrEmsList" name="esr-ems-list" type="inventory.aai.onap.org.v12.EsrEmsList" />
-                               <xml-element java-attribute="esrVnfmList" name="esr-vnfm-list" type="inventory.aai.onap.org.v12.EsrVnfmList" />
-                               <xml-element java-attribute="esrThirdpartySdncList" name="esr-thirdparty-sdnc-list" type="inventory.aai.onap.org.v12.EsrThirdpartySdncList" />
+                               <xml-element java-attribute="esrEmsList" name="esr-ems-list" type="inventory.aai.onap.org.v12.EsrEmsList"/>
+                               <xml-element java-attribute="esrVnfmList" name="esr-vnfm-list" type="inventory.aai.onap.org.v12.EsrVnfmList"/>
+                               <xml-element java-attribute="esrThirdpartySdncList" name="esr-thirdparty-sdnc-list" type="inventory.aai.onap.org.v12.EsrThirdpartySdncList"/>
                        </java-attributes>
                </java-type>
 
                <java-type name="EsrEmsList">
-                       <xml-root-element name="esr-ems-list" />
+                       <xml-root-element name="esr-ems-list"/>
                        <java-attributes>
-                               <xml-element container-type="java.util.ArrayList" java-attribute="esrEms" name="esr-ems" type="inventory.aai.onap.org.v12.EsrEms" />
+                               <xml-element container-type="java.util.ArrayList" java-attribute="esrEms" name="esr-ems" type="inventory.aai.onap.org.v12.EsrEms"/>
                        </java-attributes>
                        <xml-properties>
-                               <xml-property name="maximumDepth" value="0" />
+                               <xml-property name="maximumDepth" value="0"/>
                        </xml-properties>
                </java-type>
 
                <java-type name="EsrEms">
-                       <xml-root-element name="esr-ems" />
+                       <xml-root-element name="esr-ems"/>
                        <java-attributes>
                                <xml-element java-attribute="emsId" name="ems-id" required="true" type="java.lang.String" xml-key="true">
                                        <xml-properties>
-                                               <xml-property name="description" value="Unique ID of EMS." />
+                                               <xml-property name="description" value="Unique ID of EMS."/>
                                        </xml-properties>
                                </xml-element>
                                <xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
                                        <xml-properties>
-                                               <xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
+                                               <xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete."/>
                                        </xml-properties>
                                </xml-element>
-                               <xml-element java-attribute="esrSystemInfoList" name="esr-system-info-list" type="inventory.aai.onap.org.v12.EsrSystemInfoList" />
-                               <xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v12.RelationshipList" />
+                               <xml-element java-attribute="esrSystemInfoList" name="esr-system-info-list" type="inventory.aai.onap.org.v12.EsrSystemInfoList"/>
+                               <xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v12.RelationshipList"/>
                        </java-attributes>
                        <xml-properties>
-                               <xml-property name="description" value="Persist EMS address information used by EMS driver." />
-                               <xml-property name="indexedProps" value="ems-id" />
-                               <xml-property name="searchable" value="ems-id" />
-                               <xml-property name="container" value="esr-ems-list" />
-                               <xml-property name="namespace" value="external-system" />
-                       </xml-properties>
+                               <xml-property name="description" value="Persist EMS address information used by EMS driver."/>
+                               <xml-property name="indexedProps" value="ems-id"/>
+                               <xml-property name="searchable" value="ems-id"/>
+                               <xml-property name="container" value="esr-ems-list"/>
+                               <xml-property name="namespace" value="external-system"/>
+                       <xml-property name="requiredProps" value="ems-id"/>
+            </xml-properties>
                </java-type>
 
                <java-type name="EsrVnfmList">
-                       <xml-root-element name="esr-vnfm-list" />
+                       <xml-root-element name="esr-vnfm-list"/>
                        <java-attributes>
-                               <xml-element container-type="java.util.ArrayList" java-attribute="esrVnfm" name="esr-vnfm" type="inventory.aai.onap.org.v12.EsrVnfm" />
+                               <xml-element container-type="java.util.ArrayList" java-attribute="esrVnfm" name="esr-vnfm" type="inventory.aai.onap.org.v12.EsrVnfm"/>
                        </java-attributes>
             <xml-properties>
-                               <xml-property name="maximumDepth" value="0" />
+                               <xml-property name="maximumDepth" value="0"/>
                        </xml-properties>
                </java-type>
 
                <java-type name="EsrVnfm">
-                       <xml-root-element name="esr-vnfm" />
+                       <xml-root-element name="esr-vnfm"/>
                        <java-attributes>
                                <xml-element java-attribute="vnfmId" name="vnfm-id" required="true" type="java.lang.String" xml-key="true">
                                        <xml-properties>
-                                               <xml-property name="description" value="Unique ID of VNFM." />
+                                               <xml-property name="description" value="Unique ID of VNFM."/>
                                        </xml-properties>
                                </xml-element>
                                <xml-element java-attribute="vimId" name="vim-id" type="java.lang.String">
                                        <xml-properties>
-                                               <xml-property name="description" value="indecate the VIM to deploy VNF." />
+                                               <xml-property name="description" value="indecate the VIM to deploy VNF."/>
                                        </xml-properties>
                                </xml-element>
                                <xml-element java-attribute="certificateUrl" name="certificate-url" type="java.lang.String">
                                        <xml-properties>
-                                               <xml-property name="description" value="certificate url of VNFM." />
+                                               <xml-property name="description" value="certificate url of VNFM."/>
                                        </xml-properties>
                                </xml-element>
                                <xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
                                        <xml-properties>
-                                               <xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
+                                               <xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete."/>
                                        </xml-properties>
                                </xml-element>
-                               <xml-element java-attribute="esrSystemInfoList" name="esr-system-info-list" type="inventory.aai.onap.org.v12.EsrSystemInfoList" />
-                               <xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v12.RelationshipList" />
+                               <xml-element java-attribute="esrSystemInfoList" name="esr-system-info-list" type="inventory.aai.onap.org.v12.EsrSystemInfoList"/>
+                               <xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v12.RelationshipList"/>
                        </java-attributes>
                        <xml-properties>
-                               <xml-property name="description" value="Persist VNFM address information used by VF-C." />
-                               <xml-property name="indexedProps" value="vnfm-id" />
-                               <xml-property name="searchable" value="vnfm-id" />
-                               <xml-property name="container" value="esr-vnfm-list" />
-                               <xml-property name="namespace" value="external-system" />
-                       </xml-properties>
+                               <xml-property name="description" value="Persist VNFM address information used by VF-C."/>
+                               <xml-property name="indexedProps" value="vnfm-id"/>
+                               <xml-property name="searchable" value="vnfm-id"/>
+                               <xml-property name="container" value="esr-vnfm-list"/>
+                               <xml-property name="namespace" value="external-system"/>
+                       <xml-property name="requiredProps" value="vnfm-id"/>
+            </xml-properties>
                </java-type>
 
                <java-type name="EsrThirdpartySdncList">
-                       <xml-root-element name="esr-thirdparty-sdnc-list" />
+                       <xml-root-element name="esr-thirdparty-sdnc-list"/>
                        <java-attributes>
-                               <xml-element container-type="java.util.ArrayList" java-attribute="esrThirdpartySdnc" name="esr-thirdparty-sdnc" type="inventory.aai.onap.org.v12.EsrThirdpartySdnc" />
+                               <xml-element container-type="java.util.ArrayList" java-attribute="esrThirdpartySdnc" name="esr-thirdparty-sdnc" type="inventory.aai.onap.org.v12.EsrThirdpartySdnc"/>
                        </java-attributes>
             <xml-properties>
-                               <xml-property name="maximumDepth" value="0" />
+                               <xml-property name="maximumDepth" value="0"/>
                        </xml-properties>
                </java-type>
 
                <java-type name="EsrThirdpartySdnc">
-                       <xml-root-element name="esr-thirdparty-sdnc" />
+                       <xml-root-element name="esr-thirdparty-sdnc"/>
                        <java-attributes>
                                <xml-element java-attribute="thirdpartySdncId" name="thirdparty-sdnc-id" required="true" type="java.lang.String" xml-key="true">
                                        <xml-properties>
-                                               <xml-property name="description" value="Unique ID of SDNC." />
+                                               <xml-property name="description" value="Unique ID of SDNC."/>
                                        </xml-properties>
                                </xml-element>
                                <xml-element java-attribute="location" name="location" type="java.lang.String">
                                        <xml-properties>
-                                               <xml-property name="description" value="used for DC type to indicate the location of SDNC, such as Core or Edge." />
+                                               <xml-property name="description" value="used for DC type to indicate the location of SDNC, such as Core or Edge."/>
                                        </xml-properties>
                                </xml-element>
                                <xml-element java-attribute="productName" name="product-name" type="java.lang.String">
                                        <xml-properties>
-                                               <xml-property name="description" value="password used to access SDNC server." />
+                                               <xml-property name="description" value="password used to access SDNC server."/>
                                        </xml-properties>
                                </xml-element>
                                <xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
                                        <xml-properties>
-                                               <xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
+                                               <xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete."/>
                                        </xml-properties>
                                </xml-element>
-                               <xml-element java-attribute="esrSystemInfoList" name="esr-system-info-list" type="inventory.aai.onap.org.v12.EsrSystemInfoList" />
-                               <xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v12.RelationshipList" />
+                               <xml-element java-attribute="esrSystemInfoList" name="esr-system-info-list" type="inventory.aai.onap.org.v12.EsrSystemInfoList"/>
+                               <xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v12.RelationshipList"/>
                        </java-attributes>
                        <xml-properties>
-                               <xml-property name="description" value="Persist SDNC address information used by ONAP SDNC." />
-                               <xml-property name="indexedProps" value="sdnc-id" />
-                               <xml-property name="searchable" value="sdnc-id" />
-                               <xml-property name="container" value="esr-thirdparty-sdnc-list" />
-                               <xml-property name="namespace" value="external-system" />
-                       </xml-properties>
+                               <xml-property name="description" value="Persist SDNC address information used by ONAP SDNC."/>
+                               <xml-property name="indexedProps" value="sdnc-id"/>
+                               <xml-property name="searchable" value="sdnc-id"/>
+                               <xml-property name="container" value="esr-thirdparty-sdnc-list"/>
+                               <xml-property name="namespace" value="external-system"/>
+                       <xml-property name="requiredProps" value="thirdparty-sdnc-id"/>
+            </xml-properties>
                </java-type>
 
                <java-type name="EsrSystemInfoList">
-                       <xml-root-element name="esr-system-info-list" />
+                       <xml-root-element name="esr-system-info-list"/>
                        <xml-properties>
-                               <xml-property name="description" value="Collection of persistent block-level external system auth info." />
+                               <xml-property name="description" value="Collection of persistent block-level external system auth info."/>
                        </xml-properties>
                        <java-attributes>
-                               <xml-element container-type="java.util.ArrayList" java-attribute="esrSystemInfo" name="esr-system-info" type="inventory.aai.onap.org.v12.EsrSystemInfo" />
+                               <xml-element container-type="java.util.ArrayList" java-attribute="esrSystemInfo" name="esr-system-info" type="inventory.aai.onap.org.v12.EsrSystemInfo"/>
                        </java-attributes>
                        <xml-properties>
-                               <xml-property name="maximumDepth" value="0" />
+                               <xml-property name="maximumDepth" value="0"/>
                        </xml-properties>
                </java-type>
 
                <java-type name="EsrSystemInfo">
-                       <xml-root-element name="esr-system-info" />
+                       <xml-root-element name="esr-system-info"/>
                        <java-attributes>
                                <xml-element java-attribute="esrSystemInfoId" name="esr-system-info-id" required="true" type="java.lang.String" xml-key="true">
                                        <xml-properties>
-                                               <xml-property name="description" value="Unique ID of esr system info." />
+                                               <xml-property name="description" value="Unique ID of esr system info."/>
                                        </xml-properties>
                                </xml-element>
                                <xml-element java-attribute="systemName" name="system-name" type="java.lang.String">
                                        <xml-properties>
-                                               <xml-property name="description" value="name of external system." />
+                                               <xml-property name="description" value="name of external system."/>
                                        </xml-properties>
                                </xml-element>
                                <xml-element java-attribute="type" name="type" type="java.lang.String">
                                        <xml-properties>
-                                               <xml-property name="description" value="type of external systems." />
+                                               <xml-property name="description" value="type of external systems."/>
                                        </xml-properties>
                                </xml-element>
                                <xml-element java-attribute="vendor" name="vendor" type="java.lang.String">
                                        <xml-properties>
-                                               <xml-property name="description" value="vendor of external systems." />
+                                               <xml-property name="description" value="vendor of external systems."/>
                                        </xml-properties>
                                </xml-element>
                                <xml-element java-attribute="version" name="version" type="java.lang.String">
                                        <xml-properties>
-                                               <xml-property name="description" value="version of external systems." />
+                                               <xml-property name="description" value="version of external systems."/>
                                        </xml-properties>
                                </xml-element>
                                <xml-element java-attribute="serviceUrl" name="service-url" type="java.lang.String">
                                        <xml-properties>
-                                               <xml-property name="description" value="url used to access external systems." />
+                                               <xml-property name="description" value="url used to access external systems."/>
                                        </xml-properties>
                                </xml-element>
                                <xml-element java-attribute="userName" name="user-name" required="true" type="java.lang.String">
                                        <xml-properties>
-                                               <xml-property name="description" value="username used to access external systems." />
+                                               <xml-property name="description" value="username used to access external systems."/>
                                        </xml-properties>
                                </xml-element>
                                <xml-element java-attribute="password" name="password" required="true" type="java.lang.String">
                                        <xml-properties>
-                                               <xml-property name="description" value="password used to access external systems." />
+                                               <xml-property name="description" value="password used to access external systems."/>
                                        </xml-properties>
                                </xml-element>
                                <xml-element java-attribute="systemType" name="system-type" required="true" type="java.lang.String">
                                        <xml-properties>
-                                               <xml-property name="description" value="it could be vim/vnfm/thirdparty-sdnc/ems-resource/ems-performance/ems-alarm." />
+                                               <xml-property name="description" value="it could be vim/vnfm/thirdparty-sdnc/ems-resource/ems-performance/ems-alarm."/>
                                        </xml-properties>
                                </xml-element>
                                <xml-element java-attribute="protocol" name="protocol" type="java.lang.String">
                                        <xml-properties>
-                                               <xml-property name="description" value="protocol of third party SDNC, for example netconf/snmp." />
+                                               <xml-property name="description" value="protocol of third party SDNC, for example netconf/snmp."/>
                                        </xml-properties>
                                </xml-element>
                                <xml-element java-attribute="sslCacert" name="ssl-cacert" type="java.lang.String">
                                        <xml-properties>
-                                               <xml-property name="description" value="ca file content if enabled ssl on auth-url." />
+                                               <xml-property name="description" value="ca file content if enabled ssl on auth-url."/>
                                        </xml-properties>
                                </xml-element>
                                <xml-element default-value="false" java-attribute="sslInsecure" name="ssl-insecure" type="java.lang.Boolean">
                                        <xml-properties>
-                                               <xml-property name="description" value="Whether to verify VIM's certificate." />
+                                               <xml-property name="description" value="Whether to verify VIM's certificate."/>
                                        </xml-properties>
                                </xml-element>
                                <xml-element java-attribute="ipAddress" name="ip-address" type="java.lang.String">
                                        <xml-properties>
-                                               <xml-property name="description" value="service IP of ftp server." />
+                                               <xml-property name="description" value="service IP of ftp server."/>
                                        </xml-properties>
                                </xml-element>
                                <xml-element java-attribute="port" name="port" type="java.lang.String">
                                        <xml-properties>
-                                               <xml-property name="description" value="service port of ftp server." />
+                                               <xml-property name="description" value="service port of ftp server."/>
                                        </xml-properties>
                                </xml-element>
                                <xml-element java-attribute="cloudDomain" name="cloud-domain" type="java.lang.String">
                                        <xml-properties>
-                                               <xml-property name="description" value="domain info for authentication." />
+                                               <xml-property name="description" value="domain info for authentication."/>
                                        </xml-properties>
                                </xml-element>
                                <xml-element java-attribute="defaultTenant" name="default-tenant" type="java.lang.String">
                                        <xml-properties>
-                                               <xml-property name="description" value="default tenant of VIM." />
+                                               <xml-property name="description" value="default tenant of VIM."/>
                                        </xml-properties>
                                </xml-element>
                                <xml-element java-attribute="passive" name="passive" type="java.lang.Boolean">
                                        <xml-properties>
-                                               <xml-property name="description" value="ftp passive mode or not." />
+                                               <xml-property name="description" value="ftp passive mode or not."/>
                                        </xml-properties>
                                </xml-element>
                                <xml-element java-attribute="remotepath" name="remote-path" type="java.lang.String">
                                        <xml-properties>
-                                               <xml-property name="description" value="resource or performance data file path." />
+                                               <xml-property name="description" value="resource or performance data file path."/>
                                        </xml-properties>
                                </xml-element>
                                <xml-element java-attribute="systemStatus" name="system-status" type="java.lang.String">
                                        <xml-properties>
-                                               <xml-property name="description" value="the status of external system." />
+                                               <xml-property name="description" value="the status of external system."/>
                                        </xml-properties>
                                </xml-element>
                                <xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
                                        <xml-properties>
-                                               <xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete." />
+                                               <xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete."/>
                                        </xml-properties>
                                </xml-element>
-                               <xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v12.RelationshipList" />
+                               <xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v12.RelationshipList"/>
                        </java-attributes>
                        <xml-properties>
-                               <xml-property name="description" value="Persist common address information of external systems." />
-                               <xml-property name="indexedProps" value="esr-system-info-id,system-name,system-type" />
-                               <xml-property name="searchable" value="esr-system-info-id,system-name,system-type" />
-                               <xml-property name="container" value="esr-system-info-list" />
-                               <xml-property name="dependentOn" value="cloud-region,esr-ems,esr-vnfm,esr-thirdparty-sdnc" />
-                       </xml-properties>
+                               <xml-property name="description" value="Persist common address information of external systems."/>
+                               <xml-property name="indexedProps" value="esr-system-info-id,system-name,system-type"/>
+                               <xml-property name="searchable" value="esr-system-info-id,system-name,system-type"/>
+                               <xml-property name="container" value="esr-system-info-list"/>
+                               <xml-property name="dependentOn" value="cloud-region,esr-ems,esr-vnfm,esr-thirdparty-sdnc"/>
+                       <xml-property name="requiredProps" value="esr-system-info-id,user-name,password,system-type"/>
+            </xml-properties>
                </java-type>
 
 		<java-type name="HpaCapabilities">
@@ -535,7 +539,8 @@
 				<xml-property name="indexedProps" value="hpa-feature,architecture,hpa-capability-id"/>
 				<xml-property name="dependentOn" value="flavor,cloud-region"/>
 				<xml-property name="container" value="hpa-capabilities"/>
-			</xml-properties>
+			<xml-property name="requiredProps" value="hpa-capability-id,hpa-feature"/>
+            </xml-properties>
 		</java-type>
 
 		<java-type name="HpaFeatureAttributes">
@@ -562,7 +567,8 @@
 				<xml-property name="description" value="HPA Capability Feature attributes"/>
 				<xml-property name="indexedProps" value="hpa-attribute-key"/>
 				<xml-property name="dependentOn" value="hpa-capability"/>
-			</xml-properties>
+			<xml-property name="requiredProps" value="hpa-attribute-key"/>
+            </xml-properties>
 		</java-type>
 
         <java-type name="CloudInfrastructure">
@@ -595,7 +601,7 @@
             <java-attributes>
                 <xml-element java-attribute="cloudOwner" name="cloud-owner" required="true" type="java.lang.String" xml-key="true">
                     <xml-properties>
-						<xml-property name="description" value="Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname" />
+						<xml-property name="description" value="Identifies the vendor and cloud name. First part of composite key should be formatted as vendor-cloudname"/>
                     </xml-properties>
                 </xml-element>
                 <xml-element java-attribute="cloudRegionId" name="cloud-region-id" required="true" type="java.lang.String" xml-key="true">
@@ -640,12 +646,12 @@
                 </xml-element>
 				<xml-element java-attribute="cloudExtraInfo" name="cloud-extra-info" type="java.lang.String">
 					<xml-properties>
-						<xml-property name="description" value="ESR inputs extra information about the VIM or Cloud which will be decoded by MultiVIM." />
+						<xml-property name="description" value="ESR inputs extra information about the VIM or Cloud which will be decoded by MultiVIM."/>
 					</xml-properties>
 				</xml-element>
 				<xml-element java-attribute="cloudEpaCaps" name="cloud-epa-caps" type="java.lang.String">
 					<xml-properties>
-						<xml-property name="description" value="MultiVIM will discover and expose EPA capabilities." />
+						<xml-property name="description" value="MultiVIM will discover and expose EPA capabilities."/>
 					</xml-properties>
 				</xml-element>
                 <xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
@@ -670,15 +676,16 @@
 						<xml-property name="description" value="List of cloud-region specific HPA Capabilities"/>
 					</xml-properties>
 				</xml-element>
-				<xml-element java-attribute="esrSystemInfoList" name="esr-system-info-list" type="inventory.aai.onap.org.v12.EsrSystemInfoList" />
+				<xml-element java-attribute="esrSystemInfoList" name="esr-system-info-list" type="inventory.aai.onap.org.v12.EsrSystemInfoList"/>
             </java-attributes>
             <xml-properties>
-				<xml-property name="description" value="cloud-region designates an installation of a cloud cluster or region or instantiation." />
+				<xml-property name="description" value="cloud-region designates an installation of a cloud cluster or region or instantiation."/>
                 <xml-property name="indexedProps" value="cloud-owner,cloud-region-id,cloud-type,owner-defined-type"/>
                 <xml-property name="nameProps" value="owner-defined-type"/>
                 <xml-property name="container" value="cloud-regions"/>
                 <xml-property name="namespace" value="cloud-infrastructure"/>
                 <xml-property name="uriTemplate" value="/cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}"/>
+            <xml-property name="requiredProps" value="cloud-owner,cloud-region-id"/>
             </xml-properties>
         </java-type>
         <java-type name="VolumeGroups">
@@ -743,6 +750,7 @@
                 <xml-property name="dependentOn" value="cloud-region"/>
                 <xml-property name="container" value="volume-groups"/>
                 <xml-property name="uriTemplate" value="/volume-groups/volume-group/{volume-group-id}"/>
+            <xml-property name="requiredProps" value="volume-group-id,vnf-type"/>
             </xml-properties>
         </java-type>
 
@@ -876,6 +884,7 @@
                 <xml-property name="container" value="complexes"/>
                 <xml-property name="namespace" value="cloud-infrastructure"/>
                 <xml-property name="uriTemplate" value="/cloud-infrastructure/complexes/complex/{physical-location-id}"/>
+            <xml-property name="requiredProps" value="physical-location-id,physical-location-type,street1,city,postal-code,country,region"/>
             </xml-properties>
         </java-type>
 
@@ -922,6 +931,7 @@
                 <xml-property name="dependentOn" value="complex"/>
                 <xml-property name="container" value="ctag-pools"/>
                 <xml-property name="uriTemplate" value="/ctag-pools/ctag-pool/{target-pe}/{availability-zone-name}"/>
+            <xml-property name="requiredProps" value="target-pe,availability-zone-name,ctag-pool-purpose"/>
             </xml-properties>
         </java-type>
 
@@ -972,6 +982,7 @@
                 <xml-property name="dependentOn" value="cloud-region"/>
                 <xml-property name="container" value="tenants"/>
                 <xml-property name="uriTemplate" value="/tenants/tenant/{tenant-id}"/>
+            <xml-property name="requiredProps" value="tenant-id,tenant-name"/>
             </xml-properties>
         </java-type>
 
@@ -1042,6 +1053,7 @@
                 <xml-property name="dependentOn" value="tenant"/>
                 <xml-property name="container" value="vservers"/>
                 <xml-property name="uriTemplate" value="/vservers/vserver/{vserver-id}"/>
+            <xml-property name="requiredProps" value="vserver-id,vserver-name,vserver-selflink,in-maint,is-closed-loop-disabled"/>
             </xml-properties>
         </java-type>
 
@@ -1149,6 +1161,7 @@
                 <xml-property name="dependentOn" value="generic-vnf,newvce,p-interface,vserver,lag-interface,l-interface"/>
                 <xml-property name="container" value="l-interfaces"/>
                 <xml-property name="uriTemplate" value="/l-interfaces/l-interface/{interface-name}"/>
+            <xml-property name="requiredProps" value="interface-name,is-port-mirrored,in-maint,is-ip-unnumbered"/>
             </xml-properties>
         </java-type>
 
@@ -1242,6 +1255,7 @@
                 <xml-property name="dependentOn" value="l-interface"/>
                 <xml-property name="container" value="sriov-vfs"/>
                 <xml-property name="uriTemplate" value="/sriov-vfs/sriov-vf/{pci-id}"/>
+            <xml-property name="requiredProps" value="pci-id"/>
             </xml-properties>
         </java-type>
 
@@ -1295,6 +1309,7 @@
                 <xml-property name="indexedProps" value="l3-interface-ipv4-address,vlan-id-inner,neutron-network-id,neutron-subnet-id"/>
                 <xml-property name="dependentOn" value="vlan,l-interface,vnfc"/>
             <xml-property name="uriTemplate" value="/l3-interface-ipv4-address-list/{l3-interface-ipv4-address}"/>
+            <xml-property name="requiredProps" value="l3-interface-ipv4-address"/>
             </xml-properties>
         </java-type>
 
@@ -1385,6 +1400,7 @@
                 <xml-property name="dependentOn" value="l-interface"/>
                 <xml-property name="container" value="vlans"/>
                 <xml-property name="uriTemplate" value="/vlans/vlan/{vlan-interface}"/>
+            <xml-property name="requiredProps" value="vlan-interface,in-maint,is-ip-unnumbered"/>
             </xml-properties>
         </java-type>
 
@@ -1438,6 +1454,7 @@
                 <xml-property name="indexedProps" value="l3-interface-ipv6-address,vlan-id-inner,neutron-network-id,neutron-subnet-id"/>
                 <xml-property name="dependentOn" value="vlan,l-interface,vnfc"/>
             <xml-property name="uriTemplate" value="/l3-interface-ipv6-address-list/{l3-interface-ipv6-address}"/>
+            <xml-property name="requiredProps" value="l3-interface-ipv6-address"/>
             </xml-properties>
         </java-type>
 
@@ -1477,6 +1494,7 @@
                 <xml-property name="dependentOn" value="vserver"/>
                 <xml-property name="container" value="volumes"/>
                 <xml-property name="uriTemplate" value="/volumes/volume/{volume-id}"/>
+            <xml-property name="requiredProps" value="volume-id,volume-selflink"/>
             </xml-properties>
         </java-type>
 
@@ -1562,6 +1580,7 @@
                 <xml-property name="dependentOn" value="cloud-region"/>
                 <xml-property name="container" value="flavors"/>
                 <xml-property name="uriTemplate" value="/flavors/flavor/{flavor-id}"/>
+            <xml-property name="requiredProps" value="flavor-id,flavor-name,flavor-selflink"/>
             </xml-properties>
         </java-type>
 
@@ -1643,6 +1662,7 @@
                 <xml-property name="dependentOn" value="cloud-region"/>
                 <xml-property name="container" value="snapshots"/>
                 <xml-property name="uriTemplate" value="/snapshots/snapshot/{snapshot-id}"/>
+            <xml-property name="requiredProps" value="snapshot-id"/>
             </xml-properties>
         </java-type>
 
@@ -1694,6 +1714,7 @@
                 <xml-property name="dependentOn" value="cloud-region"/>
                 <xml-property name="container" value="group-assignments"/>
                 <xml-property name="uriTemplate" value="/group-assignments/group-assignment/{group-id}"/>
+            <xml-property name="requiredProps" value="group-id,group-type,group-name"/>
             </xml-properties>
         </java-type>
 
@@ -1770,6 +1791,7 @@
                 <xml-property name="dependentOn" value="cloud-region"/>
                 <xml-property name="container" value="images"/>
                 <xml-property name="uriTemplate" value="/images/image/{image-id}"/>
+            <xml-property name="requiredProps" value="image-id,image-name,image-os-distro,image-os-version,image-selflink"/>
             </xml-properties>
         </java-type>
 
@@ -1800,6 +1822,7 @@
                 <xml-property name="dependentOn" value="tenant,image,service-instance,connector,model"/>
                 <xml-property name="container" value="metadata"/>
                 <xml-property name="uriTemplate" value="/metadata/metadatum/{metaname}"/>
+            <xml-property name="requiredProps" value="metaname,metaval"/>
             </xml-properties>
         </java-type>
 
@@ -1839,6 +1862,7 @@
                 <xml-property name="dependentOn" value="cloud-region"/>
                 <xml-property name="container" value="dvs-switches"/>
                 <xml-property name="uriTemplate" value="/dvs-switches/dvs-switch/{switch-name}"/>
+            <xml-property name="requiredProps" value="switch-name,vcenter-url"/>
             </xml-properties>
         </java-type>
 
@@ -1878,6 +1902,7 @@
                 <xml-property name="container" value="network-profiles"/>
                 <xml-property name="namespace" value="cloud-infrastructure"/>
                 <xml-property name="uriTemplate" value="/cloud-infrastructure/network-profiles/network-profile/{nm-profile-name}"/>
+            <xml-property name="requiredProps" value="nm-profile-name"/>
             </xml-properties>
         </java-type>
 
@@ -2046,6 +2071,7 @@
                 <xml-property name="container" value="pservers"/>
                 <xml-property name="namespace" value="cloud-infrastructure"/>
                 <xml-property name="uriTemplate" value="/cloud-infrastructure/pservers/pserver/{hostname}"/>
+            <xml-property name="requiredProps" value="hostname,in-maint"/>
             </xml-properties>
         </java-type>
 
@@ -2109,7 +2135,7 @@
                 </xml-element>
 				<xml-element java-attribute="macAddress" name="mac-addresss" type="java.lang.String">
 					<xml-properties>
-						<xml-property name="description" value="MAC Address of the p-interface." />
+						<xml-property name="description" value="MAC Address of the p-interface."/>
 					</xml-properties>
 				</xml-element>
                 <xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
@@ -2139,6 +2165,7 @@
                 <xml-property name="dependentOn" value="vpls-pe,pserver,pnf"/>
                 <xml-property name="container" value="p-interfaces"/>
                 <xml-property name="uriTemplate" value="/p-interfaces/p-interface/{interface-name}"/>
+            <xml-property name="requiredProps" value="interface-name,in-maint"/>
             </xml-properties>
         </java-type>
 
@@ -2210,6 +2237,7 @@
                 <xml-property name="dependentOn" value="generic-vnf,pserver,vpls-pe,pnf"/>
                 <xml-property name="container" value="lag-interfaces"/>
                 <xml-property name="uriTemplate" value="/lag-interfaces/lag-interface/{interface-name}"/>
+            <xml-property name="requiredProps" value="interface-name,in-maint"/>
             </xml-properties>
         </java-type>
 
@@ -2265,6 +2293,7 @@
                 <xml-property name="dependentOn" value="cloud-region"/>
                 <xml-property name="container" value="oam-networks"/>
                 <xml-property name="uriTemplate" value="/oam-networks/oam-network/{network-uuid}"/>
+            <xml-property name="requiredProps" value="network-uuid,network-name,cvlan-tag"/>
             </xml-properties>
         </java-type>
 
@@ -2309,6 +2338,7 @@
                 <xml-property name="dependentOn" value="cloud-region"/>
                 <xml-property name="container" value="availability-zones"/>
                 <xml-property name="uriTemplate" value="/availability-zones/availability-zone/{availability-zone-name}"/>
+            <xml-property name="requiredProps" value="availability-zone-name,hypervisor-type"/>
             </xml-properties>
         </java-type>
 
@@ -2349,6 +2379,7 @@
                 <xml-property name="container" value="virtual-data-centers"/>
                 <xml-property name="namespace" value="cloud-infrastructure"/>
                 <xml-property name="uriTemplate" value="/cloud-infrastructure/virtual-data-centers/virtual-data-center/{vdc-id}"/>
+            <xml-property name="requiredProps" value="vdc-id,vdc-name"/>
             </xml-properties>
         </java-type>
 
@@ -2399,6 +2430,7 @@
                 <xml-property name="container" value="projects"/>
                 <xml-property name="namespace" value="business"/>
                 <xml-property name="uriTemplate" value="/business/projects/project/{project-name}"/>
+            <xml-property name="requiredProps" value="project-name"/>
             </xml-properties>
         </java-type>
 
@@ -2468,6 +2500,7 @@
                 <xml-property name="container" value="connectors"/>
                 <xml-property name="namespace" value="business"/>
                 <xml-property name="uriTemplate" value="/business/connectors/connector/{resource-instance-id}"/>
+            <xml-property name="requiredProps" value="resource-instance-id"/>
             </xml-properties>
         </java-type>
 
@@ -2520,6 +2553,7 @@
                 <xml-property name="container" value="customers"/>
                 <xml-property name="namespace" value="business"/>
                 <xml-property name="uriTemplate" value="/business/customers/customer/{global-customer-id}"/>
+            <xml-property name="requiredProps" value="global-customer-id,subscriber-name,subscriber-type"/>
             </xml-properties>
         </java-type>
 
@@ -2555,6 +2589,7 @@
                 <xml-property name="container" value="lines-of-business"/>
                 <xml-property name="namespace" value="business"/>
                 <xml-property name="uriTemplate" value="/business/lines-of-business/line-of-business/{line-of-business-name}"/>
+            <xml-property name="requiredProps" value="line-of-business-name"/>
             </xml-properties>
         </java-type>
 
@@ -2596,6 +2631,7 @@
                 <xml-property name="container" value="owning-entities"/>
                 <xml-property name="namespace" value="business"/>
                 <xml-property name="uriTemplate" value="/business/owning-entities/owning-entity/{owning-entity-id}"/>
+            <xml-property name="requiredProps" value="owning-entity-id,owning-entity-name"/>
             </xml-properties>
         </java-type>
 
@@ -2631,6 +2667,7 @@
                 <xml-property name="container" value="platforms"/>
                 <xml-property name="namespace" value="business"/>
                 <xml-property name="uriTemplate" value="/business/platforms/platform/{platform-name}"/>
+            <xml-property name="requiredProps" value="platform-name"/>
             </xml-properties>
         </java-type>
 
@@ -2673,6 +2710,7 @@
                 <xml-property name="container" value="service-subscriptions"/>
                 <xml-property name="crossEntityReference" value="service-instance,service-type"/>
                 <xml-property name="uriTemplate" value="/service-subscriptions/service-subscription/{service-type}"/>
+            <xml-property name="requiredProps" value="service-type"/>
             </xml-properties>
         </java-type>
 
@@ -2721,17 +2759,17 @@
                 </xml-element>
                 <xml-element java-attribute="createdAt" name="created-at" required="false" type="java.lang.String">
                     <xml-properties>
-                        <xml-property name="description" value="create time of Network Service." />
+                        <xml-property name="description" value="create time of Network Service."/>
                     </xml-properties>
                 </xml-element>
                 <xml-element java-attribute="updatedAt" name="updated-at" required="false" type="java.lang.String">
                     <xml-properties>
-                        <xml-property name="description" value="last update of Network Service." />
+                        <xml-property name="description" value="last update of Network Service."/>
                     </xml-properties>
                 </xml-element>
                 <xml-element java-attribute="description" name="description" required="false" type="java.lang.String">
                     <xml-properties>
-                        <xml-property name="description" value="short description for service-instance." />
+                        <xml-property name="description" value="short description for service-instance."/>
                     </xml-properties>
                 </xml-element>
                 <!-- for storing the nsd_id create edge between services -->
@@ -2832,6 +2870,7 @@
                 <xml-property name="dependentOn" value="service-subscription"/>
                 <xml-property name="container" value="service-instances"/>
                 <xml-property name="uriTemplate" value="/service-instances/service-instance/{service-instance-id}"/>
+            <xml-property name="requiredProps" value="service-instance-id"/>
             </xml-properties>
         </java-type>
 
@@ -2901,6 +2940,7 @@
                 <xml-property name="container" value="vnf-images"/>
                 <xml-property name="namespace" value="service-design-and-creation"/>
                 <xml-property name="uriTemplate" value="/service-design-and-creation/vnf-images/vnf-image/{vnf-image-uuid}"/>
+            <xml-property name="requiredProps" value="vnf-image-uuid,application,application-vendor"/>
             </xml-properties>
         </java-type>
 
@@ -2950,6 +2990,7 @@
                 <xml-property name="container" value="services"/>
                 <xml-property name="namespace" value="service-design-and-creation"/>
                 <xml-property name="uriTemplate" value="/service-design-and-creation/services/service/{service-id}"/>
+            <xml-property name="requiredProps" value="service-id,service-description"/>
             </xml-properties>
         </java-type>
 
@@ -2989,6 +3030,7 @@
                 <xml-property name="container" value="service-capabilities"/>
                 <xml-property name="namespace" value="service-design-and-creation"/>
                 <xml-property name="uriTemplate" value="/service-design-and-creation/service-capabilities/service-capability/{service-type}/{vnf-type}"/>
+            <xml-property name="requiredProps" value="service-type,vnf-type"/>
             </xml-properties>
         </java-type>
 
@@ -3129,6 +3171,7 @@
                 <xml-property name="container" value="configurations"/>
                 <xml-property name="namespace" value="network"/>
                 <xml-property name="uriTemplate" value="/network/configurations/configuration/{configuration-id}"/>
+            <xml-property name="requiredProps" value="configuration-id,configuration-type,configuration-sub-type"/>
             </xml-properties>
         </java-type>
 
@@ -3265,6 +3308,7 @@
                 <xml-property name="namespace" value="network"/>
                 <xml-property name="searchable" value="link-name"/>
                 <xml-property name="uriTemplate" value="/network/logical-links/logical-link/{link-name}"/>
+            <xml-property name="requiredProps" value="link-name,in-maint,link-type"/>
             </xml-properties>
         </java-type>
 
@@ -3301,6 +3345,7 @@
                 <xml-property name="container" value="site-pair-sets"/>
                 <xml-property name="namespace" value="network"/>
                 <xml-property name="uriTemplate" value="/network/site-pair-sets/site-pair-set/{site-pair-set-id}"/>
+            <xml-property name="requiredProps" value="site-pair-set-id"/>
             </xml-properties>
         </java-type>
 
@@ -3512,6 +3557,7 @@
                 <xml-property name="container" value="vpn-bindings"/>
                 <xml-property name="namespace" value="network"/>
                 <xml-property name="uriTemplate" value="/network/vpn-bindings/vpn-binding/{vpn-id}"/>
+            <xml-property name="requiredProps" value="vpn-id,vpn-name"/>
             </xml-properties>
         </java-type>
 
@@ -3564,6 +3610,7 @@
                 <xml-property name="container" value="vpls-pes"/>
                 <xml-property name="namespace" value="network"/>
                 <xml-property name="uriTemplate" value="/network/vpls-pes/vpls-pe/{equipment-name}"/>
+            <xml-property name="requiredProps" value="equipment-name"/>
             </xml-properties>
         </java-type>
 
@@ -3734,6 +3781,7 @@
                 <xml-property name="namespace" value="network"/>
                 <xml-property name="extends" value="vnf"/>
                 <xml-property name="uriTemplate" value="/network/vces/vce/{vnf-id}"/>
+            <xml-property name="requiredProps" value="vnf-id,vnf-name,vnf-type"/>
             </xml-properties>
         </java-type>
 
@@ -3812,6 +3860,7 @@
                 <xml-property name="dependentOn" value="vce"/>
                 <xml-property name="container" value="port-groups"/>
                 <xml-property name="uriTemplate" value="/port-groups/port-group/{interface-id}"/>
+            <xml-property name="requiredProps" value="interface-id,orchestration-status"/>
             </xml-properties>
         </java-type>
 
@@ -4117,6 +4166,7 @@
                 <xml-property name="container" value="l3-networks"/>
                 <xml-property name="namespace" value="network"/>
                 <xml-property name="uriTemplate" value="/network/l3-networks/l3-network/{network-id}"/>
+            <xml-property name="requiredProps" value="network-id,is-bound-to-vpn,is-provider-network,is-shared-network,is-external-network"/>
             </xml-properties>
         </java-type>
         <java-type name="NetworkPolicies">
@@ -4312,7 +4362,7 @@
                 </xml-element>
                 <xml-element java-attribute="vnfInstanceId" name="vnf-instance-id" required="false" type="java.lang.String">
                     <xml-properties>
-                        <xml-property name="description" value="vnf instance id." />
+                        <xml-property name="description" value="vnf instance id."/>
                     </xml-properties>
                 </xml-element>
                 <xml-element java-attribute="vnfName" name="vnf-name" type="java.lang.String">
@@ -4449,17 +4499,17 @@
                 </xml-element>
                 <xml-element java-attribute="nshd" name="nshd" type="java.lang.Long">
                     <xml-properties>
-                        <xml-property name="description" value="number of associated SHD in vnf." />
+                        <xml-property name="description" value="number of associated SHD in vnf."/>
                     </xml-properties>
                 </xml-element>
                 <xml-element java-attribute="nvm" name="nvm" type="java.lang.Long">
                     <xml-properties>
-                        <xml-property name="description" value="number of vms in vnf." />
+                        <xml-property name="description" value="number of vms in vnf."/>
                     </xml-properties>
                 </xml-element>
                 <xml-element java-attribute="nnet" name="nnet" type="java.lang.Long">
                     <xml-properties>
-                        <xml-property name="description" value="number of network in vnf." />
+                        <xml-property name="description" value="number of network in vnf."/>
                     </xml-properties>
                 </xml-element>
                 <xml-element default-value="false" java-attribute="inMaint" name="in-maint" required="true" type="java.lang.Boolean">
@@ -4624,6 +4674,7 @@
                 <xml-property name="containsSuggestibleProps" value="true"/>
                 <xml-property name="suggestionAliases" value="VNFs"/>
                 <xml-property name="uriTemplate" value="/network/generic-vnfs/generic-vnf/{vnf-id}"/>
+            <xml-property name="requiredProps" value="vnf-id,vnf-type,in-maint,is-closed-loop-disabled"/>
             </xml-properties>
         </java-type>
 
@@ -4734,6 +4785,7 @@
                 <xml-property name="dependentOn" value="generic-vnf"/>
                 <xml-property name="container" value="vf-modules"/>
                 <xml-property name="uriTemplate" value="/vf-modules/vf-module/{vf-module-id}"/>
+            <xml-property name="requiredProps" value="vf-module-id,is-base-vf-module"/>
             </xml-properties>
         </java-type>
 
@@ -4769,6 +4821,7 @@
                 <xml-property name="container" value="lag-links"/>
                 <xml-property name="namespace" value="network"/>
                 <xml-property name="uriTemplate" value="/network/lag-links/lag-link/{link-name}"/>
+            <xml-property name="requiredProps" value="link-name"/>
             </xml-properties>
         </java-type>
 
@@ -4867,6 +4920,7 @@
                 <xml-property name="container" value="newvces"/>
                 <xml-property name="namespace" value="network"/>
                 <xml-property name="uriTemplate" value="/network/newvces/newvce/{vnf-id2}"/>
+            <xml-property name="requiredProps" value="vnf-id2,vnf-name,vnf-type"/>
             </xml-properties>
         </java-type>
 
@@ -5014,6 +5068,7 @@
                 <xml-property name="container" value="pnfs"/>
                 <xml-property name="namespace" value="network"/>
                 <xml-property name="uriTemplate" value="/network/pnfs/pnf/{pnf-name}"/>
+            <xml-property name="requiredProps" value="pnf-name,in-maint"/>
             </xml-properties>
         </java-type>
 
@@ -5103,6 +5158,7 @@
                 <xml-property name="namespace" value="network"/>
                 <xml-property name="searchable" value="link-name,circuit-id"/>
                 <xml-property name="uriTemplate" value="/network/physical-links/physical-link/{link-name}"/>
+            <xml-property name="requiredProps" value="link-name"/>
             </xml-properties>
         </java-type>
 
@@ -5144,6 +5200,7 @@
                 <xml-property name="dependentOn" value="ipsec-configuration"/>
                 <xml-property name="container" value="vig-servers"/>
                 <xml-property name="uriTemplate" value="/vig-servers/vig-server/{vig-address-type}"/>
+            <xml-property name="requiredProps" value="vig-address-type"/>
             </xml-properties>
         </java-type>
 
@@ -5277,6 +5334,7 @@
                 <xml-property name="container" value="ipsec-configurations"/>
                 <xml-property name="namespace" value="network"/>
                 <xml-property name="uriTemplate" value="/network/ipsec-configurations/ipsec-configuration/{ipsec-configuration-id}"/>
+            <xml-property name="requiredProps" value="ipsec-configuration-id"/>
             </xml-properties>
         </java-type>
 
@@ -5373,6 +5431,7 @@
                 <xml-property name="container" value="models"/>
                 <xml-property name="namespace" value="service-design-and-creation"/>
                 <xml-property name="uriTemplate" value="/service-design-and-creation/models/model/{model-invariant-id}"/>
+            <xml-property name="requiredProps" value="model-invariant-id,model-type"/>
             </xml-properties>
             <java-attributes>
                 <xml-element java-attribute="modelInvariantId" name="model-invariant-id" required="true" type="java.lang.String" xml-key="true">
@@ -5412,6 +5471,7 @@
                 <xml-property name="uniqueProps" value="model-version-id"/>
                 <xml-property name="container" value="model-vers"/>
                 <xml-property name="uriTemplate" value="/model-vers/model-ver/{model-version-id}"/>
+            <xml-property name="requiredProps" value="model-version-id,model-name,model-version"/>
             </xml-properties>
             <java-attributes>
                 <xml-element java-attribute="modelVersionId" name="model-version-id" required="true" type="java.lang.String" xml-key="true">
@@ -5466,6 +5526,7 @@
                 <xml-property name="allowDirectWrite" value="false"/>
                 <xml-property name="container" value="model-elements"/>
                 <xml-property name="uriTemplate" value="/model-elements/model-element/{model-element-uuid}"/>
+            <xml-property name="requiredProps" value="model-element-uuid,new-data-del-flag,cardinality"/>
             </xml-properties>
             <xml-root-element name="model-element"/>
             <java-attributes>
@@ -5521,6 +5582,7 @@
                 <xml-property name="allowDirectWrite" value="false"/>
                 <xml-property name="container" value="model-constraints"/>
                 <xml-property name="uriTemplate" value="/model-constraints/model-constraint/{model-constraint-uuid}"/>
+            <xml-property name="requiredProps" value="model-constraint-uuid,constrained-element-set-uuid-to-replace"/>
             </xml-properties>
             <xml-root-element name="model-constraint"/>
             <java-attributes>
@@ -5555,6 +5617,7 @@
                 <xml-property name="allowDirectWrite" value="false"/>
                 <xml-property name="container" value="constrained-element-sets"/>
                 <xml-property name="uriTemplate" value="/constrained-element-sets/constrained-element-set/{constrained-element-set-uuid}"/>
+            <xml-property name="requiredProps" value="constrained-element-set-uuid,constraint-type,check-type"/>
             </xml-properties>
             <xml-root-element name="constrained-element-set"/>
             <java-attributes>
@@ -5587,6 +5650,7 @@
                 <xml-property name="allowDirectWrite" value="false"/>
                 <xml-property name="container" value="element-choice-sets"/>
                 <xml-property name="uriTemplate" value="/element-choice-sets/element-choice-set/{element-choice-set-uuid}"/>
+            <xml-property name="requiredProps" value="element-choice-set-uuid,element-choice-set-name"/>
             </xml-properties>
             <xml-root-element name="element-choice-set"/>
             <java-attributes>
@@ -5619,6 +5683,7 @@
                 <xml-property name="container" value="named-queries"/>
                 <xml-property name="namespace" value="service-design-and-creation"/>
                 <xml-property name="uriTemplate" value="/service-design-and-creation/named-queries/named-query/{named-query-uuid}"/>
+            <xml-property name="requiredProps" value="named-query-uuid,named-query-name,named-query-version"/>
             </xml-properties>
             <xml-root-element name="named-query"/>
             <java-attributes>
@@ -5651,6 +5716,7 @@
                 <xml-property name="allowDirectWrite" value="false"/>
                 <xml-property name="container" value="named-query-elements"/>
                 <xml-property name="uriTemplate" value="/named-query-elements/named-query-element/{named-query-element-uuid}"/>
+            <xml-property name="requiredProps" value="named-query-element-uuid"/>
             </xml-properties>
             <xml-root-element name="named-query-element"/>
             <java-attributes>
@@ -5686,6 +5752,7 @@
                 <xml-property name="allowDirectWrite" value="false"/>
                 <xml-property name="container" value="related-lookups"/>
                 <xml-property name="uriTemplate" value="/related-lookups/related-lookup/{related-lookup-uuid}"/>
+            <xml-property name="requiredProps" value="related-lookup-uuid,source-node-type,source-node-property,target-node-type,target-node-property"/>
             </xml-properties>
             <xml-root-element name="related-lookup"/>
             <java-attributes>
@@ -5720,6 +5787,7 @@
                 <xml-property name="allowDirectWrite" value="false"/>
                 <xml-property name="container" value="property-constraints"/>
                 <xml-property name="uriTemplate" value="/property-constraints/property-constraint/{property-constraint-uuid}"/>
+            <xml-property name="requiredProps" value="property-constraint-uuid,constraint-type,property-name,property-value"/>
             </xml-properties>
             <xml-root-element name="property-constraint"/>
             <java-attributes>
@@ -5764,6 +5832,7 @@
             <xml-root-element name="overloaded-model"/>
             <xml-properties>
                 <xml-property name="description" value="Allows for legacy POST of old-style and new-style models"/>
+            <xml-property name="requiredProps" value="model-invariant-id,model-name-version-id,model-type,model-name,model-id,model-version"/>
             </xml-properties>
             <java-attributes>
                 <xml-element java-attribute="modelInvariantId" name="model-invariant-id" required="true" type="java.lang.String" xml-key="true">
@@ -5955,6 +6024,7 @@
                 <xml-property name="container" value="route-table-references"/>
                 <xml-property name="namespace" value="network"/>
                 <xml-property name="uriTemplate" value="/network/route-table-references/route-table-reference/{route-table-reference-id}"/>
+            <xml-property name="requiredProps" value="route-table-reference-id,route-table-reference-fqdn"/>
             </xml-properties>
         </java-type>
 
@@ -6040,6 +6110,7 @@
                 <xml-property name="container" value="instance-groups"/>
                 <xml-property name="namespace" value="network"/>
                 <xml-property name="uriTemplate" value="/network/instance-groups/instance-group/{id}"/>
+            <xml-property name="requiredProps" value="id,description,type"/>
             </xml-properties>
         </java-type>
 
@@ -6075,6 +6146,7 @@
                 <xml-property name="dependentOn" value="l3-network"/>
                 <xml-property name="container" value="segmentation-assignments"/>
                 <xml-property name="uriTemplate" value="/segmentation-assignments/segmentation-assignment/{segmentation-id}"/>
+            <xml-property name="requiredProps" value="segmentation-id"/>
             </xml-properties>
         </java-type>
 
@@ -6168,6 +6240,7 @@
                 <xml-property name="container" value="allotted-resources"/>
                 <!--  <xml-property name="namespace" value="network" /> -->
                 <xml-property name="uriTemplate" value="/allotted-resources/allotted-resource/{id}"/>
+            <xml-property name="requiredProps" value="id"/>
             </xml-properties>
         </java-type>
 
@@ -6225,6 +6298,7 @@
                 <xml-property name="container" value="tunnel-xconnects"/>
                 <!--  <xml-property name="namespace" value="network" /> -->
                 <xml-property name="uriTemplate" value="/tunnel-xconnects/tunnel-xconnect/{id}"/>
+            <xml-property name="requiredProps" value="id"/>
             </xml-properties>
         </java-type>
 
@@ -6264,6 +6338,7 @@
                 <xml-property name="dependentOn" value="generic-vnf,vce"/>
                 <xml-property name="container" value="entitlements"/>
                 <xml-property name="uriTemplate" value="/entitlements/entitlement/{group-uuid}/{resource-uuid}"/>
+            <xml-property name="requiredProps" value="group-uuid,resource-uuid"/>
             </xml-properties>
         </java-type>
 
@@ -6304,6 +6379,7 @@
                 <xml-property name="dependentOn" value="generic-vnf,vce"/>
                 <xml-property name="container" value="licenses"/>
                 <xml-property name="uriTemplate" value="/licenses/license/{group-uuid}/{resource-uuid}"/>
+            <xml-property name="requiredProps" value="group-uuid,resource-uuid"/>
             </xml-properties>
         </java-type>
 
@@ -6322,6 +6398,7 @@
                 <xml-property name="uniqueProps" value="vnf-id"/>
                 <xml-property name="inheritors" value="vce,generic-vnf"/>
                 <xml-property name="abstract" value="true"/>
+            <xml-property name="requiredProps" value="vnf-id"/>
             </xml-properties>
         </java-type>
 
@@ -6378,6 +6455,7 @@
                 <xml-property name="container" value="zones"/>
                 <xml-property name="namespace" value="network"/>
                 <xml-property name="uriTemplate" value="/network/zones/zone/{zone-id}"/>
+            <xml-property name="requiredProps" value="zone-id,zone-name,design-type,zone-context"/>
             </xml-properties>
         </java-type>
         <java-type name="RouteTargets">
@@ -6415,6 +6493,7 @@
                 <xml-property name="dependentOn" value="vpn-binding"/>
                 <xml-property name="canBeLinked" value="true"/>
                 <xml-property name="uriTemplate" value="/route-targets/route-target/{global-route-target}/{route-target-role}"/>
+            <xml-property name="requiredProps" value="global-route-target,route-target-role"/>
             </xml-properties>
         </java-type>
 
@@ -6448,6 +6527,7 @@
                 <xml-property name="dependentOn" value="p-interface"/>
                 <xml-property name="container" value="sriov-pfs"/>
                 <xml-property name="uriTemplate" value="/sriov-pfs/sriov-pf/{pf-pci-id}"/>
+            <xml-property name="requiredProps" value="pf-pci-id"/>
             </xml-properties>
         </java-type>
 
@@ -6545,6 +6625,7 @@
                 <xml-property name="indexedProps" value="vip-ipv4-address,vlan-id-inner,neutron-network-id,neutron-subnet-id"/>
                 <xml-property name="dependentOn" value="cloud-region"/>
             <xml-property name="uriTemplate" value="/vip-ipv4-address-list/{vip-ipv4-address}"/>
+            <xml-property name="requiredProps" value="vip-ipv4-address"/>
             </xml-properties>
         </java-type>
 
@@ -6598,6 +6679,7 @@
                 <xml-property name="indexedProps" value="vip-ipv6-address,vlan-id-inner,neutron-network-id,neutron-subnet-id"/>
                 <xml-property name="dependentOn" value="cloud-region"/>
             <xml-property name="uriTemplate" value="/vip-ipv6-address-list/{vip-ipv6-address}"/>
+            <xml-property name="requiredProps" value="vip-ipv6-address"/>
             </xml-properties>
         </java-type>
 
@@ -6662,6 +6744,7 @@
                 <xml-property name="container" value="operational-environments"/>
                 <xml-property name="namespace" value="cloud-infrastructure"/>
                 <xml-property name="uriTemplate" value="/cloud-infrastructure/operational-environments/operational-environment/{operational-environment-id}"/>
+            <xml-property name="requiredProps" value="operational-environment-id,operational-environment-name,operational-environment-type,operational-environment-status,tenant-context,workload-context"/>
             </xml-properties>
         </java-type>
 
@@ -6682,6 +6765,7 @@
                 <xml-property name="nameProps" value="forwarding-path-name"/>
                 <xml-property name="uniqueProps" value="forwarding-path-id"/>
                 <xml-property name="uriTemplate" value="/network/forwarding-paths/forwarding-path/{forwarding-path-id}"/>
+            <xml-property name="requiredProps" value="forwarding-path-id,forwarding-path-name"/>
             </xml-properties>
             <java-attributes>
                 <xml-element java-attribute="forwardingPathId" name="forwarding-path-id" required="true" type="java.lang.String" xml-key="true">
@@ -6724,6 +6808,7 @@
                 <xml-property name="container" value="forwarders"/>
                 <xml-property name="dependentOn" value="forwarding-path"/>
                 <xml-property name="uriTemplate" value="/forwarders/forwarder/{sequence}"/>
+            <xml-property name="requiredProps" value="sequence"/>
             </xml-properties>
             <java-attributes>
                 <xml-element java-attribute="sequence" name="sequence" required="true" type="java.lang.Integer" xml-key="true">
@@ -6793,6 +6878,7 @@
                 <xml-property name="uniqueProps" value="forwarder-evc-id"/>
                 <xml-property name="container" value="forwarder-evcs"/>
                 <xml-property name="uriTemplate" value="/forwarder-evcs/forwarder-evc/{forwarder-evc-id}"/>
+            <xml-property name="requiredProps" value="forwarder-evc-id"/>
             </xml-properties>
         </java-type>
 
@@ -6889,9 +6975,9 @@
                 <xml-property name="uniqueProps" value="evc-id"/>
                 <xml-property name="container" value="evcs"/>
                 <xml-property name="uriTemplate" value="/evcs/evc/{evc-id}"/>
+            <xml-property name="requiredProps" value="evc-id"/>
             </xml-properties>
         </java-type>
 
     </java-types>
 </xml-bindings>
-
