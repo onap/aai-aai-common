@@ -28,119 +28,119 @@ import static org.junit.Assert.assertEquals;
 
 public class AAIExceptionWithInfoTest extends AAISetup {
 
-	
-	private static final HashMap<String, Object> map = new HashMap<String, Object>();
+    
+    private static final HashMap<String, Object> map = new HashMap<String, Object>();
 
-	{
-		map.put("itemInteger", 1);
-		map.put("itemString", "Two");
-		map.put("itemThree", Boolean.TRUE);
-	}
+    {
+        map.put("itemInteger", 1);
+        map.put("itemString", "Two");
+        map.put("itemThree", Boolean.TRUE);
+    }
 
-	private static final String info = "An error has occurred.";
-	private static final String code = "AAI_4004";
-	private static final String details = "This is a detailed description of the exception.";
-	private static final Throwable cause = new RuntimeException("This is a runtime exception.");
+    private static final String info = "An error has occurred.";
+    private static final String code = "AAI_4004";
+    private static final String details = "This is a detailed description of the exception.";
+    private static final Throwable cause = new RuntimeException("This is a runtime exception.");
 
-	/**
-	 * Test constructor with 2 params.
-	 *
-	 * @throws Exception the exception
-	 */
-	@Test
-	public void testConstructorWith2Params() throws Exception {
-		AAIExceptionWithInfo exception = new AAIExceptionWithInfo(map, info);
+    /**
+     * Test constructor with 2 params.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testConstructorWith2Params() throws Exception {
+        AAIExceptionWithInfo exception = new AAIExceptionWithInfo(map, info);
 
-		assertEquals(map, exception.getInfoHash());
-		assertEquals(info, exception.getInfo());
-	}
+        assertEquals(map, exception.getInfoHash());
+        assertEquals(info, exception.getInfo());
+    }
 
-	/**
-	 * Test constructor with 3 params.
-	 *
-	 * @throws Exception the exception
-	 */
-	@Test
-	public void testConstructorWith3Params() throws Exception {
-		AAIExceptionWithInfo exception = new AAIExceptionWithInfo(code, map, info);
+    /**
+     * Test constructor with 3 params.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testConstructorWith3Params() throws Exception {
+        AAIExceptionWithInfo exception = new AAIExceptionWithInfo(code, map, info);
 
-		assertEquals("4004", exception.getErrorObject().getErrorCode());
-		assertEquals(map, exception.getInfoHash());
-		assertEquals(info, exception.getInfo());
-	}
+        assertEquals("4004", exception.getErrorObject().getErrorCode());
+        assertEquals(map, exception.getInfoHash());
+        assertEquals(info, exception.getInfo());
+    }
 
-	/**
-	 * Test constructor with 4 params I.
-	 *
-	 * @throws Exception the exception
-	 */
-	@Test
-	public void testConstructorWith4ParamsI() throws Exception {
-		AAIExceptionWithInfo exception = new AAIExceptionWithInfo(code, details, map, info);
+    /**
+     * Test constructor with 4 params I.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testConstructorWith4ParamsI() throws Exception {
+        AAIExceptionWithInfo exception = new AAIExceptionWithInfo(code, details, map, info);
 
-		assertEquals("4004", exception.getErrorObject().getErrorCode());
-		assertEquals(details, exception.getMessage());
-		assertEquals(map, exception.getInfoHash());
-		assertEquals(info, exception.getInfo());
-	}
+        assertEquals("4004", exception.getErrorObject().getErrorCode());
+        assertEquals(details, exception.getMessage());
+        assertEquals(map, exception.getInfoHash());
+        assertEquals(info, exception.getInfo());
+    }
 
-	/**
-	 * Test constructor with 4 params II.
-	 *
-	 * @throws Exception the exception
-	 */
-	@Test
-	public void testConstructorWith4ParamsII() throws Exception {
-		AAIExceptionWithInfo exception = new AAIExceptionWithInfo(code, cause, map, info);
+    /**
+     * Test constructor with 4 params II.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testConstructorWith4ParamsII() throws Exception {
+        AAIExceptionWithInfo exception = new AAIExceptionWithInfo(code, cause, map, info);
 
-		assertEquals("4004", exception.getErrorObject().getErrorCode());
-		assertEquals(cause.toString(), exception.getMessage());
-		assertEquals(map, exception.getInfoHash());
-		assertEquals(info, exception.getInfo());
-	}
+        assertEquals("4004", exception.getErrorObject().getErrorCode());
+        assertEquals(cause.toString(), exception.getMessage());
+        assertEquals(map, exception.getInfoHash());
+        assertEquals(info, exception.getInfo());
+    }
 
-	/**
-	 * Test constructor with 5 params.
-	 *
-	 * @throws Exception the exception
-	 */
-	@Test
-	public void testConstructorWith5Params() throws Exception {
-		AAIExceptionWithInfo exception = new AAIExceptionWithInfo(code, cause, details, map, info);
+    /**
+     * Test constructor with 5 params.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testConstructorWith5Params() throws Exception {
+        AAIExceptionWithInfo exception = new AAIExceptionWithInfo(code, cause, details, map, info);
 
-		assertEquals("4004", exception.getErrorObject().getErrorCode());
-		assertEquals(details, exception.getMessage());
-		assertEquals(map, exception.getInfoHash());
-		assertEquals(info, exception.getInfo());
-	}
+        assertEquals("4004", exception.getErrorObject().getErrorCode());
+        assertEquals(details, exception.getMessage());
+        assertEquals(map, exception.getInfoHash());
+        assertEquals(info, exception.getInfo());
+    }
 
-	/**
-	 * Test set info hash.
-	 */
-	@Test
-	public void testSetInfoHash() {
-		AAIExceptionWithInfo exception = new AAIExceptionWithInfo(map, info);
+    /**
+     * Test set info hash.
+     */
+    @Test
+    public void testSetInfoHash() {
+        AAIExceptionWithInfo exception = new AAIExceptionWithInfo(map, info);
 
-		HashMap<String, Object> newMap = new HashMap<String, Object>();
-		newMap.put("itemInteger", 2);
-		exception.setInfoHash(newMap);
-		
-		assertEquals(newMap, exception.getInfoHash());
-		assertEquals(info, exception.getInfo());
-	}
-	
-	/**
-	 * Test set info.
-	 */
-	@Test
-	public void testSetInfo() {
-		AAIExceptionWithInfo exception = new AAIExceptionWithInfo(map, info);
+        HashMap<String, Object> newMap = new HashMap<String, Object>();
+        newMap.put("itemInteger", 2);
+        exception.setInfoHash(newMap);
+        
+        assertEquals(newMap, exception.getInfoHash());
+        assertEquals(info, exception.getInfo());
+    }
+    
+    /**
+     * Test set info.
+     */
+    @Test
+    public void testSetInfo() {
+        AAIExceptionWithInfo exception = new AAIExceptionWithInfo(map, info);
 
-		String newInfo = "This is updated info.";
-		exception.setInfo(newInfo);
-		
-		assertEquals(map, exception.getInfoHash());
-		assertEquals(newInfo, exception.getInfo());
-	}
+        String newInfo = "This is updated info.";
+        exception.setInfo(newInfo);
+        
+        assertEquals(map, exception.getInfoHash());
+        assertEquals(newInfo, exception.getInfo());
+    }
 
 }

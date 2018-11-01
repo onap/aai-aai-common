@@ -26,87 +26,87 @@ import static org.junit.Assert.assertEquals;
 
 public class AAIExceptionTest extends AAISetup {
 
-  private static final String code = "4004";
-  private static final String details = "This is a detailed description of the exception.";
-  private static final Throwable cause = new RuntimeException("This is a runtime exception.");
-  private static final Throwable noMessage = new RuntimeException();
-  
-  /**
-   * Test constructor with 0 params.
-   *
-   * @throws Exception the exception
-   */
-  @Test
-  public void testConstructorWith0Params() throws Exception {
-    AAIException exception = new AAIException();
-    assertEquals(exception, exception);
-  }
-  
-  /**
-   * Test constructor with 1 params.
-   *
-   * @throws Exception the exception
-   */
-  @Test
-  public void testConstructorWith1Params() throws Exception {
-    AAIException exception = new AAIException(code);
-    assertEquals(exception, exception);
-  }
-  
-  /**
-   * Test constructor with 2 params details.
-   *
-   * @throws Exception the exception
-   */
-  @Test
-  public void testConstructorWith2ParamsDetails() throws Exception {
-    AAIException exception = new AAIException(code, details);
-    assertEquals(details, exception.getMessage());
-  }
-  
-  /**
-   * Test constructor with 2 params cause.
-   *
-   * @throws Exception the exception
-   */
-  @Test
-  public void testConstructorWith2ParamsCause() throws Exception {
-    AAIException exception = new AAIException(code, cause);
-    assertEquals("java.lang.RuntimeException: This is a runtime exception.", exception.getMessage());
-  }
-  
-  /**
-   * Test constructor with 2 params null message.
-   *
-   * @throws Exception the exception
-   */
-  @Test
-  public void testConstructorWith2ParamsNullMessage() throws Exception {
-    AAIException exception = new AAIException(code, noMessage);
-    assertEquals(noMessage.toString(), exception.getMessage());
-  }
-  
-  /**
-   * Test constructor with 3 params.
-   *
-   * @throws Exception the exception
-   */
-  @Test
-  public void testConstructorWith3Params() throws Exception {
-    AAIException exception = new AAIException(code, cause, details);
-    String details = "This is a detailed description of the exception.";
-    assertEquals(details, exception.getMessage());
-  }
-  
-  /**
-   * Test constructor with 3 params null message.
-   *
-   * @throws Exception the exception
-   */
-  @Test
-  public void testConstructorWith3ParamsNullMessage() throws Exception {
-    AAIException exception = new AAIException(code, noMessage, details);
-    String detailString = new String(details);
-    assertEquals(detailString, exception.getMessage());
-  }
+    private static final String code = "4004";
+    private static final String details = "This is a detailed description of the exception.";
+    private static final Throwable cause = new RuntimeException("This is a runtime exception.");
+    private static final Throwable noMessage = new RuntimeException();
+    
+    /**
+     * Test constructor with 0 params.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testConstructorWith0Params() throws Exception {
+        AAIException exception = new AAIException();
+        assertEquals(exception, exception);
+    }
+    
+    /**
+     * Test constructor with 1 params.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testConstructorWith1Params() throws Exception {
+        AAIException exception = new AAIException(code);
+        assertEquals(exception, exception);
+    }
+    
+    /**
+     * Test constructor with 2 params details.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testConstructorWith2ParamsDetails() throws Exception {
+        AAIException exception = new AAIException(code, details);
+        assertEquals(details, exception.getMessage());
+    }
+    
+    /**
+     * Test constructor with 2 params cause.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testConstructorWith2ParamsCause() throws Exception {
+        AAIException exception = new AAIException(code, cause);
+        assertEquals("java.lang.RuntimeException: This is a runtime exception.", exception.getMessage());
+    }
+    
+    /**
+     * Test constructor with 2 params null message.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testConstructorWith2ParamsNullMessage() throws Exception {
+        AAIException exception = new AAIException(code, noMessage);
+        assertEquals(noMessage.toString(), exception.getMessage());
+    }
+    
+    /**
+     * Test constructor with 3 params.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testConstructorWith3Params() throws Exception {
+        AAIException exception = new AAIException(code, cause, details);
+        String details = "This is a detailed description of the exception.";
+        assertEquals(details, exception.getMessage());
+    }
+    
+    /**
+     * Test constructor with 3 params null message.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testConstructorWith3ParamsNullMessage() throws Exception {
+        AAIException exception = new AAIException(code, noMessage, details);
+        String detailString = new String(details);
+        assertEquals(detailString, exception.getMessage());
+    }
 }
