@@ -35,40 +35,40 @@ import static org.junit.Assert.assertThat;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class PropertyPredicatesTest extends AAISetup {
 
-	private Loader loader;
-	private ModelType introspectorFactoryType = ModelType.MOXY;
-	private Introspector obj;
-	
-	@Before
-	public void setup() throws Exception {
-		loader = loaderFactory.createLoaderForVersion(introspectorFactoryType, schemaVersions.getDefaultVersion());
-		obj = loader.introspectorFromName("generic-vnf");
-	}
-	
-	@Test
-	public void includeInTestGeneration() throws AAIUnknownObjectException {
-		
-		Set<String> props = obj.getProperties(PropertyPredicates.includeInTestGeneration());
+    private Loader loader;
+    private ModelType introspectorFactoryType = ModelType.MOXY;
+    private Introspector obj;
+    
+    @Before
+    public void setup() throws Exception {
+        loader = loaderFactory.createLoaderForVersion(introspectorFactoryType, schemaVersions.getDefaultVersion());
+        obj = loader.introspectorFromName("generic-vnf");
+    }
+    
+    @Test
+    public void includeInTestGeneration() throws AAIUnknownObjectException {
+        
+        Set<String> props = obj.getProperties(PropertyPredicates.includeInTestGeneration());
 
-		assertThat("props not found", props,
-				not(hasItems("model-invariant-id", "model-version-id")));
-	}
-	
-	@Test
-	public void isVisible() throws AAIUnknownObjectException {
-		
-		Set<String> props = obj.getProperties(PropertyPredicates.isVisible());
+        assertThat("props not found", props,
+                not(hasItems("model-invariant-id", "model-version-id")));
+    }
+    
+    @Test
+    public void isVisible() throws AAIUnknownObjectException {
+        
+        Set<String> props = obj.getProperties(PropertyPredicates.isVisible());
 
-		assertThat("props not found", props, hasItems("model-invariant-id", "model-version-id"));
-	}
-	
-	@Test
-	public void all() throws AAIUnknownObjectException {
-		
-		Set<String> props = obj.getProperties();
+        assertThat("props not found", props, hasItems("model-invariant-id", "model-version-id"));
+    }
+    
+    @Test
+    public void all() throws AAIUnknownObjectException {
+        
+        Set<String> props = obj.getProperties();
 
-		assertThat("all found", props, hasItems("model-invariant-id", "model-version-id"));
-	}
-	
+        assertThat("all found", props, hasItems("model-invariant-id", "model-version-id"));
+    }
+    
 
 }

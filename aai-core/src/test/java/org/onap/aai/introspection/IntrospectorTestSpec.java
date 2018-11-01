@@ -26,32 +26,32 @@ import static org.junit.Assert.assertEquals;
 
 public abstract class IntrospectorTestSpec extends AAISetup {
 
-	
-	
-	/**
-	 * Container test set.
-	 *
-	 * @param wrappedPortGroups the wrapped port groups
-	 * @throws AAIUnknownObjectException 
-	 */
-	protected void containerTestSet(Introspector wrappedPortGroups) throws AAIUnknownObjectException {
-		
-		assertEquals(
-				"isContainer",
-				true,
-				wrappedPortGroups.isContainer());
-		
-		assertEquals(
-				"newInstanceOfNestedProperty",
-				"PortGroup",
-				wrappedPortGroups.newInstanceOfNestedProperty("port-group").getClass().getSimpleName());
-		
-		assertEquals(
-				"isComplexGenericType",
-				true,
-				wrappedPortGroups.isComplexGenericType("port-group"));
-		
-		
-	}
-	
+    
+    
+    /**
+     * Container test set.
+     *
+     * @param wrappedPortGroups the wrapped port groups
+     * @throws AAIUnknownObjectException 
+     */
+    protected void containerTestSet(Introspector wrappedPortGroups) throws AAIUnknownObjectException {
+        
+        assertEquals(
+                "isContainer",
+                true,
+                wrappedPortGroups.isContainer());
+        
+        assertEquals(
+                "newInstanceOfNestedProperty",
+                "PortGroup",
+                wrappedPortGroups.newInstanceOfNestedProperty("port-group").getClass().getSimpleName());
+        
+        assertEquals(
+                "isComplexGenericType",
+                true,
+                wrappedPortGroups.isComplexGenericType("port-group"));
+        
+        
+    }
+    
 }
