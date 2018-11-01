@@ -29,7 +29,7 @@ import org.junit.*;
 
 public class EcompErrorCategoryTest {
 
-	EcompErrorCategory _ecompErrorCategory;
+    EcompErrorCategory _ecompErrorCategory;
     ILoggingEvent mockEvent;
 
     @Before
@@ -41,7 +41,7 @@ public class EcompErrorCategoryTest {
     }
     @Test
     public void warn(){
-    	String defaultCategory = "WARN";
+        String defaultCategory = "WARN";
         assertEquals(_ecompErrorCategory.convert(mockEvent), defaultCategory);
     }
 
