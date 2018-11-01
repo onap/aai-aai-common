@@ -96,6 +96,7 @@ public class DBSerializer {
 	private final Loader loader;
 	private final String baseURL;
 	private double dbTimeMsecs = 0;
+	private long currentTimeMillis;
 
 	private SchemaVersions schemaVersions;
 	/**
@@ -117,6 +118,7 @@ public class DBSerializer {
 		this.version = version;
 		this.loader = SpringContextAware.getBean(LoaderFactory.class).createLoaderForVersion(introspectionType, version);
 		this.baseURL = AAIConfig.get(AAIConstants.AAI_SERVER_URL_BASE);
+		this.currentTimeMillis = System.currentTimeMillis();
 		initBeans();
 	}
 
@@ -156,14 +158,14 @@ public class DBSerializer {
 	 * @param isNewVertex the is new vertex
 	 */
 	public void touchStandardVertexProperties(Vertex v, boolean isNewVertex) {
-		
-		String timeNowInSec = Long.toString(System.currentTimeMillis());
+	    String timeNowInSec = Long.toString(currentTimeMillis);
+
 		if (isNewVertex) {
 			v.property(AAIProperties.SOURCE_OF_TRUTH, this.sourceOfTruth);
 			v.property(AAIProperties.CREATED_TS, timeNowInSec);
 			v.property(AAIProperties.AAI_UUID, UUID.randomUUID().toString());
 		}
-		v.property(AAIProperties.RESOURCE_VERSION, timeNowInSec );
+		v.property(AAIProperties.RESOURCE_VERSION, timeNowInSec);
 		v.property(AAIProperties.LAST_MOD_TS, timeNowInSec);
 		v.property(AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, this.sourceOfTruth);
 		

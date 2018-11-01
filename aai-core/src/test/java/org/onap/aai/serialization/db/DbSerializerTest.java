@@ -340,25 +340,64 @@ public class DbSerializerTest extends AAISetup {
 
 	}
 
-	@Test
+    @Test
 	public void touchStandardVertexPropertiesTest() throws AAIException, InterruptedException {
 		engine.startTransaction();
+
+        //if this test runs through too fast the value may not change, causing the test to fail. sleeping ensures a different value
+        Thread.sleep(2);
 		DBSerializer dbser2 = new DBSerializer(version, engine, introspectorFactoryType, "AAI-TEST-2");
 		Vertex vert = graph.addVertex("aai-node-type", "generic-vnf");
 
+		// Upon first creation of the Vertex and the DBSerializer
+        // the source of truth and created-ts should be the same as their modified counterparts
+        dbser2.touchStandardVertexProperties(vert, true);
+        String createTS = (String)vert.property(AAIProperties.CREATED_TS).value();
+        String modTS = (String)vert.property(AAIProperties.LAST_MOD_TS).value();
+        String sot = (String)vert.property(AAIProperties.SOURCE_OF_TRUTH).value();
+        String lastModSOT = (String)vert.property(AAIProperties.LAST_MOD_SOURCE_OF_TRUTH).value();
+        assertTrue(createTS.equals(modTS));
+        assertTrue(sot.equals(lastModSOT));
+
+        //if this test runs through too fast the value may not change, causing the test to fail. sleeping ensures a different value
+        Thread.sleep(2);
+
+        // Not new vertex && new DBSerializer (A new serializer since a new one will be created per transaction)
+        // Here the vertex will be modified by a different source of truth
+        DBSerializer dbser3 = new DBSerializer(version, engine, introspectorFactoryType, "AAI-TEST-3");
+        dbser3.touchStandardVertexProperties(vert, false);
+        createTS = (String)vert.property(AAIProperties.CREATED_TS).value();
+        modTS = (String)vert.property(AAIProperties.LAST_MOD_TS).value();
+        sot = (String)vert.property(AAIProperties.SOURCE_OF_TRUTH).value();
+        lastModSOT = (String)vert.property(AAIProperties.LAST_MOD_SOURCE_OF_TRUTH).value();
+        assertFalse(createTS.equals(modTS));
+        assertFalse(sot.equals(lastModSOT));
+
+        //if this test runs through too fast the value may not change, causing the test to fail. sleeping ensures a different value
+        Thread.sleep(2);
+
+        // The currentTimeMillis used for the created-ts and modified-ts is created at DBSerializer instantiation
+        // Every REST transaction should create a new DBSerializer - thus a new currentTimeMillis is used at the time of transaction.
+        // Using an existing vertex, but treating it as new && using an older DBSerializer
 		dbser.touchStandardVertexProperties(vert, true);
 		String resverStart = (String)vert.property(AAIProperties.RESOURCE_VERSION).value();
-		String lastModTimeStart = (String)vert.property(AAIProperties.LAST_MOD_TS).value();
+        String lastModTimeStart = (String)vert.property(AAIProperties.LAST_MOD_TS).value();
+        createTS = (String)vert.property(AAIProperties.CREATED_TS).value();
+        modTS = (String)vert.property(AAIProperties.LAST_MOD_TS).value();
+        assertTrue(createTS.equals(modTS));
+        assertEquals("AAI-TEST", vert.property(AAIProperties.LAST_MOD_SOURCE_OF_TRUTH).value());
 
-		Thread.sleep(10); //bc the resource version is set based on current time in milliseconds,
-							//if this test runs through too fast the value may not change
-							//causing the test to fail. sleeping ensures a different value
+        //if this test runs through too fast the value may not change, causing the test to fail. sleeping ensures a different value
+        Thread.sleep(2);
 
 		dbser2.touchStandardVertexProperties(vert, false);
-		assertFalse(resverStart.equals(vert.property(AAIProperties.RESOURCE_VERSION).value()));
-		assertFalse(lastModTimeStart.equals(vert.property(AAIProperties.LAST_MOD_TS).value()));
-		assertEquals("AAI-TEST-2", vert.property(AAIProperties.LAST_MOD_SOURCE_OF_TRUTH).value());
+		String resourceVer = (String)vert.property(AAIProperties.RESOURCE_VERSION).value();
+		String lastModTs = (String)vert.property(AAIProperties.LAST_MOD_TS).value();
+		String lastModSoT = (String)vert.property(AAIProperties.LAST_MOD_SOURCE_OF_TRUTH).value();
 
+		assertFalse(resverStart.equals(resourceVer));
+		assertFalse(lastModTimeStart.equals(lastModTs));
+		assertEquals("AAI-TEST-2", lastModSoT);
 	}
 
 	@Test
