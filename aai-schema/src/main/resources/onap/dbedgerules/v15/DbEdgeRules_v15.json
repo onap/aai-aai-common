@@ -1670,6 +1670,19 @@
 		},
 		{
 			"from": "service-instance",
+			"to": "instance-group",
+			"label": "org.onap.relationships.inventory.Uses",
+			"direction": "OUT",
+			"multiplicity": "ONE2MANY",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"SVC-INFRA":"NONE",
+			"prevent-delete": "NONE",
+			"default": "false",
+			"description":"MSO creates this edge on VNF Group Service creation"
+		},
+		{
+			"from": "service-instance",
 			"to": "configuration",
 			"label": "org.onap.relationships.inventory.Uses",
 			"direction": "OUT",
