@@ -8587,6 +8587,7 @@
                         <xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete."/>
                     </xml-properties>
                 </xml-element>
+                <xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v15.RelationshipList"/>
             </java-attributes>
             <xml-properties>
                 <xml-property name="description" value="Contacts store the vendor information and have a relationship to the generic-vnf.  In 1902, this will be populated by SDN-GC"/>
@@ -8636,7 +8637,8 @@
                     <xml-properties>
                         <xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete."/>
                     </xml-properties>
-                </xml-element>				
+                </xml-element>	
+                <xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v15.RelationshipList"/>			
             </java-attributes>
             <xml-properties>
                 <xml-property name="description" value="Aggregate route configs are used on the D2 IPE’s for the Voice services.  In 1902, SDNC will create aggregate-route objects and write them to A&amp;AI. "/>

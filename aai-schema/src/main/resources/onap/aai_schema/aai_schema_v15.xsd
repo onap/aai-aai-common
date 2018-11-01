@@ -6171,6 +6171,7 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
+        <xs:element ref="tns:relationship-list" minOccurs="0"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -9845,6 +9846,7 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
+        <xs:element ref="tns:relationship-list" minOccurs="0"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
