@@ -1200,6 +1200,11 @@
                         <xml-property name="description" value="Freeform field for storing an ip address, list of ip addresses or a subnet block."/>
                     </xml-properties>
                 </xml-element>
+                <xml-element java-attribute="priority" name="priority" type="java.lang.Integer">
+                    <xml-properties>
+                        <xml-property name="description" value="Priority used for fail-over. Valid values 1-1024, with 1 being the highest priority."/>
+                    </xml-properties>
+                </xml-element>
                 <xml-element java-attribute="vlans" name="vlans" type="inventory.aai.onap.org.v15.Vlans"/>
                 <xml-element java-attribute="sriovVfs" name="sriov-vfs" type="inventory.aai.onap.org.v15.SriovVfs"/>
                 <xml-element java-attribute="lInterfaces" name="l-interfaces" type="inventory.aai.onap.org.v15.LInterfaces"/>

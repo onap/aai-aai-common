@@ -1191,6 +1191,13 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
+        <xs:element name="priority" type="xs:int" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="Priority used for fail-over. Valid values 1-1024, with 1 being the highest priority.")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
         <xs:element ref="tns:vlans" minOccurs="0"/>
         <xs:element ref="tns:sriov-vfs" minOccurs="0"/>
         <xs:element ref="tns:l-interfaces" minOccurs="0"/>
