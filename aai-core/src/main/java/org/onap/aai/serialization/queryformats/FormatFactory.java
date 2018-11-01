@@ -83,6 +83,9 @@ public class FormatFactory {
 			case count :
 				formatter = new Formatter(inject(new Count(), params));
 				break;
+            case resource_with_sot :
+                formatter = new Formatter(inject(new ResourceWithSoT.Builder(loader, serializer, urlBuilder), params).build());
+                break;
 			default :
 				break;
 

@@ -31,7 +31,8 @@ public enum Format {
 	resource_and_url,
 	console,
 	raw,
-	count;
+	count,
+    resource_with_sot;
 
 	public static Format getFormat(String format) throws AAIException {
 		try {
