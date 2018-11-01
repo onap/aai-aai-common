@@ -4335,6 +4335,7 @@
                 <xml-element java-attribute="subnets" name="subnets" type="inventory.aai.onap.org.v15.Subnets"/>
                 <xml-element java-attribute="ctagAssignments" name="ctag-assignments" type="inventory.aai.onap.org.v15.CtagAssignments"/>
                 <xml-element java-attribute="segmentationAssignments" name="segmentation-assignments" type="inventory.aai.onap.org.v15.SegmentationAssignments"/>
+                <xml-element java-attribute="aggregateRoutes" name="aggregate-routes" type="inventory.aai.onap.org.v15.AggregateRoutes"/>
                 <xml-element java-attribute="relationshipList" name="relationship-list" type="inventory.aai.onap.org.v15.RelationshipList">
                     <xml-properties>
                         <xml-property name="description" value="Relates to tenant (or is it a child of tenant), complex, service, vpn-binding"/>
@@ -8487,6 +8488,55 @@
                 <xml-property name="nameProps" value="contact-name,vendor-type"/>
                 <xml-property name="uriTemplate" value="/common/contacts/contact/{contact-name}"/>
             </xml-properties>
-		</java-type>		
+		</java-type>	
+		
+				<java-type name="AggregateRoutes">
+            <xml-properties>
+                <xml-property name="description" value="Collection of aggregate routes."/>
+            </xml-properties>
+            <xml-root-element name="aggregate-routes"/>
+            <java-attributes>
+                <xml-element container-type="java.util.ArrayList" java-attribute="aggregateRoute" name="aggregate-route" type="inventory.aai.onap.org.v15.AggregateRoute"/>
+            </java-attributes>
+        </java-type>	
+        
+        <java-type name="AggregateRoute">
+            <xml-root-element name="aggregate-route"/>
+            <java-attributes>
+                <xml-element java-attribute="routeId" name="route-id" required="true" type="java.lang.String" xml-key="true">
+                    <xml-properties>
+                        <xml-property name="description" value="Unique id of the aggregate-route instance"/>
+                    </xml-properties>
+                </xml-element>                
+                <xml-element java-attribute="networkStartAddress" name="network-start-address" required="true" type="java.lang.String">
+                    <xml-properties>
+                        <xml-property name="description" value="Name of the forwarding-path"/>
+                    </xml-properties>
+                </xml-element>                
+                <xml-element java-attribute="cidrMask" name="cidr-mask" required="true" type="java.lang.String">
+                    <xml-properties>
+                        <xml-property name="description" value="CIDR-mask for aggregate route subnet"/>
+                    </xml-properties>
+                </xml-element>                
+                <xml-element java-attribute="ipVersion" name="ip-version" required="true" type="java.lang.String">
+                    <xml-properties>
+                        <xml-property name="description" value="Identifies is aggregate route is ipv4 or ipv6"/>
+                    </xml-properties>
+                </xml-element>                
+                 <xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+                    <xml-properties>
+                        <xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete."/>
+                    </xml-properties>
+                </xml-element>				
+            </java-attributes>
+            <xml-properties>
+                <xml-property name="description" value="Aggregate route configs are used on the D2 IPE’s for the Voice services.  In 1902, SDNC will create aggregate-route objects and write them to A&amp;AI. " />
+                <xml-property name="uniqueProps" value="route-id"/>
+                <xml-property name="container" value="aggregate-routes"/> 
+                <xml-property name="dependentOn" value="l3-network"/>
+                <xml-property name="uriTemplate" value="/aggregate-routes/aggregate-route/{route-id}"/>
+            </xml-properties>
+		</java-type>
+			
 	</java-types>
 </xml-bindings>

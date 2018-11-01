@@ -3104,6 +3104,19 @@
 			"prevent-delete": "NONE",
 			"default": "true",
 			"description":""
+		},
+		{
+			"from": "aggregate-route",
+			"to": "l3-network",
+			"label": "org.onap.relationships.inventory.BelongsTo",
+			"direction": "OUT",
+			"multiplicity": "MANY2ONE",
+			"contains-other-v": "!${direction}",
+			"delete-other-v": "!${direction}",
+			"SVC-INFRA": "NONE",
+			"prevent-delete": "NONE",
+			"default": "true",
+			"description":""		
 		}
 		
 	]
