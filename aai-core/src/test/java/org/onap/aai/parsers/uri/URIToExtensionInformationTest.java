@@ -37,62 +37,62 @@ import static org.junit.Assert.assertEquals;
 
 public class URIToExtensionInformationTest extends AAISetup {
 
-	
-	private Loader specificLoader ;
-	
-	/**
-	 * Vservers V 7.
-	 *
-	 * @throws JAXBException the JAXB exception
-	 * @throws AAIException the AAI exception
-	 * @throws IllegalArgumentException the illegal argument exception
-	 * @throws UnsupportedEncodingException the unsupported encoding exception
-	 */
-	
-	@PostConstruct
-	public void createLoader(){
-		specificLoader = loaderFactory.createLoaderForVersion(ModelType.MOXY, new SchemaVersion("v10"));
-	}
-	
-	@Test
+    
+    private Loader specificLoader ;
+    
+    /**
+     * Vservers V 7.
+     *
+     * @throws JAXBException the JAXB exception
+     * @throws AAIException the AAI exception
+     * @throws IllegalArgumentException the illegal argument exception
+     * @throws UnsupportedEncodingException the unsupported encoding exception
+     */
+    
+    @PostConstruct
+    public void createLoader(){
+        specificLoader = loaderFactory.createLoaderForVersion(ModelType.MOXY, new SchemaVersion("v10"));
+    }
+    
+    @Test
     public void vserversV8() throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException {
-		URI uri = UriBuilder.fromPath("/aai/" + specificLoader.getVersion() + "/cloud-infrastructure/cloud-regions/cloud-region/testOwner1/testRegion1/tenants/tenant/key1/vservers/vserver/key2").build();
-		URIToExtensionInformation parse = new URIToExtensionInformation(specificLoader, uri);
-		
-		String namespace = "cloudInfrastructure";
-		String preMethodName = "DynamicAddCloudInfrastructureCloudRegionsCloudRegionTenantsTenantVserversVserverPreProc";
-		String postMethodName = "DynamicAddCloudInfrastructureCloudRegionsCloudRegionTenantsTenantVserversVserverPostProc";
-		String topLevel = "CloudRegion";
-		testSpec(parse, HttpMethod.PUT, namespace, preMethodName, postMethodName, topLevel);
+        URI uri = UriBuilder.fromPath("/aai/" + specificLoader.getVersion() + "/cloud-infrastructure/cloud-regions/cloud-region/testOwner1/testRegion1/tenants/tenant/key1/vservers/vserver/key2").build();
+        URIToExtensionInformation parse = new URIToExtensionInformation(specificLoader, uri);
+        
+        String namespace = "cloudInfrastructure";
+        String preMethodName = "DynamicAddCloudInfrastructureCloudRegionsCloudRegionTenantsTenantVserversVserverPreProc";
+        String postMethodName = "DynamicAddCloudInfrastructureCloudRegionsCloudRegionTenantsTenantVserversVserverPostProc";
+        String topLevel = "CloudRegion";
+        testSpec(parse, HttpMethod.PUT, namespace, preMethodName, postMethodName, topLevel);
 
-	}
+    }
 
-	/**
-	 * Test spec.
-	 *
-	 * @param info the info
-	 * @param httpMethod the http method
-	 * @param namespace the namespace
-	 * @param preMethodName the pre method name
-	 * @param postMethodName the post method name
-	 * @param topLevel the top level
-	 */
-	private void testSpec(URIToExtensionInformation info, HttpMethod httpMethod, String namespace, String preMethodName, String postMethodName, String topLevel) {
-		
+    /**
+     * Test spec.
+     *
+     * @param info the info
+     * @param httpMethod the http method
+     * @param namespace the namespace
+     * @param preMethodName the pre method name
+     * @param postMethodName the post method name
+     * @param topLevel the top level
+     */
+    private void testSpec(URIToExtensionInformation info, HttpMethod httpMethod, String namespace, String preMethodName, String postMethodName, String topLevel) {
+        
 
-		String namespaceResult = info.getNamespace();
-		String methodNameResult = info.getMethodName(httpMethod, true);
-		
-		assertEquals("namespace", namespace, namespaceResult);
-		assertEquals("preprocess method name", preMethodName, methodNameResult);
-		methodNameResult = info.getMethodName(httpMethod, false);
+        String namespaceResult = info.getNamespace();
+        String methodNameResult = info.getMethodName(httpMethod, true);
+        
+        assertEquals("namespace", namespace, namespaceResult);
+        assertEquals("preprocess method name", preMethodName, methodNameResult);
+        methodNameResult = info.getMethodName(httpMethod, false);
 
-		assertEquals("postprocess method name", postMethodName, methodNameResult);
+        assertEquals("postprocess method name", postMethodName, methodNameResult);
 
-		String topLevelResult = info.getTopObject();
-		
-		assertEquals("topLevel", topLevel, topLevelResult);
-	}
-	
-	
+        String topLevelResult = info.getTopObject();
+        
+        assertEquals("topLevel", topLevel, topLevelResult);
+    }
+    
+    
 }

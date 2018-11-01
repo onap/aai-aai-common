@@ -39,67 +39,67 @@ import static org.hamcrest.Matchers.is;
 
 public class URIParserTest extends AAISetup {
 
-	private Loader loader ;
+    private Loader loader ;
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-	
-	/**
-	 * Invalid path.
-	 *
-	 * @throws JAXBException the JAXB exception
-	 * @throws AAIException the AAI exception
-	 * @throws IllegalArgumentException the illegal argument exception
-	 * @throws UnsupportedEncodingException the unsupported encoding exception
-	 */
-	@PostConstruct
-	public void createLoader(){
-		loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, new SchemaVersion("v10"));
-	}
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
+    
+    /**
+     * Invalid path.
+     *
+     * @throws JAXBException the JAXB exception
+     * @throws AAIException the AAI exception
+     * @throws IllegalArgumentException the illegal argument exception
+     * @throws UnsupportedEncodingException the unsupported encoding exception
+     */
+    @PostConstruct
+    public void createLoader(){
+        loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, new SchemaVersion("v10"));
+    }
 
-	@Test
+    @Test
     public void invalidPath() throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException {
-		URI uri = UriBuilder.fromPath("/aai/" + loader.getVersion() + "/network/tenants/tenant/key1/vservers/vserver/key2/l-interfaces/l-interface/key3").build();
-		
-		thrown.expect(AAIException.class);
-		thrown.expect(hasProperty("code",  is("AAI_3001")));
-		
-		new URIToDBKey(loader, uri);
-	}
-	
-	/**
-	 * Invalid path no name space.
-	 *
-	 * @throws JAXBException the JAXB exception
-	 * @throws AAIException the AAI exception
-	 * @throws IllegalArgumentException the illegal argument exception
-	 * @throws UnsupportedEncodingException the unsupported encoding exception
-	 */
-	@Test
+        URI uri = UriBuilder.fromPath("/aai/" + loader.getVersion() + "/network/tenants/tenant/key1/vservers/vserver/key2/l-interfaces/l-interface/key3").build();
+        
+        thrown.expect(AAIException.class);
+        thrown.expect(hasProperty("code",  is("AAI_3001")));
+        
+        new URIToDBKey(loader, uri);
+    }
+    
+    /**
+     * Invalid path no name space.
+     *
+     * @throws JAXBException the JAXB exception
+     * @throws AAIException the AAI exception
+     * @throws IllegalArgumentException the illegal argument exception
+     * @throws UnsupportedEncodingException the unsupported encoding exception
+     */
+    @Test
     public void invalidPathNoNameSpace() throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException {
-		URI uri = UriBuilder.fromPath("/aai/" + loader.getVersion() + "/tenants/tenant/key1/vservers/vserver/key2/l-interfaces/l-interface/key3").build();
-		
-		thrown.expect(AAIException.class);
-		thrown.expect(hasProperty("code",  is("AAI_3000")));
-		
-		new URIToDBKey(loader, uri);
-	}
-	
-	/**
-	 * Invalid path partial.
-	 *
-	 * @throws JAXBException the JAXB exception
-	 * @throws AAIException the AAI exception
-	 * @throws IllegalArgumentException the illegal argument exception
-	 * @throws UnsupportedEncodingException the unsupported encoding exception
-	 */
-	@Test
+        URI uri = UriBuilder.fromPath("/aai/" + loader.getVersion() + "/tenants/tenant/key1/vservers/vserver/key2/l-interfaces/l-interface/key3").build();
+        
+        thrown.expect(AAIException.class);
+        thrown.expect(hasProperty("code",  is("AAI_3000")));
+        
+        new URIToDBKey(loader, uri);
+    }
+    
+    /**
+     * Invalid path partial.
+     *
+     * @throws JAXBException the JAXB exception
+     * @throws AAIException the AAI exception
+     * @throws IllegalArgumentException the illegal argument exception
+     * @throws UnsupportedEncodingException the unsupported encoding exception
+     */
+    @Test
     public void invalidPathPartial() throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException {
-		URI uri = UriBuilder.fromPath("vservers/vserver/key2/l-interfaces/l-interface/key3").build();
-		
-		thrown.expect(AAIException.class);
-		thrown.expect(hasProperty("code", is("AAI_3000")));
-		
-		new URIToDBKey(loader, uri);
-	}
+        URI uri = UriBuilder.fromPath("vservers/vserver/key2/l-interfaces/l-interface/key3").build();
+        
+        thrown.expect(AAIException.class);
+        thrown.expect(hasProperty("code", is("AAI_3000")));
+        
+        new URIToDBKey(loader, uri);
+    }
 }
