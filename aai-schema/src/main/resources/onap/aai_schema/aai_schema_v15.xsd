@@ -2326,6 +2326,13 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
             </xs:appinfo>
           </xs:annotation>
         </xs:element>
+        <xs:element name="upgrade-cycle" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <annox:annotate target="field">@org.onap.aai.annotations.Metadata(description="Upgrade cycle for the cloud region. For AIC regions upgrade cycle is designated by A,B,C etc.")</annox:annotate>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
         <xs:element name="resource-version" type="xs:string" minOccurs="0">
           <xs:annotation>
             <xs:appinfo>

@@ -656,6 +656,11 @@
 						<xml-property name="description" value="ESR inputs extra information about the VIM or Cloud which will be decoded by MultiVIM."/>
                     </xml-properties>
                 </xml-element>
+				<xml-element java-attribute="upgradeCycle" name="upgrade-cycle" type="java.lang.String">
+                    <xml-properties>
+                        <xml-property name="description" value="Upgrade cycle for the cloud region. For AIC regions upgrade cycle is designated by A,B,C etc."/>
+                    </xml-properties>
+                </xml-element>
                 <xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
                     <xml-properties>
                         <xml-property name="description" value="Used for optimistic concurrency.  Must be empty on create, valid on update and delete."/>
