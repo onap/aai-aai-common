@@ -87,8 +87,8 @@
   <xs:element name="relationship-data">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="relationship-key" type="xs:string"/>
-        <xs:element name="relationship-value" type="xs:string"/>
+        <xs:element name="relationship-key" type="xs:string" minOccurs="0"/>
+        <xs:element name="relationship-value" type="xs:string" minOccurs="0"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -120,9 +120,9 @@
   <xs:element name="oam-network">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="network-uuid" type="xs:string"/>
-        <xs:element name="network-name" type="xs:string"/>
-        <xs:element name="cvlan-tag" type="xs:unsignedInt"/>
+        <xs:element name="network-uuid" type="xs:string" minOccurs="0"/>
+        <xs:element name="network-name" type="xs:string" minOccurs="0"/>
+        <xs:element name="cvlan-tag" type="xs:unsignedInt" minOccurs="0"/>
         <xs:element name="ipv4-oam-gateway-address" type="xs:string" minOccurs="0"/>
         <xs:element name="ipv4-oam-gateway-address-prefix-length" type="xs:int" minOccurs="0"/>
         <xs:element name="resource-version" type="xs:string" minOccurs="0"/>
@@ -140,8 +140,8 @@
   <xs:element name="dvs-switch">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="switch-name" type="xs:string"/>
-        <xs:element name="vcenter-url" type="xs:string"/>
+        <xs:element name="switch-name" type="xs:string" minOccurs="0"/>
+        <xs:element name="vcenter-url" type="xs:string" minOccurs="0"/>
         <xs:element name="resource-version" type="xs:string" minOccurs="0"/>
         <xs:element ref="tns:relationship-list" minOccurs="0"/>
       </xs:sequence>
@@ -157,8 +157,8 @@
   <xs:element name="availability-zone">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="availability-zone-name" type="xs:string"/>
-        <xs:element name="hypervisor-type" type="xs:string"/>
+        <xs:element name="availability-zone-name" type="xs:string" minOccurs="0"/>
+        <xs:element name="hypervisor-type" type="xs:string" minOccurs="0"/>
         <xs:element name="operational-state" type="xs:string" minOccurs="0"/>
         <xs:element name="resource-version" type="xs:string" minOccurs="0"/>
         <xs:element ref="tns:relationship-list" minOccurs="0"/>
@@ -218,7 +218,7 @@
   <xs:element name="update">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="update-node-type" type="xs:string"/>
+        <xs:element name="update-node-type" type="xs:string" minOccurs="0"/>
         <xs:element ref="tns:update-node-key" minOccurs="0" maxOccurs="5000"/>
         <xs:element name="update-node-uri" type="xs:string" minOccurs="0"/>
         <xs:element ref="tns:action" minOccurs="0" maxOccurs="5000"/>
@@ -236,7 +236,7 @@
   <xs:element name="notify">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="event-id" type="xs:string"/>
+        <xs:element name="event-id" type="xs:string" minOccurs="0"/>
         <xs:element name="node-type" type="xs:string" minOccurs="0"/>
         <xs:element name="event-trigger" type="xs:string" minOccurs="0"/>
         <xs:element ref="tns:key-data" minOccurs="0" maxOccurs="5000"/>
@@ -255,9 +255,9 @@
   <xs:element name="ctag-pool">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="target-pe" type="xs:string"/>
-        <xs:element name="availability-zone-name" type="xs:string"/>
-        <xs:element name="ctag-pool-purpose" type="xs:string"/>
+        <xs:element name="target-pe" type="xs:string" minOccurs="0"/>
+        <xs:element name="availability-zone-name" type="xs:string" minOccurs="0"/>
+        <xs:element name="ctag-pool-purpose" type="xs:string" minOccurs="0"/>
         <xs:element name="ctag-values" type="xs:string" minOccurs="0"/>
         <xs:element name="resource-version" type="xs:string" minOccurs="0"/>
         <xs:element ref="tns:relationship-list" minOccurs="0"/>
@@ -274,19 +274,19 @@
   <xs:element name="complex">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="physical-location-id" type="xs:string"/>
+        <xs:element name="physical-location-id" type="xs:string" minOccurs="0"/>
         <xs:element name="data-center-code" type="xs:string" minOccurs="0"/>
         <xs:element name="complex-name" type="xs:string" minOccurs="0"/>
         <xs:element name="identity-url" type="xs:string" minOccurs="0"/>
         <xs:element name="resource-version" type="xs:string" minOccurs="0"/>
-        <xs:element name="physical-location-type" type="xs:string"/>
-        <xs:element name="street1" type="xs:string"/>
+        <xs:element name="physical-location-type" type="xs:string" minOccurs="0"/>
+        <xs:element name="street1" type="xs:string" minOccurs="0"/>
         <xs:element name="street2" type="xs:string" minOccurs="0"/>
-        <xs:element name="city" type="xs:string"/>
+        <xs:element name="city" type="xs:string" minOccurs="0"/>
         <xs:element name="state" type="xs:string" minOccurs="0"/>
-        <xs:element name="postal-code" type="xs:string"/>
-        <xs:element name="country" type="xs:string"/>
-        <xs:element name="region" type="xs:string"/>
+        <xs:element name="postal-code" type="xs:string" minOccurs="0"/>
+        <xs:element name="country" type="xs:string" minOccurs="0"/>
+        <xs:element name="region" type="xs:string" minOccurs="0"/>
         <xs:element name="latitude" type="xs:string" minOccurs="0"/>
         <xs:element name="longitude" type="xs:string" minOccurs="0"/>
         <xs:element name="elevation" type="xs:string" minOccurs="0"/>
@@ -306,10 +306,10 @@
   <xs:element name="volume-group">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="volume-group-id" type="xs:string"/>
-        <xs:element name="volume-group-name" type="xs:string"/>
+        <xs:element name="volume-group-id" type="xs:string" minOccurs="0"/>
+        <xs:element name="volume-group-name" type="xs:string" minOccurs="0"/>
         <xs:element name="heat-stack-id" type="xs:string" minOccurs="0"/>
-        <xs:element name="vnf-type" type="xs:string"/>
+        <xs:element name="vnf-type" type="xs:string" minOccurs="0"/>
         <xs:element name="orchestration-status" type="xs:string" minOccurs="0"/>
         <xs:element name="resource-version" type="xs:string" minOccurs="0"/>
         <xs:element ref="tns:relationship-list" minOccurs="0"/>
@@ -326,8 +326,8 @@
   <xs:element name="volume">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="volume-id" type="xs:string"/>
-        <xs:element name="volume-selflink" type="xs:string"/>
+        <xs:element name="volume-id" type="xs:string" minOccurs="0"/>
+        <xs:element name="volume-selflink" type="xs:string" minOccurs="0"/>
         <xs:element name="resource-version" type="xs:string" minOccurs="0"/>
         <xs:element ref="tns:relationship-list" minOccurs="0"/>
       </xs:sequence>
@@ -343,7 +343,7 @@
   <xs:element name="l3-interface-ipv4-address-list">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="l3-interface-ipv4-address" type="xs:string"/>
+        <xs:element name="l3-interface-ipv4-address" type="xs:string" minOccurs="0"/>
         <xs:element name="l3-interface-ipv4-prefix-length" type="xs:unsignedInt" minOccurs="0"/>
         <xs:element name="vlan-id-inner" type="xs:unsignedInt" minOccurs="0"/>
         <xs:element name="vlan-id-outer" type="xs:unsignedInt" minOccurs="0"/>
@@ -358,7 +358,7 @@
   <xs:element name="l3-interface-ipv6-address-list">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="l3-interface-ipv6-address" type="xs:string"/>
+        <xs:element name="l3-interface-ipv6-address" type="xs:string" minOccurs="0"/>
         <xs:element name="l3-interface-ipv6-prefix-length" type="xs:unsignedInt" minOccurs="0"/>
         <xs:element name="vlan-id-inner" type="xs:unsignedInt" minOccurs="0"/>
         <xs:element name="vlan-id-outer" type="xs:unsignedInt" minOccurs="0"/>
@@ -373,7 +373,7 @@
   <xs:element name="vlan">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="vlan-interface" type="xs:string"/>
+        <xs:element name="vlan-interface" type="xs:string" minOccurs="0"/>
         <xs:element name="vlan-id-inner" type="xs:unsignedInt" minOccurs="0"/>
         <xs:element name="vlan-id-outer" type="xs:unsignedInt" minOccurs="0"/>
         <xs:element name="resource-version" type="xs:string" minOccurs="0"/>
@@ -398,7 +398,7 @@
   <xs:element name="sriov-vf">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="pci-id" type="xs:string"/>
+        <xs:element name="pci-id" type="xs:string" minOccurs="0"/>
         <xs:element name="vf-vlan-filter" type="xs:string" minOccurs="0"/>
         <xs:element name="vf-mac-filter" type="xs:string" minOccurs="0"/>
         <xs:element name="vf-vlan-strip" type="xs:boolean" minOccurs="0"/>
@@ -426,7 +426,7 @@
   <xs:element name="l-interface">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="interface-name" type="xs:string"/>
+        <xs:element name="interface-name" type="xs:string" minOccurs="0"/>
         <xs:element name="interface-role" type="xs:string" minOccurs="0"/>
         <xs:element name="v6-wan-link-ip" type="xs:string" minOccurs="0"/>
         <xs:element name="selflink" type="xs:string" minOccurs="0"/>
@@ -453,11 +453,11 @@
   <xs:element name="vserver">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="vserver-id" type="xs:string"/>
-        <xs:element name="vserver-name" type="xs:string"/>
+        <xs:element name="vserver-id" type="xs:string" minOccurs="0"/>
+        <xs:element name="vserver-name" type="xs:string" minOccurs="0"/>
         <xs:element name="vserver-name2" type="xs:string" minOccurs="0"/>
         <xs:element name="prov-status" type="xs:string" minOccurs="0"/>
-        <xs:element name="vserver-selflink" type="xs:string"/>
+        <xs:element name="vserver-selflink" type="xs:string" minOccurs="0"/>
         <xs:element name="in-maint" type="xs:boolean" minOccurs="0"/>
         <xs:element name="is-closed-loop-disabled" type="xs:boolean" minOccurs="0"/>
         <xs:element name="resource-version" type="xs:string" minOccurs="0"/>
@@ -477,8 +477,8 @@
   <xs:element name="tenant">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="tenant-id" type="xs:string"/>
-        <xs:element name="tenant-name" type="xs:string"/>
+        <xs:element name="tenant-id" type="xs:string" minOccurs="0"/>
+        <xs:element name="tenant-name" type="xs:string" minOccurs="0"/>
         <xs:element name="resource-version" type="xs:string" minOccurs="0"/>
         <xs:element ref="tns:vservers" minOccurs="0"/>
         <xs:element ref="tns:relationship-list" minOccurs="0"/>
@@ -495,15 +495,15 @@
   <xs:element name="flavor">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="flavor-id" type="xs:string"/>
-        <xs:element name="flavor-name" type="xs:string"/>
+        <xs:element name="flavor-id" type="xs:string" minOccurs="0"/>
+        <xs:element name="flavor-name" type="xs:string" minOccurs="0"/>
         <xs:element name="flavor-vcpus" type="xs:int" minOccurs="0"/>
         <xs:element name="flavor-ram" type="xs:int" minOccurs="0"/>
         <xs:element name="flavor-disk" type="xs:int" minOccurs="0"/>
         <xs:element name="flavor-ephemeral" type="xs:int" minOccurs="0"/>
         <xs:element name="flavor-swap" type="xs:string" minOccurs="0"/>
         <xs:element name="flavor-is-public" type="xs:boolean" minOccurs="0"/>
-        <xs:element name="flavor-selflink" type="xs:string"/>
+        <xs:element name="flavor-selflink" type="xs:string" minOccurs="0"/>
         <xs:element name="flavor-disabled" type="xs:boolean" minOccurs="0"/>
         <xs:element name="resource-version" type="xs:string" minOccurs="0"/>
         <xs:element ref="tns:relationship-list" minOccurs="0"/>
@@ -520,9 +520,9 @@
   <xs:element name="group-assignment">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="group-id" type="xs:string"/>
-        <xs:element name="group-type" type="xs:string"/>
-        <xs:element name="group-name" type="xs:string"/>
+        <xs:element name="group-id" type="xs:string" minOccurs="0"/>
+        <xs:element name="group-type" type="xs:string" minOccurs="0"/>
+        <xs:element name="group-name" type="xs:string" minOccurs="0"/>
         <xs:element name="group-description" type="xs:string" minOccurs="0"/>
         <xs:element name="resource-version" type="xs:string" minOccurs="0"/>
         <xs:element ref="tns:relationship-list" minOccurs="0"/>
@@ -539,7 +539,7 @@
   <xs:element name="snapshot">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="snapshot-id" type="xs:string"/>
+        <xs:element name="snapshot-id" type="xs:string" minOccurs="0"/>
         <xs:element name="snapshot-name" type="xs:string" minOccurs="0"/>
         <xs:element name="snapshot-architecture" type="xs:string" minOccurs="0"/>
         <xs:element name="snapshot-os-distro" type="xs:string" minOccurs="0"/>
@@ -564,8 +564,8 @@
   <xs:element name="metadatum">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="metaname" type="xs:string"/>
-        <xs:element name="metaval" type="xs:string"/>
+        <xs:element name="metaname" type="xs:string" minOccurs="0"/>
+        <xs:element name="metaval" type="xs:string" minOccurs="0"/>
         <xs:element name="resource-version" type="xs:string" minOccurs="0"/>
       </xs:sequence>
     </xs:complexType>
@@ -580,15 +580,15 @@
   <xs:element name="image">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="image-id" type="xs:string"/>
-        <xs:element name="image-name" type="xs:string"/>
+        <xs:element name="image-id" type="xs:string" minOccurs="0"/>
+        <xs:element name="image-name" type="xs:string" minOccurs="0"/>
         <xs:element name="image-architecture" type="xs:string" minOccurs="0"/>
-        <xs:element name="image-os-distro" type="xs:string"/>
-        <xs:element name="image-os-version" type="xs:string"/>
+        <xs:element name="image-os-distro" type="xs:string" minOccurs="0"/>
+        <xs:element name="image-os-version" type="xs:string" minOccurs="0"/>
         <xs:element name="application" type="xs:string" minOccurs="0"/>
         <xs:element name="application-vendor" type="xs:string" minOccurs="0"/>
         <xs:element name="application-version" type="xs:string" minOccurs="0"/>
-        <xs:element name="image-selflink" type="xs:string"/>
+        <xs:element name="image-selflink" type="xs:string" minOccurs="0"/>
         <xs:element name="resource-version" type="xs:string" minOccurs="0"/>
         <xs:element ref="tns:relationship-list" minOccurs="0"/>
         <xs:element ref="tns:metadata" minOccurs="0"/>
@@ -612,8 +612,8 @@
   <xs:element name="cloud-region">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="cloud-owner" type="xs:string"/>
-        <xs:element name="cloud-region-id" type="xs:string"/>
+        <xs:element name="cloud-owner" type="xs:string" minOccurs="0"/>
+        <xs:element name="cloud-region-id" type="xs:string" minOccurs="0"/>
         <xs:element name="cloud-type" type="xs:string" minOccurs="0"/>
         <xs:element name="owner-defined-type" type="xs:string" minOccurs="0"/>
         <xs:element name="cloud-region-version" type="xs:string" minOccurs="0"/>
@@ -644,7 +644,7 @@
   <xs:element name="network-profile">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="nm-profile-name" type="xs:string"/>
+        <xs:element name="nm-profile-name" type="xs:string" minOccurs="0"/>
         <xs:element name="community-string" type="xs:string" minOccurs="0"/>
         <xs:element name="resource-version" type="xs:string" minOccurs="0"/>
         <xs:element ref="tns:relationship-list" minOccurs="0"/>
@@ -661,7 +661,7 @@
   <xs:element name="p-interface">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="interface-name" type="xs:string"/>
+        <xs:element name="interface-name" type="xs:string" minOccurs="0"/>
         <xs:element name="speed-value" type="xs:string" minOccurs="0"/>
         <xs:element name="speed-units" type="xs:string" minOccurs="0"/>
         <xs:element name="port-description" type="xs:string" minOccurs="0"/>
@@ -684,7 +684,7 @@
   <xs:element name="lag-interface">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="interface-name" type="xs:string"/>
+        <xs:element name="interface-name" type="xs:string" minOccurs="0"/>
         <xs:element name="resource-version" type="xs:string" minOccurs="0"/>
         <xs:element name="speed-value" type="xs:string" minOccurs="0"/>
         <xs:element name="speed-units" type="xs:string" minOccurs="0"/>
@@ -703,7 +703,7 @@
   <xs:element name="pserver">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="hostname" type="xs:string"/>
+        <xs:element name="hostname" type="xs:string" minOccurs="0"/>
         <xs:element name="ptnii-equip-name" type="xs:string" minOccurs="0"/>
         <xs:element name="number-of-cpus" type="xs:int" minOccurs="0"/>
         <xs:element name="disk-in-gigabytes" type="xs:int" minOccurs="0"/>
@@ -737,8 +737,8 @@
   <xs:element name="virtual-data-center">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="vdc-id" type="xs:string"/>
-        <xs:element name="vdc-name" type="xs:string"/>
+        <xs:element name="vdc-id" type="xs:string" minOccurs="0"/>
+        <xs:element name="vdc-name" type="xs:string" minOccurs="0"/>
         <xs:element name="resource-version" type="xs:string" minOccurs="0"/>
         <xs:element ref="tns:relationship-list" minOccurs="0"/>
       </xs:sequence>
@@ -765,7 +765,7 @@
   <xs:element name="connector">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="resource-instance-id" type="xs:string"/>
+        <xs:element name="resource-instance-id" type="xs:string" minOccurs="0"/>
         <xs:element name="resource-version" type="xs:string" minOccurs="0"/>
         <xs:element name="persona-model-id" type="xs:string" minOccurs="0"/>
         <xs:element name="persona-model-version" type="xs:string" minOccurs="0"/>
@@ -787,7 +787,7 @@
   <xs:element name="service-instance">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="service-instance-id" type="xs:string"/>
+        <xs:element name="service-instance-id" type="xs:string" minOccurs="0"/>
         <xs:element name="service-instance-name" type="xs:string" minOccurs="0"/>
         <xs:element name="persona-model-id" type="xs:string" minOccurs="0"/>
         <xs:element name="persona-model-version" type="xs:string" minOccurs="0"/>
@@ -817,7 +817,7 @@
   <xs:element name="service-subscription">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="service-type" type="xs:string"/>
+        <xs:element name="service-type" type="xs:string" minOccurs="0"/>
         <xs:element name="temp-ub-sub-account-id" type="xs:string" minOccurs="0"/>
         <xs:element name="resource-version" type="xs:string" minOccurs="0"/>
         <xs:element ref="tns:service-instances" minOccurs="0"/>
@@ -835,9 +835,9 @@
   <xs:element name="customer">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="global-customer-id" type="xs:string"/>
-        <xs:element name="subscriber-name" type="xs:string"/>
-        <xs:element name="subscriber-type" type="xs:string"/>
+        <xs:element name="global-customer-id" type="xs:string" minOccurs="0"/>
+        <xs:element name="subscriber-name" type="xs:string" minOccurs="0"/>
+        <xs:element name="subscriber-type" type="xs:string" minOccurs="0"/>
         <xs:element name="resource-version" type="xs:string" minOccurs="0"/>
         <xs:element ref="tns:service-subscriptions" minOccurs="0"/>
         <xs:element ref="tns:relationship-list" minOccurs="0"/>
@@ -862,9 +862,9 @@
   <xs:element name="vnf-image">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="vnf-image-uuid" type="xs:string"/>
-        <xs:element name="application" type="xs:string"/>
-        <xs:element name="application-vendor" type="xs:string"/>
+        <xs:element name="vnf-image-uuid" type="xs:string" minOccurs="0"/>
+        <xs:element name="application" type="xs:string" minOccurs="0"/>
+        <xs:element name="application-vendor" type="xs:string" minOccurs="0"/>
         <xs:element name="application-version" type="xs:string" minOccurs="0"/>
         <xs:element name="selflink" type="xs:string" minOccurs="0"/>
         <xs:element name="resource-version" type="xs:string" minOccurs="0"/>
@@ -882,8 +882,8 @@
   <xs:element name="service">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="service-id" type="xs:string"/>
-        <xs:element name="service-description" type="xs:string"/>
+        <xs:element name="service-id" type="xs:string" minOccurs="0"/>
+        <xs:element name="service-description" type="xs:string" minOccurs="0"/>
         <xs:element name="service-selflink" type="xs:string" minOccurs="0"/>
         <xs:element name="resource-version" type="xs:string" minOccurs="0"/>
         <xs:element name="service-version" type="xs:string" minOccurs="0"/>
@@ -901,8 +901,8 @@
   <xs:element name="service-capability">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="service-type" type="xs:string"/>
-        <xs:element name="vnf-type" type="xs:string"/>
+        <xs:element name="service-type" type="xs:string" minOccurs="0"/>
+        <xs:element name="vnf-type" type="xs:string" minOccurs="0"/>
         <xs:element name="resource-version" type="xs:string" minOccurs="0"/>
         <xs:element ref="tns:relationship-list" minOccurs="0"/>
       </xs:sequence>
@@ -918,8 +918,8 @@
   <xs:element name="element-choice-set">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="element-choice-set-uuid" type="xs:string"/>
-        <xs:element name="element-choice-set-name" type="xs:string"/>
+        <xs:element name="element-choice-set-uuid" type="xs:string" minOccurs="0"/>
+        <xs:element name="element-choice-set-name" type="xs:string" minOccurs="0"/>
         <xs:element name="cardinality" type="xs:string" minOccurs="0"/>
         <xs:element name="resource-version" type="xs:string" minOccurs="0"/>
         <xs:element ref="tns:model-elements" minOccurs="0"/>
@@ -937,9 +937,9 @@
   <xs:element name="constrained-element-set">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="constrained-element-set-uuid" type="xs:string"/>
-        <xs:element name="constraint-type" type="xs:string"/>
-        <xs:element name="check-type" type="xs:string"/>
+        <xs:element name="constrained-element-set-uuid" type="xs:string" minOccurs="0"/>
+        <xs:element name="constraint-type" type="xs:string" minOccurs="0"/>
+        <xs:element name="check-type" type="xs:string" minOccurs="0"/>
         <xs:element name="resource-version" type="xs:string" minOccurs="0"/>
         <xs:element ref="tns:element-choice-sets" minOccurs="0"/>
         <xs:element ref="tns:relationship-list" minOccurs="0"/>
@@ -956,8 +956,8 @@
   <xs:element name="model-constraint">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="model-constraint-uuid" type="xs:string"/>
-        <xs:element name="constrained-element-set-uuid-to-replace" type="xs:string"/>
+        <xs:element name="model-constraint-uuid" type="xs:string" minOccurs="0"/>
+        <xs:element name="constrained-element-set-uuid-to-replace" type="xs:string" minOccurs="0"/>
         <xs:element ref="tns:constrained-element-sets" minOccurs="0"/>
       </xs:sequence>
     </xs:complexType>
@@ -972,9 +972,9 @@
   <xs:element name="model-element">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="model-element-uuid" type="xs:string"/>
-        <xs:element name="new-data-del-flag" type="xs:string"/>
-        <xs:element name="cardinality" type="xs:string"/>
+        <xs:element name="model-element-uuid" type="xs:string" minOccurs="0"/>
+        <xs:element name="new-data-del-flag" type="xs:string" minOccurs="0"/>
+        <xs:element name="cardinality" type="xs:string" minOccurs="0"/>
         <xs:element name="linkage-points" type="xs:string" minOccurs="0" maxOccurs="5000"/>
         <xs:element name="resource-version" type="xs:string" minOccurs="0"/>
         <xs:element ref="tns:model-elements" minOccurs="0"/>
@@ -993,11 +993,11 @@
   <xs:element name="model">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="model-name-version-id" type="xs:string"/>
-        <xs:element name="model-type" type="xs:string"/>
-        <xs:element name="model-name" type="xs:string"/>
-        <xs:element name="model-id" type="xs:string"/>
-        <xs:element name="model-version" type="xs:string"/>
+        <xs:element name="model-name-version-id" type="xs:string" minOccurs="0"/>
+        <xs:element name="model-type" type="xs:string" minOccurs="0"/>
+        <xs:element name="model-name" type="xs:string" minOccurs="0"/>
+        <xs:element name="model-id" type="xs:string" minOccurs="0"/>
+        <xs:element name="model-version" type="xs:string" minOccurs="0"/>
         <xs:element name="model-description" type="xs:string" minOccurs="0"/>
         <xs:element name="resource-version" type="xs:string" minOccurs="0"/>
         <xs:element ref="tns:model-elements" minOccurs="0"/>
@@ -1016,11 +1016,11 @@
   <xs:element name="related-lookup">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="related-lookup-uuid" type="xs:string"/>
-        <xs:element name="source-node-type" type="xs:string"/>
-        <xs:element name="source-node-property" type="xs:string"/>
-        <xs:element name="target-node-type" type="xs:string"/>
-        <xs:element name="target-node-property" type="xs:string"/>
+        <xs:element name="related-lookup-uuid" type="xs:string" minOccurs="0"/>
+        <xs:element name="source-node-type" type="xs:string" minOccurs="0"/>
+        <xs:element name="source-node-property" type="xs:string" minOccurs="0"/>
+        <xs:element name="target-node-type" type="xs:string" minOccurs="0"/>
+        <xs:element name="target-node-property" type="xs:string" minOccurs="0"/>
         <xs:element name="property-collect-list" type="xs:string" minOccurs="0" maxOccurs="5000"/>
         <xs:element name="resource-version" type="xs:string" minOccurs="0"/>
         <xs:element ref="tns:relationship-list" minOccurs="0"/>
@@ -1037,10 +1037,10 @@
   <xs:element name="property-constraint">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="property-constraint-uuid" type="xs:string"/>
-        <xs:element name="constraint-type" type="xs:string"/>
-        <xs:element name="property-name" type="xs:string"/>
-        <xs:element name="property-value" type="xs:string"/>
+        <xs:element name="property-constraint-uuid" type="xs:string" minOccurs="0"/>
+        <xs:element name="constraint-type" type="xs:string" minOccurs="0"/>
+        <xs:element name="property-name" type="xs:string" minOccurs="0"/>
+        <xs:element name="property-value" type="xs:string" minOccurs="0"/>
         <xs:element name="resource-version" type="xs:string" minOccurs="0"/>
       </xs:sequence>
     </xs:complexType>
@@ -1055,7 +1055,7 @@
   <xs:element name="named-query-element">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="named-query-element-uuid" type="xs:string"/>
+        <xs:element name="named-query-element-uuid" type="xs:string" minOccurs="0"/>
         <xs:element name="property-collect-list" type="xs:string" minOccurs="0" maxOccurs="5000"/>
         <xs:element name="resource-version" type="xs:string" minOccurs="0"/>
         <xs:element name="property-limit-desc" type="xs:string" minOccurs="0"/>
@@ -1077,9 +1077,9 @@
   <xs:element name="named-query">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="named-query-uuid" type="xs:string"/>
-        <xs:element name="named-query-name" type="xs:string"/>
-        <xs:element name="named-query-version" type="xs:string"/>
+        <xs:element name="named-query-uuid" type="xs:string" minOccurs="0"/>
+        <xs:element name="named-query-name" type="xs:string" minOccurs="0"/>
+        <xs:element name="named-query-version" type="xs:string" minOccurs="0"/>
         <xs:element name="required-input-params" minOccurs="0">
           <xs:complexType>
             <xs:sequence>
@@ -1115,8 +1115,8 @@
   <xs:element name="logical-link">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="link-name" type="xs:string"/>
-        <xs:element name="link-type" type="xs:string"/>
+        <xs:element name="link-name" type="xs:string" minOccurs="0"/>
+        <xs:element name="link-type" type="xs:string" minOccurs="0"/>
         <xs:element name="speed-value" type="xs:string" minOccurs="0"/>
         <xs:element name="speed-units" type="xs:string" minOccurs="0"/>
         <xs:element name="ip-version" type="xs:string" minOccurs="0"/>
@@ -1145,7 +1145,7 @@
   <xs:element name="class-of-service">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="cos" type="xs:string"/>
+        <xs:element name="cos" type="xs:string" minOccurs="0"/>
         <xs:element name="probe-id" type="xs:string" minOccurs="0"/>
         <xs:element name="probe-type" type="xs:string" minOccurs="0"/>
         <xs:element name="resource-version" type="xs:string" minOccurs="0"/>
@@ -1163,7 +1163,7 @@
   <xs:element name="site-pair">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="site-pair-id" type="xs:string"/>
+        <xs:element name="site-pair-id" type="xs:string" minOccurs="0"/>
         <xs:element name="source-ip" type="xs:string" minOccurs="0"/>
         <xs:element name="destination-ip" type="xs:string" minOccurs="0"/>
         <xs:element name="ip-version" type="xs:string" minOccurs="0"/>
@@ -1185,7 +1185,7 @@
   <xs:element name="routing-instance">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="routing-instance-id" type="xs:string"/>
+        <xs:element name="routing-instance-id" type="xs:string" minOccurs="0"/>
         <xs:element name="rpm-owner" type="xs:string" minOccurs="0"/>
         <xs:element name="resource-version" type="xs:string" minOccurs="0"/>
         <xs:element ref="tns:site-pairs" minOccurs="0"/>
@@ -1203,7 +1203,7 @@
   <xs:element name="site-pair-set">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="site-pair-set-id" type="xs:string"/>
+        <xs:element name="site-pair-set-id" type="xs:string" minOccurs="0"/>
         <xs:element name="resource-version" type="xs:string" minOccurs="0"/>
         <xs:element ref="tns:routing-instances" minOccurs="0"/>
         <xs:element ref="tns:relationship-list" minOccurs="0"/>
@@ -1220,9 +1220,9 @@
   <xs:element name="vpn-binding">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="vpn-id" type="xs:string"/>
-        <xs:element name="vpn-name" type="xs:string"/>
-        <xs:element name="global-route-target" type="xs:string"/>
+        <xs:element name="vpn-id" type="xs:string" minOccurs="0"/>
+        <xs:element name="vpn-name" type="xs:string" minOccurs="0"/>
+        <xs:element name="global-route-target" type="xs:string" minOccurs="0"/>
         <xs:element name="vpn-platform" type="xs:string" minOccurs="0"/>
         <xs:element name="resource-version" type="xs:string" minOccurs="0"/>
         <xs:element ref="tns:relationship-list" minOccurs="0"/>
@@ -1239,7 +1239,7 @@
   <xs:element name="vpls-pe">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="equipment-name" type="xs:string"/>
+        <xs:element name="equipment-name" type="xs:string" minOccurs="0"/>
         <xs:element name="prov-status" type="xs:string" minOccurs="0"/>
         <xs:element name="ipv4-oam-address" type="xs:string" minOccurs="0"/>
         <xs:element name="equipment-role" type="xs:string" minOccurs="0"/>
@@ -1261,9 +1261,9 @@
   <xs:element name="multicast-configuration">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="multicast-configuration-id" type="xs:string"/>
-        <xs:element name="multicast-protocol" type="xs:string"/>
-        <xs:element name="rp-type" type="xs:string"/>
+        <xs:element name="multicast-configuration-id" type="xs:string" minOccurs="0"/>
+        <xs:element name="multicast-protocol" type="xs:string" minOccurs="0"/>
+        <xs:element name="rp-type" type="xs:string" minOccurs="0"/>
         <xs:element name="resource-version" type="xs:string" minOccurs="0"/>
         <xs:element ref="tns:relationship-list" minOccurs="0"/>
       </xs:sequence>
@@ -1279,7 +1279,7 @@
   <xs:element name="cvlan-tag-entry">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="cvlan-tag" type="xs:unsignedInt"/>
+        <xs:element name="cvlan-tag" type="xs:unsignedInt" minOccurs="0"/>
         <xs:element name="resource-version" type="xs:string" minOccurs="0"/>
         <xs:element ref="tns:relationship-list" minOccurs="0"/>
       </xs:sequence>
@@ -1295,7 +1295,7 @@
   <xs:element name="port-group">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="interface-id" type="xs:string"/>
+        <xs:element name="interface-id" type="xs:string" minOccurs="0"/>
         <xs:element name="neutron-network-id" type="xs:string" minOccurs="0"/>
         <xs:element name="neutron-network-name" type="xs:string" minOccurs="0"/>
         <xs:element name="interface-role" type="xs:string" minOccurs="0"/>
@@ -1303,7 +1303,7 @@
         <xs:element name="port-group-id" type="xs:string" minOccurs="0"/>
         <xs:element name="port-group-name" type="xs:string" minOccurs="0"/>
         <xs:element name="switch-name" type="xs:string" minOccurs="0"/>
-        <xs:element name="orchestration-status" type="xs:string"/>
+        <xs:element name="orchestration-status" type="xs:string" minOccurs="0"/>
         <xs:element name="heat-stack-id" type="xs:string" minOccurs="0"/>
         <xs:element name="mso-catalog-key" type="xs:string" minOccurs="0"/>
         <xs:element ref="tns:cvlan-tags" minOccurs="0"/>
@@ -1321,10 +1321,10 @@
   <xs:element name="vce">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="vnf-id" type="xs:string"/>
-        <xs:element name="vnf-name" type="xs:string"/>
+        <xs:element name="vnf-id" type="xs:string" minOccurs="0"/>
+        <xs:element name="vnf-name" type="xs:string" minOccurs="0"/>
         <xs:element name="vnf-name2" type="xs:string" minOccurs="0"/>
-        <xs:element name="vnf-type" type="xs:string"/>
+        <xs:element name="vnf-type" type="xs:string" minOccurs="0"/>
         <xs:element name="service-id" type="xs:string" minOccurs="0"/>
         <xs:element name="regional-resource-zone" type="xs:string" minOccurs="0"/>
         <xs:element name="prov-status" type="xs:string" minOccurs="0"/>
@@ -1355,9 +1355,9 @@
   <xs:element name="vnfc">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="vnfc-name" type="xs:string"/>
-        <xs:element name="vnfc-function-code" type="xs:string"/>
-        <xs:element name="vnfc-type" type="xs:string"/>
+        <xs:element name="vnfc-name" type="xs:string" minOccurs="0"/>
+        <xs:element name="vnfc-function-code" type="xs:string" minOccurs="0"/>
+        <xs:element name="vnfc-type" type="xs:string" minOccurs="0"/>
         <xs:element name="prov-status" type="xs:string" minOccurs="0"/>
         <xs:element name="orchestration-status" type="xs:string" minOccurs="0"/>
         <xs:element name="ipaddress-v4-oam-vip" type="xs:string" minOccurs="0"/>
@@ -1379,7 +1379,7 @@
   <xs:element name="subnet">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="subnet-id" type="xs:string"/>
+        <xs:element name="subnet-id" type="xs:string" minOccurs="0"/>
         <xs:element name="subnet-name" type="xs:string" minOccurs="0"/>
         <xs:element name="neutron-subnet-id" type="xs:string" minOccurs="0"/>
         <xs:element name="gateway-address" type="xs:string" minOccurs="0"/>
@@ -1405,7 +1405,7 @@
   <xs:element name="ctag-assignment">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="vlan-id-inner" type="xs:unsignedInt"/>
+        <xs:element name="vlan-id-inner" type="xs:unsignedInt" minOccurs="0"/>
         <xs:element name="resource-version" type="xs:string" minOccurs="0"/>
         <xs:element ref="tns:relationship-list" minOccurs="0"/>
       </xs:sequence>
@@ -1421,7 +1421,7 @@
   <xs:element name="segmentation-assignment">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="segmentation-id" type="xs:string"/>
+        <xs:element name="segmentation-id" type="xs:string" minOccurs="0"/>
         <xs:element name="resource-version" type="xs:string" minOccurs="0"/>
         <xs:element ref="tns:relationship-list" minOccurs="0"/>
       </xs:sequence>
@@ -1437,8 +1437,8 @@
   <xs:element name="l3-network">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="network-id" type="xs:string"/>
-        <xs:element name="network-name" type="xs:string"/>
+        <xs:element name="network-id" type="xs:string" minOccurs="0"/>
+        <xs:element name="network-name" type="xs:string" minOccurs="0"/>
         <xs:element name="network-type" type="xs:string" minOccurs="0"/>
         <xs:element name="network-role" type="xs:string" minOccurs="0"/>
         <xs:element name="network-technology" type="xs:string" minOccurs="0"/>
@@ -1477,7 +1477,7 @@
   <xs:element name="network-policy">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="network-policy-id" type="xs:string"/>
+        <xs:element name="network-policy-id" type="xs:string" minOccurs="0"/>
         <xs:element name="network-policy-fqdn" type="xs:string" minOccurs="0"/>
         <xs:element name="heat-stack-id" type="xs:string" minOccurs="0"/>
         <xs:element name="resource-version" type="xs:string" minOccurs="0"/>
@@ -1495,7 +1495,7 @@
   <xs:element name="vf-module">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="vf-module-id" type="xs:string"/>
+        <xs:element name="vf-module-id" type="xs:string" minOccurs="0"/>
         <xs:element name="vf-module-name" type="xs:string" minOccurs="0"/>
         <xs:element name="heat-stack-id" type="xs:string" minOccurs="0"/>
         <xs:element name="orchestration-status" type="xs:string" minOccurs="0"/>
@@ -1521,10 +1521,10 @@
   <xs:element name="generic-vnf">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="vnf-id" type="xs:string"/>
-        <xs:element name="vnf-name" type="xs:string"/>
+        <xs:element name="vnf-id" type="xs:string" minOccurs="0"/>
+        <xs:element name="vnf-name" type="xs:string" minOccurs="0"/>
         <xs:element name="vnf-name2" type="xs:string" minOccurs="0"/>
-        <xs:element name="vnf-type" type="xs:string"/>
+        <xs:element name="vnf-type" type="xs:string" minOccurs="0"/>
         <xs:element name="service-id" type="xs:string" minOccurs="0"/>
         <xs:element name="regional-resource-zone" type="xs:string" minOccurs="0"/>
         <xs:element name="prov-status" type="xs:string" minOccurs="0"/>
@@ -1574,7 +1574,7 @@
   <xs:element name="lag-link">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="link-name" type="xs:string"/>
+        <xs:element name="link-name" type="xs:string" minOccurs="0"/>
         <xs:element name="resource-version" type="xs:string" minOccurs="0"/>
         <xs:element ref="tns:relationship-list" minOccurs="0"/>
       </xs:sequence>
@@ -1590,10 +1590,10 @@
   <xs:element name="newvce">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="vnf-id2" type="xs:string"/>
-        <xs:element name="vnf-name" type="xs:string"/>
+        <xs:element name="vnf-id2" type="xs:string" minOccurs="0"/>
+        <xs:element name="vnf-name" type="xs:string" minOccurs="0"/>
         <xs:element name="vnf-name2" type="xs:string" minOccurs="0"/>
-        <xs:element name="vnf-type" type="xs:string"/>
+        <xs:element name="vnf-type" type="xs:string" minOccurs="0"/>
         <xs:element name="prov-status" type="xs:string" minOccurs="0"/>
         <xs:element name="operational-state" type="xs:string" minOccurs="0"/>
         <xs:element name="license-key" type="xs:string" minOccurs="0"/>
@@ -1619,7 +1619,7 @@
   <xs:element name="pnf">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="pnf-name" type="xs:string"/>
+        <xs:element name="pnf-name" type="xs:string" minOccurs="0"/>
         <xs:element name="pnf-name2" type="xs:string" minOccurs="0"/>
         <xs:element name="pnf-name2-source" type="xs:string" minOccurs="0"/>
         <xs:element name="pnf-id" type="xs:string" minOccurs="0"/>
@@ -1649,7 +1649,7 @@
   <xs:element name="physical-link">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="link-name" type="xs:string"/>
+        <xs:element name="link-name" type="xs:string" minOccurs="0"/>
         <xs:element name="speed-value" type="xs:string" minOccurs="0"/>
         <xs:element name="speed-units" type="xs:string" minOccurs="0"/>
         <xs:element name="circuit-id" type="xs:string" minOccurs="0"/>
@@ -1671,7 +1671,7 @@
   <xs:element name="vig-server">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="vig-address-type" type="xs:string"/>
+        <xs:element name="vig-address-type" type="xs:string" minOccurs="0"/>
         <xs:element name="ipaddress-v4-vig" type="xs:string" minOccurs="0" maxOccurs="5000"/>
         <xs:element name="ipaddress-v6-vig" type="xs:string" minOccurs="0" maxOccurs="5000"/>
         <xs:element name="resource-version" type="xs:string" minOccurs="0"/>
@@ -1689,7 +1689,7 @@
   <xs:element name="ipsec-configuration">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="ipsec-configuration-id" type="xs:string"/>
+        <xs:element name="ipsec-configuration-id" type="xs:string" minOccurs="0"/>
         <xs:element name="requested-vig-address-type" type="xs:string" minOccurs="0"/>
         <xs:element name="requested-encryption-strength" type="xs:string" minOccurs="0"/>
         <xs:element name="requested-dmz-type" type="xs:string" minOccurs="0"/>
@@ -1726,8 +1726,8 @@
   <xs:element name="route-table-reference">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="route-table-reference-id" type="xs:string"/>
-        <xs:element name="route-table-reference-fqdn" type="xs:string"/>
+        <xs:element name="route-table-reference-id" type="xs:string" minOccurs="0"/>
+        <xs:element name="route-table-reference-fqdn" type="xs:string" minOccurs="0"/>
         <xs:element name="resource-version" type="xs:string" minOccurs="0"/>
         <xs:element ref="tns:relationship-list" minOccurs="0"/>
       </xs:sequence>
@@ -1898,7 +1898,7 @@
   <xs:element name="vnf">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="vnf-id" type="xs:string"/>
+        <xs:element name="vnf-id" type="xs:string" minOccurs="0"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>

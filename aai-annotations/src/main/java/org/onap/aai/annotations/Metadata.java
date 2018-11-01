@@ -39,6 +39,7 @@ public @interface Metadata {
 	String defaultValue() default "";
 	String searchable() default "";
 	String uniqueProps() default "";
+	String requiredProps() default "";
 	String uriTemplate() default "";
 	String extendsFrom() default "";
 	String isAbstract() default "";

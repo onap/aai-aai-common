@@ -61,6 +61,11 @@ public enum ObjectMetadata {
 	 */
 	UNIQUE_PROPS("uniqueProps"),
 	/**
+	 * properties marked as required
+	 * <br><b>comma separated list</b>
+	 */
+	REQUIRED_PROPS("requiredProps"),
+	/**
 	 * uri template for this object
 	 */
 	URI_TEMPLATE("uriTemplate"),
