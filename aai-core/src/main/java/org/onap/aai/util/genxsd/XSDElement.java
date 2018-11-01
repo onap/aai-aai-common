@@ -314,11 +314,11 @@ public class XSDElement implements Element {
 		}
 		if(useAnnotation) {				
 			String annotation = new XSDElement(xmlElementElement, maxOccurs).getHTMLAnnotation("field", "          ");
-			sbElement.append(StringUtils.isNotEmpty(annotation) ? ">\n" : "");
+			sbElement.append(StringUtils.isNotEmpty(annotation) ? ">" + OxmFileProcessor.LINE_SEPARATOR : "");
 				sbElement.append(annotation);
-				sbElement.append(StringUtils.isNotEmpty(annotation) ? "        </xs:element>\n" : "/>\n" );
+				sbElement.append(StringUtils.isNotEmpty(annotation) ? "        </xs:element>" + OxmFileProcessor.LINE_SEPARATOR : "/>" + OxmFileProcessor.LINE_SEPARATOR );
 		} else {
-			sbElement.append("/>\n");
+			sbElement.append("/>" + OxmFileProcessor.LINE_SEPARATOR);
 		}
 		return this.getHTMLElementWrapper(sbElement.toString(), v, useAnnotation);
 //		return sbElement.toString();
@@ -346,18 +346,18 @@ public class XSDElement implements Element {
 		if ( elementIsRequired == null || !elementIsRequired.equals("true")||addType != null) {	
 			sbElement.append(" minOccurs=\"0\"");	
 		} 
-		sbElement.append(">\n");
-		sbElement.append("          <xs:complexType>\n");
+		sbElement.append(">" + OxmFileProcessor.LINE_SEPARATOR);
+		sbElement.append("          <xs:complexType>" + OxmFileProcessor.LINE_SEPARATOR);
 		if(useAnnotation) {
 			XSDElement javaTypeElement = new XSDElement((Element)this.getParentNode(), maxOccurs);
 			sbElement.append(javaTypeElement.getHTMLAnnotation("class", "            "));
 		}
-		sbElement.append("            <xs:sequence>\n");
+		sbElement.append("            <xs:sequence>" + OxmFileProcessor.LINE_SEPARATOR);
 		sbElement.append("      ");
 		sbElement.append(unwrappedElement);
-		sbElement.append("            </xs:sequence>\n");
-		sbElement.append("          </xs:complexType>\n");
-		sbElement.append("        </xs:element>\n");
+		sbElement.append("            </xs:sequence>" + OxmFileProcessor.LINE_SEPARATOR);
+		sbElement.append("          </xs:complexType>" + OxmFileProcessor.LINE_SEPARATOR);
+		sbElement.append("        </xs:element>" + OxmFileProcessor.LINE_SEPARATOR);
 		return sbElement.toString();
 	}
 	
@@ -394,12 +394,12 @@ public class XSDElement implements Element {
 		if(metadata.size() == 0) {			
 			return "";
 		}
-		sb.append(indentation +"<xs:annotation>\r\n");
+		sb.append(indentation +"<xs:annotation>" + OxmFileProcessor.LINE_SEPARATOR);
 		sb.append(
-			indentation + "  <xs:appinfo>\r\n" + 
-			indentation + "    <annox:annotate target=\""+target+"\">@org.onap.aai.annotations.Metadata(" + Joiner.on(",").join(metadata) + ")</annox:annotate>\r\n" +
-			indentation + "  </xs:appinfo>\r\n");
-		sb.append(indentation +"</xs:annotation>\r\n");
+			indentation + "  <xs:appinfo>" + OxmFileProcessor.LINE_SEPARATOR + 
+			indentation + "    <annox:annotate target=\""+target+"\">@org.onap.aai.annotations.Metadata(" + Joiner.on(",").join(metadata) + ")</annox:annotate>" + OxmFileProcessor.LINE_SEPARATOR +
+			indentation + "  </xs:appinfo>" + OxmFileProcessor.LINE_SEPARATOR);
+		sb.append(indentation +"</xs:annotation>" + OxmFileProcessor.LINE_SEPARATOR);
 		return sb.toString();
 	}
 
@@ -732,4 +732,3 @@ public class XSDElement implements Element {
 
 
 }
-

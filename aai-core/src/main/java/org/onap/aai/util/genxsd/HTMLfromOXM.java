@@ -28,7 +28,7 @@ import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.lang.StringUtils;
+
 import org.onap.aai.config.SpringContextAware;
 import org.onap.aai.edges.EdgeIngestor;
 import org.onap.aai.edges.exceptions.EdgeRuleNotFoundException;
@@ -42,16 +42,12 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
-import com.google.common.base.CaseFormat;
 
 public class HTMLfromOXM extends OxmFileProcessor {
 
 	private static final Logger logger = LoggerFactory.getLogger("HTMLfromOXM.class");
-	public static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
 	private String maxOccurs;
 	
@@ -77,7 +73,7 @@ public class HTMLfromOXM extends OxmFileProcessor {
 	public String getDocumentHeader() {
 		StringBuffer sb = new StringBuffer();
 		logger.trace("processing starts");
-		sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n");
+		sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" + LINE_SEPARATOR);
 		String namespace = "org.onap";
 		if (v.compareTo(getSchemaVersions().getNamespaceChangeVersion()) < 0 ) {
 			namespace = "org.openecomp";
@@ -85,22 +81,22 @@ public class HTMLfromOXM extends OxmFileProcessor {
 		if ( versionUsesAnnotations(v.toString()) ) {
 			sb.append("<xs:schema elementFormDefault=\"qualified\" version=\"1.0\" targetNamespace=\"http://" + namespace + ".aai.inventory/" 
 				+ v.toString() + "\" xmlns:tns=\"http://" + namespace + ".aai.inventory/" + v.toString() + "\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\""
-						+ "\n"
-						+ "xmlns:jaxb=\"http://java.sun.com/xml/ns/jaxb\"\r\n" + 
-						"    jaxb:version=\"2.1\"\r\n" + 
-						"    xmlns:annox=\"http://annox.dev.java.net\"\r\n" + 
-						"    jaxb:extensionBindingPrefixes=\"annox\">\n\n");
+						+ LINE_SEPARATOR
+						+ "xmlns:jaxb=\"http://java.sun.com/xml/ns/jaxb\"" + LINE_SEPARATOR +
+						"    jaxb:version=\"2.1\"" + LINE_SEPARATOR +
+						"    xmlns:annox=\"http://annox.dev.java.net\"" + LINE_SEPARATOR +
+						"    jaxb:extensionBindingPrefixes=\"annox\">" + DOUBLE_LINE_SEPARATOR);
 		} else {
 			sb.append("<xs:schema elementFormDefault=\"qualified\" version=\"1.0\" targetNamespace=\"http://" + namespace + ".aai.inventory/" 
-					+ v.toString() + "\" xmlns:tns=\"http://" + namespace + ".aai.inventory/" + v.toString() + "\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\">\n\n");
+					+ v.toString() + "\" xmlns:tns=\"http://" + namespace + ".aai.inventory/" + v.toString() + "\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\">" + DOUBLE_LINE_SEPARATOR);
 		}
 		return sb.toString();
 	}
-	
 
 	@Override
 	public String process() throws ParserConfigurationException, SAXException, IOException, AAIException, FileNotFoundException, EdgeRuleNotFoundException {
 		StringBuilder sb = new StringBuilder();
+
 		try {
 			init();
 		} catch(Exception e) {
@@ -141,11 +137,10 @@ public class HTMLfromOXM extends OxmFileProcessor {
 			sb.append(processJavaTypeElement( javaTypeName, javaTypeElement, sbInventory ));
 		}
 		sb.append(sbInventory);
-		sb.append("      </xs:sequence>\n");
-		sb.append("    </xs:complexType>\n");
-		sb.append("  </xs:element>\n");			
-		sb.append("</xs:schema>\n");
-		StringBuilder invalidSb = new StringBuilder();
+		sb.append("      </xs:sequence>" + LINE_SEPARATOR);
+		sb.append("    </xs:complexType>" + LINE_SEPARATOR);
+		sb.append("  </xs:element>" + LINE_SEPARATOR);			
+		sb.append("</xs:schema>" + LINE_SEPARATOR);
 		return sb.toString();
 	}
 	
@@ -155,6 +150,14 @@ public class HTMLfromOXM extends OxmFileProcessor {
 		}
 		String pattern = "^[a-z0-9-]*$";
 		return name.matches(pattern);
+	}
+	
+	protected boolean skipCheck( String javaAttribute ) {
+		if ( javaAttribute.equals("model")
+				|| javaAttribute.equals("eventHeader") ) {
+			return true;
+		}
+		return false;
 	}
 
 	public String processJavaTypeElement( String javaTypeName, Element javaType_Element, StringBuilder sbInventory) {
@@ -183,15 +186,15 @@ public class HTMLfromOXM extends OxmFileProcessor {
 		if ( xmlElementNodes.getLength() > 0 ) {
 
 			if ( !processingInventory || !hasPreviousInventory ) {
-				sb1.append("  <xs:element name=\"" + xmlRootElementName + "\">\n");
-				sb1.append("    <xs:complexType>\n");
+				sb1.append("  <xs:element name=\"" + xmlRootElementName + "\">" + LINE_SEPARATOR);
+				sb1.append("    <xs:complexType>" + LINE_SEPARATOR);
 
 				XSDElement javaTypeElement = new XSDElement(javaType_Element, maxOccurs);
 				logger.debug("XSDElement name: "+javaTypeElement.name());
 				if(versionUsesAnnotations(v.toString())) {
 					sb1.append(javaTypeElement.getHTMLAnnotation("class", "      "));
 				}
-				sb1.append("      <xs:sequence>\n");
+				sb1.append("      <xs:sequence>" + LINE_SEPARATOR);
 			}
 			Element javatypeElement;
 			for ( int i = 0; i < xmlElementNodes.getLength(); ++i ) {
@@ -205,7 +208,6 @@ public class HTMLfromOXM extends OxmFileProcessor {
     			if ( elementType.contains("." + v.toString() + ".") && !generatedJavaType.containsKey(addType) ) {
     				generatedJavaType.put(addType, elementType);
     				javatypeElement = getJavaTypeElement(addType, processingInventory);
-
     				sb.append(processJavaTypeElement( addType, javatypeElement, null ));	
     			}
         		if ("Nodes".equals(addType)) {
@@ -216,18 +218,18 @@ public class HTMLfromOXM extends OxmFileProcessor {
         		sb1.append(xmlElementElement.getHTMLElement(v, versionUsesAnnotations(v.toString()), this));
 			}
 			if ( !processingInventory ) {
-				sb1.append("      </xs:sequence>\n");
-				sb1.append("    </xs:complexType>\n");
-				sb1.append("  </xs:element>\n");
+				sb1.append("      </xs:sequence>" + LINE_SEPARATOR);
+				sb1.append("    </xs:complexType>" + LINE_SEPARATOR);
+				sb1.append("  </xs:element>" + LINE_SEPARATOR);
 			}
 		}
 	
 		if ( xmlElementNodes.getLength() < 1 ) {
-			sb.append("  <xs:element name=\"" + xmlRootElementName + "\">\n");
-			sb.append("    <xs:complexType>\n");
-			sb.append("      <xs:sequence/>\n");
-			sb.append("    </xs:complexType>\n");
-			sb.append("  </xs:element>\n");
+			sb.append("  <xs:element name=\"" + xmlRootElementName + "\">" + LINE_SEPARATOR);
+			sb.append("    <xs:complexType>" + LINE_SEPARATOR);
+			sb.append("      <xs:sequence/>" + LINE_SEPARATOR);
+			sb.append("    </xs:complexType>" + LINE_SEPARATOR);
+			sb.append("  </xs:element>" + LINE_SEPARATOR);
 			generatedJavaType.put(javaTypeName, null);
 			return sb.toString();			
 		}

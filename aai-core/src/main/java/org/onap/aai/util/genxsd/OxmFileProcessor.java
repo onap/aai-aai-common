@@ -62,6 +62,10 @@ import org.xml.sax.SAXException;
 import org.xml.sax.InputSource;
 
 public abstract class OxmFileProcessor {
+
+	public static final String LINE_SEPARATOR = System.getProperty("line.separator");
+	public static final String DOUBLE_LINE_SEPARATOR = System.getProperty("line.separator") + System.getProperty("line.separator");
+	
 	EdgeIngestor ei;
 	NodeIngestor ni;
 	protected Set<String> namespaceFilter;
