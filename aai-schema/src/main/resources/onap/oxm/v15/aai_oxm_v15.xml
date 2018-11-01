@@ -5170,6 +5170,11 @@
                         <xml-property name="description" value="identifier of managed by ATT or customer"/>
                     </xml-properties>
                 </xml-element>
+                <xml-element java-attribute="orchestrationStatus" name="orchestration-status" type="java.lang.String">
+                    <xml-properties>
+                        <xml-property name="description" value="Orchestration status of this pnf"/>
+                    </xml-properties>
+                </xml-element>
                 <xml-element java-attribute="ipaddressV4Oam" name="ipaddress-v4-oam" type="java.lang.String">
                     <xml-properties>
                         <xml-property name="description" value="ipv4-oam-address with new naming convention for IP addresses"/>
