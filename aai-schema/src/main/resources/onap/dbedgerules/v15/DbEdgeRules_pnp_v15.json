@@ -1,0 +1,17 @@
+{
+  "rules": [
+    {
+      "from": "software-version",
+      "to": "pnf",
+      "label": "org.onap.relationships.inventory.BelongsTo",
+      "direction": "OUT",
+      "multiplicity": "MANY2ONE",
+      "contains-other-v": "!${direction}",
+      "delete-other-v": "NONE",
+      "SVC-INFRA": "NONE",
+      "prevent-delete": "!${direction}",
+      "default": "true",
+      "description":""
+    }
+  ]
+}
