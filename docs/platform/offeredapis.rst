@@ -1,8 +1,23 @@
+.. This work is licensed under a Creative Commons Attribution 4.0 International License.
+.. http://creativecommons.org/licenses/by/4.0
+
 ========================================
 Offered APIs
 ========================================
 
-.. This work is licensed under a Creative Commons Attribution 4.0 International License.
+The list of APIs that AAI offers could be found in the following table:
 
-- `API Doc on ONAP Wiki <https://wiki.onap.org/download/attachments/28378171/aai_swagger_v13.html?version=1&modificationDate=1528894021259&api=v2>`_
+.. |yml-icon| image:: images/yaml.png
+              :width: 40px
+
+.. |html-icon| image:: images/html.png
+               :width: 40px
+
+.. csv-table::
+   :header: "|html-icon|", "|yml-icon|"
+   :widths: 60,60
+
+   "html doc", "yaml doc"
+   ":download:`link <https://wiki.onap.org/download/attachments/41421924/aai_swagger_v14.html?api=v2>`", ":download:`link <https://wiki.onap.org/download/attachments/41421924/aai_swagger_v14.yaml?api=v2>`"
+
 
