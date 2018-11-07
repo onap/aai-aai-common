@@ -1543,7 +1543,7 @@ Example Response
 		   "city": [
 		       {
 			   "id": "1cs0zv-1crx3s-4irp",
-			   "value": "Middletown"
+			   "value": "Beverley Hills"
 		       }
 		   ],
 		   "complex-name": [
@@ -1579,7 +1579,7 @@ Example Response
 		   "longitude": [
 		       {
 			   "id": "1cs3d7-1crx3s-4nid",
-			   "value": "-74.135344"
+			   "value": "-174.135344"
 		       }
 		   ],
 		   "physical-location-id": [
@@ -1591,19 +1591,19 @@ Example Response
 		   "physical-location-type": [
 		       {
 			   "id": "1crzt7-1crx3s-4ged",
-			   "value": "nj-lab"
+			   "value": "lab"
 		       }
 		   ],
 		   "postal-code": [
 		       {
 			   "id": "1cs1sb-1crx3s-4kcl",
-			   "value": "07748"
+			   "value": "90210"
 		       }
 		   ],
 		   "region": [
 		       {
 			   "id": "1cs2kr-1crx3s-4lxh",
-			   "value": "Northeast"
+			   "value": "West"
 		       }
 		   ],
 		   "resource-version": [
@@ -1615,31 +1615,32 @@ Example Response
 		   "source-of-truth": [
 		       {
 			   "id": "1crv2j-1crx3s-6epx",
-			   "value": "rx2202"
+			   "value": "foo"
 		       }
 		   ],
 		   "state": [
 		       {
 			   "id": "1cs1e3-1crx3s-4jk5",
-			   "value": "NJ"
+			   "value": "CA"
 		       }
 		   ],
 		   "street1": [
 		       {
 			   "id": "1cs07f-1crx3s-4h6t",
-			   "value": "200 Laurel Av"
+			   "value": "100 Main St"
 		       }
 		   ],
 		   "street2": [
 		       {
 			   "id": "1cs0ln-1crx3s-4hz9",
-			   "value": "C3-3W03"
+			   "value": "Room 101"
 		       }
 		   ]
 	       }
 	   }
        ]
    }
+
    
 Optional Query Parameters
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1652,7 +1653,7 @@ children/grandchildren to return. The default depth is 1.
 
 .. code::
   
-   PUT /aai/v$/query?format={format}&depth=0
+   PUT /aai/v$/query?format={}&depth=0
 
 nodesOnly
 ^^^^^^^^^
