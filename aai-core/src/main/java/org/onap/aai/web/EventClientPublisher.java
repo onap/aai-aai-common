@@ -22,13 +22,21 @@ package org.onap.aai.web;
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.ssl.SSLContextBuilder;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.client.RestTemplate;
 
+import javax.net.ssl.SSLContext;
+import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.util.Base64;
 
@@ -61,14 +69,42 @@ public class EventClientPublisher {
     @Value("${dmaap.ribbon.protocol:http}")
     private String protocol;
 
-    @Value("${dmaap.ribbon.transportType:HTTPNOAUTH}")
-    private String tranportType;
+    @Value("${dmaap.ribbon.transportType:http}")
+    private String transportType;
 
     @Value("${dmaap.ribbon.contentType:application/json}")
     private String contentType;
 
+    @Value("${server.ssl.trust-store:aai_keystore}")
+    private String trustStoreFile;
+
+    @Value("${server.ssl.trust-store-password:somepass}")
+    private String trustStorePass;
+
     @Bean(name="dmaapRestTemplate")
-    public RestTemplate dmaapRestTemplate(){
+    public RestTemplate dmaapRestTemplate() throws Exception {
+
+        if(transportType.equals("https")){
+
+            RestTemplateBuilder restTemplateBuilder = new RestTemplateBuilder();
+
+            SSLContext sslContext = SSLContextBuilder
+                    .create()
+                    .loadTrustMaterial(ResourceUtils.getFile(trustStoreFile), trustStorePass.toCharArray())
+                    .build();
+
+            HttpClient client = HttpClients
+                    .custom()
+                    .setSSLContext(sslContext)
+                    .build();
+
+            LOGGER.info("Creating a dmaap rest template with https using truststore {}", trustStoreFile);
+            return restTemplateBuilder
+                    .requestFactory(new HttpComponentsClientHttpRequestFactory(client))
+                    .build();
+        }
+
+        LOGGER.info("Creating a dmaap rest template using http");
         return new RestTemplate();
     }
 
