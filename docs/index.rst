@@ -15,5 +15,5 @@ The key AAI repos for running the AAI REST APIs:
 
    platform/index.rst
    release-notes.rst
-   AAI REST API Documentation/AAIRESTAPI_AMSTERDAM
+   AAI REST API Documentation/AAIRESTAPI_CASABLANCA
 

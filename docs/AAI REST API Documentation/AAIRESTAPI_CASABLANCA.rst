@@ -704,7 +704,7 @@ Example GET Request
 Swagger and XSD:
 ----------------
 
-`Offered APIs <../platform/offeredapis.rst>`_
+`Offered APIs <../platform/offeredapis.html>`_
 
 Data Assumptions
 ----------------
@@ -1030,4 +1030,687 @@ Bulk APIs
 The Bulk API allows clients to make multiple requests in a single
 transaction. Please look for additional details on the following wiki
 page
+
+AAI Traversal APIs
+==================
+
+Not all queries of the graph are purely GETs of a specific resource
+and its related vertexes.  The following capabilities are available to
+meet more advanced search needs.  Please contact the AAI team if you
+need another search.
+
+Node Queries
+------------
+
+The Nodes Query mechanism was implemented in support of searching the
+pservers which do not have the ipv4-oam-ipaddress set.  It will allow
+nodes to be searched based on certain properties of the nodes. It will
+allow search based on properties being set, not set or set to specific
+values.
+
+Generic Queries
+---------------
+
+The Generic Query mechanism allows to search for certain nodes of
+“include” node types at a specified “depth” from the from a particular
+start node of type “start-node-type” identified by specifying its
+“key” values
+
+Model Based Query and Delete
+----------------------------
+
+AAI supports a search and delete capability that allows a client to
+retrieve or delete an instance of a service based on the model
+subgraph definition provided to AAI by ASDC.
+
+The instance filters must uniquely identify a service instance.  
+
+The URL is as follows:
+
+.. code::
+
+   https://{serverRoot}/aai/search/model[?action=DELETE]
+
+.. code-block:: json
+
+   {
+       "query-parameters": {
+	   "model": {
+	       "model-invariant-id": "$modelInvariantId",
+	       "model-vers": {
+		   "model-ver": [
+		       {
+			   "model-version-id": "$modelVersionId"
+		       }
+		   ]
+	       }
+	   },
+	   "instance-filters": {
+	       "instance-filter": [
+		   {
+		       "customer": {
+			   "global-customer-id": "$globalCustID"
+		       },
+		       "service-instance": {
+			   "resource-version": "$resourceversionID",
+			   "service-instance-id": "$serviceInstanceID"
+		       },
+		       "service-subscription": {
+			   "service-type": "$serviceType"
+		       }
+		   }
+	       ]
+	   }
+       }
+   }
+
+Named Query
+-----------
+
+These queries provide the ability to upload a json file describing the
+inputs and designed output based on traversing the graph in a
+particular way. Existing named queries are supported but will be
+migrated to custom queries. **Named queries will be deprecated (no new
+queries, just support for existing ones) in Dublin and clients will be
+asked to migrate to use the custom queries instead.**
+
+Custom Query
+------------
+
+This API provides AAI clients an API for complex data retrieval. To
+execute a custom query, a client will perform an HTTP PUT request on
+the query API and include a payload indicating the starting node and
+the query to be run. While the client is performing a PUT request,
+this is actually a data query and no data is created or changed.
+
+Assumptions
+~~~~~~~~~~~
+
++----------+-----------------------------+--------------------------+
+| No.      | Assumption                  | Approach                 |
++==========+=============================+==========================+
+| 1        | Assume that client will     |                          |
+|          | not request large amounts   |                          |
+|          | of data from AAI w/out      |                          |
+|          | using secondary filters     |                          |
++----------+-----------------------------+--------------------------+
+
+Depdendencies
+~~~~~~~~~~~~~
+
+Data has been PUT to AAI prior to the query.
+
+Custom Query URI
+~~~~~~~~~~~~~~~~
+
+.. code::
+
+   PUT /aai/v$/query?format={format}
+
+Query Formats
+~~~~~~~~~~~~~
+
+The format determines what information is returned from the
+query. Acceptable formats are: count, id, pathed, resource,
+resource_and_url, or simple.
+
+count
+^^^^^
+
+Provides an count of the objects returned in the query.
+
+.. code::
+
+   PUT /aai/v$/query?format=count
+
+Example reponse
+
+.. code-block:: json
+
+   {
+     "results": [
+       {
+	 "pnf": 4,
+	 "p-interface": 5,
+	 "l-interface": 3,
+	 "pserver": 1
+       }
+     ]
+   }
+
+id 
+^^^ 
+
+Provides an array of objects containing resource-type (AAI's node
+type; i.e., pnf) and a URI using the vertex ID from AAI's graph.
+
+.. code::
+
+   PUT /aai/v$/query?format=id
+
+Example Response
+   
+.. code-block:: json
+
+   {
+     "results": [
+       {
+	 "resource-type": "complex",
+	 "resource-link": "/aai/v1/resources/id/8159312"
+       },
+       {
+	 "resource-type": "complex",
+	 "resource-link": "/aai/v1/resources/id/389256"
+       }
+     ]
+   }
+
+pathed
+^^^^^^
+
+Provides an array of objects containing resource-type (AAIs node type;
+i.e., pnf) and a URI using the AAI REST API pathed URIs
+
+.. code::
+
+   PUT /aai/v$/query?format=pathed
+
+Example Response
+   
+.. code-block:: json
+
+   {
+     "results": [
+       {
+	 "resource-type": "complex",
+	 "resource-link": "/aai/v1/cloud-infrastructure/complexes/complex/complex1"
+       },
+       {
+	 "resource-type": "complex",
+	 "resource-link": "/aai/v1/cloud-infrastructure/complexes/complex/complex1"
+       }
+     ]
+   }
+
+resource
+^^^^^^^^
+
+Provides each object in the results array in the same format as AAI's
+REST API with depth = 1 (first level children and cousin
+relationships).
+
+.. code::
+
+   PUT /aai/v$/query?format=resource
+
+
+Example Response
+
+.. code-block:: json
+
+   {
+       "results": [
+	   {
+	       "complex": {
+		   "city": "Anywhere",
+		   "complex-name": "complex-mccomplexface",
+		   "country": "USA",
+		   "data-center-code": "CHG",
+		   "latitude": "30.123456",
+		   "longitude": "-78.135344",
+		   "physical-location-id": "complextest1",
+		   "physical-location-type": "lab",
+		   "postal-code": "90210",
+		   "region": "West",
+		   "relationship-list": {
+		       "relationship": [
+			   {
+			       "related-link": "/aai/v1/network/zones/zone/zone1",
+			       "related-to": "zone",
+			       "related-to-property": [
+				   {
+				       "property-key": "zone.zone-name",
+				       "property-value": "zone-name1"
+				   }
+			       ],
+			       "relationship-data": [
+				   {
+				       "relationship-key": "zone.zone-id",
+				       "relationship-value": "zone1"
+				   }
+			       ],
+			       "relationship-label": "org.onap.relationships.inventory.LocatedIn"
+			   },
+			   {
+			       "related-link": "/aai/v1/cloud-infrastructure/cloud-regions/cloud-region/Cloud-Region/Region1",
+			       "related-to": "cloud-region",
+			       "related-to-property": [
+				   {
+				       "property-key": "cloud-region.owner-defined-type"
+				   }
+			       ],
+			       "relationship-data": [
+				   {
+				       "relationship-key": "cloud-region.cloud-owner",
+				       "relationship-value": "Cloud-Region"
+				   },
+				   {
+				       "relationship-key": "cloud-region.cloud-region-id",
+				       "relationship-value": "Region1"
+				   }
+			       ],
+			       "relationship-label": "org.onap.relationships.inventory.LocatedIn"
+			   }
+		       ]
+		   },
+		   "resource-version": "1531233769164",
+		   "state": "CA",
+		   "street1": "100 Main St",
+		   "street2": "C3-3W03"
+	       }
+	   }
+       ]
+   }
+
+resource_and_uri
+^^^^^^^^^^^^^^^^
+
+Provides each object in the results array in the same format as AAI’s
+REST API with depth = 1 (first level children and cousin
+relationships) plus the pathed url for the result object in AAI.
+
+.. code::
+
+   PUT /aai/v$/query?format=resource_and_url
+
+Example Response
+
+.. code-block:: json
+
+  {
+      "results": [
+	  {
+	      "complex": {
+		  "city": "Anywhere",
+		  "complex-name": "complex-mccomplexface",
+		  "country": "USA",
+		  "data-center-code": "CHG",
+		  "latitude": "30.123456",
+		  "longitude": "-78.135344",
+		  "physical-location-id": "complextest1",
+		  "physical-location-type": "lab",
+		  "postal-code": "90210",
+		  "region": "West",
+		  "relationship-list": {
+		      "relationship": [
+			  {
+			      "related-link": "/aai/v1/network/zones/zone/zone1",
+			      "related-to": "zone",
+			      "related-to-property": [
+				  {
+				      "property-key": "zone.zone-name",
+				      "property-value": "zone-name1"
+				  }
+			      ],
+			      "relationship-data": [
+				  {
+				      "relationship-key": "zone.zone-id",
+				      "relationship-value": "zone1"
+				  }
+			      ],
+			      "relationship-label": "org.onap.relationships.inventory.LocatedIn"
+			  },
+			  {
+			      "related-link": "/aai/v1/cloud-infrastructure/cloud-regions/cloud-region/Cloud-Region/Region1",
+			      "related-to": "cloud-region",
+			      "related-to-property": [
+				  {
+				      "property-key": "cloud-region.owner-defined-type"
+				  }
+			      ],
+			      "relationship-data": [
+				  {
+				      "relationship-key": "cloud-region.cloud-owner",
+				      "relationship-value": "Cloud-REgion"
+				  },
+				  {
+				      "relationship-key": "cloud-region.cloud-region-id",
+				      "relationship-value": "Region1"
+				  }
+			      ],
+			      "relationship-label": "org.onap.relationships.inventory.LocatedIn"
+			  }
+		      ]
+		  },
+		  "resource-version": "1531233769164",
+		  "state": "CA",
+		  "street1": "100 Main St",
+		  "street2": "C3-3W03"
+	      },
+	      "url": "/aai/v11/cloud-infrastructure/complexes/complex/complextest1"
+	  }
+      ]
+  }
+
+simple
+^^^^^^
+
+Provides each result object in a simplified format. The node-type,
+graph vertex id, pathed url, object properties, and directly related
+objects in the graph are all returned. Both direct parent/child
+objects and cousin objects are included in the related-to array.
+
+.. code::
+
+   PUT /aai/v$/query?format=simple
+
+Example Response
+
+.. code-block:: json
+
+   {
+       "results": [
+	   {
+	       "id": "81924184",
+	       "node-type": "complex",
+	       "properties": {
+		   "city": "Anywhere",
+		   "complex-name": "complex-mccomplexface",
+		   "country": "USA",
+		   "data-center-code": "CHG",
+		   "latitude": "30.123456",
+		   "longitude": "-78.135344",
+		   "physical-location-id": "complextest1",
+		   "physical-location-type": "lab",
+		   "postal-code": "90210",
+		   "region": "West",
+		   "resource-version": "1531233769164",
+		   "state": "CA",
+		   "street1": "100 Main St",
+		   "street2": "C3-3W03"
+	       },
+	       "related-to": [
+		   {
+		       "id": "40968400",
+		       "node-type": "zone",
+		       "relationship-label": "org.onap.relationships.inventory.LocatedIn",
+		       "url": "/aai/v1/network/zones/zone/zone1"
+		   },
+		   {
+		       "id": "122884184",
+		       "node-type": "cloud-region",
+		       "relationship-label": "org.onap.relationships.inventory.LocatedIn",
+		       "url": "/aai/v1/cloud-infrastructure/cloud-regions/cloud-region/Cloud-Region/Region1"
+		   },
+		   {
+		       "id": "122884296",
+		       "node-type": "rack",
+		       "relationship-label": "org.onap.relationships.inventory.LocatedIn",
+		       "url": "/aai/v1/cloud-infrastructure/complexes/complex/complextest1/racks/rack/rackname1-1test"
+		   }
+	       ],
+	       "url": "/aai/v1/cloud-infrastructure/complexes/complex/complextest1"
+	   }
+       ]
+   }
+
+graphson
+^^^^^^^^
+
+Provides the results using the graphson standard.
+
+.. code::
+
+   PUT /aai/v$/query?format=graphson
+
+Example Response
+
+.. code-block:: json
+
+   {
+       "results": [
+	   {
+	       "id": 81924184,
+	       "inE": {
+		   "org.onap.relationships.inventory.LocatedIn": [
+		       {
+			   "id": "oeioq-oe3f4-74l-1crx3s",
+			   "outV": 40968400,
+			   "properties": {
+			       "aai-uuid": "9e75af3d-aa7f-4e8e-a7eb-32d8096f03cc",
+			       "contains-other-v": "NONE",
+			       "delete-other-v": "NONE",
+			       "prevent-delete": "IN",
+			       "private": false
+			   }
+		       },
+		       {
+			   "id": "216a6j-215u1k-74l-1crx3s",
+			   "outV": 122884184,
+			   "properties": {
+			       "aai-uuid": "4b3693be-b399-4355-8747-4ea2bb298dff",
+			       "contains-other-v": "NONE",
+			       "delete-other-v": "NONE",
+			       "prevent-delete": "IN",
+			       "private": false
+			   }
+		       },
+		       {
+			   "id": "215xjt-215u4o-74l-1crx3s",
+			   "outV": 122884296,
+			   "properties": {
+			       "aai-uuid": "958b8e10-6c42-4145-9cc1-76f50bb3e513",
+			       "contains-other-v": "IN",
+			       "delete-other-v": "IN",
+			       "prevent-delete": "NONE",
+			       "private": false
+			   }
+		       }
+		   ]
+	       },
+	       "label": "vertex",
+	       "properties": {
+		   "aai-created-ts": [
+		       {
+			   "id": "1crvgr-1crx3s-6bk5",
+			   "value": 1531231973518
+		       }
+		   ],
+		   "aai-last-mod-ts": [
+		       {
+			   "id": "215vkb-1crx3s-6dxh",
+			   "value": 1531233769164
+		       }
+		   ],
+		   "aai-node-type": [
+		       {
+			   "id": "215urv-1crx3s-69z9",
+			   "value": "complex"
+		       }
+		   ],
+		   "aai-uri": [
+		       {
+			   "id": "1crxfv-1crx3s-6gat",
+			   "value": "/cloud-infrastructure/complexes/complex/complextest1"
+		       }
+		   ],
+		   "aai-uuid": [
+		       {
+			   "id": "1crvuz-1crx3s-1ybp",
+			   "value": "3959ceca-3a89-4e92-a2ff-073b6f409303"
+		       }
+		   ],
+		   "city": [
+		       {
+			   "id": "1cs0zv-1crx3s-4irp",
+			   "value": "Middletown"
+		       }
+		   ],
+		   "complex-name": [
+		       {
+			   "id": "215wcr-1crx3s-4d8l",
+			   "value": "chcil"
+		       }
+		   ],
+		   "country": [
+		       {
+			   "id": "1cs26j-1crx3s-4l51",
+			   "value": "USA"
+		       }
+		   ],
+		   "data-center-code": [
+		       {
+			   "id": "215ssr-1crx3s-4bnp",
+			   "value": "CHG"
+		       }
+		   ],
+		   "last-mod-source-of-truth": [
+		       {
+			   "id": "215vyj-1crx3s-696t",
+			   "value": "aai-AppId"
+		       }
+		   ],
+		   "latitude": [
+		       {
+			   "id": "1cs2yz-1crx3s-4mpx",
+			   "value": "30.123456"
+		       }
+		   ],
+		   "longitude": [
+		       {
+			   "id": "1cs3d7-1crx3s-4nid",
+			   "value": "-74.135344"
+		       }
+		   ],
+		   "physical-location-id": [
+		       {
+			   "id": "1crzez-1crx3s-4a2t",
+			   "value": "complextest1"
+		       }
+		   ],
+		   "physical-location-type": [
+		       {
+			   "id": "1crzt7-1crx3s-4ged",
+			   "value": "nj-lab"
+		       }
+		   ],
+		   "postal-code": [
+		       {
+			   "id": "1cs1sb-1crx3s-4kcl",
+			   "value": "07748"
+		       }
+		   ],
+		   "region": [
+		       {
+			   "id": "1cs2kr-1crx3s-4lxh",
+			   "value": "Northeast"
+		       }
+		   ],
+		   "resource-version": [
+		       {
+			   "id": "215v63-1crx3s-glh",
+			   "value": "1531233769164"
+		       }
+		   ],
+		   "source-of-truth": [
+		       {
+			   "id": "1crv2j-1crx3s-6epx",
+			   "value": "rx2202"
+		       }
+		   ],
+		   "state": [
+		       {
+			   "id": "1cs1e3-1crx3s-4jk5",
+			   "value": "NJ"
+		       }
+		   ],
+		   "street1": [
+		       {
+			   "id": "1cs07f-1crx3s-4h6t",
+			   "value": "200 Laurel Av"
+		       }
+		   ],
+		   "street2": [
+		       {
+			   "id": "1cs0ln-1crx3s-4hz9",
+			   "value": "C3-3W03"
+		       }
+		   ]
+	       }
+	   }
+       ]
+   }
+   
+Optional Query Parameters
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+depth
+^^^^^
+
+You can pass the depth query parameter to specify how many levels of
+children/grandchildren to return. The default depth is 1.
+
+.. code::
+  
+   PUT /aai/v$/query?format={format}&depth=0
+
+nodesOnly
+^^^^^^^^^
+
+You can pass the nodesOnly query parameter to have the output only
+contain the object properties with no relationships.
+
+.. code:: 
+
+   PUT /aai/v$/query?format={format}&nodesOnly=true
+
+subgraph
+^^^^^^^^
+
+You can pass a subgraph query parameter that determines the behavior
+of the output.  Using subgraph=prune returns all of the objects from
+the query and only the edges between those objects. Using
+subgraph=star returns all of the objects from the query plus all of
+the objects they relate to.
+
+The default is subgraph=star
+
+.. code::
+
+   PUT /aai/v$/query?format={format}&subgraph={subgraph}
+
+HTTP Headers
+~~~~~~~~~~~~
+
++--------------------------+--------------------------------------------------------------------------------------+
+|   X-FromAppID={client ID}| Unique application identifier.                                                       |
++--------------------------+--------------------------------------------------------------------------------------+
+|  X-TransactionID={UUDID} | must be a UUID and unique to each transaction within the context of an X-FromAppID.  |
++--------------------------+--------------------------------------------------------------------------------------+
+|  Content-Type={format}   | format of the request. Should be application/json or application/xml.                |
++--------------------------+--------------------------------------------------------------------------------------+
+|  Accept={format}         | format of the response. Should be application/json or application/xml.               |
++--------------------------+--------------------------------------------------------------------------------------+
+
+Request Payload
+~~~~~~~~~~~~~~~
+
+Typically the query payload will include both a "start" and a "query"
+portion. The "start" can indicate one or more starting nodes in the
+graph. If multiple nodes are specified, the result will contain the
+query results for all of the start nodes. The "query" indicates the
+name of the query to be run and also takes query parameters depending
+on the query. Please reference the queries on the AAI wiki for
+specific saved queries and how they should be usServer Timeout A
+Server timeout is implemented for these APIs to make sure the server
+did not continue processing the request long after a client times out
+on their side. An error code ERR.5.4.7406 will be returned when this
+limit is hit. The default value for Traversal API is 60 secs. The
+clients should set their timeouts accordingly.
+
+List of Queries and Payloads
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+For a full list of available custom queries, please refer to our
+`Custom Queries <customQueries.html>`_ document
 
