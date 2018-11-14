@@ -6,6 +6,40 @@
 AAI Release Notes
 ==================
 
+Version: 1.3.0
+--------------
+
+:Release Date: TBD
+
+**New Features**
+
+The R3 Casablanca release of ONAP again focuses on platform maturity
+and deployablity. AAI continued to leverage oom and kubernetes, and
+added new data types in support of multiple R3 use cases.  AAI added a
+new schema ingest library which moves AAI closer to being more
+model-driven.
+
+Authentication and Authorization is performed using AAF with the CADI
+framework. We use basic authentication with RBAC (Role Based Access
+Control) to secure the AAI REST APIs.
+
+**Epic**
+
+- `AAI-32 <https://jira.onap.org/browse/AAI-32>`_ Integrate with AAF
+- `AAI-766 <https://jira.onap.org/browse/AAI-766>`_ Microservice for administering the AAI graph db
+- `AAI-767 <https://jira.onap.org/browse/AAI-767>`_ Make AAI More Model Driven
+- `AAI-981 <https://jira.onap.org/browse/AAI-981>`_ Schema updates required for the R3 Casablanca use cases
+- `AAI-1340 <https://jira.onap.org/browse/AAI-1340>`_ Support CCVPN use case in AAI
+- `AAI-1409 <https://jira.onap.org/browse/AAI-1409>`_ SONAR Coverage
+- `AAI-1410 <https://jira.onap.org/browse/AAI-1410>`_ Logging Enhancements
+- `AAI-1411 <https://jira.onap.org/browse/AAI-1411>`_ SRIOV Automation
+- `AAI-1413 <https://jira.onap.org/browse/AAI-1413>`_ 5G Core Scale over Network Cloud
+- `AAI-1415 <https://jira.onap.org/browse/AAI-1415>`_ SVLAN and CVLAN rewrite
+- `AAI-1416 <https://jira.onap.org/browse/AAI-1416>`_ Enhance CRUD APIs to take Optional "format"
+- `AAI-1418 <https://jira.onap.org/browse/AAI-1418>`_ VLAN Tagging
+- `AAI-1419 <https://jira.onap.org/browse/AAI-1419>`_ Schema Ingest Library
+
+
 Version: 1.2.0
 --------------
 
