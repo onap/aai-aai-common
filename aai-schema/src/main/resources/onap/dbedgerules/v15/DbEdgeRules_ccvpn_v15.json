@@ -1,6 +1,18 @@
 {
   "rules": [
 	{
+		"from": "allotted-resource",
+		"to": "p-interface",
+		"label": "org.onap.relationships.inventory.Uses",
+		"direction": "OUT",
+		"multiplicity": "ONE2MANY",
+		"contains-other-v": "NONE",
+		"delete-other-v": "NONE",
+		"prevent-delete": "NONE",
+		"default": "true",
+		"description":"AAI-1925 For CCVPN Usecase"
+	},
+	{
 		"from": "vpn-binding",
 		"to": "p-interface",
 		"label": "org.onap.relationships.inventory.BindsTo",

@@ -2,6 +2,18 @@
 	"rules": [
 		{
 			"from": "allotted-resource",
+			"to": "allotted-resource",
+			"label": "tosca.relationships.network.BindsTo",
+			"direction": "OUT",
+			"multiplicity": "ONE2ONE",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"prevent-delete": "NONE",
+			"default": "true",
+			"description":"AAI-1925"
+		},
+		{
+			"from": "allotted-resource",
 			"to": "generic-vnf",
 			"label": "org.onap.relationships.inventory.PartOf",
 			"direction": "OUT",
