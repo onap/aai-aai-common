@@ -68,13 +68,15 @@ Step-by-step guide
 
     echo "nexus3.onap.org:10001" > /opt/config/nexus_docker_repo.txt
 
-10. Create a file called /opt/config/docker\_version.txt containing text: 1.1-STAGING-latest
+10. Create a file called /opt/config/docker\_version.txt containing text: 1.4-STAGING-latest
 
   .. code-block:: bash
 
-    echo "1.1-STAGING-latest" > /opt/config/docker_version.txt
+    echo "1.4-STAGING-latest" > /opt/config/docker_version.txt
 
-11. Please note that in the previous step, docker version is currently 1.1-STAGING-latest and this will be changed later. Finally, run the installation scripts
+11. Please note that in the previous step, docker version is currently 1.4-STAGING-latest and this will be changed later. This does not apply to the docker image onap/aai-graphadmin:1.1-STAGING-latest - its version is not synchronized (today is the 26th of November 2018) and you have to change it in the file deploy_vm1.sh
+
+    Finally, run the installation scripts
 
   .. code-block:: bash
 
