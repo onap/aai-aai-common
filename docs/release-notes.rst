@@ -20,25 +20,40 @@ new schema ingest library which moves AAI closer to being more
 model-driven and a new microservice called "graphadmin" which provides
 graph maintenance and configuration facilities.
 
-Authentication and Authorization is performed using AAF with the CADI
-framework. We use basic authentication with RBAC (Role Based Access
-Control) to secure the AAI REST APIs.
+AAI is more model driven in Casablanca, which means it dynamically
+operationalize new and updated models at run-time, with minimal
+downtime and coding, so that the latest service and resource models
+can be delivered quickly. To do this, AAI must update its internal
+model, external API and behavior to respond to change to service and
+resource models, including schema changes. There are changes required
+to align on implementation across different ONAP components to provide
+a more strategic model-driven A&AI implementation. For this release
+decomposing AAI model/schema artifacts (OXM/XSD) into a more granular
+approach better enables extensibility and support logical
+subdivision of models.
 
-**Epic**
+AAI added support fo the Cross Domain and Carrier Layer VPN use case
+by adding new object types, models, and edge rules.
 
-- `AAI-32 <https://jira.onap.org/browse/AAI-32>`_ Integrate with AAF
-- `AAI-766 <https://jira.onap.org/browse/AAI-766>`_ Microservice for administering the AAI graph db
-- `AAI-767 <https://jira.onap.org/browse/AAI-767>`_ Make AAI More Model Driven
-- `AAI-981 <https://jira.onap.org/browse/AAI-981>`_ Schema updates required for the R3 Casablanca use cases
-- `AAI-1340 <https://jira.onap.org/browse/AAI-1340>`_ Support CCVPN use case in AAI
-- `AAI-1409 <https://jira.onap.org/browse/AAI-1409>`_ SONAR Coverage
-- `AAI-1410 <https://jira.onap.org/browse/AAI-1410>`_ Logging Enhancements
-- `AAI-1411 <https://jira.onap.org/browse/AAI-1411>`_ SRIOV Automation
-- `AAI-1413 <https://jira.onap.org/browse/AAI-1413>`_ 5G Core Scale over Network Cloud
-- `AAI-1415 <https://jira.onap.org/browse/AAI-1415>`_ SVLAN and CVLAN rewrite
-- `AAI-1416 <https://jira.onap.org/browse/AAI-1416>`_ Enhance CRUD APIs to take Optional "format"
-- `AAI-1418 <https://jira.onap.org/browse/AAI-1418>`_ VLAN Tagging
-- `AAI-1419 <https://jira.onap.org/browse/AAI-1419>`_ Schema Ingest Library
+AAI delivered 50%+ test coverage on all Java-based repos.
+
+Added support Support for SR-IOV.
+
+Authentication and Authorization is performed using AAF with the
+CADI framework. We use basic authentication with RBAC (Role Based
+Access Control) to secure the AAI REST APIs.
+
+AAI added automation support for orchestrating SR-IOV Provider
+Networks that are compatible with the Network Cloud 1.0
+infrastructure solution based on standard SR-IOV. Allow for standard
+SR-IOV Provider Networks to be defined with a set of one or more
+VLAN associations.
+
+AAI added suport to allow clients to specify the format on GET
+operations in the resources micoservices to output like the custom
+query API does.
+
+Added support for VLAN tagging.
 
 **Known Issues**
 
@@ -46,13 +61,13 @@ Please find at this link the list of issues that will be fixed in the `Casablanc
 
 **Security Notes**
 
-AAI code has been formally scanned during build time using NexusIQ and all Critical vulnerabilities have been addressed, items that remain open have been assessed for risk and determined to be false positive. The AAI open Critical security vulnerabilities and their risk assessment have been documented as part of the `project <https://wiki.onap.org/pages/viewpage.action?pageId=38120427>`_.
+AAI code has been formally scanned during build time using NexusIQ and all Critical vulnerabilities have been addressed, items that remain open have been assessed for risk and determined to be false positive. The AAI open Critical security vulnerabilities and their risk assessment have been documented as part of the `project <https://wiki.onap.org/pages/viewpage.action?pageId=45307817>`_.
 
 Quick Links:
 
 - `AAI project page <https://wiki.onap.org/display/DW/Active+and+Available+Inventory+Project>`_
 - `Passing Badge information for AAI <https://bestpractices.coreinfrastructure.org/en/projects/1591>`_
-- `Project Vulnerability Review Table for AAI <https://wiki.onap.org/pages/viewpage.action?pageId=38120427>`_
+- `Project Vulnerability Review Table for AAI <https://wiki.onap.org/pages/viewpage.action?pageId=45307817>`_
 
 
 Version: 1.2.0
