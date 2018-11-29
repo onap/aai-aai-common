@@ -625,6 +625,30 @@
 			"description":""
 		},
 		{
+			"from": "generic-vnf",
+			"to": "cloud-region",
+			"label": "org.onap.relationships.inventory.LocatedIn",
+			"direction": "OUT",
+			"multiplicity": "MANY2ONE",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"prevent-delete": "NONE",
+			"default": "true",
+			"description":""
+		},
+		{
+			"from": "generic-vnf",
+			"to": "tenant",
+			"label": "org.onap.relationships.inventory.BelongsTo",
+			"direction": "OUT",
+			"multiplicity": "MANY2ONE",
+			"contains-other-v": "NONE",
+			"delete-other-v": "NONE",
+			"prevent-delete": "NONE",
+			"default": "true",
+			"description":""
+		},
+		{
 			"from": "lag-interface",
 			"to": "generic-vnf",
 			"label": "org.onap.relationships.inventory.BelongsTo",
