@@ -1,0 +1,8 @@
+Verified+1: ONAP Jobbuilder <onap-jobbuilder@jenkins.onap.org>
+Code-Review+1: Keong Lim <keong.lim@huawei.com>
+Code-Review+2: Tian Lee <TianL@amdocs.com>
+Submitted-by: Tian Lee <TianL@amdocs.com>
+Submitted-at: Thu, 29 Nov 2018 11:31:32 +0000
+Reviewed-on: https://gerrit.onap.org/r/73865
+Project: aai/aai-common
+Branch: refs/heads/casablanca
