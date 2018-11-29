@@ -9,7 +9,7 @@ AAI Release Notes
 Version: 1.3.0
 --------------
 
-:Release Date: TBD
+:Release Date: 2018-11-30
 
 **New Features**
 
@@ -17,7 +17,8 @@ The R3 Casablanca release of ONAP again focuses on platform maturity
 and deployablity. AAI continued to leverage oom and kubernetes, and
 added new data types in support of multiple R3 use cases.  AAI added a
 new schema ingest library which moves AAI closer to being more
-model-driven.
+model-driven and a new microservice called "graphadmin" which provides
+graph maintenance and configuration facilities.
 
 Authentication and Authorization is performed using AAF with the CADI
 framework. We use basic authentication with RBAC (Role Based Access
@@ -38,6 +39,20 @@ Control) to secure the AAI REST APIs.
 - `AAI-1416 <https://jira.onap.org/browse/AAI-1416>`_ Enhance CRUD APIs to take Optional "format"
 - `AAI-1418 <https://jira.onap.org/browse/AAI-1418>`_ VLAN Tagging
 - `AAI-1419 <https://jira.onap.org/browse/AAI-1419>`_ Schema Ingest Library
+
+**Known Issues**
+
+Please find at this link the list of issues that will be fixed in the `Casablanca Maintenance Release <https://jira.onap.org/issues/?jql=fixVersion%20%3D%20%22Casablanca%20Maintenance%20Release%22%20and%20type%20%3D%20Bug%20and%20project%20%3D%20%22Active%20and%20Available%20Inventory%22>`_
+
+**Security Notes**
+
+AAI code has been formally scanned during build time using NexusIQ and all Critical vulnerabilities have been addressed, items that remain open have been assessed for risk and determined to be false positive. The AAI open Critical security vulnerabilities and their risk assessment have been documented as part of the `project <https://wiki.onap.org/pages/viewpage.action?pageId=38120427>`_.
+
+Quick Links:
+
+- `AAI project page <https://wiki.onap.org/display/DW/Active+and+Available+Inventory+Project>`_
+- `Passing Badge information for AAI <https://bestpractices.coreinfrastructure.org/en/projects/1591>`_
+- `Project Vulnerability Review Table for AAI <https://wiki.onap.org/pages/viewpage.action?pageId=38120427>`_
 
 
 Version: 1.2.0
@@ -379,7 +394,7 @@ ONAP AAI R1 includes the following components:
 - Traversal (Advanced search operations)
 - Data Router (Route/persist AAI event data for consumption by the UI)
 - Model Loader (Obtains SDC artifacts and loads them into the A&AI Resources service for storage)
-- Search Data SErvice (Abstraction layer for searchengine, supporting queries and updates)
+- Search Data Service (Abstraction layer for searchengine, supporting queries and updates)
 - Applications
 - Sparky (AAI User Interface)
 
