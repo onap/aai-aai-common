@@ -6396,7 +6396,7 @@
                         <xml-property name="privateEdge" value="service-design-and-creation/models/model/{model-invariant-id}/model-vers/model-ver/{model-version-id}"/>
                     </xml-properties>
                 </xml-element>
-                <xml-element java-attribute="description" name="description" required="true" type="java.lang.String">
+                <xml-element java-attribute="description" name="description" required="false" type="java.lang.String">
                     <xml-properties>
                         <xml-property name="description" value="Descriptive text to help identify the usage of this instance-group"/>
                     </xml-properties>
@@ -6431,11 +6431,11 @@
                 <xml-property name="nameProps" value="description,instance-group-name"/>
                 <xml-property name="uniqueProps" value="id"/>
                 <xml-property name="searchable" value="id,description"/>
-                <xml-property name="indexedProps" value="id,description,type,sub-type,model-invariant-id,model-version-id"/>
+                <xml-property name="indexedProps" value="id,type,sub-type,model-invariant-id,model-version-id"/>
                 <xml-property name="container" value="instance-groups"/>
                 <xml-property name="namespace" value="network"/>
                 <xml-property name="uriTemplate" value="/network/instance-groups/instance-group/{id}"/>
-            <xml-property name="requiredProps" value="id,description,instance-group-type"/>
+            <xml-property name="requiredProps" value="id,instance-group-type"/>
             </xml-properties>
         </java-type>
 
