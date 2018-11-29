@@ -379,7 +379,7 @@ ONAP AAI R1 includes the following components:
 - Traversal (Advanced search operations)
 - Data Router (Route/persist AAI event data for consumption by the UI)
 - Model Loader (Obtains SDC artifacts and loads them into the A&AI Resources service for storage)
-- Search Data SErvice (Abstraction layer for searchengine, supporting queries and updates)
+- Search Data Service (Abstraction layer for searchengine, supporting queries and updates)
 - Applications
 - Sparky (AAI User Interface)
 
