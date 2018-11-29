@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9adffdf1_6c30b6e8",
+        "filename": "docs/release-notes.rst",
+        "patchSetId": 1
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 219
+      },
+      "writtenOn": "2018-11-29T17:12:30Z",
+      "side": 1,
+      "message": "There is no value in adding this list of epics. The above section New Features is intended to highlight the key new Casablanca features.",
+      "range": {
+        "startLine": 27,
+        "startChar": 0,
+        "endLine": 27,
+        "endChar": 8
+      },
+      "revId": "7737fd1d14edd46b2417a1efc4b1e2c71924f608",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9adffdf1_cc21a2a0",
+        "filename": "docs/release-notes.rst",
+        "patchSetId": 1
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 219
+      },
+      "writtenOn": "2018-11-29T17:12:30Z",
+      "side": 1,
+      "message": "Use this link https://wiki.onap.org/pages/viewpage.action?pageId\u003d45307817",
+      "revId": "7737fd1d14edd46b2417a1efc4b1e2c71924f608",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9adffdf1_0c280a85",
+        "filename": "docs/release-notes.rst",
+        "patchSetId": 1
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 219
+      },
+      "writtenOn": "2018-11-29T17:12:30Z",
+      "side": 1,
+      "message": "use this link https://wiki.onap.org/pages/viewpage.action?pageId\u003d45307817",
+      "range": {
+        "startLine": 55,
+        "startChar": 47,
+        "endLine": 55,
+        "endChar": 106
+      },
+      "revId": "7737fd1d14edd46b2417a1efc4b1e2c71924f608",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
