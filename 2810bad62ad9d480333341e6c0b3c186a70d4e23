@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9adffdf1_c23c0be5",
+        "filename": "aai-schema/src/main/resources/onap/dbedgerules/v14/DbEdgeRules_v14.json",
+        "patchSetId": 1
+      },
+      "lineNbr": 617,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2018-11-30T04:51:27Z",
+      "side": 1,
+      "message": "why is this added to the v14 file in master?\ndoes this imply that it should be backported to Casablanca release?",
+      "range": {
+        "startLine": 616,
+        "startChar": 3,
+        "endLine": 617,
+        "endChar": 23
+      },
+      "revId": "2810bad62ad9d480333341e6c0b3c186a70d4e23",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9adffdf1_e23fcfd4",
+        "filename": "aai-schema/src/main/resources/onap/dbedgerules/v14/DbEdgeRules_v14.json",
+        "patchSetId": 1
+      },
+      "lineNbr": 629,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2018-11-30T04:51:27Z",
+      "side": 1,
+      "message": "same here too.\nwhy is this added to the v14 file in master?\ndoes this imply that it should be backported to Casablanca release?",
+      "range": {
+        "startLine": 628,
+        "startChar": 3,
+        "endLine": 629,
+        "endChar": 18
+      },
+      "revId": "2810bad62ad9d480333341e6c0b3c186a70d4e23",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
