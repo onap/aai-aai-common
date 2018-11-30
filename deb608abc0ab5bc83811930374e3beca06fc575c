@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9adffdf1_a221c7b5",
+        "filename": "aai-schema/src/main/resources/onap/oxm/v14/aai_oxm_v14.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 6321,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2018-11-30T04:55:23Z",
+      "side": 1,
+      "message": "why is this added to the v14 file in master?\ndoes this imply that it should be backported to Casablanca release?",
+      "range": {
+        "startLine": 6321,
+        "startChar": 77,
+        "endLine": 6321,
+        "endChar": 93
+      },
+      "revId": "deb608abc0ab5bc83811930374e3beca06fc575c",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9adffdf1_42301b01",
+        "filename": "aai-schema/src/main/resources/onap/oxm/v14/aai_oxm_v14.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 6356,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2018-11-30T04:55:23Z",
+      "side": 1,
+      "message": "why is this added to the v14 file in master?\ndoes this imply that it should be backported to Casablanca release?\nwhat is backwards-compatibility requirement?",
+      "range": {
+        "startLine": 6356,
+        "startChar": 50,
+        "endLine": 6356,
+        "endChar": 64
+      },
+      "revId": "deb608abc0ab5bc83811930374e3beca06fc575c",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9adffdf1_622bdf94",
+        "filename": "aai-schema/src/main/resources/onap/oxm/v14/aai_oxm_v14.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 6360,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2018-11-30T04:55:23Z",
+      "side": 1,
+      "message": "same here too.\nwhy is this added to the v14 file in master?\ndoes this imply that it should be backported to Casablanca release?",
+      "range": {
+        "startLine": 6360,
+        "startChar": 47,
+        "endLine": 6360,
+        "endChar": 58
+      },
+      "revId": "deb608abc0ab5bc83811930374e3beca06fc575c",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
