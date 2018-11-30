@@ -1,0 +1,9 @@
+Verified+1: ONAP Jobbuilder <onap-jobbuilder@jenkins.onap.org>
+Code-Review-1: Gildas Lanilis <gildas.lanilis@huawei.com>
+Code-Review+1: Keong Lim <keong.lim@huawei.com>
+Code-Review+2: Venkata Harish Kajur <vk250x@att.com>
+Submitted-by: Venkata Harish Kajur <vk250x@att.com>
+Submitted-at: Fri, 30 Nov 2018 14:09:37 +0000
+Reviewed-on: https://gerrit.onap.org/r/73916
+Project: aai/aai-common
+Branch: refs/heads/master
