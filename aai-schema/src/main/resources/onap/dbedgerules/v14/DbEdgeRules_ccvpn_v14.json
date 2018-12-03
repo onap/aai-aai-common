@@ -68,7 +68,7 @@
 		"multiplicity": "ONE2MANY",
 		"contains-other-v": "${direction}",
 		"delete-other-v": "${direction}",
-		"prevent-delete": "!${direction}",
+		"prevent-delete": "NONE",
 		"default": "true",
 		"description":"For CCVPN Usecase"
 	},
@@ -91,7 +91,7 @@
 		"direction": "OUT",
 		"multiplicity": "MANY2MANY",
 		"contains-other-v": "NONE",
-		"delete-other-v": "!${direction}",
+		"delete-other-v": "NONE",
 		"prevent-delete": "${direction}",
 		"default": "true",
 		"description":"For CCVPN Usecase"
@@ -212,7 +212,7 @@
 		"multiplicity": "ONE2MANY",
 		"contains-other-v": "${direction}",
 		"delete-other-v": "${direction}",
-		"prevent-delete": "!${direction}",
+		"prevent-delete": "NONE",
 		"default": "true",
 		"description":"For CCVPN Usecase"
 	},
@@ -223,7 +223,7 @@
 		"direction": "OUT",
 		"multiplicity": "MANY2MANY",
 		"contains-other-v": "NONE",
-		"delete-other-v": "${direction}",
+		"delete-other-v": "NONE",
 		"prevent-delete": "!${direction}",
 		"default": "true",
 		"description":"For CCVPN Usecase"
@@ -235,7 +235,7 @@
 		"direction": "OUT",
 		"multiplicity": "MANY2MANY",
 		"contains-other-v": "NONE",
-		"delete-other-v": "${direction}",
+		"delete-other-v": "NONE",
 		"prevent-delete": "!${direction}",
 		"default": "true",
 		"description":"For CCVPN Usecase"
@@ -247,7 +247,7 @@
 		"direction": "OUT",
 		"multiplicity": "MANY2MANY",
 		"contains-other-v": "NONE",
-		"delete-other-v": "${direction}",
+		"delete-other-v": "NONE",
 		"prevent-delete": "!${direction}",
 		"default": "true",
 		"description":"For CCVPN Usecase"
@@ -259,7 +259,7 @@
 		"direction": "OUT",
 		"multiplicity": "MANY2MANY",
 		"contains-other-v": "NONE",
-		"delete-other-v": "${direction}",
+		"delete-other-v": "NONE",
 		"prevent-delete": "!${direction}",
 		"default": "true",
 		"description":"For CCVPN Usecase"
@@ -271,7 +271,7 @@
 		"direction": "OUT",
 		"multiplicity": "MANY2MANY",
 		"contains-other-v": "NONE",
-		"delete-other-v": "${direction}",
+		"delete-other-v": "NONE",
 		"prevent-delete": "!${direction}",
 		"default": "true",
 		"description":"For CCVPN Usecase"
@@ -283,7 +283,7 @@
 		"direction": "OUT",
 		"multiplicity": "MANY2MANY",
 		"contains-other-v": "NONE",
-		"delete-other-v": "${direction}",
+		"delete-other-v": "NONE",
 		"prevent-delete": "!${direction}",
 		"default": "true",
 		"description":"For CCVPN Usecase"
@@ -295,7 +295,7 @@
 		"direction": "OUT",
 		"multiplicity": "MANY2MANY",
 		"contains-other-v": "NONE",
-		"delete-other-v": "${direction}",
+		"delete-other-v": "NONE",
 		"prevent-delete": "!${direction}",
 		"default": "true",
 		"description":"For CCVPN Usecase"
@@ -307,7 +307,7 @@
 		"direction": "OUT",
 		"multiplicity": "MANY2MANY",
 		"contains-other-v": "NONE",
-		"delete-other-v": "${direction}",
+		"delete-other-v": "NONE",
 		"prevent-delete": "!${direction}",
 		"default": "true",
 		"description":"For CCVPN Usecase"
@@ -319,7 +319,7 @@
 		"direction": "OUT",
 		"multiplicity": "MANY2MANY",
 		"contains-other-v": "NONE",
-		"delete-other-v": "${direction}",
+		"delete-other-v": "NONE",
 		"prevent-delete": "!${direction}",
 		"default": "true",
 		"description":"For CCVPN Usecase"
@@ -331,7 +331,7 @@
 		"direction": "OUT",
 		"multiplicity": "MANY2MANY",
 		"contains-other-v": "NONE",
-		"delete-other-v": "${direction}",
+		"delete-other-v": "NONE",
 		"prevent-delete": "!${direction}",
 		"default": "true",
 		"description":"For CCVPN Usecase"
