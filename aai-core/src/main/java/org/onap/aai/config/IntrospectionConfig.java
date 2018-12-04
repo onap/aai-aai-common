@@ -21,14 +21,16 @@
  */
 package org.onap.aai.config;
 
+import org.onap.aai.schema.enums.ObjectMetadata;
 import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.setup.SchemaVersions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import org.onap.aai.introspection.LoaderFactory;
 import org.onap.aai.introspection.MoxyLoader;

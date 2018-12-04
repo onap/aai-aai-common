@@ -1,0 +1,6 @@
+{
+    "vip-ipv4-address": "vip-ipv4-address-list-1",
+    "vip-ipv4-prefix-length": 3333,
+    "vlan-id-inner": 3333,
+    "vlan-id-outer": 3333
+}

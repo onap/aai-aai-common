@@ -465,16 +465,18 @@ public class DbSerializerTest extends AAISetup {
 	public void getURIForVertexTest() throws AAIException, URISyntaxException, UnsupportedEncodingException {
 		engine.startTransaction();
 
-		Vertex cr = engine.tx().addVertex("aai-node-type", "cloud-region", "cloud-owner", "me", "cloud-region-id", "123");
+		Vertex cr = engine.tx().addVertex("aai-node-type", "cloud-region", "cloud-owner", "me", "cloud-region-id", "123", "aai-uri", "/cloud-infrastructure/cloud-regions/cloud-region/me/123");
 		Vertex ten = engine.tx().addVertex("aai-node-type", "tenant", "tenant-id", "453");
 
 		edgeSer.addTreeEdge(engine.tx().traversal(), cr, ten);
 
+		ten.property("aai-uri", "/cloud-infrastructure/cloud-regions/cloud-region/me/123/tenants/tenant/453");
+
 		URI compare = new URI("/cloud-infrastructure/cloud-regions/cloud-region/me/123/tenants/tenant/453");
 		assertEquals(compare, dbser.getURIForVertex(ten));
 
-		cr.property("aai-node-type").remove();
 		URI compareFailure = new URI("/unknown-uri");
+		ten.property("aai-uri").remove();
 		assertEquals(compareFailure, dbser.getURIForVertex(ten));
 
 	}
@@ -619,9 +621,10 @@ public class DbSerializerTest extends AAISetup {
 	public void serializeSingleVertexChildTest() throws AAIException, UnsupportedEncodingException {
 		engine.startTransaction();
 
-		Vertex cr = engine.tx().addVertex("aai-node-type", "cloud-region", "cloud-owner", "me", "cloud-region-id", "123");
+		Vertex cr = engine.tx().addVertex("aai-node-type", "cloud-region", "cloud-owner", "me", "cloud-region-id", "123", "aai-uri", "/cloud-infrastructure/cloud-regions/cloud-region/me/123");
 		Introspector tenIn = loader.introspectorFromName("tenant");
 		Vertex ten = dbser.createNewVertex(tenIn);
+		ten.property("aai-uri", cr.property("aai-uri").value().toString() + "/tenants/tenant/453");
 
 		edgeSer.addTreeEdge(engine.tx().traversal(), cr, ten);
 
@@ -639,8 +642,8 @@ public class DbSerializerTest extends AAISetup {
 	public void getVertexPropertiesRelationshipHasLabelTest() throws AAIException, UnsupportedEncodingException {
 		engine.startTransaction();
 
-		Vertex gvnf = engine.tx().addVertex("aai-node-type","generic-vnf","vnf-id","vnf-123");
-		Vertex vnfc = engine.tx().addVertex("aai-node-type","vnfc","vnfc-name","vnfc-123");
+		Vertex gvnf = engine.tx().addVertex("aai-node-type","generic-vnf","vnf-id","vnf-123","aai-uri", "/network/generic-vnfs/generic-vnf/vnf-123");
+		Vertex vnfc = engine.tx().addVertex("aai-node-type","vnfc","vnfc-name","vnfc-123","aai-uri", "/network/vnfcs/vnfc/vnfc-123");
 
 		edgeSer.addEdge(engine.tx().traversal(), gvnf, vnfc);
 
@@ -672,8 +675,8 @@ public class DbSerializerTest extends AAISetup {
 
 		engine.startTransaction();
 
-		Vertex gvnf = engine.tx().addVertex("aai-node-type","generic-vnf","vnf-id","vnf-123");
-		Vertex vnfc = engine.tx().addVertex("aai-node-type","vnfc","vnfc-name","vnfc-123");
+		Vertex gvnf = engine.tx().addVertex("aai-node-type","generic-vnf","vnf-id","vnf-123", "aai-uri", "/network/generic-vnfs/generic-vnf/vnf-123");
+		Vertex vnfc = engine.tx().addVertex("aai-node-type","vnfc","vnfc-name","vnfc-123", "aai-uri", "/network/vnfcs/vnfc/vnfc-123");
 
 		edgeSer.addEdge(engine.tx().traversal(), gvnf, vnfc);
 

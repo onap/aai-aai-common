@@ -46,47 +46,47 @@ public class JSONStrategy extends Introspector {
 			throw new IllegalArgumentException("This object has no named type.");
 		}
 	}
-	
+
 	protected JSONStrategy(Object o, String namedType) {
 		super(o);
 		json = (JSONObject)o;
 		this.namedType = namedType;
-		
+
 	}
-	
+
 	@Override
 	public boolean hasProperty(String name) {
-		//TODO 
+		//TODO
 		return true;
 	}
 	@Override
 	public Object getValue(String name) {
 		Object result = "";
 		result = json.get(name);
-		
+
 		return result;
 	}
 
 	@Override
 	public void setValue(String name, Object obj) {
 		json.put(name, obj);
-		
+
 	}
 	@Override
 	public Object getUnderlyingObject() {
 		return this.json;
 	}
-	
+
 	@Override
 	public Set<String> getProperties() {
 		Set<String> result = json.keySet();
 		return result;
 	}
-	
+
 	@Override
 	public Set<String> getRequiredProperties() {
 		//unknowable
-		
+
 		return this.getProperties();
 	}
 
@@ -109,11 +109,11 @@ public class JSONStrategy extends Introspector {
 		if (resultClass != null) {
 			result = resultClass.getName();
 		}
-		
+
 		if (result.equals("org.json.simple.JSONArray")) {
 			result = "java.util.List";
 		}
-		
+
 		return result;
 	}
 
@@ -136,7 +136,7 @@ public class JSONStrategy extends Introspector {
 	public Class<?> getClass(String name) {
 		Class<?> result = null;
 		result = json.get(name).getClass();
-		
+
 		return result;
 	}
 
@@ -148,7 +148,7 @@ public class JSONStrategy extends Introspector {
 		if (resultObject.getClass().getName().equals("org.json.simple.JSONArray")) {
 			resultClass = ((List)resultObject).get(0).getClass();
 		}
-		
+
 		return resultClass;
 	}
 
@@ -169,43 +169,43 @@ public class JSONStrategy extends Introspector {
 			return null;
 		}
 	}
-	
+
 	@Override
 	public boolean isComplexType(String name) {
 		String result = this.getType(name);
-		
+
 		if (result.contains("JSONObject")) {
 			return true;
 		} else {
 			return false;
 		}
-		
+
 	}
-	
+
 	@Override
 	public boolean isComplexGenericType(String name) {
 		String result = this.getGenericType(name);
-		
+
 		if (result.contains("JSONObject")) {
 			return true;
 		} else {
 			return false;
 		}
-		
+
 	}
-	
+
 	@Override
 	public boolean isListType(String name) {
 		String result = this.getType(name);
-		
+
 		if (result.contains("java.util.List")) {
 			return true;
 		} else {
 			return false;
 		}
-		
+
 	}
-	
+
 	@Override
 	public boolean isContainer() {
 		Set<String> props = this.getProperties();
@@ -213,66 +213,66 @@ public class JSONStrategy extends Introspector {
 		if (props.size() == 1 && this.isListType(props.iterator().next())) {
 			result = true;
 		}
-		
+
 		return result;
 	}
 	@Override
 	protected String findKey() {
 		return "";
 	}
-	
+
 	@Override
 	public String getName() {
 		return this.namedType;
 	}
-	
+
 	@Override
 	public String getDbName() {
 		return this.getName();
 	}
-	
+
 	@Override
 	public String getURI() {
-		
-		// use a UUID for now 
+
+		// use a UUID for now
 		return UUID.randomUUID().toString();
 	}
-	
+
 	@Override
 	public String getGenericURI() {
-		
+
 		//there is none defined for this
 		return "";
 	}
-	
+
 	@Override
 	public String preProcessKey (String key) {
-		
+
 		// don't do anything with it
 		return key;
-		
+
 	}
-	
+
 	@Override
 	public String marshal(MarshallerProperties properties) {
 		//TODO
 		return null;
 	}
-	
+
 	@Override
 	public Object clone() {
 		//TODO
 		return null;
 	}
-	
+
 	/*@Override
 	public String findEdgeName(String parent, String child) {
-		
+
 		// Always has for now
 		return "has";
-		
+
 	}*/
-	
+
 	@Override
 	public ModelType getModelType() {
 		return ModelType.JSON;
@@ -341,7 +341,7 @@ public class JSONStrategy extends Introspector {
 	@Override
 	protected void set(String name, Object value) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override

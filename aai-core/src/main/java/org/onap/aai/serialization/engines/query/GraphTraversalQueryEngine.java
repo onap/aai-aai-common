@@ -30,6 +30,7 @@ import static org.onap.aai.edges.enums.EdgeProperty.DELETE_OTHER_V;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.tinkerpop.gremlin.process.traversal.Order;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
@@ -45,12 +46,12 @@ import org.onap.aai.logging.StopWatch;
 
 /*
  * This class needs some big explanation despite its compact size.
- * This controls all the queries performed by the CRUD API in A&AI. 
+ * This controls all the queries performed by the CRUD API in A&AI.
  * findParents, findChildren, and findDeletable require special attention
  *   These methods use 'repeat'. You cannot use 'emit' with repeat currently
  *   as it is extremely buggy as of tinkerpop-3.0.1-incubating. The way around
  *   it (for now) is to sideEffect all the vertices we traverse into an ArrayList.
- * 
+ *
  */
 public class GraphTraversalQueryEngine extends QueryEngine {
 
@@ -70,6 +71,7 @@ public class GraphTraversalQueryEngine extends QueryEngine {
 	public List<Vertex> findParents(Vertex start) {
 		try {
 			StopWatch.conditionalStart();
+
                         @SuppressWarnings("unchecked")
                         final GraphTraversal<Vertex, Vertex> pipe = this.g.V(start).emit(v -> true).repeat(__.union(__.inE().has(CONTAINS.toString(), OUT.toString()).outV(), __.outE().has(CONTAINS.toString(), IN.toString()).inV()));
 		        return pipe.toList();
@@ -79,19 +81,36 @@ public class GraphTraversalQueryEngine extends QueryEngine {
 		}
 	}
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Vertex> findParents(String[] uris) {
+        try {
+            StopWatch.conditionalStart();
+            final GraphTraversal<Vertex, Vertex> pipe = this.g.V()
+                .has(AAIProperties.AAI_URI, P.within(uris))
+                .order().by(AAIProperties.AAI_URI, Order.decr);
+            return pipe.toList();
+        }
+        finally {
+            dbTimeMsecs += StopWatch.stopIfStarted();
+        }
+    }
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public List<Vertex> findAllChildren(Vertex start) {
-		
+
 		@SuppressWarnings("unchecked")
 		GraphTraversal<Vertex, Vertex> pipe =  this.g
 				.V(start).emit(v -> true).repeat(__.union(__.outE().has(CONTAINS.toString(), OUT.toString()).inV(), __.inE().has(CONTAINS.toString(), IN.toString()).outV()));
-		
+
 
 		return pipe.toList();
-		
+
 	}
 
 	/**
@@ -104,10 +123,10 @@ public class GraphTraversalQueryEngine extends QueryEngine {
 					__.outE().has(CONTAINS.toString(), OUT.toString()).inV(),
 					__.inE().has(CONTAINS.toString(), IN.toString()).outV()
 				).has(AAIProperties.NODE_TYPE, type).dedup();
- 
+
 		return pipe.toList();
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -118,7 +137,7 @@ public class GraphTraversalQueryEngine extends QueryEngine {
 					__.outE().has(CONTAINS.toString(), OUT.toString()),
 					__.inE().has(CONTAINS.toString(), IN.toString())
 				).otherV().dedup();
- 
+
 		return pipe.toList();
 	}
 
@@ -135,7 +154,7 @@ public class GraphTraversalQueryEngine extends QueryEngine {
 						__.inE().has(DELETE_OTHER_V.toString(), IN.toString()).outV()
 					)
 				).dedup();
-		
+
 		return pipe.toList();
 	}
 
@@ -158,11 +177,11 @@ public class GraphTraversalQueryEngine extends QueryEngine {
 			 default:
 				break;
 		}
-		
+
 		pipe.has(AAIProperties.NODE_TYPE, nodeType).dedup();
 		return pipe.toList();
 	}
-	
+
 	@Override
 	public Tree<Element> findSubGraph(Vertex start, int iterations, boolean nodeOnly) {
 		final GraphTraversal<Vertex, ?> t = this.g.V(start).emit(v -> true).times(iterations).repeat(
@@ -204,13 +223,13 @@ public class GraphTraversalQueryEngine extends QueryEngine {
 				__.has("private", true)
 			)
 			.dedup();
-		
+
 		return pipeline.toList();
 	}
 
 
 	@Override
-	public List<Vertex> findCousinVertices(Vertex start) {
+	public List<Vertex> findCousinVertices(Vertex start, String... labels) {
 	    // Start at the given vertex
 		// Do a union to copy the start vertex to be run against all
 		// so for the start vertex it gets all of in edges that contains other v set to none
@@ -223,8 +242,8 @@ public class GraphTraversalQueryEngine extends QueryEngine {
 		GraphTraversal<Vertex, Vertex> pipeline = this.g
             .V(start)
             .union(
-                __.inE().has(CONTAINS.toString(), NONE.toString()),
-                __.outE().has(CONTAINS.toString(), NONE.toString())
+                __.inE(labels).has(CONTAINS.toString(), NONE.toString()),
+                __.outE(labels).has(CONTAINS.toString(), NONE.toString())
             )
 			.not(
 				__.has(PRIVATE.toString(), true)
@@ -234,7 +253,7 @@ public class GraphTraversalQueryEngine extends QueryEngine {
 
 		return pipeline.toList();
 	}
-	
+
 	public double getDBTimeMsecs() {
 		return (dbTimeMsecs);
 	}
