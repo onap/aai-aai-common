@@ -36,6 +36,7 @@ import org.onap.aai.workarounds.NamingExceptions;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 public abstract class Introspector implements Cloneable {
@@ -57,25 +58,25 @@ public abstract class Introspector implements Cloneable {
 	protected String convertPropertyName (String name) {
 		return CaseFormat.LOWER_HYPHEN.to(CaseFormat.LOWER_CAMEL, name);
 	}
-	
+
 	protected abstract Object get(String name);
 	protected abstract void set(String name, Object value);
 	/**
-	 * 
+	 *
 	 * @param name the property name you'd like to retrieve the value for
 	 * @return the value of the property
 	 */
 	public <T> T getValue(String name) {
 		String convertedName = convertPropertyName(name);
 		Object result = null;
-		
+
 		if (this.hasProperty(name)) {
 			result = this.get(convertedName);
 		} else {
 			/* property not found - slightly ambiguous */
 			return null;
 		}
-		
+
 		Class<?> clazz = this.getClass(name);
 		if (this.isListType(name) && result == null) {
 			try {
@@ -88,18 +89,18 @@ public abstract class Introspector implements Cloneable {
 
 		return (T)result;
 	}
-	
+
 	public Introspector getWrappedValue(String name) {
 		String convertedName = convertPropertyName(name);
 		Object value = null;
-		
+
 		if (this.hasProperty(name)) {
 			value = this.get(convertedName);
 		} else {
 			/* property not found - slightly ambiguous */
 			return null;
 		}
-		
+
 		Class<?> clazz = this.getClass(name);
 		if (this.isListType(name) && value == null) {
 			try {
@@ -115,9 +116,9 @@ public abstract class Introspector implements Cloneable {
 			//no value
 			return null;
 		}
-		
+
 	}
-	
+
 	public List<Introspector> getWrappedListValue(String name) {
 		String convertedName = convertPropertyName(name);
 		Object value = null;
@@ -141,17 +142,17 @@ public abstract class Introspector implements Cloneable {
 				LOGGER.warn(e.getMessage(),e);
 			}
 		}
-		
+
 		List<Object> valueList = (List<Object>)value;
-		
+
 		for (Object item : valueList) {
 			resultList.add(IntrospectorFactory.newInstance(this.getModelType(), item));
 		}
-		
+
 		return resultList;
-		
+
 	}
-	
+
 	public Object castValueAccordingToSchema(String name, Object obj) {
 		Object result = obj;
 		Class<?> nameClass = this.getClass(name);
@@ -159,11 +160,11 @@ public abstract class Introspector implements Cloneable {
 			throw new IllegalArgumentException("property: " + name + " does not exist on " + this.getDbName());
 		}
 		if (obj != null) {
-	
+
 			try {
 				if (!obj.getClass().getName().equals(nameClass.getName())) {
 					if (nameClass.isPrimitive()) {
-						nameClass = ClassUtils.primitiveToWrapper(nameClass);	
+						nameClass = ClassUtils.primitiveToWrapper(nameClass);
 						result = nameClass.getConstructor(String.class).newInstance(obj.toString());
 					}
 					if (obj instanceof String) {
@@ -180,35 +181,35 @@ public abstract class Introspector implements Cloneable {
 		}
 		return result;
 	}
-	
+
 	public List<Object> castValueAccordingToSchema(String name, List<?> objs) {
 		List<Object> result = new ArrayList<>();
-		
+
 		for (Object item : objs) {
 			result.add(this.castValueAccordingToSchema(name, item));
 		}
-		
+
 		return result;
-		
+
 	}
 	/**
-	 * 
+	 *
 	 * @param name the property name you'd like to set the value of
 	 * @param obj the value to be set
 	 * @return
 	 */
 	public void setValue(String name, Object obj) throws IllegalArgumentException {
 		Object box = this.castValueAccordingToSchema(name, obj);
-		
+
 		name = convertPropertyName(name);
 		this.set(name, box);
 	}
 	/**
-	 * 
+	 *
 	 * @return a list of all the properties available on the object
 	 */
 	public abstract Set<String> getProperties();
-	
+
 	public Set<String> getProperties(PropertyPredicate<Introspector, String> p) {
 		final Set<String> temp = new LinkedHashSet<>();
 		this.getProperties().stream().filter(item -> {
@@ -217,22 +218,30 @@ public abstract class Introspector implements Cloneable {
 			temp.add(item);
 		});
 		final Set<String> result = Collections.unmodifiableSet(temp);
-		
+
 		return result;
-		
+
 	}
+
+	public Set<String> getSimpleProperties(PropertyPredicate<Introspector, String> p){
+        return this.getProperties()
+            .stream()
+            .filter(item -> p.test(this, item))
+            .filter(this::isSimpleType)
+            .collect(Collectors.toSet());
+    }
 	/**
-	 * 
+	 *
 	 * @return a list of the required properties on the object
 	 */
 	public abstract Set<String> getRequiredProperties();
 	/**
-	 * 
+	 *
 	 * @return a list of the properties that can be used to query the object in the db
 	 */
 	public abstract Set<String> getKeys();
 	/**
-	 * 
+	 *
 	 * @return a list of the all key properties for this object
 	 */
 	public Set<String> getAllKeys() {
@@ -274,7 +283,7 @@ public abstract class Introspector implements Cloneable {
 		result = this.indexedProperties;
 		return result;
 	}
-	
+
 	public Set<String> getUniqueProperties() {
 		Set<String> result = null;
 		if (this.uniqueProperties == null) {
@@ -292,7 +301,7 @@ public abstract class Introspector implements Cloneable {
 		result = this.uniqueProperties;
 		return result;
 	}
-	
+
 	public Set<String> getDependentOn() {
 		String dependentOn = this.getMetadata(ObjectMetadata.DEPENDENT_ON);
 		if (dependentOn == null) {
@@ -301,21 +310,21 @@ public abstract class Introspector implements Cloneable {
 		return new LinkedHashSet<>(Arrays.asList(dependentOn.split(",")));
 	}
 	/**
-	 * 
+	 *
 	 * @param name
 	 * @return the string name of the java class of the named property
 	 */
 	public String getType(String name) {
 		Class<?> resultClass = this.getClass(name);
 		String result = "";
-		
+
 		if (resultClass != null) {
 			result = resultClass.getName();
 			if (result.equals("java.util.ArrayList")) {
 				result = "java.util.List";
 			}
 		}
-		
+
 		return result;
 	}
 	/**
@@ -327,33 +336,33 @@ public abstract class Introspector implements Cloneable {
 	public String getGenericType(String name) {
 		Class<?> resultClass = this.getGenericTypeClass(name);
 		String result = "";
-		
+
 		if (resultClass != null) {
 			result = resultClass.getName();
 		}
-		
+
 		return result;
 	}
 	/**
-	 * 
+	 *
 	 * @return the string name of the java class of the underlying object
 	 */
 	public abstract String getJavaClassName();
-	
+
 	/**
-	 * 
+	 *
 	 * @param name the property name
 	 * @return the Class object
 	 */
 	public abstract Class<?> getClass(String name);
-	
+
 	public abstract Class<?> getGenericTypeClass(String name);
 
 	/**
-	 * 
+	 *
 	 * @param name the property name
 	 * @return a new instance of the underlying type of this property
-	 * @throws AAIUnknownObjectException 
+	 * @throws AAIUnknownObjectException
 	 */
 	public Object newInstanceOfProperty(String name) throws AAIUnknownObjectException {
 		String type = this.getType(name);
@@ -364,22 +373,22 @@ public abstract class Introspector implements Cloneable {
 		String type = this.getGenericType(name);
 		return loader.objectFromName(type);
 	}
-	
-	
+
+
 	public Introspector newIntrospectorInstanceOfProperty(String name) throws AAIUnknownObjectException {
-	
+
 		Introspector result = IntrospectorFactory.newInstance(this.getModelType(), this.newInstanceOfProperty(name));
-		
+
 		return result;
-		
+
 	}
-	
+
 	public Introspector newIntrospectorInstanceOfNestedProperty(String name) throws AAIUnknownObjectException {
-	
+
 		Introspector result = IntrospectorFactory.newInstance(this.getModelType(), this.newInstanceOfNestedProperty(name));
-		
+
 		return result;
-		
+
 	}
 	/**
 	 * Is this type not a Java String or primitive
@@ -388,56 +397,56 @@ public abstract class Introspector implements Cloneable {
 	 */
 	public boolean isComplexType(String name) {
 		String result = this.getType(name);
-		
+
 		if (result.contains("aai") || result.equals("java.lang.Object")) {
 			return true;
 		} else {
 			return false;
 		}
 	}
-	
+
 	public boolean isComplexGenericType(String name) {
 		String result = this.getGenericType(name);
-		
+
 		if (result.contains("aai")) {
 			return true;
 		} else {
 			return false;
 		}
 	}
-	
+
 	public boolean isSimpleType(String name) {
 		return !(this.isComplexType(name) || this.isListType(name));
 	}
-	
+
 	public boolean isSimpleGenericType(String name) {
 		return !this.isComplexGenericType(name);
 	}
 
 	public boolean isListType(String name) {
 		String result = this.getType(name);
-		
+
 		if (result.contains("java.util.List")) {
 			return true;
 		} else {
 			return false;
 		}
 	}
-	
+
 	public boolean isContainer() {
 		Set<String> props = this.getProperties();
 		boolean result = false;
 		if (props.size() == 1 && this.isListType(props.iterator().next())) {
 			result = true;
 		}
-		
+
 		return result;
 	}
-	
+
 	public abstract String getChildName();
 	public String getChildDBName() {
 		String result = this.getChildName();
-		
+
 		result = namingException.getDBName(result);
 		return result;
 	}
@@ -447,10 +456,10 @@ public abstract class Introspector implements Cloneable {
 		String lowerHyphen = this.getName();
 
 		lowerHyphen = namingException.getDBName(lowerHyphen);
-		
+
 		return lowerHyphen;
 	}
-		
+
 	public abstract ModelType getModelType();
 
 	public boolean hasChild(Introspector child) {
@@ -474,7 +483,7 @@ public abstract class Introspector implements Cloneable {
 		}
 		return result;
 	}
-	
+
 	public void setURIChain(String uri) {
 		this.uriChain = uri;
 	}
@@ -488,21 +497,21 @@ public abstract class Introspector implements Cloneable {
 		if (this.isContainer()) {
 			 result += "/" + this.getName();
 		} else {
-			
+
 			if (container != null) {
 				result += "/" + container;
 			}
 			result += "/" + this.getDbName() + "/" + this.findKey();
-			
+
 			if (namespace != null && !namespace.equals("")) {
 				result = "/" + namespace + result;
 			}
 		}
-		
+
 
 		return result;
 	}
-	
+
 	public String getGenericURI() {
 		String result = "";
 		if (this.isContainer()) {
@@ -513,10 +522,10 @@ public abstract class Introspector implements Cloneable {
 				result += "/{" + this.getDbName() + "-" + key + "}";
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	public String getFullGenericURI() {
 		String result = "";
 		String namespace = this.getMetadata(ObjectMetadata.NAMESPACE);
@@ -537,33 +546,33 @@ public abstract class Introspector implements Cloneable {
 			if (namespace != null && !namespace.equals("")) {
 				result = "/" + namespace + result;
 			}
-			
+
 		}
-		
+
 		return result;
 	}
 
 	public abstract String preProcessKey(String key);
-	
+
 	protected abstract String findKey() throws UnsupportedEncodingException;
-	
+
 	public abstract String marshal(MarshallerProperties properties);
-	
+
 	public abstract Object clone();
 
 	public abstract Object getUnderlyingObject();
-	
+
 	public String marshal(boolean formatted) {
 		MarshallerProperties properties =
 				new MarshallerProperties.Builder(MediaType.APPLICATION_JSON_TYPE).formatted(formatted).build();
-		
+
 		return marshal(properties);
 	}
 	public String makeSingular(String word) {
-		
+
 		String result = word;
 		result = result.replaceAll("(?:([ho])es|s)$", "");
-		
+
 		if (result.equals("ClassesOfService")) {
 			result = "ClassOfService";
 		} else if (result.equals("CvlanTag")) {
@@ -573,10 +582,10 @@ public abstract class Introspector implements Cloneable {
 		}
 		return result;
 	}
-	
+
 	protected String makePlural(String word) {
 		String result = word;
-		
+
 		if (result.equals("cvlan-tag-entry")) {
 			return "cvlan-tags";
 		} else if (result.equals("class-of-service")) {
@@ -590,7 +599,7 @@ public abstract class Introspector implements Cloneable {
 		if (result.equals("classes-of-services")) {
 			result = "classes-of-service";
 		}*/
-		
+
 		return result;
 	}
 
@@ -599,21 +608,22 @@ public abstract class Introspector implements Cloneable {
 	public Optional<String> getPropertyMetadata(String propName, PropertyMetadata metadataName) {
 		final String resultValue = this.getPropertyMetadata(propName).getOrDefault(metadataName, "");
 		Optional<String> result = Optional.empty();
-		
+
 		if (!resultValue.isEmpty()) {
 			result = Optional.of(resultValue);
 		}
 		return result;
-		
+
 	}
 
 	public abstract SchemaVersion getVersion();
 	public Loader getLoader() {
 		return this.loader;
 	}
-	
+
 	public boolean isTopLevel() {
-		
+
 		return this.getMetadata(ObjectMetadata.NAMESPACE) != null;
 	}
+
 }

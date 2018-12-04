@@ -52,11 +52,11 @@ import static org.mockito.Mockito.when;
 
 public class HttpTestUtil extends RESTAPI {
 
-    
-    protected HttpEntry traversalHttpEntry;
-    
-    protected HttpEntry traversalUriHttpEntry;
-    
+
+	protected HttpEntry traversalHttpEntry;
+
+	protected HttpEntry traversalUriHttpEntry;
+
     private static final EELFLogger logger = EELFManager.getInstance().getLogger(HttpTestUtil.class);
 
     protected static final MediaType APPLICATION_JSON = MediaType.valueOf("application/json");
@@ -77,7 +77,7 @@ public class HttpTestUtil extends RESTAPI {
         this.queryStyle = qs;
         traversalHttpEntry = SpringContextAware.getBean("traversalUriHttpEntry", HttpEntry.class);
         traversalUriHttpEntry = SpringContextAware.getBean("traversalUriHttpEntry", HttpEntry.class);
-       
+
     }
 
     public void init(){
@@ -121,7 +121,10 @@ public class HttpTestUtil extends RESTAPI {
 
         try {
 
-            uri = uri.replaceAll("/aai/", "");
+            if(uri.startsWith("/aai/")){
+                uri = uri.substring(5);
+            }
+
             logger.info("Starting the put request for the uri {} with payload {}", uri, payload);
 
             String [] arr = uri.split("/");
@@ -142,7 +145,7 @@ public class HttpTestUtil extends RESTAPI {
             Mockito.when(uriInfo.getPath()).thenReturn(uri);
 
             DBConnectionType type = DBConnectionType.REALTIME;
-            
+
             traversalHttpEntry.setHttpEntryProperties(version, type);
             Loader loader         = traversalHttpEntry.getLoader();
             dbEngine              = traversalHttpEntry.getDbEngine();
@@ -206,7 +209,7 @@ public class HttpTestUtil extends RESTAPI {
         return response;
     }
 
-    public Response doGet(String uri) throws UnsupportedEncodingException, AAIException {
+    public Response doGet(String uri, String depth){
 
         this.init();
         Response response = null;
@@ -215,8 +218,11 @@ public class HttpTestUtil extends RESTAPI {
 
         try {
 
-            uri = uri.replaceAll("/aai/", "");
-            logger.info("Starting the GET request for the uri {} with depth {}", uri, "all");
+            if(uri.startsWith("/aai/")){
+                uri = uri.substring(5);
+            }
+
+            logger.info("Starting the GET request for the uri {} with depth {}", uri, depth);
 
             String [] arr = uri.split("/");
 
@@ -240,21 +246,29 @@ public class HttpTestUtil extends RESTAPI {
             dbEngine              = traversalHttpEntry.getDbEngine();
 
             URI uriObject = UriBuilder.fromPath(uri).build();
-            URIToObject uriToObject = new URIToObject(loader, uriObject);
 
-            String objType = uriToObject.getEntityName();
-            queryParameters.add("depth", "all");
+            if(depth != null){
+                queryParameters.add("depth", depth);
+            }
+
             QueryParser uriQuery = dbEngine.getQueryBuilder().createQueryFromURI(uriObject, queryParameters);
 
             Mockito.when(uriInfo.getPath()).thenReturn(uri);
 
+            URIToObject uriToObject = new URIToObject(loader, uriObject);
+            String objType = "";
+            if (!uriQuery.getContainerType().equals("")) {
+                objType = uriQuery.getContainerType();
+            } else {
+                objType = uriQuery.getResultType();
+            }
             logger.info("Unmarshalling the payload to this {}", objType);
 
             Introspector obj = loader.introspectorFromName(objType);
 
             DBRequest dbRequest =
-                    new DBRequest.Builder(HttpMethod.GET, uriObject, uriQuery, obj, httpHeaders, uriInfo, "JUNIT-TRANSACTION")
-                            .build();
+                new DBRequest.Builder(HttpMethod.GET, uriObject, uriQuery, obj, httpHeaders, uriInfo, "JUNIT-TRANSACTION")
+                    .build();
 
             List<DBRequest> dbRequestList = new ArrayList<>();
             dbRequestList.add(dbRequest);
@@ -286,6 +300,10 @@ public class HttpTestUtil extends RESTAPI {
         }
 
         return response;
+    }
+
+    public Response doGet(String uri) throws UnsupportedEncodingException, AAIException {
+        return this.doGet(uri, "all");
     }
 
     public Response doDelete(String uri, String resourceVersion) throws UnsupportedEncodingException, AAIException {
@@ -321,7 +339,7 @@ public class HttpTestUtil extends RESTAPI {
             Mockito.when(uriInfo.getPath()).thenReturn(uri);
             DBConnectionType type = DBConnectionType.REALTIME;
             traversalHttpEntry.setHttpEntryProperties(version, type);
-            
+
             traversalHttpEntry.setHttpEntryProperties(version, type);
             Loader loader         = traversalHttpEntry.getLoader();
             dbEngine              = traversalHttpEntry.getDbEngine();

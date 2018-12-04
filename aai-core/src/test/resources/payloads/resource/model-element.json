@@ -1,0 +1,230 @@
+{
+    "model-element-uuid": "acf8b6cf-e051-4c1b-bcad-b24792f826cf-test1",
+    "new-data-del-flag": "7hWigbwQCh",
+    "cardinality": "loWHX7E8X",
+    "linkage-points": [
+        "Ve4JU"
+    ],
+    "model-elements": {
+        "model-element": [
+            {
+                "model-element-uuid": "01b757d5-6468-48d0-a1cd-2aa8310dadab-test1",
+                "new-data-del-flag": "IXoM0QnE0W",
+                "cardinality": "THLHKl"
+            },
+            {
+                "model-element-uuid": "2e5d5696-2221-4bcf-a493-e0ca92e323de-test1",
+                "new-data-del-flag": "icATJZ7Vbhz",
+                "cardinality": "tOIz"
+            }
+        ]
+    },
+    "model-constraints": {
+        "model-constraint": [
+            {
+                "model-constraint-uuid": "9f2e872b-000e-4bb9-9398-f308a997dd4f-test1",
+                "constrained-element-set-uuid-to-replace": "XfAVftTYu",
+                "constrained-element-sets": {
+                    "constrained-element-set": [
+                        {
+                            "constrained-element-set-uuid": "103cc6f7-b648-4a3f-b5aa-0ffdac4d4bc5-test1",
+                            "constraint-type": "FLKyNFdqbSSje",
+                            "check-type": "IDLSYTM",
+                            "element-choice-sets": {
+                                "element-choice-set": [
+                                    {
+                                        "element-choice-set-uuid": "5c063d38-d83e-4fe5-a721-86296fe39267-test1",
+                                        "element-choice-set-name": "EFc5b4k7LN8hF",
+                                        "cardinality": "xx8",
+                                        "model-elements": {
+                                            "model-element": [
+                                                {
+                                                    "model-element-uuid": "0b7a5aa2-5061-4916-a2c6-5280e67e0a71-test1",
+                                                    "new-data-del-flag": "x1Lo15W",
+                                                    "cardinality": "COu"
+                                                },
+                                                {
+                                                    "model-element-uuid": "f0af348b-1701-409f-bb11-e3acc77ad718-test1",
+                                                    "new-data-del-flag": "eiWkNQEj",
+                                                    "cardinality": "3aju5XtI"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "element-choice-set-uuid": "2c0888a6-fb6d-4a72-b0a1-3349c90d9e33-test1",
+                                        "element-choice-set-name": "Ko4",
+                                        "cardinality": "aXjnyYfCRFTDK",
+                                        "model-elements": {
+                                            "model-element": [
+                                                {
+                                                    "model-element-uuid": "ea8853be-8473-4f80-8229-9041864e143e-test1",
+                                                    "new-data-del-flag": "4tirsCs0fjDdS",
+                                                    "cardinality": "v2hbEn8u"
+                                                },
+                                                {
+                                                    "model-element-uuid": "f1267f37-5aa0-4f4a-ae66-3cf782ff4a9d-test1",
+                                                    "new-data-del-flag": "mzuWZTlc9f",
+                                                    "cardinality": "ysBXVL"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "constrained-element-set-uuid": "a82256df-5bc8-4433-851f-9b09f63432b4-test1",
+                            "constraint-type": "qgnLpj",
+                            "check-type": "zFug3wfyCe5cF",
+                            "element-choice-sets": {
+                                "element-choice-set": [
+                                    {
+                                        "element-choice-set-uuid": "3ce79981-c0cc-4210-9dab-89b8866797be-test1",
+                                        "element-choice-set-name": "rZ2f7Es",
+                                        "cardinality": "H1b",
+                                        "model-elements": {
+                                            "model-element": [
+                                                {
+                                                    "model-element-uuid": "52362a88-eb7a-4fe5-a6d5-1ca414cfed64-test1",
+                                                    "new-data-del-flag": "8cQmvQgeKJz",
+                                                    "cardinality": "6T7GiwYlJR5"
+                                                },
+                                                {
+                                                    "model-element-uuid": "e9d00d89-a340-4ef1-ab19-63367a5e8642-test1",
+                                                    "new-data-del-flag": "ec8DWfYeMJdr",
+                                                    "cardinality": "Bumc8fT7"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "element-choice-set-uuid": "335bac38-9739-4ff7-8743-e186310d86a9-test1",
+                                        "element-choice-set-name": "K0MH",
+                                        "cardinality": "rL3fH1Oz",
+                                        "model-elements": {
+                                            "model-element": [
+                                                {
+                                                    "model-element-uuid": "29244639-38ab-45b2-82b7-b91001ad56da-test1",
+                                                    "new-data-del-flag": "YZGbB6",
+                                                    "cardinality": "ushcYd"
+                                                },
+                                                {
+                                                    "model-element-uuid": "e36d3159-bfa7-465a-849f-de9ca6d4f304-test1",
+                                                    "new-data-del-flag": "ZtzRhZbxv2i",
+                                                    "cardinality": "NE4m8n5hj"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "model-constraint-uuid": "9e74a97c-52a9-43b4-bb9d-144cb5a2216e-test1",
+                "constrained-element-set-uuid-to-replace": "bZqdarfk6",
+                "constrained-element-sets": {
+                    "constrained-element-set": [
+                        {
+                            "constrained-element-set-uuid": "6c4db1da-8860-4445-a0ad-3ae00709e2bb-test1",
+                            "constraint-type": "Xzat2eVcU36g",
+                            "check-type": "3Y5Bi32VkRHFl",
+                            "element-choice-sets": {
+                                "element-choice-set": [
+                                    {
+                                        "element-choice-set-uuid": "33dc52b0-3461-4ca6-a195-c3cacc2ab426-test1",
+                                        "element-choice-set-name": "2ziwMvQGmanJ",
+                                        "cardinality": "7XXcdT5sqsOf",
+                                        "model-elements": {
+                                            "model-element": [
+                                                {
+                                                    "model-element-uuid": "c0fb7805-dfc4-4972-9a1c-d9409560f6e3-test1",
+                                                    "new-data-del-flag": "262Lx",
+                                                    "cardinality": "0ZaryC"
+                                                },
+                                                {
+                                                    "model-element-uuid": "e868506d-ef7d-4843-9c1b-47712c7c1b77-test1",
+                                                    "new-data-del-flag": "f7cKUCEbVuj6",
+                                                    "cardinality": "6LlYciE99"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "element-choice-set-uuid": "aca6b107-ba99-4e10-aef5-ff35a5b25a60-test1",
+                                        "element-choice-set-name": "lqfZDs",
+                                        "cardinality": "9AwB7",
+                                        "model-elements": {
+                                            "model-element": [
+                                                {
+                                                    "model-element-uuid": "527faaf0-f989-47a4-9ffd-4ea16d034be1-test1",
+                                                    "new-data-del-flag": "mPra14ZfLilOw",
+                                                    "cardinality": "y6mYr6"
+                                                },
+                                                {
+                                                    "model-element-uuid": "dfd7c245-0a28-494d-b388-faf27481674c-test1",
+                                                    "new-data-del-flag": "muGR",
+                                                    "cardinality": "TUj4Z"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "constrained-element-set-uuid": "17999338-a062-4447-b8c3-b27228255ede-test1",
+                            "constraint-type": "WhTbdWCLyA",
+                            "check-type": "tN02MBeB",
+                            "element-choice-sets": {
+                                "element-choice-set": [
+                                    {
+                                        "element-choice-set-uuid": "633c6757-2270-48fb-bff7-61145e6c943f-test1",
+                                        "element-choice-set-name": "Ith1PEe6",
+                                        "cardinality": "8sta",
+                                        "model-elements": {
+                                            "model-element": [
+                                                {
+                                                    "model-element-uuid": "827c40a9-cabe-460a-b537-2f117ca62db5-test1",
+                                                    "new-data-del-flag": "fS65rXWQY",
+                                                    "cardinality": "Kq42Z8GzCh"
+                                                },
+                                                {
+                                                    "model-element-uuid": "c107a4bd-59e4-4249-bbc3-a006645dcb01-test1",
+                                                    "new-data-del-flag": "EtgTeJdo19",
+                                                    "cardinality": "tvzpgg"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "element-choice-set-uuid": "930260d8-4cfd-4494-ba2c-d619c143a390-test1",
+                                        "element-choice-set-name": "ugDc0",
+                                        "cardinality": "K8MXjV",
+                                        "model-elements": {
+                                            "model-element": [
+                                                {
+                                                    "model-element-uuid": "f17f9eea-d421-4e8a-8628-32a4b56507ef-test1",
+                                                    "new-data-del-flag": "rjAbq7gyZWe",
+                                                    "cardinality": "VbDCFB9"
+                                                },
+                                                {
+                                                    "model-element-uuid": "ee1d800e-46c1-4bb0-8664-f257850ffff9-test1",
+                                                    "new-data-del-flag": "YontPXK4sj4s",
+                                                    "cardinality": "UQnNPld4sE"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}

@@ -1,0 +1,50 @@
+{
+  "cloud-owner" : "junit-cloud-owner-with-vlan",
+  "cloud-region-id" : "junit-cloud-region-with-vlan",
+  "cloud-type" : "P9P1X6U9eDXR",
+  "owner-defined-type" : "OUrR8kI6Br",
+  "tenants" : {
+    "tenant" : [ {
+      "tenant-id" : "tenant1-with-vlan",
+      "tenant-name" : "yhgVBcv3Pr",
+      "vservers" : {
+        "vserver" : [ {
+          "vserver-id" : "vserver1-with-vlan",
+          "vserver-name" : "P3SJ347Uyv",
+          "vserver-name2" : "1dHd",
+          "vserver-selflink" : "v7dU8H",
+          "in-maint" : false,
+          "is-closed-loop-disabled" : true,
+          "l-interfaces" : {
+            "l-interface" : [ {
+              "interface-name" : "top-linterface-with-vlan",
+              "interface-role" : "3W1FAJGSQ",
+              "v6-wan-link-ip" : "WugWw3N",
+              "selflink" : "Of4j0pU",
+              "interface-id" : "eoW",
+              "macaddr" : "XNbbIy33",
+              "network-name" : "ZETDv5sGhiS",
+              "management-option" : "qR3RyCxgEU",
+              "vlans" : {
+                "vlan" : [ {
+                  "vlan-interface" : "test-vlan-interface-1",
+                  "vlan-id-inner" : 884,
+                  "vlan-id-outer" : 992,
+                  "speed-value" : "RyFPm",
+                  "speed-units" : "ZrckmLff7b",
+                  "vlan-description" : "zjAeUFgeagpf",
+                  "backdoor-connection" : "gANMvUquB",
+                  "vpn-key" : "l0rV7bb2Sc",
+                  "orchestration-status" : "WVnLpbzIx",
+                  "in-maint" : false,
+                  "prov-status" : "tYMRi6df",
+                  "is-ip-unnumbered" : false
+                } ]
+              }
+            } ]
+          }
+        } ]
+      }
+    } ]
+  }
+}

@@ -25,12 +25,13 @@ import org.onap.aai.restcore.MediaType;
 import org.onap.aai.setup.SchemaVersion;
 
 import java.util.Map;
+import java.util.Set;
 
 public abstract class Loader {
 
 	private final SchemaVersion version;
 	private final ModelType modelType;
-	
+
 	/**
 	 * Instantiates a new loader.
 	 *
@@ -41,32 +42,32 @@ public abstract class Loader {
 		this.version = version;
 		this.modelType = modelType;
 	}
-	
+
 	/**
 	 * Process.
 	 *
 	 * @param version the version
 	 */
 	protected abstract void process(SchemaVersion version);
-	
+
 	/**
 	 * Object from name.
 	 *
 	 * @param name the name
 	 * @return the object
-	 * @throws AAIUnknownObjectException 
+	 * @throws AAIUnknownObjectException
 	 */
 	public abstract Object objectFromName(String name) throws AAIUnknownObjectException;
-	
+
 	/**
 	 * Introspector from name.
 	 *
 	 * @param name the name
 	 * @return the introspector
-	 * @throws AAIUnknownObjectException 
+	 * @throws AAIUnknownObjectException
 	 */
 	public abstract Introspector introspectorFromName(String name) throws AAIUnknownObjectException;
-	
+
 	/**
 	 * Unmarshal.
 	 *
@@ -76,7 +77,7 @@ public abstract class Loader {
 	 * @return the introspector
 	 */
 	public abstract Introspector unmarshal(String type, String json, MediaType mediaType) throws AAIUnmarshallingException;
-	
+
 	/**
 	 * Unmarshal.
 	 *
@@ -88,7 +89,7 @@ public abstract class Loader {
 		return unmarshal(type, json, MediaType.APPLICATION_JSON_TYPE);
 	}
 
-	
+
 	/**
 	 * Gets the model type.
 	 *
@@ -97,7 +98,7 @@ public abstract class Loader {
 	public ModelType getModelType() {
 		return this.modelType;
 	}
-	
+
 	/**
 	 * Gets the version.
 	 *
@@ -106,6 +107,8 @@ public abstract class Loader {
 	public SchemaVersion getVersion() {
 		return this.version;
 	}
-	
+
 	public abstract Map<String, Introspector> getAllObjects();
+
+    public abstract Set<String> getNamedPropNodes();
 }
