@@ -50,6 +50,7 @@ import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
 import org.apache.commons.lang.StringUtils;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 import org.janusgraph.core.JanusGraphException;
 import org.javatuples.Pair;
 import org.onap.aai.db.props.AAIProperties;
@@ -67,6 +68,7 @@ import org.onap.aai.nodes.NodeIngestor;
 import org.onap.aai.parsers.query.QueryParser;
 import org.onap.aai.parsers.uri.URIToExtensionInformation;
 
+import org.onap.aai.parsers.uri.URIToObject;
 import org.onap.aai.rest.ueb.UEBNotification;
 import org.onap.aai.restcore.HttpMethod;
 import org.onap.aai.schema.enums.ObjectMetadata;
@@ -93,15 +95,15 @@ public class HttpEntry {
 	private static final String TARGET_ENTITY = "DB";
 
 	private  ModelType introspectorFactoryType;
-	
+
 	private  QueryStyle queryStyle;
-	
+
 	private SchemaVersion version;
-	
+
 	private Loader loader;
-	
+
 	private TransactionalGraphEngine dbEngine;
-		
+
 	private boolean processSingle = true;
 
 	private int paginationBucket = -1;
@@ -161,7 +163,7 @@ public class HttpEntry {
 		getDbEngine().startTransaction();
 		return this;
 	}
-	
+
 
 	/**
 	 * Gets the introspector factory type.
@@ -316,7 +318,7 @@ public class HttpEntry {
 		QueryEngine queryEngine = dbEngine.getQueryEngine();
 		int maxRetries = 10;
 		int retry = 0;
-	
+
 		LoggingContext.save();
 		for (DBRequest request : requests) {
 			response = null;
@@ -358,7 +360,7 @@ public class HttpEntry {
 						if (requestContextList != null) {
 							requestContext = requestContextList.get(0);
 						}
-					
+
 						if (cleanUp == null) {
 							cleanUp = "false";
 						}
@@ -426,7 +428,7 @@ public class HttpEntry {
 									result = formatter.output(vertices.stream().map(vertex -> (Object) vertex).collect(Collectors.toList())).toString();
 									status = Status.OK;
 								}
-								
+
 								break;
 							case PUT:
 								response = this.invokeExtension(dbEngine, this.dbEngine.tx(), method, request, sourceOfTruth, version, loader, obj, uri, true);
@@ -441,9 +443,9 @@ public class HttpEntry {
 								}
 								obj = serializer.getLatestVersionView(v);
 								if (query.isDependent()) {
-									relatedObjects = this.getRelatedObjects(serializer, queryEngine, v);
+									relatedObjects = this.getRelatedObjects(serializer, queryEngine, v, obj, this.loader);
 								}
-								LoggingContext.elapsedTime((long)serializer.getDBTimeMsecs() + 
+								LoggingContext.elapsedTime((long)serializer.getDBTimeMsecs() +
 										(long)queryEngine.getDBTimeMsecs(), TimeUnit.MILLISECONDS);
 								LOGGER.info ("Completed ");
 								LoggingContext.restoreIfPossible();
@@ -454,7 +456,7 @@ public class HttpEntry {
 								serializer.touchStandardVertexProperties(v, false);
 								this.invokeExtension(dbEngine, this.dbEngine.tx(), method, request, sourceOfTruth, version, loader, obj, uri, true);
 								serializer.createEdge(obj, v);
-								
+
 								LoggingContext.elapsedTime((long)serializer.getDBTimeMsecs(),TimeUnit.MILLISECONDS);
 								LOGGER.info ("Completed");
 								LoggingContext.restoreIfPossible();
@@ -466,7 +468,7 @@ public class HttpEntry {
 								existingObj = this.getObjectFromDb(vertices, serializer, query, existingObj, request.getUri(), 0, false, cleanUp);
 								String existingJson = existingObj.marshal(false);
 								String newJson;
-								
+
 								if (request.getRawRequestContent().isPresent()) {
 									newJson = request.getRawRequestContent().get();
 								} else {
@@ -489,15 +491,15 @@ public class HttpEntry {
 									status = Status.OK;
 									patchedObj = serializer.getLatestVersionView(v);
 									if (query.isDependent()) {
-										relatedObjects = this.getRelatedObjects(serializer, queryEngine, v);
+										relatedObjects = this.getRelatedObjects(serializer, queryEngine, v, patchedObj, this.loader);
 									}
-									LoggingContext.elapsedTime((long)serializer.getDBTimeMsecs() + 
+									LoggingContext.elapsedTime((long)serializer.getDBTimeMsecs() +
 											(long)queryEngine.getDBTimeMsecs(), TimeUnit.MILLISECONDS);
 									LOGGER.info ("Completed");
 									LoggingContext.restoreIfPossible();
 									notification.createNotificationEvent(transactionId, sourceOfTruth, status, uri, patchedObj, relatedObjects, basePath);
 								} catch (IOException | JsonPatchException e) {
-									
+
 									LOGGER.info ("Caught exception: " + e.getMessage());
 									LoggingContext.restoreIfPossible();
 									throw new AAIException("AAI_3000", "could not perform patch operation");
@@ -507,18 +509,18 @@ public class HttpEntry {
 								String resourceVersion = params.getFirst("resource-version");
 								obj = serializer.getLatestVersionView(v);
 								if (query.isDependent()) {
-									relatedObjects = this.getRelatedObjects(serializer, queryEngine, v);
+									relatedObjects = this.getRelatedObjects(serializer, queryEngine, v, obj, this.loader);
 								}
 								/*
 								 * Find all Delete-other-vertex vertices and create structure for notify
-								 * findDeleatble also returns the startVertex v and we dont want to create 
+								 * findDeleatble also returns the startVertex v and we dont want to create
 								 * duplicate notification events for the same
 								 * So remove the startvertex first
 								 */
-								
+
 								List<Vertex> deletableVertices = dbEngine.getQueryEngine().findDeletable(v);
 								Long vId = (Long) v.id();
-								
+
 								/*
 								 * I am assuming vertexId cant be null
 								 */
@@ -527,39 +529,39 @@ public class HttpEntry {
 								Map<Vertex, Introspector> deleteObjects = new HashMap<>();
 								Map<String, URI> uriMap = new HashMap<>();
 								Map<String, HashMap<String, Introspector>> deleteRelatedObjects = new HashMap<>();
-								
+
 								if(isDelVerticesPresent){
 									deleteObjects = this.buildIntrospectorObjects(serializer, deletableVertices);
-										
+
 									uriMap = this.buildURIMap(serializer, deleteObjects);
 									deleteRelatedObjects = this.buildRelatedObjects(serializer, queryEngine, deleteObjects);
 								}
-								
+
 								this.invokeExtension(dbEngine, this.dbEngine.tx(), method, request, sourceOfTruth, version, loader, obj, uri, true);
 								serializer.delete(v, deletableVertices, resourceVersion, enableResourceVersion);
 								this.invokeExtension(dbEngine, this.dbEngine.tx(), method, request, sourceOfTruth, version, loader, obj, uri, false);
-								
-								LoggingContext.elapsedTime((long)serializer.getDBTimeMsecs() + 
+
+								LoggingContext.elapsedTime((long)serializer.getDBTimeMsecs() +
 										(long)queryEngine.getDBTimeMsecs(), TimeUnit.MILLISECONDS);
 								LOGGER.info ("Completed");
 								LoggingContext.restoreIfPossible();
 								status = Status.NO_CONTENT;
 								notification.createNotificationEvent(transactionId, sourceOfTruth, status, uri, obj, relatedObjects, basePath);
-								
+
 								/*
 								 * Notify delete-other-v candidates
 								 */
-								
+
 								if(isDelVerticesPresent){
 									this.buildNotificationEvent(sourceOfTruth, status, transactionId, notification, deleteObjects,
 									uriMap, deleteRelatedObjects, basePath);
 								}
-								
+
 								break;
 							case DELETE_EDGE:
 								serializer.touchStandardVertexProperties(v, false);
 								serializer.deleteEdge(obj, v);
-								
+
 								LoggingContext.elapsedTime((long)serializer.getDBTimeMsecs(),TimeUnit.MILLISECONDS);
 								LOGGER.info ("Completed");
 								LoggingContext.restoreIfPossible();
@@ -569,8 +571,8 @@ public class HttpEntry {
 							default:
 								break;
 						}
-						
-						
+
+
 						/* temporarily adding vertex id to the headers
 						 * to be able to use for testing the vertex id endpoint functionality
 						 * since we presently have no other way of generating those id urls
@@ -606,7 +608,7 @@ public class HttpEntry {
 						break;
 					} catch (JanusGraphException e) {
 						this.dbEngine.rollback();
-						
+
 						LOGGER.info ("Caught exception: " + e.getMessage());
 						LoggingContext.restoreIfPossible();
 						AAIException ex = new AAIException("AAI_6142", e);
@@ -655,7 +657,7 @@ public class HttpEntry {
 		return Pair.with(success, responses);
 	}
 
-	
+
 	/**
 	 * Gets the media type.
 	 *
@@ -663,15 +665,15 @@ public class HttpEntry {
 	 * @return the media type
 	 */
 	private String getMediaType(List <MediaType> mediaTypeList) {
-		String mediaType = MediaType.APPLICATION_JSON;  // json is the default    
+		String mediaType = MediaType.APPLICATION_JSON;  // json is the default
 		for (MediaType mt : mediaTypeList) {
 			if (MediaType.APPLICATION_XML_TYPE.isCompatible(mt)) {
 				mediaType = MediaType.APPLICATION_XML;
-			} 
+			}
 		}
 		return mediaType;
 	}
-	
+
 	/**
 	 * Gets the object from db.
 	 *
@@ -691,11 +693,11 @@ public class HttpEntry {
 	 * @throws NoSuchMethodException the no such method exception
 	 * @throws UnsupportedEncodingException the unsupported encoding exception
 	 * @throws MalformedURLException the malformed URL exception
-	 * @throws AAIUnknownObjectException 
-	 * @throws URISyntaxException 
+	 * @throws AAIUnknownObjectException
+	 * @throws URISyntaxException
 	 */
 	private Introspector getObjectFromDb(List<Vertex> results, DBSerializer serializer, QueryParser query, Introspector obj, URI uri, int depth, boolean nodeOnly, String cleanUp) throws AAIException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, SecurityException, InstantiationException, NoSuchMethodException, UnsupportedEncodingException, AAIUnknownObjectException, URISyntaxException {
-        
+
         //nothing found
         if (results.isEmpty()) {
         	String msg = createNotFoundMessage(query.getResultType(), uri);
@@ -703,7 +705,7 @@ public class HttpEntry {
         }
 
         return serializer.dbToObject(results, obj, depth, nodeOnly, cleanUp);
-        
+
 	}
 
 	/**
@@ -800,7 +802,7 @@ public class HttpEntry {
 
 		return response;
 	}
-	
+
 	/**
 	 * Creates the not found message.
 	 *
@@ -809,12 +811,12 @@ public class HttpEntry {
 	 * @return the string
 	 */
 	private String createNotFoundMessage(String resultType, URI uri) {
-		
+
     	String msg = "No Node of type " + resultType + " found at: " + uri.getPath();
 
     	return msg;
 	}
-	
+
 	/**
 	 * Sets the depth.
 	 *
@@ -848,7 +850,7 @@ public class HttpEntry {
 			}
 		}
         String maxDepth = obj.getMetadata(ObjectMetadata.MAXIMUM_DEPTH);
-        
+
 		int maximumDepth = AAIProperties.MAXIMUM_DEPTH;
 
 		if(maxDepth != null){
@@ -865,7 +867,7 @@ public class HttpEntry {
 
 		return depth;
 	}
-	
+
 	/**
 	 * Checks if is modification method.
 	 *
@@ -874,31 +876,138 @@ public class HttpEntry {
 	 */
 	private boolean isModificationMethod(HttpMethod method) {
 		boolean result = false;
-		
+
 		if (method.equals(HttpMethod.PUT) || method.equals(HttpMethod.PUT_EDGE) || method.equals(HttpMethod.DELETE_EDGE) || method.equals(HttpMethod.MERGE_PATCH)) {
 			result = true;
 		}
-		
+
 		return result;
-		
+
 	}
-	
-	private HashMap<String, Introspector> getRelatedObjects(DBSerializer serializer, QueryEngine queryEngine, Vertex v) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, SecurityException, InstantiationException, NoSuchMethodException, UnsupportedEncodingException, AAIException, URISyntaxException {
-		HashMap<String, Introspector> relatedVertices = new HashMap<>();
-		List<Vertex> vertexChain = queryEngine.findParents(v);
-		for (Vertex vertex : vertexChain) {
-			try {
-				final Introspector vertexObj = serializer.getVertexProperties(vertex);
-				relatedVertices.put(vertexObj.getObjectId(), vertexObj);
-			} catch (AAIUnknownObjectException e) {
-				LOGGER.warn("Unable to get vertex properties, partial list of related vertices returned");
-			}
-			
-		}
-		
-		return relatedVertices;
-	}
-	
+
+    /**
+     * Given an uri, introspector object and loader object
+     * it will check if the obj is top level object if it is,
+     * it will return immediately returning the uri passed in
+     * If it isn't, it will go through, get the uriTemplate
+     * from the introspector object and get the count of "/"s
+     * and remove that part of the uri using substring
+     * and keep doing that until the current object is top level
+     * Also added the max depth just so worst case scenario
+     * Then keep adding aai-uri to the list include the aai-uri passed in
+     * Convert that list into an array and return it
+     * <p>
+     *
+     * Example:
+     *
+     * <blockquote>
+     * aai-uri -> /cloud-infrastructure/cloud-regions/cloud-region/cloud-owner/cloud-region-id/tenants/tenant/tenant1/vservers/vserver/v1
+     *
+     * Given the uriTemplate vserver -> /vservers/vserver/{vserver-id}
+     * it converts to /vservers/vserver
+     *
+     * lastIndexOf /vservers/vserver in /cloud-infrastructure/cloud-regions/cloud-region/cloud-owner/cloud-region-id/tenants/tenant/tenant1/vservers/vserver/v1
+     *                                                                                                                                    ^
+     *                                                                                                                                    |
+     *                                                                                                                                    |
+     *                                                                                                                                lastIndexOf
+     * Use substring to get the string from 0 to that lastIndexOf
+     * aai-uri -> /cloud-infrastructure/cloud-regions/cloud-region/cloud-owner/cloud-region-id/tenants/tenant/tenant1
+     *
+     * From this new aai-uri, generate a introspector from the URITOObject class
+     * and keep doing this until you
+     *
+     * </blockquote>
+     *
+     * @param aaiUri - aai-uri of the vertex representating the unique id of a given vertex
+     * @param obj    - introspector object of the given starting vertex
+     * @param loader - Type of loader which will always be MoxyLoader to support model driven
+     * @return an array of strings which can be used to get the vertexes of parent and grand parents from a given vertex
+     * @throws UnsupportedEncodingException
+     * @throws AAIException
+     */
+	String[] convertIntrospectorToUriList(String aaiUri, Introspector obj, Loader loader) throws UnsupportedEncodingException, AAIException {
+
+        List<String> uriList = new ArrayList<>();
+        String template = StringUtils.EMPTY;
+        String truncatedUri = aaiUri;
+        int depth = AAIProperties.MAXIMUM_DEPTH;
+        uriList.add(truncatedUri);
+
+        while (depth >= 0 && !obj.isTopLevel()) {
+            template = obj.getMetadata(ObjectMetadata.URI_TEMPLATE);
+            int templateCount = StringUtils.countMatches(template, "/");
+            int truncatedUriCount = StringUtils.countMatches(truncatedUri, "/");
+            int cutIndex = truncatedUri.length();
+            if (templateCount != StringUtils.countMatches(truncatedUri, "/")) {
+                cutIndex = StringUtils.ordinalIndexOf(truncatedUri, "/", truncatedUriCount-templateCount+1);
+            }
+            truncatedUri = StringUtils.substring(truncatedUri, 0, cutIndex);
+            uriList.add(truncatedUri);
+            obj = new URIToObject(loader, UriBuilder.fromPath(truncatedUri).build()).getEntity();
+            depth--;
+        }
+
+        return uriList.toArray(new String[uriList.size()]);
+    }
+
+    /**
+     *
+     * @param serializer
+     * @param queryEngine
+     * @param v
+     * @param obj
+     * @param loader
+     * @return
+     * @throws IllegalAccessException
+     * @throws IllegalArgumentException
+     * @throws InvocationTargetException
+     * @throws SecurityException
+     * @throws InstantiationException
+     * @throws NoSuchMethodException
+     * @throws UnsupportedEncodingException
+     * @throws AAIException
+     * @throws URISyntaxException
+     */
+    private HashMap<String, Introspector> getRelatedObjects(DBSerializer serializer, QueryEngine queryEngine, Vertex v, Introspector obj, Loader loader) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, SecurityException, InstantiationException, NoSuchMethodException, UnsupportedEncodingException, AAIException, URISyntaxException {
+
+        HashMap<String, Introspector> relatedVertices = new HashMap<>();
+        VertexProperty aaiUriProperty = v.property(AAIProperties.AAI_URI);
+
+        if(!aaiUriProperty.isPresent()){
+            if(LOGGER.isDebugEnabled()){
+                LOGGER.debug("For the given vertex {}, it seems aai-uri is not present so not getting related objects", v.id().toString());
+            } else {
+                LOGGER.info("It seems aai-uri is not present in vertex, so not getting related objects, for more info enable debug log");
+            }
+            return relatedVertices;
+        }
+
+        String aaiUri = aaiUriProperty.value().toString();
+
+        if(!obj.isTopLevel()){
+            String[] uriList = convertIntrospectorToUriList(aaiUri, obj, loader);
+            List<Vertex> vertexChain = queryEngine.findParents(uriList);
+            for(Vertex vertex : vertexChain){
+                try {
+                    final Introspector vertexObj = serializer.getVertexProperties(vertex);
+                    relatedVertices.put(vertexObj.getObjectId(), vertexObj);
+                } catch (AAIUnknownObjectException e) {
+                    LOGGER.warn("Unable to get vertex properties, partial list of related vertices returned");
+                }
+            }
+        } else {
+            try {
+                final Introspector vertexObj = serializer.getVertexProperties(v);
+                relatedVertices.put(vertexObj.getObjectId(), vertexObj);
+            } catch (AAIUnknownObjectException e) {
+                LOGGER.warn("Unable to get vertex properties, partial list of related vertices returned");
+            }
+        }
+
+        return relatedVertices;
+    }
+
 	private Map<Vertex, Introspector> buildIntrospectorObjects(DBSerializer serializer, Iterable<Vertex> vertices) {
 		Map<Vertex, Introspector> deleteObjectMap = new HashMap<>();
 		for (Vertex vertex : vertices) {
@@ -944,7 +1053,7 @@ public class HttpEntry {
 		for (Map.Entry<Vertex, Introspector> entry : introSpector.entrySet()) {
 			try {
 				HashMap<String, Introspector> relatedObjects = this.getRelatedObjects(serializer, queryEngine,
-						entry.getKey());
+						entry.getKey(), entry.getValue(), this.loader);
 				if (null != entry.getValue())
 					relatedObjectsMap.put(entry.getValue().getObjectId(), relatedObjects);
 			} catch (IllegalAccessException | IllegalArgumentException
@@ -959,7 +1068,7 @@ public class HttpEntry {
 		return relatedObjectsMap;
 
 	}
-	
+
 	private void buildNotificationEvent(String sourceOfTruth, Status status, String transactionId,
 			UEBNotification notification, Map<Vertex, Introspector> deleteObjects, Map<String, URI> uriMap,
 			Map<String, HashMap<String, Introspector>> deleteRelatedObjects, String basePath) {
@@ -979,5 +1088,28 @@ public class HttpEntry {
 				LOGGER.warn("Error in sending notification");
 			}
 		}
+	}
+
+	public void setPaginationParameters(String resultIndex, String resultSize) {
+		if (resultIndex != null && resultIndex != "-1" && resultSize != null && resultSize != "-1") {
+			this.setPaginationIndex(Integer.parseInt(resultIndex));
+			this.setPaginationBucket(Integer.parseInt(resultSize));
+		}
+	}
+
+	public List<Object> getPaginatedVertexList(List<Object> vertexList) throws AAIException{
+		List<Object> vertices;
+		if(this.isPaginated()) {
+			this.setTotalsForPaging(vertexList.size(), this.getPaginationBucket());
+			int startIndex = (this.getPaginationIndex() - 1) * this.getPaginationBucket();
+			int endIndex = Math.min((this.getPaginationBucket() * this.getPaginationIndex()), vertexList.size());
+			if(startIndex > endIndex){
+				throw new AAIException("AAI_6150"," ResultIndex is not appropriate for the result set, Needs to be <= "+ endIndex);
+			}
+			vertices = vertexList.subList(startIndex, endIndex);
+		}else{
+			vertices = vertexList;
+		}
+		return vertices;
 	}
 }

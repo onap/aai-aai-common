@@ -5704,8 +5704,8 @@
 		<java-type name="ReservedPropNames">
 			<xml-properties>
 				<xml-property name="description" value="Internal map to define some reserved properties of a vertex"/>
-				<xml-property name="uniqueProps" value="aai-unique-key"/>
-				<xml-property name="indexedProps" value="aai-unique-key,source-of-truth,aai-node-type,aai-uri"/>
+				<xml-property name="uniqueProps" value="aai-unique-key,aai-uri,aai-uuid"/>
+				<xml-property name="indexedProps" value="aai-unique-key,source-of-truth,aai-node-type,aai-uri,aai-uuid"/>
 			</xml-properties>
 			<xml-root-element name="reserved-prop-names"/>
 			<java-attributes>

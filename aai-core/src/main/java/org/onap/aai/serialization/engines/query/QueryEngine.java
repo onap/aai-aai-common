@@ -42,16 +42,33 @@ public abstract class QueryEngine {
 	public QueryEngine (GraphTraversalSource g) {
 		this.g = g;
 	}
-	
+
 	/**
 	 * Finds all the parents/grandparents/etc of the given start node.
 	 *
 	 * @param start - the start vertex whose parent chain you want
 	 * @return the list of start and start's parent, grandparent, etc, in
-	 * 			order (ie {start, parent, grandparent, etc} 
+	 * 			order (ie {start, parent, grandparent, etc}
 	 */
 	public abstract List<Vertex> findParents(Vertex start);
-	
+
+    /**
+     * Finds all the parents/grandparents/etc of the given start node.
+     *
+     * This method should be used in place of the #findParents(Vertex)
+     * as since the aai-uri is added the lookup for finding the parents
+     * using the given list of aai-uri will be much faster than using
+     * a traversal to follow a start vertex and keep repeating since
+     * as the number of different type of edges keeps growing that call
+     * will be more expensive than using the aai-uri's as they are fast lookup
+     *
+     * @param uris  - list of the uris representing the aai-uris of
+     *                 parent, grandparent, etc
+     * @return the list of start and start's parent, grandparent, etc, in
+     * 			order (ie {start, parent, grandparent, etc}
+     */
+    public abstract List<Vertex> findParents(String [] uris);
+
 	/**
 	 * Finds all children, grandchildren, etc of start
 	 *
@@ -59,7 +76,7 @@ public abstract class QueryEngine {
 	 * @return the list of child/grandchild/etc vertices
 	 */
 	public abstract List<Vertex> findAllChildren(Vertex start);
-	
+
 	/**
 	 * Finds all immediate children of start (no grandchildren or so forth) of the given type
 	 * @param start - the start vertex
@@ -67,14 +84,14 @@ public abstract class QueryEngine {
 	 * @return the list of immediate child vertices of given type
 	 */
 	public abstract List<Vertex> findChildrenOfType(Vertex start, String type);
-	
+
 	/**
 	 * Finds all immediate children of start (no grandchildren or so forth)
 	 * @param start - the start vertex
 	 * @return the list of immediate child vertices
 	 */
 	public abstract List<Vertex> findChildren(Vertex start);
-	
+
 	/**
 	 * Find all vertices that should be deleted in a cascade from a delete of start
 	 *
@@ -82,34 +99,34 @@ public abstract class QueryEngine {
 	 * @return the list of vertices to be deleted when start is deleted
 	 */
 	public abstract List<Vertex> findDeletable(Vertex start);
-	
+
 	/**
 	 * Finds the subgraph under start, including cousins as well as start's children/grandchildren/etc.
 	 * More specifically, this includes start, all its descendants, start's cousins, and start's
 	 * descendants' cousins (but not any of the cousins' cousins or descendants), and the edges
 	 * connecting them.
-	 * 
+	 *
 	 * @param start - the start vertex
-	 * @return - Tree containing nodes and edges of the subgraph 
+	 * @return - Tree containing nodes and edges of the subgraph
 	 */
 	public Tree<Element> findSubGraph(Vertex start) {
 		return findSubGraph(start, AAIProperties.MAXIMUM_DEPTH, false);
 	}
-	
+
 	/**
 	 * Finds the subgraph under start, including cousins as well as start's children/grandchildren/etc.
 	 * More specifically, this includes start, all its descendants, start's cousins, and start's
 	 * descendants' cousins (but not any of the cousins' cousins or descendants), and the edges
 	 * connecting them.
-	 * 
+	 *
 	 * @param start - the start vertex
-	 * @param iterations - depth of the subgraph, this limits how many generations of 
+	 * @param iterations - depth of the subgraph, this limits how many generations of
 	 * 						descendants are included
 	 * @param nodeOnly - if true the subgraph will NOT include the cousins
-	 * @return Tree containing nodes and edges of the subgraph 
+	 * @return Tree containing nodes and edges of the subgraph
 	 */
 	public abstract Tree<Element> findSubGraph(Vertex start, int iterations, boolean nodeOnly);
-	
+
 	/**
 	 * Find vertices of type nodeType related to start by edges of the given
 	 *  direction and label.
@@ -125,23 +142,23 @@ public abstract class QueryEngine {
 	/**
 	 * Finds cousin edges connecting start to other vertices only of types defined in an old version.
 	 * The idea is that if a user is using an old version, they won't understand any new node types in
-	 * subsequent versions. Thus, revealing edges to new types will cause problems. This methods 
+	 * subsequent versions. Thus, revealing edges to new types will cause problems. This methods
 	 * filters any such edges out.
-	 * 
+	 *
 	 * @param start - the start vertex
 	 * @param loader - loader for retrieving the list of allowed node types for the desired version
 	 * 					(version is set when the loader was instantiated)
 	 * @return list of cousin edges between start and any node types understood by the version specified in loader
 	 */
 	public abstract List<Edge> findEdgesForVersion(Vertex start, Loader loader);
-	
+
 	/**
-	 * Finds all cousins of start. 
-	 * 
+	 * Finds all cousins of start.
+	 *
 	 * @param start - the start vertex
 	 * @return list of start's cousin vertices
 	 */
-	public abstract List<Vertex> findCousinVertices(Vertex start);
+	public abstract List<Vertex> findCousinVertices(Vertex start, String... labels);
 
 	public abstract double getDBTimeMsecs();
 

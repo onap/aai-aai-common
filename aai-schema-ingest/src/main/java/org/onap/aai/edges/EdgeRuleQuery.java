@@ -1,4 +1,4 @@
-/** 
+/**
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
@@ -36,6 +36,7 @@ import static com.jayway.jsonpath.Filter.filter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.jayway.jsonpath.Criteria.where;
@@ -90,6 +91,12 @@ public class EdgeRuleQuery {
         private String getSecondNodeType() {
             return nodeB;
         }
+
+        public Builder to(String nodeB){
+            this.nodeB = nodeB;
+            return this;
+        }
+
         public Builder toOnly() {
             //Allows this to be used with single parameter constructor Builder(String nodeA)
             if(StringUtils.isEmpty(this.nodeB) && StringUtils.isNotEmpty(this.nodeA) ) {
@@ -312,6 +319,30 @@ public class EdgeRuleQuery {
         }
         return sb.toString();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        EdgeRuleQuery ruleQuery = (EdgeRuleQuery) o;
+        return isPrivate == ruleQuery.isPrivate &&
+            Objects.equals(v, ruleQuery.v) &&
+            Objects.equals(nodeA, ruleQuery.nodeA) &&
+            Objects.equals(nodeB, ruleQuery.nodeB) &&
+            Objects.equals(label, ruleQuery.label) &&
+            direction == ruleQuery.direction &&
+            type == ruleQuery.type;
+    }
+
+    @Override
+    public int hashCode() {
+        if(v.isPresent()){
+            return Objects.hash(v.get(), nodeA, nodeB, label, direction, type, isPrivate);
+        } else {
+            return Objects.hash(nodeA, nodeB, label, direction, type, isPrivate);
+        }
+    }
+
 }
 
 
