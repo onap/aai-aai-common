@@ -1,0 +1,211 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9adffdf1_2f305300",
+        "filename": "aai-core/src/main/java/org/onap/aai/introspection/JSONStrategy.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 361,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2018-12-05T04:53:20Z",
+      "side": 1,
+      "message": "should this return empty Set rather than null?",
+      "range": {
+        "startLine": 361,
+        "startChar": 5,
+        "endLine": 361,
+        "endChar": 16
+      },
+      "revId": "a4fcb0fed73e226576d03c77d80d4ab864ee2bb2",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9adffdf1_4f7d97b0",
+        "filename": "aai-core/src/main/java/org/onap/aai/introspection/MoxyLoader.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 188,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2018-12-05T04:53:20Z",
+      "side": 1,
+      "message": "should this be synchronized on namedProps? any chance of multiple threads entering this at the same time?",
+      "range": {
+        "startLine": 188,
+        "startChar": 8,
+        "endLine": 188,
+        "endChar": 31
+      },
+      "revId": "a4fcb0fed73e226576d03c77d80d4ab864ee2bb2",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9adffdf1_ef4b2b85",
+        "filename": "aai-core/src/main/java/org/onap/aai/introspection/MoxyStrategy.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2018-12-05T04:53:20Z",
+      "side": 1,
+      "message": "these two lines appear to get the property metadata twice from the database mapping, which seems counter-productive for a performance improvement code",
+      "range": {
+        "startLine": 168,
+        "startChar": 0,
+        "endLine": 169,
+        "endChar": 89
+      },
+      "revId": "a4fcb0fed73e226576d03c77d80d4ab864ee2bb2",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9adffdf1_0f4f8f93",
+        "filename": "aai-core/src/main/java/org/onap/aai/rest/db/HttpEntry.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 938,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2018-12-05T04:53:20Z",
+      "side": 1,
+      "message": "where is the defensive programming in case this URI_TEMPLATE parameter is not in the metadata? e.g. Beijing branch version of v10 to v13 schema files instead of the Casablanca branch version of v10 to v13 schema files?",
+      "range": {
+        "startLine": 938,
+        "startChar": 12,
+        "endLine": 938,
+        "endChar": 68
+      },
+      "revId": "a4fcb0fed73e226576d03c77d80d4ab864ee2bb2",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9adffdf1_af452371",
+        "filename": "aai-core/src/main/java/org/onap/aai/rest/db/HttpEntry.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 942,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2018-12-05T04:53:20Z",
+      "side": 1,
+      "message": "this is exactly truncatedUriCount at this point, no need to countMatches again",
+      "range": {
+        "startLine": 942,
+        "startChar": 33,
+        "endLine": 942,
+        "endChar": 76
+      },
+      "revId": "a4fcb0fed73e226576d03c77d80d4ab864ee2bb2",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9adffdf1_cf48a789",
+        "filename": "aai-core/src/main/java/org/onap/aai/rest/db/HttpEntry.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 943,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2018-12-05T04:53:20Z",
+      "side": 1,
+      "message": "assumption that templateCount \u003c truncatedUriCount.\nwhat if the templateCount is larger? need defense against faulty URI_TEMPLATE metadata.",
+      "range": {
+        "startLine": 943,
+        "startChar": 73,
+        "endLine": 943,
+        "endChar": 106
+      },
+      "revId": "a4fcb0fed73e226576d03c77d80d4ab864ee2bb2",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9adffdf1_cf3f47d5",
+        "filename": "aai-core/src/main/java/org/onap/aai/serialization/db/DBSerializer.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2018-12-05T04:53:20Z",
+      "side": 1,
+      "message": "indenting inconsistent with surrounding code",
+      "range": {
+        "startLine": 104,
+        "startChar": 0,
+        "endLine": 105,
+        "endChar": 39
+      },
+      "revId": "a4fcb0fed73e226576d03c77d80d4ab864ee2bb2",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9adffdf1_6f265bd0",
+        "filename": "aai-core/src/main/java/org/onap/aai/serialization/db/DBSerializer.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2018-12-05T04:53:20Z",
+      "side": 1,
+      "message": "indenting inconsistent with surrounding code",
+      "range": {
+        "startLine": 123,
+        "startChar": 0,
+        "endLine": 125,
+        "endChar": 65
+      },
+      "revId": "a4fcb0fed73e226576d03c77d80d4ab864ee2bb2",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9adffdf1_8f213fb6",
+        "filename": "aai-core/src/main/java/org/onap/aai/serialization/db/DBSerializer.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 186,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2018-12-05T04:53:20Z",
+      "side": 1,
+      "message": "why is the entire rest of this file re-indented and mixed with other code changes? near impossible to diff properly for the functional changes.",
+      "range": {
+        "startLine": 185,
+        "startChar": 0,
+        "endLine": 186,
+        "endChar": 0
+      },
+      "revId": "a4fcb0fed73e226576d03c77d80d4ab864ee2bb2",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
