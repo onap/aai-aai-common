@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "9adffdf1_bea9d2e0",
+        "filename": "aai-core/src/main/java/org/onap/aai/introspection/JSONStrategy.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 361,
+      "author": {
+        "id": 75
+      },
+      "writtenOn": "2018-12-05T14:18:50Z",
+      "side": 1,
+      "message": "Actually this method and its implementation is not currently used. I planned on using it to see if its faster to get all the properties at once and would need to know the keys of the dbAlias. When doing analysis on which is faster, I found that in some cases, it gained performance and in some cases, it didn\u0027t. I will clean this up.",
+      "parentUuid": "9adffdf1_2f305300",
+      "range": {
+        "startLine": 361,
+        "startChar": 5,
+        "endLine": 361,
+        "endChar": 16
+      },
+      "revId": "a4fcb0fed73e226576d03c77d80d4ab864ee2bb2",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9adffdf1_4f7d97b0",
         "filename": "aai-core/src/main/java/org/onap/aai/introspection/MoxyLoader.java",
         "patchSetId": 1
@@ -36,6 +60,30 @@
       "writtenOn": "2018-12-05T04:53:20Z",
       "side": 1,
       "message": "should this be synchronized on namedProps? any chance of multiple threads entering this at the same time?",
+      "range": {
+        "startLine": 188,
+        "startChar": 8,
+        "endLine": 188,
+        "endChar": 31
+      },
+      "revId": "a4fcb0fed73e226576d03c77d80d4ab864ee2bb2",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9adffdf1_5eb0e642",
+        "filename": "aai-core/src/main/java/org/onap/aai/introspection/MoxyLoader.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 188,
+      "author": {
+        "id": 75
+      },
+      "writtenOn": "2018-12-05T14:18:50Z",
+      "side": 1,
+      "message": "No multiple threads would not enter at the same time.",
+      "parentUuid": "9adffdf1_4f7d97b0",
       "range": {
         "startLine": 188,
         "startChar": 8,
@@ -197,6 +245,30 @@
       "writtenOn": "2018-12-05T04:53:20Z",
       "side": 1,
       "message": "why is the entire rest of this file re-indented and mixed with other code changes? near impossible to diff properly for the functional changes.",
+      "range": {
+        "startLine": 185,
+        "startChar": 0,
+        "endLine": 186,
+        "endChar": 0
+      },
+      "revId": "a4fcb0fed73e226576d03c77d80d4ab864ee2bb2",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9adffdf1_3ee3a234",
+        "filename": "aai-core/src/main/java/org/onap/aai/serialization/db/DBSerializer.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 186,
+      "author": {
+        "id": 75
+      },
+      "writtenOn": "2018-12-05T14:18:50Z",
+      "side": 1,
+      "message": "I think the IDE messed up the formatting when it saw the file already had some places with tabs and some places with spaces so that resulted in this state. I will fix that. You can also click on the settings and ignore whitespace to see a clear diff.",
+      "parentUuid": "9adffdf1_8f213fb6",
       "range": {
         "startLine": 185,
         "startChar": 0,
