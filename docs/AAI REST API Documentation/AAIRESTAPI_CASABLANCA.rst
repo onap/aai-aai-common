@@ -1715,3 +1715,13 @@ List of Queries and Payloads
 For a full list of available custom queries, please refer to our
 `Custom Queries <customQueries.html>`_ document
 
+Nodes Query
+-----------
+
+In working with AAI's standard REST API, you may have noticed that
+certain API paths have a hierarchy to them and require a client to
+know multiple object keys to preform GETs. The nodes API allows for
+more freedom in querying AAI, allowing clients to circumvent the need
+to know every key in the hierarchy.
+
+See `Nodes Query <nodesQuery.html>`_ for more information.
