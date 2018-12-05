@@ -20,7 +20,10 @@
 package org.onap.aai.setup;
 
 import java.io.File;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -43,7 +46,7 @@ public class AAIConfigTranslator extends ConfigTranslator {
 	 */
 	@Override
 	public Map<SchemaVersion, List<String>> getNodeFiles() {
-		
+
 		Map<SchemaVersion, List<String>> files = new TreeMap<>();
 		for (SchemaVersion v : schemaVersions.getVersions()) {
 			List<String> container = getVersionNodeFiles(v);
@@ -55,7 +58,6 @@ public class AAIConfigTranslator extends ConfigTranslator {
 	
 
 	private List<String> getVersionNodeFiles(SchemaVersion v) {
-
 	    return getVersionFiles(
 	    	bean.getNodeDirectory(),
 			v,
@@ -99,7 +101,6 @@ public class AAIConfigTranslator extends ConfigTranslator {
 
 		List<String> container;
 		final String directoryName = startDirectory + FILESEP + schemaVersion.toString() + FILESEP;
-
 		container = Arrays.stream(new File(directoryName).listFiles())
 				.map(File::getName)
 				.filter(name -> inclusionPattern.get().anyMatch(name::matches))

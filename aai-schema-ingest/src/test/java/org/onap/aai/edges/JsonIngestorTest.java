@@ -23,7 +23,6 @@ package org.onap.aai.edges;
 import static org.junit.Assert.*;
 
 import java.util.*;
-
 import org.junit.Test;
 import org.onap.aai.setup.SchemaVersion;
 

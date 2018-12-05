@@ -27,11 +27,11 @@
     <parent>
         <groupId>org.onap.aai.aai-common</groupId>
         <artifactId>aai-common</artifactId>
-        <version>1.4.0-SNAPSHOT</version>
+        <version>1.4.1-SNAPSHOT</version>
     </parent>
     <artifactId>aai-core</artifactId>
     <name>aai-core</name>
-    <version>1.4.0-SNAPSHOT</version>
+    <version>1.4.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <properties>
         <sonar.language>java</sonar.language>
@@ -699,7 +699,7 @@
         <dependency>
             <groupId>org.onap.aai.aai-common</groupId>
             <artifactId>aai-schema-ingest</artifactId>
-            <version>${project.version}</version>
+            <version>1.4.0</version>
         </dependency>
         <dependency>
             <groupId>org.onap.aai.aai-common</groupId>

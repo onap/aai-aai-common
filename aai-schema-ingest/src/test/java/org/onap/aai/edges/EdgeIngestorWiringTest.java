@@ -22,12 +22,14 @@ package org.onap.aai.edges;
 
 import static org.junit.Assert.*;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.onap.aai.config.EdgesConfiguration;
 import org.onap.aai.edges.exceptions.EdgeRuleNotFoundException;
-import org.onap.aai.setup.SchemaLocationsBean;
 import org.onap.aai.setup.SchemaVersion;
-import org.onap.aai.setup.SchemaVersions;
+import org.onap.aai.setup.SchemaVersionsBean;
+
 import org.onap.aai.testutils.ConfigTranslatorForWiringTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -38,8 +40,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.google.common.collect.Multimap;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {SchemaLocationsBean.class, SchemaVersions.class, ConfigTranslatorForWiringTest.class, EdgeIngestor.class})
-@TestPropertySource(properties = {"schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-wiring-test.properties"})
+@ContextConfiguration(classes = {EdgesConfiguration.class, ConfigTranslatorForWiringTest.class})
+@TestPropertySource(properties = {"schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-wiring-test-local.properties"})
 @SpringBootTest
 public class EdgeIngestorWiringTest {
     @Autowired

@@ -7906,7 +7906,7 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
     <xs:complexType>
       <xs:annotation>
         <xs:appinfo>
-          <annox:annotate target="class">@org.onap.aai.annotations.Metadata(description="General mechanism for grouping instances",nameProps="description,instance-group-name",uniqueProps="id",searchable="id,description",indexedProps="id,description,type,sub-type,model-invariant-id,model-version-id",container="instance-groups",namespace="network",uriTemplate="/network/instance-groups/instance-group/{id}",requiredProps="id,description,instance-group-type")</annox:annotate>
+          <annox:annotate target="class">@org.onap.aai.annotations.Metadata(description="General mechanism for grouping instances",nameProps="description,instance-group-name",uniqueProps="id",searchable="id,description",indexedProps="id,type,sub-type,model-invariant-id,model-version-id",container="instance-groups",namespace="network",uriTemplate="/network/instance-groups/instance-group/{id}",requiredProps="id,instance-group-type")</annox:annotate>
         </xs:appinfo>
       </xs:annotation>
       <xs:sequence>
@@ -9762,7 +9762,7 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
     <xs:complexType>
       <xs:annotation>
         <xs:appinfo>
-          <annox:annotate target="class">@org.onap.aai.annotations.Metadata(description="Internal map to define some reserved properties of a vertex",uniqueProps="aai-unique-key",indexedProps="aai-unique-key,source-of-truth,aai-node-type,aai-uri")</annox:annotate>
+          <annox:annotate target="class">@org.onap.aai.annotations.Metadata(description="Internal map to define some reserved properties of a vertex",uniqueProps="aai-unique-key,aai-uri,aai-uuid",indexedProps="aai-unique-key,source-of-truth,aai-node-type,aai-uri,aai-uuid")</annox:annotate>
         </xs:appinfo>
       </xs:annotation>
       <xs:sequence>

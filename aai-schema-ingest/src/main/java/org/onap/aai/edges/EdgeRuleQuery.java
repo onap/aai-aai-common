@@ -170,7 +170,7 @@ public class EdgeRuleQuery {
         List<Predicate> criteriaFromTo = new ArrayList<>();
         //Special logic to allow for A to B case only
         if(("FromOnly").equals(builder.getSecondNodeType())) {
-                criteriaFromTo.add(buildToFromPart(builder.getFirstNodeType(), null));
+            criteriaFromTo.add(buildToFromPart(builder.getFirstNodeType(), null));
         } else {
             criteriaFromTo.add(buildToFromPart(builder.getFirstNodeType(), builder.getSecondNodeType()));
         }
@@ -245,16 +245,16 @@ public class EdgeRuleQuery {
     }
         
     private Predicate addDirection(AAIDirection direction) {
-            if (direction == AAIDirection.OUT) {
-                return where(EdgeField.DIRECTION.toString()).in(AAIDirection.OUT.toString(), AAIDirection.BOTH.toString());
-            } else if (direction == AAIDirection.IN) {
-                return where(EdgeField.DIRECTION.toString()).in(AAIDirection.IN.toString(), AAIDirection.BOTH.toString());
-            } else if (direction == AAIDirection.BOTH) {
-                return where(EdgeField.DIRECTION.toString()).is(AAIDirection.BOTH.toString());
-            } else if (direction == AAIDirection.NONE) {
-                return where(EdgeField.DIRECTION.toString()).is(AAIDirection.NONE.toString());
-            }
+        if (direction == AAIDirection.OUT) {
+            return where(EdgeField.DIRECTION.toString()).in(AAIDirection.OUT.toString(), AAIDirection.BOTH.toString());
+        } else if (direction == AAIDirection.IN) {
+            return where(EdgeField.DIRECTION.toString()).in(AAIDirection.IN.toString(), AAIDirection.BOTH.toString());
+        } else if (direction == AAIDirection.BOTH) {
+            return where(EdgeField.DIRECTION.toString()).is(AAIDirection.BOTH.toString());
+        } else if (direction == AAIDirection.NONE) {
             return where(EdgeField.DIRECTION.toString()).is(AAIDirection.NONE.toString());
+        }
+        return where(EdgeField.DIRECTION.toString()).is(AAIDirection.NONE.toString());
     }
     
     /**
@@ -344,5 +344,4 @@ public class EdgeRuleQuery {
     }
 
 }
-
 

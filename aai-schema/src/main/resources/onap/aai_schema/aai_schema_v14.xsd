@@ -7755,7 +7755,7 @@ xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
     <xs:complexType>
       <xs:annotation>
         <xs:appinfo>
-          <annox:annotate target="class">@org.onap.aai.annotations.Metadata(description="General mechanism for grouping instances",nameProps="description,instance-group-name",uniqueProps="id",searchable="id,description",indexedProps="id,description,type,sub-type,model-invariant-id,model-version-id",container="instance-groups",namespace="network",uriTemplate="/network/instance-groups/instance-group/{id}",requiredProps="id,description,instance-group-type")</annox:annotate>
+          <annox:annotate target="class">@org.onap.aai.annotations.Metadata(description="General mechanism for grouping instances",nameProps="description,instance-group-name",uniqueProps="id",searchable="id,description",indexedProps="id,type,sub-type,model-invariant-id,model-version-id",container="instance-groups",namespace="network",uriTemplate="/network/instance-groups/instance-group/{id}",requiredProps="id,instance-group-type")</annox:annotate>
         </xs:appinfo>
       </xs:annotation>
       <xs:sequence>
