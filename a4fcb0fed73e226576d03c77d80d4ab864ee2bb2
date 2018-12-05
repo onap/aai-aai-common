@@ -206,6 +206,52 @@
       "revId": "a4fcb0fed73e226576d03c77d80d4ab864ee2bb2",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9adffdf1_6f0dfb3d",
+        "filename": "aai-core/src/test/java/org/onap/aai/HttpTestUtil.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 218,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2018-12-05T05:10:49Z",
+      "side": 1,
+      "message": "this replaces too much! what if there are objects with literal name of \"aai\"?\nit should be substring(5)",
+      "range": {
+        "startLine": 218,
+        "startChar": 22,
+        "endLine": 218,
+        "endChar": 46
+      },
+      "revId": "a4fcb0fed73e226576d03c77d80d4ab864ee2bb2",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9adffdf1_8f085f2e",
+        "filename": "aai-core/src/test/java/org/onap/aai/HttpTestUtil.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 219,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2018-12-05T05:10:49Z",
+      "side": 1,
+      "message": "where is null protection and default value for depth?",
+      "range": {
+        "startLine": 219,
+        "startChar": 86,
+        "endLine": 219,
+        "endChar": 91
+      },
+      "revId": "a4fcb0fed73e226576d03c77d80d4ab864ee2bb2",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
