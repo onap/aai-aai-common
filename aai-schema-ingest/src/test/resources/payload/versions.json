@@ -1,0 +1,18 @@
+{
+"versions": [
+"v8",
+"v9",
+"v10",
+    "v11",
+    "v12",
+    "v13",
+    "v14",
+    "v15"
+],
+"edge-version": "v15",
+"default-version": "v15",
+"depth-version": "v15",
+"app-root-version": "v15",
+"related-link-version": "v15",
+"namespace-change-version": "v15"
+}

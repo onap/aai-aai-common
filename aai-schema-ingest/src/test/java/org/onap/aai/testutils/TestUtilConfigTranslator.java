@@ -20,13 +20,22 @@
 
 package org.onap.aai.testutils;
 
-import java.util.*;
+import org.onap.aai.setup.ConfigTranslator;
+import org.onap.aai.setup.SchemaLocationsBean;
+import org.onap.aai.setup.SchemaVersion;
+import org.onap.aai.setup.SchemaVersions;
+import org.springframework.context.annotation.PropertySource;
 
-import org.onap.aai.setup.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+@PropertySource(value = "classpath:schema-ingest.properties", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${schema.ingest.file}", ignoreResourceNotFound = true)
 
 public class TestUtilConfigTranslator extends ConfigTranslator {
 
-    public static final SchemaVersion LATEST = new SchemaVersion("v14");
+    public static final SchemaVersion LATEST = new SchemaVersion("v15");
     public TestUtilConfigTranslator(SchemaLocationsBean bean, SchemaVersions schemaVersions) {
         super(bean, schemaVersions);
     }
@@ -74,7 +83,6 @@ public class TestUtilConfigTranslator extends ConfigTranslator {
         files3.add("src/test/resources/edgeRules/test3.json");
         files3.add("src/test/resources/edgeRules/defaultEdgesTest.json");
         input.put(new SchemaVersion("v11"), files3);
-        
         return input;
     }
 }

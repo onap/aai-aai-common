@@ -31,13 +31,14 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class NodeValidator {
-	private ConfigTranslator translator;
+
+    private ConfigTranslator translator;
 	private SchemaErrorStrategy strat;
 	private DuplicateNodeDefinitionValidationModule dupChecker;
 
 	@Autowired
-	public NodeValidator(ConfigTranslator translator, SchemaErrorStrategy strategy, DuplicateNodeDefinitionValidationModule dupChecker) {
-		this.translator = translator;
+	public NodeValidator( ConfigTranslator translator, SchemaErrorStrategy strategy, DuplicateNodeDefinitionValidationModule dupChecker) {
+        this.translator = translator;
 		this.strat = strategy;
 		this.dupChecker = dupChecker;
 	}

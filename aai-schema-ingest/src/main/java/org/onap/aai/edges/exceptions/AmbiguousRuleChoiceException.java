@@ -1,4 +1,4 @@
-/**
+/** 
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
@@ -25,7 +25,7 @@ public class AmbiguousRuleChoiceException extends Exception {
 		super(msg);
 	}
 
-	public AmbiguousRuleChoiceException(Throwable throwable){
-	    super(throwable);
+    public AmbiguousRuleChoiceException(Throwable throwable){
+        super(throwable);
     }
 }

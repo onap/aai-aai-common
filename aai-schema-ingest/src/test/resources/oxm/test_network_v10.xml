@@ -19,9 +19,9 @@
   ============LICENSE_END=========================================================
   -->
 
-<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm" package-name="inventory.aai.onap.org.v12" xml-mapping-metadata-complete="true">
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm" package-name="inventory.aai.onap.org.v10" xml-mapping-metadata-complete="true">
 	<xml-schema element-form-default="QUALIFIED">
-		<xml-ns namespace-uri="http://org.onap.aai.inventory/v12" />
+		<xml-ns namespace-uri="http://org.onap.aai.inventory/v10" />
 	</xml-schema>
 	<java-types>
 

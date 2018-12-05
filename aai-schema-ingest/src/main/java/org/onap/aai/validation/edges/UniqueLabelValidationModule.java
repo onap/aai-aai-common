@@ -20,17 +20,12 @@
 
 package org.onap.aai.validation.edges;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.jayway.jsonpath.DocumentContext;
 import org.onap.aai.edges.EdgeRuleQuery;
 import org.onap.aai.edges.EdgeRuleQuery.Builder;
 import org.onap.aai.edges.enums.EdgeField;
 
-import com.jayway.jsonpath.DocumentContext;
+import java.util.*;
 
 /**
  * Applies label validation rules

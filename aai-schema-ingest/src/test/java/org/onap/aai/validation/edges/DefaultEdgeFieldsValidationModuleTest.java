@@ -28,8 +28,6 @@ import java.util.Map;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.onap.aai.edges.enums.EdgeField;
-import org.onap.aai.validation.edges.DefaultEdgeFieldsValidationModule;
-import org.onap.aai.validation.edges.EdgeFieldsValidationModule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;

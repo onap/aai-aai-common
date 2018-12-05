@@ -20,11 +20,6 @@
 
 package org.onap.aai.setup;
 
-import static org.junit.Assert.*;
-
-import java.util.List;
-import java.util.Map;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.onap.aai.testutils.ConfigTranslatorForWiringTest;
@@ -34,9 +29,15 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {SchemaLocationsBean.class, SchemaVersions.class, ConfigTranslatorForWiringTest.class})
-@TestPropertySource(properties = {"schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-wiring-test.properties"})
+@TestPropertySource(properties = {"schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-wiring-test-local.properties"})
 @SpringBootTest
 public class ConfigTranslatorWiringTest {
     @Autowired

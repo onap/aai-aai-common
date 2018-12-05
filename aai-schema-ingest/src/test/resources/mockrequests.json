@@ -1,0 +1,52 @@
+{
+    "mock-uri":
+    [
+    {
+        "aai-uri": "/versions",
+        "response-file": "payload/versions.json",
+        "content": "application/json;charset=UTF-8"
+    },
+    {
+        "aai-uri": "/nodes?version=v8",
+        "response-file": "oxm/test_combined_network_business_v8.xml",
+        "content": "application/json;charset=UTF-8"
+    },
+        {
+            "aai-uri": "/nodes?version=v9",
+            "response-file": "oxm/test_combined_network_business_v9.xml",
+            "content": "application/json;charset=UTF-8"
+        },
+        {
+            "aai-uri": "/nodes?version=v10",
+            "response-file": "oxm/test_combined_network_business_v10.xml",
+            "content": "application/json;charset=UTF-8"
+        },
+        {
+            "aai-uri": "/nodes?version=v11",
+            "response-file": "oxm/test_combined_network_business_v11.xml",
+            "content": "application/json;charset=UTF-8"
+        },
+        {
+            "aai-uri": "/nodes?version=v12",
+            "response-file": "oxm/test_combined_network_business_v12.xml",
+            "content": "application/json;charset=UTF-8"
+        },
+        {
+            "aai-uri": "/nodes?version=v13",
+            "response-file": "oxm/test_combined_v13.xml",
+            "content": "application/json;charset=UTF-8"
+        },
+        {
+            "aai-uri": "/nodes?version=v14",
+            "response-file": "oxm/test_combined_network_business_v14.xml",
+            "content": "application/json;charset=UTF-8"
+        },
+        {
+            "aai-uri": "/nodes?version=v15",
+            "response-file": "oxm/test_combined_network_business_v15.xml",
+            "content": "application/json;charset=UTF-8"
+        }
+    ]
+
+
+}
