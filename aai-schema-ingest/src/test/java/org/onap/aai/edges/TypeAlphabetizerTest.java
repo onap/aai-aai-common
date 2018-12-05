@@ -21,7 +21,6 @@
 package org.onap.aai.edges;
 
 import static org.junit.Assert.*;
-
 import org.junit.Test;
 
 public class TypeAlphabetizerTest {

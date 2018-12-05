@@ -20,9 +20,15 @@
 
 package org.onap.aai.testutils;
 
-import java.util.*;
+import org.onap.aai.setup.ConfigTranslator;
+import org.onap.aai.setup.SchemaLocationsBean;
+import org.onap.aai.setup.SchemaVersion;
+import org.onap.aai.setup.SchemaVersions;
 
-import org.onap.aai.setup.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * All schema files here are valid for sunny day validator testing

@@ -20,14 +20,13 @@
 
 package org.onap.aai.validation.edges;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
+import com.jayway.jsonpath.DocumentContext;
 import org.onap.aai.edges.EdgeRuleQuery;
 import org.onap.aai.edges.enums.EdgeType;
 
-import com.jayway.jsonpath.DocumentContext;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Validates that the given node type pair has at most one containment relationship

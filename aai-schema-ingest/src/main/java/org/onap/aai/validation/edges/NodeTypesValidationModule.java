@@ -20,14 +20,15 @@
 
 package org.onap.aai.validation.edges;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.onap.aai.nodes.NodeIngestor;
 import org.onap.aai.setup.SchemaVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Validates that the node types appearing in the edge rules are valid

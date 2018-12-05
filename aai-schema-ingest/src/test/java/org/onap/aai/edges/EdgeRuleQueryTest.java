@@ -33,6 +33,7 @@ import org.onap.aai.edges.enums.EdgeType;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 
+
 public class EdgeRuleQueryTest {
     private DocumentContext testRules;
     private String readStart = "$.rules.[?]";

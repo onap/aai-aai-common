@@ -1,4 +1,4 @@
-/**
+/** 
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
@@ -25,7 +25,7 @@ public class EdgeRuleNotFoundException extends Exception {
 		super(msg);
 	}
 
-	public EdgeRuleNotFoundException(Throwable throwable){
-	    super(throwable);
+    public EdgeRuleNotFoundException(Throwable throwable){
+        super(throwable);
     }
 }

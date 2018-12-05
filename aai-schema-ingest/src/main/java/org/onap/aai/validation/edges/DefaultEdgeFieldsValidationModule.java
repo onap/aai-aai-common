@@ -23,12 +23,11 @@
  */
 package org.onap.aai.validation.edges;
 
+import org.onap.aai.edges.enums.EdgeField;
+
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
-
-import org.onap.aai.edges.enums.EdgeField;
 
 /**
  * Default core A&AI edge field validation
