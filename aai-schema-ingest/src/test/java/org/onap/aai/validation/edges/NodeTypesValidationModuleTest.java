@@ -25,12 +25,14 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.onap.aai.config.NodesConfiguration;
 import org.onap.aai.nodes.NodeIngestor;
-import org.onap.aai.setup.SchemaLocationsBean;
+
 import org.onap.aai.setup.SchemaVersion;
-import org.onap.aai.setup.SchemaVersions;
+import org.onap.aai.setup.SchemaVersionsBean;
 import org.onap.aai.testutils.TestUtilConfigTranslator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -39,8 +41,8 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {SchemaLocationsBean.class, SchemaVersions.class, TestUtilConfigTranslator.class, NodeIngestor.class, NodeTypesValidationModule.class})
-@TestPropertySource(properties = { "schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-wiring-test.properties" })
+@ContextConfiguration(classes = {NodesConfiguration.class, TestUtilConfigTranslator.class, NodeTypesValidationModule.class})
+@TestPropertySource(properties = { "schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-wiring-test-local.properties" })
 @SpringBootTest
 public class NodeTypesValidationModuleTest {
     @Autowired

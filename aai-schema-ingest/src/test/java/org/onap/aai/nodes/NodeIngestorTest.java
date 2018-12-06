@@ -20,54 +20,45 @@
 
 package org.onap.aai.nodes;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
-import javax.xml.bind.SchemaOutputResolver;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Result;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
 import org.eclipse.persistence.dynamic.DynamicEntity;
-import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.onap.aai.setup.SchemaLocationsBean;
+import org.onap.aai.restclient.MockProvider;
+import org.onap.aai.config.NodesConfiguration;
 import org.onap.aai.setup.SchemaVersion;
-import org.onap.aai.setup.SchemaVersions;
-import org.onap.aai.testutils.TestUtilConfigTranslator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.w3c.dom.Document;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+
+import javax.xml.bind.SchemaOutputResolver;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.*;
+
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {SchemaLocationsBean.class, SchemaVersions.class, TestUtilConfigTranslator.class, NodeIngestor.class})
-@TestPropertySource(properties = { "schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-wiring-test.properties" })
+@TestPropertySource(properties = { "schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-ss-wiring-test.properties" })
+
+@ContextConfiguration(classes = { MockProvider.class, NodesConfiguration.class})
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 @SpringBootTest
 public class NodeIngestorTest {
     @Autowired
-    NodeIngestor ni;
-    
+    NodeIngestor nodeIngestor;
+
     //set thrown.expect to whatever a specific test needs
     //this establishes a default of expecting no exceptions to be thrown
     @Rule
@@ -75,7 +66,7 @@ public class NodeIngestorTest {
     
     @Test
     public void testGetContextForVersion() {
-        DynamicJAXBContext ctx10 = ni.getContextForVersion(new SchemaVersion("v10"));
+        DynamicJAXBContext ctx10 = nodeIngestor.getContextForVersion(new SchemaVersion("v10"));
         
         //should work bc Foo is valid in test_network_v10 schema
         DynamicEntity foo10 = ctx10.newDynamicEntity("Foo");
@@ -90,7 +81,7 @@ public class NodeIngestorTest {
         XSDOutputResolver outputResolver10 = new XSDOutputResolver();
         ctx10.generateSchema(outputResolver10);
         
-        DynamicJAXBContext ctx11 = ni.getContextForVersion(new SchemaVersion("v11"));
+        DynamicJAXBContext ctx11 = nodeIngestor.getContextForVersion(new SchemaVersion("v11"));
         
         //should work bc Foo.quantity is valid in test_network_v11 schema
         DynamicEntity foo11 = ctx11.newDynamicEntity("Foo");
@@ -108,23 +99,47 @@ public class NodeIngestorTest {
         //should fail bc Quux not in v10 test schema
         ctx10.newDynamicEntity("Quux");
     }
-    
+
     @Test
     public void testHasNodeType() {
-        assertTrue(ni.hasNodeType("foo", new SchemaVersion("v11")));
-        assertTrue(ni.hasNodeType("quux", new SchemaVersion("v11")));
-        assertFalse(ni.hasNodeType("quux", new SchemaVersion("v10")));
+        //TODO remove for integration tests
+        assertTrue(nodeIngestor.hasNodeType("foo", new SchemaVersion("v11")));
+        assertTrue(nodeIngestor.hasNodeType("quux", new SchemaVersion("v11")));
+        assertFalse(nodeIngestor.hasNodeType("quux", new SchemaVersion("v10")));
     }
+
+    @Test
+    public void testGetVersionFromClassName() {
+        assertEquals(nodeIngestor.getVersionFromClassName("inventory.aai.onap.org.v13.Evc"),new SchemaVersion("v13"));
+
+    }
+
+    @Test
+    public void testGetVersionFromClassNameNull() {
+        assertEquals(nodeIngestor.getVersionFromClassName("blah"), new SchemaVersion("v15"));
+
+    }
+
+    @Test
+    public void testGetObjectsInVersion() {
+        assertEquals(nodeIngestor.getObjectsInVersion(new SchemaVersion("v13")).size(), 148);
+        //comment for IntegrationTest
+        //assertEquals(nodeIngestor.getObjectsInVersion(new SchemaVersion("v13")).size(), 229);
+
+    }
+    
     @Test
     public void testCombinedSchema() throws TransformerException, IOException {
-        DynamicJAXBContext ctx13 = ni.getContextForVersion(new SchemaVersion("v13"));
+        DynamicJAXBContext ctx13 = nodeIngestor.getContextForVersion(new SchemaVersion("v13"));
         XSDOutputResolver outputResolver13 = new XSDOutputResolver();
         ctx13.generateSchema(outputResolver13);
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        printDocument(ni.getSchema(new SchemaVersion("v13")),buffer);
+        printDocument(nodeIngestor.getSchema(new SchemaVersion("v13")),buffer);
         String content = new String(Files.readAllBytes(Paths.get("src/test/resources/forWiringTests/aai_oxm_v13.xml")));
         content = content.replaceAll("\\s+", "");
         String expected = buffer.toString().replaceAll("\\s+", "");
+
+
         assertThat("OXM:\n"+expected,expected, is(content));
     }
 
@@ -160,6 +175,7 @@ public class NodeIngestorTest {
               return result;
            }
     }
+
 }
 
 

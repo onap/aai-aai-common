@@ -20,13 +20,8 @@
 package org.onap.aai.edges;
 
 import org.apache.tinkerpop.gremlin.structure.Direction;
-import org.onap.aai.edges.enums.AAIDirection;
-import org.onap.aai.edges.enums.DirectionNotation;
-import org.onap.aai.edges.enums.EdgeField;
-import org.onap.aai.edges.enums.EdgeProperty;
-import org.onap.aai.edges.enums.MultiplicityRule;
+import org.onap.aai.edges.enums.*;
 
-import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
@@ -45,52 +40,52 @@ public class EdgeRule {
 	private String description;
 	private boolean isPrivateEdge = false;
 
-    /**
+	/**
 	 * Instantiates a new edge rule.
-	 *
+	 * 
 	 * @param fieldVals - Map<String, String> where first string is
-	 * 					an EdgeField value and second string is the
+	 * 					an EdgeField value and second string is the 
 	 * 					value of that field
 	 */
 	public EdgeRule(Map<String, String> fieldVals) {
 		edgeFields = new EnumMap<>(EdgeProperty.class);
-
+		
 		from = fieldVals.get(EdgeField.FROM.toString());
 		to = fieldVals.get(EdgeField.TO.toString());
 		label = fieldVals.get(EdgeField.LABEL.toString());
 		direction = Direction.valueOf(fieldVals.get(EdgeField.DIRECTION.toString()));
 		multiplicityRule = MultiplicityRule.getValue(fieldVals.get(EdgeField.MULTIPLICITY.toString()));
 		isPrivateEdge = Boolean.valueOf(fieldVals.getOrDefault(EdgeField.PRIVATE.toString(), "false"));
-		for (EdgeProperty prop : EdgeProperty.values()) {
+
+        for (EdgeProperty prop : EdgeProperty.values()) {
 			String rawVal = fieldVals.get(prop.toString());
 			edgeFields.put(prop, convertNotation(direction, rawVal));
 		}
-
+		
 		isDefaultEdge = Boolean.valueOf(fieldVals.get(EdgeField.DEFAULT.toString()));
-
-		description = fieldVals.get(EdgeField.DESCRIPTION.toString());
+        description = fieldVals.get(EdgeField.DESCRIPTION.toString());
 		if (description == null) { //bc description is optional and not in v12 and earlier
 			description = "";
 		}
 	}
 
-	// Copy Constructor
-	public EdgeRule(EdgeRule edgeRule){
-	    this.from = edgeRule.from;
-	    this.to   = edgeRule.to;
-	    this.label = edgeRule.label;
-	    this.direction = Direction.valueOf(edgeRule.direction.toString());
-	    this.multiplicityRule = MultiplicityRule.valueOf(edgeRule.multiplicityRule.toString());
+    // Copy Constructor
+    public EdgeRule(EdgeRule edgeRule){
+        this.from = edgeRule.from;
+        this.to   = edgeRule.to;
+        this.label = edgeRule.label;
+        this.direction = Direction.valueOf(edgeRule.direction.toString());
+        this.multiplicityRule = MultiplicityRule.valueOf(edgeRule.multiplicityRule.toString());
         this.edgeFields = new HashMap<>(edgeRule.edgeFields);
-	    this.isDefaultEdge    = edgeRule.isDefaultEdge;
-	    this.description = edgeRule.description;
-	    this.isPrivateEdge = edgeRule.isPrivateEdge;
+        this.isDefaultEdge    = edgeRule.isDefaultEdge;
+        this.description = edgeRule.description;
+        this.isPrivateEdge = edgeRule.isPrivateEdge;
     }
 
 	/**
 	 * Converts whatever string was in the json for an edge property value into
 	 * the appropriate AAIDirection
-	 *
+	 * 
 	 * @param Direction dir - the edge direction
 	 * @param String rawVal - property value from the json, may be
 	 * 			IN, OUT, BOTH, NONE, ${direction}, or !${direction}
@@ -107,7 +102,7 @@ public class EdgeRule {
 		} else if (AAIDirection.IN.toString().equalsIgnoreCase(rawVal)) {
 			return AAIDirection.IN;
 		}
-
+		
 		DirectionNotation rawDN = DirectionNotation.getValue(rawVal);
 		if (DirectionNotation.DIRECTION.equals(rawDN)) {
 			return AAIDirection.getValue(dir);
@@ -115,7 +110,7 @@ public class EdgeRule {
 			return AAIDirection.getValue(dir.opposite());
 		}
 	}
-
+	
 	/**
 	 * Gets the name of the node type in the "from" field
 	 * @return String nodetype
@@ -140,7 +135,7 @@ public class EdgeRule {
 	public String getLabel() {
 		return label;
 	}
-
+	
 	/**
 	 * Gets the multiplicity rule.
 	 *
@@ -149,7 +144,7 @@ public class EdgeRule {
 	public MultiplicityRule getMultiplicityRule() {
 		return multiplicityRule;
 	}
-
+	
 	/**
 	 * Gets the edge direction
 	 *
@@ -158,7 +153,7 @@ public class EdgeRule {
 	public Direction getDirection() {
 		return direction;
 	}
-
+	
 	/**
 	 * Gets the value of contains-other-v
 	 *
@@ -167,7 +162,7 @@ public class EdgeRule {
 	public String getContains() {
 		return edgeFields.get(EdgeProperty.CONTAINS).toString();
 	}
-
+	
 	/**
 	 * Gets the value of delete-other-v
 	 *
@@ -176,10 +171,10 @@ public class EdgeRule {
 	public String getDeleteOtherV() {
 		return edgeFields.get(EdgeProperty.DELETE_OTHER_V).toString();
 	}
-
+	
 	/**
 	 * Gets the value of the prevent-delete property
-	 *
+	 * 
 	 * @return String prevent-delete property value
 	 */
 	public String getPreventDelete() {
@@ -188,13 +183,13 @@ public class EdgeRule {
 
 	/**
 	 * Returns if this rule is a default or not
-	 *
+	 * 
 	 * @return boolean
 	 */
 	public boolean isDefault() {
 		return isDefaultEdge;
 	}
-
+	
 	/**
 	 * Gets the description on the edge rule (if there is one)
 	 * @return String description
@@ -202,7 +197,7 @@ public class EdgeRule {
 	public String getDescription() {
 		return this.description;
 	}
-
+	
 	/**
 	 * Flips the direction value
 	 * IN -> OUT

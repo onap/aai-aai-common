@@ -1,0 +1,9 @@
+"schema-service-endpoints" : {
+    "version-endpoint": {
+        "uri": "/versions",
+        "response" : {
+           "versions" : ["v9", "v10", "v11"],
+           "default" : "v14",
+        }
+        }
+}

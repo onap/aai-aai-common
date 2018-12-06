@@ -21,7 +21,6 @@ package org.onap.aai.setup;
 
 import org.onap.aai.validation.AAISchemaValidationException;
 
-import java.util.Comparator;
 import java.util.regex.Pattern;
 
 public class SchemaVersion implements Comparable<SchemaVersion> {
@@ -31,7 +30,6 @@ public class SchemaVersion implements Comparable<SchemaVersion> {
     private final String value;
 
     public SchemaVersion(String value){
-
         if(!VERSION_PATTERN.matcher(value).matches()){
             throw new AAISchemaValidationException("Invalid Schema Version " + value + ", value doesn't match the expected regex: " + VERSION_PATTERN);
         }

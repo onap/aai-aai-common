@@ -20,22 +20,18 @@
 
 package org.onap.aai.validation.edges;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.jayway.jsonpath.DocumentContext;
 import org.onap.aai.edges.JsonIngestor;
 import org.onap.aai.edges.TypeAlphabetizer;
 import org.onap.aai.edges.enums.EdgeField;
+
 import org.onap.aai.setup.ConfigTranslator;
 import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.validation.SchemaErrorStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.jayway.jsonpath.DocumentContext;
+import java.util.*;
 
 /**
  * Runs all validations against the ingested schema
@@ -49,21 +45,22 @@ public class EdgeRuleValidator {
 	protected final SingleContainmentValidationModule containsValidator;
 	protected final CousinDefaultingValidationModule defaultsValidator;
 	protected final NodeTypesValidationModule typeValidator;
-	
-	@Autowired
-	public EdgeRuleValidator(ConfigTranslator config, SchemaErrorStrategy strat,
-			EdgeFieldsValidationModule fieldValidator, UniqueLabelValidationModule labelValidator, 
-			SingleContainmentValidationModule containsValidator, CousinDefaultingValidationModule defaultsValidator, 
-			NodeTypesValidationModule typeValidator) {
-		this.versionJsonFilesMap = new JsonIngestor().ingest(config.getEdgeFiles());
-		this.strat = strat;
-		this.fieldValidator = fieldValidator;
-		this.labelValidator = labelValidator;
-		this.containsValidator = containsValidator;
-		this.defaultsValidator = defaultsValidator;
-		this.typeValidator = typeValidator;
-	}
-	
+
+    @Autowired
+    public EdgeRuleValidator(ConfigTranslator config, SchemaErrorStrategy strat,
+                             EdgeFieldsValidationModule fieldValidator, UniqueLabelValidationModule labelValidator,
+                             SingleContainmentValidationModule containsValidator, CousinDefaultingValidationModule defaultsValidator,
+                             NodeTypesValidationModule typeValidator) {
+        //TODO - Need to change this to use files/schemaservice
+        this.versionJsonFilesMap = new JsonIngestor().ingest(config.getEdgeFiles());
+        this.strat = strat;
+        this.fieldValidator = fieldValidator;
+        this.labelValidator = labelValidator;
+        this.containsValidator = containsValidator;
+        this.defaultsValidator = defaultsValidator;
+        this.typeValidator = typeValidator;
+    }
+
 	public boolean validate() {
 		
 		for (Map.Entry<SchemaVersion, List<DocumentContext>> verEntry : versionJsonFilesMap.entrySet()) {

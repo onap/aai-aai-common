@@ -4627,4 +4627,5 @@
 				<xml-property name="container" value="evcs"/>
 			</xml-properties>
 		</java-type>
-    </java-types>\n</xml-bindings>
+    </java-types>
+</xml-bindings>

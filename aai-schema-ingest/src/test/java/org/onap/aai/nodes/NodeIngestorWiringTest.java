@@ -24,11 +24,13 @@ import static org.junit.Assert.*;
 
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.onap.aai.setup.SchemaLocationsBean;
+import org.onap.aai.config.NodesConfiguration;
 import org.onap.aai.setup.SchemaVersion;
-import org.onap.aai.setup.SchemaVersions;
+import org.onap.aai.setup.SchemaVersionsBean;
+
 import org.onap.aai.testutils.ConfigTranslatorForWiringTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
@@ -37,8 +39,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {SchemaLocationsBean.class, SchemaVersions.class, ConfigTranslatorForWiringTest.class, NodeIngestor.class})
-@TestPropertySource(properties = {"schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-wiring-test.properties"})
+@ContextConfiguration(classes = {ConfigTranslatorForWiringTest.class, NodesConfiguration.class})
+@TestPropertySource(properties = {"schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-wiring-test-local-node.properties"})
 @SpringBootTest
 public class NodeIngestorWiringTest {
     @Autowired

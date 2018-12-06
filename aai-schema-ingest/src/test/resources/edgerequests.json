@@ -1,0 +1,50 @@
+{
+    "mock-uri":
+    [
+        {
+            "aai-uri": "/versions",
+            "response-file": "payload/versions.json",
+            "content": "application/json;charset=UTF-8"
+        },
+        {
+            "aai-uri": "/edgerules?version=v8",
+            "response-file": "edgeRules/test_v8.json",
+            "content": "application/json;charset=UTF-8"
+        },
+        {
+            "aai-uri": "/edgerules?version=v9",
+            "response-file": "edgeRules/test_v9.json",
+            "content": "application/json;charset=UTF-8"
+        },
+        {
+            "aai-uri": "/edgerules?version=v10",
+            "response-file": "edgeRules/test_v10.json",
+            "content": "application/json;charset=UTF-8"
+        },
+        {
+            "aai-uri": "/edgerules?version=v11",
+            "response-file": "edgeRules/test_v11.json",
+            "content": "application/json;charset=UTF-8"
+        },
+        {
+            "aai-uri": "/edgerules?version=v12",
+            "response-file": "edgeRules/test_v12.json",
+            "content": "application/json;charset=UTF-8"
+        },
+        {
+            "aai-uri": "/edgerules?version=v13",
+            "response-file": "edgeRules/test_v13.json",
+            "content": "application/json;charset=UTF-8"
+        },
+        {
+            "aai-uri": "/edgerules?version=v14",
+            "response-file": "edgeRules/test_v14.json",
+            "content": "application/json;charset=UTF-8"
+        },
+        {
+            "aai-uri": "/edgerules?version=v15",
+            "response-file": "edgeRules/test_v15.json",
+            "content": "application/json;charset=UTF-8"
+        }
+    ]
+}
