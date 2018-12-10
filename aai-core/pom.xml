@@ -27,11 +27,11 @@
     <parent>
         <groupId>org.onap.aai.aai-common</groupId>
         <artifactId>aai-common</artifactId>
-        <version>1.3.3-SNAPSHOT</version>
+        <version>1.3.4-SNAPSHOT</version>
     </parent>
     <artifactId>aai-core</artifactId>
     <name>aai-core</name>
-    <version>1.3.3-SNAPSHOT</version>
+    <version>1.3.4-SNAPSHOT</version>
     <packaging>jar</packaging>
     <properties>
         <sonar.language>java</sonar.language>
@@ -45,7 +45,7 @@
         <eelf.core.version>1.0.0</eelf.core.version>
         <logback.version>1.2.3</logback.version>
         <freemarker.version>2.3.21</freemarker.version>
-        <activemq.version>5.15.6</activemq.version>
+        <activemq.version>5.15.8</activemq.version>
         <jacoco.line.coverage.limit>0.50</jacoco.line.coverage.limit>
         <gremlin.version>3.2.2</gremlin.version>
 	<groovy.version>2.4.15</groovy.version>
@@ -801,12 +801,12 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
-            <version>4.3.18.RELEASE</version>
+            <version>4.3.21.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>4.3.18.RELEASE</version>
+            <version>4.3.21.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>javax.xml.bind</groupId>
@@ -957,13 +957,13 @@
          <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
-            <version>4.3.18.RELEASE</version>
+            <version>4.3.21.RELEASE</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-test</artifactId>
-            <version>1.5.1.RELEASE</version>
+            <version>1.5.18.RELEASE</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -997,7 +997,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-jms</artifactId>
-            <version>4.3.18.RELEASE</version>
+            <version>4.3.21.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -1022,7 +1022,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot</artifactId>
-            <version>1.5.15.RELEASE</version>
+            <version>1.5.18.RELEASE</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
