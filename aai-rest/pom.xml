@@ -38,9 +38,9 @@
     <properties>
         <onap.nexus.url>https://nexus.onap.org</onap.nexus.url>
         <eelf.core.version>1.0.0</eelf.core.version>
-        <spring.boot.starter.web.version>1.5.15.RELEASE</spring.boot.starter.web.version>
-        <spring.boot.starter.parent.version>1.5.15.RELEASE</spring.boot.starter.parent.version>
-        <spring.security.version>1.0.3.RELEASE</spring.security.version>
+        <spring.boot.starter.web.version>1.5.18.RELEASE</spring.boot.starter.web.version>
+        <spring.boot.starter.parent.version>1.5.18.RELEASE</spring.boot.starter.parent.version>
+        <spring.security.version>1.0.8.RELEASE</spring.security.version>
     </properties>
 
     <dependencyManagement>
@@ -121,7 +121,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-test</artifactId>
-            <version>1.5.1.RELEASE</version>
+            <version>1.5.18.RELEASE</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
