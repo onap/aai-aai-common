@@ -47,6 +47,7 @@ import org.onap.aai.util.AAIConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.onap.aai.db.props.AAIProperties;
 
@@ -72,6 +73,9 @@ import static org.junit.Assert.*;
 		IntrospectionConfig.class
 })
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+@TestPropertySource(properties = {
+    "schema.translator.list = config"
+})
 public abstract class QueryBuilderTestAbstraction {
 
 	protected   Loader loader;

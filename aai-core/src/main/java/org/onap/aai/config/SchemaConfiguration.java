@@ -30,33 +30,65 @@ import org.onap.aai.setup.SchemaLocationsBean;
 import org.onap.aai.setup.SchemaVersions;
 import org.onap.aai.validation.CheckEverythingStrategy;
 import org.onap.aai.validation.SchemaErrorStrategy;
+import org.onap.aai.validation.nodes.DefaultDuplicateNodeDefinitionValidationModule;
+import org.onap.aai.validation.nodes.DuplicateNodeDefinitionValidationModule;
+import org.onap.aai.validation.nodes.NodeValidator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.*;
-
+@Import({NodesConfiguration.class, EdgesConfiguration.class})
 @Configuration
+@PropertySource(value = "classpath:schema-ingest.properties", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${schema.ingest.file}", ignoreResourceNotFound = true)
 public class SchemaConfiguration {
 
+    @Autowired(required = false)
+    NodesConfiguration nodesConfiguration;
+
+    @Autowired(required = false)
+    EdgesConfiguration edgesConfiguration;
+
     @Bean
-    public EdgeIngestor edgeIngestor(SchemaLocationsBean schemaLocationsBean, SchemaVersions schemaVersions){
-        return new EdgeIngestor(configTranslator(schemaLocationsBean, schemaVersions), schemaVersions);
+    public EdgeIngestor edgeIngestor(){
+        return edgesConfiguration.edgeIngestor();
     }
 
     @Bean
     public EdgeSerializer edgeSerializer(EdgeIngestor edgeIngestor){
         return new EdgeSerializer(edgeIngestor);
     }
-    
+
     @Bean(name = "nodeIngestor")
-    public NodeIngestor nodeIngestor(ConfigTranslator configTranslator) {
-        return new NodeIngestor(configTranslator);
+    public NodeIngestor nodeIngestor() {
+        return nodesConfiguration.nodeIngestor();
     }
 
+
     @Bean(name = "configTranslator")
+    @ConditionalOnProperty(name = "schema.translator.list", havingValue = "config", matchIfMissing = true)
     public ConfigTranslator configTranslator(SchemaLocationsBean schemaLocationsBean, SchemaVersions schemaVersions) {
         return new AAIConfigTranslator(schemaLocationsBean, schemaVersions);
     }
 
     @Bean
+    @ConditionalOnProperty(name = "schema.translator.list", havingValue = "config", matchIfMissing = true)
     public SchemaErrorStrategy schemaErrorStrategy(){
         return new CheckEverythingStrategy();
-    }
+	}
+
+	@Bean
+	@ConditionalOnProperty(name = "schema.translator.list", havingValue = "config", matchIfMissing = true)
+	public DuplicateNodeDefinitionValidationModule duplicateNodeDefinitionValidationModule(){
+    	return new DefaultDuplicateNodeDefinitionValidationModule();
+	}
+
+	@Bean
+	@ConditionalOnProperty(name = "schema.translator.list", havingValue = "config", matchIfMissing = true)
+	public NodeValidator nodeValidator(
+			ConfigTranslator configTranslator,
+			SchemaErrorStrategy schemaErrorStrategy,
+			DuplicateNodeDefinitionValidationModule duplicateNodeDefinitionValidationModule
+	){
+        return new NodeValidator(configTranslator, schemaErrorStrategy, duplicateNodeDefinitionValidationModule);
+	}
 }

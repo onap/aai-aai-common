@@ -47,8 +47,7 @@ public class QueryTestsConfigTranslator extends AbstractConfigTranslator {
 		Map<SchemaVersion, List<String>> files = new TreeMap<>();
 		List<String> container = new ArrayList<>();
 		container.add(file);
-		files.put(schemaVersions.getDefaultVersion(), container);
-		
+    	files.put(schemaVersions.getDefaultVersion(), container);
 		return files;
 	}
 

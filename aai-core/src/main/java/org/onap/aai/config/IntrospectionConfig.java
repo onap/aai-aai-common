@@ -21,7 +21,6 @@
  */
 package org.onap.aai.config;
 
-import org.onap.aai.schema.enums.ObjectMetadata;
 import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.setup.SchemaVersions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,18 +29,19 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 import org.onap.aai.introspection.LoaderFactory;
 import org.onap.aai.introspection.MoxyLoader;
-import org.onap.aai.nodes.NodeIngestor;
-
+import org.springframework.context.annotation.Import;
+@Import({NodesConfiguration.class, EdgesConfiguration.class})
 @Configuration
+
 public class IntrospectionConfig {
 
     private Map<SchemaVersion, MoxyLoader> moxyInstanceMap = new ConcurrentHashMap<>();
+   
     @Autowired
-    NodeIngestor nodeIngestor;
+    NodesConfiguration nodesConfiguration;
 
     @Bean
     public LoaderFactory loaderFactory(SchemaVersions schemaVersions) {
@@ -52,7 +52,7 @@ public class IntrospectionConfig {
     public Map<SchemaVersion, MoxyLoader> moxyLoaderInstance(SchemaVersions schemaVersions) {
         for(SchemaVersion version : schemaVersions.getVersions()){
             if (!moxyInstanceMap.containsKey(version)) {
-                moxyInstanceMap.put(version, new MoxyLoader(version, nodeIngestor));
+                moxyInstanceMap.put(version, new MoxyLoader(version, nodesConfiguration.nodeIngestor()));
             }
         }
         return moxyInstanceMap;

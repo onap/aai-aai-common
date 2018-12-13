@@ -44,6 +44,7 @@ import org.onap.aai.serialization.queryformats.QueryFormatTestHelper;
 import org.onap.aai.setup.SchemaLocationsBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.UnsupportedEncodingException;
@@ -66,6 +67,9 @@ import static org.mockito.Mockito.when;
 		EdgeSerializer.class,
 		SpringContextAware.class,
 		IntrospectionConfig.class
+})
+@TestPropertySource(properties = {
+    "schema.translator.list = config"
 })
 public class DbSerializer_needsFakeRulesTest {
 
