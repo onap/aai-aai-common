@@ -1,2 +1,5 @@
 /bin/
 /.checkstyle
+
+aai_swagger_html/
+aai_swagger_yaml/
