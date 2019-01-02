@@ -928,16 +928,7 @@ public class DBSerializer {
      * @throws SecurityException         the security exception
      */
     private void copySimpleProperty(String property, Introspector obj, Vertex v) {
-
-        final Map<PropertyMetadata, String> metadata = obj.getPropertyMetadata(property);
-        String dbPropertyName = property;
-
-        if (metadata.containsKey(PropertyMetadata.DB_ALIAS)) {
-            dbPropertyName = metadata.get(PropertyMetadata.DB_ALIAS);
-        }
-
-
-        final Object temp = v.<Object>property(dbPropertyName).orElse(null);
+        final Object temp = getProperty(obj, property, v);
         if (temp != null) {
             obj.setValue(property, temp);
         }
@@ -1181,10 +1172,9 @@ public class DBSerializer {
         VertexProperty cousinVertexNodeType = cousin.property(AAIProperties.NODE_TYPE);
 
         if(cousinVertexNodeType.isPresent()){
-            if(namedPropNodes.contains(cousinVertexNodeType.value().toString())){
-                Introspector cousinObj = loader.introspectorFromName(cousinVertexNodeType.value().toString());
-                this.simpleDbToObject(cousinObj, cousin);
-                this.addRelatedToProperty(result, cousinObj);
+            String cousinType = cousinVertexNodeType.value().toString();
+            if(namedPropNodes.contains(cousinType)){
+                this.addRelatedToProperty(result, cousin, cousinType);
             }
         }
 
@@ -1244,35 +1234,41 @@ public class DBSerializer {
         return UriBuilder.fromPath(uri).build();
     }
 
-    /**
-     * Adds the r
-     *
-     * @param relationship the relationship
-     * @param child        the throws IllegalArgumentException, AAIUnknownObjectException child
-     * @throws AAIUnknownObjectException
-     * @throws IllegalArgumentException  elated to property.
-     */
-    public void addRelatedToProperty(Introspector relationship, Introspector child) throws AAIUnknownObjectException {
-        String nameProps = child.getMetadata(ObjectMetadata.NAME_PROPS);
+    public void addRelatedToProperty(Introspector relationship, Vertex cousinVertex, String cousinType) throws AAIUnknownObjectException {
+        Introspector obj = loader.introspectorFromName(cousinType);
+        String nameProps = obj.getMetadata(ObjectMetadata.NAME_PROPS);
         List<Introspector> relatedToProperties = new ArrayList<>();
 
         if (nameProps != null) {
             String[] props = nameProps.split(",");
             for (String prop : props) {
+                final Object temp = getProperty(obj, prop, cousinVertex);
                 Introspector relatedTo = relationship.newIntrospectorInstanceOfNestedProperty("related-to-property");
-                relatedTo.setValue("property-key", child.getDbName() + "." + prop);
-                relatedTo.setValue("property-value", child.getValue(prop));
+                relatedTo.setValue("property-key", cousinType + "." + prop);
+                relatedTo.setValue("property-value", temp);
                 relatedToProperties.add(relatedTo);
             }
         }
 
         if (!relatedToProperties.isEmpty()) {
             List relatedToList = (List) relationship.getValue("related-to-property");
-            for (Introspector obj : relatedToProperties) {
-                relatedToList.add(obj.getUnderlyingObject());
+            for (Introspector introspector : relatedToProperties) {
+                relatedToList.add(introspector.getUnderlyingObject());
             }
         }
 
+    }
+
+    private Object getProperty(Introspector obj, String prop, Vertex vertex){
+
+        final Map<PropertyMetadata, String> metadata = obj.getPropertyMetadata(prop);
+        String dbPropertyName = prop;
+
+        if (metadata.containsKey(PropertyMetadata.DB_ALIAS)) {
+            dbPropertyName = metadata.get(PropertyMetadata.DB_ALIAS);
+        }
+
+        return vertex.<Object>property(dbPropertyName).orElse(null);
     }
 
     /**

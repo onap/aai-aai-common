@@ -47,6 +47,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
@@ -714,18 +715,27 @@ public class DbSerializerTest extends AAISetup {
 
 	@Test
 	public void addRelatedToPropertyTest() throws AAIException {
+		engine.startTransaction();
+
+		Vertex gvnf = engine.tx().addVertex("aai-node-type","generic-vnf",
+				"vnf-id","myname",
+				"vnf-name","myname",
+				"aai-uri", "/network/generic-vnfs/generic-vnf/myname"
+		);
+		engine.tx().addVertex("aai-node-type","vnfc","vnfc-name","a-name", "aai-uri", "/network/vnfcs/vnfc/a-name");
 		Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getAppRootVersion());
 		Introspector gv = loader.introspectorFromName("generic-vnf");
 		gv.setValue("vnf-name", "myname");
+
 		Introspector rel = loader.introspectorFromName("relationship");
 		DBSerializer dbser = new DBSerializer(schemaVersions.getAppRootVersion(), dbEngine,
 												ModelType.MOXY, "AAI-TEST");
-		dbser.addRelatedToProperty(rel, gv);
+		dbser.addRelatedToProperty(rel, gvnf, "generic-vnf");
 		List<Introspector> relToProps = rel.getWrappedListValue("related-to-property");
-		assertTrue(relToProps.size() == 1);
+		assertThat(relToProps.size(), is(1));
 		Introspector relToProp = relToProps.get(0);
-		assertTrue("generic-vnf.vnf-name".equals(relToProp.getValue("property-key")));
-		assertTrue("myname".equals(relToProp.getValue("property-value")));
+		assertThat(relToProp.getValue("property-key"), is("generic-vnf.vnf-name"));
+		assertThat(relToProp.getValue("property-value"), is("myname"));
 	}
 
 	@Test
