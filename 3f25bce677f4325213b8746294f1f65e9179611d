@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9adffdf1_c98aac63",
+        "filename": "aai-core/src/main/java/org/onap/aai/audit/ListEndpoints.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2019-01-10T00:03:47Z",
+      "side": 1,
+      "message": "please note that this is a command-line utility, so the message should probably come out on the stderr always. the logger can be added additionally.",
+      "range": {
+        "startLine": 69,
+        "startChar": 1,
+        "endLine": 69,
+        "endChar": 39
+      },
+      "revId": "3f25bce677f4325213b8746294f1f65e9179611d",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
