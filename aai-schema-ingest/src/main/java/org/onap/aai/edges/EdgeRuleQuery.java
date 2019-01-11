@@ -60,26 +60,26 @@ public class EdgeRuleQuery {
 
         private static final String FROM_ONLY = "FromOnly";
 
-        //required 
+        //required
         private String nodeA;
-        
+
         //optional - null will translate to any value of the param
-        private String nodeB = null; 
+        private String nodeB = null;
         private String label = null;
         private EdgeType type = null;
         private AAIDirection direction = null;
         private boolean isPrivate = false;
         private SchemaVersion version = null;
-        
+
         public Builder(String nodeA) {
             this.nodeA = nodeA;
         }
-        
+
         public Builder(String nodeA, String nodeB) {
             this.nodeA = nodeA;
             this.nodeB = nodeB;
         }
-        
+
         private String getFirstNodeType() {
             return nodeA;
         }
@@ -87,7 +87,7 @@ public class EdgeRuleQuery {
             this.nodeB = FROM_ONLY;
             return this;
         }
-        
+
         private String getSecondNodeType() {
             return nodeB;
         }
@@ -105,35 +105,35 @@ public class EdgeRuleQuery {
             this.nodeA = TO_ONLY;
             return this;
         }
-        
+
         public Builder label(String label) {
             this.label = label;
             return this;
         }
-        
+
         private String getLabel() {
             return label;
         }
-        
+
         public Builder edgeType(EdgeType type) {
             this.type = type;
             return this;
         }
-        
+
         private EdgeType getEdgeType() {
             return type;
         }
-        
+
 
         public Builder direction(AAIDirection direction) {
             this.direction = direction;
             return this;
         }
-        
+
         private AAIDirection getDirection() {
             return direction;
         }
-                
+
         public Builder version(SchemaVersion version) {
             this.version = version;
             return this;
@@ -151,12 +151,12 @@ public class EdgeRuleQuery {
         private Optional<SchemaVersion> getSchemaVersion() {
             return Optional.ofNullable(version);
         }
-        
+
         public EdgeRuleQuery build() {
             return new EdgeRuleQuery(this);
         }
     }
-    
+
     private EdgeRuleQuery(Builder builder) {
         this.v = builder.getSchemaVersion();
         this.nodeA = builder.getFirstNodeType();
@@ -165,7 +165,7 @@ public class EdgeRuleQuery {
         this.type = builder.getEdgeType();
         this.direction = builder.getDirection();
         this.isPrivate = builder.isPrivate();
-        
+
         //will cover from A to B case
         List<Predicate> criteriaFromTo = new ArrayList<>();
         //Special logic to allow for A to B case only
@@ -187,8 +187,8 @@ public class EdgeRuleQuery {
             criteriaFromTo.add(labelPred);
             criteriaToFrom.add(labelPred);
         }
-        
-        if (builder.getEdgeType() != null) {
+
+        if (builder.getEdgeType() != null && builder.getEdgeType() != EdgeType.ALL) {
             Predicate typePred = addType(builder.getEdgeType());
             criteriaFromTo.add(typePred);
             criteriaToFrom.add(typePred);
@@ -199,7 +199,7 @@ public class EdgeRuleQuery {
             criteriaFromTo.add(privatePredicate);
             criteriaToFrom.add(privatePredicate);
         }
-        
+
         if (builder.getDirection() != null) {
             Predicate directionPred = addDirection(builder.getDirection());
             criteriaFromTo.add(directionPred);
@@ -213,14 +213,14 @@ public class EdgeRuleQuery {
             this.filter = filter(criteriaFromTo).or(filter(criteriaToFrom));
         }
     }
-    
+
     private Predicate buildToFromPart(String from, String to) {
         if (from == null && to == null) { //shouldn't ever happen though
             throw new IllegalStateException("must have at least one node defined");
         }
-        
+
         Predicate p;
-        
+
         if (to == null) {
             p = where(EdgeField.FROM.toString()).is(from);
         } else if (from == null) {
@@ -228,14 +228,14 @@ public class EdgeRuleQuery {
         } else {
             p = where(EdgeField.FROM.toString()).is(from).and(EdgeField.TO.toString()).is(to);
         }
-        
+
         return p;
     }
-    
+
     private Predicate addLabel(String label) {
         return where(EdgeField.LABEL.toString()).is(label);
     }
-    
+
     private Predicate addType(EdgeType type) {
         if (type == EdgeType.COUSIN) {
             return where(EdgeProperty.CONTAINS.toString()).is(AAIDirection.NONE.toString());
@@ -243,7 +243,7 @@ public class EdgeRuleQuery {
             return where(EdgeProperty.CONTAINS.toString()).ne(AAIDirection.NONE.toString());
         }
     }
-        
+
     private Predicate addDirection(AAIDirection direction) {
         if (direction == AAIDirection.OUT) {
             return where(EdgeField.DIRECTION.toString()).in(AAIDirection.OUT.toString(), AAIDirection.BOTH.toString());
@@ -256,7 +256,7 @@ public class EdgeRuleQuery {
         }
         return where(EdgeField.DIRECTION.toString()).is(AAIDirection.NONE.toString());
     }
-    
+
     /**
      * Provides the JsonPath filter for actually querying the edge rule schema files
      * @return Filter
@@ -264,24 +264,24 @@ public class EdgeRuleQuery {
     public Filter getFilter() {
         return this.filter;
     }
-    
+
     /**
      * Gets the first node type given for the query.
-     * 
+     *
      * ie, If you called Builder(A,B) this would return A,
      * if you called Builder(B,A), it would return B,
      * if you called Builder(A), it would return A.
-     * 
+     *
      * This is to maintain backwards compatibility with the
      * EdgeRules API which flipped the direction of
      * the result EdgeRule to match the input directionality.
-     * 
+     *
      * @return String first node type of the query
      */
     public String getFromType() {
         return this.nodeA;
     }
-    
+
     /**
      * So the Ingestor knows which version of the rules to search
      * @return the Version
@@ -289,21 +289,21 @@ public class EdgeRuleQuery {
     public Optional<SchemaVersion> getVersion() {
         return this.v;
     }
-    
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        
+
         sb.append("EdgeRuleQuery with filter params node type: ").append(nodeA);
-        
+
         if (nodeB != null) {
             sb.append(", node type: ").append(nodeB);
         }
-        
+
         if (label != null) {
             sb.append(", label: ").append(label);
-        } 
-        
+        }
+
         sb.append(", type: ");
         if (type != null) {
             sb.append(type.toString());

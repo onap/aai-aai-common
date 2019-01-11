@@ -293,6 +293,40 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
 		return createEdgeTraversal(type, out, in);
 	}
 
+	/**
+	 *
+	 * @param edgeType
+	 * @param outNodeType
+	 * @param inNodeType
+	 * @return
+	 * @throws AAIException
+	 */
+	public QueryBuilder<Vertex> createEdgeTraversal(String edgeType, String outNodeType, String inNodeType) throws AAIException {
+		/*
+		 * When the optional parameter edgetype is sent it is a string that needs to be converted to Enum
+		 */
+		EdgeType type = EdgeType.valueOf(edgeType);
+		Introspector out = loader.introspectorFromName(outNodeType);
+		Introspector in = loader.introspectorFromName(inNodeType);
+
+		return createEdgeTraversal(type, out, in);
+	}
+	
+	/**
+	 *
+	 * @param MissingOptionalParameter
+	 * @param outNodeType
+	 * @param inNodeType
+	 * @return
+	 * @throws AAIException
+	 */
+	public QueryBuilder<Vertex> createEdgeTraversal(MissingOptionalParameter edgeType, String outNodeType, String inNodeType) throws AAIException {
+		/*
+		 * When no optional parameter edgetype is sent get all edges between the 2 nodetypes
+		 */
+		return this.createEdgeTraversal(outNodeType, inNodeType);	
+	}
+	
 	public QueryBuilder<Vertex> createEdgeTraversal(String outNodeType, String inNodeType) throws AAIException {
 
 		Introspector out = loader.introspectorFromName(outNodeType);
@@ -506,6 +540,7 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
 	public abstract QueryBuilder<E> not(QueryBuilder<E> builder);
 	public abstract QueryBuilder<E> as(String name);
 	public abstract QueryBuilder<E> select(String name);
+	public abstract QueryBuilder<E> select(String... names);
 	public abstract QueryBuilder<E> until(QueryBuilder<E> builder);
 	public abstract QueryBuilder<E> groupCount();
 	public abstract QueryBuilder<E> by(String name);
@@ -573,5 +608,17 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
 	
 	protected void setEdgeIngestor(EdgeIngestor ei) {
 		this.edgeRules = ei;
+	}
+
+	public QueryBuilder<Vertex> getVerticesByNumberProperty(String key, Object value) {
+		return getVerticesByProperty(key, value);
+	}
+
+    public QueryBuilder<Vertex> getVerticesByNumberProperty(String key) {
+    	return getVerticesByProperty(key);
+    }
+    
+    public QueryBuilder<Vertex> getVerticesByNumberProperty(String key, MissingOptionalParameter value) {
+		return getVerticesByProperty(key, value);
 	}
 }

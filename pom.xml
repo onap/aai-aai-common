@@ -49,6 +49,10 @@
         <aai.generate.schema>true</aai.generate.schema>
         <sitePath>/content/sites/site/org/onap/aai/aai-common/${project.artifactId}/${project.version}</sitePath>
         <onap.nexus.url>https://nexus.onap.org</onap.nexus.url>
+        <onap.nexus.snapshot.path>/content/repositories/snapshots/</onap.nexus.snapshot.path>
+        <onap.nexus.snapshot.id>ecomp-snapshots</onap.nexus.snapshot.id>
+        <onap.nexus.release.path>/content/repositories/releases/</onap.nexus.release.path>
+        <onap.nexus.release.id>ecomp-releases</onap.nexus.release.id>
     </properties>
 
     <build>
@@ -169,10 +173,15 @@
     </build>
 
     <distributionManagement>
+        <repository>
+            <id>${onap.nexus.release.id}</id>
+            <name>ECOMP Release Repository</name>
+            <url>${onap.nexus.url}${onap.nexus.release.path}</url>
+        </repository>
         <snapshotRepository>
-            <id>ecomp-snapshots</id>
+            <id>${onap.nexus.snapshot.id}</id>
             <name>ECOMP Snapshot Repository</name>
-            <url>${onap.nexus.url}/content/repositories/snapshots/</url>
+            <url>${onap.nexus.url}${onap.nexus.snapshot.path}</url>
         </snapshotRepository>
         <site>
             <id>ecomp-site</id>

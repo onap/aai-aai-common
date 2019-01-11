@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.onap.aai.AAISetup;
 import org.onap.aai.introspection.*;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.net.URI;
 
@@ -33,6 +34,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class InjectKeysFromURITest extends AAISetup {
 
     private Loader loader;

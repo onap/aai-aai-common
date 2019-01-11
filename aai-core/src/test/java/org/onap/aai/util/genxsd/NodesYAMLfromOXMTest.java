@@ -32,6 +32,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -330,19 +331,22 @@ public class NodesYAMLfromOXMTest {
 		sb.append("          null\n      parameters:\n");
 		sb.append("        - name: global-customer-id\n");
 		sb.append("          in: query\n");
-		sb.append("          description:\n");
+		sb.append("          description: Global customer id used across to uniquely identify customer.\n");
 		sb.append("          required: false\n");
 		sb.append("          type: string\n");
+		sb.append("          example: __GLOBAL-CUSTOMER-ID__\n");
 		sb.append("        - name: subscriber-name\n");
 		sb.append("          in: query\n");
-		sb.append("          description:\n");
+		sb.append("          description: Subscriber name, an alternate way to retrieve a customer.\n");
 		sb.append("          required: false\n");
 		sb.append("          type: string\n");
+		sb.append("          example: __SUBSCRIBER-NAME__\n");
 		sb.append("        - name: subscriber-type\n");
 		sb.append("          in: query\n");
-		sb.append("          description:\n");
+		sb.append("          description: Subscriber type, a way to provide VID with only the INFRA customers.\n");
 		sb.append("          required: false\n");
 		sb.append("          type: string\n");
+		sb.append("          example: __SUBSCRIBER-TYPE__\n");
 		sb.append("  /nodes/service-subscriptions?parameter=value[&parameter2=value2]:\n");
 		sb.append("    get:\n");
 		sb.append("      tags:\n");
@@ -362,9 +366,10 @@ public class NodesYAMLfromOXMTest {
 		sb.append("          null\n      parameters:\n");
 		sb.append("        - name: service-type\n");
 		sb.append("          in: query\n");
-		sb.append("          description:\n");
+		sb.append("          description: Value defined by orchestration to identify this service.\n");
 		sb.append("          required: false\n");
 		sb.append("          type: string\n");
+		sb.append("          example: __SERVICE-TYPE__\n");
 		return sb.toString();
 	}
 	public String YAMLdefs() {

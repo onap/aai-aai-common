@@ -21,8 +21,10 @@ package org.onap.aai.introspection;
 
 import org.junit.Test;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
+import org.springframework.test.annotation.DirtiesContext;
 
 
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class MoxyEngineTest extends IntrospectorTestSpec {
 
 	/**

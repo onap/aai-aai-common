@@ -56,10 +56,11 @@ import org.springframework.test.context.junit4.rules.SpringMethodRule;
         EdgeSerializer.class,
         NodeIngestor.class,
         SpringContextAware.class,
-        IntrospectionConfig.class,  
+        IntrospectionConfig.class,
         RestBeanConfig.class
 })
-@TestPropertySource(properties = { "schema.uri.base.path = /aai", "schema.xsd.maxoccurs = 5000" , "schema.translator.list=config"})
+@TestPropertySource(properties = { "schema.uri.base.path = /aai", "schema.xsd.maxoccurs = 5000" , "schema.translator.list=config",
+    "schema.nodes.location=src/test/resources/onap/oxm", "schema.edges.location=src/test/resources/onap/dbedgerules"})
 public abstract class AAISetup {
 
     @ClassRule
@@ -70,16 +71,16 @@ public abstract class AAISetup {
 
     @Autowired
 	protected  Map<SchemaVersion, MoxyLoader>  moxyLoaderInstance;
-	
+
 	@Autowired
 	protected HttpEntry traversalHttpEntry;
-	
+
 	@Autowired
 	protected HttpEntry traversalUriHttpEntry;
-	
+
 	@Autowired
 	protected NodeIngestor nodeIngestor;
-	
+
 	@Autowired
 	protected LoaderFactory loaderFactory;
 
@@ -90,8 +91,8 @@ public abstract class AAISetup {
 	protected String basePath;
 
 	@Value("${schema.xsd.maxoccurs}")
-	protected String maxOccurs;	
-	
+	protected String maxOccurs;
+
     protected static final String SERVICE_NAME = "JUNIT";
 
     @BeforeClass
@@ -101,7 +102,7 @@ public abstract class AAISetup {
         System.setProperty("aai.service.name", SERVICE_NAME);
         QueryFormatTestHelper.setFinalStatic(AAIConstants.class.getField("AAI_HOME_ETC_OXM"), "src/test/resources/bundleconfig-local/etc/oxm/");
     }
-	
-	
-	
+
+
+
 }

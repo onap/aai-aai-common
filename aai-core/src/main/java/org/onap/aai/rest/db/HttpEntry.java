@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *	http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -53,6 +53,8 @@ import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 import org.janusgraph.core.JanusGraphException;
 import org.javatuples.Pair;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.dbmap.DBConnectionType;
 import org.onap.aai.domain.responseMessage.AAIResponseMessage;
@@ -94,9 +96,9 @@ public class HttpEntry {
 	private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(HttpEntry.class);
 	private static final String TARGET_ENTITY = "DB";
 
-	private  ModelType introspectorFactoryType;
+	private ModelType introspectorFactoryType;
 
-	private  QueryStyle queryStyle;
+	private QueryStyle queryStyle;
 
 	private SchemaVersion version;
 
@@ -123,7 +125,7 @@ public class HttpEntry {
 	@Value("${schema.uri.base.path}")
 	private String basePath;
 
-	private UEBNotification	notification;
+	private UEBNotification notification;
 
 	/**
 	 * Instantiates a new http entry.
@@ -136,13 +138,13 @@ public class HttpEntry {
 		this.queryStyle = queryStyle;
 	}
 
-	public HttpEntry setHttpEntryProperties(SchemaVersion version, DBConnectionType connectionType){
+	public HttpEntry setHttpEntryProperties(SchemaVersion version, DBConnectionType connectionType) {
 		this.version = version;
 		this.loader = loaderFactory.createLoaderForVersion(introspectorFactoryType, version);
 		this.dbEngine = new JanusGraphDBEngine(
-				queryStyle,
-				connectionType,
-				loader);
+			queryStyle,
+			connectionType,
+			loader);
 
 		getDbEngine().startTransaction();
 		this.notification = new UEBNotification(loader, loaderFactory, schemaVersions);
@@ -150,13 +152,13 @@ public class HttpEntry {
 	}
 
 
-	 public HttpEntry setHttpEntryProperties(SchemaVersion version, DBConnectionType connectionType, UEBNotification notification){
+	public HttpEntry setHttpEntryProperties(SchemaVersion version, DBConnectionType connectionType, UEBNotification notification) {
 		this.version = version;
 		this.loader = loaderFactory.createLoaderForVersion(introspectorFactoryType, version);
 		this.dbEngine = new JanusGraphDBEngine(
-				queryStyle,
-				connectionType,
-				loader);
+			queryStyle,
+			connectionType,
+			loader);
 
 		this.notification = notification;
 		//start transaction on creation
@@ -210,7 +212,7 @@ public class HttpEntry {
 		return dbEngine;
 	}
 
-	public Pair<Boolean, List<Pair<URI, Response>>> process (List<DBRequest> requests, String sourceOfTruth) throws AAIException {
+	public Pair<Boolean, List<Pair<URI, Response>>> process(List<DBRequest> requests, String sourceOfTruth) throws AAIException {
 		return this.process(requests, sourceOfTruth, true);
 	}
 
@@ -221,24 +223,32 @@ public class HttpEntry {
 	 *
 	 * @return a boolean true/false of whether the user requested paginated results
 	 */
-	public boolean isPaginated(){
+	public boolean isPaginated() {
 		return this.paginationBucket > -1 && this.paginationIndex > -1;
-	}
-
-	/**
-	 * Setter for the pagination bucket variable which stores in this object the size of results to return
-	 * @param pb
-	 */
-	public void setPaginationBucket(int pb){
-		this.paginationBucket = pb;
 	}
 
 	/**
 	 * Returns the pagination size
 	 * @return integer of the size of results to be returned when paginated
 	 */
-	public int getPaginationBucket(){
+	public int getPaginationBucket() {
 		return this.paginationBucket;
+	}
+
+	/**
+	 * Setter for the pagination bucket variable which stores in this object the size of results to return
+	 * @param pb
+	 */
+	public void setPaginationBucket(int pb) {
+		this.paginationBucket = pb;
+	}
+
+	/**
+	 * Getter to return the pagination index requested by the user when requesting paginated results
+	 * @return
+	 */
+	public int getPaginationIndex() {
+		return this.paginationIndex;
 	}
 
 	/**
@@ -246,19 +256,11 @@ public class HttpEntry {
 	 * paginated
 	 * @param pi
 	 */
-	public void setPaginationIndex(int pi){
-		if(pi == 0){
+	public void setPaginationIndex(int pi) {
+		if (pi == 0) {
 			pi = 1;
 		}
 		this.paginationIndex = pi;
-	}
-
-	/**
-	 * Getter to return the pagination index requested by the user when requesting paginated results
-	 * @return
-	 */
-	public int getPaginationIndex(){
-		return this.paginationIndex;
 	}
 
 	/**
@@ -266,12 +268,12 @@ public class HttpEntry {
 	 * @param totalVertices
 	 * @param paginationBucketSize
 	 */
-	public void setTotalsForPaging(int totalVertices, int paginationBucketSize){
+	public void setTotalsForPaging(int totalVertices, int paginationBucketSize) {
 		this.totalVertices = totalVertices;
 		//set total number of buckets equal to full pages
-		this.totalPaginationBuckets = totalVertices/paginationBucketSize;
+		this.totalPaginationBuckets = totalVertices / paginationBucketSize;
 		//conditionally add a page for the remainder
-		if(totalVertices % paginationBucketSize > 0){
+		if (totalVertices % paginationBucketSize > 0) {
 			this.totalPaginationBuckets++;
 		}
 	}
@@ -279,7 +281,7 @@ public class HttpEntry {
 	/**
 	 * @return the total amount of pages
 	 */
-	public int getTotalPaginationBuckets(){
+	public int getTotalPaginationBuckets() {
 		return this.totalPaginationBuckets;
 	}
 
@@ -287,7 +289,7 @@ public class HttpEntry {
 	 *
 	 * @return the total number of vertices when paginated
 	 */
-	public int getTotalVertices(){
+	public int getTotalVertices() {
 		return this.totalVertices;
 	}
 
@@ -299,7 +301,7 @@ public class HttpEntry {
 	 * @return the pair
 	 * @throws AAIException the AAI exception
 	 */
-	public Pair<Boolean, List<Pair<URI, Response>>> process (List<DBRequest> requests, String sourceOfTruth, boolean enableResourceVersion) throws AAIException {
+	public Pair<Boolean, List<Pair<URI, Response>>> process(List<DBRequest> requests, String sourceOfTruth, boolean enableResourceVersion) throws AAIException {
 
 		DBSerializer serializer = new DBSerializer(version, dbEngine, introspectorFactoryType, sourceOfTruth);
 		String methodName = "process";
@@ -310,7 +312,7 @@ public class HttpEntry {
 		String transactionId = null;
 		int depth = AAIProperties.MAXIMUM_DEPTH;
 		Format format = null;
-		List<Pair<URI,Response>> responses = new ArrayList<>();
+		List<Pair<URI, Response>> responses = new ArrayList<>();
 		MultivaluedMap<String, String> params = null;
 		HttpMethod method = null;
 		String uriTemp = "";
@@ -339,11 +341,11 @@ public class HttpEntry {
 						LoggingContext.startTime();
 						List<Vertex> vertTemp;
 						List<Vertex> vertices;
-						if(this.isPaginated()) {
+						if (this.isPaginated()) {
 							vertTemp = query.getQueryBuilder().toList();
 							this.setTotalsForPaging(vertTemp.size(), this.paginationBucket);
 							vertices = vertTemp.subList(((this.paginationIndex - 1) * this.paginationBucket), Math.min((this.paginationBucket * this.paginationIndex), vertTemp.size()));
-						}else{
+						} else {
 							vertices = query.getQueryBuilder().toList();
 						}
 						boolean isNewVertex = false;
@@ -364,7 +366,7 @@ public class HttpEntry {
 						if (cleanUp == null) {
 							cleanUp = "false";
 						}
-						if (vertices.size() > 1 && processSingle && !method.equals(HttpMethod.GET)) {
+						if (vertices.size() > 1 && processSingle && !(method.equals(HttpMethod.GET) || method.equals(HttpMethod.GET_RELATIONSHIP))) {
 							if (method.equals(HttpMethod.DELETE)) {
 								LoggingContext.restoreIfPossible();
 								throw new AAIException("AAI_6138");
@@ -374,7 +376,7 @@ public class HttpEntry {
 							}
 						}
 						if (method.equals(HttpMethod.PUT)) {
-							String resourceVersion = (String)obj.getValue("resource-version");
+							String resourceVersion = (String) obj.getValue("resource-version");
 							if (vertices.isEmpty()) {
 								if (enableResourceVersion) {
 									serializer.verifyResourceVersion("create", query.getResultType(), "", resourceVersion, obj.getURI());
@@ -399,17 +401,17 @@ public class HttpEntry {
 							v = vertices.get(0);
 						}
 						HashMap<String, Introspector> relatedObjects = new HashMap<>();
+						String nodeOnly = params.getFirst("nodes-only");
+						boolean isNodeOnly = nodeOnly != null;
 						switch (method) {
 							case GET:
-								String nodeOnly = params.getFirst("nodes-only");
-								boolean isNodeOnly = nodeOnly != null;
 
 								if (format == null) {
 									obj = this.getObjectFromDb(vertices, serializer, query, obj, request.getUri(), depth, isNodeOnly, cleanUp);
 
 
 									LoggingContext.elapsedTime((long) serializer.getDBTimeMsecs(), TimeUnit.MILLISECONDS);
-									LOGGER.info ("Completed");
+									LOGGER.info("Completed");
 									LoggingContext.restoreIfPossible();
 
 									if (obj != null) {
@@ -424,11 +426,39 @@ public class HttpEntry {
 									}
 								} else {
 									FormatFactory ff = new FormatFactory(loader, serializer, schemaVersions, basePath + "/");
-									Formatter formatter =  ff.get(format, params);
+									Formatter formatter = ff.get(format, params);
 									result = formatter.output(vertices.stream().map(vertex -> (Object) vertex).collect(Collectors.toList())).toString();
 									status = Status.OK;
 								}
 
+								break;
+							case GET_RELATIONSHIP:
+								if (format == null) {
+									obj = this.getRelationshipObjectFromDb(vertices, serializer, query, request.getInfo().getRequestUri());
+
+									LoggingContext.elapsedTime((long) serializer.getDBTimeMsecs(), TimeUnit.MILLISECONDS);
+									LOGGER.info("Completed");
+									LoggingContext.restoreIfPossible();
+
+									if (obj != null) {
+										status = Status.OK;
+										MarshallerProperties properties;
+										if (!request.getMarshallerProperties().isPresent()) {
+											properties = new MarshallerProperties.Builder(org.onap.aai.restcore.MediaType.getEnum(outputMediaType)).build();
+										} else {
+											properties = request.getMarshallerProperties().get();
+										}
+										result = obj.marshal(properties);
+									} else {
+										String msg = createRelationshipNotFoundMessage(query.getResultType(), request.getUri());
+										throw new AAIException("AAI_6149", msg);
+									}
+								} else {
+									FormatFactory ff = new FormatFactory(loader, serializer, schemaVersions, basePath + "/");
+									Formatter formatter = ff.get(format, params);
+									result = formatter.output(vertices.stream().map(vertex -> (Object) vertex).collect(Collectors.toList())).toString();
+									status = Status.OK;
+								}
 								break;
 							case PUT:
 								response = this.invokeExtension(dbEngine, this.dbEngine.tx(), method, request, sourceOfTruth, version, loader, obj, uri, true);
@@ -445,9 +475,9 @@ public class HttpEntry {
 								if (query.isDependent()) {
 									relatedObjects = this.getRelatedObjects(serializer, queryEngine, v, obj, this.loader);
 								}
-								LoggingContext.elapsedTime((long)serializer.getDBTimeMsecs() +
-										(long)queryEngine.getDBTimeMsecs(), TimeUnit.MILLISECONDS);
-								LOGGER.info ("Completed ");
+								LoggingContext.elapsedTime((long) serializer.getDBTimeMsecs() +
+									(long) queryEngine.getDBTimeMsecs(), TimeUnit.MILLISECONDS);
+								LOGGER.info("Completed ");
 								LoggingContext.restoreIfPossible();
 								notification.createNotificationEvent(transactionId, sourceOfTruth, status, uri, obj, relatedObjects, basePath);
 
@@ -457,14 +487,14 @@ public class HttpEntry {
 								this.invokeExtension(dbEngine, this.dbEngine.tx(), method, request, sourceOfTruth, version, loader, obj, uri, true);
 								serializer.createEdge(obj, v);
 
-								LoggingContext.elapsedTime((long)serializer.getDBTimeMsecs(),TimeUnit.MILLISECONDS);
-								LOGGER.info ("Completed");
+								LoggingContext.elapsedTime((long) serializer.getDBTimeMsecs(), TimeUnit.MILLISECONDS);
+								LOGGER.info("Completed");
 								LoggingContext.restoreIfPossible();
 								status = Status.OK;
 								notification.createNotificationEvent(transactionId, sourceOfTruth, status, new URI(uri.toString().replace("/relationship-list/relationship", "")), serializer.getLatestVersionView(v), relatedObjects, basePath);
 								break;
 							case MERGE_PATCH:
-								Introspector existingObj  = loader.introspectorFromName(obj.getDbName());
+								Introspector existingObj = loader.introspectorFromName(obj.getDbName());
 								existingObj = this.getObjectFromDb(vertices, serializer, query, existingObj, request.getUri(), 0, false, cleanUp);
 								String existingJson = existingObj.marshal(false);
 								String newJson;
@@ -493,14 +523,14 @@ public class HttpEntry {
 									if (query.isDependent()) {
 										relatedObjects = this.getRelatedObjects(serializer, queryEngine, v, patchedObj, this.loader);
 									}
-									LoggingContext.elapsedTime((long)serializer.getDBTimeMsecs() +
-											(long)queryEngine.getDBTimeMsecs(), TimeUnit.MILLISECONDS);
-									LOGGER.info ("Completed");
+									LoggingContext.elapsedTime((long) serializer.getDBTimeMsecs() +
+										(long) queryEngine.getDBTimeMsecs(), TimeUnit.MILLISECONDS);
+									LOGGER.info("Completed");
 									LoggingContext.restoreIfPossible();
 									notification.createNotificationEvent(transactionId, sourceOfTruth, status, uri, patchedObj, relatedObjects, basePath);
 								} catch (IOException | JsonPatchException e) {
 
-									LOGGER.info ("Caught exception: " + e.getMessage());
+									LOGGER.info("Caught exception: " + e.getMessage());
 									LoggingContext.restoreIfPossible();
 									throw new AAIException("AAI_3000", "could not perform patch operation");
 								}
@@ -530,7 +560,7 @@ public class HttpEntry {
 								Map<String, URI> uriMap = new HashMap<>();
 								Map<String, HashMap<String, Introspector>> deleteRelatedObjects = new HashMap<>();
 
-								if(isDelVerticesPresent){
+								if (isDelVerticesPresent) {
 									deleteObjects = this.buildIntrospectorObjects(serializer, deletableVertices);
 
 									uriMap = this.buildURIMap(serializer, deleteObjects);
@@ -541,9 +571,9 @@ public class HttpEntry {
 								serializer.delete(v, deletableVertices, resourceVersion, enableResourceVersion);
 								this.invokeExtension(dbEngine, this.dbEngine.tx(), method, request, sourceOfTruth, version, loader, obj, uri, false);
 
-								LoggingContext.elapsedTime((long)serializer.getDBTimeMsecs() +
-										(long)queryEngine.getDBTimeMsecs(), TimeUnit.MILLISECONDS);
-								LOGGER.info ("Completed");
+								LoggingContext.elapsedTime((long) serializer.getDBTimeMsecs() +
+									(long) queryEngine.getDBTimeMsecs(), TimeUnit.MILLISECONDS);
+								LOGGER.info("Completed");
 								LoggingContext.restoreIfPossible();
 								status = Status.NO_CONTENT;
 								notification.createNotificationEvent(transactionId, sourceOfTruth, status, uri, obj, relatedObjects, basePath);
@@ -552,9 +582,9 @@ public class HttpEntry {
 								 * Notify delete-other-v candidates
 								 */
 
-								if(isDelVerticesPresent){
+								if (isDelVerticesPresent) {
 									this.buildNotificationEvent(sourceOfTruth, status, transactionId, notification, deleteObjects,
-									uriMap, deleteRelatedObjects, basePath);
+										uriMap, deleteRelatedObjects, basePath);
 								}
 
 								break;
@@ -562,8 +592,8 @@ public class HttpEntry {
 								serializer.touchStandardVertexProperties(v, false);
 								serializer.deleteEdge(obj, v);
 
-								LoggingContext.elapsedTime((long)serializer.getDBTimeMsecs(),TimeUnit.MILLISECONDS);
-								LOGGER.info ("Completed");
+								LoggingContext.elapsedTime((long) serializer.getDBTimeMsecs(), TimeUnit.MILLISECONDS);
+								LOGGER.info("Completed");
 								LoggingContext.restoreIfPossible();
 								status = Status.NO_CONTENT;
 								notification.createNotificationEvent(transactionId, sourceOfTruth, Status.OK, new URI(uri.toString().replace("/relationship-list/relationship", "")), serializer.getLatestVersionView(v), relatedObjects, basePath);
@@ -576,40 +606,42 @@ public class HttpEntry {
 						/* temporarily adding vertex id to the headers
 						 * to be able to use for testing the vertex id endpoint functionality
 						 * since we presently have no other way of generating those id urls
-						*/
+						 */
 						if (response == null && v != null && (
 							method.equals(HttpMethod.PUT)
-							|| method.equals(HttpMethod.GET)
-							|| method.equals(HttpMethod.MERGE_PATCH))
-						) {
+								|| method.equals(HttpMethod.GET)
+								|| method.equals(HttpMethod.MERGE_PATCH)
+								|| method.equals(HttpMethod.GET_RELATIONSHIP))
+
+							) {
 							String myvertid = v.id().toString();
-							if(this.isPaginated()){
+							if (this.isPaginated()) {
 								response = Response.status(status)
-										.header("vertex-id", myvertid)
-										.header("total-results", this.getTotalVertices())
-										.header("total-pages", this.getTotalPaginationBuckets())
-										.entity(result)
-										.type(outputMediaType).build();
-							}else {
+									.header("vertex-id", myvertid)
+									.header("total-results", this.getTotalVertices())
+									.header("total-pages", this.getTotalPaginationBuckets())
+									.entity(result)
+									.type(outputMediaType).build();
+							} else {
 								response = Response.status(status)
-										.header("vertex-id", myvertid)
-										.entity(result)
-										.type(outputMediaType).build();
+									.header("vertex-id", myvertid)
+									.entity(result)
+									.type(outputMediaType).build();
 							}
 						} else if (response == null) {
 							response = Response.status(status)
-									.type(outputMediaType).build();
+								.type(outputMediaType).build();
 						} else {
 							//response already set to something
 						}
-						Pair<URI,Response> pairedResp = Pair.with(request.getUri(), response);
+						Pair<URI, Response> pairedResp = Pair.with(request.getUri(), response);
 						responses.add(pairedResp);
 						//break out of retry loop
 						break;
 					} catch (JanusGraphException e) {
 						this.dbEngine.rollback();
 
-						LOGGER.info ("Caught exception: " + e.getMessage());
+						LOGGER.info("Caught exception: " + e.getMessage());
 						LoggingContext.restoreIfPossible();
 						AAIException ex = new AAIException("AAI_6142", e);
 						ErrorLogHelper.logException(ex);
@@ -630,10 +662,10 @@ public class HttpEntry {
 				templateVars.addAll(e.getTemplateVars());
 				ErrorLogHelper.logException(e);
 				response = Response
-						.status(e.getErrorObject().getHTTPResponseCode())
-						.entity(ErrorLogHelper.getRESTAPIErrorResponse(request.getHeaders().getAcceptableMediaTypes(), e, templateVars))
-						.build();
-				Pair<URI,Response> pairedResp = Pair.with(request.getUri(), response);
+					.status(e.getErrorObject().getHTTPResponseCode())
+					.entity(ErrorLogHelper.getRESTAPIErrorResponse(request.getHeaders().getAcceptableMediaTypes(), e, templateVars))
+					.build();
+				Pair<URI, Response> pairedResp = Pair.with(request.getUri(), response);
 				responses.add(pairedResp);
 				continue;
 			} catch (Exception e) {
@@ -645,9 +677,9 @@ public class HttpEntry {
 				templateVars.add(request.getUri().getPath().toString());
 				ErrorLogHelper.logException(ex);
 				response = Response
-						.status(ex.getErrorObject().getHTTPResponseCode())
-						.entity(ErrorLogHelper.getRESTAPIErrorResponse(request.getHeaders().getAcceptableMediaTypes(), ex, templateVars))
-						.build();
+					.status(ex.getErrorObject().getHTTPResponseCode())
+					.entity(ErrorLogHelper.getRESTAPIErrorResponse(request.getHeaders().getAcceptableMediaTypes(), ex, templateVars))
+					.build();
 				Pair<URI, Response> pairedResp = Pair.with(request.getUri(), response);
 				responses.add(pairedResp);
 				continue;
@@ -664,7 +696,7 @@ public class HttpEntry {
 	 * @param mediaTypeList the media type list
 	 * @return the media type
 	 */
-	private String getMediaType(List <MediaType> mediaTypeList) {
+	private String getMediaType(List<MediaType> mediaTypeList) {
 		String mediaType = MediaType.APPLICATION_JSON;  // json is the default
 		for (MediaType mt : mediaTypeList) {
 			if (MediaType.APPLICATION_XML_TYPE.isCompatible(mt)) {
@@ -709,6 +741,44 @@ public class HttpEntry {
 	}
 
 	/**
+	 * Gets the object from db.
+	 *
+	 * @param serializer the serializer
+	 * @param query the query
+	 * @param obj the obj
+	 * @param uri the uri
+	 * @param depth the depth
+	 * @param cleanUp the clean up
+	 * @return the object from db
+	 * @throws AAIException the AAI exception
+	 * @throws IllegalAccessException the illegal access exception
+	 * @throws IllegalArgumentException the illegal argument exception
+	 * @throws InvocationTargetException the invocation target exception
+	 * @throws SecurityException the security exception
+	 * @throws InstantiationException the instantiation exception
+	 * @throws NoSuchMethodException the no such method exception
+	 * @throws UnsupportedEncodingException the unsupported encoding exception
+	 * @throws MalformedURLException the malformed URL exception
+	 * @throws AAIUnknownObjectException
+	 * @throws URISyntaxException
+	 */
+	private Introspector getRelationshipObjectFromDb(List<Vertex> results, DBSerializer serializer, QueryParser query, URI uri) throws AAIException, IllegalArgumentException, SecurityException, UnsupportedEncodingException, AAIUnknownObjectException {
+
+		//nothing found
+		if (results.isEmpty()) {
+			String msg = createNotFoundMessage(query.getResultType(), uri);
+			throw new AAIException("AAI_6114", msg);
+		}
+
+		if (results.size() > 1) {
+			throw new AAIException("AAI_6148", uri.getPath());
+		}
+
+		Vertex v = results.get(0);
+		return serializer.dbToRelationshipObject(v);
+	}
+
+	/**
 	 * Invoke extension.
 	 *
 	 * @param dbEngine the db engine
@@ -748,11 +818,11 @@ public class HttpEntry {
 
 		ExtensionController ext = new ExtensionController();
 		ext.runExtension(aaiExtMap.getApiVersion(),
-				extensionInformation.getNamespace(),
-				extensionInformation.getTopObject(),
-				extensionInformation.getMethodName(httpMethod, isPreprocess),
-				aaiExtMap,
-				isPreprocess);
+			extensionInformation.getNamespace(),
+			extensionInformation.getTopObject(),
+			extensionInformation.getMethodName(httpMethod, isPreprocess),
+			aaiExtMap,
+			isPreprocess);
 
 		if (aaiExtMap.getPrecheckAddedList().size() > 0) {
 			response = notifyOnSkeletonCreation(aaiExtMap, obj, request.getHeaders());
@@ -793,12 +863,12 @@ public class HttpEntry {
 			}
 			templateVars.add(StringUtils.join(keys, ", "));
 			exceptionList.put(new AAIException("AAI_0004", msg.getAaiResponseMessageResourceType()),
-					templateVars);
+				templateVars);
 		}
 		response = Response
-				.status(Status.ACCEPTED).entity(ErrorLogHelper
-						.getRESTAPIInfoResponse(headers.getAcceptableMediaTypes(), exceptionList))
-						.build();
+			.status(Status.ACCEPTED).entity(ErrorLogHelper
+				.getRESTAPIInfoResponse(headers.getAcceptableMediaTypes(), exceptionList))
+			.build();
 
 		return response;
 	}
@@ -818,6 +888,20 @@ public class HttpEntry {
 	}
 
 	/**
+	 * Creates the not found message.
+	 *
+	 * @param resultType the result type
+	 * @param uri the uri
+	 * @return the string
+	 */
+	private String createRelationshipNotFoundMessage(String resultType, URI uri) {
+
+		String msg = "No relationship found of type " + resultType + " at the given URI: " + uri.getPath() + "/relationship-list";
+
+		return msg;
+	}
+
+	/**
 	 * Sets the depth.
 	 *
 	 * @param depthParam the depth param
@@ -829,18 +913,18 @@ public class HttpEntry {
 
 		String getAllRandomStr = AAIConfig.get("aai.rest.getall.depthparam", "");
 		if (depthParam != null && getAllRandomStr != null && !getAllRandomStr.isEmpty()
-				&& getAllRandomStr.equals(depthParam)) {
+			&& getAllRandomStr.equals(depthParam)) {
 			return depth;
 		}
 
-		if(depthParam == null){
-			if(this.version.compareTo(schemaVersions.getDepthVersion()) >= 0){
+		if (depthParam == null) {
+			if (this.version.compareTo(schemaVersions.getDepthVersion()) >= 0) {
 				depth = 0;
 			} else {
 				depth = AAIProperties.MAXIMUM_DEPTH;
 			}
 		} else {
-			if (!depthParam.isEmpty() && !"all".equals(depthParam)){
+			if (!depthParam.isEmpty() && !"all".equals(depthParam)) {
 				try {
 					depth = Integer.parseInt(depthParam);
 				} catch (Exception e) {
@@ -853,15 +937,15 @@ public class HttpEntry {
 
 		int maximumDepth = AAIProperties.MAXIMUM_DEPTH;
 
-		if(maxDepth != null){
+		if (maxDepth != null) {
 			try {
 				maximumDepth = Integer.parseInt(maxDepth);
-			} catch(Exception ex){
+			} catch (Exception ex) {
 				throw new AAIException("AAI_4018");
 			}
 		}
 
-		if(depth > maximumDepth){
+		if (depth > maximumDepth) {
 			throw new AAIException("AAI_3303");
 		}
 
@@ -937,7 +1021,7 @@ public class HttpEntry {
 		while (depth >= 0 && !obj.isTopLevel()) {
 			template = obj.getMetadata(ObjectMetadata.URI_TEMPLATE);
 
-			if(template == null){
+			if (template == null) {
 				LOGGER.warn("Unable to find the uriTemplate for the object {}", obj.getDbName());
 				return null;
 			}
@@ -945,12 +1029,12 @@ public class HttpEntry {
 			int templateCount = StringUtils.countMatches(template, "/");
 			int truncatedUriCount = StringUtils.countMatches(truncatedUri, "/");
 
-			if(templateCount > truncatedUriCount){
+			if (templateCount > truncatedUriCount) {
 				LOGGER.warn("Template uri {} contains more slashes than truncatedUri {}", template, truncatedUri);
 				return null;
 			}
 
-			int cutIndex = StringUtils.ordinalIndexOf(truncatedUri, "/", truncatedUriCount-templateCount+1);
+			int cutIndex = StringUtils.ordinalIndexOf(truncatedUri, "/", truncatedUriCount - templateCount + 1);
 			truncatedUri = StringUtils.substring(truncatedUri, 0, cutIndex);
 			uriList.add(truncatedUri);
 			obj = new URIToObject(loader, UriBuilder.fromPath(truncatedUri).build()).getEntity();
@@ -983,8 +1067,8 @@ public class HttpEntry {
 		HashMap<String, Introspector> relatedVertices = new HashMap<>();
 		VertexProperty aaiUriProperty = v.property(AAIProperties.AAI_URI);
 
-		if(!aaiUriProperty.isPresent()){
-			if(LOGGER.isDebugEnabled()){
+		if (!aaiUriProperty.isPresent()) {
+			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("For the given vertex {}, it seems aai-uri is not present so not getting related objects", v.id().toString());
 			} else {
 				LOGGER.info("It seems aai-uri is not present in vertex, so not getting related objects, for more info enable debug log");
@@ -994,18 +1078,18 @@ public class HttpEntry {
 
 		String aaiUri = aaiUriProperty.value().toString();
 
-		if(!obj.isTopLevel()){
+		if (!obj.isTopLevel()) {
 			String[] uriList = convertIntrospectorToUriList(aaiUri, obj, loader);
 			List<Vertex> vertexChain = null;
 			// If the uriList is null then there is something wrong with converting the uri
 			// into a list of aai-uris so falling back to the old mechanism for finding parents
-			if(uriList == null){
+			if (uriList == null) {
 				LOGGER.info("Falling back to the old mechanism due to unable to convert aai-uri to list of uris but this is not optimal");
 				vertexChain = queryEngine.findParents(v);
 			} else {
 				vertexChain = queryEngine.findParents(uriList);
 			}
-			for(Vertex vertex : vertexChain){
+			for (Vertex vertex : vertexChain) {
 				try {
 					final Introspector vertexObj = serializer.getVertexProperties(vertex);
 					relatedVertices.put(vertexObj.getObjectId(), vertexObj);
@@ -1050,8 +1134,9 @@ public class HttpEntry {
 			URI uri;
 			try {
 				uri = serializer.getURIForVertex(entry.getKey());
-				if (null != entry.getValue())
+				if (null != entry.getValue()) {
 					uriMap.put(entry.getValue().getObjectId(), uri);
+				}
 			} catch (UnsupportedEncodingException e) {
 				LOGGER.warn("Unable to get URIs, Just continue");
 				continue;
@@ -1064,18 +1149,19 @@ public class HttpEntry {
 	}
 
 	private Map<String, HashMap<String, Introspector>> buildRelatedObjects(DBSerializer serializer,
-			QueryEngine queryEngine, Map<Vertex, Introspector> introSpector) {
+																		   QueryEngine queryEngine, Map<Vertex, Introspector> introSpector) {
 
 		Map<String, HashMap<String, Introspector>> relatedObjectsMap = new HashMap<>();
 		for (Map.Entry<Vertex, Introspector> entry : introSpector.entrySet()) {
 			try {
 				HashMap<String, Introspector> relatedObjects = this.getRelatedObjects(serializer, queryEngine,
-						entry.getKey(), entry.getValue(), this.loader);
-				if (null != entry.getValue())
+					entry.getKey(), entry.getValue(), this.loader);
+				if (null != entry.getValue()) {
 					relatedObjectsMap.put(entry.getValue().getObjectId(), relatedObjects);
+				}
 			} catch (IllegalAccessException | IllegalArgumentException
-					| InvocationTargetException | SecurityException | InstantiationException | NoSuchMethodException
-					| UnsupportedEncodingException | AAIException | URISyntaxException e) {
+				| InvocationTargetException | SecurityException | InstantiationException | NoSuchMethodException
+				| UnsupportedEncodingException | AAIException | URISyntaxException e) {
 				LOGGER.warn("Unable to get realted Objects, Just continue");
 				continue;
 			}
@@ -1087,8 +1173,8 @@ public class HttpEntry {
 	}
 
 	private void buildNotificationEvent(String sourceOfTruth, Status status, String transactionId,
-			UEBNotification notification, Map<Vertex, Introspector> deleteObjects, Map<String, URI> uriMap,
-			Map<String, HashMap<String, Introspector>> deleteRelatedObjects, String basePath) {
+										UEBNotification notification, Map<Vertex, Introspector> deleteObjects, Map<String, URI> uriMap,
+										Map<String, HashMap<String, Introspector>> deleteRelatedObjects, String basePath) {
 		for (Map.Entry<Vertex, Introspector> entry : deleteObjects.entrySet()) {
 			try {
 				String vertexObjectId = "";
@@ -1096,9 +1182,10 @@ public class HttpEntry {
 				if (null != entry.getValue()) {
 					vertexObjectId = entry.getValue().getObjectId();
 
-					if (uriMap.containsKey(vertexObjectId) && deleteRelatedObjects.containsKey(vertexObjectId))
+					if (uriMap.containsKey(vertexObjectId) && deleteRelatedObjects.containsKey(vertexObjectId)) {
 						notification.createNotificationEvent(transactionId, sourceOfTruth, status,
-								uriMap.get(vertexObjectId), entry.getValue(), deleteRelatedObjects.get(vertexObjectId), basePath);
+							uriMap.get(vertexObjectId), entry.getValue(), deleteRelatedObjects.get(vertexObjectId), basePath);
+					}
 				}
 			} catch (UnsupportedEncodingException | AAIException e) {
 
@@ -1114,17 +1201,17 @@ public class HttpEntry {
 		}
 	}
 
-	public List<Object> getPaginatedVertexList(List<Object> vertexList) throws AAIException{
+	public List<Object> getPaginatedVertexList(List<Object> vertexList) throws AAIException {
 		List<Object> vertices;
-		if(this.isPaginated()) {
+		if (this.isPaginated()) {
 			this.setTotalsForPaging(vertexList.size(), this.getPaginationBucket());
 			int startIndex = (this.getPaginationIndex() - 1) * this.getPaginationBucket();
 			int endIndex = Math.min((this.getPaginationBucket() * this.getPaginationIndex()), vertexList.size());
-			if(startIndex > endIndex){
-				throw new AAIException("AAI_6150"," ResultIndex is not appropriate for the result set, Needs to be <= "+ endIndex);
+			if (startIndex > endIndex) {
+				throw new AAIException("AAI_6150", " ResultIndex is not appropriate for the result set, Needs to be <= " + endIndex);
 			}
 			vertices = vertexList.subList(startIndex, endIndex);
-		}else{
+		} else {
 			vertices = vertexList;
 		}
 		return vertices;

@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.onap.aai.AAISetup;
 import org.onap.aai.introspection.*;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
+import org.springframework.test.annotation.DirtiesContext;
 
 import static junit.framework.TestCase.assertNotNull;
 import static org.eclipse.persistence.jpa.jpql.Assert.fail;
@@ -31,6 +32,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class IntrospectorValidatorTest extends AAISetup {
 
     private Loader loader;
