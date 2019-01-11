@@ -36,6 +36,7 @@ import org.junit.runners.Parameterized;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.onap.aai.AAISetup;
+import org.onap.aai.DataLinkSetup;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.dbmap.DBConnectionType;
 import org.onap.aai.exceptions.AAIException;
@@ -61,7 +62,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 @RunWith(value = Parameterized.class)
-public class DataLinkTest extends AAISetup {
+public class DataLinkTest extends DataLinkSetup {
 
 	private static JanusGraph graph;
 	private final static ModelType introspectorFactoryType = ModelType.MOXY;

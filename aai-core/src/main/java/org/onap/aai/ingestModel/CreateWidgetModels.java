@@ -24,6 +24,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.xml.transform.stream.StreamSource;
@@ -36,6 +37,7 @@ import org.onap.aai.introspection.ModelType;
 import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.util.AAIConfig;
 import org.onap.aai.util.AAIConstants;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 /**
  * The Class CreateWidgetModels.
@@ -74,7 +76,13 @@ public class CreateWidgetModels
 			System.exit(0);
 		}
 
-		Loader loader = SpringContextAware.getBean(LoaderFactory.class).createLoaderForVersion(ModelType.MOXY, new SchemaVersion(_apiVersion));
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(
+				"org.onap.aai.config",
+				"org.onap.aai.setup"
+		);
+
+		LoaderFactory loaderFactory = ctx.getBean(LoaderFactory.class);
+		Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, new SchemaVersion(_apiVersion));
 
 		// iterate the collection of resources
 
@@ -90,6 +98,12 @@ public class CreateWidgetModels
 
 				if (processedWidgets.contains(resource)) {
 					continue;
+				}
+
+				Set<String> introspectorProperties = aaiRes.getProperties();
+
+				if(!(introspectorProperties.contains("model-version-id") && introspectorProperties.contains("model-invariant-id"))){
+				    System.out.println(aaiRes.getDbName() + " does not contain model properties so skipping");
 				}
 				processedWidgets.add(resource);
 

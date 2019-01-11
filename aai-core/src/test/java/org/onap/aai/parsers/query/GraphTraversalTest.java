@@ -30,6 +30,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.onap.aai.AAISetup;
+import org.onap.aai.DataLinkSetup;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.ModelType;
@@ -37,6 +38,7 @@ import org.onap.aai.rest.RestTokens;
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.serialization.engines.JanusGraphDBEngine;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
+import org.springframework.test.annotation.DirtiesContext;
 
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
@@ -54,10 +56,11 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(value = Parameterized.class)
-public class GraphTraversalTest extends AAISetup {
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
+public class GraphTraversalTest extends DataLinkSetup {
 
 	private TransactionalGraphEngine dbEngine;
-	private TransactionalGraphEngine dbEnginev9;
+	private TransactionalGraphEngine dbEngineDepthVersion;
 
 	@Parameterized.Parameter(value = 0)
 	public QueryStyle queryStyle;
@@ -71,13 +74,13 @@ public class GraphTraversalTest extends AAISetup {
 	}
 
 	@Rule public ExpectedException thrown = ExpectedException.none();
-	
-	
+
+
 	/**
 	 * Configure.
-	 * @throws Exception 
-	 * @throws SecurityException 
-	 * @throws NoSuchFieldException 
+	 * @throws Exception
+	 * @throws SecurityException
+	 * @throws NoSuchFieldException
 	 */
 	@Before
 	public void configure() throws Exception {
@@ -85,13 +88,13 @@ public class GraphTraversalTest extends AAISetup {
 				new JanusGraphDBEngine(queryStyle,
 					loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion()),
 					false);
-		
-		dbEnginev9 = 
+
+		dbEngineDepthVersion =
 				new JanusGraphDBEngine(queryStyle,
 					loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDepthVersion()),
 					false);
 	}
-	
+
 	/**
 	 * Parent query.
 	 *
@@ -101,9 +104,9 @@ public class GraphTraversalTest extends AAISetup {
 	@Test
     public void parentQuery() throws UnsupportedEncodingException, AAIException {
 		URI uri = UriBuilder.fromPath("cloud-infrastructure/complexes/complex/key1").build();
-		
+
 		QueryParser query = dbEngine.getQueryBuilder().createQueryFromURI(uri);
-		
+
 		GraphTraversal<Vertex, Vertex> expected = __.<Vertex>start().has("physical-location-id", "key1").has("aai-node-type", "complex");
 		assertEquals(
 				"gremlin query should be " + expected.toString(),
@@ -123,7 +126,7 @@ public class GraphTraversalTest extends AAISetup {
 				query.getParentResultType());
 		assertEquals("dependent",false, query.isDependent());
 
-		
+
     }
 
 	/**
@@ -161,9 +164,9 @@ public class GraphTraversalTest extends AAISetup {
 				query.getResultType());
 		assertEquals("dependent",true, query.isDependent());
 
-		
+
     }
-	
+
 	/**
 	 * Naming exceptions.
 	 *
@@ -208,9 +211,9 @@ public class GraphTraversalTest extends AAISetup {
 				query.getContainerType());
 		assertEquals("dependent",true, query.isDependent());
 
-		
+
     }
-	
+
 	/**
 	 * Gets the all.
 	 *
@@ -255,9 +258,9 @@ public class GraphTraversalTest extends AAISetup {
 				query.getContainerType());
 		assertEquals("dependent",true, query.isDependent());
 
-		
+
     }
-	
+
 	@Test
     public void getAllParent() throws UnsupportedEncodingException, AAIException {
 		URI uri = UriBuilder.fromPath("cloud-infrastructure/pservers").build();
@@ -288,10 +291,10 @@ public class GraphTraversalTest extends AAISetup {
 				query.getContainerType());
 		assertEquals("dependent",false, query.isDependent());
 
-		
+
     }
-	
-	
+
+
 	/**
 	 * Gets the via query param.
 	 *
@@ -315,7 +318,7 @@ public class GraphTraversalTest extends AAISetup {
 		GraphTraversal<Vertex, Vertex> expectedParent = __.<Vertex>start()
 				.has("cloud-owner", "mycloudowner").has("cloud-region-id", "mycloudregionid")
 				.has("aai-node-type", "cloud-region");
-						
+
 		assertEquals(
 				"gremlin query should be " + expected.toString(),
 				expected.toString(),
@@ -339,7 +342,7 @@ public class GraphTraversalTest extends AAISetup {
 		assertEquals("dependent",true, query.isDependent());
 
 	}
-	
+
 	@Test
 	public void getViaDuplicateQueryParam() throws UnsupportedEncodingException, AAIException {
 		URI uri = UriBuilder.fromPath("cloud-infrastructure/cloud-regions/cloud-region/mycloudowner/mycloudregionid/tenants/tenant").build();
@@ -359,7 +362,7 @@ public class GraphTraversalTest extends AAISetup {
 		GraphTraversal<Vertex, Vertex> expectedParent = __.<Vertex>start()
 				.has("cloud-owner", "mycloudowner").has("cloud-region-id", "mycloudregionid")
 				.has("aai-node-type", "cloud-region");
-						
+
 		assertEquals(
 				"gremlin query should be " + expected.toString(),
 				expected.toString(),
@@ -383,7 +386,7 @@ public class GraphTraversalTest extends AAISetup {
 		assertEquals("dependent",true, query.isDependent());
 
 	}
-	
+
 	/**
 	 * Gets the plural via query param.
 	 *
@@ -403,7 +406,7 @@ public class GraphTraversalTest extends AAISetup {
 
 		GraphTraversal<Vertex, Vertex> expectedParent = __.<Vertex>start()
 				.has("aai-node-type", "vnfc");
-					
+
 		assertEquals(
 				"gremlin query should be " + expected.toString(),
 				expected.toString(),
@@ -427,7 +430,7 @@ public class GraphTraversalTest extends AAISetup {
 		assertEquals("dependent",true, query.isDependent());
 
 	}
-	
+
 	/**
 	 * Gets the all query param naming exception.
 	 *
@@ -441,7 +444,7 @@ public class GraphTraversalTest extends AAISetup {
 		MultivaluedMap<String, String> map = new MultivaluedHashMap<>();
 		map.putSingle("cvlan-tag", "333");
 		QueryParser query = dbEngine.getQueryBuilder().createQueryFromURI(uri, map);
-		
+
 		GraphTraversal<Vertex, Vertex> expected = __.<Vertex>start()
 				.has("vnf-id", "key1").has("aai-node-type", "vce")
 				.in("org.onap.relationships.inventory.BelongsTo")
@@ -476,9 +479,9 @@ public class GraphTraversalTest extends AAISetup {
 				query.getContainerType());
 		assertEquals("dependent",true, query.isDependent());
 
-		
+
     }
-	
+
 	/**
 	 * Abstract type.
 	 *
@@ -490,10 +493,10 @@ public class GraphTraversalTest extends AAISetup {
 		URI uri = UriBuilder.fromPath("vnf/key1").build();
 
 		QueryParser query = dbEngine.getQueryBuilder().createQueryFromURI(uri);
-		
+
 		GraphTraversal<Vertex, Vertex> expected = __.<Vertex>start()
 				.has("vnf-id", "key1").has(AAIProperties.NODE_TYPE, P.within("vce", "generic-vnf"));
-			
+
 		GraphTraversal<Vertex, Vertex> expectedParent = expected;
 		assertEquals(
 				"gremlin query should be " + expected.toString(),
@@ -511,12 +514,12 @@ public class GraphTraversalTest extends AAISetup {
 				"result type should be vnf",
 				"vnf",
 				query.getResultType());
-		
+
 		assertEquals("dependent",false, query.isDependent());
 
-		
+
     }
-	
+
 	/**
 	 * Non parent abstract type.
 	 *
@@ -530,17 +533,17 @@ public class GraphTraversalTest extends AAISetup {
 		thrown.expectMessage(containsString("not a valid path"));
 		dbEngine.getQueryBuilder().createQueryFromURI(uri);
     }
-	
+
 	@Test
 	public void parentAbstractTypeWithNesting() throws UnsupportedEncodingException, AAIException {
 		URI uri = UriBuilder.fromPath("vnf/key1/vf-modules/vf-module/key2").build();
-		
+
 		QueryParser query = dbEngine.getQueryBuilder().createQueryFromURI(uri);
-		
+
 		GraphTraversal<Vertex, Vertex> expected = __.<Vertex>start()
 				.has("vnf-id", "key1").has(AAIProperties.NODE_TYPE, P.within("vce", "generic-vnf"))
 				.union(__.in("org.onap.relationships.inventory.BelongsTo").has(AAIProperties.NODE_TYPE, "vf-module")).has("vf-module-id", "key2");
-		
+
 		GraphTraversal<Vertex, Vertex> expectedParent = __.<Vertex>start()
 				.has("vnf-id", "key1").has(AAIProperties.NODE_TYPE, P.within("vce", "generic-vnf"));
 		assertEquals(
@@ -559,11 +562,11 @@ public class GraphTraversalTest extends AAISetup {
 				"result type should be vf-module",
 				"vf-module",
 				query.getResultType());
-		
+
 		assertEquals("dependent",true, query.isDependent());
-		
+
 	}
-	
+
 	@Test
 	public void getViaBadQueryParam() throws UnsupportedEncodingException, AAIException {
 		URI uri = UriBuilder.fromPath("cloud-infrastructure/cloud-regions/cloud-region/a/b/tenants/tenant").build();
@@ -571,11 +574,11 @@ public class GraphTraversalTest extends AAISetup {
 		map.putSingle("tenant-n231ame", "Tenant1");
 		thrown.expect(AAIException.class);
 		thrown.expect(hasProperty("code", is("AAI_3000")));
-		
+
 		QueryParser query = dbEngine.getQueryBuilder().createQueryFromURI(uri, map);
 
 	}
-	
+
 	@Test
 	public void getPluralViaBadQueryParam() throws UnsupportedEncodingException, AAIException {
 		URI uri = UriBuilder.fromPath("cloud-infrastructure/cloud-regions/cloud-region/a/b/tenants").build();
@@ -583,11 +586,11 @@ public class GraphTraversalTest extends AAISetup {
 		map.putSingle("tenant-n231ame", "Tenant1");
 		thrown.expect(AAIException.class);
 		thrown.expect(hasProperty("code", is("AAI_3000")));
-		
+
 		QueryParser query = dbEngine.getQueryBuilder().createQueryFromURI(uri, map);
 
 	}
-	
+
 	@Test
 	public void getPluralViaDuplicateQueryParam() throws UnsupportedEncodingException, AAIException {
 		URI uri = UriBuilder.fromPath("network/vnfcs").build();
@@ -606,7 +609,7 @@ public class GraphTraversalTest extends AAISetup {
 
 		GraphTraversal<Vertex, Vertex> expectedParent = __.<Vertex>start()
 				.has("aai-node-type", "vnfc");
-					
+
 		assertEquals(
 				"gremlin query should be " + expected.toString(),
 				expected.toString(),
@@ -630,19 +633,19 @@ public class GraphTraversalTest extends AAISetup {
 		assertEquals("dependent",true, query.isDependent());
 
 	}
-	
+
 	@Test
 	public void dbAliasedSearch() throws UnsupportedEncodingException, AAIException {
 		URI uri = UriBuilder.fromPath("network/generic-vnfs").build();
 		MultivaluedMap<String, String> map = new MultivaluedHashMap<>();
 		map.putSingle("persona-model-customization-id", "key2");
-		QueryParser query = dbEnginev9.getQueryBuilder().createQueryFromURI(uri, map);
+		QueryParser query = dbEngineDepthVersion.getQueryBuilder().createQueryFromURI(uri, map);
 		GraphTraversal<Vertex, Vertex> expected = __.<Vertex>start()
 				.has("aai-node-type", "generic-vnf")
 				.has("model-customization-id", "key2");
 		GraphTraversal<Vertex, Vertex> expectedParent = __.<Vertex>start()
 				.has("aai-node-type", "generic-vnf");
-		
+
 		assertEquals(
 				"gremlin query should be " + expected.toString(),
 				expected.toString(),
@@ -651,7 +654,7 @@ public class GraphTraversalTest extends AAISetup {
 				"parent",
 				expectedParent.toString(),
 				query.getQueryBuilder().getParentQuery().getQuery().toString());
-		
+
 		assertEquals(
 				"result type should be",
 				"generic-vnf",
@@ -661,22 +664,22 @@ public class GraphTraversalTest extends AAISetup {
 				"",
 				query.getParentResultType());
 		assertEquals("dependent",true, query.isDependent());
-		
-	
+
+
 	}
-	
+
 	@Test
 	public void dataLinkedSearch() throws UnsupportedEncodingException, AAIException {
 		URI uri = UriBuilder.fromPath("network/vpn-bindings").build();
 		MultivaluedMap<String, String> map = new MultivaluedHashMap<>();
 		map.putSingle("global-route-target", "key2");
-		QueryParser query = dbEnginev9.getQueryBuilder().createQueryFromURI(uri, map);
+		QueryParser query = dbEngineDepthVersion.getQueryBuilder().createQueryFromURI(uri, map);
 		GraphTraversal<Vertex, Vertex> expected = __.<Vertex>start()
 				.has("aai-node-type", "vpn-binding")
 				.where(__.in("org.onap.relationships.inventory.BelongsTo").has(AAIProperties.NODE_TYPE, "route-target").has("global-route-target", "key2"));
 		GraphTraversal<Vertex, Vertex> expectedParent = __.<Vertex>start()
 				.has("aai-node-type", "vpn-binding");
-		
+
 		assertEquals(
 				"gremlin query should be " + expected.toString(),
 				expected.toString(),
@@ -685,7 +688,7 @@ public class GraphTraversalTest extends AAISetup {
 				"parent",
 				expectedParent.toString(),
 				query.getQueryBuilder().getParentQuery().getQuery().toString());
-		
+
 		assertEquals(
 				"result type should be",
 				"vpn-binding",
@@ -701,7 +704,7 @@ public class GraphTraversalTest extends AAISetup {
 	public void pluralCousin() throws UnsupportedEncodingException, AAIException {
 		URI uri = UriBuilder.fromPath("cloud-infrastructure/complexes/complex/key1/related-to/pservers").build();
 
-		QueryParser query = dbEnginev9.getQueryBuilder().createQueryFromURI(uri);
+		QueryParser query = dbEngineDepthVersion.getQueryBuilder().createQueryFromURI(uri);
 		GraphTraversal<Vertex, Vertex> expected = __.<Vertex>start()
 				.has("physical-location-id", "key1")
 				.has("aai-node-type", "complex")
@@ -735,7 +738,7 @@ public class GraphTraversalTest extends AAISetup {
 	public void specificCousin() throws UnsupportedEncodingException, AAIException {
 		URI uri = UriBuilder.fromPath("cloud-infrastructure/complexes/complex/key1/related-to/pservers/pserver/key2").build();
 
-		QueryParser query = dbEnginev9.getQueryBuilder().createQueryFromURI(uri);
+		QueryParser query = dbEngineDepthVersion.getQueryBuilder().createQueryFromURI(uri);
 		GraphTraversal<Vertex, Vertex> expected = __.<Vertex>start()
 				.has("physical-location-id", "key1")
 				.has("aai-node-type", "complex")
@@ -770,7 +773,7 @@ public class GraphTraversalTest extends AAISetup {
 	public void doubleSpecificCousin() throws UnsupportedEncodingException, AAIException {
 		URI uri = UriBuilder.fromPath("cloud-infrastructure/complexes/complex/key1/related-to/pservers/pserver/key2/related-to/vservers/vserver/key3").build();
 
-		QueryParser query = dbEnginev9.getQueryBuilder().createQueryFromURI(uri);
+		QueryParser query = dbEngineDepthVersion.getQueryBuilder().createQueryFromURI(uri);
 		GraphTraversal<Vertex, Vertex> expected = __.<Vertex>start()
 				.has("physical-location-id", "key1")
 				.has("aai-node-type", "complex")
@@ -811,7 +814,7 @@ public class GraphTraversalTest extends AAISetup {
 
 		thrown.expect(AAIException.class);
 		thrown.expectMessage(containsString(RestTokens.COUSIN.toString()));
-		QueryParser query = dbEnginev9.getQueryBuilder().createQueryFromURI(uri);
+		QueryParser query = dbEngineDepthVersion.getQueryBuilder().createQueryFromURI(uri);
 
 	}
 
@@ -821,7 +824,7 @@ public class GraphTraversalTest extends AAISetup {
 
 		thrown.expect(AAIException.class);
 		thrown.expectMessage(containsString("chain plurals"));
-		QueryParser query = dbEnginev9.getQueryBuilder().createQueryFromURI(uri);
-	
+		QueryParser query = dbEngineDepthVersion.getQueryBuilder().createQueryFromURI(uri);
+
 	}
 }

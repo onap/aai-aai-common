@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *	http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,11 +26,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -53,6 +49,8 @@ import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 import org.janusgraph.core.JanusGraphException;
 import org.javatuples.Pair;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.dbmap.DBConnectionType;
 import org.onap.aai.domain.responseMessage.AAIResponseMessage;
@@ -150,7 +148,7 @@ public class HttpEntry {
 	}
 
 
-	 public HttpEntry setHttpEntryProperties(SchemaVersion version, DBConnectionType connectionType, UEBNotification notification){
+     public HttpEntry setHttpEntryProperties(SchemaVersion version, DBConnectionType connectionType, UEBNotification notification){
 		this.version = version;
 		this.loader = loaderFactory.createLoaderForVersion(introspectorFactoryType, version);
 		this.dbEngine = new JanusGraphDBEngine(
@@ -364,7 +362,7 @@ public class HttpEntry {
 						if (cleanUp == null) {
 							cleanUp = "false";
 						}
-						if (vertices.size() > 1 && processSingle && !method.equals(HttpMethod.GET)) {
+						if (vertices.size() > 1 && processSingle && !(method.equals(HttpMethod.GET) || method.equals(HttpMethod.GET_RELATIONSHIP))) {
 							if (method.equals(HttpMethod.DELETE)) {
 								LoggingContext.restoreIfPossible();
 								throw new AAIException("AAI_6138");
@@ -399,10 +397,10 @@ public class HttpEntry {
 							v = vertices.get(0);
 						}
 						HashMap<String, Introspector> relatedObjects = new HashMap<>();
+                        String nodeOnly = params.getFirst("nodes-only");
+                        boolean isNodeOnly = nodeOnly != null;
 						switch (method) {
 							case GET:
-								String nodeOnly = params.getFirst("nodes-only");
-								boolean isNodeOnly = nodeOnly != null;
 
 								if (format == null) {
 									obj = this.getObjectFromDb(vertices, serializer, query, obj, request.getUri(), depth, isNodeOnly, cleanUp);
@@ -430,7 +428,35 @@ public class HttpEntry {
 								}
 
 								break;
-							case PUT:
+                            case GET_RELATIONSHIP:
+                                if (format == null) {
+                                    obj = this.getRelationshipObjectFromDb(vertices, serializer, query, request.getInfo().getRequestUri());
+
+                                    LoggingContext.elapsedTime((long) serializer.getDBTimeMsecs(), TimeUnit.MILLISECONDS);
+                                    LOGGER.info ("Completed");
+                                    LoggingContext.restoreIfPossible();
+
+                                    if (obj != null) {
+                                        status = Status.OK;
+                                        MarshallerProperties properties;
+                                        if (!request.getMarshallerProperties().isPresent()) {
+                                            properties = new MarshallerProperties.Builder(org.onap.aai.restcore.MediaType.getEnum(outputMediaType)).build();
+                                        } else {
+                                            properties = request.getMarshallerProperties().get();
+                                        }
+                                        result = obj.marshal(properties);
+                                    } else {
+                                        String msg = createRelationshipNotFoundMessage(query.getResultType(), request.getUri());
+                                        throw new AAIException("AAI_6149", msg);
+                                    }
+                                } else {
+                                    FormatFactory ff = new FormatFactory(loader, serializer, schemaVersions, basePath + "/");
+                                    Formatter formatter =  ff.get(format, params);
+                                    result = formatter.output(vertices.stream().map(vertex -> (Object) vertex).collect(Collectors.toList())).toString();
+                                    status = Status.OK;
+                                }
+                                break;
+                            case PUT:
 								response = this.invokeExtension(dbEngine, this.dbEngine.tx(), method, request, sourceOfTruth, version, loader, obj, uri, true);
 								if (isNewVertex) {
 									v = serializer.createNewVertex(obj);
@@ -580,7 +606,9 @@ public class HttpEntry {
 						if (response == null && v != null && (
 							method.equals(HttpMethod.PUT)
 							|| method.equals(HttpMethod.GET)
-							|| method.equals(HttpMethod.MERGE_PATCH))
+							|| method.equals(HttpMethod.MERGE_PATCH)
+                                || method.equals(HttpMethod.GET_RELATIONSHIP))
+
 						) {
 							String myvertid = v.id().toString();
 							if(this.isPaginated()){
@@ -698,15 +726,53 @@ public class HttpEntry {
 	 */
 	private Introspector getObjectFromDb(List<Vertex> results, DBSerializer serializer, QueryParser query, Introspector obj, URI uri, int depth, boolean nodeOnly, String cleanUp) throws AAIException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, SecurityException, InstantiationException, NoSuchMethodException, UnsupportedEncodingException, AAIUnknownObjectException, URISyntaxException {
 
-		//nothing found
-		if (results.isEmpty()) {
-			String msg = createNotFoundMessage(query.getResultType(), uri);
+        //nothing found
+        if (results.isEmpty()) {
+        	String msg = createNotFoundMessage(query.getResultType(), uri);
 			throw new AAIException("AAI_6114", msg);
-		}
+        }
 
-		return serializer.dbToObject(results, obj, depth, nodeOnly, cleanUp);
+        return serializer.dbToObject(results, obj, depth, nodeOnly, cleanUp);
 
 	}
+
+    /**
+     * Gets the object from db.
+     *
+     * @param serializer the serializer
+     * @param query the query
+     * @param obj the obj
+     * @param uri the uri
+     * @param depth the depth
+     * @param cleanUp the clean up
+     * @return the object from db
+     * @throws AAIException the AAI exception
+     * @throws IllegalAccessException the illegal access exception
+     * @throws IllegalArgumentException the illegal argument exception
+     * @throws InvocationTargetException the invocation target exception
+     * @throws SecurityException the security exception
+     * @throws InstantiationException the instantiation exception
+     * @throws NoSuchMethodException the no such method exception
+     * @throws UnsupportedEncodingException the unsupported encoding exception
+     * @throws MalformedURLException the malformed URL exception
+     * @throws AAIUnknownObjectException
+     * @throws URISyntaxException
+     */
+    private Introspector getRelationshipObjectFromDb(List<Vertex> results, DBSerializer serializer, QueryParser query, URI uri) throws AAIException, IllegalArgumentException, SecurityException, UnsupportedEncodingException, AAIUnknownObjectException {
+
+        //nothing found
+        if (results.isEmpty()) {
+            String msg = createNotFoundMessage(query.getResultType(), uri);
+            throw new AAIException("AAI_6114", msg);
+        }
+
+        if(results.size() > 1){
+            throw new AAIException("AAI_6148", uri.getPath());
+        }
+
+        Vertex v = results.get(0);
+        return serializer.dbToRelationshipObject(v);
+    }
 
 	/**
 	 * Invoke extension.
@@ -812,10 +878,24 @@ public class HttpEntry {
 	 */
 	private String createNotFoundMessage(String resultType, URI uri) {
 
-		String msg = "No Node of type " + resultType + " found at: " + uri.getPath();
+    	String msg = "No Node of type " + resultType + " found at: " + uri.getPath();
 
-		return msg;
+    	return msg;
 	}
+
+    /**
+     * Creates the not found message.
+     *
+     * @param resultType the result type
+     * @param uri the uri
+     * @return the string
+     */
+    private String createRelationshipNotFoundMessage(String resultType, URI uri) {
+
+        String msg = "No relationship found of type " + resultType + " at the given URI: " + uri.getPath() + "/relationship-list";
+
+        return msg;
+    }
 
 	/**
 	 * Sets the depth.
@@ -833,11 +913,11 @@ public class HttpEntry {
 			return depth;
 		}
 
-		if(depthParam == null){
+        if(depthParam == null){
 			if(this.version.compareTo(schemaVersions.getDepthVersion()) >= 0){
 				depth = 0;
 			} else {
-				depth = AAIProperties.MAXIMUM_DEPTH;
+                depth = AAIProperties.MAXIMUM_DEPTH;
 			}
 		} else {
 			if (!depthParam.isEmpty() && !"all".equals(depthParam)){
@@ -849,16 +929,16 @@ public class HttpEntry {
 
 			}
 		}
-		String maxDepth = obj.getMetadata(ObjectMetadata.MAXIMUM_DEPTH);
+        String maxDepth = obj.getMetadata(ObjectMetadata.MAXIMUM_DEPTH);
 
 		int maximumDepth = AAIProperties.MAXIMUM_DEPTH;
 
 		if(maxDepth != null){
-			try {
-				maximumDepth = Integer.parseInt(maxDepth);
-			} catch(Exception ex){
-				throw new AAIException("AAI_4018");
-			}
+            try {
+                maximumDepth = Integer.parseInt(maxDepth);
+            } catch(Exception ex){
+                throw new AAIException("AAI_4018");
+            }
 		}
 
 		if(depth > maximumDepth){

@@ -42,8 +42,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class GenerateXsd {
-	
-	private static final Logger logger = LoggerFactory.getLogger("GenerateXsd.class");	
+
+	private static final Logger logger = LoggerFactory.getLogger("GenerateXsd.class");
 	protected static String apiVersion = null;
 	public static AnnotationConfigApplicationContext ctx = null;
 	static String apiVersionFmt = null;
@@ -76,18 +76,18 @@ public class GenerateXsd {
 	public static final int VALUE_DESCRIPTION = 1;
 	public static final int VALUE_INDEXED_PROPS = 2;
 	public static final int VALUE_CONTAINER = 3;
-	
+
 	private static final String generateTypeXSD = "xsd";
 	private static final String generateTypeYAML = "yaml";
-	
+
 	private final static String nodeDir = System.getProperty("nodes.configuration.location");
 	private final static String edgeDir = System.getProperty("edges.configuration.location");
 	private static final String baseRoot = "aai-schema/";
 	private static final String baseAutoGenRoot = "aai-schema/";
-	
+
 	private static final String root = baseRoot + "src/main/resources";
 	private static final String autoGenRoot = baseAutoGenRoot + "src/main/resources";
-	
+
 	private static final String normalStartDir = "aai-core";
 	private static final String xsd_dir = root + "/" + RELEASE +"/aai_schema";
 
@@ -97,9 +97,9 @@ public class GenerateXsd {
 
 	private static int swaggerSupportStartsVersion = 1; // minimum version to support swagger documentation
 
-	
+
 	private static boolean validVersion(String versionToGen) {
-		
+
 		if ("ALL".equalsIgnoreCase(versionToGen)) {
 			return true;
 		}
@@ -113,14 +113,14 @@ public class GenerateXsd {
 
 	    return false;
 	}
-	
+
 	private static boolean versionSupportsSwagger( String version) {
 		if (new Integer(version.substring(1)).intValue() >= swaggerSupportStartsVersion ) {
 			return true;
 		}
 		return false;
 	}
-	
+
 	public static String getAPIVersion() {
 		return apiVersion;
 	}
@@ -146,19 +146,19 @@ public class GenerateXsd {
 		if ( fileTypeToGen == null ) {
 			fileTypeToGen = generateTypeXSD;
 		}
-		
+
 		if ( !fileTypeToGen.equals( generateTypeXSD ) && !fileTypeToGen.equals( generateTypeYAML )) {
 			System.err.println("Invalid gen_type passed. " + fileTypeToGen);
 			System.exit(1);
 		}
-		
+
 		String responsesLabel = System.getProperty("yamlresponses_url");
 		responsesUrl = responsesLabel;
-		
+
 		List<SchemaVersion> versionsToGen = new ArrayList<>();
 		if ( versionToGen == null ) {
 			System.err.println("Version is required, ie v<n> or ALL.");
-			System.exit(1);			
+			System.exit(1);
 		}
 		else if (!"ALL".equalsIgnoreCase(versionToGen) && !versionToGen.matches("v\\d+") && !validVersion(versionToGen)) {
 			System.err.println("Invalid version passed. " + versionToGen);
@@ -171,14 +171,14 @@ public class GenerateXsd {
 		} else {
 			versionsToGen.add(new SchemaVersion(versionToGen));
 		}
-		
+
 		//process file type System property
 		fileTypeToGen = (fileTypeToGen == null ? generateTypeXSD : fileTypeToGen.toLowerCase());
 		if ( !fileTypeToGen.equals( generateTypeXSD ) && !fileTypeToGen.equals( generateTypeYAML )) {
 			System.err.println("Invalid gen_type passed. " + fileTypeToGen);
 			System.exit(1);
 		} else if ( fileTypeToGen.equals(generateTypeYAML) ) {
-			if ( responsesUrl == null || responsesUrl.length() < 1 
+			if ( responsesUrl == null || responsesUrl.length() < 1
 					|| responsesLabel == null || responsesLabel.length() < 1 ) {
 				System.err.println("generating swagger yaml file requires yamlresponses_url and yamlresponses_label properties" );
 				System.exit(1);
@@ -217,11 +217,11 @@ public class GenerateXsd {
 			logger.debug("user.dir = "+System.getProperty("user.dir"));
 			if(System.getProperty("user.dir") != null && !System.getProperty("user.dir").contains(normalStartDir)) {
 				fileName = baseAutoGenRoot + fileName;
-				
+
 			}
 			else {
 				fileName = baseRoot + fileName;
-				
+
 			}
 			edgeRuleFile = new File( fileName);
 //			Document doc = ni.getSchema(translateVersion(v));
@@ -232,6 +232,9 @@ public class GenerateXsd {
 					HTMLfromOXM swagger = ctx.getBean(HTMLfromOXM.class);
 					swagger.setVersion(v);
 					fileContent = swagger.process();
+					if ( fileContent.startsWith("Schema format issue")) {
+						throw new Exception(fileContent);
+					}
 				} catch(Exception e) {
 		        	logger.error( "Exception creating output file " + outfileName);
 		        	logger.error( e.getMessage());
@@ -241,7 +244,7 @@ public class GenerateXsd {
 			} else if ( versionSupportsSwagger(apiVersion )) {
 				outfileName = yaml_dir + "/aai_swagger_" + apiVersion + "." + generateTypeYAML;
 				nodesfileName = yaml_dir + "/aai_swagger_" + apiVersion + "." + "nodes"+"."+generateTypeYAML;
-				try {					
+				try {
 					YAMLfromOXM swagger = (YAMLfromOXM) ctx.getBean(YAMLfromOXM.class);
 					swagger.setVersion(v);
 					fileContent = swagger.process();
@@ -259,13 +262,13 @@ public class GenerateXsd {
 			}
 			outfile = new File(outfileName);
 			File parentDir = outfile.getParentFile();
-			if(! parentDir.exists()) 
+			if(! parentDir.exists())
 			      parentDir.mkdirs();
 			if(nodesfileName != null) {
 				BufferedWriter nodesBW = null;
 				nodesfile = new File(nodesfileName);
 				parentDir = nodesfile.getParentFile();
-				if(! parentDir.exists()) 
+				if(! parentDir.exists())
 				      parentDir.mkdirs();
 			    try {
 			        nodesfile.createNewFile();
@@ -287,7 +290,7 @@ public class GenerateXsd {
 	        		}
 	        	}
 			}
-					
+
 		    try {
 		        outfile.createNewFile();
 		    } catch (IOException e) {
@@ -310,9 +313,8 @@ public class GenerateXsd {
 	        }
 			logger.debug( "GeneratedXSD successful, saved in " + outfileName);
 		}
-		
+
 	}
 
 }
 
-        

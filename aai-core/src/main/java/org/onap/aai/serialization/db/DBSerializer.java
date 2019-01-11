@@ -992,6 +992,11 @@ public class DBSerializer {
         return simplePropsHashMap;
     }
 
+    public Introspector dbToRelationshipObject(Vertex v) throws UnsupportedEncodingException, AAIException {
+        Introspector relationshipList = this.latestLoader.introspectorFromName("relationship-list");
+        relationshipList =  createRelationshipList(v, relationshipList, "false");
+        return relationshipList;
+    }
     /**
      * Creates the relationship list.
      *
@@ -1235,7 +1240,7 @@ public class DBSerializer {
     }
 
     public void addRelatedToProperty(Introspector relationship, Vertex cousinVertex, String cousinType) throws AAIUnknownObjectException {
-        Introspector obj = loader.introspectorFromName(cousinType);
+        Introspector obj = this.latestLoader.introspectorFromName(cousinType);
         String nameProps = obj.getMetadata(ObjectMetadata.NAME_PROPS);
         List<Introspector> relatedToProperties = new ArrayList<>();
 
@@ -1734,11 +1739,11 @@ public class DBSerializer {
     /**
      * Verify resource version.
      *
-     * @param action the action
-     * @param nodeType the node type
+     * @param action                 the action
+     * @param nodeType               the node type
      * @param currentResourceVersion the current resource version
-     * @param resourceVersion the resource version
-     * @param uri the uri
+     * @param resourceVersion        the resource version
+     * @param uri                    the uri
      * @return true, if successful
      * @throws AAIException the AAI exception
      */
@@ -1746,6 +1751,7 @@ public class DBSerializer {
         String enabled = "";
         String errorDetail = "";
         String aaiExceptionCode = "";
+        boolean isDeleteResourceVersionOk = true;
         if (currentResourceVersion == null) {
             currentResourceVersion = "";
         }
@@ -1755,12 +1761,16 @@ public class DBSerializer {
         }
         try {
             enabled = AAIConfig.get(AAIConstants.AAI_RESVERSION_ENABLEFLAG);
+
         } catch (AAIException e) {
             ErrorLogHelper.logException(e);
         }
         if (enabled.equals("true")) {
-            if (!currentResourceVersion.equals(resourceVersion)) {
-                if (action.equals("create") && !resourceVersion.equals("")) {
+            if ("delete".equals(action)) {
+                isDeleteResourceVersionOk = verifyResourceVersionForDelete(currentResourceVersion, resourceVersion);
+            }
+            if ((!isDeleteResourceVersionOk) || ((!"delete".equals(action)) && (!currentResourceVersion.equals(resourceVersion)))) {
+                if ("create".equals(action) && !resourceVersion.equals("")) {
                     errorDetail = "resource-version passed for " + action + " of " + uri;
                     aaiExceptionCode = "AAI_6135";
                 } else if (resourceVersion.equals("")) {
@@ -1779,12 +1789,31 @@ public class DBSerializer {
     }
 
     /**
+     * Verify resource version for delete.
+     *
+     * @param currentResourceVersion the current resource version
+     * @param resourceVersion        the resource version
+     * @return true, if successful or false if there is a mismatch
+     */
+    private boolean verifyResourceVersionForDelete(String currentResourceVersion, String resourceVersion) {
+
+        boolean isDeleteResourceVersionOk = true;
+        String resourceVersionDisabledUuid = AAIConfig.get(AAIConstants.AAI_RESVERSION_DISABLED_UUID,
+            AAIConstants.AAI_RESVERSION_DISABLED_UUID_DEFAULT);
+
+        if ((!currentResourceVersion.equals(resourceVersion)) && (!resourceVersion.equals(resourceVersionDisabledUuid))) {
+            isDeleteResourceVersionOk = false;
+        }
+        return isDeleteResourceVersionOk;
+    }
+
+    /**
      * Convert from camel case.
      *
      * @param name the name
      * @return the string
      */
-    private String convertFromCamelCase (String name) {
+    private String convertFromCamelCase(String name) {
         String result = "";
         result = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, name);
 
@@ -1810,7 +1839,7 @@ public class DBSerializer {
     private void executePreSideEffects(Introspector obj, Vertex self) throws AAIException {
 
         SideEffectRunner runner = new SideEffectRunner
-                .Builder(this.engine, this).addSideEffect(DataCopy.class).addSideEffect(PrivateEdge.class).build();
+            .Builder(this.engine, this).addSideEffect(DataCopy.class).addSideEffect(PrivateEdge.class).build();
 
         runner.execute(obj, self);
     }
@@ -1818,15 +1847,15 @@ public class DBSerializer {
     private void executePostSideEffects(Introspector obj, Vertex self) throws AAIException {
 
         SideEffectRunner runner = new SideEffectRunner
-                .Builder(this.engine, this).addSideEffect(DataLinkWriter.class).build();
+            .Builder(this.engine, this).addSideEffect(DataLinkWriter.class).build();
 
         runner.execute(obj, self);
     }
 
-    private void enrichData(Introspector obj, Vertex self) throws AAIException  {
+    private void enrichData(Introspector obj, Vertex self) throws AAIException {
 
         SideEffectRunner runner = new SideEffectRunner
-                .Builder(this.engine, this).addSideEffect(DataLinkReader.class).build();
+            .Builder(this.engine, this).addSideEffect(DataLinkReader.class).build();
 
         runner.execute(obj, self);
     }

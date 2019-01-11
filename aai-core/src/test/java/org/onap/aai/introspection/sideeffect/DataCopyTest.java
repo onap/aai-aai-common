@@ -151,33 +151,6 @@ public class DataCopyTest extends AAISetup{
 	}
 	
 	@Test
-	public void runPopulateModelVersionId() throws URISyntaxException, AAIException, UnsupportedEncodingException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, SecurityException, InstantiationException, NoSuchMethodException, MalformedURLException {
-		
-		final Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDepthVersion());
-		final Introspector obj = loader.introspectorFromName("generic-vnf");
-		obj.setValue("vnf-id", "myId");
-		obj.setValue("persona-model-id", "key1");
-		obj.setValue("persona-model-version", "testValue");
-		TransactionalGraphEngine spy = spy(dbEngine);
-		TransactionalGraphEngine.Admin adminSpy = spy(dbEngine.asAdmin());
-		Graph g = graph.newTransaction();
-		GraphTraversalSource traversal = g.traversal();
-		when(spy.asAdmin()).thenReturn(adminSpy);
-		when(adminSpy.getTraversalSource()).thenReturn(traversal);
-		when(self.<String>property(AAIProperties.AAI_URI)).thenReturn(prop);
-		when(prop.orElse(null)).thenReturn(obj.getURI());
-		DBSerializer serializer = new DBSerializer(schemaVersions.getDefaultVersion(), spy, introspectorFactoryType, "AAI_TEST");
-		SideEffectRunner runner = new SideEffectRunner
-				.Builder(spy, serializer).addSideEffect(DataCopy.class).build();
-		
-		runner.execute(obj, self);
-		
-		assertEquals("value populated", "key2", obj.getValue("model-version-id"));
-		
-		g.tx().rollback();
-	}
-	
-	@Test
 	public void verifyNestedSideEffect() throws URISyntaxException, AAIException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, SecurityException, InstantiationException, NoSuchMethodException, IOException {
 		
 		final Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());

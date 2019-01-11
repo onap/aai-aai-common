@@ -49,14 +49,14 @@ import static org.junit.Assert.assertEquals;
 @Ignore
 public class UniqueRelationshipQueryTest extends AAISetup {
 
-	@Autowired 
+	@Autowired
 	private NodeIngestor ingestor ;
-	
+
 	private TransactionalGraphEngine dbEngine;
 	private SchemaVersion version ;
 	private DynamicJAXBContext context = ingestor.getContextForVersion(version);
 	private Unmarshaller unmarshaller = null;
-	
+
 	/**
 	 * Setup.
 	 *
@@ -64,7 +64,7 @@ public class UniqueRelationshipQueryTest extends AAISetup {
 	 */
 	@Before
 	public void setup() throws JAXBException {
-	    version = new SchemaVersion("v8");
+	    version = new SchemaVersion("v10");
 		dbEngine = new JanusGraphDBEngine(QueryStyle.GREMLIN_UNIQUE,
 				loaderFactory.createLoaderForVersion(ModelType.MOXY, version),
 				false);
@@ -73,7 +73,7 @@ public class UniqueRelationshipQueryTest extends AAISetup {
 	    unmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
 		unmarshaller.setProperty(UnmarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME, true);
 	}
-	
+
 	/**
 	 * Parent query.
 	 *
@@ -83,7 +83,7 @@ public class UniqueRelationshipQueryTest extends AAISetup {
 	 */
 	@Test
     public void parentQuery() throws JAXBException, UnsupportedEncodingException, AAIException {
-		
+
 		String content =
 				"{"
 				+ "\"related-to\" : \"pserver\","
@@ -92,21 +92,21 @@ public class UniqueRelationshipQueryTest extends AAISetup {
 				+ "\"relationship-value\" : \"key1\""
 				+ "}]"
 				+ "}";
-						
+
 		Object obj = context.newDynamicEntity("Relationship");
 
 		DynamicEntity entity = (DynamicEntity)unmarshaller.unmarshal(new StreamSource(new StringReader(content)), obj.getClass()).getValue();
-			
+
 		Introspector wrappedObj = IntrospectorFactory.newInstance(ModelType.MOXY, entity);
 		QueryParser query = dbEngine.getQueryBuilder().createQueryFromRelationship(wrappedObj);
 		String key = "pserver/key1";
-		GraphTraversal<Vertex, Vertex> expected = 
+		GraphTraversal<Vertex, Vertex> expected =
 				__.<Vertex>start().has("aai-unique-key", key);
 		String resultType = "pserver";
 		String containerType = "";
-		
+
 		testSet(query, expected, expected, resultType, containerType);
-		
+
     }
 
 	/**
@@ -129,25 +129,25 @@ public class UniqueRelationshipQueryTest extends AAISetup {
 				+ "\"relationship-value\" : \"key2\""
 				+ "}]"
 				+ "}";
-						
+
 		Object obj = context.newDynamicEntity("Relationship");
 
 		DynamicEntity entity = (DynamicEntity)unmarshaller.unmarshal(new StreamSource(new StringReader(content)), obj.getClass()).getValue();
-			
+
 		Introspector wrappedObj = IntrospectorFactory.newInstance(ModelType.MOXY, entity);
 		QueryParser query = dbEngine.getQueryBuilder().createQueryFromRelationship(wrappedObj);
 
 		String key = "pserver/key1/lag-interface/key2";
-		GraphTraversal<Vertex, Vertex> expected = 
+		GraphTraversal<Vertex, Vertex> expected =
 				__.<Vertex>start().has("aai-unique-key", key);
-		GraphTraversal<Vertex, Vertex> parentExpected = 
+		GraphTraversal<Vertex, Vertex> parentExpected =
 				__.<Vertex>start().has("aai-unique-key", "pserver/key1");
 		String resultType = "lag-interface";
 		String containerType = "";
-		
+
 		testSet(query, expected, parentExpected, resultType, containerType);
     }
-	
+
 	/**
 	 * Naming exceptions.
 	 *
@@ -171,25 +171,25 @@ public class UniqueRelationshipQueryTest extends AAISetup {
 				+ "\"relationship-value\" : \"655\""
 				+ "}]"
 				+ "}";
-						
+
 		Object obj = context.newDynamicEntity("Relationship");
 
 		DynamicEntity entity = (DynamicEntity)unmarshaller.unmarshal(new StreamSource(new StringReader(content)), obj.getClass()).getValue();
-			
+
 		Introspector wrappedObj = IntrospectorFactory.newInstance(ModelType.MOXY, entity);
 		QueryParser query = dbEngine.getQueryBuilder().createQueryFromRelationship(wrappedObj);
 		String key = "vce/key1/port-group/key2/cvlan-tag/655";
-		GraphTraversal<Vertex, Vertex> expected = 
+		GraphTraversal<Vertex, Vertex> expected =
 				__.<Vertex>start().has("aai-unique-key", key);
-		GraphTraversal<Vertex, Vertex> parentExpected = 
+		GraphTraversal<Vertex, Vertex> parentExpected =
 				__.<Vertex>start().has("aai-unique-key", "vce/key1/port-group/key2");
 		String resultType = "cvlan-tag";
 		String containerType = "";
-		
+
 		testSet(query, expected, parentExpected, resultType, containerType);
-		
+
     }
-	
+
 	/**
 	 * Double key.
 	 *
@@ -210,26 +210,26 @@ public class UniqueRelationshipQueryTest extends AAISetup {
 				+ " \"relationship-value\" : \"key2\""
 				+ " }]"
 				+ "}";
-						
+
 		Object obj = context.newDynamicEntity("Relationship");
 
 		DynamicEntity entity = (DynamicEntity)unmarshaller.unmarshal(new StreamSource(new StringReader(content)), obj.getClass()).getValue();
-			
+
 		Introspector wrappedObj = IntrospectorFactory.newInstance(ModelType.MOXY, entity);
 		QueryParser query = dbEngine.getQueryBuilder().createQueryFromRelationship(wrappedObj);
 
 		String key = "service-capability/key1/key2";
-		GraphTraversal<Vertex, Vertex> expected = 
+		GraphTraversal<Vertex, Vertex> expected =
 				__.<Vertex>start().has("aai-unique-key", key);
-		GraphTraversal<Vertex, Vertex> parentExpected = 
+		GraphTraversal<Vertex, Vertex> parentExpected =
 				__.<Vertex>start().has("aai-unique-key", "service-capability/key1/key2");
 		String resultType = "service-capability";
 		String containerType = "";
-		
+
 		testSet(query, expected, parentExpected, resultType, containerType);
-		
+
     }
-	
+
 	/**
 	 * Short circuit.
 	 *
@@ -254,11 +254,11 @@ public class UniqueRelationshipQueryTest extends AAISetup {
 				+ "\"relationship-value\" : \"655\""
 				+ "}]"
 				+ "}";
-						
+
 		Object obj = context.newDynamicEntity("Relationship");
 
 		DynamicEntity entity = (DynamicEntity)unmarshaller.unmarshal(new StreamSource(new StringReader(content)), obj.getClass()).getValue();
-			
+
 		Introspector wrappedObj = IntrospectorFactory.newInstance(ModelType.MOXY, entity);
 		QueryParser query = dbEngine.getQueryBuilder().createQueryFromRelationship(wrappedObj);
 		String key = "vce/key1/port-group/key2/cvlan-tag/655";
@@ -266,11 +266,11 @@ public class UniqueRelationshipQueryTest extends AAISetup {
 		GraphTraversal<Vertex, Vertex> parentExpected = __.<Vertex>start().has("aai-unique-key", "vce/key1/port-group/key2");
 		String resultType = "cvlan-tag";
 		String containerType = "";
-		
+
 		testSet(query, expected, parentExpected, resultType, containerType);
-		
+
     }
-	
+
 	/**
 	 * Test set.
 	 *

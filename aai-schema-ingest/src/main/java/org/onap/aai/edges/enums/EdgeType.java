@@ -21,5 +21,6 @@ package org.onap.aai.edges.enums;
 
 public enum EdgeType {
 	COUSIN,
-	TREE;
+	TREE,
+	ALL;
 }

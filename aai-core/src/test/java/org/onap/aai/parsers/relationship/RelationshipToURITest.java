@@ -30,6 +30,7 @@ import org.onap.aai.introspection.*;
 import org.onap.aai.parsers.exceptions.AAIIdentityMapParseException;
 import org.onap.aai.parsers.exceptions.AmbiguousMapAAIException;
 import org.onap.aai.setup.SchemaVersion;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -40,11 +41,11 @@ import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class RelationshipToURITest extends AAISetup {
 
 	private final ModelType modelType = ModelType.MOXY;
 	private final SchemaVersion version10 = new SchemaVersion("v10");
-	private final SchemaVersion version9 = new SchemaVersion("v9");
 	
 	
 	@Rule
@@ -85,35 +86,6 @@ public class RelationshipToURITest extends AAISetup {
 		thrown.expect(AAIIdentityMapParseException.class);
 		thrown.expect(hasProperty("code", is("AAI_3000")));
 		RelationshipToURI parse = new RelationshipToURI(loader, obj);
-		URI uri = parse.getUri();
-		
-	}
-	
-	@Test
-	public void successV9() throws AAIException, URISyntaxException, IOException {
-		Loader loader = loaderFactory.createLoaderForVersion(modelType, version9);
-		Introspector obj = loader.unmarshal("relationship", this.getJsonString("both-failv10-successv9.json"));
-		URI expected = new URI("/network/generic-vnfs/generic-vnf/key2");
-		
-		RelationshipToURI parse = new RelationshipToURI(loader, obj);
-		URI uri = parse.getUri();
-		
-		assertEquals("related-link is equal", expected, uri);
-
-		
-	}
-	
-	@Test
-	public void failV9() throws AAIException, URISyntaxException, IOException {
-		Loader loader = loaderFactory.createLoaderForVersion(modelType, version9);
-		Introspector obj = loader.unmarshal("relationship", this.getJsonString("both-successv10-failv9.json"));
-		URI expected = new URI("/network/generic-vnfs/generic-vnf/key1");
-		
-		thrown.expect(AAIIdentityMapParseException.class);
-		thrown.expect(hasProperty("code", is("AAI_3000")));
-		RelationshipToURI parse = new RelationshipToURI(loader, obj);
-		
-
 		URI uri = parse.getUri();
 		
 	}

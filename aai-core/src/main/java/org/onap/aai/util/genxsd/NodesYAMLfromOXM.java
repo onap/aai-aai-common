@@ -131,8 +131,7 @@ public class NodesYAMLfromOXM extends OxmFileProcessor {
 			}			
 			
 			XSDElement javaTypeElement = new XSDElement(elem);
-			
-			
+					
 			logger.debug("External: "+javaTypeElement.getAttribute("name")+"/"+getXmlRootElementName(javaTypeName));
 			if ( javaTypeName == null ) {
 				String msg = "Invalid OXM file: <java-type> has no name attribute in " + oxmFile; 
@@ -140,7 +139,6 @@ public class NodesYAMLfromOXM extends OxmFileProcessor {
 				throw new AAIException(msg);
 			}
 			namespaceFilter.add(getXmlRootElementName(javaTypeName));
-
 			processJavaTypeElementSwagger( javaTypeName, javaTypeElement, pathSb,
 				definitionsSb, null, null, null, null, null, null);
 		}
@@ -274,7 +272,11 @@ public class NodesYAMLfromOXM extends OxmFileProcessor {
 				}
 				if (  indexedProps != null
 						&& indexedProps.contains(xmlElementElement.getAttribute("name") ) ) {
-					containerProps.add(xmlElementElement.getQueryParamYAML());
+					containerProps.add(xmlElementElement.getQueryParamYAML(elementDescription));
+					NodeGetOperation.addContainerProps(container, containerProps);
+				} else if ( indexedProps == null || indexedProps.isEmpty() && "true".equals(xmlElementElement.getAttribute("required")) ){
+					// no indexedProps and element is required, also considered using xml-key in this case
+					containerProps.add(xmlElementElement.getPathParamYAMLRqd(elementDescription, false));
 					NodeGetOperation.addContainerProps(container, containerProps);
 				}
 			if ( xmlElementElement.isStandardType()) {
@@ -500,8 +502,7 @@ public class NodesYAMLfromOXM extends OxmFileProcessor {
 		}
 		Path path = Paths.get(outfileName);
 		Charset charset = Charset.forName("UTF-8");
-		try {
-			BufferedWriter bw = Files.newBufferedWriter(path, charset);
+		try(BufferedWriter bw = Files.newBufferedWriter(path, charset);) {
 			bw.write(fileContent);
 			if ( bw != null ) {
 				bw.close();
