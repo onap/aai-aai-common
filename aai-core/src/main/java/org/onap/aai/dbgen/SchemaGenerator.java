@@ -132,8 +132,8 @@ public class SchemaGenerator {
 				if (alias.isPresent()) {
 					dbPropName = alias.get();
 				}
-				if (graphMgmt.containsRelationType(propName)) {
-					String dmsg = " PropertyKey  [" + propName + "] already existed in the DB. ";
+				if (graphMgmt.containsRelationType(dbPropName)) {
+					String dmsg = " PropertyKey  [" + dbPropName + "] already existed in the DB. ";
 					LOGGER.debug(dmsg);
 				} else {
 					Class<?> type = obj.getClass(propName);
@@ -164,8 +164,8 @@ public class SchemaGenerator {
 							String dmsg = " Index  [" + dbPropName + "] already existed in the DB. ";
 							LOGGER.debug(dmsg);
 						} else {
-							if (obj.getIndexedProperties().contains(propName)) {
-								if (obj.getUniqueProperties().contains(propName)) {
+							if (obj.getIndexedProperties().contains(dbPropName)) {
+								if (obj.getUniqueProperties().contains(dbPropName)) {
 									imsg = "Add Unique index for PropertyKey: [" + dbPropName + "]";
 									LOGGER.info(imsg);
 									graphMgmt.buildIndex(dbPropName, Vertex.class).addKey(propK).unique()

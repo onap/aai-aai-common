@@ -84,14 +84,14 @@ public class PutOperation {
             pathSb.append("      operationId: createOrUpdate" + useOpId + "\n");
             pathSb.append("      consumes:\n");
             pathSb.append("        - application/json\n");
-            pathSb.append("        - application/xml\n");                    
+            pathSb.append("        - application/xml\n");
             pathSb.append("      produces:\n");
             pathSb.append("        - application/json\n");
             pathSb.append("        - application/xml\n");
             pathSb.append("      responses:\n");
             pathSb.append("        \"default\":\n");
             pathSb.append("          " + GenerateXsd.getResponsesUrl());
-        
+
             pathSb.append("      parameters:\n");
             pathSb.append(pathParams); // for nesting
             pathSb.append("        - name: body\n");
@@ -99,7 +99,11 @@ public class PutOperation {
             pathSb.append("          description: " + xmlRootElementName + " object that needs to be created or updated. "+relationshipExamplesSb.toString()+"\n");
             pathSb.append("          required: true\n");
             pathSb.append("          schema:\n");
-            pathSb.append("            $ref: \"#/definitions/" + xmlRootElementName + "\"\n");
+            String useElement = xmlRootElementName;
+            if ( xmlRootElementName.equals("relationship")) {
+            	useElement += "-dict";
+            }
+            pathSb.append("            $ref: \"#/definitions/" + useElement + "\"\n");
             this.tagRelationshipPathMapEntry();
             return pathSb.toString();
         }
@@ -110,5 +114,5 @@ public class PutOperation {
             }
             return "";
         }
-        
+
     }

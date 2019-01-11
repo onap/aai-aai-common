@@ -24,11 +24,13 @@ import org.junit.Test;
 import org.onap.aai.AAISetup;
 import org.onap.aai.introspection.*;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
+import org.springframework.test.annotation.DirtiesContext;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNull;
 
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class RemoveNonVisiblePropertyTest extends AAISetup {
 
     private Loader loader;

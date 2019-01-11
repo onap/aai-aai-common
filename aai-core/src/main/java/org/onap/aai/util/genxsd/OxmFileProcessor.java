@@ -43,7 +43,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-
 import org.onap.aai.edges.EdgeIngestor;
 import org.onap.aai.edges.exceptions.EdgeRuleNotFoundException;
 import org.onap.aai.exceptions.AAIException;
@@ -65,7 +64,7 @@ public abstract class OxmFileProcessor {
 
 	public static final String LINE_SEPARATOR = System.getProperty("line.separator");
 	public static final String DOUBLE_LINE_SEPARATOR = System.getProperty("line.separator") + System.getProperty("line.separator");
-	
+
 	EdgeIngestor ei;
 	NodeIngestor ni;
 	protected Set<String> namespaceFilter;
@@ -75,17 +74,17 @@ public abstract class OxmFileProcessor {
 	protected Document doc = null;
 	protected String apiVersion = null;
 	protected SchemaVersions schemaVersions;
-	
-	protected Map combinedJavaTypes;
-	
-	
+
+
 	protected static int annotationsStartVersion = 9; // minimum version to support annotations in xsd
 	protected static int annotationsMinVersion = 6; // lower versions support annotations in xsd
 	protected static int swaggerSupportStartsVersion = 1; // minimum version to support swagger documentation
 	protected static int swaggerDiffStartVersion = 1; // minimum version to support difference
 	protected static int swaggerMinBasepath = 6; // minimum version to support difference
-	
-	
+
+	protected Map combinedJavaTypes;
+
+
 	protected String apiVersionFmt = null;
 	protected HashMap<String, String> generatedJavaType = new HashMap<String, String>();
 	protected HashMap<String, String> appliedPaths = new HashMap<String, String>();
@@ -125,8 +124,8 @@ public abstract class OxmFileProcessor {
     	this.ni = ni;
 		this.ei = ei;
 	}
-    
-   
+
+
 
 	public void setOxmVersion(File oxmFile, SchemaVersion v) {
 		this.oxmFile = oxmFile;
@@ -137,16 +136,16 @@ public abstract class OxmFileProcessor {
 		this.xml = xml;
 		this.v = v;
 	}
-	
+
 	public void setVersion(SchemaVersion v) {
 		this.oxmFile = null;
 		this.v = v;
 	}
-	
+
 	public void setNodeIngestor(NodeIngestor ni) {
 	            this.ni = ni;
 	}
-	
+
     public void setEdgeIngestor(EdgeIngestor ei) {
             this.ei = ei;
 	}
@@ -158,25 +157,25 @@ public abstract class OxmFileProcessor {
 	public void setSchemaVersions(SchemaVersions schemaVersions) {
 		this.schemaVersions = schemaVersions;
 	}
-	
+
 	protected void init() throws ParserConfigurationException, SAXException, IOException, AAIException, EdgeRuleNotFoundException  {
-		if(this.xml != null || this.oxmFile != null ) {			
+		if(this.xml != null || this.oxmFile != null ) {
 			createDocument();
 		}
 		if(this.doc == null) {
 			this.doc = ni.getSchema(v);
 		}
 		namespaceFilter = new HashSet<>();
-				
+
 	    NodeList bindingsNodes = doc.getElementsByTagName("xml-bindings");
 		Element bindingElement;
 		NodeList javaTypesNodes;
 		Element javaTypesElement;
-		
+
 		if ( bindingsNodes == null || bindingsNodes.getLength() == 0 ) {
 			throw new AAIException("OXM file error: missing <binding-nodes> in " + oxmFile);
-		}	    
-		
+		}
+
 		bindingElement = (Element) bindingsNodes.item(0);
 		javaTypesNodes = bindingElement.getElementsByTagName("java-types");
 		if ( javaTypesNodes.getLength() < 1 ) {
@@ -192,14 +191,14 @@ public abstract class OxmFileProcessor {
 
 	private void createDocument() throws ParserConfigurationException, SAXException, IOException, AAIException {
 		DocumentBuilder dBuilder = null;
-		try {	
+		try {
 		    DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 		    dbFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
 		    dBuilder = dbFactory.newDocumentBuilder();
 		} catch (ParserConfigurationException e) {
 			throw e;
 		}
-		try {	
+		try {
 		    if ( xml == null ) {
 		    	doc = dBuilder.parse(oxmFile);
 		    } else {
@@ -215,11 +214,11 @@ public abstract class OxmFileProcessor {
 	}
 	public abstract String getDocumentHeader();
 	public abstract String process() throws ParserConfigurationException, SAXException, IOException, AAIException, FileNotFoundException, EdgeRuleNotFoundException ;
-	
+
 	public String getXMLRootElementName(Element javaTypeElement) {
 		String xmlRootElementName=null;
 		NamedNodeMap attributes;
-		
+
 		NodeList valNodes = javaTypeElement.getElementsByTagName("xml-root-element");
 		Element valElement = (Element) valNodes.item(0);
 		attributes = valElement.getAttributes();
@@ -233,7 +232,7 @@ public abstract class OxmFileProcessor {
 		}
 		return xmlRootElementName;
 	}
-	
+
 	public String getXmlRootElementName( String javaTypeName )
 	{
 		String attrName, attrValue;
@@ -263,22 +262,22 @@ public abstract class OxmFileProcessor {
 		}
 		return null;
 	}
-	
+
 	public Map getCombinedJavaTypes() {
 		return combinedJavaTypes;
 	}
-	
+
 	public void setCombinedJavaTypes(Map combinedJavaTypes) {
 		this.combinedJavaTypes = combinedJavaTypes;
 	}
-	
+
 	public Element getJavaTypeElementSwagger( String javaTypeName )
 	{
-		
+
 		String attrName, attrValue;
 		Attr attr;
 		Element javaTypeElement;
-		
+
 		List<Element> combineElementList = new ArrayList<Element>();
 		for ( int i = 0; i < javaTypeNodes.getLength(); ++ i ) {
 			javaTypeElement = (Element) javaTypeNodes.item(i);
@@ -295,12 +294,11 @@ public abstract class OxmFileProcessor {
 		if ( combineElementList.size() == 0 ) {
 			return (Element) null;
 		} else if ( combineElementList.size() > 1 ) {
-			// need to combine java-attributes
 			return combineElements( javaTypeName, combineElementList);
 		}
 		return combineElementList.get(0);
 	}
-	
+
 	public boolean versionSupportsSwaggerDiff( String version) {
 		int ver = new Integer(version.substring(1)).intValue();
 		if ( ver >= HTMLfromOXM.swaggerDiffStartVersion ) {
@@ -308,7 +306,7 @@ public abstract class OxmFileProcessor {
 		}
 		return false;
 	}
-	
+
 	public boolean versionSupportsBasePathProperty( String version) {
 		int ver = new Integer(version.substring(1)).intValue();
 		if ( ver <= HTMLfromOXM.swaggerMinBasepath ) {
@@ -340,11 +338,11 @@ public abstract class OxmFileProcessor {
 
 		for ( int i = 0; i < moreXmlElementNodes.getLength(); ++i ) {
 			xmlElement = (Element)moreXmlElementNodes.item(i);
-			childNode = xmlElement.cloneNode(true);			
+			childNode = xmlElement.cloneNode(true);
 			parentElement.insertBefore(childNode, refChild);
 		}
 	}
-	
+
 	protected Node getXmlPropertiesNode(Element javaTypeElement ) {
 		NodeList nl = javaTypeElement.getChildNodes();
 		Node child;
@@ -356,7 +354,7 @@ public abstract class OxmFileProcessor {
 		}
 		return null;
 	}
-	
+
 	protected Node merge( NodeList nl, Node mergeNode ) {
 		NamedNodeMap nnm = mergeNode.getAttributes();
 		Node childNode;
@@ -390,7 +388,7 @@ public abstract class OxmFileProcessor {
 		childNode = mergeNode.cloneNode(true);
 		return childNode;
 	}
-	
+
 	protected void mergeXmlProperties(Node useChildProperties, NodeList propertiesToMerge ) {
 		NodeList nl = useChildProperties.getChildNodes();
 		Node childNode;
@@ -403,10 +401,10 @@ public abstract class OxmFileProcessor {
 					useChildProperties.appendChild(newNode);
 				}
 			}
-			
+
 		}
 	}
-	
+
 	protected void combineXmlProperties(int useElement, List<Element> combineElementList) {
 		// add or update xml-properties to the referenced element from the combined list
 		Element javaTypeElement = combineElementList.get(useElement);
@@ -443,7 +441,7 @@ public abstract class OxmFileProcessor {
 		}
 
 	}
-	
+
 	protected Element combineElements( String javaTypeName, List<Element> combineElementList ) {
 		Element javaTypeElement;
 		NodeList parentNodes;
@@ -486,7 +484,7 @@ public abstract class OxmFileProcessor {
 				parentNodes = javaTypeElement.getElementsByTagName("java-attributes");
 				if ( parentNodes.getLength() == 0 ) {
 					continue;
-				}				
+				}
 				otherParentElement = (Element)parentNodes.item(0);
 				xmlElementNodes = otherParentElement.getElementsByTagName("xml-element");
 				if ( xmlElementNodes.getLength() <= 0 ) {
@@ -494,7 +492,7 @@ public abstract class OxmFileProcessor {
 				}
 				// xml-element that are not present
 				updateParentXmlElements( parentElement, xmlElementNodes);
-				
+
 			}
 		}
 		// need to combine xml-properties
@@ -502,7 +500,7 @@ public abstract class OxmFileProcessor {
 		combinedJavaTypes.put( javaTypeName, useElement);
 		return combineElementList.get(useElement);
 	}
-	
+
 
     private static void prettyPrint(Node node, String tab)
 	{

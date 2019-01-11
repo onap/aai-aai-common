@@ -52,13 +52,13 @@ public class XSDElement implements Element {
 		this.xmlElementElement = xmlElementElement;
 		this.maxOccurs = maxOccurs;
 	}
-	
+
 	public XSDElement(Element xmlElementElement) {
 		super();
 		this.xmlElementElement = xmlElementElement;
 		this.maxOccurs = null;
 	}
-	
+
 	public String name() {
 		return this.getAttribute("name");
 	}
@@ -235,13 +235,23 @@ public class XSDElement implements Element {
 	}
 	
 	public String getQueryParamYAML() {
+		return getQueryParamYAML(null);
+	}
+	
+	public String getQueryParamYAML(String elementDescription ) {
+		// when elementDescription is not null, return parameters with description and example
 		StringBuffer sbParameter = new StringBuffer();
 		sbParameter.append(("        - name: " + this.getAttribute("name") + "\n"));
 		sbParameter.append(("          in: query\n"));
-		if ( this.getAttribute("description") != null && this.getAttribute("description").length() > 0 )
-			sbParameter.append(("          description: " + this.getAttribute("description") + "\n"));
-		else
+		String useDescription = elementDescription;
+		if ( elementDescription == null ) {
+			useDescription = this.getAttribute("description");
+		}
+		if ( useDescription != null && useDescription.length() > 0 ) {
+			sbParameter.append(("          description: " + useDescription + "\n"));
+		} else {
 			sbParameter.append(("          description:\n"));
+		}
 		sbParameter.append(("          required: false\n"));
 		if ( ("java.lang.String").equals(this.getAttribute("type")))
 			sbParameter.append("          type: string\n");
@@ -256,16 +266,28 @@ public class XSDElement implements Element {
 		if ( ("java.lang.Boolean").equals(this.getAttribute("type"))) {
 			sbParameter.append("          type: boolean\n");
 		}
+		if ( elementDescription != null && StringUtils.isNotBlank(this.getAttribute("name"))) {
+			sbParameter.append("          example: "+"__"+this.getAttribute("name").toUpperCase()+"__"+"\n");
+		}
 		return sbParameter.toString();
 	}
 	
 	public String getPathParamYAML(String elementDescription) {
+		return getPathParamYAMLRqd( elementDescription, true);
+	}
+	
+	public String getPathParamYAMLRqd(String elementDescription, boolean isRqd) {
 		StringBuffer sbParameter = new StringBuffer();
 		sbParameter.append(("        - name: " + this.getAttribute("name") + "\n"));
 		sbParameter.append(("          in: path\n"));
 		if ( elementDescription != null && elementDescription.length() > 0 )
 			sbParameter.append(("          description: " + elementDescription + "\n"));
-		sbParameter.append(("          required: true\n"));
+		if ( isRqd ) {
+			sbParameter.append(("          required: true\n"));
+		} else {
+			// used by Nodes API for query params
+			sbParameter.append(("          required: false\n"));
+		}
 		if ( ("java.lang.String").equals(this.getAttribute("type")))
 			sbParameter.append("          type: string\n");
 		if ( ("java.lang.Long").equals(this.getAttribute("type"))) {
@@ -306,7 +328,7 @@ public class XSDElement implements Element {
 			sbElement.append(" type=\"xs:int\"");
 		if ( elementType.equals("java.lang.Boolean"))
 			sbElement.append(" type=\"xs:boolean\"");
-		if ( addType != null || elementType.startsWith("java.lang.") ) {	
+		if ( addType != null || elementType.startsWith("java.lang.") ) {
 			sbElement.append(" minOccurs=\"0\"");
 		} 
 		if ( elementContainerType != null && elementContainerType.equals("java.util.ArrayList")) {

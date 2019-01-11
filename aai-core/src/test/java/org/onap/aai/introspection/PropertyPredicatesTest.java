@@ -24,6 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.onap.aai.AAISetup;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.Set;
 
@@ -31,6 +32,7 @@ import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class PropertyPredicatesTest extends AAISetup {
 
 	private Loader loader;

@@ -54,7 +54,7 @@ public class URIParserTest extends AAISetup {
 	 */
 	@PostConstruct
 	public void createLoader(){
-		loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, new SchemaVersion("v8"));
+		loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, new SchemaVersion("v10"));
 	}
 
 	@Test
