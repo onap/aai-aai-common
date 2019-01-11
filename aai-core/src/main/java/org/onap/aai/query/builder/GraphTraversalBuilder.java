@@ -63,11 +63,11 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
 	 */
 	public GraphTraversalBuilder(Loader loader, GraphTraversalSource source) {
 		super(loader, source);
-		
+
 		traversal = (GraphTraversal<Vertex, E>) __.<E>start();
-		
+
 	}
-	
+
 	/**
 	 * Instantiates a new graph traversal builder.
 	 *
@@ -76,42 +76,42 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
 	 */
 	public GraphTraversalBuilder(Loader loader, GraphTraversalSource source, Vertex start) {
 		super(loader, source, start);
-		
+
 		traversal = (GraphTraversal<Vertex, E>) __.__(start);
-		
+
 	}
-	
+
 	/**
 	 * @{inheritDoc}
 	 */
 	@Override
 	public QueryBuilder<Vertex> getVerticesByProperty(String key, Object value) {
-		
+
 		// correct value call because the index is registered as an Integer
 		traversal.has(key, this.correctObjectType(value));
-		
+
 		stepIndex++;
 		return (QueryBuilder<Vertex>) this;
 	}
-	
+
 	/**
 	 * @{inheritDoc}
 	 */
 	@Override
 	public QueryBuilder<Vertex> getVerticesByProperty(final String key, final List<?> values) {
-		
+
 		//this is because the index is registered as an Integer
 		List<Object> correctedValues = new ArrayList<>();
 		for (Object item : values) {
 			correctedValues.add(this.correctObjectType(item));
 		}
-		
+
 		traversal.has(key, P.within(correctedValues));
-		
+
 		stepIndex++;
 		return (QueryBuilder<Vertex>) this;
 	}
-	
+
 	/**
 	 * @{inheritDoc}
 	 */
@@ -124,79 +124,79 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
 		stepIndex++;
 		return (QueryBuilder<Vertex>) this;
 	}
-	
+
     /**
      * @{inheritDoc}
      */
     @Override
     public QueryBuilder<Vertex> getVerticesByProperty(String key) {
-        
+
         traversal.has(key);
         stepIndex++;
         return (QueryBuilder<Vertex>) this;
     }
-    
+
     /**
      * @{inheritDoc}
      */
     @Override
     public QueryBuilder<Vertex> getVerticesExcludeByProperty(String key) {
-        
+
         traversal.hasNot(key);
         stepIndex++;
         return (QueryBuilder<Vertex>) this;
     }
-    
+
 
 	/**
 	 * @{inheritDoc}
 	 */
 	@Override
 	public QueryBuilder<Vertex> getVerticesExcludeByProperty(String key, Object value) {
-		
+
 		// correct value call because the index is registered as an Integer
 		traversal.has(key, P.neq(this.correctObjectType(value)));
-		
+
 		stepIndex++;
 		return (QueryBuilder<Vertex>) this;
 	}
-	
+
 	/**
 	 * @{inheritDoc}
 	 */
 	@Override
 	public QueryBuilder<Vertex> getVerticesExcludeByProperty(final String key, final List<?> values) {
-		
+
 		//this is because the index is registered as an Integer
 		List<Object> correctedValues = new ArrayList<>();
 		for (Object item : values) {
 			correctedValues.add(this.correctObjectType(item));
 		}
-		
+
 		traversal.has(key, P.without(correctedValues));
-		
+
 		stepIndex++;
 		return (QueryBuilder<Vertex>) this;
 	}
 
     @Override
     public QueryBuilder<Vertex> getVerticesGreaterThanProperty(final String key, Object value) {
-        
+
         traversal.has(key, P.gte(this.correctObjectType(value)));
-        
+
         stepIndex++;
         return (QueryBuilder<Vertex>) this;
     }
-    
+
     @Override
     public QueryBuilder<Vertex> getVerticesLessThanProperty(final String key, Object value) {
-        
+
         traversal.has(key, P.lte(this.correctObjectType(value)));
-        
+
         stepIndex++;
         return (QueryBuilder<Vertex>) this;
     }
-    
+
 
 	/**
 	 * @{inheritDoc}
@@ -213,7 +213,7 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
 	 */
 	@Override
 	public QueryBuilder<Vertex> getTypedVerticesByMap(String type, Map<String, String> map) {
-		
+
 		for (Map.Entry<String, String> es : map.entrySet()) {
 			traversal.has(es.getKey(), es.getValue());
 			stepIndex++;
@@ -273,7 +273,7 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
 		this.createContainerQuery(obj);
 		return (QueryBuilder<Vertex>) this;
 	}
-	
+
 	private void allPropertiesQuery(Introspector obj) {
 		Set<String> props = obj.getProperties();
 		Set<String> keys = obj.getKeys();
@@ -298,12 +298,12 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
 			}
 		}
 	}
-	
+
 	/**
 	 * @{inheritDoc}
 	 */
 	@Override
-	
+
 	public QueryBuilder<Vertex> createContainerQuery(Introspector obj) {
 		String type = obj.getChildDBName();
 		String abstractType = obj.getMetadata(ObjectMetadata.ABSTRACT);
@@ -319,8 +319,8 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
 	}
 
 	/**
-	 * @throws NoEdgeRuleFoundException 
-	 * @throws AAIException 
+	 * @throws NoEdgeRuleFoundException
+	 * @throws AAIException
 	 * @{inheritDoc}
 	 */
 	@Override
@@ -423,10 +423,10 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
 		}
 		this.traversal.union(traversals);
 		stepIndex++;
-		
+
 		return this;
 	}
-	
+
 	/**
 	 * @{inheritDoc}
 	 */
@@ -454,101 +454,101 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
 
 		return this;
 	}
-	
+
 	@Override
 	public QueryBuilder<E> store(String name) {
-		
+
 		this.traversal.store(name);
 		stepIndex++;
-		
+
 		return this;
 	}
-	
+
 	@Override
 	public QueryBuilder<E> cap(String name) {
 		this.traversal.cap(name);
 		stepIndex++;
-		
+
 		return this;
 	}
-	
+
 	@Override
 	public QueryBuilder<E> unfold() {
 		this.traversal.unfold();
 		stepIndex++;
-			
+
 		return this;
 	}
-	
+
 	@Override
 	public QueryBuilder<E> dedup() {
-		
+
 		this.traversal.dedup();
 		stepIndex++;
-		
+
 		return this;
 	}
-	
+
 	@Override
 	public QueryBuilder<E> emit() {
-		
+
 		this.traversal.emit();
 		stepIndex++;
-		
+
 		return this;
-		
+
 	}
-	
+
 	@Override
 	public QueryBuilder<E> repeat(QueryBuilder<E> builder) {
-		
+
 		this.traversal.repeat((GraphTraversal<Vertex, E>)builder.getQuery());
 		stepIndex++;
 
 		return this;
 	}
-	
+
 	@Override
 	public QueryBuilder<E> until(QueryBuilder<E> builder) {
 		this.traversal.until((GraphTraversal<Vertex,E>)builder.getQuery());
 		stepIndex++;
-		
+
 		return this;
 	}
-	
+
 	@Override
 	public QueryBuilder<E> groupCount() {
 		this.traversal.groupCount();
 		stepIndex++;
-		
+
 		return this;
 	}
-	
+
 	@Override
 	public QueryBuilder<E> both() {
 		this.traversal.both();
 		stepIndex++;
-		
+
 		return this;
 	}
-	
+
 	@Override
 	public QueryBuilder<Tree> tree() {
-		
+
 		this.traversal.tree();
 		stepIndex++;
-		
+
 		return (QueryBuilder<Tree>)this;
 	}
-	
+
 	@Override
 	public QueryBuilder<E> by(String name) {
 		this.traversal.by(name);
 		stepIndex++;
-		
+
 		return this;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -568,72 +568,90 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
 		stepIndex++;
 		return (QueryBuilder<Path>)this;
 	}
-	
+
 	@Override
 	public QueryBuilder<Edge> outE() {
 		this.traversal.outE();
 		stepIndex++;
 		return (QueryBuilder<Edge>)this;
 	}
-	
+
 	@Override
 	public QueryBuilder<Edge> inE() {
 		this.traversal.inE();
 		stepIndex++;
 		return (QueryBuilder<Edge>)this;
 	}
-	
+
 	@Override
 	public QueryBuilder<Vertex> outV() {
 		this.traversal.outV();
 		stepIndex++;
 		return (QueryBuilder<Vertex>)this;
 	}
-	
+
 	@Override
 	public QueryBuilder<Vertex> inV() {
 		this.traversal.inV();
 		stepIndex++;
 		return (QueryBuilder<Vertex>)this;
 	}
-	
+
 	@Override
 	public QueryBuilder<E> as(String name) {
 		this.traversal.as(name);
-		
+
 		stepIndex++;
 		return this;
 	}
-	
+
 	@Override
 	public QueryBuilder<E> not(QueryBuilder<E> builder) {
 		this.traversal.not(builder.getQuery());
-		
+
 		stepIndex++;
 		return this;
 	}
-	
+
 	@Override
 	public QueryBuilder<E> select(String name) {
 		this.traversal.select(name);
-		
+
 		stepIndex++;
-		
+
 		return this;
 	}
-	
+
+	@Override
+	public QueryBuilder<E> select(String... names) {
+		if(names.length == 1) {
+			this.traversal.select(names[0]);
+		}
+		else if(names.length == 2) {
+			this.traversal.select(names[0], names[1]);
+		}
+		else if(names.length > 2){
+			String[] otherNames = Arrays.copyOfRange(names, 2, names.length);
+			this.traversal.select(names[0], names[1], otherNames);
+		}
+
+		stepIndex++;
+
+		return this;
+	}
+
 	/**
 	 * Edge query.
 	 *
 	 * @param outObj the out type
 	 * @param inObj the in type
-	 * @throws NoEdgeRuleFoundException 
-	 * @throws AAIException 
+	 * @throws NoEdgeRuleFoundException
+	 * @throws AAIException
 	 */
 	private void edgeQueryToVertex(EdgeType type, Introspector outObj, Introspector inObj, List<String> labels) throws AAIException {
 		String outType = outObj.getDbName();
 		String inType = inObj.getDbName();
-		
+
 		if (outObj.isContainer()) {
 			outType = outObj.getChildDBName();
 		}
@@ -685,35 +703,35 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
 			traversal.out(outLabels.toArray(new String[outLabels.size()]));
 		} else if (outLabels.isEmpty() && !inLabels.isEmpty()) {
 			traversal.in(inLabels.toArray(new String[inLabels.size()]));
-		} else {				
+		} else {
 			traversal.union(__.out(outLabels.toArray(new String[outLabels.size()])), __.in(inLabels.toArray(new String[inLabels.size()])));
 		}
-		
+
 		stepIndex++;
 
 		this.createContainerQuery(inObj);
-		
+
 	}
-	
+
 	/**
 	 * Edge query.
 	 *
 	 * @param outObj the out type
 	 * @param inObj the in type
-	 * @throws NoEdgeRuleFoundException 
-	 * @throws AAIException 
+	 * @throws NoEdgeRuleFoundException
+	 * @throws AAIException
 	 */
 	private void edgeQuery(EdgeType type, Introspector outObj, Introspector inObj, List<String> labels) throws AAIException {
 		String outType = outObj.getDbName();
 		String inType = inObj.getDbName();
-		
+
 		if (outObj.isContainer()) {
 			outType = outObj.getChildDBName();
 		}
 		if (inObj.isContainer()) {
 			inType = inObj.getChildDBName();
 		}
-		
+
 		markParentBoundary();
 		Multimap<String, EdgeRule> rules = ArrayListMultimap.create();
 		EdgeRuleQuery.Builder qB = new EdgeRuleQuery.Builder(outType, inType).edgeType(type);
@@ -729,7 +747,7 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
 		} catch (EdgeRuleNotFoundException e) {
 			throw new NoEdgeRuleFoundException(e);
 		}
-		
+
 		final List<String> inLabels = new ArrayList<>();
 		final List<String> outLabels = new ArrayList<>();
 
@@ -749,11 +767,11 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
 			traversal.outE(outLabels.toArray(new String[outLabels.size()]));
 		} else if (outLabels.isEmpty() && !inLabels.isEmpty()) {
 			traversal.inE(inLabels.toArray(new String[inLabels.size()]));
-		} else {				
+		} else {
 			traversal.union(__.outE(outLabels.toArray(new String[outLabels.size()])), __.inE(inLabels.toArray(new String[inLabels.size()])));
 		}
 	}
-	
+
 	@Override
 	public QueryBuilder<E> limit(long amount) {
 		traversal.limit(amount);
@@ -767,7 +785,7 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
 	public <E2> E2 getQuery() {
 		return (E2)this.traversal;
 	}
-	
+
 	/**
 	 * @{inheritDoc}
 	 */
@@ -776,17 +794,17 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
 
 		return cloneQueryAtStep(parentStepIndex);
 	}
-	
+
 	@Override
 	public QueryBuilder<E> getContainerQuery() {
-		
+
 		if (this.parentStepIndex == 0) {
 			return removeQueryStepsBetween(0, containerStepIndex);
 		} else {
 			return cloneQueryAtStep(containerStepIndex);
 		}
 	}
-	
+
 	/**
 	 * @{inheritDoc}
 	 */
@@ -794,13 +812,13 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
 	public void markParentBoundary() {
 		parentStepIndex = stepIndex;
 	}
-	
+
 	@Override
 	public void markContainer() {
 		containerStepIndex = stepIndex;
 	}
-	
-	
+
+
 	/**
 	 * @{inheritDoc}
 	 */
@@ -823,7 +841,7 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
 
 	/**
 	 * end is exclusive
-	 * 
+	 *
 	 * @param start
 	 * @param end
 	 * @return
@@ -850,19 +868,19 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
 		if (this.completeTraversal == null) {
 			executeQuery();
 		}
-		
+
 		return this.completeTraversal.hasNext();
 	}
-	
+
 	@Override
 	public E next() {
 		if (this.completeTraversal == null) {
 			executeQuery();
 		}
-		
+
 		return this.completeTraversal.next();
 	}
-	
+
 	@Override
 	public List<E> toList() {
 		if (this.completeTraversal == null) {

@@ -33,6 +33,7 @@ import org.onap.aai.introspection.*;
 
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.skyscreamer.jsonassert.JSONAssert;
+import org.springframework.test.annotation.DirtiesContext;
 
 import javax.ws.rs.core.Response;
 import java.util.Arrays;
@@ -44,6 +45,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 @RunWith(value = Parameterized.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class PserverTest extends AAISetup{
 
     private static EELFLogger logger = EELFManager.getInstance().getLogger(PserverTest.class);

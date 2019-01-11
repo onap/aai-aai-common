@@ -46,7 +46,7 @@ public class TreeBackedVertexTest {
 		
 		startKey = g.addV(T.label, "vserver").as("v1").property("test", "hello")
 				.addV(T.label, "vserver").as("v2")
-				.addV(T.label, "interface").property("name", "interface 1").as("v7").addInE("hasChild", "v2").property(EdgeProperty.CONTAINS.toString(), true)
+				.addV(T.label, "interface").property("name", "interface 1").as("v10").addInE("hasChild", "v2").property(EdgeProperty.CONTAINS.toString(), true)
 				.addV(T.label, "pserver").property("name", "pserver 1").as("v4").addOutE("runsOn", "v1").property(EdgeProperty.CONTAINS.toString(), false)
 				.addV(T.label, "interface").property("name", "interface 2").as("v3").addInE("hasChild", "v1").property(EdgeProperty.CONTAINS.toString(), true)
 				.addV(T.label, "address").property("name", "address 1").addInE("hasChild", "v3").property(EdgeProperty.CONTAINS.toString(), true)

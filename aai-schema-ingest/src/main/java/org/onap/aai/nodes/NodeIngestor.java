@@ -98,7 +98,7 @@ public class NodeIngestor {
             }
         }
         if (versionContextMap.isEmpty() || schemaPerVersion.isEmpty() || typesPerVersion.isEmpty()) {
-            throw new ExceptionInInitializerError();
+            throw new ExceptionInInitializerError("NodeIngestor could not ingest schema");
         }
     }
 

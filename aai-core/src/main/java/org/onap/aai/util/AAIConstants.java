@@ -29,9 +29,9 @@ public final class AAIConstants {
     public static final String AAI_FILESEP = (System.getProperty("file.separator") == null) ? "/" : System.getProperty("file.separator");
     //
     /** Default to opt aai if system property aai.home is null, using file.separator */
-    public static final String AAI_HOME = (System.getProperty(AJSC_HOME) == null) ? AAI_FILESEP + "opt" + AAI_FILESEP + "app" + AAI_FILESEP +"aai" : System.getProperty(AJSC_HOME); 
+    public static final String AAI_HOME = (System.getProperty(AJSC_HOME) == null) ? AAI_FILESEP + "opt" + AAI_FILESEP + "app" + AAI_FILESEP +"aai" : System.getProperty(AJSC_HOME);
     public static final String AAI_BUNDLECONFIG_NAME = (System.getProperty("BUNDLECONFIG_DIR") == null) ? "bundleconfig" : System.getProperty("BUNDLECONFIG_DIR");
-    public static final String AAI_HOME_BUNDLECONFIG = (System.getProperty(AJSC_HOME) == null) ? AAI_FILESEP + "opt" + AAI_FILESEP + "app" + AAI_FILESEP + "aai" + AAI_FILESEP + AAI_BUNDLECONFIG_NAME : System.getProperty(AJSC_HOME)+ AAI_FILESEP + AAI_BUNDLECONFIG_NAME; 
+    public static final String AAI_HOME_BUNDLECONFIG = (System.getProperty(AJSC_HOME) == null) ? AAI_FILESEP + "opt" + AAI_FILESEP + "app" + AAI_FILESEP + "aai" + AAI_FILESEP + AAI_BUNDLECONFIG_NAME : System.getProperty(AJSC_HOME)+ AAI_FILESEP + AAI_BUNDLECONFIG_NAME;
 
     /** etc directory, relative to AAI_HOME */
     public static final String AAI_HOME_ETC = AAI_HOME_BUNDLECONFIG + AAI_FILESEP + "etc" + AAI_FILESEP;
@@ -63,10 +63,10 @@ public final class AAIConstants {
     public static final int AAI_QUERY_PORT = 8446;
     public static final int AAI_LEGACY_PORT = 8443;
 
-    public static final String AAI_DEFAULT_API_VERSION = "v7";
+    public static final String AAI_DEFAULT_API_VERSION = "v10";
     public static final String AAI_DEFAULT_API_VERSION_PROP = "aai.default.api.version";
     public static final String AAI_NOTIFICATION_CURRENT_VERSION = "aai.notification.current.version";
-    
+
     public static final String AAI_NODENAME = "aai.config.nodename";
 
     public static final String AAI_BULKCONSUMER_LIMIT = "aai.bulkconsumer.payloadlimit";
@@ -85,15 +85,12 @@ public final class AAIConstants {
     public static final String AAI_CRUD_TIMEOUT_APP = "aai.crud.timeout.appspecific";
 
     public static final String AAI_RESVERSION_ENABLEFLAG = "aai.resourceversion.enableflag";
+    public static final String AAI_RESVERSION_DISABLED_UUID = "aai.resourceversion.disabled.uuid";
+    public static final String AAI_RESVERSION_DISABLED_UUID_DEFAULT = "38cf3090-6a0c-4e9d-8142-4332a7352846";
 
-    public static final int AAI_GROOMING_DEFAULT_MAX_FIX = 150;
-    public static final int AAI_GROOMING_DEFAULT_SLEEP_MINUTES = 7;
-    
-    public static final int AAI_DUPETOOL_DEFAULT_MAX_FIX = 25;
-    public static final int AAI_DUPETOOL_DEFAULT_SLEEP_MINUTES = 7;
-    
+
     public static final long HISTORY_MAX_HOURS = 192;
-    
+
     public static final String LOGGING_MAX_STACK_TRACE_ENTRIES = "aai.logging.maxStackTraceEntries";
 
     /*** UEB ***/

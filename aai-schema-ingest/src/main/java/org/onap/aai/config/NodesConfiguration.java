@@ -68,7 +68,7 @@ public class NodesConfiguration {
             LOGGER.info("Translator is SchemaServiceTranslator");
             translators.add(schemaConfiguration.schemaServiceTranslator());
         } else {
-            LOGGER.info("Translator is SchemaServiceTranslator");
+            LOGGER.info("Translator is ConfigTranslator");
             translators.add(translatorConfiguration.configTranslator);
         }
         return translators;

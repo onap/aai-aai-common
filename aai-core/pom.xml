@@ -48,7 +48,7 @@
         <activemq.version>5.15.6</activemq.version>
         <jacoco.line.coverage.limit>0.50</jacoco.line.coverage.limit>
         <gremlin.version>3.2.2</gremlin.version>
-	<groovy.version>2.4.15</groovy.version>
+        <groovy.version>2.4.15</groovy.version>
         <jetty.version>9.4.11.v20180605</jetty.version>
 
         <!-- Start of Default ONAP Schema Properties -->
@@ -59,13 +59,13 @@
         <schema.configuration.location>N/A</schema.configuration.location>
         <schema.nodes.location>aai-schema/src/main/resources/${aai.release}/oxm</schema.nodes.location>
         <schema.edges.location>aai-schema/src/main/resources/${aai.release}/dbedgerules</schema.edges.location>
-        <schema.version.depth.start>v9</schema.version.depth.start>
+        <schema.version.depth.start>v10</schema.version.depth.start>
         <schema.version.related.link.start>v10</schema.version.related.link.start>
         <schema.version.app.root.start>v11</schema.version.app.root.start>
         <schema.version.namespace.change.start>v12</schema.version.namespace.change.start>
         <schema.version.edge.label.start>v12</schema.version.edge.label.start>
         <schema.version.api.default>v15</schema.version.api.default>
-        <schema.version.list>v8,v9,v10,v11,v12,v13,v14,v15</schema.version.list>
+        <schema.version.list>v10,v11,v12,v13,v14,v15</schema.version.list>
         <schema.translator.list>config</schema.translator.list>
         <!-- End of Default ONAP Schema Properties -->
     </properties>
@@ -78,13 +78,13 @@
                 <schema.configuration.location>N/A</schema.configuration.location>
                 <schema.nodes.location>aai-schema/src/main/resources/${aai.release}/oxm</schema.nodes.location>
                 <schema.edges.location>aai-schema/src/main/resources/${aai.release}/dbedgerules</schema.edges.location>
-                <schema.version.depth.start>v9</schema.version.depth.start>
+                <schema.version.depth.start>v10</schema.version.depth.start>
                 <schema.version.related.link.start>v10</schema.version.related.link.start>
                 <schema.version.app.root.start>v11</schema.version.app.root.start>
                 <schema.version.edge.label.start>v12</schema.version.edge.label.start>
                 <schema.version.namespace.change.start>v12</schema.version.namespace.change.start>
                 <schema.version.api.default>v15</schema.version.api.default>
-                <schema.version.list>v8,v9,v10,v11,v12,v13,v14,v15</schema.version.list>
+                <schema.version.list>v10,v11,v12,v13,v14,v15</schema.version.list>
                 <gendoc.version>v15</gendoc.version>
             </properties>
         </profile>
@@ -636,6 +636,51 @@
                         <BUNDLECONFIG_DIR>bundleconfig-local</BUNDLECONFIG_DIR>
                     </systemPropertyVariables>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.8</version>
+                <executions>
+                    <execution>
+                        <id>unpack-schema-dependency</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.onap.aai.aai-common</groupId>
+                                    <artifactId>aai-schema</artifactId>
+                                    <version>1.4.0</version>
+                                    <outputDirectory>${project.basedir}/src/test/resources/</outputDirectory>
+                                    <includes>onap/oxm/**/*.xml</includes>
+                                </artifactItem>
+                            </artifactItems>
+                            <!-- other configurations here -->
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>unpack-edgerules-dependency</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.onap.aai.aai-common</groupId>
+                                    <artifactId>aai-schema</artifactId>
+                                    <version>1.4.0</version>
+                                    <outputDirectory>${project.basedir}/src/test/resources/</outputDirectory>
+                                    <includes>onap/dbedgerules/**/*.json</includes>
+                                </artifactItem>
+                            </artifactItems>
+                            <!-- other configurations here -->
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>

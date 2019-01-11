@@ -38,7 +38,7 @@ import static org.junit.Assert.assertEquals;
 public class URIToExtensionInformationTest extends AAISetup {
 
 	
-	private Loader v8Loader ;
+	private Loader specificLoader ;
 	
 	/**
 	 * Vservers V 7.
@@ -51,13 +51,13 @@ public class URIToExtensionInformationTest extends AAISetup {
 	
 	@PostConstruct
 	public void createLoader(){
-		v8Loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, new SchemaVersion("v8"));
+		specificLoader = loaderFactory.createLoaderForVersion(ModelType.MOXY, new SchemaVersion("v10"));
 	}
 	
 	@Test
     public void vserversV8() throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException {
-		URI uri = UriBuilder.fromPath("/aai/" + v8Loader.getVersion() + "/cloud-infrastructure/cloud-regions/cloud-region/testOwner1/testRegion1/tenants/tenant/key1/vservers/vserver/key2").build();
-		URIToExtensionInformation parse = new URIToExtensionInformation(v8Loader, uri);
+		URI uri = UriBuilder.fromPath("/aai/" + specificLoader.getVersion() + "/cloud-infrastructure/cloud-regions/cloud-region/testOwner1/testRegion1/tenants/tenant/key1/vservers/vserver/key2").build();
+		URIToExtensionInformation parse = new URIToExtensionInformation(specificLoader, uri);
 		
 		String namespace = "cloudInfrastructure";
 		String preMethodName = "DynamicAddCloudInfrastructureCloudRegionsCloudRegionTenantsTenantVserversVserverPreProc";

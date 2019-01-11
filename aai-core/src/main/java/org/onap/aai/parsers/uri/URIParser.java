@@ -66,14 +66,7 @@ public class URIParser {
 	public URIParser(Loader loader, URI uri) {
 		this.uri = uri;
 
-		String currentVersion = "v7";
 		this.originalLoader = loader;
-		try {
-			currentVersion = AAIConfig.get("aai.default.api.version");
-		} catch (AAIException e) {
-			ErrorLogHelper.logException(e);
-		}
-
 		//Load the latest version because we need it for cloud region
 
 			this.loader = loader;
@@ -156,10 +149,13 @@ public class URIParser {
 					}
 					if (introspector.isContainer()) {
 						boolean isFinalContainer = i == parts.length-2;
-						p.processContainer(introspector, EdgeType.COUSIN, uriKeys, isFinalContainer);
+						/*
+						 * Related-to could be COUSIN OR TREE and in some cases BOTH. So Let EdgeRuleBuilder use all the edgeTypes
+						 */
+						p.processContainer(introspector, EdgeType.ALL, uriKeys, isFinalContainer);
 					}
 					previousObj = introspector;
-					type = EdgeType.COUSIN;
+					type = EdgeType.ALL;
 					i+=2;
 					continue;
 				}
@@ -215,7 +211,6 @@ public class URIParser {
 							}
 						}
 						p.processContainer(introspector, type, uriKeys, isFinalContainer);
-						
 						i++; 
 					} else {
 						p.processNamespace(introspector);

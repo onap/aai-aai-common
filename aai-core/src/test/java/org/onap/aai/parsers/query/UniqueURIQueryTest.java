@@ -47,7 +47,7 @@ public class UniqueURIQueryTest extends AAISetup {
 	private TransactionalGraphEngine dbEngine;
 	private SchemaVersion version;
 	private DynamicJAXBContext context = nodeIngestor.getContextForVersion(version);
-	
+
 	/**
 	 * Parent query.
 	 *
@@ -56,7 +56,7 @@ public class UniqueURIQueryTest extends AAISetup {
 	 */
 	@Test
     public void parentQuery() throws UnsupportedEncodingException, AAIException {
-	    version = new SchemaVersion("v8");
+	    version = new SchemaVersion("v10");
 	    dbEngine = new JanusGraphDBEngine(QueryStyle.GREMLIN_UNIQUE,
 				loaderFactory.createLoaderForVersion(ModelType.MOXY, version),
 				false);
@@ -67,11 +67,11 @@ public class UniqueURIQueryTest extends AAISetup {
 		String parentResultType = "";
 		String resultType = "complex";
 		String containerType = "";
-		
+
 		testSet(query, expected, expected, parentResultType, resultType, containerType);
-		
+
     }
-	
+
 	/**
 	 * Parent plural query.
 	 *
@@ -86,9 +86,9 @@ public class UniqueURIQueryTest extends AAISetup {
 		String parentResultType = "";
 		String resultType = "complex";
 		String containerType = "complexes";
-		
+
 		testSet(query, expected, expected, parentResultType, resultType, containerType);
-		
+
     }
 
 	/**
@@ -108,11 +108,11 @@ public class UniqueURIQueryTest extends AAISetup {
 		String parentResultType = "complex";
 		String resultType = "ctag-pool";
 		String containerType = "";
-		
+
 		testSet(query, expected, parentExpected, parentResultType, resultType, containerType);
-		
+
     }
-	
+
 	/**
 	 * Naming exceptions.
 	 *
@@ -130,11 +130,11 @@ public class UniqueURIQueryTest extends AAISetup {
 		String parentResultType = "port-group";
 		String resultType = "cvlan-tag";
 		String containerType = "";
-		
+
 		testSet(query, expected, parentExpected, parentResultType, resultType, containerType);
-		
+
     }
-	
+
 	/**
 	 * Gets the all.
 	 *
@@ -153,11 +153,11 @@ public class UniqueURIQueryTest extends AAISetup {
 		String parentResultType = "port-group";
 		String resultType = "cvlan-tag";
 		String containerType = "cvlan-tags";
-		
+
 		testSet(query, expected, parentExpected, parentResultType, resultType, containerType);
-		
+
     }
-	
+
 	/**
 	 * Test set.
 	 *

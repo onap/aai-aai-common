@@ -37,7 +37,7 @@ public class EventClientPublisher {
 
     private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(EventClientPublisher.class);
 
-    @Value("${dmaap.ribbon.listOfServers}")
+    @Value("${dmaap.ribbon.listOfServers:}")
     private String hosts;
 
     @Value("${dmaap.ribbon.username:}")
