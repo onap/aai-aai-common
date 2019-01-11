@@ -69,7 +69,9 @@ import static org.mockito.Mockito.when;
 		IntrospectionConfig.class
 })
 @TestPropertySource(properties = {
-    "schema.translator.list = config"
+    "schema.translator.list = config",
+    "schema.nodes.location=src/test/resources/onap/oxm",
+    "schema.edges.location=src/test/resources/onap/dbedgerules"
 })
 public class DbSerializer_needsFakeRulesTest {
 
@@ -79,7 +81,7 @@ public class DbSerializer_needsFakeRulesTest {
 	public ExpectedException thrown = ExpectedException.none();
 
 	protected static Graph graph;
-	
+
 	@Autowired
 	protected EdgeSerializer edgeSer;
 	@Autowired
@@ -114,7 +116,7 @@ public class DbSerializer_needsFakeRulesTest {
 		System.setProperty("AJSC_HOME", ".");
         System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
         QueryFormatTestHelper.setFinalStatic(AAIConstants.class.getField("AAI_HOME_ETC_OXM"), "src/test/resources/bundleconfig-local/etc/oxm/");
-  
+
 	}
 
 	@Before
@@ -636,8 +638,8 @@ public class DbSerializer_needsFakeRulesTest {
 
 	private DBSerializer getDBSerializerWithSpecificEdgeRules()
 			throws NoSuchFieldException, AAIException, IllegalAccessException {
-		
-		
+
+
 		DBSerializer localDbser = new DBSerializer(version, engine, introspectorFactoryType, "AAI-TEST");
 		return localDbser;
 	}

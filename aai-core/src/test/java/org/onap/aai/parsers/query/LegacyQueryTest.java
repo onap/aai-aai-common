@@ -48,7 +48,7 @@ public class LegacyQueryTest extends AAISetup {
 	private DynamicJAXBContext context = nodeIngestor.getContextForVersion(version);
 
 	public void setup(){
-		version = new SchemaVersion("v8");
+		version = new SchemaVersion("v10");
 		dbEngine =
 			new JanusGraphDBEngine(QueryStyle.GREMLIN_TRAVERSAL,
 				loaderFactory.createLoaderForVersion(ModelType.MOXY, version),

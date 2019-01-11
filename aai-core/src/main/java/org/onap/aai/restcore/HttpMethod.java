@@ -28,5 +28,6 @@ public enum HttpMethod {
 	DELETE,
 	PUT_EDGE,
 	DELETE_EDGE,
-	GET;
+	GET,
+    GET_RELATIONSHIP;
 }

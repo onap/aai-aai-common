@@ -59,7 +59,7 @@ import static com.jayway.jsonpath.Filter.filter;
 @Component
 public class EdgeIngestor {
     private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(EdgeIngestor.class);
-    private Map<SchemaVersion, List<DocumentContext>> versionJsonFilesMap;
+    private Map<SchemaVersion, List<DocumentContext>> versionJsonFilesMap = new TreeMap<>();
     private static final String READ_START = "$.rules.[?]";
     private static final String READ_ALL_START = "$.rules.*";
     private SchemaVersions schemaVersions;
@@ -94,7 +94,7 @@ public class EdgeIngestor {
             }
         }
         if (versionJsonFilesMap.isEmpty() || schemaVersions==null ) {
-            throw new ExceptionInInitializerError();
+            throw new ExceptionInInitializerError("EdgeIngestor could not ingest edgerules");
         }
     }
 

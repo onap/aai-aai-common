@@ -30,6 +30,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.onap.aai.AAISetup;
+import org.onap.aai.DataLinkSetup;
 import org.onap.aai.dbmap.DBConnectionType;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.*;
@@ -57,7 +58,7 @@ import static org.mockito.Mockito.when;
 
 @RunWith(value = Parameterized.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
-public class DbAliasTest extends AAISetup {
+public class DbAliasTest extends DataLinkSetup {
 
 	private JanusGraph graph;
 

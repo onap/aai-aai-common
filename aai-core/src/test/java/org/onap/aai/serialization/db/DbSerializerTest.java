@@ -28,6 +28,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.onap.aai.AAISetup;
+import org.onap.aai.util.AAIConstants;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.dbmap.DBConnectionType;
 import org.onap.aai.edges.EdgeIngestor;
@@ -456,6 +457,14 @@ public class DbSerializerTest extends AAISetup {
 
 	}
 
+	@Test
+	public void verifyResourceVersion_DeleteTest() throws AAIException {
+		engine.startTransaction();
+
+		assertTrue (dbser.verifyResourceVersion("delete", "generic-vnf", "current-res-ver", AAIConstants.AAI_RESVERSION_DISABLED_UUID_DEFAULT,
+				"generic-vnfs/generic-vnf/myid"));
+
+	}
 	@Test
 	public void trimClassNameTest() throws AAIException {
 		assertEquals("GenericVnf", dbser.trimClassName("GenericVnf"));

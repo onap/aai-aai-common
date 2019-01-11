@@ -112,7 +112,7 @@ public class YAMLfromOXM extends OxmFileProcessor {
 		try {
 			init();
 		} catch(Exception e) {
-			logger.error( "Error initializing " + this.getClass());
+			logger.error( "Error initializing " + this.getClass(),e);
 			throw e;
 		}		
 		pathSb.append(getDocumentHeader());
@@ -138,7 +138,6 @@ public class YAMLfromOXM extends OxmFileProcessor {
 				throw new AAIException(msg);
 			}
 			namespaceFilter.add(getXmlRootElementName(javaTypeName));
-
 			processJavaTypeElementSwagger( javaTypeName, javaTypeElement, pathSb,
 				definitionsSb, null, null, null, null, null, null);
 		}
@@ -235,7 +234,7 @@ public class YAMLfromOXM extends OxmFileProcessor {
 	private String processJavaTypeElementSwagger( String javaTypeName, Element javaTypeElement,
 			StringBuffer pathSb, StringBuffer definitionsSb, String path, String tag, String opId,
 			String getItemName, StringBuffer pathParams, String validEdges) {
-
+		
 		String xmlRootElementName = getXMLRootElementName(javaTypeElement);
 		StringBuilder definitionsLocalSb = new StringBuilder(256);
 		
@@ -468,7 +467,7 @@ public class YAMLfromOXM extends OxmFileProcessor {
 				results.get(key).stream().filter((i) -> (i.getFrom().equals(xmlRootElementName) && (! i.isPrivateEdge() && i.getPreventDelete().equals("OUT")))).forEach((i) ->{ preventDelete.add(i.getTo().toUpperCase());} );
 			}
 		} catch(Exception e) {
-			logger.debug("xmlRootElementName: "+xmlRootElementName+"\n"+e);
+			logger.debug("xmlRootElementName: "+xmlRootElementName+" from edge exception\n", e);
 		}
 		try {
 			EdgeRuleQuery q1 = new EdgeRuleQuery.Builder(xmlRootElementName).version(v).toOnly().build();
@@ -481,7 +480,7 @@ public class YAMLfromOXM extends OxmFileProcessor {
 				results.get(key).stream().filter((i) -> (i.getTo().equals(xmlRootElementName) && (! i.isPrivateEdge() && i.getPreventDelete().equals("IN")))).forEach((i) ->{ preventDelete.add(i.getFrom().toUpperCase());} );
 			}
 		} catch(Exception e) {
-			logger.debug("xmlRootElementName: "+xmlRootElementName+"\n"+e);
+			logger.debug("xmlRootElementName: "+xmlRootElementName+" to edge exception\n", e);
 		}
 		if(preventDelete.size() > 0) {
 			prevent = xmlRootElementName.toUpperCase()+" cannot be deleted if related to "+String.join(",",preventDelete);
@@ -536,6 +535,7 @@ public class YAMLfromOXM extends OxmFileProcessor {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			logger.error("Exception adding in javaTypeDefinitions",e);
 		}
 		if ( xmlRootElementName.equals("inventory") ) {
 			logger.trace("skip xmlRootElementName(2)="+xmlRootElementName);
@@ -568,14 +568,11 @@ public class YAMLfromOXM extends OxmFileProcessor {
 			logger.error( "Exception creating output file " + outfileName);
 			e.printStackTrace();
 		}
-		BufferedWriter bw = null;
-		Charset charset = Charset.forName("UTF-8");
-		Path path = Paths.get(outfileName);
 		try {
-			bw = Files.newBufferedWriter(path, charset);
-			bw.write(fileContent);
-			if ( bw != null ) {
-				bw.close();
+			Charset charset = Charset.forName("UTF-8");
+			Path path = Paths.get(outfileName);
+			try(BufferedWriter bw = Files.newBufferedWriter(path, charset)){
+				bw.write(fileContent);
 			}
 		} catch ( IOException e) {
 			logger.error( "Exception writing output file " + outfileName);
