@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "9adffdf1_4779c0c6",
+        "filename": "aai-core/src/main/java/org/onap/aai/rest/db/HttpEntry.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 75
+      },
+      "writtenOn": "2019-01-14T01:28:45Z",
+      "side": 1,
+      "message": "I see why it would be a problem because it could clash with a similar names with a different package and makes it clear where you are getting the class from. The editor automatically does this when importing more than 3 classes within a package. I will change it back.",
+      "parentUuid": "9adffdf1_67af242b",
+      "range": {
+        "startLine": 29,
+        "startChar": 0,
+        "endLine": 29,
+        "endChar": 18
+      },
+      "revId": "14c60486208228b6669c21b1da12023de9e7cc37",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9adffdf1_07a8981e",
         "filename": "aai-core/src/main/java/org/onap/aai/rest/db/HttpEntry.java",
         "patchSetId": 4
@@ -117,6 +141,30 @@
     },
     {
       "key": {
+        "uuid": "9adffdf1_677644d9",
+        "filename": "aai-core/src/main/java/org/onap/aai/util/genxsd/YAMLfromOXM.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 574,
+      "author": {
+        "id": 75
+      },
+      "writtenOn": "2019-01-14T01:28:45Z",
+      "side": 1,
+      "message": "The outer try is unnecessary. Going to remove that.",
+      "parentUuid": "9adffdf1_e76a34ed",
+      "range": {
+        "startLine": 571,
+        "startChar": 2,
+        "endLine": 574,
+        "endChar": 6
+      },
+      "revId": "14c60486208228b6669c21b1da12023de9e7cc37",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9adffdf1_876b28f0",
         "filename": "pom.xml",
         "patchSetId": 4
@@ -128,6 +176,30 @@
       "writtenOn": "2019-01-14T00:57:22Z",
       "side": 1,
       "message": "if we don\u0027t care about checkstyle warnings, can we just get rid of it altogether?",
+      "range": {
+        "startLine": 56,
+        "startChar": 8,
+        "endLine": 56,
+        "endChar": 47
+      },
+      "revId": "14c60486208228b6669c21b1da12023de9e7cc37",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9adffdf1_077f38ac",
+        "filename": "pom.xml",
+        "patchSetId": 4
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 75
+      },
+      "writtenOn": "2019-01-14T01:28:45Z",
+      "side": 1,
+      "message": "The checkstyle is part of the onap oparent pom and I think we do need it. I added that when I run mvn commands locally, I forgot to take that off when I committed. Removing this back.",
+      "parentUuid": "9adffdf1_876b28f0",
       "range": {
         "startLine": 56,
         "startChar": 8,
