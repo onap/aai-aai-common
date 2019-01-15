@@ -3,6 +3,8 @@
  * org.onap.aai
  * ================================================================================
  * Copyright © 2017-2018 AT&T Intellectual Property. All rights reserved.
+ *
+ * Modifications Copyright (C) 2019 IBM.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,9 +76,10 @@ public class ListEndpoints {
 		String schemaUriBasePath =  context.getEnvironment().getProperty("schema.uri.base.path");
 
 		if(schemaUriBasePath == null){
-			System.err.println("Unable to find the property schema.uri.base.path,"
-				+" please check if specified in system property or in schema-ingest.properties"
-			);
+			String errorMsg = "Unable to find the property schema.uri.base.path,"
+				+" please check if specified in system property or in schema-ingest.properties";
+			System.err.println(errorMsg);
+			LOGGER.error(errorMsg);
 		}
 
 		SchemaVersions schemaVersions = context.getBean(SchemaVersions.class);
