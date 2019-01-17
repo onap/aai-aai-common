@@ -93,7 +93,7 @@ public class SchemaGenerator {
 		try {
 			edges = edgeIngestor.getAllCurrentRules();
 		} catch (EdgeRuleNotFoundException e) {
-			e.printStackTrace();
+			
 			LOGGER.error("Unable to find all rules {}", LogFormatTools.getStackTop(e));
 		}
 
