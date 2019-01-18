@@ -1,0 +1,142 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9adffdf1_609e2065",
+        "filename": "aai-core/src/main/java/org/onap/aai/dbgen/SchemaGenerator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2019-01-18T00:26:57Z",
+      "side": 1,
+      "message": "same comment as https://gerrit.onap.org/r/75602 and https://gerrit.onap.org/r/75564\n\nthis is a command-line utility, so this changes the output of the program. it should probably have both the original output and the logger",
+      "range": {
+        "startLine": 95,
+        "startChar": 4,
+        "endLine": 98,
+        "endChar": 3
+      },
+      "revId": "396128a31be0f38e4ceaa6022adb6c1a62782ac0",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9adffdf1_8099c47a",
+        "filename": "aai-schema/src/main/resources/onap/aai_schema/aai_schema_v10.xsd",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2019-01-18T00:26:57Z",
+      "side": 1,
+      "message": "why include all of these spurious whitespace changes?",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 0
+      },
+      "revId": "396128a31be0f38e4ceaa6022adb6c1a62782ac0",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9adffdf1_208c9835",
+        "filename": "aai-schema/src/main/resources/onap/aai_schema/aai_schema_v11.xsd",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2019-01-18T00:26:57Z",
+      "side": 1,
+      "message": "why include all of these spurious whitespace changes?",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 0
+      },
+      "revId": "396128a31be0f38e4ceaa6022adb6c1a62782ac0",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9adffdf1_408f5c2a",
+        "filename": "aai-schema/src/main/resources/onap/aai_schema/aai_schema_v12.xsd",
+        "patchSetId": 1
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2019-01-18T00:26:57Z",
+      "side": 1,
+      "message": "why include all of these spurious whitespace changes?",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 8,
+        "endChar": 1
+      },
+      "revId": "396128a31be0f38e4ceaa6022adb6c1a62782ac0",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9adffdf1_e081b0fb",
+        "filename": "aai-schema/src/main/resources/onap/aai_schema/aai_schema_v13.xsd",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2019-01-18T00:26:57Z",
+      "side": 1,
+      "message": "why include all of these spurious whitespace changes?",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 0
+      },
+      "revId": "396128a31be0f38e4ceaa6022adb6c1a62782ac0",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9adffdf1_0085d405",
+        "filename": "aai-schema/src/main/resources/onap/aai_schema/aai_schema_v14.xsd",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2019-01-18T00:26:57Z",
+      "side": 1,
+      "message": "why include all of these spurious whitespace changes?",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 0
+      },
+      "revId": "396128a31be0f38e4ceaa6022adb6c1a62782ac0",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
