@@ -670,7 +670,7 @@ public class HttpEntry {
 				continue;
 			} catch (Exception e) {
 				success = false;
-				e.printStackTrace();
+				LOGGER.info("Error occured in process"+e);
 				AAIException ex = new AAIException("AAI_4000", e);
 				ArrayList<String> templateVars = new ArrayList<String>();
 				templateVars.add(request.getMethod().toString()); //GET, PUT, etc
