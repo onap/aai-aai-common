@@ -19,6 +19,27 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+/**
+ * ============LICENSE_START=======================================================
+ * org.onap.aai
+ * ================================================================================
+ * Copyright © 2017-2018 AT&T Intellectual Property. All rights reserved.
+ *
+ * Modifications Copyright (C) 2019 IBM.
+ * ================================================================================
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ============LICENSE_END=========================================================
+ */
 package org.onap.aai.audit;
 
 import java.util.ArrayList;
@@ -59,7 +80,7 @@ public class ListEndpoints {
 	private final String[] blacklist = { "search", "aai-internal" };
 
 	private List<String> endpoints = new ArrayList<>();
-	private Map<String, String> endpointToLogicalName = new HashMap<String, String>();
+	private Map<String, String> endpointToLogicalName = new HashMap<>();
 
 	/**
 	 * The main method.
@@ -78,7 +99,6 @@ public class ListEndpoints {
 		if(schemaUriBasePath == null){
 			String errorMsg = "Unable to find the property schema.uri.base.path,"
 				+" please check if specified in system property or in schema-ingest.properties";
-			System.err.println(errorMsg);
 			LOGGER.error(errorMsg);
 		}
 
@@ -102,6 +122,7 @@ public class ListEndpoints {
 			Set<String> startMap = new HashSet<>();
 			beginAudit(start, basePath + "/" + version, startMap);
 		} catch (AAIUnknownObjectException e) {
+			LOGGER.error("Error in ListEndpoints"+e);
 			throw new RuntimeException("Failed to find object " + this.start + ", cannot run ListEndpoints audit");
 		}
 	}
@@ -128,7 +149,7 @@ public class ListEndpoints {
 			endpoints.add(currentUri);
 		}
 		
-		String dbName = obj.getDbName();
+		
 		
 		populateLogicalName(obj, uri, currentUri);
 		
@@ -270,7 +291,6 @@ public class ListEndpoints {
 		Matcher m = null;
 		if (!filterOut.equals("")) {
 			p = Pattern.compile(filterOut);
-			m = null;
 		}
 		for (String s : endpoints) {
 			if (p != null) {
@@ -319,4 +339,5 @@ public class ListEndpoints {
 		return sb.toString();
 	}
 
+}
 }
