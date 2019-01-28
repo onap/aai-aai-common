@@ -132,6 +132,8 @@ public class AAIGraph {
             throw new AAIException("AAI_4001");
         } catch (IOException e) {
             throw new AAIException("AAI_4002");
+        }finally {
+        	graph.close();
         }
     }
 
