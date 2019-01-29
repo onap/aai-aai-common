@@ -68,7 +68,7 @@ public class SchemaGenerator {
 			AAIConfig.init();
 		} catch (Exception ex) {
 			LOGGER.error(" ERROR - Could not run AAIConfig.init(). " + LogFormatTools.getStackTop(ex));
-			System.out.println(" ERROR - Could not run AAIConfig.init(). ");
+			//System.out.println(" ERROR - Could not run AAIConfig.init(). ");
 			System.exit(1);
 		}
 
@@ -93,7 +93,6 @@ public class SchemaGenerator {
 		try {
 			edges = edgeIngestor.getAllCurrentRules();
 		} catch (EdgeRuleNotFoundException e) {
-			e.printStackTrace();
 			LOGGER.error("Unable to find all rules {}", LogFormatTools.getStackTop(e));
 		}
 
@@ -188,7 +187,7 @@ public class SchemaGenerator {
 		String imsg = "-- About to call graphMgmt commit";
 		LOGGER.info(imsg);
 		if(backend != null){
-			System.out.println("Successfully loaded the schema to " + backend);
+			LOGGER.info("Successfully loaded the schema to " + backend);
 		}
 
 		graphMgmt.commit();
