@@ -59,7 +59,7 @@ public class ListEndpoints {
 	private final String[] blacklist = { "search", "aai-internal" };
 
 	private List<String> endpoints = new ArrayList<>();
-	private Map<String, String> endpointToLogicalName = new HashMap<String, String>();
+	private Map<String, String> endpointToLogicalName = new HashMap<>();
 
 	/**
 	 * The main method.
@@ -78,7 +78,7 @@ public class ListEndpoints {
 		if(schemaUriBasePath == null){
 			String errorMsg = "Unable to find the property schema.uri.base.path,"
 				+" please check if specified in system property or in schema-ingest.properties";
-			System.err.println(errorMsg);
+			//System.err.println(errorMsg);
 			LOGGER.error(errorMsg);
 		}
 
