@@ -22,10 +22,30 @@ Maintenance Release:
 
 - `AAI-1923 <https://jira.onap.org/browse/AAI-1923>`_ Problem deleting due to EdgeRules in CCVPN usecase Casablanca
 
+- `AAI-1776 <https://jira.onap.org/browse/AAI-1776>`_ Champ fails to start
+
+- `AAI-1958 <https://jira.onap.org/browse/AAI-1958>`_ [graphadmin] createDbSchema.sh job loses detailed logfile
+
+- `AAI-1973 <https://jira.onap.org/browse/AAI-1973>`_ Schema update wiki is out of data of Casablanca
+
+- `AAI-2058 <https://jira.onap.org/browse/AAI-2058>`_ Upgrade to latest jetty-security
+
+- `AAI-2076 <https://jira.onap.org/browse/AAI-2076>`_ A&AI healthcheck timeout
+
+- `AAI-2079 <https://jira.onap.org/browse/AAI-2079>`_ aai-traversal and aai container failure to deploy issues in casablanca 3.0.0-ONAP
+
 Dependencies were updated in multiple repos to patch security
 vulnerabilities.
 
 **Known Issues**
+
+- `AAI-2090 <https://jira.onap.org/browse/AAI-2090>`_ aai-data-router pod enters CrashLoopBackOff state
+
+This issue can still present itself if you use the OOM chart which
+references version 1.3.2 (which is the version specified in the
+casablanca branch of oom), data-router will not start.  The workaround
+is to set 1.3.3 in the values.yaml file for data-router, or use the
+docker-manifest to override.  File is oom/kubernetes/aai/charts/aai-data-router/values.yaml
 
 Users should pay special attention to `AAI-2064
 <https://jira.onap.org/browse/AAI-2064>`_ and should consult `this
