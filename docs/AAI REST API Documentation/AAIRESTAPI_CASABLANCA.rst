@@ -1029,7 +1029,7 @@ Bulk APIs
 
 The Bulk API allows clients to make multiple requests in a single
 transaction. Please look for additional details on the following wiki
-page
+page: `Bulk API <bulkApi.html>`_
 
 AAI Traversal APIs
 ==================
