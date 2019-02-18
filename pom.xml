@@ -115,15 +115,6 @@
                         <skipExistingHeaders>true</skipExistingHeaders>
                         <skip>false</skip>
                     </configuration>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <!-- Set goal to "format" to auto update license headers -->
-                                <goal>check</goal>
-                            </goals>
-                            <phase>process-sources</phase>
-                        </execution>
-                    </executions>
                 </plugin>
             </plugins>
         </pluginManagement>
