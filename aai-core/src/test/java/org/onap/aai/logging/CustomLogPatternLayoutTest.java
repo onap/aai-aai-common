@@ -27,24 +27,24 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class CustomLogPatternLayoutTest {
-	
-	/**
-	 * Test null when defaultConverterMap doesn't have corresponding entry.
-	 */
-	@Test
-	public void testNull(){
-		String s = CustomLogPatternLayout.defaultConverterMap.get("z");
-		assertFalse("Entry not found for key 'z'", CNName.class.getName().equals(s));
-	}
-	
-	/**
-	 * Test defaultConverterMap when valid entry exists.
-	 */
-	@Test
-	public void testEntryFor_Z(){
-		CustomLogPatternLayout layout = new CustomLogPatternLayout();
-		String s = CustomLogPatternLayout.defaultConverterMap.get("z");
-		assertTrue("Entry not found for key 'z'", CNName.class.getName().equals(s));
-	}
+    
+    /**
+     * Test null when defaultConverterMap doesn't have corresponding entry.
+     */
+    @Test
+    public void testNull(){
+        String s = CustomLogPatternLayout.defaultConverterMap.get("z");
+        assertFalse("Entry not found for key 'z'", CNName.class.getName().equals(s));
+    }
+    
+    /**
+     * Test defaultConverterMap when valid entry exists.
+     */
+    @Test
+    public void testEntryFor_Z(){
+        CustomLogPatternLayout layout = new CustomLogPatternLayout();
+        String s = CustomLogPatternLayout.defaultConverterMap.get("z");
+        assertTrue("Entry not found for key 'z'", CNName.class.getName().equals(s));
+    }
 
 }
