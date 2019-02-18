@@ -40,7 +40,6 @@
         <module>aai-schema-ingest</module>
         <module>aai-annotations</module>
         <module>aai-core</module>
-        <module>aai-schema</module>
         <module>aai-auth</module>
         <module>aai-utils</module>
     </modules>
