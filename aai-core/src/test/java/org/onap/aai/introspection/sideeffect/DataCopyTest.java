@@ -63,199 +63,199 @@ import static org.mockito.Mockito.when;
 
 public class DataCopyTest extends AAISetup{
 
-	
-	
-	private static JanusGraph graph;
-	private final static ModelType introspectorFactoryType = ModelType.MOXY;
-	private final static DBConnectionType type = DBConnectionType.REALTIME;
-	private static Loader loader;
-	private static TransactionalGraphEngine dbEngine;
-	@Mock private Vertex self;
-	@Mock private VertexProperty<String> prop;
-	@Mock private QueryParser uriQuery;
-	@Rule public ExpectedException thrown = ExpectedException.none();
-
-	
     
-	@Parameterized.Parameter(value = 0)
-	public QueryStyle queryStyle;
+    
+    private static JanusGraph graph;
+    private final static ModelType introspectorFactoryType = ModelType.MOXY;
+    private final static DBConnectionType type = DBConnectionType.REALTIME;
+    private static Loader loader;
+    private static TransactionalGraphEngine dbEngine;
+    @Mock private Vertex self;
+    @Mock private VertexProperty<String> prop;
+    @Mock private QueryParser uriQuery;
+    @Rule public ExpectedException thrown = ExpectedException.none();
 
-	@Parameterized.Parameters(name = "QueryStyle.{0}")
-	public static Collection<Object[]> data() {
-		return Arrays.asList(new Object[][]{
-				{QueryStyle.TRAVERSAL},
-				{QueryStyle.TRAVERSAL_URI}
-		});
-	}
-	
-	
-	@BeforeClass
-	public static void setup() throws NoSuchFieldException, SecurityException, Exception {
-		graph = JanusGraphFactory.build().set("storage.backend","inmemory").open();
-		System.setProperty("AJSC_HOME", ".");
-		System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
-		
-		graph.traversal().addV("aai-node-type", "model", "model-invariant-id", "key1", AAIProperties.AAI_URI, "/service-design-and-creation/models/model/key1").as("v1")
-		.addV("aai-node-type", "model-ver", "model-ver", "myValue", "model-version-id", "key2", "model-version", "testValue", AAIProperties.AAI_URI, "/service-design-and-creation/models/model/key1/model-vers/model-ver/key2")
-				.addOutE("org.onap.relationships.inventory.BelongsTo", "v1", EdgeProperty.CONTAINS.toString(), true)
-		.addV("aai-node-type", "model", "model-invariant-id", "key3", AAIProperties.AAI_URI, "/service-design-and-creation/models/model/key3").as("v2")
-		.addV("aai-node-type", "model-ver", "model-ver", "myValue", "model-version-id", "key4", AAIProperties.AAI_URI, "/service-design-and-creation/models/model/key3/model-vers/model-ver/key4")
-				.addOutE("org.onap.relationships.inventory.BelongsTo", "v2", EdgeProperty.CONTAINS.toString(), true)
-		.next();
-		graph.tx().commit();
-	}
-	
-	@AfterClass
-	public static void tearDown() {
-		graph.tx().rollback();
-		graph.close();
-	}
-	
-	@Before
-	public void initMock() {
-		loader = loaderFactory.createLoaderForVersion(introspectorFactoryType, schemaVersions.getDefaultVersion());
-		MockitoAnnotations.initMocks(this);
-		dbEngine = new JanusGraphDBEngine(
-				queryStyle,
-				type,
-				loader);
-	}
-	
-	@Test
-	public void runPopulatePersonaModelVer() throws URISyntaxException, AAIException, UnsupportedEncodingException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, SecurityException, InstantiationException, NoSuchMethodException, MalformedURLException {
-		
-		final Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
-		final Introspector obj = loader.introspectorFromName("generic-vnf");
-		obj.setValue("vnf-id", "myId");
-		obj.setValue("model-invariant-id", "key1");
-		obj.setValue("model-version-id", "key2");
-		TransactionalGraphEngine spy = spy(dbEngine);
-		TransactionalGraphEngine.Admin adminSpy = spy(dbEngine.asAdmin());
-		Graph g = graph.newTransaction();
-		GraphTraversalSource traversal = g.traversal();
-		when(spy.asAdmin()).thenReturn(adminSpy);
-		when(adminSpy.getTraversalSource()).thenReturn(traversal);
-		when(self.<String>property(AAIProperties.AAI_URI)).thenReturn(prop);
-		when(prop.orElse(null)).thenReturn(obj.getURI());
-		DBSerializer serializer = new DBSerializer(schemaVersions.getDefaultVersion(), spy, introspectorFactoryType, "AAI_TEST");
-		SideEffectRunner runner = new SideEffectRunner
-				.Builder(spy, serializer).addSideEffect(DataCopy.class).build();
-		
-		runner.execute(obj, self);
+    
+    
+    @Parameterized.Parameter(value = 0)
+    public QueryStyle queryStyle;
 
-		assertEquals("value populated", "testValue", obj.getValue("persona-model-version"));
-		
-		g.tx().rollback();
-		
-		
-	}
-	
-	@Test
-	public void verifyNestedSideEffect() throws URISyntaxException, AAIException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, SecurityException, InstantiationException, NoSuchMethodException, IOException {
-		
-		final Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
-		final Introspector obj = loader.unmarshal("customer", this.getJsonString("nested-case.json"));
-		//System.out.println(obj.marshal(true));
-		TransactionalGraphEngine spy = spy(dbEngine);
-		TransactionalGraphEngine.Admin adminSpy = spy(dbEngine.asAdmin());
-		Graph g = graph.newTransaction();
-		GraphTraversalSource traversal = g.traversal();
-		when(spy.tx()).thenReturn(g);
-		when(spy.asAdmin()).thenReturn(adminSpy);
-		when(adminSpy.getTraversalSource()).thenReturn(traversal);
-		when(self.<String>property(AAIProperties.AAI_URI)).thenReturn(prop);
-		when(prop.orElse(null)).thenReturn(obj.getURI());
-		when(uriQuery.isDependent()).thenReturn(false);
-		DBSerializer serializer = new DBSerializer(schemaVersions.getDefaultVersion(), spy, introspectorFactoryType, "AAI_TEST");
-		Vertex v= serializer.createNewVertex(obj);
-		serializer.serializeToDb(obj, v, uriQuery, obj.getURI(), "test");
-		
-		assertEquals("nested value populated", "testValue", g.traversal().V().has("service-instance-id", "nested-instance-key").next().property("persona-model-version").orElse(""));
+    @Parameterized.Parameters(name = "QueryStyle.{0}")
+    public static Collection<Object[]> data() {
+        return Arrays.asList(new Object[][]{
+                {QueryStyle.TRAVERSAL},
+                {QueryStyle.TRAVERSAL_URI}
+        });
+    }
+    
+    
+    @BeforeClass
+    public static void setup() throws NoSuchFieldException, SecurityException, Exception {
+        graph = JanusGraphFactory.build().set("storage.backend","inmemory").open();
+        System.setProperty("AJSC_HOME", ".");
+        System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
+        
+        graph.traversal().addV("aai-node-type", "model", "model-invariant-id", "key1", AAIProperties.AAI_URI, "/service-design-and-creation/models/model/key1").as("v1")
+        .addV("aai-node-type", "model-ver", "model-ver", "myValue", "model-version-id", "key2", "model-version", "testValue", AAIProperties.AAI_URI, "/service-design-and-creation/models/model/key1/model-vers/model-ver/key2")
+                .addOutE("org.onap.relationships.inventory.BelongsTo", "v1", EdgeProperty.CONTAINS.toString(), true)
+        .addV("aai-node-type", "model", "model-invariant-id", "key3", AAIProperties.AAI_URI, "/service-design-and-creation/models/model/key3").as("v2")
+        .addV("aai-node-type", "model-ver", "model-ver", "myValue", "model-version-id", "key4", AAIProperties.AAI_URI, "/service-design-and-creation/models/model/key3/model-vers/model-ver/key4")
+                .addOutE("org.onap.relationships.inventory.BelongsTo", "v2", EdgeProperty.CONTAINS.toString(), true)
+        .next();
+        graph.tx().commit();
+    }
+    
+    @AfterClass
+    public static void tearDown() {
+        graph.tx().rollback();
+        graph.close();
+    }
+    
+    @Before
+    public void initMock() {
+        loader = loaderFactory.createLoaderForVersion(introspectorFactoryType, schemaVersions.getDefaultVersion());
+        MockitoAnnotations.initMocks(this);
+        dbEngine = new JanusGraphDBEngine(
+                queryStyle,
+                type,
+                loader);
+    }
+    
+    @Test
+    public void runPopulatePersonaModelVer() throws URISyntaxException, AAIException, UnsupportedEncodingException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, SecurityException, InstantiationException, NoSuchMethodException, MalformedURLException {
+        
+        final Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
+        final Introspector obj = loader.introspectorFromName("generic-vnf");
+        obj.setValue("vnf-id", "myId");
+        obj.setValue("model-invariant-id", "key1");
+        obj.setValue("model-version-id", "key2");
+        TransactionalGraphEngine spy = spy(dbEngine);
+        TransactionalGraphEngine.Admin adminSpy = spy(dbEngine.asAdmin());
+        Graph g = graph.newTransaction();
+        GraphTraversalSource traversal = g.traversal();
+        when(spy.asAdmin()).thenReturn(adminSpy);
+        when(adminSpy.getTraversalSource()).thenReturn(traversal);
+        when(self.<String>property(AAIProperties.AAI_URI)).thenReturn(prop);
+        when(prop.orElse(null)).thenReturn(obj.getURI());
+        DBSerializer serializer = new DBSerializer(schemaVersions.getDefaultVersion(), spy, introspectorFactoryType, "AAI_TEST");
+        SideEffectRunner runner = new SideEffectRunner
+                .Builder(spy, serializer).addSideEffect(DataCopy.class).build();
+        
+        runner.execute(obj, self);
 
-		g.tx().rollback();
+        assertEquals("value populated", "testValue", obj.getValue("persona-model-version"));
+        
+        g.tx().rollback();
+        
+        
+    }
+    
+    @Test
+    public void verifyNestedSideEffect() throws URISyntaxException, AAIException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, SecurityException, InstantiationException, NoSuchMethodException, IOException {
+        
+        final Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
+        final Introspector obj = loader.unmarshal("customer", this.getJsonString("nested-case.json"));
+        //System.out.println(obj.marshal(true));
+        TransactionalGraphEngine spy = spy(dbEngine);
+        TransactionalGraphEngine.Admin adminSpy = spy(dbEngine.asAdmin());
+        Graph g = graph.newTransaction();
+        GraphTraversalSource traversal = g.traversal();
+        when(spy.tx()).thenReturn(g);
+        when(spy.asAdmin()).thenReturn(adminSpy);
+        when(adminSpy.getTraversalSource()).thenReturn(traversal);
+        when(self.<String>property(AAIProperties.AAI_URI)).thenReturn(prop);
+        when(prop.orElse(null)).thenReturn(obj.getURI());
+        when(uriQuery.isDependent()).thenReturn(false);
+        DBSerializer serializer = new DBSerializer(schemaVersions.getDefaultVersion(), spy, introspectorFactoryType, "AAI_TEST");
+        Vertex v= serializer.createNewVertex(obj);
+        serializer.serializeToDb(obj, v, uriQuery, obj.getURI(), "test");
+        
+        assertEquals("nested value populated", "testValue", g.traversal().V().has("service-instance-id", "nested-instance-key").next().property("persona-model-version").orElse(""));
 
-	}
-	
-	@Test
-	public void expectedMissingPropertyExceptionInURI() throws AAIException, UnsupportedEncodingException {
-		
-		final Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
-		final Introspector obj = loader.introspectorFromName("generic-vnf");
-		obj.setValue("vnf-id", "myId");
-		obj.setValue("model-invariant-id", "key1");
+        g.tx().rollback();
 
-		TransactionalGraphEngine spy = spy(dbEngine);
-		TransactionalGraphEngine.Admin adminSpy = spy(dbEngine.asAdmin());
-		Graph g = graph.newTransaction();
-		GraphTraversalSource traversal = g.traversal();
-		when(spy.asAdmin()).thenReturn(adminSpy);
-		when(adminSpy.getTraversalSource()).thenReturn(traversal);
-		when(self.<String>property(AAIProperties.AAI_URI)).thenReturn(prop);
-		when(prop.orElse(null)).thenReturn(obj.getURI());
-		DBSerializer serializer = new DBSerializer(schemaVersions.getDefaultVersion(), spy, introspectorFactoryType, "AAI_TEST");
-		SideEffectRunner runner = new SideEffectRunner
-				.Builder(spy, serializer).addSideEffect(DataCopy.class).build();
-		
-		thrown.expect(AAIMissingRequiredPropertyException.class);
-		runner.execute(obj, self);
-	}
-	
-	@Test
-	public void expectedMissingPropertyExceptionForResultingObject() throws AAIException, UnsupportedEncodingException {
-		final Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
-		final Introspector obj = loader.introspectorFromName("generic-vnf");
-		obj.setValue("vnf-id", "myId");
-		obj.setValue("model-invariant-id", "key3");
-		obj.setValue("model-version-id", "key4");
+    }
+    
+    @Test
+    public void expectedMissingPropertyExceptionInURI() throws AAIException, UnsupportedEncodingException {
+        
+        final Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
+        final Introspector obj = loader.introspectorFromName("generic-vnf");
+        obj.setValue("vnf-id", "myId");
+        obj.setValue("model-invariant-id", "key1");
 
-		TransactionalGraphEngine spy = spy(dbEngine);
-		TransactionalGraphEngine.Admin adminSpy = spy(dbEngine.asAdmin());
-		Graph g = graph.newTransaction();
-		GraphTraversalSource traversal = g.traversal();
-		when(spy.asAdmin()).thenReturn(adminSpy);
-		when(adminSpy.getTraversalSource()).thenReturn(traversal);
-		when(self.<String>property(AAIProperties.AAI_URI)).thenReturn(prop);
-		when(prop.orElse(null)).thenReturn(obj.getURI());
-		DBSerializer serializer = new DBSerializer(schemaVersions.getDefaultVersion(), spy, introspectorFactoryType, "AAI_TEST");
-		SideEffectRunner runner = new SideEffectRunner
-				.Builder(spy, serializer).addSideEffect(DataCopy.class).build();
-		
-		thrown.expect(AAIMissingRequiredPropertyException.class);
-		runner.execute(obj, self);
-	}
-	
-	@Test
-	public void expectNoProcessingWithNoProperties() throws AAIException, UnsupportedEncodingException {
-		final Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
-		final Introspector obj = loader.introspectorFromName("generic-vnf");
-		obj.setValue("vnf-id", "myId");
+        TransactionalGraphEngine spy = spy(dbEngine);
+        TransactionalGraphEngine.Admin adminSpy = spy(dbEngine.asAdmin());
+        Graph g = graph.newTransaction();
+        GraphTraversalSource traversal = g.traversal();
+        when(spy.asAdmin()).thenReturn(adminSpy);
+        when(adminSpy.getTraversalSource()).thenReturn(traversal);
+        when(self.<String>property(AAIProperties.AAI_URI)).thenReturn(prop);
+        when(prop.orElse(null)).thenReturn(obj.getURI());
+        DBSerializer serializer = new DBSerializer(schemaVersions.getDefaultVersion(), spy, introspectorFactoryType, "AAI_TEST");
+        SideEffectRunner runner = new SideEffectRunner
+                .Builder(spy, serializer).addSideEffect(DataCopy.class).build();
+        
+        thrown.expect(AAIMissingRequiredPropertyException.class);
+        runner.execute(obj, self);
+    }
+    
+    @Test
+    public void expectedMissingPropertyExceptionForResultingObject() throws AAIException, UnsupportedEncodingException {
+        final Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
+        final Introspector obj = loader.introspectorFromName("generic-vnf");
+        obj.setValue("vnf-id", "myId");
+        obj.setValue("model-invariant-id", "key3");
+        obj.setValue("model-version-id", "key4");
 
-		TransactionalGraphEngine spy = spy(dbEngine);
-		TransactionalGraphEngine.Admin adminSpy = spy(dbEngine.asAdmin());
-		Graph g = graph.newTransaction();
-		GraphTraversalSource traversal = g.traversal();
-		when(spy.asAdmin()).thenReturn(adminSpy);
-		when(adminSpy.getTraversalSource()).thenReturn(traversal);
-		when(self.<String>property(AAIProperties.AAI_URI)).thenReturn(prop);
-		when(prop.orElse(null)).thenReturn(obj.getURI());
-		DBSerializer serializer = new DBSerializer(schemaVersions.getDefaultVersion(), spy, introspectorFactoryType, "AAI_TEST");
-		SideEffectRunner runner = new SideEffectRunner
-				.Builder(spy, serializer).addSideEffect(DataCopy.class).build();
-		
-		runner.execute(obj, self);
-		
-		assertEquals("no model-version-id", true, obj.getValue("model-version-id") == null);
-		assertEquals("no model-invariant-id", true, obj.getValue("model-invariant-id") == null);
-		
-	}
-	
-	private String getJsonString(String filename) throws IOException {
-		
-		
-		FileInputStream is = new FileInputStream("src/test/resources/oxm/sideeffect/" + filename);
-		String s =  IOUtils.toString(is, "UTF-8"); 
-		IOUtils.closeQuietly(is);
-		
-		return s;
-	}
+        TransactionalGraphEngine spy = spy(dbEngine);
+        TransactionalGraphEngine.Admin adminSpy = spy(dbEngine.asAdmin());
+        Graph g = graph.newTransaction();
+        GraphTraversalSource traversal = g.traversal();
+        when(spy.asAdmin()).thenReturn(adminSpy);
+        when(adminSpy.getTraversalSource()).thenReturn(traversal);
+        when(self.<String>property(AAIProperties.AAI_URI)).thenReturn(prop);
+        when(prop.orElse(null)).thenReturn(obj.getURI());
+        DBSerializer serializer = new DBSerializer(schemaVersions.getDefaultVersion(), spy, introspectorFactoryType, "AAI_TEST");
+        SideEffectRunner runner = new SideEffectRunner
+                .Builder(spy, serializer).addSideEffect(DataCopy.class).build();
+        
+        thrown.expect(AAIMissingRequiredPropertyException.class);
+        runner.execute(obj, self);
+    }
+    
+    @Test
+    public void expectNoProcessingWithNoProperties() throws AAIException, UnsupportedEncodingException {
+        final Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
+        final Introspector obj = loader.introspectorFromName("generic-vnf");
+        obj.setValue("vnf-id", "myId");
+
+        TransactionalGraphEngine spy = spy(dbEngine);
+        TransactionalGraphEngine.Admin adminSpy = spy(dbEngine.asAdmin());
+        Graph g = graph.newTransaction();
+        GraphTraversalSource traversal = g.traversal();
+        when(spy.asAdmin()).thenReturn(adminSpy);
+        when(adminSpy.getTraversalSource()).thenReturn(traversal);
+        when(self.<String>property(AAIProperties.AAI_URI)).thenReturn(prop);
+        when(prop.orElse(null)).thenReturn(obj.getURI());
+        DBSerializer serializer = new DBSerializer(schemaVersions.getDefaultVersion(), spy, introspectorFactoryType, "AAI_TEST");
+        SideEffectRunner runner = new SideEffectRunner
+                .Builder(spy, serializer).addSideEffect(DataCopy.class).build();
+        
+        runner.execute(obj, self);
+        
+        assertEquals("no model-version-id", true, obj.getValue("model-version-id") == null);
+        assertEquals("no model-invariant-id", true, obj.getValue("model-invariant-id") == null);
+        
+    }
+    
+    private String getJsonString(String filename) throws IOException {
+        
+        
+        FileInputStream is = new FileInputStream("src/test/resources/oxm/sideeffect/" + filename);
+        String s =  IOUtils.toString(is, "UTF-8"); 
+        IOUtils.closeQuietly(is);
+        
+        return s;
+    }
 }
