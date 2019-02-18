@@ -49,253 +49,253 @@ import static org.junit.Assert.assertEquals;
 @Ignore
 public class UniqueRelationshipQueryTest extends AAISetup {
 
-	@Autowired
-	private NodeIngestor ingestor ;
+    @Autowired
+    private NodeIngestor ingestor ;
 
-	private TransactionalGraphEngine dbEngine;
-	private SchemaVersion version ;
-	private DynamicJAXBContext context = ingestor.getContextForVersion(version);
-	private Unmarshaller unmarshaller = null;
+    private TransactionalGraphEngine dbEngine;
+    private SchemaVersion version ;
+    private DynamicJAXBContext context = ingestor.getContextForVersion(version);
+    private Unmarshaller unmarshaller = null;
 
-	/**
-	 * Setup.
-	 *
-	 * @throws JAXBException the JAXB exception
-	 */
-	@Before
-	public void setup() throws JAXBException {
-	    version = new SchemaVersion("v10");
-		dbEngine = new JanusGraphDBEngine(QueryStyle.GREMLIN_UNIQUE,
-				loaderFactory.createLoaderForVersion(ModelType.MOXY, version),
-				false);
-		unmarshaller = context.createUnmarshaller();
-	    unmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/json");
-	    unmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
-		unmarshaller.setProperty(UnmarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME, true);
-	}
+    /**
+     * Setup.
+     *
+     * @throws JAXBException the JAXB exception
+     */
+    @Before
+    public void setup() throws JAXBException {
+        version = new SchemaVersion("v10");
+        dbEngine = new JanusGraphDBEngine(QueryStyle.GREMLIN_UNIQUE,
+                loaderFactory.createLoaderForVersion(ModelType.MOXY, version),
+                false);
+        unmarshaller = context.createUnmarshaller();
+        unmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/json");
+        unmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
+        unmarshaller.setProperty(UnmarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME, true);
+    }
 
-	/**
-	 * Parent query.
-	 *
-	 * @throws JAXBException the JAXB exception
-	 * @throws UnsupportedEncodingException the unsupported encoding exception
-	 * @throws AAIException the AAI exception
-	 */
-	@Test
+    /**
+     * Parent query.
+     *
+     * @throws JAXBException the JAXB exception
+     * @throws UnsupportedEncodingException the unsupported encoding exception
+     * @throws AAIException the AAI exception
+     */
+    @Test
     public void parentQuery() throws JAXBException, UnsupportedEncodingException, AAIException {
 
-		String content =
-				"{"
-				+ "\"related-to\" : \"pserver\","
-				+ "\"relationship-data\" : [{"
-				+ "\"relationship-key\" : \"pserver.hostname\","
-				+ "\"relationship-value\" : \"key1\""
-				+ "}]"
-				+ "}";
+        String content =
+                "{"
+                + "\"related-to\" : \"pserver\","
+                + "\"relationship-data\" : [{"
+                + "\"relationship-key\" : \"pserver.hostname\","
+                + "\"relationship-value\" : \"key1\""
+                + "}]"
+                + "}";
 
-		Object obj = context.newDynamicEntity("Relationship");
+        Object obj = context.newDynamicEntity("Relationship");
 
-		DynamicEntity entity = (DynamicEntity)unmarshaller.unmarshal(new StreamSource(new StringReader(content)), obj.getClass()).getValue();
+        DynamicEntity entity = (DynamicEntity)unmarshaller.unmarshal(new StreamSource(new StringReader(content)), obj.getClass()).getValue();
 
-		Introspector wrappedObj = IntrospectorFactory.newInstance(ModelType.MOXY, entity);
-		QueryParser query = dbEngine.getQueryBuilder().createQueryFromRelationship(wrappedObj);
-		String key = "pserver/key1";
-		GraphTraversal<Vertex, Vertex> expected =
-				__.<Vertex>start().has("aai-unique-key", key);
-		String resultType = "pserver";
-		String containerType = "";
+        Introspector wrappedObj = IntrospectorFactory.newInstance(ModelType.MOXY, entity);
+        QueryParser query = dbEngine.getQueryBuilder().createQueryFromRelationship(wrappedObj);
+        String key = "pserver/key1";
+        GraphTraversal<Vertex, Vertex> expected =
+                __.<Vertex>start().has("aai-unique-key", key);
+        String resultType = "pserver";
+        String containerType = "";
 
-		testSet(query, expected, expected, resultType, containerType);
+        testSet(query, expected, expected, resultType, containerType);
 
     }
 
-	/**
-	 * Child query.
-	 *
-	 * @throws JAXBException the JAXB exception
-	 * @throws UnsupportedEncodingException the unsupported encoding exception
-	 * @throws AAIException the AAI exception
-	 */
-	@Test
+    /**
+     * Child query.
+     *
+     * @throws JAXBException the JAXB exception
+     * @throws UnsupportedEncodingException the unsupported encoding exception
+     * @throws AAIException the AAI exception
+     */
+    @Test
     public void childQuery() throws JAXBException, UnsupportedEncodingException, AAIException {
-		String content =
-				"{"
-				+ "\"related-to\" : \"lag-interface\","
-				+ "\"relationship-data\" : [{"
-				+ "\"relationship-key\" : \"pserver.hostname\","
-				+ "\"relationship-value\" : \"key1\""
-				+ "}, {"
-				+ "\"relationship-key\" : \"lag-interface.interface-name\","
-				+ "\"relationship-value\" : \"key2\""
-				+ "}]"
-				+ "}";
+        String content =
+                "{"
+                + "\"related-to\" : \"lag-interface\","
+                + "\"relationship-data\" : [{"
+                + "\"relationship-key\" : \"pserver.hostname\","
+                + "\"relationship-value\" : \"key1\""
+                + "}, {"
+                + "\"relationship-key\" : \"lag-interface.interface-name\","
+                + "\"relationship-value\" : \"key2\""
+                + "}]"
+                + "}";
 
-		Object obj = context.newDynamicEntity("Relationship");
+        Object obj = context.newDynamicEntity("Relationship");
 
-		DynamicEntity entity = (DynamicEntity)unmarshaller.unmarshal(new StreamSource(new StringReader(content)), obj.getClass()).getValue();
+        DynamicEntity entity = (DynamicEntity)unmarshaller.unmarshal(new StreamSource(new StringReader(content)), obj.getClass()).getValue();
 
-		Introspector wrappedObj = IntrospectorFactory.newInstance(ModelType.MOXY, entity);
-		QueryParser query = dbEngine.getQueryBuilder().createQueryFromRelationship(wrappedObj);
+        Introspector wrappedObj = IntrospectorFactory.newInstance(ModelType.MOXY, entity);
+        QueryParser query = dbEngine.getQueryBuilder().createQueryFromRelationship(wrappedObj);
 
-		String key = "pserver/key1/lag-interface/key2";
-		GraphTraversal<Vertex, Vertex> expected =
-				__.<Vertex>start().has("aai-unique-key", key);
-		GraphTraversal<Vertex, Vertex> parentExpected =
-				__.<Vertex>start().has("aai-unique-key", "pserver/key1");
-		String resultType = "lag-interface";
-		String containerType = "";
+        String key = "pserver/key1/lag-interface/key2";
+        GraphTraversal<Vertex, Vertex> expected =
+                __.<Vertex>start().has("aai-unique-key", key);
+        GraphTraversal<Vertex, Vertex> parentExpected =
+                __.<Vertex>start().has("aai-unique-key", "pserver/key1");
+        String resultType = "lag-interface";
+        String containerType = "";
 
-		testSet(query, expected, parentExpected, resultType, containerType);
+        testSet(query, expected, parentExpected, resultType, containerType);
     }
 
-	/**
-	 * Naming exceptions.
-	 *
-	 * @throws JAXBException the JAXB exception
-	 * @throws UnsupportedEncodingException the unsupported encoding exception
-	 * @throws AAIException the AAI exception
-	 */
-	@Test
+    /**
+     * Naming exceptions.
+     *
+     * @throws JAXBException the JAXB exception
+     * @throws UnsupportedEncodingException the unsupported encoding exception
+     * @throws AAIException the AAI exception
+     */
+    @Test
     public void namingExceptions() throws JAXBException, UnsupportedEncodingException, AAIException {
-		String content =
-				"{"
-				+ "\"related-to\" : \"cvlan-tag\","
-				+ "\"relationship-data\" : [{"
-				+ "\"relationship-key\" : \"vce.vnf-id\","
-				+ "\"relationship-value\" : \"key1\""
-				+ "}, {"
-				+ "\"relationship-key\" : \"port-group.interface-id\","
-				+ "\"relationship-value\" : \"key2\""
-				+ "},{"
-				+ "\"relationship-key\" : \"cvlan-tag.cvlan-tag\","
-				+ "\"relationship-value\" : \"655\""
-				+ "}]"
-				+ "}";
+        String content =
+                "{"
+                + "\"related-to\" : \"cvlan-tag\","
+                + "\"relationship-data\" : [{"
+                + "\"relationship-key\" : \"vce.vnf-id\","
+                + "\"relationship-value\" : \"key1\""
+                + "}, {"
+                + "\"relationship-key\" : \"port-group.interface-id\","
+                + "\"relationship-value\" : \"key2\""
+                + "},{"
+                + "\"relationship-key\" : \"cvlan-tag.cvlan-tag\","
+                + "\"relationship-value\" : \"655\""
+                + "}]"
+                + "}";
 
-		Object obj = context.newDynamicEntity("Relationship");
+        Object obj = context.newDynamicEntity("Relationship");
 
-		DynamicEntity entity = (DynamicEntity)unmarshaller.unmarshal(new StreamSource(new StringReader(content)), obj.getClass()).getValue();
+        DynamicEntity entity = (DynamicEntity)unmarshaller.unmarshal(new StreamSource(new StringReader(content)), obj.getClass()).getValue();
 
-		Introspector wrappedObj = IntrospectorFactory.newInstance(ModelType.MOXY, entity);
-		QueryParser query = dbEngine.getQueryBuilder().createQueryFromRelationship(wrappedObj);
-		String key = "vce/key1/port-group/key2/cvlan-tag/655";
-		GraphTraversal<Vertex, Vertex> expected =
-				__.<Vertex>start().has("aai-unique-key", key);
-		GraphTraversal<Vertex, Vertex> parentExpected =
-				__.<Vertex>start().has("aai-unique-key", "vce/key1/port-group/key2");
-		String resultType = "cvlan-tag";
-		String containerType = "";
+        Introspector wrappedObj = IntrospectorFactory.newInstance(ModelType.MOXY, entity);
+        QueryParser query = dbEngine.getQueryBuilder().createQueryFromRelationship(wrappedObj);
+        String key = "vce/key1/port-group/key2/cvlan-tag/655";
+        GraphTraversal<Vertex, Vertex> expected =
+                __.<Vertex>start().has("aai-unique-key", key);
+        GraphTraversal<Vertex, Vertex> parentExpected =
+                __.<Vertex>start().has("aai-unique-key", "vce/key1/port-group/key2");
+        String resultType = "cvlan-tag";
+        String containerType = "";
 
-		testSet(query, expected, parentExpected, resultType, containerType);
+        testSet(query, expected, parentExpected, resultType, containerType);
 
     }
 
-	/**
-	 * Double key.
-	 *
-	 * @throws JAXBException the JAXB exception
-	 * @throws UnsupportedEncodingException the unsupported encoding exception
-	 * @throws AAIException the AAI exception
-	 */
-	@Test
+    /**
+     * Double key.
+     *
+     * @throws JAXBException the JAXB exception
+     * @throws UnsupportedEncodingException the unsupported encoding exception
+     * @throws AAIException the AAI exception
+     */
+    @Test
     public void doubleKey() throws JAXBException, UnsupportedEncodingException, AAIException {
-		String content =
-				"{"
-				+ "\"related-to\" : \"service-capability\","
-				+ "\"relationship-data\" : [{"
-				+ "\"relationship-key\" : \"service-capability.service-type\","
-				+ "\"relationship-value\" : \"key1\""
-				+ " }, { "
-				+ "\"relationship-key\" : \"service-capability.vnf-type\","
-				+ " \"relationship-value\" : \"key2\""
-				+ " }]"
-				+ "}";
+        String content =
+                "{"
+                + "\"related-to\" : \"service-capability\","
+                + "\"relationship-data\" : [{"
+                + "\"relationship-key\" : \"service-capability.service-type\","
+                + "\"relationship-value\" : \"key1\""
+                + " }, { "
+                + "\"relationship-key\" : \"service-capability.vnf-type\","
+                + " \"relationship-value\" : \"key2\""
+                + " }]"
+                + "}";
 
-		Object obj = context.newDynamicEntity("Relationship");
+        Object obj = context.newDynamicEntity("Relationship");
 
-		DynamicEntity entity = (DynamicEntity)unmarshaller.unmarshal(new StreamSource(new StringReader(content)), obj.getClass()).getValue();
+        DynamicEntity entity = (DynamicEntity)unmarshaller.unmarshal(new StreamSource(new StringReader(content)), obj.getClass()).getValue();
 
-		Introspector wrappedObj = IntrospectorFactory.newInstance(ModelType.MOXY, entity);
-		QueryParser query = dbEngine.getQueryBuilder().createQueryFromRelationship(wrappedObj);
+        Introspector wrappedObj = IntrospectorFactory.newInstance(ModelType.MOXY, entity);
+        QueryParser query = dbEngine.getQueryBuilder().createQueryFromRelationship(wrappedObj);
 
-		String key = "service-capability/key1/key2";
-		GraphTraversal<Vertex, Vertex> expected =
-				__.<Vertex>start().has("aai-unique-key", key);
-		GraphTraversal<Vertex, Vertex> parentExpected =
-				__.<Vertex>start().has("aai-unique-key", "service-capability/key1/key2");
-		String resultType = "service-capability";
-		String containerType = "";
+        String key = "service-capability/key1/key2";
+        GraphTraversal<Vertex, Vertex> expected =
+                __.<Vertex>start().has("aai-unique-key", key);
+        GraphTraversal<Vertex, Vertex> parentExpected =
+                __.<Vertex>start().has("aai-unique-key", "service-capability/key1/key2");
+        String resultType = "service-capability";
+        String containerType = "";
 
-		testSet(query, expected, parentExpected, resultType, containerType);
+        testSet(query, expected, parentExpected, resultType, containerType);
 
     }
 
-	/**
-	 * Short circuit.
-	 *
-	 * @throws JAXBException the JAXB exception
-	 * @throws UnsupportedEncodingException the unsupported encoding exception
-	 * @throws AAIException the AAI exception
-	 */
-	@Test
+    /**
+     * Short circuit.
+     *
+     * @throws JAXBException the JAXB exception
+     * @throws UnsupportedEncodingException the unsupported encoding exception
+     * @throws AAIException the AAI exception
+     */
+    @Test
     public void shortCircuit() throws JAXBException, UnsupportedEncodingException, AAIException {
-		String content =
-				"{"
-				+ "\"related-to\" : \"cvlan-tag\","
-				+ "\"related-link\" : \"http://mock-system-name.com:8443/aai/v6/network/vces/vce/key1/port-groups/port-group/key2/cvlan-tags/cvlan-tag/655\","
-				+ "\"relationship-data\" : [{"
-				+ "\"relationship-key\" : \"vce.hostname\","
-				+ "\"relationship-value\" : \"key1\""
-				+ "}, {"
-				+ "\"relationship-key\" : \"port-group.interface-name\","
-				+ "\"relationship-value\" : \"key2\""
-				+ "},{"
-				+ "\"relationship-key\" : \"cvlan-tag.-name\","
-				+ "\"relationship-value\" : \"655\""
-				+ "}]"
-				+ "}";
+        String content =
+                "{"
+                + "\"related-to\" : \"cvlan-tag\","
+                + "\"related-link\" : \"http://mock-system-name.com:8443/aai/v6/network/vces/vce/key1/port-groups/port-group/key2/cvlan-tags/cvlan-tag/655\","
+                + "\"relationship-data\" : [{"
+                + "\"relationship-key\" : \"vce.hostname\","
+                + "\"relationship-value\" : \"key1\""
+                + "}, {"
+                + "\"relationship-key\" : \"port-group.interface-name\","
+                + "\"relationship-value\" : \"key2\""
+                + "},{"
+                + "\"relationship-key\" : \"cvlan-tag.-name\","
+                + "\"relationship-value\" : \"655\""
+                + "}]"
+                + "}";
 
-		Object obj = context.newDynamicEntity("Relationship");
+        Object obj = context.newDynamicEntity("Relationship");
 
-		DynamicEntity entity = (DynamicEntity)unmarshaller.unmarshal(new StreamSource(new StringReader(content)), obj.getClass()).getValue();
+        DynamicEntity entity = (DynamicEntity)unmarshaller.unmarshal(new StreamSource(new StringReader(content)), obj.getClass()).getValue();
 
-		Introspector wrappedObj = IntrospectorFactory.newInstance(ModelType.MOXY, entity);
-		QueryParser query = dbEngine.getQueryBuilder().createQueryFromRelationship(wrappedObj);
-		String key = "vce/key1/port-group/key2/cvlan-tag/655";
-		GraphTraversal<Vertex, Vertex> expected = __.<Vertex>start().has("aai-unique-key", key);
-		GraphTraversal<Vertex, Vertex> parentExpected = __.<Vertex>start().has("aai-unique-key", "vce/key1/port-group/key2");
-		String resultType = "cvlan-tag";
-		String containerType = "";
+        Introspector wrappedObj = IntrospectorFactory.newInstance(ModelType.MOXY, entity);
+        QueryParser query = dbEngine.getQueryBuilder().createQueryFromRelationship(wrappedObj);
+        String key = "vce/key1/port-group/key2/cvlan-tag/655";
+        GraphTraversal<Vertex, Vertex> expected = __.<Vertex>start().has("aai-unique-key", key);
+        GraphTraversal<Vertex, Vertex> parentExpected = __.<Vertex>start().has("aai-unique-key", "vce/key1/port-group/key2");
+        String resultType = "cvlan-tag";
+        String containerType = "";
 
-		testSet(query, expected, parentExpected, resultType, containerType);
+        testSet(query, expected, parentExpected, resultType, containerType);
 
     }
 
-	/**
-	 * Test set.
-	 *
-	 * @param query the query
-	 * @param expected the expected
-	 * @param parentExpected the parent expected
-	 * @param resultType the result type
-	 * @param containerType the container type
-	 */
-	public void testSet(QueryParser query, GraphTraversal<Vertex, Vertex> expected, GraphTraversal<Vertex, Vertex> parentExpected, String resultType, String containerType) {
-		assertEquals(
-				"gremlin query should be " + expected,
-				expected,
-				query.getQueryBuilder().getQuery());
-		assertEquals(
-				"parent gremlin query should be " + parentExpected,
-				parentExpected,
-				query.getParentQueryBuilder().getParentQuery());
-		assertEquals(
-				"result type should be " + resultType,
-				resultType,
-				query.getResultType());
-		assertEquals(
-				"container type should be " + containerType,
-				containerType,
-				query.getContainerType());
-	}
+    /**
+     * Test set.
+     *
+     * @param query the query
+     * @param expected the expected
+     * @param parentExpected the parent expected
+     * @param resultType the result type
+     * @param containerType the container type
+     */
+    public void testSet(QueryParser query, GraphTraversal<Vertex, Vertex> expected, GraphTraversal<Vertex, Vertex> parentExpected, String resultType, String containerType) {
+        assertEquals(
+                "gremlin query should be " + expected,
+                expected,
+                query.getQueryBuilder().getQuery());
+        assertEquals(
+                "parent gremlin query should be " + parentExpected,
+                parentExpected,
+                query.getParentQueryBuilder().getParentQuery());
+        assertEquals(
+                "result type should be " + resultType,
+                resultType,
+                query.getResultType());
+        assertEquals(
+                "container type should be " + containerType,
+                containerType,
+                query.getContainerType());
+    }
 }
