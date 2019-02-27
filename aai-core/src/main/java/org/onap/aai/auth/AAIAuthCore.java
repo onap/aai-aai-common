@@ -53,6 +53,8 @@ public final class AAIAuthCore {
 
 	private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(AAIAuthCore.class);
 
+	private static final String ERROR_CODE_AAI_4001 = "AAI_4001";
+
 	private String globalAuthFileName = AAIConstants.AAI_AUTH_CONFIG_FILENAME;
 	
 	private final Pattern AUTH_POLICY_PATTERN;
@@ -161,11 +163,11 @@ public final class AAIAuthCore {
 				}	
 			}
 		} catch (FileNotFoundException e) {
-			ErrorLogHelper.logError("AAI_4001", globalAuthFileName + ". Exception: " + e);
+			ErrorLogHelper.logError(ERROR_CODE_AAI_4001, globalAuthFileName + ". Exception: " + e);
 		} catch (JsonProcessingException e) {
-			ErrorLogHelper.logError("AAI_4001", globalAuthFileName + ". Not valid JSON: " + e);
+			ErrorLogHelper.logError(ERROR_CODE_AAI_4001, globalAuthFileName + ". Not valid JSON: " + e);
 		} catch (Exception e) {
-			ErrorLogHelper.logError("AAI_4001", globalAuthFileName + ". Exception caught: " + e);
+			ErrorLogHelper.logError(ERROR_CODE_AAI_4001, globalAuthFileName + ". Exception caught: " + e);
 		}
 	}
 
