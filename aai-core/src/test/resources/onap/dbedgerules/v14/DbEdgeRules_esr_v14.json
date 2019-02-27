@@ -1,0 +1,64 @@
+{
+  "rules": [
+    {
+      "from": "esr-system-info",
+      "to": "esr-ems",
+      "label": "org.onap.relationships.inventory.BelongsTo",
+      "direction": "OUT",
+      "multiplicity": "MANY2ONE",
+      "contains-other-v": "!${direction}",
+      "delete-other-v": "!${direction}",
+      "SVC-INFRA": "NONE",
+      "prevent-delete": "NONE",
+      "default": "true"
+    },
+    {
+      "from": "esr-system-info",
+      "to": "esr-vnfm",
+      "label": "org.onap.relationships.inventory.BelongsTo",
+      "direction": "OUT",
+      "multiplicity": "ONE2ONE",
+      "contains-other-v": "!${direction}",
+      "delete-other-v": "!${direction}",
+      "SVC-INFRA": "NONE",
+      "prevent-delete": "NONE",
+      "default": "true"
+    },
+    {
+      "from": "esr-system-info",
+      "to": "esr-thirdparty-sdnc",
+      "label": "org.onap.relationships.inventory.BelongsTo",
+      "direction": "OUT",
+      "multiplicity": "ONE2ONE",
+      "contains-other-v": "!${direction}",
+      "delete-other-v": "!${direction}",
+      "SVC-INFRA": "NONE",
+      "prevent-delete": "NONE",
+      "default": "true"
+    },
+    {
+      "from": "esr-thirdparty-sdnc",
+      "to": "pnf",
+      "label": "org.onap.relationships.inventory.AppliesTo",
+      "direction": "OUT",
+      "multiplicity": "ONE2MANY",
+      "contains-other-v": "NONE",
+      "delete-other-v": "NONE",
+      "SVC-INFRA": "NONE",
+      "prevent-delete": "NONE",
+      "default": "true"
+    },
+    {
+      "from": "esr-system-info",
+      "to": "cloud-region",
+      "label": "org.onap.relationships.inventory.BelongsTo",
+      "direction": "OUT",
+      "multiplicity": "MANY2ONE",
+      "contains-other-v": "!${direction}",
+      "delete-other-v": "!${direction}",
+      "SVC-INFRA": "NONE",
+      "prevent-delete": "NONE",
+      "default": "true"
+    }
+  ]
+}
