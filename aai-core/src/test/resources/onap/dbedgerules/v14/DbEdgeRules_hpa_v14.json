@@ -1,0 +1,68 @@
+{
+  "rules": [
+    {
+      "from": "hpa-capability",
+      "to": "flavor",
+      "label": "org.onap.relationships.inventory.BelongsTo",
+      "direction": "OUT",
+      "multiplicity": "MANY2ONE",
+      "contains-other-v": "!${direction}",
+      "delete-other-v": "NONE",
+      "SVC-INFRA": "NONE",
+      "prevent-delete": "!${direction}",
+      "default": "true",
+      "description":""
+    },
+    {
+      "from": "hpa-capability",
+      "to": "cloud-region",
+      "label": "org.onap.relationships.inventory.BelongsTo",
+      "direction": "OUT",
+      "multiplicity": "MANY2ONE",
+      "contains-other-v": "!${direction}",
+      "delete-other-v": "NONE",
+      "SVC-INFRA": "NONE",
+      "prevent-delete": "!${direction}",
+      "default": "true",
+      "description":""
+    },
+    {
+      "from": "hpa-feature-attributes",
+      "to": "hpa-capability",
+      "label": "org.onap.relationships.inventory.BelongsTo",
+      "direction": "OUT",
+      "multiplicity": "MANY2ONE",
+      "contains-other-v": "!${direction}",
+      "delete-other-v": "!${direction}",
+      "SVC-INFRA": "!${direction}",
+      "prevent-delete": "NONE",
+      "default": "true",
+      "description":""
+    },
+    {
+      "from": "hpa-capacity",
+      "to": "pserver",
+      "label": "org.onap.relationships.inventory.BelongsTo",
+      "direction": "OUT",
+      "multiplicity": "MANY2ONE",
+      "contains-other-v": "!${direction}",
+      "delete-other-v": "!${direction}",
+      "SVC-INFRA": "!${direction}",
+      "prevent-delete": "NONE",
+      "default": "true",
+      "description":"HPA Capacity KV for given compute node"
+    },
+    {
+      "from": "flavor",
+      "to": "pserver",
+      "label": "org.onap.relationships.inventory.CanBeInstantiatedIn",
+      "direction": "OUT",
+      "multiplicity": "MANY2MANY",
+      "contains-other-v": "NONE",
+      "delete-other-v": "NONE",
+      "prevent-delete": "NONE",
+      "default": "true",
+      "description":"HPA Capacity getting the compute nodes from given flavor"
+    }
+  ]
+}
