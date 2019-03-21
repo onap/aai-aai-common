@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +17,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.util.swagger;
 
 import java.util.List;
@@ -38,23 +39,23 @@ public class Api {
         this.httpMethods = httpMethods;
     }
 
-    public String getTag(){
+    public String getTag() {
 
-        if(this.tag != null){
+        if (this.tag != null) {
             return this.tag;
         }
 
-        if(this.httpMethods != null){
-            if(this.httpMethods.size() != 0){
-                if(this.httpMethods.get(0).getTags() != null){
-                    if(this.httpMethods.get(0).getTags().size() != 0){
+        if (this.httpMethods != null) {
+            if (this.httpMethods.size() != 0) {
+                if (this.httpMethods.get(0).getTags() != null) {
+                    if (this.httpMethods.get(0).getTags().size() != 0) {
                         this.tag = this.httpMethods.get(0).getTags().get(0);
                     }
                 }
             }
         }
 
-        if(this.tag == null){
+        if (this.tag == null) {
             this.tag = "";
         }
 
@@ -63,10 +64,7 @@ public class Api {
 
     @Override
     public String toString() {
-        return "Api{" +
-                "path='" + path + '\'' +
-                ", httpMethods=" + httpMethods +
-                '}';
+        return "Api{" + "path='" + path + '\'' + ", httpMethods=" + httpMethods + '}';
     }
 
     public void setPath(String path) {
@@ -77,9 +75,9 @@ public class Api {
         return this.path;
     }
 
-    public String getOperation(){
+    public String getOperation() {
 
-        if(this.path != null){
+        if (this.path != null) {
             return this.path.replaceAll("[^a-zA-Z0-9\\-]", "-") + "-";
         }
 
@@ -122,14 +120,13 @@ public class Api {
 
         private String returnSchemaObject;
 
-        public void setConsumerEnabled(boolean consumerEnabled){
+        public void setConsumerEnabled(boolean consumerEnabled) {
             this.consumerEnabled = consumerEnabled;
         }
 
         public boolean isConsumerEnabled() {
             return consumerEnabled;
         }
-
 
         public List<String> getTags() {
             return tags;
@@ -197,16 +194,10 @@ public class Api {
 
         @Override
         public String toString() {
-            return "HttpVerb{" +
-                    "tags=" + tags +
-                    ", type='" + type + '\'' +
-                    ", summary='" + summary + '\'' +
-                    ", operationId='" + operationId + '\'' +
-                    ", consumes=" + consumes +
-                    ", produces=" + produces +
-                    ", responses=" + responses +
-                    ", parameters=" + parameters +
-                    '}';
+            return "HttpVerb{" + "tags=" + tags + ", type='" + type + '\'' + ", summary='" + summary
+                + '\'' + ", operationId='" + operationId + '\'' + ", consumes=" + consumes
+                + ", produces=" + produces + ", responses=" + responses + ", parameters="
+                + parameters + '}';
         }
 
         public void setParametersEnabled(boolean b) {
@@ -220,8 +211,9 @@ public class Api {
         public boolean isBodyParametersEnabled() {
             return bodyParametersEnabled;
         }
+
         public boolean isOpNotPatch() {
-        	return type.equalsIgnoreCase("patch") ? false : true;
+            return type.equalsIgnoreCase("patch") ? false : true;
         }
 
         public void setBodyParametersEnabled(boolean bodyParametersEnabled) {
@@ -282,7 +274,7 @@ public class Api {
 
             private String description;
 
-			private String version;
+            private String version;
 
             public String getResponseCode() {
                 return responseCode;
@@ -302,15 +294,13 @@ public class Api {
 
             @Override
             public String toString() {
-                return "Response{" +
-                        "responseCode='" + responseCode + '\'' +
-                        ", description='" + description + '\'' +
-                        '}';
+                return "Response{" + "responseCode='" + responseCode + '\'' + ", description='"
+                    + description + '\'' + '}';
             }
 
-			public void setVersion(String version) {
-				this.version = version;				
-			}
+            public void setVersion(String version) {
+                this.version = version;
+            }
         }
 
     }

@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,11 +17,19 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.rest;
+
+import static org.junit.Assert.assertEquals;
 
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 import com.jayway.jsonpath.JsonPath;
+
+import java.util.*;
+
+import javax.ws.rs.core.Response;
+
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -32,11 +40,6 @@ import org.onap.aai.HttpTestUtil;
 import org.onap.aai.PayloadUtil;
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.skyscreamer.jsonassert.JSONAssert;
-
-import javax.ws.rs.core.Response;
-import java.util.*;
-
-import static org.junit.Assert.assertEquals;
 
 @Ignore
 @RunWith(AAIJunitRunner.class)
@@ -51,9 +54,7 @@ public class HPACapabilityTest {
 
     @Parameterized.Parameters(name = "QueryStyle.{0}")
     public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][]{
-                {QueryStyle.TRAVERSAL}
-        });
+        return Arrays.asList(new Object[][] {{QueryStyle.TRAVERSAL}});
     }
 
     @Before
@@ -81,10 +82,9 @@ public class HPACapabilityTest {
         templateValuesMap.put("hpa-capability-id8", UUID.randomUUID().toString());
 
         String cloudRegionPayload = PayloadUtil.getTemplatePayload("hpa.json", templateValuesMap);
-        String cloudRegionUri = String.format("/aai/v14/cloud-infrastructure/cloud-regions/cloud-region/%s/%s",
-                templateValuesMap.get("cloud-owner"),
-                templateValuesMap.get("cloud-region-id")
-        );
+        String cloudRegionUri =
+            String.format("/aai/v14/cloud-infrastructure/cloud-regions/cloud-region/%s/%s",
+                templateValuesMap.get("cloud-owner"), templateValuesMap.get("cloud-region-id"));
 
         Response response = httpTestUtil.doPut(cloudRegionUri, cloudRegionPayload);
         assertEquals("Expected the cloud region to be created", 201, response.getStatus());
@@ -114,7 +114,8 @@ public class HPACapabilityTest {
         String resourceVersion = JsonPath.read(responseStr, "$.resource-version");
 
         tntResponse = httpTestUtil.doDelete(tenantUri, resourceVersion);
-        assertEquals("Expected to DELETE Tenant info from cloud-region", 204, tntResponse.getStatus());
+        assertEquals("Expected to DELETE Tenant info from cloud-region", 204,
+            tntResponse.getStatus());
     }
 
     private void deleteVserver(String tenantUri) throws Exception {
@@ -141,9 +142,9 @@ public class HPACapabilityTest {
         System.out.println("#########################Flavor Response#########################");
         String responseStr = response.getEntity().toString();
 
-        List<String> capabilityIds = JsonPath.read(responseStr,
-                "$.hpa-capabilities.hpa-capability[*].hpa-capability-id");
-        for(String capabilityId : capabilityIds) {
+        List<String> capabilityIds =
+            JsonPath.read(responseStr, "$.hpa-capabilities.hpa-capability[*].hpa-capability-id");
+        for (String capabilityId : capabilityIds) {
             deleteHPACapability(flavorUri, capabilityId);
         }
 

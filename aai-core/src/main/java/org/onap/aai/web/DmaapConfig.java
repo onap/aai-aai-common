@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,10 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.web;
+
+import javax.annotation.PostConstruct;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.broker.BrokerService;
@@ -35,8 +38,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.jms.connection.CachingConnectionFactory;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
-
-import javax.annotation.PostConstruct;
 import org.springframework.web.client.RestTemplate;
 
 @Profile("dmaap")
@@ -58,7 +59,7 @@ public class DmaapConfig {
     private String bindAddress;
 
     @PostConstruct
-    public void init(){
+    public void init() {
         System.setProperty("activemq.tcp.url", bindAddress);
     }
 
@@ -76,22 +77,22 @@ public class DmaapConfig {
     }
 
     @Bean(name = "connectionFactory")
-    public ActiveMQConnectionFactory activeMQConnectionFactory(){
+    public ActiveMQConnectionFactory activeMQConnectionFactory() {
         return new ActiveMQConnectionFactory(bindAddress);
     }
 
     @Bean
-    public CachingConnectionFactory cachingConnectionFactory(){
+    public CachingConnectionFactory cachingConnectionFactory() {
         return new CachingConnectionFactory(activeMQConnectionFactory());
     }
 
     @Bean(name = "destinationQueue")
-    public ActiveMQQueue activeMQQueue(){
+    public ActiveMQQueue activeMQQueue() {
         return new ActiveMQQueue("IN_QUEUE");
     }
 
     @Bean
-    public JmsTemplate jmsTemplate(){
+    public JmsTemplate jmsTemplate() {
         JmsTemplate jmsTemplate = new JmsTemplate();
 
         jmsTemplate.setConnectionFactory(activeMQConnectionFactory());
@@ -101,11 +102,11 @@ public class DmaapConfig {
     }
 
     @Bean
-    public AAIDmaapEventJMSProducer jmsProducer(){
+    public AAIDmaapEventJMSProducer jmsProducer() {
         return new AAIDmaapEventJMSProducer();
     }
 
-    @Bean(name="jmsConsumer")
+    @Bean(name = "jmsConsumer")
     public AAIDmaapEventJMSConsumer jmsConsumer() throws Exception {
         return new AAIDmaapEventJMSConsumer(ctx.getEnvironment(), dmaapRestTemplate, dmaapHeaders);
     }
@@ -113,7 +114,8 @@ public class DmaapConfig {
     @Bean
     public DefaultMessageListenerContainer defaultMessageListenerContainer() throws Exception {
 
-        DefaultMessageListenerContainer messageListenerContainer = new DefaultMessageListenerContainer();
+        DefaultMessageListenerContainer messageListenerContainer =
+            new DefaultMessageListenerContainer();
 
         messageListenerContainer.setConnectionFactory(cachingConnectionFactory());
         messageListenerContainer.setDestinationName("IN_QUEUE");

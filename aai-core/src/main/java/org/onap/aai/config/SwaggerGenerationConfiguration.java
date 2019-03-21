@@ -10,7 +10,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,8 +19,8 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
-package org.onap.aai.config;
 
+package org.onap.aai.config;
 
 import org.onap.aai.edges.EdgeIngestor;
 import org.onap.aai.nodes.NodeIngestor;
@@ -45,20 +45,23 @@ public class SwaggerGenerationConfiguration {
 
     @Bean
     @Scope(scopeName = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-    public NodesYAMLfromOXM nodesYamlFromOXM(SchemaVersions schemaVersions, NodeIngestor nodeIngestor, EdgeIngestor edgeIngestor) {
+    public NodesYAMLfromOXM nodesYamlFromOXM(SchemaVersions schemaVersions,
+        NodeIngestor nodeIngestor, EdgeIngestor edgeIngestor) {
         return new NodesYAMLfromOXM(basePath, schemaVersions, nodeIngestor, edgeIngestor);
     }
 
     @Bean
     @Scope(scopeName = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-    public HTMLfromOXM htmlFromOXM(SchemaVersions schemaVersions, NodeIngestor nodeIngestor, EdgeIngestor edgeIngestor) {
+    public HTMLfromOXM htmlFromOXM(SchemaVersions schemaVersions, NodeIngestor nodeIngestor,
+        EdgeIngestor edgeIngestor) {
         return new HTMLfromOXM(maxOccurs, schemaVersions, nodeIngestor, edgeIngestor);
     }
 
     @Bean
     @Scope(scopeName = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-    public YAMLfromOXM yamlFromOXM(SchemaVersions schemaVersions, NodeIngestor nodeIngestor, EdgeIngestor edgeIngestor) {
+    public YAMLfromOXM yamlFromOXM(SchemaVersions schemaVersions, NodeIngestor nodeIngestor,
+        EdgeIngestor edgeIngestor) {
         return new YAMLfromOXM(basePath, schemaVersions, nodeIngestor, edgeIngestor);
     }
-    
+
 }

@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +17,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.query.builder;
 
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
@@ -25,30 +26,33 @@ import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.introspection.ModelType;
+
 public class GremlinTraversalTest extends QueryBuilderTestAbstraction {
-    
+
     @Override
     protected QueryBuilder<Edge> getNewEdgeTraversalWithTestEdgeRules(Vertex v) {
-        loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
+        loader = loaderFactory.createLoaderForVersion(ModelType.MOXY,
+            schemaVersions.getDefaultVersion());
         return new GremlinTraversal<>(loader, g, v);
     }
-    
+
     @Override
     protected QueryBuilder<Edge> getNewEdgeTraversalWithTestEdgeRules() {
-        loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
+        loader = loaderFactory.createLoaderForVersion(ModelType.MOXY,
+            schemaVersions.getDefaultVersion());
         return new GremlinTraversal<>(loader, g);
     }
-    
+
     @Override
     protected QueryBuilder<Vertex> getNewVertexTraversalWithTestEdgeRules(Vertex v) {
         return new GremlinTraversal<>(loader, g, v);
     }
-    
+
     @Override
     protected QueryBuilder<Vertex> getNewVertexTraversalWithTestEdgeRules() {
         return new GremlinTraversal<>(loader, g);
     }
-    
+
     @Override
     protected QueryBuilder<Tree> getNewTreeTraversalWithTestEdgeRules(Vertex v) {
         return new GremlinTraversal<>(loader, g, v);
@@ -69,5 +73,4 @@ public class GremlinTraversalTest extends QueryBuilderTestAbstraction {
         return new GremlinTraversal<>(loader, g);
     }
 
-        
 }

@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,10 +17,14 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.serialization.queryformats;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
+import java.util.Optional;
+
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.introspection.Loader;
@@ -31,8 +35,6 @@ import org.onap.aai.serialization.queryformats.params.NodesOnly;
 import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
 import org.onap.aai.util.AAIConfig;
 
-import java.util.Optional;
-
 public class ResourceWithSoT extends MultiFormatMapper {
     protected JsonParser parser = new JsonParser();
     protected final DBSerializer serializer;
@@ -40,6 +42,7 @@ public class ResourceWithSoT extends MultiFormatMapper {
     protected final UrlBuilder urlBuilder;
     protected final int depth;
     protected final boolean nodesOnly;
+
     protected ResourceWithSoT(Builder builder) {
         this.urlBuilder = builder.getUrlBuilder();
         this.loader = builder.getLoader();
@@ -62,6 +65,7 @@ public class ResourceWithSoT extends MultiFormatMapper {
         protected boolean nodesOnly = false;
         protected int depth = 1;
         protected boolean modelDriven = false;
+
         public Builder(Loader loader, DBSerializer serializer, UrlBuilder urlBuilder) {
             this.loader = loader;
             this.serializer = serializer;
@@ -89,6 +93,7 @@ public class ResourceWithSoT extends MultiFormatMapper {
             this.nodesOnly = nodesOnly;
             return this;
         }
+
         public boolean isNodesOnly() {
             return this.nodesOnly;
         }
@@ -114,6 +119,7 @@ public class ResourceWithSoT extends MultiFormatMapper {
         public boolean getModelDriven() {
             return this.modelDriven;
         }
+
         public ResourceWithSoT build() {
             return new ResourceWithSoT(this);
         }
@@ -121,8 +127,10 @@ public class ResourceWithSoT extends MultiFormatMapper {
 
     /**
      *
-     * Returns an Optional<JsonObject> to convert the contents from the given Vertex object into a JsonObject.
-     * The fields returned are to record the time stamp of the creation/modification of the object, the user responsible for
+     * Returns an Optional<JsonObject> to convert the contents from the given Vertex object into a
+     * JsonObject.
+     * The fields returned are to record the time stamp of the creation/modification of the object,
+     * the user responsible for
      * the change, and the last http method performed on the object.
      *
      * @param v
@@ -151,8 +159,10 @@ public class ResourceWithSoT extends MultiFormatMapper {
         json.addProperty("source-of-truth", sotObj.toString());
         json.addProperty("last-mod-source-of-truth", lastModSotObj.toString());
 
-        // Check if the timestamp difference between creation and last modification are greater than a certain threshold, and if the source of truth differs
-        // If the timestamp difference is marginal and the SoT (creator/modifier) is the same, the last action performed is likely to be a creation.
+        // Check if the timestamp difference between creation and last modification are greater than
+        // a certain threshold, and if the source of truth differs
+        // If the timestamp difference is marginal and the SoT (creator/modifier) is the same, the
+        // last action performed is likely to be a creation.
         long timestampDiff = lastModifiedTimestamp - createdTimestamp;
         boolean isSameSoT = sotObj.toString().equals(lastModSotObj.toString());
 

@@ -10,7 +10,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,11 +19,10 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.config;
 
-
 import org.onap.aai.introspection.ModelType;
-
 import org.onap.aai.rest.db.HttpEntry;
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -38,13 +37,11 @@ public class RestBeanConfig {
     public HttpEntry traversalUriHttpEntry() {
         return new HttpEntry(ModelType.MOXY, QueryStyle.TRAVERSAL_URI);
     }
-    
+
     @Bean(name = "traversalHttpEntry")
     @Scope(scopeName = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public HttpEntry traversalHttpEntry() {
         return new HttpEntry(ModelType.MOXY, QueryStyle.TRAVERSAL);
     }
-    
-    
-    
+
 }

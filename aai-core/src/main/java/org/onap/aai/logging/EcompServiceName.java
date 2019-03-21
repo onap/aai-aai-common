@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,10 +17,12 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.logging;
 
 import ch.qos.logback.classic.pattern.ClassicConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
+
 import org.onap.aai.logging.LoggingContext.LoggingField;
 
 public class EcompServiceName extends ClassicConverter {
@@ -32,4 +34,3 @@ public class EcompServiceName extends ClassicConverter {
         return event.getMDCPropertyMap().get(LoggingField.SERVICE_NAME.toString());
     }
 }
-

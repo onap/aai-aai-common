@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,11 +17,9 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.domain.restPolicyException;
 
-import java.util.HashMap;
-import java.util.Map;
-import javax.annotation.Generated;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -29,11 +27,14 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.Generated;
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
-@JsonPropertyOrder({
-    "requestError"
-})
+@JsonPropertyOrder({"requestError"})
 public class RESTResponse {
 
     @JsonProperty("requestError")
@@ -44,7 +45,7 @@ public class RESTResponse {
     /**
      * Gets the request error.
      *
-     * @return     The requestError
+     * @return The requestError
      */
     @JsonProperty("requestError")
     public RequestError getRequestError() {
@@ -54,7 +55,7 @@ public class RESTResponse {
     /**
      * Sets the request error.
      *
-     * @param requestError     The requestError
+     * @param requestError The requestError
      */
     @JsonProperty("requestError")
     public void setRequestError(RequestError requestError) {

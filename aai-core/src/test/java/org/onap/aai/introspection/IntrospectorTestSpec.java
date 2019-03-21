@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,41 +17,33 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.introspection;
+
+import static org.junit.Assert.assertEquals;
 
 import org.onap.aai.AAISetup;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 
-import static org.junit.Assert.assertEquals;
-
 public abstract class IntrospectorTestSpec extends AAISetup {
 
-    
-    
     /**
      * Container test set.
      *
      * @param wrappedPortGroups the wrapped port groups
-     * @throws AAIUnknownObjectException 
+     * @throws AAIUnknownObjectException
      */
-    protected void containerTestSet(Introspector wrappedPortGroups) throws AAIUnknownObjectException {
-        
-        assertEquals(
-                "isContainer",
-                true,
-                wrappedPortGroups.isContainer());
-        
-        assertEquals(
-                "newInstanceOfNestedProperty",
-                "PortGroup",
-                wrappedPortGroups.newInstanceOfNestedProperty("port-group").getClass().getSimpleName());
-        
-        assertEquals(
-                "isComplexGenericType",
-                true,
-                wrappedPortGroups.isComplexGenericType("port-group"));
-        
-        
+    protected void containerTestSet(Introspector wrappedPortGroups)
+        throws AAIUnknownObjectException {
+
+        assertEquals("isContainer", true, wrappedPortGroups.isContainer());
+
+        assertEquals("newInstanceOfNestedProperty", "PortGroup",
+            wrappedPortGroups.newInstanceOfNestedProperty("port-group").getClass().getSimpleName());
+
+        assertEquals("isComplexGenericType", true,
+            wrappedPortGroups.isComplexGenericType("port-group"));
+
     }
-    
+
 }

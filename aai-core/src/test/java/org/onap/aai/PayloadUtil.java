@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,9 +17,10 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai;
 
-import org.apache.commons.io.IOUtils;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,7 +29,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.junit.Assert.assertNotNull;
+import org.apache.commons.io.IOUtils;
 
 public class PayloadUtil {
 
@@ -37,7 +38,8 @@ public class PayloadUtil {
 
     public static String getExpectedPayload(String fileName) throws IOException {
 
-        InputStream inputStream = PayloadUtil.class.getClassLoader().getResourceAsStream("payloads/expected/" + fileName);
+        InputStream inputStream =
+            PayloadUtil.class.getClassLoader().getResourceAsStream("payloads/expected/" + fileName);
 
         String message = String.format("Unable to find the %s in src/test/resources", fileName);
         assertNotNull(message, inputStream);
@@ -50,7 +52,8 @@ public class PayloadUtil {
 
     public static String getResourcePayload(String fileName) throws IOException {
 
-        InputStream inputStream = PayloadUtil.class.getClassLoader().getResourceAsStream("payloads/resource/" + fileName);
+        InputStream inputStream =
+            PayloadUtil.class.getClassLoader().getResourceAsStream("payloads/resource/" + fileName);
 
         String message = String.format("Unable to find the %s in src/test/resources", fileName);
         assertNotNull(message, inputStream);
@@ -61,16 +64,18 @@ public class PayloadUtil {
         return resource;
     }
 
-    public static String getTemplatePayload(String fileName, Map<String, String> templateValueMap) throws Exception {
+    public static String getTemplatePayload(String fileName, Map<String, String> templateValueMap)
+        throws Exception {
 
-        InputStream inputStream = PayloadUtil.class.getClassLoader().getResourceAsStream("payloads/templates/" + fileName);
+        InputStream inputStream = PayloadUtil.class.getClassLoader()
+            .getResourceAsStream("payloads/templates/" + fileName);
 
         String message = String.format("Unable to find the %s in src/test/resources", fileName);
         assertNotNull(message, inputStream);
 
         String resource;
 
-        if(cache.containsKey(fileName)){
+        if (cache.containsKey(fileName)) {
             resource = cache.get(fileName);
         } else {
             resource = IOUtils.toString(inputStream);
@@ -81,14 +86,17 @@ public class PayloadUtil {
 
         String resourceWithTemplateValues = resource;
 
-        while(matcher.find()){
+        while (matcher.find()) {
             int start = matcher.start() + 2;
             int end = matcher.end() - 1;
             String key = resource.substring(start, end);
-            if(templateValueMap.containsKey(key)){
-                resourceWithTemplateValues = resourceWithTemplateValues.replaceAll("\\$\\{" + key +"\\}", templateValueMap.get(key));
+            if (templateValueMap.containsKey(key)) {
+                resourceWithTemplateValues = resourceWithTemplateValues
+                    .replaceAll("\\$\\{" + key + "\\}", templateValueMap.get(key));
             } else {
-                throw new RuntimeException("Unable to find the key value pair in map for the template processing for key " + key);
+                throw new RuntimeException(
+                    "Unable to find the key value pair in map for the template processing for key "
+                        + key);
             }
         }
 

@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,18 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.parsers.uri;
+
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.is;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+
+import javax.annotation.PostConstruct;
+import javax.ws.rs.core.UriBuilder;
+import javax.xml.bind.JAXBException;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,22 +39,13 @@ import org.onap.aai.introspection.Loader;
 import org.onap.aai.introspection.ModelType;
 import org.onap.aai.setup.SchemaVersion;
 
-import javax.annotation.PostConstruct;
-import javax.ws.rs.core.UriBuilder;
-import javax.xml.bind.JAXBException;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.is;
-
 public class URIParserTest extends AAISetup {
 
-    private Loader loader ;
+    private Loader loader;
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
-    
+
     /**
      * Invalid path.
      *
@@ -53,20 +55,23 @@ public class URIParserTest extends AAISetup {
      * @throws UnsupportedEncodingException the unsupported encoding exception
      */
     @PostConstruct
-    public void createLoader(){
+    public void createLoader() {
         loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, new SchemaVersion("v10"));
     }
 
     @Test
-    public void invalidPath() throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException {
-        URI uri = UriBuilder.fromPath("/aai/" + loader.getVersion() + "/network/tenants/tenant/key1/vservers/vserver/key2/l-interfaces/l-interface/key3").build();
-        
+    public void invalidPath()
+        throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException {
+        URI uri = UriBuilder.fromPath("/aai/" + loader.getVersion()
+            + "/network/tenants/tenant/key1/vservers/vserver/key2/l-interfaces/l-interface/key3")
+            .build();
+
         thrown.expect(AAIException.class);
-        thrown.expect(hasProperty("code",  is("AAI_3001")));
-        
+        thrown.expect(hasProperty("code", is("AAI_3001")));
+
         new URIToDBKey(loader, uri);
     }
-    
+
     /**
      * Invalid path no name space.
      *
@@ -76,15 +81,19 @@ public class URIParserTest extends AAISetup {
      * @throws UnsupportedEncodingException the unsupported encoding exception
      */
     @Test
-    public void invalidPathNoNameSpace() throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException {
-        URI uri = UriBuilder.fromPath("/aai/" + loader.getVersion() + "/tenants/tenant/key1/vservers/vserver/key2/l-interfaces/l-interface/key3").build();
-        
+    public void invalidPathNoNameSpace()
+        throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException {
+        URI uri = UriBuilder
+            .fromPath("/aai/" + loader.getVersion()
+                + "/tenants/tenant/key1/vservers/vserver/key2/l-interfaces/l-interface/key3")
+            .build();
+
         thrown.expect(AAIException.class);
-        thrown.expect(hasProperty("code",  is("AAI_3000")));
-        
+        thrown.expect(hasProperty("code", is("AAI_3000")));
+
         new URIToDBKey(loader, uri);
     }
-    
+
     /**
      * Invalid path partial.
      *
@@ -94,12 +103,14 @@ public class URIParserTest extends AAISetup {
      * @throws UnsupportedEncodingException the unsupported encoding exception
      */
     @Test
-    public void invalidPathPartial() throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException {
-        URI uri = UriBuilder.fromPath("vservers/vserver/key2/l-interfaces/l-interface/key3").build();
-        
+    public void invalidPathPartial()
+        throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException {
+        URI uri =
+            UriBuilder.fromPath("vservers/vserver/key2/l-interfaces/l-interface/key3").build();
+
         thrown.expect(AAIException.class);
         thrown.expect(hasProperty("code", is("AAI_3000")));
-        
+
         new URIToDBKey(loader, uri);
     }
 }

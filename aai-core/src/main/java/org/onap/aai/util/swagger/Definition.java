@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +17,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.util.swagger;
 
 import java.util.List;
@@ -61,11 +62,9 @@ public class Definition {
 
     @Override
     public String toString() {
-        return "Definition{" +
-                "definitionName='" + definitionName + '\'' +
-                ", definitionDescription='" + definitionDescription + '\'' +
-                ", propertyList=" + propertyList +
-                '}';
+        return "Definition{" + "definitionName='" + definitionName + '\''
+            + ", definitionDescription='" + definitionDescription + '\'' + ", propertyList="
+            + propertyList + '}';
     }
 
     public boolean isHasDescription() {
@@ -112,7 +111,8 @@ public class Definition {
 
         private boolean hasPropertyReference;
 
-        public Property(){}
+        public Property() {
+        }
 
         public String getPropertyName() {
             return propertyName;
@@ -140,11 +140,8 @@ public class Definition {
 
         @Override
         public String toString() {
-            return "Property{" +
-                    "propertyName='" + propertyName + '\'' +
-                    ", propertyType='" + propertyType + '\'' +
-                    ", propertyReference='" + propertyReference + '\'' +
-                    '}';
+            return "Property{" + "propertyName='" + propertyName + '\'' + ", propertyType='"
+                + propertyType + '\'' + ", propertyReference='" + propertyReference + '\'' + '}';
         }
 
         public boolean isHasType() {

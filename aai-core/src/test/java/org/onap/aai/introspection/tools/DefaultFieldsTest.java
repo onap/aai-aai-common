@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,13 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.introspection.tools;
+
+import static junit.framework.TestCase.assertNotNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -25,11 +31,6 @@ import org.onap.aai.AAISetup;
 import org.onap.aai.introspection.*;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.springframework.test.annotation.DirtiesContext;
-
-import static junit.framework.TestCase.assertNotNull;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class DefaultFieldsTest extends AAISetup {
@@ -40,13 +41,15 @@ public class DefaultFieldsTest extends AAISetup {
 
     @Before
     public void setup() {
-        loader  = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
-        issue   = new Issue();
+        loader = loaderFactory.createLoaderForVersion(ModelType.MOXY,
+            schemaVersions.getDefaultVersion());
+        issue = new Issue();
         defaultFields = new DefaultFields();
     }
 
     @Test
-    public void testDefaultFieldOfPserverIsSucccessfullyResolved() throws AAIUnknownObjectException {
+    public void testDefaultFieldOfPserverIsSucccessfullyResolved()
+        throws AAIUnknownObjectException {
 
         Introspector pserver = loader.introspectorFromName("pserver");
         assertNotNull("Unable to load the template introspector", pserver);
@@ -60,11 +63,12 @@ public class DefaultFieldsTest extends AAISetup {
 
         assertTrue("Unable to resolve the pserver in-maint default field issue", isResolved);
         assertEquals("Introspector didn't successfully modify the pserver in-maint", false,
-                pserver.getValue("in-maint"));
+            pserver.getValue("in-maint"));
     }
 
     @Test
-    public void testDefaultFieldResolverShouldFailWhenResolveOnNonDefaultField() throws AAIUnknownObjectException {
+    public void testDefaultFieldResolverShouldFailWhenResolveOnNonDefaultField()
+        throws AAIUnknownObjectException {
 
         Introspector pserver = loader.introspectorFromName("pserver");
         assertNotNull("Unable to load the template introspector", pserver);

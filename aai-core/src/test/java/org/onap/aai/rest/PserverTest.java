@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,11 +17,23 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.rest;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 import com.jayway.jsonpath.JsonPath;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.ws.rs.core.Response;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,23 +42,13 @@ import org.onap.aai.AAISetup;
 import org.onap.aai.HttpTestUtil;
 import org.onap.aai.PayloadUtil;
 import org.onap.aai.introspection.*;
-
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.test.annotation.DirtiesContext;
 
-import javax.ws.rs.core.Response;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 @RunWith(value = Parameterized.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
-public class PserverTest extends AAISetup{
+public class PserverTest extends AAISetup {
 
     private static EELFLogger logger = EELFManager.getInstance().getLogger(PserverTest.class);
     private HttpTestUtil httpTestUtil;
@@ -57,26 +59,24 @@ public class PserverTest extends AAISetup{
 
     @Parameterized.Parameters(name = "QueryStyle.{0}")
     public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][]{
-                {QueryStyle.TRAVERSAL},
-                {QueryStyle.TRAVERSAL_URI}
-        });
+        return Arrays.asList(new Object[][] {{QueryStyle.TRAVERSAL}, {QueryStyle.TRAVERSAL_URI}});
     }
 
-
     @Before
-    public void setUp(){
+    public void setUp() {
         httpTestUtil = new HttpTestUtil(queryStyle);
         relationshipMap = new HashMap<>();
     }
 
     @Test
-    public void testPutPServerCreateGetAndDeleteAndCreateRelationshipBetweenPserverAndCloudRegion() throws Exception {
+    public void testPutPServerCreateGetAndDeleteAndCreateRelationshipBetweenPserverAndCloudRegion()
+        throws Exception {
 
         logger.info("Starting the pserver testPutServerCreateGetAndDelete");
 
         String pserverUri = "/aai/v12/cloud-infrastructure/pservers/pserver/test-pserver";
-        String cloudRegionUri = "/aai/v12/cloud-infrastructure/cloud-regions/cloud-region/test1/test2";
+        String cloudRegionUri =
+            "/aai/v12/cloud-infrastructure/cloud-regions/cloud-region/test1/test2";
         String cloudRegionRelationshipUri = cloudRegionUri + "/relationship-list/relationship";
 
         Response response = httpTestUtil.doGet(pserverUri);
@@ -98,12 +98,14 @@ public class PserverTest extends AAISetup{
         assertEquals("Expecting the pserver to be found", 200, response.getStatus());
 
         JSONAssert.assertEquals(pserverPayload, response.getEntity().toString(), false);
-        logger.info("Successfully retrieved the created pserver from db and verified with put data");
+        logger
+            .info("Successfully retrieved the created pserver from db and verified with put data");
 
         response = httpTestUtil.doPut(cloudRegionUri, "{}");
         assertNotNull("Expected the response to be not null", response);
         assertEquals("Expect the cloud region to be created", 201, response.getStatus());
-        logger.info("Successfully able to create the cloud region with payload that has no keys to be retrieved from uri");
+        logger.info(
+            "Successfully able to create the cloud region with payload that has no keys to be retrieved from uri");
 
         response = httpTestUtil.doGet(cloudRegionUri);
         assertNotNull("Expected the response to be not null", response);
@@ -113,22 +115,26 @@ public class PserverTest extends AAISetup{
         relationshipMap.put("related-to", "pserver");
         relationshipMap.put("related-link", pserverUri);
 
-        String pserverRelationshipPayload = PayloadUtil.getTemplatePayload("relationship.json", relationshipMap);
+        String pserverRelationshipPayload =
+            PayloadUtil.getTemplatePayload("relationship.json", relationshipMap);
         // Creates the relationship between cloud region and pserver
         response = httpTestUtil.doPut(cloudRegionRelationshipUri, pserverRelationshipPayload);
         assertNotNull("Expected the response to be not null", response);
-        assertEquals("Expect the cloud region relationship to pserver to be created", 200, response.getStatus());
+        assertEquals("Expect the cloud region relationship to pserver to be created", 200,
+            response.getStatus());
         logger.info("Successfully created the relationship between cloud region and pserver");
 
-        response =  httpTestUtil.doGet(cloudRegionUri);
+        response = httpTestUtil.doGet(cloudRegionUri);
         assertNotNull("Expected the response to be not null", response);
         assertEquals("Expect the cloud region to be created", 200, response.getStatus());
         logger.info("Successfully retrieved the cloud region from db");
 
-        Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
+        Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY,
+            schemaVersions.getDefaultVersion());
         Introspector in = loader.unmarshal("cloud-region", response.getEntity().toString());
 
-        String resourceVersion = JsonPath.read(response.getEntity().toString(), "$.resource-version");
+        String resourceVersion =
+            JsonPath.read(response.getEntity().toString(), "$.resource-version");
 
         response = httpTestUtil.doDelete(cloudRegionUri, resourceVersion);
         assertNotNull("Expected the response to be not null", response);
@@ -139,7 +145,8 @@ public class PserverTest extends AAISetup{
         assertNotNull("Expected the response to be not null", response);
         assertEquals("Expecting the pserver to be not found", 200, response.getStatus());
         resourceVersion = JsonPath.read(response.getEntity().toString(), "$.resource-version");
-        logger.info("Successfully retrieved the cloud region from db to get the latest resource version");
+        logger.info(
+            "Successfully retrieved the cloud region from db to get the latest resource version");
 
         response = httpTestUtil.doDelete(pserverUri, resourceVersion);
         assertNotNull("Expected the response to be not null", response);

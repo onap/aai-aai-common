@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,12 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.introspection.tools;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -25,10 +30,6 @@ import org.onap.aai.AAISetup;
 import org.onap.aai.introspection.*;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.springframework.test.annotation.DirtiesContext;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNull;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class RemoveNonVisiblePropertyTest extends AAISetup {
@@ -38,9 +39,10 @@ public class RemoveNonVisiblePropertyTest extends AAISetup {
     private RemoveNonVisibleProperty rn;
 
     @Before
-    public void setup(){
+    public void setup() {
         rn = new RemoveNonVisibleProperty();
-        loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
+        loader = loaderFactory.createLoaderForVersion(ModelType.MOXY,
+            schemaVersions.getDefaultVersion());
     }
 
     @Test
@@ -52,7 +54,8 @@ public class RemoveNonVisiblePropertyTest extends AAISetup {
         issue.setPropName("in-maint");
         issue.setIntrospector(introspector);
         assertTrue("Nonvisible property should be removed", rn.resolveIssue(issue));
-        assertNull("Introspector did not remove the non visible property", introspector.getValue("in-maint"));
+        assertNull("Introspector did not remove the non visible property",
+            introspector.getValue("in-maint"));
     }
 
     @Test
@@ -63,8 +66,8 @@ public class RemoveNonVisiblePropertyTest extends AAISetup {
         issue.setType(IssueType.MISSING_REQUIRED_PROP);
         issue.setPropName("in-maint");
         issue.setIntrospector(introspector);
-        assertFalse("Nonvisible property not present so should not have been removed", rn.resolveIssue(issue));
+        assertFalse("Nonvisible property not present so should not have been removed",
+            rn.resolveIssue(issue));
     }
-
 
 }

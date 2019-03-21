@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +17,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.introspection;
 
 import java.util.Map;
@@ -26,49 +27,49 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class LoaderFactory {
 
-	@Autowired
-	public Map<SchemaVersion, MoxyLoader> moxyLoaderInstance;
+    @Autowired
+    public Map<SchemaVersion, MoxyLoader> moxyLoaderInstance;
 
-	public LoaderFactory(Map<SchemaVersion, MoxyLoader> moxyLoaderInstance) {
-		this.moxyLoaderInstance = moxyLoaderInstance;
-	}
+    public LoaderFactory(Map<SchemaVersion, MoxyLoader> moxyLoaderInstance) {
+        this.moxyLoaderInstance = moxyLoaderInstance;
+    }
 
-	/**
-	 * Creates a new Loader object.
-	 *
-	 * @param type
-	 *            the type
-	 * @param version
-	 *            the version
-	 * @param llBuilder
-	 *            the ll builder
-	 * @return the loader
-	 */
-	public Loader createLoaderForVersion(ModelType type, SchemaVersion version) {
+    /**
+     * Creates a new Loader object.
+     *
+     * @param type
+     *        the type
+     * @param version
+     *        the version
+     * @param llBuilder
+     *        the ll builder
+     * @return the loader
+     */
+    public Loader createLoaderForVersion(ModelType type, SchemaVersion version) {
 
-		if (type.equals(ModelType.MOXY)) {
-			return getMoxyLoaderInstance().get(version);
-		}
+        if (type.equals(ModelType.MOXY)) {
+            return getMoxyLoaderInstance().get(version);
+        }
 
-		return null;
+        return null;
 
-	}
+    }
 
-	public Loader getLoaderStrategy(ModelType type, SchemaVersion version) {
+    public Loader getLoaderStrategy(ModelType type, SchemaVersion version) {
 
-		if (type.equals(ModelType.MOXY)) {
-			return getMoxyLoaderInstance().get(version);
-		}
-		return null;
+        if (type.equals(ModelType.MOXY)) {
+            return getMoxyLoaderInstance().get(version);
+        }
+        return null;
 
-	}
+    }
 
-	public Map<SchemaVersion, MoxyLoader> getMoxyLoaderInstance() {
-		return moxyLoaderInstance;
-	}
+    public Map<SchemaVersion, MoxyLoader> getMoxyLoaderInstance() {
+        return moxyLoaderInstance;
+    }
 
-	public void setMoxyLoaderInstance(Map<SchemaVersion, MoxyLoader> moxyLoaderInstance) {
-		this.moxyLoaderInstance = moxyLoaderInstance;
-	}
+    public void setMoxyLoaderInstance(Map<SchemaVersion, MoxyLoader> moxyLoaderInstance) {
+        this.moxyLoaderInstance = moxyLoaderInstance;
+    }
 
 }

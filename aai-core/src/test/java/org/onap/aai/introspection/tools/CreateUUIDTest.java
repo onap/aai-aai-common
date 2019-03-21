@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,11 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.introspection.tools;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -25,9 +29,6 @@ import org.onap.aai.AAISetup;
 import org.onap.aai.introspection.*;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.springframework.test.annotation.DirtiesContext;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class CreateUUIDTest extends AAISetup {
@@ -38,9 +39,10 @@ public class CreateUUIDTest extends AAISetup {
     private Issue issue;
 
     @Before
-    public void setup(){
+    public void setup() {
         createUUID = new CreateUUID();
-        loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
+        loader = loaderFactory.createLoaderForVersion(ModelType.MOXY,
+            schemaVersions.getDefaultVersion());
     }
 
     /**
@@ -48,10 +50,12 @@ public class CreateUUIDTest extends AAISetup {
      * the property that is being tested doesn't have the auto generated uuid
      * metadata set to true in the oxm xml for the version specified
      *
-     * @throws AAIUnknownObjectException - if the object type specified is unable to be found in the oxm
+     * @throws AAIUnknownObjectException - if the object type specified is unable to be found in the
+     *         oxm
      */
     @Test
-    public void testNonResolvableIssueIfMissingPropNameThatIsRequired() throws AAIUnknownObjectException {
+    public void testNonResolvableIssueIfMissingPropNameThatIsRequired()
+        throws AAIUnknownObjectException {
 
         Introspector introspector = loader.introspectorFromName("pserver");
 
@@ -71,10 +75,12 @@ public class CreateUUIDTest extends AAISetup {
      * looking for, model-element-uuid, has the auto generated uuid
      * metadata attribute associated to it if the data is missing
      *
-     * @throws AAIUnknownObjectException - if the object type specified is unable to be found in the oxm
+     * @throws AAIUnknownObjectException - if the object type specified is unable to be found in the
+     *         oxm
      */
     @Test
-    public void testResolvableIssueWhenMissingPropNameAllowsToUseGeneratedUUID() throws AAIUnknownObjectException {
+    public void testResolvableIssueWhenMissingPropNameAllowsToUseGeneratedUUID()
+        throws AAIUnknownObjectException {
 
         Introspector introspector = loader.introspectorFromName("model-element");
 

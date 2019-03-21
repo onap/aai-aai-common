@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +17,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.serialization.db;
 
 import java.util.*;
@@ -32,25 +33,26 @@ import org.onap.aai.setup.SchemaVersions;
  */
 public class AAICoreFakeEdgesConfigTranslator extends AbstractConfigTranslator {
 
-	public AAICoreFakeEdgesConfigTranslator(SchemaLocationsBean bean, SchemaVersions schemaVersions) {
-		super(bean, schemaVersions);
-	}
+    public AAICoreFakeEdgesConfigTranslator(SchemaLocationsBean bean,
+        SchemaVersions schemaVersions) {
+        super(bean, schemaVersions);
+    }
 
-	/* (non-Javadoc)
-	 * @see org.onap.aai.setup.ConfigTranslator#getEdgeFiles()
-	 */
-	@Override
-	public Map<SchemaVersion, List<String>> getEdgeFiles() {
-		String file = "src/test/resources/dbedgerules/DbEdgeRules_test.json";
-		
-		Map<SchemaVersion, List<String>> files = new TreeMap<>();
-		List<String> container = new ArrayList<>();
-		container.add(file);
-		files.put(schemaVersions.getDefaultVersion(), container);
-		
-		return files;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.onap.aai.setup.ConfigTranslator#getEdgeFiles()
+     */
+    @Override
+    public Map<SchemaVersion, List<String>> getEdgeFiles() {
+        String file = "src/test/resources/dbedgerules/DbEdgeRules_test.json";
 
+        Map<SchemaVersion, List<String>> files = new TreeMap<>();
+        List<String> container = new ArrayList<>();
+        container.add(file);
+        files.put(schemaVersions.getDefaultVersion(), container);
 
+        return files;
+    }
 
 }

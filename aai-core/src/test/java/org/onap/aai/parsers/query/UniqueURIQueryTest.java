@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,15 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.parsers.query;
+
+import static org.junit.Assert.assertEquals;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+
+import javax.ws.rs.core.UriBuilder;
 
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
@@ -27,22 +35,14 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.onap.aai.AAISetup;
 import org.onap.aai.exceptions.AAIException;
-
 import org.onap.aai.introspection.ModelType;
-import org.onap.aai.setup.SchemaVersion;
-import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.serialization.engines.JanusGraphDBEngine;
+import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
-
-import javax.ws.rs.core.UriBuilder;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-
-import static org.junit.Assert.assertEquals;
+import org.onap.aai.setup.SchemaVersion;
 
 @Ignore
 public class UniqueURIQueryTest extends AAISetup {
-
 
     private TransactionalGraphEngine dbEngine;
     private SchemaVersion version;
@@ -58,8 +58,7 @@ public class UniqueURIQueryTest extends AAISetup {
     public void parentQuery() throws UnsupportedEncodingException, AAIException {
         version = new SchemaVersion("v10");
         dbEngine = new JanusGraphDBEngine(QueryStyle.GREMLIN_UNIQUE,
-                loaderFactory.createLoaderForVersion(ModelType.MOXY, version),
-                false);
+            loaderFactory.createLoaderForVersion(ModelType.MOXY, version), false);
         URI uri = UriBuilder.fromPath("cloud-infrastructure/complexes/complex/key1").build();
         String key = "complex/key1";
         QueryParser query = dbEngine.getQueryBuilder().createQueryFromURI(uri);
@@ -82,7 +81,8 @@ public class UniqueURIQueryTest extends AAISetup {
     public void parentPluralQuery() throws UnsupportedEncodingException, AAIException {
         URI uri = UriBuilder.fromPath("cloud-infrastructure/complexes").build();
         QueryParser query = dbEngine.getQueryBuilder().createQueryFromURI(uri);
-        GraphTraversal<Vertex, Vertex> expected = __.<Vertex>start().has("aai-node-type", "complex");
+        GraphTraversal<Vertex, Vertex> expected =
+            __.<Vertex>start().has("aai-node-type", "complex");
         String parentResultType = "";
         String resultType = "complex";
         String containerType = "complexes";
@@ -99,12 +99,15 @@ public class UniqueURIQueryTest extends AAISetup {
      */
     @Test
     public void childQuery() throws UnsupportedEncodingException, AAIException {
-        URI uri = UriBuilder.fromPath("cloud-infrastructure/complexes/complex/key1/ctag-pools/ctag-pool/key2/key3").build();
+        URI uri = UriBuilder
+            .fromPath("cloud-infrastructure/complexes/complex/key1/ctag-pools/ctag-pool/key2/key3")
+            .build();
         QueryParser query = dbEngine.getQueryBuilder().createQueryFromURI(uri);
         String parentKey = "complex/key1";
         String key = parentKey + "/ctag-pool/key2/key3";
         GraphTraversal<Vertex, Vertex> expected = __.<Vertex>start().has("aai-unique-key", key);
-        GraphTraversal<Vertex, Vertex> parentExpected =  __.<Vertex>start().has("aai-unique-key", parentKey);
+        GraphTraversal<Vertex, Vertex> parentExpected =
+            __.<Vertex>start().has("aai-unique-key", parentKey);
         String parentResultType = "complex";
         String resultType = "ctag-pool";
         String containerType = "";
@@ -121,12 +124,15 @@ public class UniqueURIQueryTest extends AAISetup {
      */
     @Test
     public void namingExceptions() throws UnsupportedEncodingException, AAIException {
-        URI uri = UriBuilder.fromPath("network/vces/vce/key1/port-groups/port-group/key2/cvlan-tags/cvlan-tag/655").build();
+        URI uri = UriBuilder
+            .fromPath("network/vces/vce/key1/port-groups/port-group/key2/cvlan-tags/cvlan-tag/655")
+            .build();
         QueryParser query = dbEngine.getQueryBuilder().createQueryFromURI(uri);
         String parentKey = "vce/key1/port-group/key2";
         String key = parentKey + "/cvlan-tag/655";
         GraphTraversal<Vertex, Vertex> expected = __.<Vertex>start().has("aai-unique-key", key);
-        GraphTraversal<Vertex, Vertex> parentExpected = __.<Vertex>start().has("aai-unique-key", parentKey);
+        GraphTraversal<Vertex, Vertex> parentExpected =
+            __.<Vertex>start().has("aai-unique-key", parentKey);
         String parentResultType = "port-group";
         String resultType = "cvlan-tag";
         String containerType = "";
@@ -148,8 +154,11 @@ public class UniqueURIQueryTest extends AAISetup {
         String parentKey = "vce/key1/port-group/key2";
         URI uri = UriBuilder.fromPath(parentURI + "/cvlan-tags").build();
         QueryParser query = dbEngine.getQueryBuilder().createQueryFromURI(uri);
-        GraphTraversal<Vertex, Vertex> expected = __.<Vertex>start().has("aai-unique-key", parentKey).in("org.onap.relationships.inventory.BelongsTo").has("aai-node-type", "cvlan-tag");
-        GraphTraversal<Vertex, Vertex> parentExpected = __.<Vertex>start().has("aai-unique-key",parentKey);
+        GraphTraversal<Vertex, Vertex> expected =
+            __.<Vertex>start().has("aai-unique-key", parentKey)
+                .in("org.onap.relationships.inventory.BelongsTo").has("aai-node-type", "cvlan-tag");
+        GraphTraversal<Vertex, Vertex> parentExpected =
+            __.<Vertex>start().has("aai-unique-key", parentKey);
         String parentResultType = "port-group";
         String resultType = "cvlan-tag";
         String containerType = "cvlan-tags";
@@ -168,26 +177,17 @@ public class UniqueURIQueryTest extends AAISetup {
      * @param resultType the result type
      * @param containerType the container type
      */
-    public void testSet(QueryParser query, GraphTraversal<Vertex, Vertex> expected, GraphTraversal<Vertex, Vertex> parentExpected, String parentResultType, String resultType, String containerType) {
-        assertEquals(
-                "gremlin query should be " + expected,
-                expected,
-                query.getQueryBuilder().getQuery());
-        assertEquals(
-                "parent gremlin query should be " + parentExpected,
-                parentExpected,
-                query.getQueryBuilder().getParentQuery().getQuery());
-        assertEquals(
-                "parent result type should be " + parentResultType,
-                parentResultType,
-                query.getParentResultType());
-        assertEquals(
-                "result type should be " + resultType,
-                resultType,
-                query.getResultType());
-        assertEquals(
-                "container type should be " + containerType,
-                containerType,
-                query.getContainerType());
+    public void testSet(QueryParser query, GraphTraversal<Vertex, Vertex> expected,
+        GraphTraversal<Vertex, Vertex> parentExpected, String parentResultType, String resultType,
+        String containerType) {
+        assertEquals("gremlin query should be " + expected, expected,
+            query.getQueryBuilder().getQuery());
+        assertEquals("parent gremlin query should be " + parentExpected, parentExpected,
+            query.getQueryBuilder().getParentQuery().getQuery());
+        assertEquals("parent result type should be " + parentResultType, parentResultType,
+            query.getParentResultType());
+        assertEquals("result type should be " + resultType, resultType, query.getResultType());
+        assertEquals("container type should be " + containerType, containerType,
+            query.getContainerType());
     }
 }

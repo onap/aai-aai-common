@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,28 +17,28 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.introspection.sideeffect.exceptions;
 
 import org.onap.aai.exceptions.AAIException;
 
 public class AAIMissingRequiredPropertyException extends AAIException {
 
+    private static final long serialVersionUID = -8907079650472014019L;
 
-	private static final long serialVersionUID = -8907079650472014019L;
+    public AAIMissingRequiredPropertyException() {
+    }
 
-	public AAIMissingRequiredPropertyException() {}
+    public AAIMissingRequiredPropertyException(String message) {
+        super("AAI_5107", message);
+    }
 
-	public AAIMissingRequiredPropertyException(String message) {
-		super("AAI_5107", message);
-	}
+    public AAIMissingRequiredPropertyException(Throwable cause) {
+        super("AAI_5107", cause);
+    }
 
-	public AAIMissingRequiredPropertyException(Throwable cause) {
-		super("AAI_5107",cause);
-	}
+    public AAIMissingRequiredPropertyException(String message, Throwable cause) {
+        super("AAI_5107", cause, message);
+    }
 
-	public AAIMissingRequiredPropertyException(String message, Throwable cause) {
-		super("AAI_5107", cause, message);
-	}
-	
-	
 }

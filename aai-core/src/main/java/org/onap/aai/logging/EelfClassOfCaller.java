@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +17,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.logging;
 
 import ch.qos.logback.classic.pattern.NamedConverter;
@@ -28,13 +29,13 @@ public class EelfClassOfCaller extends NamedConverter {
 
         StackTraceElement[] cda = event.getCallerData();
 
-		//If using the EELFLogger, it "hides" the calling class because it wraps the logging calls
-		//Without this, you'd only ever see "EELF SLF4jWrapper" when using the
-		// %C pattern converter
+        // If using the EELFLogger, it "hides" the calling class because it wraps the logging calls
+        // Without this, you'd only ever see "EELF SLF4jWrapper" when using the
+        // %C pattern converter
         if (cda != null && cda.length > 2) {
             return cda[2].getClassName();
         } else if (cda != null && cda.length > 0) {
-        	return cda[0].getClassName();
+            return cda[0].getClassName();
         } else {
             return CallerData.NA;
         }

@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,35 +17,40 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.logging;
 
 import org.onap.aai.logging.LoggingContext.LoggingField;
 
 public final class StopWatch {
 
-	private StopWatch() {}
+    private StopWatch() {
+    }
 
-	public static void start() {
-		LoggingContext.stopWatchStart();
-	}
+    public static void start() {
+        LoggingContext.stopWatchStart();
+    }
 
-	public static double stop() {
-		return LoggingContext.stopWatchStop();
-	}
-	public static void conditionalStart() {
-		if ( LoggingContext.isStopWatchStarted() ) {
-			return;
-		}
-		start();
-	}
-	public static double stopIfStarted() {
-		if ( LoggingContext.isStopWatchStarted() ) {
-			return (stop());
-		}
-		return (0);
-	}
-	public static void clear() {
-		LoggingContext.remove(LoggingField.STOP_WATCH_START.toString());
-		LoggingContext.remove(LoggingField.ELAPSED_TIME.toString());
-	}
+    public static double stop() {
+        return LoggingContext.stopWatchStop();
+    }
+
+    public static void conditionalStart() {
+        if (LoggingContext.isStopWatchStarted()) {
+            return;
+        }
+        start();
+    }
+
+    public static double stopIfStarted() {
+        if (LoggingContext.isStopWatchStarted()) {
+            return (stop());
+        }
+        return (0);
+    }
+
+    public static void clear() {
+        LoggingContext.remove(LoggingField.STOP_WATCH_START.toString());
+        LoggingContext.remove(LoggingField.ELAPSED_TIME.toString());
+    }
 }

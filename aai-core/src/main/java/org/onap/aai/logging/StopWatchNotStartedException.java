@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,25 +17,26 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.logging;
 
 public class StopWatchNotStartedException extends RuntimeException {
 
-	private static final long serialVersionUID = -4540164295822859408L;
+    private static final long serialVersionUID = -4540164295822859408L;
 
-	public StopWatchNotStartedException() {
-		super();
-	}
+    public StopWatchNotStartedException() {
+        super();
+    }
 
-	public StopWatchNotStartedException(String message) {
-		super(message);
-	}
+    public StopWatchNotStartedException(String message) {
+        super(message);
+    }
 
-	public StopWatchNotStartedException(Throwable cause) {
-		super(cause);
-	}
+    public StopWatchNotStartedException(Throwable cause) {
+        super(cause);
+    }
 
-	public StopWatchNotStartedException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public StopWatchNotStartedException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

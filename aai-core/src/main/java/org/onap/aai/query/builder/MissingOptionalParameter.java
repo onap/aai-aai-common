@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +17,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.query.builder;
 
 /*-
@@ -41,13 +42,14 @@ package org.onap.aai.query.builder;
 
 public class MissingOptionalParameter {
 
-	    private MissingOptionalParameter() {}
+    private MissingOptionalParameter() {
+    }
 
-	    private static class Helper {
-	        static final MissingOptionalParameter INSTANCE = new MissingOptionalParameter();
-	    }
+    private static class Helper {
+        static final MissingOptionalParameter INSTANCE = new MissingOptionalParameter();
+    }
 
-	    public static MissingOptionalParameter getInstance() {
-	        return Helper.INSTANCE;
-	    }
-	}
+    public static MissingOptionalParameter getInstance() {
+        return Helper.INSTANCE;
+    }
+}

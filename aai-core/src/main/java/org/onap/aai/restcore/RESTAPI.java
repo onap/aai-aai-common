@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,19 +17,24 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.restcore;
+
+import com.att.eelf.configuration.EELFLogger;
+import com.att.eelf.configuration.EELFManager;
+import com.google.common.base.Joiner;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.Callable;
 import java.util.concurrent.TimeoutException;
 
 import javax.ws.rs.core.HttpHeaders;
@@ -53,346 +58,348 @@ import org.onap.aai.logging.LoggingContext;
 import org.onap.aai.util.AAIConfig;
 import org.onap.aai.util.FormatDate;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
-import com.google.common.base.Joiner;
-
-
 /**
  * Base class for AAI REST API classes.
  * Provides method to validate header information
  * TODO should authenticate caller and authorize them for the API they are calling
  * TODO should store the transaction
- 
  *
+ * 
  */
 public class RESTAPI {
-	
-	private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(RESTAPI.class);
 
-	protected final String COMPONENT = "aairest";
+    private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(RESTAPI.class);
 
-	/**
-	 * The Enum Action.
-	 */
-	public enum Action {
-		GET, PUT, POST, DELETE
-	};
+    protected final String COMPONENT = "aairest";
 
-	/**
-	 * Gets the from app id.
-	 *
-	 * @param headers the headers
-	 * @return the from app id
-	 * @throws AAIException the AAI exception
-	 */
-	protected String getFromAppId(HttpHeaders headers) throws AAIException { 
-		String fromAppId = null;
-		if (headers != null) {
-			List<String> fromAppIdHeader = headers.getRequestHeader("X-FromAppId");
-			if (fromAppIdHeader != null) {
-				for (String fromAppIdValue : fromAppIdHeader) {
-					fromAppId = fromAppIdValue;
-				}
-			} 
-		}
+    /**
+     * The Enum Action.
+     */
+    public enum Action {
+        GET, PUT, POST, DELETE
+    };
 
-		if (fromAppId == null) {
-			throw new AAIException("AAI_4009");
-		}
+    /**
+     * Gets the from app id.
+     *
+     * @param headers the headers
+     * @return the from app id
+     * @throws AAIException the AAI exception
+     */
+    protected String getFromAppId(HttpHeaders headers) throws AAIException {
+        String fromAppId = null;
+        if (headers != null) {
+            List<String> fromAppIdHeader = headers.getRequestHeader("X-FromAppId");
+            if (fromAppIdHeader != null) {
+                for (String fromAppIdValue : fromAppIdHeader) {
+                    fromAppId = fromAppIdValue;
+                }
+            }
+        }
 
-		LoggingContext.partnerName(fromAppId);
+        if (fromAppId == null) {
+            throw new AAIException("AAI_4009");
+        }
 
-		return fromAppId;
-	}
-	
-	/**
-	 * Gets the trans id.
-	 *
-	 * @param headers the headers
-	 * @return the trans id
-	 * @throws AAIException the AAI exception
-	 */
-	protected String getTransId(HttpHeaders headers) throws AAIException { 
-		String transId = null;
-		if (headers != null) {
-			List<String> transIdHeader = headers.getRequestHeader("X-TransactionId");
-			if (transIdHeader != null) {
-				for (String transIdValue : transIdHeader) {
-					transId = transIdValue;
-				}
-			}
-		}
+        LoggingContext.partnerName(fromAppId);
 
-		if (transId == null) {
-			throw new AAIException("AAI_4010");
-		}
+        return fromAppId;
+    }
 
-		LoggingContext.requestId(transId);
+    /**
+     * Gets the trans id.
+     *
+     * @param headers the headers
+     * @return the trans id
+     * @throws AAIException the AAI exception
+     */
+    protected String getTransId(HttpHeaders headers) throws AAIException {
+        String transId = null;
+        if (headers != null) {
+            List<String> transIdHeader = headers.getRequestHeader("X-TransactionId");
+            if (transIdHeader != null) {
+                for (String transIdValue : transIdHeader) {
+                    transId = transIdValue;
+                }
+            }
+        }
 
-		return transId;
-	}
-	
-	
-	/**
-	 * Gen date.
-	 *
-	 * @return the string
-	 */
-	protected String genDate() {
-		FormatDate fd = new FormatDate( "YYMMdd-HH:mm:ss:SSS");
-		
-		return fd.getDateTime();
-	}
+        if (transId == null) {
+            throw new AAIException("AAI_4010");
+        }
 
-	/**
-	 * Gets the media type.
-	 *
-	 * @param mediaTypeList the media type list
-	 * @return the media type
-	 */
-	protected String getMediaType(List <MediaType> mediaTypeList) {
-		String mediaType = MediaType.APPLICATION_JSON;  // json is the default    
-		for (MediaType mt : mediaTypeList) {
-			if (MediaType.APPLICATION_XML_TYPE.isCompatible(mt)) {
-				mediaType = MediaType.APPLICATION_XML;
-			} 
-		}
-		return mediaType;
-	}
-	
+        LoggingContext.requestId(transId);
 
-	/* ----------helpers for common consumer actions ----------- */
-	
-	/**
-	 * Sets the depth.
-	 *
-	 * @param depthParam the depth param
-	 * @return the int
-	 * @throws AAIException the AAI exception
-	 */
-	protected int setDepth(String depthParam) throws AAIException {
-		int depth = AAIProperties.MAXIMUM_DEPTH; //default 
-		if (depthParam != null && depthParam.length() > 0 && !depthParam.equals("all")){
-			try {
-				depth = Integer.valueOf(depthParam);
-			} catch (Exception e) {
-				throw new AAIException("AAI_4016");
-			}
-		}
-		return depth;
-	}
+        return transId;
+    }
 
-	/**
-	 * Consumer exception response generator.
-	 *
-	 * @param headers the headers
-	 * @param info the info
-	 * @param templateAction the template action
-	 * @param e the e
-	 * @return the response
-	 */
-	protected Response consumerExceptionResponseGenerator(HttpHeaders headers, UriInfo info, HttpMethod templateAction, AAIException e) {
-		ArrayList<String> templateVars = new ArrayList<String>();
-		templateVars.add(templateAction.toString()); //GET, PUT, etc
-		templateVars.add(info.getPath().toString());
-		templateVars.addAll(e.getTemplateVars());
+    /**
+     * Gen date.
+     *
+     * @return the string
+     */
+    protected String genDate() {
+        FormatDate fd = new FormatDate("YYMMdd-HH:mm:ss:SSS");
 
-		ErrorLogHelper.logException(e);
-		return Response
-				.status(e.getErrorObject().getHTTPResponseCode())
-				.entity(ErrorLogHelper.getRESTAPIErrorResponseWithLogging(headers.getAcceptableMediaTypes(), e, templateVars))
-				.build();
-	}
-	
-	/**
-	 * Validate introspector.
-	 *
-	 * @param obj the obj
-	 * @param loader the loader
-	 * @param uri the uri
-	 * @throws AAIException the AAI exception
-	 * @throws UnsupportedEncodingException the unsupported encoding exception
-	 */
-	protected void validateIntrospector(Introspector obj, Loader loader, URI uri, HttpMethod method) throws AAIException, UnsupportedEncodingException {
-		
-		int maximumDepth = AAIProperties.MAXIMUM_DEPTH;
-		boolean validateRequired = true;
-		if (method.equals(HttpMethod.MERGE_PATCH)) {
-			validateRequired = false;
-			maximumDepth = 0;
-		}
-		IntrospectorValidator validator = new IntrospectorValidator.Builder()
-				.validateRequired(validateRequired)
-				.restrictDepth(maximumDepth)
-				.addResolver(new RemoveNonVisibleProperty())
-				.addResolver(new CreateUUID())
-				.addResolver(new DefaultFields())
-				.addResolver(new InjectKeysFromURI(loader, uri))
-				.build();
-		boolean result = validator.validate(obj);
-		if (!result) {
-			result = validator.resolveIssues();
-		}
-		if (!result) {
-			List<String> messages = new ArrayList<>();
-			for (Issue issue : validator.getIssues()) {
-				if (!issue.isResolved()) {
-					messages.add(issue.getDetail());
-				}
-			}
-			String errors = Joiner.on(",").join(messages);
-			throw new AAIException("AAI_3000", errors);
-		}
-		//check that key in payload and key in request uri are the same
+        return fd.getDateTime();
+    }
+
+    /**
+     * Gets the media type.
+     *
+     * @param mediaTypeList the media type list
+     * @return the media type
+     */
+    protected String getMediaType(List<MediaType> mediaTypeList) {
+        String mediaType = MediaType.APPLICATION_JSON; // json is the default
+        for (MediaType mt : mediaTypeList) {
+            if (MediaType.APPLICATION_XML_TYPE.isCompatible(mt)) {
+                mediaType = MediaType.APPLICATION_XML;
+            }
+        }
+        return mediaType;
+    }
+
+    /* ----------helpers for common consumer actions ----------- */
+
+    /**
+     * Sets the depth.
+     *
+     * @param depthParam the depth param
+     * @return the int
+     * @throws AAIException the AAI exception
+     */
+    protected int setDepth(String depthParam) throws AAIException {
+        int depth = AAIProperties.MAXIMUM_DEPTH; // default
+        if (depthParam != null && depthParam.length() > 0 && !depthParam.equals("all")) {
+            try {
+                depth = Integer.valueOf(depthParam);
+            } catch (Exception e) {
+                throw new AAIException("AAI_4016");
+            }
+        }
+        return depth;
+    }
+
+    /**
+     * Consumer exception response generator.
+     *
+     * @param headers the headers
+     * @param info the info
+     * @param templateAction the template action
+     * @param e the e
+     * @return the response
+     */
+    protected Response consumerExceptionResponseGenerator(HttpHeaders headers, UriInfo info,
+        HttpMethod templateAction, AAIException e) {
+        ArrayList<String> templateVars = new ArrayList<String>();
+        templateVars.add(templateAction.toString()); // GET, PUT, etc
+        templateVars.add(info.getPath().toString());
+        templateVars.addAll(e.getTemplateVars());
+
+        ErrorLogHelper.logException(e);
+        return Response.status(e.getErrorObject().getHTTPResponseCode()).entity(ErrorLogHelper
+            .getRESTAPIErrorResponseWithLogging(headers.getAcceptableMediaTypes(), e, templateVars))
+            .build();
+    }
+
+    /**
+     * Validate introspector.
+     *
+     * @param obj the obj
+     * @param loader the loader
+     * @param uri the uri
+     * @throws AAIException the AAI exception
+     * @throws UnsupportedEncodingException the unsupported encoding exception
+     */
+    protected void validateIntrospector(Introspector obj, Loader loader, URI uri, HttpMethod method)
+        throws AAIException, UnsupportedEncodingException {
+
+        int maximumDepth = AAIProperties.MAXIMUM_DEPTH;
+        boolean validateRequired = true;
+        if (method.equals(HttpMethod.MERGE_PATCH)) {
+            validateRequired = false;
+            maximumDepth = 0;
+        }
+        IntrospectorValidator validator =
+            new IntrospectorValidator.Builder().validateRequired(validateRequired)
+                .restrictDepth(maximumDepth).addResolver(new RemoveNonVisibleProperty())
+                .addResolver(new CreateUUID()).addResolver(new DefaultFields())
+                .addResolver(new InjectKeysFromURI(loader, uri)).build();
+        boolean result = validator.validate(obj);
+        if (!result) {
+            result = validator.resolveIssues();
+        }
+        if (!result) {
+            List<String> messages = new ArrayList<>();
+            for (Issue issue : validator.getIssues()) {
+                if (!issue.isResolved()) {
+                    messages.add(issue.getDetail());
+                }
+            }
+            String errors = Joiner.on(",").join(messages);
+            throw new AAIException("AAI_3000", errors);
+        }
+        // check that key in payload and key in request uri are the same
         String objURI = obj.getURI();
-        //if requested object is a parent objURI will have a leading slash the input uri will lack
-        //this adds that leading slash for the comparison
+        // if requested object is a parent objURI will have a leading slash the input uri will lack
+        // this adds that leading slash for the comparison
         String testURI = "/" + uri.getRawPath();
         if (!testURI.endsWith(objURI)) {
-        	throw new AAIException("AAI_3000", "uri and payload keys don't match");
+            throw new AAIException("AAI_3000", "uri and payload keys don't match");
         }
-	}
+    }
 
-	protected DBConnectionType determineConnectionType(String fromAppId, String realTime) throws AAIException {
-		if (fromAppId == null) {
-			throw new AAIException("AAI_4009", "X-FromAppId is not set");
-		}
+    protected DBConnectionType determineConnectionType(String fromAppId, String realTime)
+        throws AAIException {
+        if (fromAppId == null) {
+            throw new AAIException("AAI_4009", "X-FromAppId is not set");
+        }
 
-		DBConnectionType type = DBConnectionType.REALTIME;
-		boolean isRealTimeClient = AAIConfig.get("aai.realtime.clients", "").contains(fromAppId);
-		if (isRealTimeClient || realTime != null) {
-			type = DBConnectionType.REALTIME;
-		} else {
-			type = DBConnectionType.CACHED;
-		}
+        DBConnectionType type = DBConnectionType.REALTIME;
+        boolean isRealTimeClient = AAIConfig.get("aai.realtime.clients", "").contains(fromAppId);
+        if (isRealTimeClient || realTime != null) {
+            type = DBConnectionType.REALTIME;
+        } else {
+            type = DBConnectionType.CACHED;
+        }
 
-		return type;
-	}
-	
-	/**
-	 * Gets the input media type.
-	 *
-	 * @param mediaType the media type
-	 * @return the input media type
-	 */
-	protected String getInputMediaType(MediaType mediaType) {
-		String result = mediaType.getType() + "/" + mediaType.getSubtype();
-		
-		return result;
-		
-	}
+        return type;
+    }
 
-	/**
-	 * Returns the app specific timeout in milliseconds, -1 overrides the timeout for an app
-	 *
-	 * @param sot
-	 * @param appTimeouts
-	 * @param defaultTimeout
-	 * @return integer timeout in  or -1 to bypass
-	 * @throws AAIException
-	 */
+    /**
+     * Gets the input media type.
+     *
+     * @param mediaType the media type
+     * @return the input media type
+     */
+    protected String getInputMediaType(MediaType mediaType) {
+        String result = mediaType.getType() + "/" + mediaType.getSubtype();
 
-	public int getTimeoutLimit(String sot, String appTimeouts, String defaultTimeout) throws AAIException{
-		String[] ignoreAppIds = (appTimeouts).split("\\|");
-		int appLimit = Integer.parseInt(defaultTimeout);
-		final Map<String, Integer> m = new HashMap<String, Integer>();
-		if(ignoreAppIds != null) {
-			for (int i = 0; i < ignoreAppIds.length; i++) {
-				String[] vals = ignoreAppIds[i].split(",");
-				m.put(vals[0], Integer.parseInt(vals[1]));
-			}
-			if (m.get(sot) != null) {
-				appLimit = m.get(sot);
-			}
-		}
-		return appLimit;
-	}
+        return result;
 
-	/**
-	 * Returns whether time out is enabled
-	 * @param sot
-	 * @param isEnabled
-	 * @param appTimeouts
-	 * @param defaultTimeout
-	 * @return boolean of whether the timeout is enabled
-	 * @throws AAIException
-	 */
-	public boolean isTimeoutEnabled(String sot, String isEnabled, String appTimeouts, String defaultTimeout) throws AAIException{
-		Boolean isTimeoutEnabled = Boolean.parseBoolean(isEnabled);
-		int ata = -1;
-		if(isTimeoutEnabled) {
-			ata = getTimeoutLimit(sot, appTimeouts, defaultTimeout);
-		}
-		return isTimeoutEnabled && (ata > -1);
-	}
+    }
 
-	/**
-	 * Executes the process thread and watches the future for the timeout
-	 * @param handler
-	 * @param sourceOfTruth
-	 * @param appTimeoutLimit
-	 * @param defaultTimeoutLimit
-	 * @param method
-	 * @param headers
-	 * @param info
-	 * @return the response
-	 */
+    /**
+     * Returns the app specific timeout in milliseconds, -1 overrides the timeout for an app
+     *
+     * @param sot
+     * @param appTimeouts
+     * @param defaultTimeout
+     * @return integer timeout in or -1 to bypass
+     * @throws AAIException
+     */
 
-	public Response executeProcess(Future<Response> handler, String sourceOfTruth, String appTimeoutLimit, String defaultTimeoutLimit, HttpMethod method, HttpHeaders headers, UriInfo info){
-		Response response = null;
-		int timeoutLimit = 0;
-		try {
-			timeoutLimit = getTimeoutLimit(sourceOfTruth, appTimeoutLimit, defaultTimeoutLimit);
-			response = handler.get(timeoutLimit, TimeUnit.MILLISECONDS);
-		} catch (TimeoutException e) {
-			AAIException ex = new AAIException("AAI_7406", String.format("Timeout limit of %s seconds reached.", timeoutLimit/1000));
-			response = consumerExceptionResponseGenerator(headers, info, method, ex);
-			handler.cancel(true);
-		} catch (Exception e) {
-			AAIException ex = new AAIException("AAI_4000", e);
-			response = consumerExceptionResponseGenerator(headers, info, method, ex);
-		}
-		return response;
-	}
+    public int getTimeoutLimit(String sot, String appTimeouts, String defaultTimeout)
+        throws AAIException {
+        String[] ignoreAppIds = (appTimeouts).split("\\|");
+        int appLimit = Integer.parseInt(defaultTimeout);
+        final Map<String, Integer> m = new HashMap<String, Integer>();
+        if (ignoreAppIds != null) {
+            for (int i = 0; i < ignoreAppIds.length; i++) {
+                String[] vals = ignoreAppIds[i].split(",");
+                m.put(vals[0], Integer.parseInt(vals[1]));
+            }
+            if (m.get(sot) != null) {
+                appLimit = m.get(sot);
+            }
+        }
+        return appLimit;
+    }
 
-	/**
-	 * runner sets up the timer logic and invokes it
-	 * @param toe
-	 * @param tba
-	 * @param tdl
-	 * @param headers
-	 * @param info
-	 * @param httpMethod
-	 * @param c
-	 * @return the response
-	 */
-	public Response runner(String toe, String tba, String tdl, HttpHeaders headers, UriInfo info, HttpMethod httpMethod, Callable c){
-		Response response = null;
-		Future<Response> handler = null;
-		ExecutorService executor = null;
-		try {
-			String timeoutEnabled = AAIConfig.get(toe);
-			String timeoutByApp = AAIConfig.get(tba);
-			String timeoutDefaultLimit = AAIConfig.get(tdl);
-			String sourceOfTruth = headers.getRequestHeaders().getFirst("X-FromAppId");
-			if (isTimeoutEnabled(sourceOfTruth, timeoutEnabled, timeoutByApp, timeoutDefaultLimit)) {
-				executor = Executors.newSingleThreadExecutor();
-				handler = executor.submit(c);
-				response = executeProcess(handler, sourceOfTruth, timeoutByApp, timeoutDefaultLimit, httpMethod, headers, info);
-			} else {
-				response = (Response) c.call();
-			}
-		}catch(Exception e){
-			AAIException ex = new AAIException("AAI_4000", e);
-			response = consumerExceptionResponseGenerator(headers, info, httpMethod, ex);
-		}finally{
-			if(executor != null && handler != null){
-				executor.shutdownNow();
-			}
-		}
-		return response;
-	}
+    /**
+     * Returns whether time out is enabled
+     * 
+     * @param sot
+     * @param isEnabled
+     * @param appTimeouts
+     * @param defaultTimeout
+     * @return boolean of whether the timeout is enabled
+     * @throws AAIException
+     */
+    public boolean isTimeoutEnabled(String sot, String isEnabled, String appTimeouts,
+        String defaultTimeout) throws AAIException {
+        Boolean isTimeoutEnabled = Boolean.parseBoolean(isEnabled);
+        int ata = -1;
+        if (isTimeoutEnabled) {
+            ata = getTimeoutLimit(sot, appTimeouts, defaultTimeout);
+        }
+        return isTimeoutEnabled && (ata > -1);
+    }
+
+    /**
+     * Executes the process thread and watches the future for the timeout
+     * 
+     * @param handler
+     * @param sourceOfTruth
+     * @param appTimeoutLimit
+     * @param defaultTimeoutLimit
+     * @param method
+     * @param headers
+     * @param info
+     * @return the response
+     */
+
+    public Response executeProcess(Future<Response> handler, String sourceOfTruth,
+        String appTimeoutLimit, String defaultTimeoutLimit, HttpMethod method, HttpHeaders headers,
+        UriInfo info) {
+        Response response = null;
+        int timeoutLimit = 0;
+        try {
+            timeoutLimit = getTimeoutLimit(sourceOfTruth, appTimeoutLimit, defaultTimeoutLimit);
+            response = handler.get(timeoutLimit, TimeUnit.MILLISECONDS);
+        } catch (TimeoutException e) {
+            AAIException ex = new AAIException("AAI_7406",
+                String.format("Timeout limit of %s seconds reached.", timeoutLimit / 1000));
+            response = consumerExceptionResponseGenerator(headers, info, method, ex);
+            handler.cancel(true);
+        } catch (Exception e) {
+            AAIException ex = new AAIException("AAI_4000", e);
+            response = consumerExceptionResponseGenerator(headers, info, method, ex);
+        }
+        return response;
+    }
+
+    /**
+     * runner sets up the timer logic and invokes it
+     * 
+     * @param toe
+     * @param tba
+     * @param tdl
+     * @param headers
+     * @param info
+     * @param httpMethod
+     * @param c
+     * @return the response
+     */
+    public Response runner(String toe, String tba, String tdl, HttpHeaders headers, UriInfo info,
+        HttpMethod httpMethod, Callable c) {
+        Response response = null;
+        Future<Response> handler = null;
+        ExecutorService executor = null;
+        try {
+            String timeoutEnabled = AAIConfig.get(toe);
+            String timeoutByApp = AAIConfig.get(tba);
+            String timeoutDefaultLimit = AAIConfig.get(tdl);
+            String sourceOfTruth = headers.getRequestHeaders().getFirst("X-FromAppId");
+            if (isTimeoutEnabled(sourceOfTruth, timeoutEnabled, timeoutByApp,
+                timeoutDefaultLimit)) {
+                executor = Executors.newSingleThreadExecutor();
+                handler = executor.submit(c);
+                response = executeProcess(handler, sourceOfTruth, timeoutByApp, timeoutDefaultLimit,
+                    httpMethod, headers, info);
+            } else {
+                response = (Response) c.call();
+            }
+        } catch (Exception e) {
+            AAIException ex = new AAIException("AAI_4000", e);
+            response = consumerExceptionResponseGenerator(headers, info, httpMethod, ex);
+        } finally {
+            if (executor != null && handler != null) {
+                executor.shutdownNow();
+            }
+        }
+        return response;
+    }
 
 }
-

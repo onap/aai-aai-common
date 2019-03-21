@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,16 +17,16 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.restcore;
 
 /**
  * The Enum MediaType.
  */
 public enum MediaType {
-	APPLICATION_JSON_TYPE("application/json"),
-	APPLICATION_XML_TYPE("application/xml");
-	
-	private final String text;
+    APPLICATION_JSON_TYPE("application/json"), APPLICATION_XML_TYPE("application/xml");
+
+    private final String text;
 
     /**
      * Instantiates a new media type.
@@ -36,7 +36,7 @@ public enum MediaType {
     private MediaType(final String text) {
         this.text = text;
     }
-    
+
     /**
      * Gets the enum.
      *
@@ -44,20 +44,20 @@ public enum MediaType {
      * @return the enum
      */
     public static MediaType getEnum(String value) {
-    	
-    	for(MediaType v : values()) {
-            if(v.toString().equalsIgnoreCase(value)) {
-            	return v;
-            } 
-    	}
-    	
+
+        for (MediaType v : values()) {
+            if (v.toString().equalsIgnoreCase(value)) {
+                return v;
+            }
+        }
+
         throw new IllegalArgumentException("bad value: " + value);
- 
+
     }
-    
+
     /**
-	 * @{inheritDoc}
-	 */
+     * @{inheritDoc}
+     */
     @Override
     public String toString() {
         return text;

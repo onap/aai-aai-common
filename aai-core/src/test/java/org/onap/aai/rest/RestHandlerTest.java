@@ -10,7 +10,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,6 +19,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.rest;
 
 import static org.junit.Assert.*;
@@ -30,11 +31,11 @@ public class RestHandlerTest {
     @Test
     public void testGetInstance() {
 
-       RestHandlerService firstInstance = RestHandlerService.getInstance();
-       RestHandlerService secondInstance = RestHandlerService.getInstance();
-       assertNotNull(firstInstance);
-       assertNotNull(secondInstance);
-       assertTrue(firstInstance == secondInstance);
+        RestHandlerService firstInstance = RestHandlerService.getInstance();
+        RestHandlerService secondInstance = RestHandlerService.getInstance();
+        assertNotNull(firstInstance);
+        assertNotNull(secondInstance);
+        assertTrue(firstInstance == secondInstance);
 
     }
 }

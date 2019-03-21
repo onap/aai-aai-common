@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,18 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.rest;
+
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertThat;
+
+import java.io.IOException;
+import java.util.UUID;
+
+import javax.ws.rs.core.Response;
 
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Edge;
@@ -37,15 +48,6 @@ import org.onap.aai.edges.enums.EdgeProperty;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.serialization.engines.QueryStyle;
 
-import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.util.UUID;
-
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
-
 public class EdgeNotValidAnymoreTest extends AAISetup {
 
     private HttpTestUtil testUtil;
@@ -53,7 +55,8 @@ public class EdgeNotValidAnymoreTest extends AAISetup {
     @Before
     public void setupData() throws IOException, AAIException {
 
-        String cloudRegionEndpoint = "/aai/v13/cloud-infrastructure/cloud-regions/cloud-region/junit-cloud-owner-with-vlan/junit-cloud-region-with-vlan";
+        String cloudRegionEndpoint =
+            "/aai/v13/cloud-infrastructure/cloud-regions/cloud-region/junit-cloud-owner-with-vlan/junit-cloud-region-with-vlan";
 
         String cloudRegionBody = PayloadUtil.getResourcePayload("cloud-region-with-vlan.json");
         testUtil = new HttpTestUtil(QueryStyle.TRAVERSAL_URI);
@@ -62,20 +65,16 @@ public class EdgeNotValidAnymoreTest extends AAISetup {
         JanusGraphTransaction transaction = AAIGraph.getInstance().getGraph().newTransaction();
         GraphTraversalSource g = transaction.traversal();
 
-        Vertex configurationVertex = g.addV()
-            .property( AAIProperties.NODE_TYPE, "configuration")
-            .property( "configuration-id", "ci1")
-            .property( "configuration-type", "ci1")
-            .property( AAIProperties.AAI_URI, "/network/configurations/configuration/ci1")
-            .property(AAIProperties.SOURCE_OF_TRUTH, "JUNIT")
-            .next();
+        Vertex configurationVertex = g.addV().property(AAIProperties.NODE_TYPE, "configuration")
+            .property("configuration-id", "ci1").property("configuration-type", "ci1")
+            .property(AAIProperties.AAI_URI, "/network/configurations/configuration/ci1")
+            .property(AAIProperties.SOURCE_OF_TRUTH, "JUNIT").next();
 
-        Vertex vlanVertex = g.V()
-            .has("vlan-interface", "test-vlan-interface-1")
-            .has(AAIProperties.NODE_TYPE, "vlan")
-            .next();
+        Vertex vlanVertex = g.V().has("vlan-interface", "test-vlan-interface-1")
+            .has(AAIProperties.NODE_TYPE, "vlan").next();
 
-        Edge edge = configurationVertex.addEdge("org.onap.relationships.inventory.PartOf", vlanVertex);
+        Edge edge =
+            configurationVertex.addEdge("org.onap.relationships.inventory.PartOf", vlanVertex);
         addEdge(edge);
 
         transaction.commit();
@@ -104,16 +103,13 @@ public class EdgeNotValidAnymoreTest extends AAISetup {
     }
 
     @After
-    public void teardown(){
+    public void teardown() {
 
         JanusGraph janusGraph = AAIGraph.getInstance().getGraph();
         JanusGraphTransaction transaction = janusGraph.newTransaction();
         GraphTraversalSource g = transaction.traversal();
 
-        g.V()
-            .has(AAIProperties.SOURCE_OF_TRUTH, "JUNIT")
-            .toList()
-            .forEach((edge) -> edge.remove());
+        g.V().has(AAIProperties.SOURCE_OF_TRUTH, "JUNIT").toList().forEach((edge) -> edge.remove());
 
         transaction.commit();
     }

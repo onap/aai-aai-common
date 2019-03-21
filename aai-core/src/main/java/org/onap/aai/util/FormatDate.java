@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +17,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.util;
 
 import java.time.ZoneId;
@@ -25,21 +26,22 @@ import java.time.format.DateTimeFormatter;
 
 public class FormatDate {
 
-	private final String timeZone;
-	private final String pattern;
-	public FormatDate(String pattern) {
-		this.pattern = pattern;
-		this.timeZone = "GMT";
-	}
-	public FormatDate(String pattern, String timeZone) {
-		this.pattern = pattern;
-		this.timeZone = timeZone;
-	}
-	
-	public String getDateTime() {
-		
-		final DateTimeFormatter formatter =
-				DateTimeFormatter.ofPattern(pattern);
-		return formatter.format(ZonedDateTime.now(ZoneId.of(timeZone)));
-	}
+    private final String timeZone;
+    private final String pattern;
+
+    public FormatDate(String pattern) {
+        this.pattern = pattern;
+        this.timeZone = "GMT";
+    }
+
+    public FormatDate(String pattern, String timeZone) {
+        this.pattern = pattern;
+        this.timeZone = timeZone;
+    }
+
+    public String getDateTime() {
+
+        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+        return formatter.format(ZonedDateTime.now(ZoneId.of(timeZone)));
+    }
 }

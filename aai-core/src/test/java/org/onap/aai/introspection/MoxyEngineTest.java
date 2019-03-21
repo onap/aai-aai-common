@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,31 +17,31 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.introspection;
 
 import org.junit.Test;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.springframework.test.annotation.DirtiesContext;
 
-
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class MoxyEngineTest extends IntrospectorTestSpec {
 
     /**
      * Container object.
-     * @throws AAIUnknownObjectException 
+     * 
+     * @throws AAIUnknownObjectException
      */
     @Test
     public void containerObject() throws AAIUnknownObjectException {
-        
-        Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDepthVersion());
-        
+
+        Loader loader =
+            loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDepthVersion());
+
         Introspector obj = loader.introspectorFromName("port-groups");
 
         this.containerTestSet(obj);
-        
+
     }
-    
-    
-    
+
 }

@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,27 +17,28 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.util;
 
-import java.util.HashMap;
-import java.util.Map;
-import javax.annotation.Generated;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.Generated;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
-@JsonPropertyOrder({
-    "key",
-    "value"
-})
+@JsonPropertyOrder({"key", "value"})
 public class KeyValueList {
 
     @JsonProperty("key")
@@ -50,7 +51,7 @@ public class KeyValueList {
     /**
      * 
      * @return
-     *     The key
+     *         The key
      */
     @JsonProperty("key")
     public String getKey() {
@@ -60,7 +61,7 @@ public class KeyValueList {
     /**
      * 
      * @param key
-     *     The key
+     *        The key
      */
     @JsonProperty("key")
     public void setKey(String key) {
@@ -75,7 +76,7 @@ public class KeyValueList {
     /**
      * 
      * @return
-     *     The value
+     *         The value
      */
     @JsonProperty("value")
     public String getValue() {
@@ -85,7 +86,7 @@ public class KeyValueList {
     /**
      * 
      * @param value
-     *     The value
+     *        The value
      */
     @JsonProperty("value")
     public void setValue(String value) {
@@ -119,7 +120,8 @@ public class KeyValueList {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(key).append(value).append(additionalProperties).toHashCode();
+        return new HashCodeBuilder().append(key).append(value).append(additionalProperties)
+            .toHashCode();
     }
 
     @Override
@@ -131,7 +133,8 @@ public class KeyValueList {
             return false;
         }
         KeyValueList rhs = ((KeyValueList) other);
-        return new EqualsBuilder().append(key, rhs.key).append(value, rhs.value).append(additionalProperties, rhs.additionalProperties).isEquals();
+        return new EqualsBuilder().append(key, rhs.key).append(value, rhs.value)
+            .append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
 }

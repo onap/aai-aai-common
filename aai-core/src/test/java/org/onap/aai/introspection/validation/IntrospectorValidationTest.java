@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,12 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.introspection.validation;
+
+import static org.junit.Assert.assertEquals;
+
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -25,17 +30,12 @@ import org.junit.Test;
 import org.onap.aai.AAISetup;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.*;
-
 import org.onap.aai.introspection.tools.IntrospectorValidator;
 import org.onap.aai.introspection.tools.Issue;
 import org.onap.aai.introspection.tools.IssueType;
 import org.onap.aai.serialization.queryformats.QueryFormatTestHelper;
 import org.onap.aai.util.AAIConstants;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
 
 public class IntrospectorValidationTest extends AAISetup {
 
@@ -49,12 +49,12 @@ public class IntrospectorValidationTest extends AAISetup {
     public void createValidator() throws Exception {
         System.setProperty("AJSC_HOME", ".");
         System.setProperty("BUNDLECONFIG_DIR", "bundleconfig-local");
-        loader = loaderFactory.createLoaderForVersion(introspectorFactoryType, schemaVersions.getRelatedLinkVersion());
-        validator = new IntrospectorValidator.Builder()
-                .validateRequired(false)
-                .restrictDepth(10000)
-                .build();
+        loader = loaderFactory.createLoaderForVersion(introspectorFactoryType,
+            schemaVersions.getRelatedLinkVersion());
+        validator = new IntrospectorValidator.Builder().validateRequired(false).restrictDepth(10000)
+            .build();
     }
+
     @Ignore
     @Test
     public void verifySuccessWhenEmpty() throws AAIException {
@@ -77,6 +77,7 @@ public class IntrospectorValidationTest extends AAISetup {
         Issue issue = issues.get(0);
         assertEquals("found expected issue", IssueType.DEPENDENT_PROP_NOT_FOUND, issue.getType());
     }
+
     @Ignore
     @Test
     public void verifyRequiresSuccess() throws AAIException {

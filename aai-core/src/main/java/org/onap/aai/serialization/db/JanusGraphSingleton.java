@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,21 +17,22 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.serialization.db;
 
 /* This is class is just a wrapper of its parent */
 public class JanusGraphSingleton extends GraphSingleton {
 
-	private static class Helper {
-		private static final JanusGraphSingleton INSTANCE = new JanusGraphSingleton();
-	}
-	
-	/**
-	 * Gets the single instance of JanusGraphSingleton.
-	 *
-	 * @return single instance of JanusGraphSingleton
-	 */
-	public static JanusGraphSingleton getInstance() {
-		return Helper.INSTANCE;
-	}
+    private static class Helper {
+        private static final JanusGraphSingleton INSTANCE = new JanusGraphSingleton();
+    }
+
+    /**
+     * Gets the single instance of JanusGraphSingleton.
+     *
+     * @return single instance of JanusGraphSingleton
+     */
+    public static JanusGraphSingleton getInstance() {
+        return Helper.INSTANCE;
+    }
 }

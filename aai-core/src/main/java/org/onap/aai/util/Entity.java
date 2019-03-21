@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,31 +17,30 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.util;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.annotation.Generated;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Generated;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
-@JsonPropertyOrder({
-    "equipment-role",
-    "action",
-    "key-value-list",
-    "self-link"
-})
+@JsonPropertyOrder({"equipment-role", "action", "key-value-list", "self-link"})
 public class Entity {
 
     @JsonProperty("equipment-role")
@@ -58,7 +57,7 @@ public class Entity {
     /**
      * 
      * @return
-     *     The equipmentRole
+     *         The equipmentRole
      */
     @JsonProperty("equipment-role")
     public String getEquipmentRole() {
@@ -68,7 +67,7 @@ public class Entity {
     /**
      * 
      * @param equipmentRole
-     *     The equipment-role
+     *        The equipment-role
      */
     @JsonProperty("equipment-role")
     public void setEquipmentRole(String equipmentRole) {
@@ -83,7 +82,7 @@ public class Entity {
     /**
      * 
      * @return
-     *     The action
+     *         The action
      */
     @JsonProperty("action")
     public String getAction() {
@@ -93,7 +92,7 @@ public class Entity {
     /**
      * 
      * @param action
-     *     The action
+     *        The action
      */
     @JsonProperty("action")
     public void setAction(String action) {
@@ -108,7 +107,7 @@ public class Entity {
     /**
      * 
      * @return
-     *     The keyValueList
+     *         The keyValueList
      */
     @JsonProperty("key-value-list")
     public List<KeyValueList> getKeyValueList() {
@@ -118,7 +117,7 @@ public class Entity {
     /**
      * 
      * @param keyValueList
-     *     The key-value-list
+     *        The key-value-list
      */
     @JsonProperty("key-value-list")
     public void setKeyValueList(List<KeyValueList> keyValueList) {
@@ -133,7 +132,7 @@ public class Entity {
     /**
      * 
      * @return
-     *     The selfLink
+     *         The selfLink
      */
     @JsonProperty("self-link")
     public String getSelfLink() {
@@ -143,7 +142,7 @@ public class Entity {
     /**
      * 
      * @param selfLink
-     *     The self-link
+     *        The self-link
      */
     @JsonProperty("self-link")
     public void setSelfLink(String selfLink) {
@@ -177,7 +176,8 @@ public class Entity {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(equipmentRole).append(action).append(keyValueList).append(selfLink).append(additionalProperties).toHashCode();
+        return new HashCodeBuilder().append(equipmentRole).append(action).append(keyValueList)
+            .append(selfLink).append(additionalProperties).toHashCode();
     }
 
     @Override
@@ -189,7 +189,10 @@ public class Entity {
             return false;
         }
         Entity rhs = ((Entity) other);
-        return new EqualsBuilder().append(equipmentRole, rhs.equipmentRole).append(action, rhs.action).append(keyValueList, rhs.keyValueList).append(selfLink, rhs.selfLink).append(additionalProperties, rhs.additionalProperties).isEquals();
+        return new EqualsBuilder().append(equipmentRole, rhs.equipmentRole)
+            .append(action, rhs.action).append(keyValueList, rhs.keyValueList)
+            .append(selfLink, rhs.selfLink).append(additionalProperties, rhs.additionalProperties)
+            .isEquals();
     }
 
 }

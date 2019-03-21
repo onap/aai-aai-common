@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,34 +17,35 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.logging;
 
 public class ErrorObjectNotFoundException extends Exception {
 
-	private static final long serialVersionUID = 4115316781400786740L;
+    private static final long serialVersionUID = 4115316781400786740L;
 
-	public ErrorObjectNotFoundException() {
-		// TODO Auto-generated constructor stub
-	}
-	
-	public ErrorObjectNotFoundException(String message) {
-		super(message);
-		// TODO Auto-generated constructor stub
-	}
-	
-	public ErrorObjectNotFoundException(Throwable cause) {
-		super(cause);
-		// TODO Auto-generated constructor stub
-	}
-	
-	public ErrorObjectNotFoundException(String message, Throwable cause) {
-		super(message, cause);
-		// TODO Auto-generated constructor stub
-	}
-	
-	public ErrorObjectNotFoundException(String message, Throwable cause, boolean enableSuppression,
-			boolean writableStackTrace) {
-		super(message, cause, enableSuppression, writableStackTrace);
-		// TODO Auto-generated constructor stub
-	}
+    public ErrorObjectNotFoundException() {
+        // TODO Auto-generated constructor stub
+    }
+
+    public ErrorObjectNotFoundException(String message) {
+        super(message);
+        // TODO Auto-generated constructor stub
+    }
+
+    public ErrorObjectNotFoundException(Throwable cause) {
+        super(cause);
+        // TODO Auto-generated constructor stub
+    }
+
+    public ErrorObjectNotFoundException(String message, Throwable cause) {
+        super(message, cause);
+        // TODO Auto-generated constructor stub
+    }
+
+    public ErrorObjectNotFoundException(String message, Throwable cause, boolean enableSuppression,
+        boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
+        // TODO Auto-generated constructor stub
+    }
 }

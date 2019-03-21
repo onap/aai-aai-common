@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,17 +17,20 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.serialization.queryformats;
 
 import com.google.gson.JsonObject;
-import org.onap.aai.serialization.queryformats.exceptions.AAIFormatQueryResultFormatNotSupported;
-import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
 
 import java.util.Optional;
 
+import org.onap.aai.serialization.queryformats.exceptions.AAIFormatQueryResultFormatNotSupported;
+import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
+
 public interface FormatMapper {
 
-	Optional<JsonObject> formatObject(Object o) throws AAIFormatVertexException, AAIFormatQueryResultFormatNotSupported;
-	
-	int parallelThreshold();
+    Optional<JsonObject> formatObject(Object o)
+        throws AAIFormatVertexException, AAIFormatQueryResultFormatNotSupported;
+
+    int parallelThreshold();
 }

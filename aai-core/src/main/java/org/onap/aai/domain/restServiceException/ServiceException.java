@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,13 +17,9 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.domain.restServiceException;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.annotation.Generated;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -31,13 +27,16 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Generated;
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
-@JsonPropertyOrder({
-    "messageId",
-    "text",
-    "variables"
-})
+@JsonPropertyOrder({"messageId", "text", "variables"})
 public class ServiceException {
 
     @JsonProperty("messageId")
@@ -52,7 +51,7 @@ public class ServiceException {
     /**
      * Gets the message id.
      *
-     * @return     The messageId
+     * @return The messageId
      */
     @JsonProperty("messageId")
     public String getMessageId() {
@@ -62,7 +61,7 @@ public class ServiceException {
     /**
      * Sets the message id.
      *
-     * @param messageId     The messageId
+     * @param messageId The messageId
      */
     @JsonProperty("messageId")
     public void setMessageId(String messageId) {
@@ -72,7 +71,7 @@ public class ServiceException {
     /**
      * Gets the text.
      *
-     * @return     The text
+     * @return The text
      */
     @JsonProperty("text")
     public String getText() {
@@ -82,7 +81,7 @@ public class ServiceException {
     /**
      * Sets the text.
      *
-     * @param text     The text
+     * @param text The text
      */
     @JsonProperty("text")
     public void setText(String text) {
@@ -92,7 +91,7 @@ public class ServiceException {
     /**
      * Gets the variables.
      *
-     * @return     The variables
+     * @return The variables
      */
     @JsonProperty("variables")
     public List<String> getVariables() {
@@ -102,7 +101,7 @@ public class ServiceException {
     /**
      * Sets the variables.
      *
-     * @param variables     The variables
+     * @param variables The variables
      */
     @JsonProperty("variables")
     public void setVariables(List<String> variables) {

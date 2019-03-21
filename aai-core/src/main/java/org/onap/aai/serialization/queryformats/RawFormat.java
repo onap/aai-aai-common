@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,12 +17,18 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.serialization.queryformats;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
+
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
@@ -35,178 +41,177 @@ import org.onap.aai.serialization.queryformats.params.Depth;
 import org.onap.aai.serialization.queryformats.params.NodesOnly;
 import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
-
-
 public class RawFormat extends MultiFormatMapper {
-	protected JsonParser parser = new JsonParser();
-	protected final DBSerializer serializer;
-	protected final Loader loader;
-	protected final UrlBuilder urlBuilder;
-	protected final int depth;
-	protected final boolean nodesOnly;
-	protected RawFormat(Builder builder) {
-		this.urlBuilder = builder.getUrlBuilder();
-		this.loader = builder.getLoader();
-		this.serializer = builder.getSerializer();
-		this.depth = builder.getDepth();
-		this.nodesOnly = builder.isNodesOnly();
-	}
-	
-	@Override
-	public int parallelThreshold() {
-		return 100;
-	}
-	
-	
-	public Optional<JsonObject> createPropertiesObject(Vertex v) throws AAIFormatVertexException {
-		JsonObject json = new JsonObject();
-		Iterator<VertexProperty<Object>> iter = v.properties();
+    protected JsonParser parser = new JsonParser();
+    protected final DBSerializer serializer;
+    protected final Loader loader;
+    protected final UrlBuilder urlBuilder;
+    protected final int depth;
+    protected final boolean nodesOnly;
 
-		while (iter.hasNext()) {
-			VertexProperty<Object> prop = iter.next();
-			if (prop.value() instanceof String) {
-				json.addProperty(prop.key(), (String)prop.value());
-			} else if (prop.value() instanceof Boolean) {
-				json.addProperty(prop.key(), (Boolean)prop.value());
-			} else if (prop.value() instanceof Number) {
-				json.addProperty(prop.key(), (Number)prop.value());
-			} else if (prop.value() instanceof List) {
-				Gson gson = new Gson();
-				String list = gson.toJson(prop.value());
+    protected RawFormat(Builder builder) {
+        this.urlBuilder = builder.getUrlBuilder();
+        this.loader = builder.getLoader();
+        this.serializer = builder.getSerializer();
+        this.depth = builder.getDepth();
+        this.nodesOnly = builder.isNodesOnly();
+    }
 
-				json.addProperty(prop.key(), list);
-			} else {
-				//throw exception?
-				return null;
-			}
-		}
+    @Override
+    public int parallelThreshold() {
+        return 100;
+    }
 
-		return Optional.of(json);
-	}
-	
-	protected JsonArray createRelationshipObject(Vertex v) throws AAIFormatVertexException {
-		JsonArray jarray = new JsonArray();
-		Iterator<Edge> inIter = v.edges(Direction.IN);
-		Iterator<Edge> outIter = v.edges(Direction.OUT);
+    public Optional<JsonObject> createPropertiesObject(Vertex v) throws AAIFormatVertexException {
+        JsonObject json = new JsonObject();
+        Iterator<VertexProperty<Object>> iter = v.properties();
 
-		while (inIter.hasNext()) {
-			Edge e = inIter.next();
-			Vertex outVertex = e.outVertex();
-			this.addEdge(e, outVertex, jarray);
-		}
-		
-		while (outIter.hasNext()) {
-			Edge e = outIter.next();
-			Vertex inVertex = e.inVertex();
-			this.addEdge(e, inVertex, jarray);
-		}
+        while (iter.hasNext()) {
+            VertexProperty<Object> prop = iter.next();
+            if (prop.value() instanceof String) {
+                json.addProperty(prop.key(), (String) prop.value());
+            } else if (prop.value() instanceof Boolean) {
+                json.addProperty(prop.key(), (Boolean) prop.value());
+            } else if (prop.value() instanceof Number) {
+                json.addProperty(prop.key(), (Number) prop.value());
+            } else if (prop.value() instanceof List) {
+                Gson gson = new Gson();
+                String list = gson.toJson(prop.value());
 
-		return jarray;
-	}
+                json.addProperty(prop.key(), list);
+            } else {
+                // throw exception?
+                return null;
+            }
+        }
 
-	protected void addEdge(Edge e, Vertex vertex, JsonArray array) throws AAIFormatVertexException {
-		array.add(this.getRelatedObject(e.label(), vertex));
-	}
-	
-	protected JsonObject getRelatedObject(String label, Vertex related) throws AAIFormatVertexException {
-		JsonObject json = new JsonObject();
-		json.addProperty("id", related.id().toString());
-		json.addProperty("relationship-label", label);
-		json.addProperty("node-type", related.<String>value(AAIProperties.NODE_TYPE));
-		json.addProperty("url", this.urlBuilder.pathed(related));
-		
-		return json;
-	}
-	
-	public static class Builder implements NodesOnly<Builder>, Depth<Builder> {
-		
-		protected final Loader loader;
-		protected final DBSerializer serializer;
-		protected final UrlBuilder urlBuilder;
-		protected boolean includeUrl = false;
-		protected boolean nodesOnly = false;
-		protected int depth = 1;
-		protected boolean modelDriven = false;
-		public Builder(Loader loader, DBSerializer serializer, UrlBuilder urlBuilder) {
-			this.loader = loader;
-			this.serializer = serializer;
-			this.urlBuilder = urlBuilder;
-		}
-		
-		protected Loader getLoader() {
-			return this.loader;
-		}
+        return Optional.of(json);
+    }
 
-		protected DBSerializer getSerializer() {
-			return this.serializer;
-		}
+    protected JsonArray createRelationshipObject(Vertex v) throws AAIFormatVertexException {
+        JsonArray jarray = new JsonArray();
+        Iterator<Edge> inIter = v.edges(Direction.IN);
+        Iterator<Edge> outIter = v.edges(Direction.OUT);
 
-		protected UrlBuilder getUrlBuilder() {
-			return this.urlBuilder;
-		}
-		
-		public Builder includeUrl() {
-			this.includeUrl = true;
-			return this;
-		}
-		
-		public Builder nodesOnly(Boolean nodesOnly) {
-			this.nodesOnly = nodesOnly;
-			return this;
-		}
-		public boolean isNodesOnly() {
-			return this.nodesOnly;
-		}
-		
-		public Builder depth(Integer depth) {
-			this.depth = depth;
-			return this;
-		}
-		
-		public int getDepth() {
-			return this.depth;
-		}
+        while (inIter.hasNext()) {
+            Edge e = inIter.next();
+            Vertex outVertex = e.outVertex();
+            this.addEdge(e, outVertex, jarray);
+        }
 
-		public boolean isIncludeUrl() {
-			return this.includeUrl;
-		}
-		
-		public Builder modelDriven() {
-			this.modelDriven = true;
-			return this;
-		}
-		
-		public boolean getModelDriven() {
-			return this.modelDriven;
-		}
-		public RawFormat build() {
-			if (modelDriven) {
-				return new SimpleFormat(this);
-			} else {
-				return new RawFormat(this);
-			}
-		}
-	}
+        while (outIter.hasNext()) {
+            Edge e = outIter.next();
+            Vertex inVertex = e.inVertex();
+            this.addEdge(e, inVertex, jarray);
+        }
 
-	@Override
-	protected Optional<JsonObject> getJsonFromVertex(Vertex v) throws AAIFormatVertexException {
+        return jarray;
+    }
 
-		JsonObject json = new JsonObject();
-		json.addProperty("id", v.id().toString());
-		json.addProperty("node-type", v.<String>value(AAIProperties.NODE_TYPE));
-		json.addProperty("url", this.urlBuilder.pathed(v));
-		Optional<JsonObject> properties = this.createPropertiesObject(v);
-		if (properties.isPresent()) {
-			json.add("properties", properties.get());
-		} else {
-			return Optional.empty();
-		}
-		if (!nodesOnly) {
-			json.add("related-to", this.createRelationshipObject(v));
-		}
-		return Optional.of(json);
-	}
+    protected void addEdge(Edge e, Vertex vertex, JsonArray array) throws AAIFormatVertexException {
+        array.add(this.getRelatedObject(e.label(), vertex));
+    }
+
+    protected JsonObject getRelatedObject(String label, Vertex related)
+        throws AAIFormatVertexException {
+        JsonObject json = new JsonObject();
+        json.addProperty("id", related.id().toString());
+        json.addProperty("relationship-label", label);
+        json.addProperty("node-type", related.<String>value(AAIProperties.NODE_TYPE));
+        json.addProperty("url", this.urlBuilder.pathed(related));
+
+        return json;
+    }
+
+    public static class Builder implements NodesOnly<Builder>, Depth<Builder> {
+
+        protected final Loader loader;
+        protected final DBSerializer serializer;
+        protected final UrlBuilder urlBuilder;
+        protected boolean includeUrl = false;
+        protected boolean nodesOnly = false;
+        protected int depth = 1;
+        protected boolean modelDriven = false;
+
+        public Builder(Loader loader, DBSerializer serializer, UrlBuilder urlBuilder) {
+            this.loader = loader;
+            this.serializer = serializer;
+            this.urlBuilder = urlBuilder;
+        }
+
+        protected Loader getLoader() {
+            return this.loader;
+        }
+
+        protected DBSerializer getSerializer() {
+            return this.serializer;
+        }
+
+        protected UrlBuilder getUrlBuilder() {
+            return this.urlBuilder;
+        }
+
+        public Builder includeUrl() {
+            this.includeUrl = true;
+            return this;
+        }
+
+        public Builder nodesOnly(Boolean nodesOnly) {
+            this.nodesOnly = nodesOnly;
+            return this;
+        }
+
+        public boolean isNodesOnly() {
+            return this.nodesOnly;
+        }
+
+        public Builder depth(Integer depth) {
+            this.depth = depth;
+            return this;
+        }
+
+        public int getDepth() {
+            return this.depth;
+        }
+
+        public boolean isIncludeUrl() {
+            return this.includeUrl;
+        }
+
+        public Builder modelDriven() {
+            this.modelDriven = true;
+            return this;
+        }
+
+        public boolean getModelDriven() {
+            return this.modelDriven;
+        }
+
+        public RawFormat build() {
+            if (modelDriven) {
+                return new SimpleFormat(this);
+            } else {
+                return new RawFormat(this);
+            }
+        }
+    }
+
+    @Override
+    protected Optional<JsonObject> getJsonFromVertex(Vertex v) throws AAIFormatVertexException {
+
+        JsonObject json = new JsonObject();
+        json.addProperty("id", v.id().toString());
+        json.addProperty("node-type", v.<String>value(AAIProperties.NODE_TYPE));
+        json.addProperty("url", this.urlBuilder.pathed(v));
+        Optional<JsonObject> properties = this.createPropertiesObject(v);
+        if (properties.isPresent()) {
+            json.add("properties", properties.get());
+        } else {
+            return Optional.empty();
+        }
+        if (!nodesOnly) {
+            json.add("related-to", this.createRelationshipObject(v));
+        }
+        return Optional.of(json);
+    }
 }

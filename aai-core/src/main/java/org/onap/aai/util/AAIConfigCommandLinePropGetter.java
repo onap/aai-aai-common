@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +17,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.util;
 
 import org.onap.aai.exceptions.AAIException;
@@ -32,34 +33,35 @@ import org.onap.aai.exceptions.AAIException;
  */
 public class AAIConfigCommandLinePropGetter {
 
-	/**
-	 * The main method.
-	 *
-	 * @param args the arguments
-	 */
-	/*
-	 * usage:
-	 * AAIConfigCommandLinePropGetter propertyname
-	 */
-	public static void main(String[] args) {
-		if (args.length != 1) {
-	//		System.out.println("only one property may be requested at a time");
-		//	System.out.println("usage: AAIConfigCommandLinePropGetter propertyname");
-		}
-		try {
-			AAIConfig.init();
-			String value = AAIConfig.get(args[0]);
-			if (value != null) {
-				System.out.println(value); //bc this utility used by a shell script so it needs the result sent to stdout
-			} else {
-				System.out.println("requested property could not be found");
-			}
-		} catch(AAIException e) {
-			//System.out.println("exception:" + e.toString()); //TODO is this reasonable?
-		} finally {
-			System.exit(0);
-		}
+    /**
+     * The main method.
+     *
+     * @param args the arguments
+     */
+    /*
+     * usage:
+     * AAIConfigCommandLinePropGetter propertyname
+     */
+    public static void main(String[] args) {
+        if (args.length != 1) {
+            // System.out.println("only one property may be requested at a time");
+            // System.out.println("usage: AAIConfigCommandLinePropGetter propertyname");
+        }
+        try {
+            AAIConfig.init();
+            String value = AAIConfig.get(args[0]);
+            if (value != null) {
+                System.out.println(value); // bc this utility used by a shell script so it needs the
+                                           // result sent to stdout
+            } else {
+                System.out.println("requested property could not be found");
+            }
+        } catch (AAIException e) {
+            // System.out.println("exception:" + e.toString()); //TODO is this reasonable?
+        } finally {
+            System.exit(0);
+        }
 
-	}
+    }
 
 }

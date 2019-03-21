@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,20 +17,21 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.util;
 
 import org.onap.aai.dbmap.AAIGraph;
 
 public class AAISystemExitUtil {
 
-	public static void systemExitCloseAAIGraph(int code) {
-		if ("true".equals(System.getProperty("org.onap.aai.graphadmin.started"))) {
-        	return;
-		}
-		if (AAIGraph.isInit()) {
-			AAIGraph.getInstance().graphShutdown();
-		}
-		System.exit(code);
+    public static void systemExitCloseAAIGraph(int code) {
+        if ("true".equals(System.getProperty("org.onap.aai.graphadmin.started"))) {
+            return;
+        }
+        if (AAIGraph.isInit()) {
+            AAIGraph.getInstance().graphShutdown();
+        }
+        System.exit(code);
 
-	}
+    }
 }

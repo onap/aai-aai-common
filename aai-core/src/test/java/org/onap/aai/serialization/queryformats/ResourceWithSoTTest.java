@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,9 +17,17 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.serialization.queryformats;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
+
 import com.google.gson.JsonObject;
+
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.strategy.verification.ReadOnlyStrategy;
 import org.apache.tinkerpop.gremlin.structure.Graph;
@@ -42,12 +50,6 @@ import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexExcepti
 import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
 import org.onap.aai.setup.SchemaVersion;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
-
 public class ResourceWithSoTTest extends AAISetup {
     @Mock
     private UrlBuilder urlBuilder;
@@ -57,9 +59,9 @@ public class ResourceWithSoTTest extends AAISetup {
     private Vertex patchVertex1;
     private Vertex patchVertex2;
 
-    private JsonObject jsonPutObj = new JsonObject() ;
-    private JsonObject jsonPatchObj1 = new JsonObject() ;
-    private JsonObject jsonPatchObj2 = new JsonObject() ;
+    private JsonObject jsonPutObj = new JsonObject();
+    private JsonObject jsonPatchObj1 = new JsonObject();
+    private JsonObject jsonPatchObj2 = new JsonObject();
 
     private SchemaVersion version;
     private ResourceWithSoT resourceWithSoT;
@@ -87,12 +89,8 @@ public class ResourceWithSoTTest extends AAISetup {
         jsonPutObj.addProperty("last-mod-source-of-truth", "user_a");
         jsonPutObj.addProperty("last-action-performed", "Created");
 
-        putVertex = graph.addVertex(
-            "aai-created-ts", timeNowInMs,
-            "aai-last-mod-ts", timeNowInMs,
-            "source-of-truth", "user_a",
-            "last-mod-source-of-truth", "user_a"
-        );
+        putVertex = graph.addVertex("aai-created-ts", timeNowInMs, "aai-last-mod-ts", timeNowInMs,
+            "source-of-truth", "user_a", "last-mod-source-of-truth", "user_a");
 
         // PATCH / MODIFY with differing source of truths
         jsonPatchObj1.addProperty("aai-created-ts", timeNowInMs);
@@ -101,12 +99,8 @@ public class ResourceWithSoTTest extends AAISetup {
         jsonPatchObj1.addProperty("last-mod-source-of-truth", "user_b");
         jsonPatchObj1.addProperty("last-action-performed", "Modified");
 
-        patchVertex1 = graph.addVertex(
-            "aai-created-ts", timeNowInMs,
-            "aai-last-mod-ts", timeNowInMs,
-            "source-of-truth", "user_a",
-            "last-mod-source-of-truth", "user_b"
-        );
+        patchVertex1 = graph.addVertex("aai-created-ts", timeNowInMs, "aai-last-mod-ts",
+            timeNowInMs, "source-of-truth", "user_a", "last-mod-source-of-truth", "user_b");
 
         // PATCH / MODIFY with differing time stamps
         jsonPatchObj2.addProperty("aai-created-ts", timeNowInMs);
@@ -115,12 +109,9 @@ public class ResourceWithSoTTest extends AAISetup {
         jsonPatchObj2.addProperty("last-mod-source-of-truth", "user_a");
         jsonPatchObj2.addProperty("last-action-performed", "Modified");
 
-        patchVertex2 = graph.addVertex(
-            "aai-created-ts", timeNowInMs,
-            "aai-last-mod-ts", Long.toString(currentTimeMs + 1000),
-            "source-of-truth", "user_a",
-            "last-mod-source-of-truth", "user_a"
-        );
+        patchVertex2 = graph.addVertex("aai-created-ts", timeNowInMs, "aai-last-mod-ts",
+            Long.toString(currentTimeMs + 1000), "source-of-truth", "user_a",
+            "last-mod-source-of-truth", "user_a");
 
         graph = TinkerGraph.open();
         createLoaderEngineSetup();
@@ -128,7 +119,8 @@ public class ResourceWithSoTTest extends AAISetup {
 
     // This test is to simulate a PUT request
     @Test
-    public void testGetJsonFromVertexWithCreateVertex() throws AAIFormatVertexException, AAIException {
+    public void testGetJsonFromVertexWithCreateVertex()
+        throws AAIFormatVertexException, AAIException {
         if (putVertex == null)
             assertTrue("The vertex used for this test is null. Fail immediately.", false);
 
@@ -138,7 +130,8 @@ public class ResourceWithSoTTest extends AAISetup {
 
     // This test is to simulate PATCH requests
     @Test
-    public void testGetJsonFromVertexWithModifyVertex() throws AAIFormatVertexException, AAIException {
+    public void testGetJsonFromVertexWithModifyVertex()
+        throws AAIFormatVertexException, AAIException {
         if (patchVertex1 == null)
             assertTrue("The vertex 1 used for this test is null. Fail immediately.", false);
         if (patchVertex2 == null)
@@ -148,13 +141,15 @@ public class ResourceWithSoTTest extends AAISetup {
         JsonObject json1 = resourceWithSoT.getJsonFromVertex(patchVertex1).get();
         assertEquals(jsonPatchObj1, json1);
 
-        // Timestamps that have a large span in time difference will (likely) indicate that the transaction was not a create (thus, modify)
+        // Timestamps that have a large span in time difference will (likely) indicate that the
+        // transaction was not a create (thus, modify)
         JsonObject json2 = resourceWithSoT.getJsonFromVertex(patchVertex2).get();
         assertEquals(jsonPatchObj2, json2);
     }
 
     @Test
-    public void testGetJsonFromVertexWithNullVertex() throws AAIFormatVertexException, AAIException {
+    public void testGetJsonFromVertexWithNullVertex()
+        throws AAIFormatVertexException, AAIException {
         // Null check, will return null.
         assertNull(resourceWithSoT.getJsonFromVertex(null));
     }
@@ -163,8 +158,9 @@ public class ResourceWithSoTTest extends AAISetup {
 
         if (loader == null) {
             loader = loaderFactory.createLoaderForVersion(factoryType, version);
-            //loader = LoaderFactory.createLoaderForVersion(factoryType, version);
-            dbEngine = spy(new JanusGraphDBEngine(QueryStyle.TRAVERSAL, DBConnectionType.CACHED, loader));
+            // loader = LoaderFactory.createLoaderForVersion(factoryType, version);
+            dbEngine =
+                spy(new JanusGraphDBEngine(QueryStyle.TRAVERSAL, DBConnectionType.CACHED, loader));
             serializer = new DBSerializer(version, dbEngine, factoryType, "Junit");
             resourceWithSoT = new ResourceWithSoT.Builder(loader, serializer, urlBuilder).build();
 
@@ -173,8 +169,8 @@ public class ResourceWithSoTTest extends AAISetup {
             when(dbEngine.tx()).thenReturn(graph);
             when(dbEngine.asAdmin()).thenReturn(spyAdmin);
 
-            when(spyAdmin.getReadOnlyTraversalSource())
-                .thenReturn(graph.traversal(GraphTraversalSource.build().with(ReadOnlyStrategy.instance())));
+            when(spyAdmin.getReadOnlyTraversalSource()).thenReturn(
+                graph.traversal(GraphTraversalSource.build().with(ReadOnlyStrategy.instance())));
             when(spyAdmin.getTraversalSource()).thenReturn(graph.traversal());
         }
     }

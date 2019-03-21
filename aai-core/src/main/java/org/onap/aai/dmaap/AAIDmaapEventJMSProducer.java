@@ -4,7 +4,7 @@
  * ================================================================================
  * Copyright © 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
- *  Modifications Copyright © 2018 IBM.
+ * Modifications Copyright © 2018 IBM.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.dmaap;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
@@ -33,18 +34,20 @@ public class AAIDmaapEventJMSProducer implements MessageProducer {
     private JmsTemplate jmsTemplate;
 
     public AAIDmaapEventJMSProducer() {
-        if("true".equals(AAIConfig.get("aai.jms.enable", "true"))){
+        if ("true".equals(AAIConfig.get("aai.jms.enable", "true"))) {
             this.jmsTemplate = new JmsTemplate();
             String activeMqTcpUrl = System.getProperty("activemq.tcp.url", "tcp://localhost:61547");
-            this.jmsTemplate.setConnectionFactory(new CachingConnectionFactory(new ActiveMQConnectionFactory(activeMqTcpUrl)));
+            this.jmsTemplate.setConnectionFactory(
+                new CachingConnectionFactory(new ActiveMQConnectionFactory(activeMqTcpUrl)));
             this.jmsTemplate.setDefaultDestination(new ActiveMQQueue("IN_QUEUE"));
         }
     }
 
     public void sendMessageToDefaultDestination(JSONObject finalJson) {
-        if(jmsTemplate != null){
+        if (jmsTemplate != null) {
             jmsTemplate.convertAndSend(finalJson.toString());
-            CachingConnectionFactory ccf = (CachingConnectionFactory) this.jmsTemplate.getConnectionFactory();
+            CachingConnectionFactory ccf =
+                (CachingConnectionFactory) this.jmsTemplate.getConnectionFactory();
             ccf.destroy();
         }
     }

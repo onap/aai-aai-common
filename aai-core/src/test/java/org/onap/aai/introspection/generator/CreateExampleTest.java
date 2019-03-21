@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,14 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.introspection.generator;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -28,35 +35,28 @@ import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.*;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 public class CreateExampleTest extends AAISetup {
-    
-    private  static CreateExample createExample;
-    private  Loader loader;
+
+    private static CreateExample createExample;
+    private Loader loader;
 
     private static boolean classLoaded = false;
-    
-    
+
     @BeforeClass
     public static void setUp() {
-        
-        
+
     }
-    
-    
+
     @Before
-    public void createLoaderVersion(){
-        if(!classLoaded){
-            loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getAppRootVersion());
+    public void createLoaderVersion() {
+        if (!classLoaded) {
+            loader = loaderFactory.createLoaderForVersion(ModelType.MOXY,
+                schemaVersions.getAppRootVersion());
             createExample = new CreateExample(loader, "edge-prop-names");
             classLoaded = false;
         }
     }
-    
+
     @Test
     public void testGetExampleObject() throws AAIException {
         Introspector introspector = loader.introspectorFromName("edge-prop-names");
@@ -70,7 +70,7 @@ public class CreateExampleTest extends AAISetup {
         Introspector introspector = loader.introspectorFromName("edge-prop-names");
         createExample.processPrimitive(propName, introspector);
     }
-    
+
     @Test
     public void testProcessPrimitiveLong() throws AAIUnknownObjectException {
         String propName = "vlan-id-inner";
@@ -84,14 +84,14 @@ public class CreateExampleTest extends AAISetup {
         Introspector introspector = loader.introspectorFromName("vserver");
         createExample.processPrimitive(propName, introspector);
     }
-    
+
     @Test
     public void testProcessPrimitiveInteger() throws AAIUnknownObjectException {
         String propName = "module-index";
         Introspector introspector = loader.introspectorFromName("vf-module");
         createExample.processPrimitive(propName, introspector);
     }
-    
+
     @Test
     public void testProcessPrimitiveList() throws AAIUnknownObjectException {
         String propName = "ipaddress-v4-vig";

@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,11 +17,13 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.util;
+
+import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 public class KeyValueListTest {
     KeyValueList kv;
@@ -48,13 +50,15 @@ public class KeyValueListTest {
 
     @Test
     public void additionalPropertyTest() {
-        assertEquals("Additional properties added", "val1", kv.getAdditionalProperties().get("name1"));
+        assertEquals("Additional properties added", "val1",
+            kv.getAdditionalProperties().get("name1"));
     }
 
     @Test
     public void hashCodeTest() {
         assertEquals("Hashing function returns the same code", kv.hashCode(), kv.hashCode());
-        assertNotEquals("Hashing function returns different code for different objects", kv.hashCode(), kv1.hashCode());
+        assertNotEquals("Hashing function returns different code for different objects",
+            kv.hashCode(), kv1.hashCode());
     }
 
     @Test
@@ -69,6 +73,7 @@ public class KeyValueListTest {
 
     @Test
     public void toStringTest() {
-        assertNotEquals("Different objects should return different strings", kv.toString(), kv1.toString());
+        assertNotEquals("Different objects should return different strings", kv.toString(),
+            kv1.toString());
     }
 }
