@@ -17,23 +17,24 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.serialization.db.exceptions;
 
 import org.onap.aai.exceptions.AAIException;
 
 public class EdgeMultiplicityException extends AAIException {
 
-	private static final long serialVersionUID = -5575661036426538012L;
+    private static final long serialVersionUID = -5575661036426538012L;
 
-	public EdgeMultiplicityException(String message) {
-		super("AAI_6140", message);
-	}
+    public EdgeMultiplicityException(String message) {
+        super("AAI_6140", message);
+    }
 
-	public EdgeMultiplicityException(Throwable cause) {
-		super("AAI_6140",cause);
-	}
+    public EdgeMultiplicityException(Throwable cause) {
+        super("AAI_6140", cause);
+    }
 
-	public EdgeMultiplicityException(String message, Throwable cause) {
-		super("AAI_6140", cause, message);
-	}
+    public EdgeMultiplicityException(String message, Throwable cause) {
+        super("AAI_6140", cause, message);
+    }
 }

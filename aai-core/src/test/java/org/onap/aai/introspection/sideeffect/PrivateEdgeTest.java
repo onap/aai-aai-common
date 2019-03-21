@@ -17,9 +17,22 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.introspection.sideeffect;
 
-import org.springframework.test.annotation.DirtiesContext;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.StringContains.containsString;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Graph;
@@ -40,110 +53,76 @@ import org.onap.aai.serialization.db.DBSerializer;
 import org.onap.aai.serialization.engines.JanusGraphDBEngine;
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.StringContains.containsString;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
+import org.springframework.test.annotation.DirtiesContext;
 
 @RunWith(value = Parameterized.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
-public class PrivateEdgeTest extends AAISetup{
+public class PrivateEdgeTest extends AAISetup {
 
     private static JanusGraph graph;
     private final static ModelType introspectorFactoryType = ModelType.MOXY;
     private final static DBConnectionType type = DBConnectionType.REALTIME;
     private Loader loader;
     private static TransactionalGraphEngine dbEngine;
-    
-    
-    
+
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
-    
     @Parameterized.Parameter(value = 0)
     public QueryStyle queryStyle;
 
     @Parameterized.Parameters(name = "QueryStyle.{0}")
     public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][]{
-                {QueryStyle.TRAVERSAL},
-                {QueryStyle.TRAVERSAL_URI}
-        });
+        return Arrays.asList(new Object[][] {{QueryStyle.TRAVERSAL}, {QueryStyle.TRAVERSAL_URI}});
     }
-    
+
     @BeforeClass
     public static void setup() throws Exception {
 
-        graph = JanusGraphFactory.build().set("storage.backend","inmemory").open();
+        graph = JanusGraphFactory.build().set("storage.backend", "inmemory").open();
 
         System.setProperty("AJSC_HOME", ".");
         System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
 
-        
-
         graph.traversal()
-        .addV("aai-node-type", "model",
-                "model-invariant-id", "key1",
-                AAIProperties.AAI_URI, "/service-design-and-creation/models/model/key1").as("v1")
-        .addV("aai-node-type", "model-ver",
-                "model-ver", "myValue",
-                "model-version-id", "key2",
-                "model-version", "testValue",
-                AAIProperties.AAI_URI, "/service-design-and-creation/models/model/key1/model-vers/model-ver/key2")
-        .addOutE("org.onap.relationships.inventory.BelongsTo", "v1",
-                EdgeProperty.CONTAINS.toString(), true
-        )
-        .addV("aai-node-type", "model",
-                "model-invariant-id", "key100",
-                AAIProperties.AAI_URI, "/service-design-and-creation/models/model/key100").as("v5")
-        .addV("aai-node-type", "model-ver",
-                "model-ver", "myValue",
-                "model-version-id", "key200",
-                "model-version", "testValue",
-                AAIProperties.AAI_URI, "/service-design-and-creation/models/model/key100/model-vers/model-ver/key200")
-        .addOutE("org.onap.relationships.inventory.BelongsTo", "v5",
-                EdgeProperty.CONTAINS.toString(), true
-        )
-        .addV("aai-node-type", "model",
-                "model-invariant-id", "key3",
-                AAIProperties.AAI_URI, "/service-design-and-creation/models/model/key3").as("v2")
-        .addV("aai-node-type", "model-ver",
-                "model-ver", "myValue",
-                "model-version-id", "key4",
-                AAIProperties.AAI_URI, "/service-design-and-creation/models/model/key3/model-vers/model-ver/key4")
-        .addOutE("org.onap.relationships.inventory.BelongsTo", "v2",
-                EdgeProperty.CONTAINS.toString(), true
-        )
-        .next();
+                .addV("aai-node-type", "model", "model-invariant-id", "key1", AAIProperties.AAI_URI,
+                        "/service-design-and-creation/models/model/key1")
+                .as("v1")
+                .addV("aai-node-type", "model-ver", "model-ver", "myValue", "model-version-id", "key2", "model-version",
+                        "testValue", AAIProperties.AAI_URI,
+                        "/service-design-and-creation/models/model/key1/model-vers/model-ver/key2")
+                .addOutE("org.onap.relationships.inventory.BelongsTo", "v1", EdgeProperty.CONTAINS.toString(), true)
+                .addV("aai-node-type", "model", "model-invariant-id", "key100", AAIProperties.AAI_URI,
+                        "/service-design-and-creation/models/model/key100")
+                .as("v5")
+                .addV("aai-node-type", "model-ver", "model-ver", "myValue", "model-version-id", "key200",
+                        "model-version", "testValue", AAIProperties.AAI_URI,
+                        "/service-design-and-creation/models/model/key100/model-vers/model-ver/key200")
+                .addOutE("org.onap.relationships.inventory.BelongsTo", "v5", EdgeProperty.CONTAINS.toString(), true)
+                .addV("aai-node-type", "model", "model-invariant-id", "key3", AAIProperties.AAI_URI,
+                        "/service-design-and-creation/models/model/key3")
+                .as("v2")
+                .addV("aai-node-type", "model-ver", "model-ver", "myValue", "model-version-id", "key4",
+                        AAIProperties.AAI_URI,
+                        "/service-design-and-creation/models/model/key3/model-vers/model-ver/key4")
+                .addOutE("org.onap.relationships.inventory.BelongsTo", "v2", EdgeProperty.CONTAINS.toString(), true)
+                .next();
         graph.tx().commit();
     }
-    
+
     @AfterClass
     public static void tearDown() {
         graph.tx().rollback();
         graph.close();
     }
-    
+
     @Before
     public void initMock() {
         loader = loaderFactory.createLoaderForVersion(introspectorFactoryType, schemaVersions.getDefaultVersion());
         MockitoAnnotations.initMocks(this);
-        dbEngine = new JanusGraphDBEngine(
-                queryStyle,
-                type,
-                loader);
+        dbEngine = new JanusGraphDBEngine(queryStyle, type, loader);
     }
-    
+
     @Test
     public void testWhenPrivateEdgeThrowsExceptionWhenHavingOnlyOnePartOfKey() throws Exception {
 
@@ -158,15 +137,12 @@ public class PrivateEdgeTest extends AAISetup{
         when(spy.asAdmin()).thenReturn(adminSpy);
         when(adminSpy.getTraversalSource()).thenReturn(traversal);
 
-        Vertex selfV = traversal.addV(
-                "aai-node-type", "generic-vnf",
-                "vnf-id", "myId",
-                "aai-uri",obj.getURI(),
-                "model-invariant-id", "key1"
-        ).next();
+        Vertex selfV = traversal.addV("aai-node-type", "generic-vnf", "vnf-id", "myId", "aai-uri", obj.getURI(),
+                "model-invariant-id", "key1").next();
 
         thrown.expectMessage(containsString("Cannot complete privateEdge uri"));
-        DBSerializer serializer = new DBSerializer(schemaVersions.getDefaultVersion(), spy, introspectorFactoryType, "AAI_TEST");
+        DBSerializer serializer =
+                new DBSerializer(schemaVersions.getDefaultVersion(), spy, introspectorFactoryType, "AAI_TEST");
         PrivateEdge privateEdge = new PrivateEdge(obj, selfV, spy, serializer);
         privateEdge.execute();
 

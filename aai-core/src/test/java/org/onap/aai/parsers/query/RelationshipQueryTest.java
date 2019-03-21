@@ -17,7 +17,17 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.parsers.query;
+
+import static org.junit.Assert.assertEquals;
+
+import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
@@ -28,35 +38,25 @@ import org.junit.Test;
 import org.onap.aai.AAISetup;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.*;
-import org.onap.aai.setup.SchemaVersion;
-import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.serialization.engines.JanusGraphDBEngine;
+import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.stream.StreamSource;
-import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
-
-import static org.junit.Assert.assertEquals;
+import org.onap.aai.setup.SchemaVersion;
 
 @Ignore
 public class RelationshipQueryTest extends AAISetup {
-
 
     private TransactionalGraphEngine dbEngine;
     private SchemaVersion version;
     private DynamicJAXBContext context = nodeIngestor.getContextForVersion(version);
 
     @Before
-    public void setup(){
+    public void setup() {
         version = new SchemaVersion("v10");
-        dbEngine =
-            new JanusGraphDBEngine(QueryStyle.GREMLIN_TRAVERSAL,
-                loaderFactory.createLoaderForVersion(ModelType.MOXY, version),
-                false);
+        dbEngine = new JanusGraphDBEngine(QueryStyle.GREMLIN_TRAVERSAL,
+                loaderFactory.createLoaderForVersion(ModelType.MOXY, version), false);
     }
+
     /**
      * Parent query.
      *
@@ -67,14 +67,8 @@ public class RelationshipQueryTest extends AAISetup {
     @Test
     public void parentQuery() throws JAXBException, UnsupportedEncodingException, AAIException {
 
-        String content =
-                "{"
-                + "\"related-to\" : \"pserver\","
-                + "\"relationship-data\" : [{"
-                + "\"relationship-key\" : \"pserver.hostname\","
-                + "\"relationship-value\" : \"key1\""
-                + "}]"
-                + "}";
+        String content = "{" + "\"related-to\" : \"pserver\"," + "\"relationship-data\" : [{"
+                + "\"relationship-key\" : \"pserver.hostname\"," + "\"relationship-value\" : \"key1\"" + "}]" + "}";
 
         Unmarshaller unmarshaller = context.createUnmarshaller();
         unmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/json");
@@ -82,25 +76,17 @@ public class RelationshipQueryTest extends AAISetup {
         unmarshaller.setProperty(UnmarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME, true);
         Object obj = context.newDynamicEntity("Relationship");
 
-        DynamicEntity entity = (DynamicEntity)unmarshaller.unmarshal(new StreamSource(new StringReader(content)), obj.getClass()).getValue();
+        DynamicEntity entity = (DynamicEntity) unmarshaller
+                .unmarshal(new StreamSource(new StringReader(content)), obj.getClass()).getValue();
 
         Introspector wrappedObj = IntrospectorFactory.newInstance(ModelType.MOXY, entity);
         QueryParser query = dbEngine.getQueryBuilder().createQueryFromRelationship(wrappedObj);
 
-        String expected =
-                ".has('hostname', 'key1').has('aai-node-type', 'pserver')";
-        assertEquals(
-                "gremlin query should be " + expected,
-                expected,
-                query.getQueryBuilder().getQuery());
-        assertEquals(
-                "parent gremlin query should be equal to normal query",
-                expected,
+        String expected = ".has('hostname', 'key1').has('aai-node-type', 'pserver')";
+        assertEquals("gremlin query should be " + expected, expected, query.getQueryBuilder().getQuery());
+        assertEquals("parent gremlin query should be equal to normal query", expected,
                 query.getQueryBuilder().getParentQuery().getQuery());
-        assertEquals(
-                "result type should be pserver",
-                "pserver",
-                query.getResultType());
+        assertEquals("result type should be pserver", "pserver", query.getResultType());
 
     }
 
@@ -114,17 +100,10 @@ public class RelationshipQueryTest extends AAISetup {
     @Ignore
     @Test
     public void childQuery() throws JAXBException, UnsupportedEncodingException, AAIException {
-        String content =
-                "{"
-                + "\"related-to\" : \"lag-interface\","
-                + "\"relationship-data\" : [{"
-                + "\"relationship-key\" : \"pserver.hostname\","
-                + "\"relationship-value\" : \"key1\""
-                + "}, {"
-                + "\"relationship-key\" : \"lag-interface.interface-name\","
-                + "\"relationship-value\" : \"key2\""
-                + "}]"
-                + "}";
+        String content = "{" + "\"related-to\" : \"lag-interface\"," + "\"relationship-data\" : [{"
+                + "\"relationship-key\" : \"pserver.hostname\"," + "\"relationship-value\" : \"key1\"" + "}, {"
+                + "\"relationship-key\" : \"lag-interface.interface-name\"," + "\"relationship-value\" : \"key2\""
+                + "}]" + "}";
 
         Unmarshaller unmarshaller = context.createUnmarshaller();
         unmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/json");
@@ -132,27 +111,19 @@ public class RelationshipQueryTest extends AAISetup {
         unmarshaller.setProperty(UnmarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME, true);
         Object obj = context.newDynamicEntity("Relationship");
 
-        DynamicEntity entity = (DynamicEntity)unmarshaller.unmarshal(new StreamSource(new StringReader(content)), obj.getClass()).getValue();
+        DynamicEntity entity = (DynamicEntity) unmarshaller
+                .unmarshal(new StreamSource(new StringReader(content)), obj.getClass()).getValue();
 
         Introspector wrappedObj = IntrospectorFactory.newInstance(ModelType.MOXY, entity);
         QueryParser query = dbEngine.getQueryBuilder().createQueryFromRelationship(wrappedObj);
         String expected =
                 ".has('hostname', 'key1').has('aai-node-type', 'pserver').out('hasLAGInterface').has('aai-node-type', 'lag-interface')"
-                + ".has('interface-name', 'key2')";
-        String parentExpected =
-                ".has('hostname', 'key1').has('aai-node-type', 'pserver')";
-        assertEquals(
-                "gremlin query should be for node",
-                expected,
-                query.getQueryBuilder().getQuery());
-        assertEquals(
-                "parent gremlin query should be for parent",
-                parentExpected,
+                        + ".has('interface-name', 'key2')";
+        String parentExpected = ".has('hostname', 'key1').has('aai-node-type', 'pserver')";
+        assertEquals("gremlin query should be for node", expected, query.getQueryBuilder().getQuery());
+        assertEquals("parent gremlin query should be for parent", parentExpected,
                 query.getQueryBuilder().getParentQuery().getQuery());
-        assertEquals(
-                "result type should be lag-interface",
-                "lag-interface",
-                query.getResultType());
+        assertEquals("result type should be lag-interface", "lag-interface", query.getResultType());
     }
 
     /**
@@ -165,20 +136,10 @@ public class RelationshipQueryTest extends AAISetup {
     @Ignore
     @Test
     public void namingExceptions() throws JAXBException, UnsupportedEncodingException, AAIException {
-        String content =
-                "{"
-                + "\"related-to\" : \"cvlan-tag\","
-                + "\"relationship-data\" : [{"
-                + "\"relationship-key\" : \"vce.vnf-id\","
-                + "\"relationship-value\" : \"key1\""
-                + "}, {"
-                + "\"relationship-key\" : \"port-group.interface-id\","
-                + "\"relationship-value\" : \"key2\""
-                + "},{"
-                + "\"relationship-key\" : \"cvlan-tag.cvlan-tag\","
-                + "\"relationship-value\" : \"655\""
-                + "}]"
-                + "}";
+        String content = "{" + "\"related-to\" : \"cvlan-tag\"," + "\"relationship-data\" : [{"
+                + "\"relationship-key\" : \"vce.vnf-id\"," + "\"relationship-value\" : \"key1\"" + "}, {"
+                + "\"relationship-key\" : \"port-group.interface-id\"," + "\"relationship-value\" : \"key2\"" + "},{"
+                + "\"relationship-key\" : \"cvlan-tag.cvlan-tag\"," + "\"relationship-value\" : \"655\"" + "}]" + "}";
 
         Unmarshaller unmarshaller = context.createUnmarshaller();
         unmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/json");
@@ -186,30 +147,23 @@ public class RelationshipQueryTest extends AAISetup {
         unmarshaller.setProperty(UnmarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME, true);
         Object obj = context.newDynamicEntity("Relationship");
 
-        DynamicEntity entity = (DynamicEntity)unmarshaller.unmarshal(new StreamSource(new StringReader(content)), obj.getClass()).getValue();
+        DynamicEntity entity = (DynamicEntity) unmarshaller
+                .unmarshal(new StreamSource(new StringReader(content)), obj.getClass()).getValue();
 
         Introspector wrappedObj = IntrospectorFactory.newInstance(ModelType.MOXY, entity);
         QueryParser query = dbEngine.getQueryBuilder().createQueryFromRelationship(wrappedObj);
         String expected =
                 ".has('vnf-id', 'key1').has('aai-node-type', 'vce').in('org.onap.relationships.inventory.BelongsTo')"
-                + ".has('aai-node-type', 'port-group').has('interface-id', 'key2').in('org.onap.relationships.inventory.BelongsTo').has('aai-node-type', 'cvlan-tag')"
-                + ".has('cvlan-tag', 655)";
+                        + ".has('aai-node-type', 'port-group').has('interface-id', 'key2').in('org.onap.relationships.inventory.BelongsTo').has('aai-node-type', 'cvlan-tag')"
+                        + ".has('cvlan-tag', 655)";
         String expectedParent =
-                        ".has('vnf-id', 'key1').has('aai-node-type', 'vce').in('org.onap.relationships.inventory.BelongsTo')"
+                ".has('vnf-id', 'key1').has('aai-node-type', 'vce').in('org.onap.relationships.inventory.BelongsTo')"
                         + ".has('aai-node-type', 'port-group').has('interface-id', 'key2')";
 
-        assertEquals(
-                "gremlin query should be " + expected,
-                expected,
-                query.getQueryBuilder().getQuery());
-        assertEquals(
-                "parent gremlin query should be equal the query for port group",
-                expectedParent,
+        assertEquals("gremlin query should be " + expected, expected, query.getQueryBuilder().getQuery());
+        assertEquals("parent gremlin query should be equal the query for port group", expectedParent,
                 query.getQueryBuilder().getParentQuery().getQuery());
-        assertEquals(
-                "result type should be cvlan-tag",
-                "cvlan-tag",
-                query.getResultType());
+        assertEquals("result type should be cvlan-tag", "cvlan-tag", query.getResultType());
 
     }
 
@@ -223,21 +177,11 @@ public class RelationshipQueryTest extends AAISetup {
     @Ignore
     @Test
     public void doubleKey() throws JAXBException, UnsupportedEncodingException, AAIException {
-        String content =
-                "{"
-                + "\"related-to\" : \"ctag-pool\","
-                + "\"relationship-data\" : [{"
-                + "\"relationship-key\" : \"complex.physical-location-id\","
-                + "\"relationship-value\" : \"key1\""
-                + " }, { "
-                + "\"relationship-key\" : \"ctag-pool.target-pe\","
-                + " \"relationship-value\" : \"key2\""
-                + " },{"
-                + "\"relationship-key\" : \"ctag-pool.availability-zone-name\","
-                + "\"relationship-value\" : \"key3\""
-                + "}]"
-                + "}";
-
+        String content = "{" + "\"related-to\" : \"ctag-pool\"," + "\"relationship-data\" : [{"
+                + "\"relationship-key\" : \"complex.physical-location-id\"," + "\"relationship-value\" : \"key1\""
+                + " }, { " + "\"relationship-key\" : \"ctag-pool.target-pe\"," + " \"relationship-value\" : \"key2\""
+                + " },{" + "\"relationship-key\" : \"ctag-pool.availability-zone-name\","
+                + "\"relationship-value\" : \"key3\"" + "}]" + "}";
 
         Unmarshaller unmarshaller = context.createUnmarshaller();
         unmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/json");
@@ -245,31 +189,21 @@ public class RelationshipQueryTest extends AAISetup {
         unmarshaller.setProperty(UnmarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME, true);
         Object obj = context.newDynamicEntity("Relationship");
 
-        DynamicEntity entity = (DynamicEntity)unmarshaller.unmarshal(new StreamSource(new StringReader(content)), obj.getClass()).getValue();
+        DynamicEntity entity = (DynamicEntity) unmarshaller
+                .unmarshal(new StreamSource(new StringReader(content)), obj.getClass()).getValue();
 
         Introspector wrappedObj = IntrospectorFactory.newInstance(ModelType.MOXY, entity);
         QueryParser query = dbEngine.getQueryBuilder().createQueryFromRelationship(wrappedObj);
 
-        String expected =
-                ".has('physical-location-id', 'key1').has('aai-node-type', 'complex')"
+        String expected = ".has('physical-location-id', 'key1').has('aai-node-type', 'complex')"
                 + ".in('org.onap.relationships.inventory.BelongsTo').has('aai-node-type', 'ctag-pool')"
-                + ".has('target-pe', 'key2')"
-                + ".has('availability-zone-name', 'key3')";
-        String expectedParent =
-                ".has('physical-location-id', 'key1').has('aai-node-type', 'complex')";
+                + ".has('target-pe', 'key2')" + ".has('availability-zone-name', 'key3')";
+        String expectedParent = ".has('physical-location-id', 'key1').has('aai-node-type', 'complex')";
 
-        assertEquals(
-                "gremlin query should be " + expected,
-                expected,
-                query.getQueryBuilder().getQuery());
-        assertEquals(
-                "parent gremlin query should be equal the query for port group",
-                expectedParent,
+        assertEquals("gremlin query should be " + expected, expected, query.getQueryBuilder().getQuery());
+        assertEquals("parent gremlin query should be equal the query for port group", expectedParent,
                 query.getQueryBuilder().getParentQuery().getQuery());
-        assertEquals(
-                "result type should be ctag-pool",
-                "ctag-pool",
-                query.getResultType());
+        assertEquals("result type should be ctag-pool", "ctag-pool", query.getResultType());
 
     }
 

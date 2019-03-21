@@ -17,17 +17,19 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.service;
 
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
+
+import javax.annotation.PostConstruct;
+
 import org.onap.aai.validation.nodes.NodeValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
-
-import javax.annotation.PostConstruct;
 
 @Service
 @ConditionalOnProperty(name = "schema.translator.list", havingValue = "config", matchIfMissing = true)
@@ -37,20 +39,19 @@ public class NodeValidationService {
 
     private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(NodeValidationService.class);
 
-    @Autowired(required=false)
+    @Autowired(required = false)
     private NodeValidator nodeValidator;
 
-    public NodeValidationService(NodeValidator nodeValidator){
+    public NodeValidationService(NodeValidator nodeValidator) {
         this.nodeValidator = nodeValidator;
     }
 
     @PostConstruct
-    public void initialize(){
-        if(!nodeValidator.validate()){
+    public void initialize() {
+        if (!nodeValidator.validate()) {
             LOGGER.warn(nodeValidator.getErrorMsg());
         } else {
             LOGGER.info("Node validation check passed");
         }
     }
 }
-

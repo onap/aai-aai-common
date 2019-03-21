@@ -24,7 +24,6 @@
 // Generated on: 2016.01.06 at 05:38:00 PM EST 
 //
 
-
 package org.onap.aai.domain.notificationEvent;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -33,13 +32,15 @@ import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+
 import org.w3c.dom.Element;
 
-
 /**
- * <p>Java class for anonymous complex type.
+ * <p>
+ * Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -80,16 +81,12 @@ import org.w3c.dom.Element;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-	"cambriaPartition",
-    "eventHeader",
-    "entity"
-})
+@XmlType(name = "", propOrder = {"cambriaPartition", "eventHeader", "entity"})
 @XmlRootElement(name = "NotificationEvent")
 public class NotificationEvent {
 
-	@XmlElement(name = "cambria.partition")
-	protected String cambriaPartition;
+    @XmlElement(name = "cambria.partition")
+    protected String cambriaPartition;
     @XmlElement(name = "event-header")
     protected EventHeader eventHeader;
     @XmlAnyElement(lax = true)
@@ -99,9 +96,9 @@ public class NotificationEvent {
      * Gets the value of the eventHeader property.
      * 
      * @return
-     *     possible object is
-     *     {@link EventHeader }
-     *     
+     *         possible object is
+     *         {@link EventHeader }
+     * 
      */
     public EventHeader getEventHeader() {
         return eventHeader;
@@ -111,9 +108,9 @@ public class NotificationEvent {
      * Sets the value of the eventHeader property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link EventHeader }
-     *     
+     *        allowed object is
+     *        {@link EventHeader }
+     * 
      */
     public void setEventHeader(EventHeader value) {
         this.eventHeader = value;
@@ -123,10 +120,10 @@ public class NotificationEvent {
      * Gets the value of the any property.
      * 
      * @return
-     *     possible object is
-     *     {@link Object }
-     *     {@link Element }
-     *     
+     *         possible object is
+     *         {@link Object }
+     *         {@link Element }
+     * 
      */
     public Object getEntity() {
         return entity;
@@ -136,10 +133,10 @@ public class NotificationEvent {
      * Sets the value of the any property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link Object }
-     *     {@link Element }
-     *     
+     *        allowed object is
+     *        {@link Object }
+     *        {@link Element }
+     * 
      */
     public void setEntity(Object value) {
         this.entity = value;
@@ -149,9 +146,9 @@ public class NotificationEvent {
      * Gets the value of the cambriaPartition property.
      * 
      * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *         possible object is
+     *         {@link String }
+     * 
      */
     public String getCambriaPartition() {
         return cambriaPartition;
@@ -161,19 +158,20 @@ public class NotificationEvent {
      * Sets the value of the cambriaPartition property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *        allowed object is
+     *        {@link String }
+     * 
      */
     public void setCambriaPartition(String value) {
         this.cambriaPartition = value;
     }
 
-
     /**
-     * <p>Java class for anonymous complex type.
+     * <p>
+     * Java class for anonymous complex type.
      * 
-     * <p>The following schema fragment specifies the expected content contained within this class.
+     * <p>
+     * The following schema fragment specifies the expected content contained within this class.
      * 
      * <pre>
      * &lt;complexType>
@@ -202,21 +200,10 @@ public class NotificationEvent {
      * 
      */
     @XmlAccessorType(XmlAccessType.FIELD)
-    @XmlType(name = "", propOrder = {
-        "id",
-        "timestamp",
-        "sourceName",
-        "domain",
-        "sequenceNumber",
-        "severity",
-        "eventType",
-        "version",
-        "action",
-        "entityType",
-        "topEntityType",
-        "entityLink",
-        "status"
-    })
+    @XmlType(
+            name = "",
+            propOrder = {"id", "timestamp", "sourceName", "domain", "sequenceNumber", "severity", "eventType",
+                    "version", "action", "entityType", "topEntityType", "entityLink", "status"})
     public static class EventHeader {
 
         @XmlElement(required = true)
@@ -250,9 +237,9 @@ public class NotificationEvent {
          * Gets the value of the id property.
          * 
          * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         *         possible object is
+         *         {@link String }
+         * 
          */
         public String getId() {
             return id;
@@ -262,9 +249,9 @@ public class NotificationEvent {
          * Sets the value of the id property.
          * 
          * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         *        allowed object is
+         *        {@link String }
+         * 
          */
         public void setId(String value) {
             this.id = value;
@@ -274,9 +261,9 @@ public class NotificationEvent {
          * Gets the value of the timestamp property.
          * 
          * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         *         possible object is
+         *         {@link String }
+         * 
          */
         public String getTimestamp() {
             return timestamp;
@@ -286,9 +273,9 @@ public class NotificationEvent {
          * Sets the value of the timestamp property.
          * 
          * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         *        allowed object is
+         *        {@link String }
+         * 
          */
         public void setTimestamp(String value) {
             this.timestamp = value;
@@ -298,9 +285,9 @@ public class NotificationEvent {
          * Gets the value of the sourceName property.
          * 
          * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         *         possible object is
+         *         {@link String }
+         * 
          */
         public String getSourceName() {
             return sourceName;
@@ -310,9 +297,9 @@ public class NotificationEvent {
          * Sets the value of the sourceName property.
          * 
          * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         *        allowed object is
+         *        {@link String }
+         * 
          */
         public void setSourceName(String value) {
             this.sourceName = value;
@@ -322,9 +309,9 @@ public class NotificationEvent {
          * Gets the value of the domain property.
          * 
          * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         *         possible object is
+         *         {@link String }
+         * 
          */
         public String getDomain() {
             return domain;
@@ -334,9 +321,9 @@ public class NotificationEvent {
          * Sets the value of the domain property.
          * 
          * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         *        allowed object is
+         *        {@link String }
+         * 
          */
         public void setDomain(String value) {
             this.domain = value;
@@ -346,9 +333,9 @@ public class NotificationEvent {
          * Gets the value of the sequenceNumber property.
          * 
          * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         *         possible object is
+         *         {@link String }
+         * 
          */
         public String getSequenceNumber() {
             return sequenceNumber;
@@ -358,9 +345,9 @@ public class NotificationEvent {
          * Sets the value of the sequenceNumber property.
          * 
          * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         *        allowed object is
+         *        {@link String }
+         * 
          */
         public void setSequenceNumber(String value) {
             this.sequenceNumber = value;
@@ -370,9 +357,9 @@ public class NotificationEvent {
          * Gets the value of the severity property.
          * 
          * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         *         possible object is
+         *         {@link String }
+         * 
          */
         public String getSeverity() {
             return severity;
@@ -382,9 +369,9 @@ public class NotificationEvent {
          * Sets the value of the severity property.
          * 
          * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         *        allowed object is
+         *        {@link String }
+         * 
          */
         public void setSeverity(String value) {
             this.severity = value;
@@ -394,9 +381,9 @@ public class NotificationEvent {
          * Gets the value of the eventType property.
          * 
          * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         *         possible object is
+         *         {@link String }
+         * 
          */
         public String getEventType() {
             return eventType;
@@ -406,9 +393,9 @@ public class NotificationEvent {
          * Sets the value of the eventType property.
          * 
          * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         *        allowed object is
+         *        {@link String }
+         * 
          */
         public void setEventType(String value) {
             this.eventType = value;
@@ -418,9 +405,9 @@ public class NotificationEvent {
          * Gets the value of the version property.
          * 
          * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         *         possible object is
+         *         {@link String }
+         * 
          */
         public String getVersion() {
             return version;
@@ -430,9 +417,9 @@ public class NotificationEvent {
          * Sets the value of the version property.
          * 
          * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         *        allowed object is
+         *        {@link String }
+         * 
          */
         public void setVersion(String value) {
             this.version = value;
@@ -442,9 +429,9 @@ public class NotificationEvent {
          * Gets the value of the action property.
          * 
          * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         *         possible object is
+         *         {@link String }
+         * 
          */
         public String getAction() {
             return action;
@@ -454,9 +441,9 @@ public class NotificationEvent {
          * Sets the value of the action property.
          * 
          * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         *        allowed object is
+         *        {@link String }
+         * 
          */
         public void setAction(String value) {
             this.action = value;
@@ -466,9 +453,9 @@ public class NotificationEvent {
          * Gets the value of the entityType property.
          * 
          * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         *         possible object is
+         *         {@link String }
+         * 
          */
         public String getEntityType() {
             return entityType;
@@ -478,9 +465,9 @@ public class NotificationEvent {
          * Sets the value of the entityType property.
          * 
          * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         *        allowed object is
+         *        {@link String }
+         * 
          */
         public void setEntityType(String value) {
             this.entityType = value;
@@ -490,9 +477,9 @@ public class NotificationEvent {
          * Gets the value of the topEntityType property.
          * 
          * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         *         possible object is
+         *         {@link String }
+         * 
          */
         public String getTopEntityType() {
             return topEntityType;
@@ -502,9 +489,9 @@ public class NotificationEvent {
          * Sets the value of the topEntityType property.
          * 
          * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         *        allowed object is
+         *        {@link String }
+         * 
          */
         public void setTopEntityType(String value) {
             this.topEntityType = value;
@@ -514,9 +501,9 @@ public class NotificationEvent {
          * Gets the value of the entityLink property.
          * 
          * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         *         possible object is
+         *         {@link String }
+         * 
          */
         public String getEntityLink() {
             return entityLink;
@@ -526,9 +513,9 @@ public class NotificationEvent {
          * Sets the value of the entityLink property.
          * 
          * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         *        allowed object is
+         *        {@link String }
+         * 
          */
         public void setEntityLink(String value) {
             this.entityLink = value;
@@ -538,9 +525,9 @@ public class NotificationEvent {
          * Gets the value of the status property.
          * 
          * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         *         possible object is
+         *         {@link String }
+         * 
          */
         public String getStatus() {
             return status;
@@ -550,9 +537,9 @@ public class NotificationEvent {
          * Sets the value of the status property.
          * 
          * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         *        allowed object is
+         *        {@link String }
+         * 
          */
         public void setStatus(String value) {
             this.status = value;

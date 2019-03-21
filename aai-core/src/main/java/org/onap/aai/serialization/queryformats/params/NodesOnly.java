@@ -17,11 +17,12 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.serialization.queryformats.params;
 
 @Inject(name = "nodesOnly")
 public interface NodesOnly<T> {
 
-	@Setter
-	public T nodesOnly(Boolean nodesOnly);
+    @Setter
+    public T nodesOnly(Boolean nodesOnly);
 }

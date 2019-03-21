@@ -17,24 +17,25 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.parsers.exceptions;
 
 import org.onap.aai.exceptions.AAIException;
 
 public class AmbiguousMapAAIException extends AAIException {
-	
-	private static final long serialVersionUID = -878581771971431246L;
-	
-	public AmbiguousMapAAIException(String message) {
-		super("AAI_6146", message);
-	}
 
-	public AmbiguousMapAAIException(Throwable cause) {
-		super("AAI_6146",cause);
-	}
+    private static final long serialVersionUID = -878581771971431246L;
 
-	public AmbiguousMapAAIException(String message, Throwable cause) {
-		super("AAI_6146", cause, message);
-	}
+    public AmbiguousMapAAIException(String message) {
+        super("AAI_6146", message);
+    }
+
+    public AmbiguousMapAAIException(Throwable cause) {
+        super("AAI_6146", cause);
+    }
+
+    public AmbiguousMapAAIException(String message, Throwable cause) {
+        super("AAI_6146", cause, message);
+    }
 
 }

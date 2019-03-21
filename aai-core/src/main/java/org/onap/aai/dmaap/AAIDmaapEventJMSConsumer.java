@@ -19,16 +19,20 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.dmaap;
 
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
+
 import java.util.Objects;
 import java.util.UUID;
+
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
+
 import org.apache.log4j.MDC;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -66,7 +70,7 @@ public class AAIDmaapEventJMSConsumer implements MessageListener {
     @Override
     public void onMessage(Message message) {
 
-        if(restTemplate == null){
+        if (restTemplate == null) {
             return;
         }
 
@@ -98,7 +102,7 @@ public class AAIDmaapEventJMSConsumer implements MessageListener {
                     eventName = jo.getString(EVENT_TOPIC);
                 }
 
-                LoggingContext.targetEntity ("DMAAP");
+                LoggingContext.targetEntity("DMAAP");
                 if (jo.getString(EVENT_TOPIC) != null) {
                     eventName = jo.getString(EVENT_TOPIC);
                     LoggingContext.targetServiceName(eventName);
@@ -107,11 +111,11 @@ public class AAIDmaapEventJMSConsumer implements MessageListener {
                 LoggingContext.statusCode(StatusCode.COMPLETE);
                 LoggingContext.responseCode(LoggingContext.SUCCESS);
                 LOGGER.info(eventName + "|" + aaiEvent);
-                
+
                 HttpEntity httpEntity = new HttpEntity(aaiEvent, httpHeaders);
 
                 String transportType = environment.getProperty("dmaap.ribbon.transportType", "http");
-                String baseUrl  = transportType + "://" + environment.getProperty("dmaap.ribbon.listOfServers");
+                String baseUrl = transportType + "://" + environment.getProperty("dmaap.ribbon.listOfServers");
                 String endpoint = "/events/" + eventName;
 
                 if ("AAI-EVENT".equals(eventName)) {
@@ -123,11 +127,13 @@ public class AAIDmaapEventJMSConsumer implements MessageListener {
             } catch (JMSException | JSONException e) {
                 LoggingContext.statusCode(StatusCode.ERROR);
                 LoggingContext.responseCode(LoggingContext.DATA_ERROR);
-                LOGGER.error("AAI_7350 Error parsing aaievent jsm message for sending to dmaap. {} {}", jsmMessageTxt, LogFormatTools.getStackTop(e));
+                LOGGER.error("AAI_7350 Error parsing aaievent jsm message for sending to dmaap. {} {}", jsmMessageTxt,
+                        LogFormatTools.getStackTop(e));
             } catch (Exception e) {
                 LoggingContext.statusCode(StatusCode.ERROR);
                 LoggingContext.responseCode(LoggingContext.AVAILABILITY_TIMEOUT_ERROR);
-                LOGGER.error("AAI_7350 Error sending message to dmaap. {} {}" , jsmMessageTxt, LogFormatTools.getStackTop(e));
+                LOGGER.error("AAI_7350 Error sending message to dmaap. {} {}", jsmMessageTxt,
+                        LogFormatTools.getStackTop(e));
             }
         }
 

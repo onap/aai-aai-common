@@ -17,7 +17,12 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.introspection.tools;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -25,10 +30,6 @@ import org.onap.aai.AAISetup;
 import org.onap.aai.introspection.*;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.springframework.test.annotation.DirtiesContext;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNull;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class RemoveNonVisiblePropertyTest extends AAISetup {
@@ -38,7 +39,7 @@ public class RemoveNonVisiblePropertyTest extends AAISetup {
     private RemoveNonVisibleProperty rn;
 
     @Before
-    public void setup(){
+    public void setup() {
         rn = new RemoveNonVisibleProperty();
         loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
     }
@@ -65,6 +66,5 @@ public class RemoveNonVisiblePropertyTest extends AAISetup {
         issue.setIntrospector(introspector);
         assertFalse("Nonvisible property not present so should not have been removed", rn.resolveIssue(issue));
     }
-
 
 }

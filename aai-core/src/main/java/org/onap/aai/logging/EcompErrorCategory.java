@@ -17,26 +17,26 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.logging;
 
+import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.pattern.ClassicConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.classic.Level;
 
 public class EcompErrorCategory extends ClassicConverter {
 
-	@Override
-	public String convert(ILoggingEvent event) {
-		
-		final Level lev = event.getLevel();
-		final String defaultCategory = "WARN";
-		
-		if ((Level.WARN).equals(lev)) {
-			return (defaultCategory);
-		}
-		else if ((Level.ERROR).equals(lev)) {
-			return ("ERROR");
-		}
-		return (defaultCategory);
-	}
+    @Override
+    public String convert(ILoggingEvent event) {
+
+        final Level lev = event.getLevel();
+        final String defaultCategory = "WARN";
+
+        if ((Level.WARN).equals(lev)) {
+            return (defaultCategory);
+        } else if ((Level.ERROR).equals(lev)) {
+            return ("ERROR");
+        }
+        return (defaultCategory);
+    }
 }

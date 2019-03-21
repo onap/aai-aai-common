@@ -19,6 +19,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.domain.restPolicyException;
 
 import static org.junit.Assert.assertEquals;
@@ -27,9 +28,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.onap.aai.AAISetup;
 
-public class RequestErrorTest extends AAISetup{
+public class RequestErrorTest extends AAISetup {
     private RequestError reqError;
-    
+
     @Before
     public void setup() {
         reqError = new RequestError();

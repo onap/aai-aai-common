@@ -17,27 +17,29 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.serialization.queryformats;
 
 import com.google.gson.JsonObject;
-import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
 
 import java.util.Optional;
 
+import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
+
 public class Console implements FormatMapper {
 
-	@Override
-	public Optional<JsonObject> formatObject(Object v) throws AAIFormatVertexException {
-		
-		JsonObject json = new JsonObject();
-		json.addProperty("result", v.toString());
-		
-		return Optional.of(json);
-	}
+    @Override
+    public Optional<JsonObject> formatObject(Object v) throws AAIFormatVertexException {
 
-	@Override
-	public int parallelThreshold() {
-		return 100;
-	}
+        JsonObject json = new JsonObject();
+        json.addProperty("result", v.toString());
+
+        return Optional.of(json);
+    }
+
+    @Override
+    public int parallelThreshold() {
+        return 100;
+    }
 
 }

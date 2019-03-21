@@ -19,6 +19,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.util;
 
 import java.text.DateFormat;
@@ -28,7 +29,7 @@ import java.util.Date;
 import java.util.TimeZone;
 
 public class AAIUtils {
-    
+
     /**
      * Instantiates AAIUtils.
      */
@@ -57,5 +58,5 @@ public class AAIUtils {
         DateFormat formatter = new SimpleDateFormat("YYMMdd-HH:mm:ss:SSS");
         formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
         return formatter.format(date);
-    }    
+    }
 }

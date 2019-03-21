@@ -17,13 +17,14 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
-package org.onap.aai.introspection.tools;
 
-import org.onap.aai.introspection.Introspector;
-import org.onap.aai.schema.enums.PropertyMetadata;
+package org.onap.aai.introspection.tools;
 
 import java.util.Map;
 import java.util.UUID;
+
+import org.onap.aai.introspection.Introspector;
+import org.onap.aai.schema.enums.PropertyMetadata;
 
 /**
  * <b>CreateUUID</b> is an issue resolver that is responsible
@@ -46,30 +47,31 @@ import java.util.UUID;
  */
 public class CreateUUID implements IssueResolver {
 
-	/**
-	 * Resolves the issue by checking if the issue type is missing key prop
-	 * and if it is it will retrieve the introspector associated with the issue
-	 * then gets the metadata associated to that specific property
-	 * and if it contains the auto generate meta property and if it does
-	 * then it will fix it by setting that property value to generated uuid
-	 *
-	 * @param issue the issue with the details associated to the problem
-	 * @return true if the issue has been successfully resolved
-	 *          false otherwise
-	 */
-	@Override
-	public boolean resolveIssue(Issue issue) {
+    /**
+     * Resolves the issue by checking if the issue type is missing key prop
+     * and if it is it will retrieve the introspector associated with the issue
+     * then gets the metadata associated to that specific property
+     * and if it contains the auto generate meta property and if it does
+     * then it will fix it by setting that property value to generated uuid
+     *
+     * @param issue the issue with the details associated to the problem
+     * @return true if the issue has been successfully resolved
+     *         false otherwise
+     */
+    @Override
+    public boolean resolveIssue(Issue issue) {
 
-		Introspector obj = issue.getIntrospector();
-		if (issue.getType().equals(IssueType.MISSING_KEY_PROP)) {
-			Map<PropertyMetadata, String> metadata = obj.getPropertyMetadata(issue.getPropName());
-			if (metadata.containsKey(PropertyMetadata.AUTO_GENERATE_UUID) && metadata.get(PropertyMetadata.AUTO_GENERATE_UUID).equals("true")) {
-				obj.setValue(issue.getPropName(), UUID.randomUUID().toString());
-				return true;
-			}
-		}
-		
-		return false;
-	}
+        Introspector obj = issue.getIntrospector();
+        if (issue.getType().equals(IssueType.MISSING_KEY_PROP)) {
+            Map<PropertyMetadata, String> metadata = obj.getPropertyMetadata(issue.getPropName());
+            if (metadata.containsKey(PropertyMetadata.AUTO_GENERATE_UUID)
+                    && metadata.get(PropertyMetadata.AUTO_GENERATE_UUID).equals("true")) {
+                obj.setValue(issue.getPropName(), UUID.randomUUID().toString());
+                return true;
+            }
+        }
+
+        return false;
+    }
 
 }

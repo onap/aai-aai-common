@@ -17,8 +17,8 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
-package org.onap.aai.serialization.engines.query;
 
+package org.onap.aai.serialization.engines.query;
 
 import static org.onap.aai.edges.enums.AAIDirection.IN;
 import static org.onap.aai.edges.enums.AAIDirection.NONE;
@@ -55,31 +55,32 @@ import org.onap.aai.logging.StopWatch;
  */
 public class GraphTraversalQueryEngine extends QueryEngine {
 
-	/**
-	 * Instantiates a new graph traversal query engine.
-	 *
-	 * @param g     graph traversal source to traverse the graph
-	 */
-	public GraphTraversalQueryEngine(GraphTraversalSource g) {
-		super(g);
-	}
+    /**
+     * Instantiates a new graph traversal query engine.
+     *
+     * @param g graph traversal source to traverse the graph
+     */
+    public GraphTraversalQueryEngine(GraphTraversalSource g) {
+        super(g);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public List<Vertex> findParents(Vertex start) {
-		try {
-			StopWatch.conditionalStart();
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Vertex> findParents(Vertex start) {
+        try {
+            StopWatch.conditionalStart();
 
-                        @SuppressWarnings("unchecked")
-                        final GraphTraversal<Vertex, Vertex> pipe = this.g.V(start).emit(v -> true).repeat(__.union(__.inE().has(CONTAINS.toString(), OUT.toString()).outV(), __.outE().has(CONTAINS.toString(), IN.toString()).inV()));
-		        return pipe.toList();
-		}
-		finally {
-			dbTimeMsecs += StopWatch.stopIfStarted();
-		}
-	}
+            @SuppressWarnings("unchecked")
+            final GraphTraversal<Vertex, Vertex> pipe = this.g.V(start).emit(v -> true)
+                    .repeat(__.union(__.inE().has(CONTAINS.toString(), OUT.toString()).outV(),
+                            __.outE().has(CONTAINS.toString(), IN.toString()).inV()));
+            return pipe.toList();
+        } finally {
+            dbTimeMsecs += StopWatch.stopIfStarted();
+        }
+    }
 
     /**
      * {@inheritDoc}
@@ -88,80 +89,73 @@ public class GraphTraversalQueryEngine extends QueryEngine {
     public List<Vertex> findParents(String[] uris) {
         try {
             StopWatch.conditionalStart();
-            final GraphTraversal<Vertex, Vertex> pipe = this.g.V()
-                .has(AAIProperties.AAI_URI, P.within(uris))
-                .order().by(AAIProperties.AAI_URI, Order.decr);
+            final GraphTraversal<Vertex, Vertex> pipe =
+                    this.g.V().has(AAIProperties.AAI_URI, P.within(uris)).order().by(AAIProperties.AAI_URI, Order.decr);
             return pipe.toList();
-        }
-        finally {
+        } finally {
             dbTimeMsecs += StopWatch.stopIfStarted();
         }
     }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public List<Vertex> findAllChildren(Vertex start) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Vertex> findAllChildren(Vertex start) {
 
-		@SuppressWarnings("unchecked")
-		GraphTraversal<Vertex, Vertex> pipe =  this.g
-				.V(start).emit(v -> true).repeat(__.union(__.outE().has(CONTAINS.toString(), OUT.toString()).inV(), __.inE().has(CONTAINS.toString(), IN.toString()).outV()));
+        @SuppressWarnings("unchecked")
+        GraphTraversal<Vertex, Vertex> pipe = this.g.V(start).emit(v -> true)
+                .repeat(__.union(__.outE().has(CONTAINS.toString(), OUT.toString()).inV(),
+                        __.inE().has(CONTAINS.toString(), IN.toString()).outV()));
 
+        return pipe.toList();
 
-		return pipe.toList();
+    }
 
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Vertex> findChildrenOfType(Vertex start, String type) {
+        @SuppressWarnings("unchecked")
+        GraphTraversal<Vertex, Vertex> pipe = this.g.V(start)
+                .union(__.outE().has(CONTAINS.toString(), OUT.toString()).inV(),
+                        __.inE().has(CONTAINS.toString(), IN.toString()).outV())
+                .has(AAIProperties.NODE_TYPE, type).dedup();
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public List<Vertex> findChildrenOfType(Vertex start, String type) {
-		@SuppressWarnings("unchecked")
-		GraphTraversal<Vertex, Vertex> pipe =  this.g.V(start).union(
-					__.outE().has(CONTAINS.toString(), OUT.toString()).inV(),
-					__.inE().has(CONTAINS.toString(), IN.toString()).outV()
-				).has(AAIProperties.NODE_TYPE, type).dedup();
+        return pipe.toList();
+    }
 
-		return pipe.toList();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Vertex> findChildren(Vertex start) {
+        @SuppressWarnings("unchecked")
+        GraphTraversal<Vertex, Vertex> pipe = this.g.V(start).union(__.outE().has(CONTAINS.toString(), OUT.toString()),
+                __.inE().has(CONTAINS.toString(), IN.toString())).otherV().dedup();
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public List<Vertex> findChildren(Vertex start) {
-		@SuppressWarnings("unchecked")
-		GraphTraversal<Vertex, Vertex> pipe =  this.g.V(start).union(
-					__.outE().has(CONTAINS.toString(), OUT.toString()),
-					__.inE().has(CONTAINS.toString(), IN.toString())
-				).otherV().dedup();
+        return pipe.toList();
+    }
 
-		return pipe.toList();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public List<Vertex> findDeletable(Vertex start) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Vertex> findDeletable(Vertex start) {
         try {
             StopWatch.conditionalStart();
             @SuppressWarnings("unchecked")
-            GraphTraversal<Vertex, Vertex> pipe = this.g
-                    .V(start).emit(v -> true).repeat(
-                        __.union(
-                            __.outE().has(DELETE_OTHER_V.toString(), OUT.toString()).inV(),
-                            __.inE().has(DELETE_OTHER_V.toString(), IN.toString()).outV()
-                        )
-                    ).dedup();
+            GraphTraversal<Vertex, Vertex> pipe = this.g.V(start).emit(v -> true)
+                    .repeat(__.union(__.outE().has(DELETE_OTHER_V.toString(), OUT.toString()).inV(),
+                            __.inE().has(DELETE_OTHER_V.toString(), IN.toString()).outV()))
+                    .dedup();
 
             return pipe.toList();
         } finally {
             dbTimeMsecs += StopWatch.stopIfStarted();
         }
-	}
+    }
 
     /**
      * {@inheritDoc}
@@ -172,119 +166,97 @@ public class GraphTraversalQueryEngine extends QueryEngine {
             StopWatch.conditionalStart();
             Vertex[] vertices = new Vertex[startVertexes.size()];
             vertices = startVertexes.toArray(vertices);
-            GraphTraversal<Vertex, Vertex> pipe = this.g
-                .V(vertices).emit(v -> true).repeat(
-                    __.union(
-                        __.outE().has(DELETE_OTHER_V.toString(), OUT.toString()).inV(),
-                        __.inE().has(DELETE_OTHER_V.toString(), IN.toString()).outV()
-                    )
-                ).dedup();
+            GraphTraversal<Vertex, Vertex> pipe = this.g.V(vertices).emit(v -> true)
+                    .repeat(__.union(__.outE().has(DELETE_OTHER_V.toString(), OUT.toString()).inV(),
+                            __.inE().has(DELETE_OTHER_V.toString(), IN.toString()).outV()))
+                    .dedup();
 
             return pipe.toList();
-        }
-        finally {
+        } finally {
             dbTimeMsecs += StopWatch.stopIfStarted();
         }
     }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public List<Vertex> findRelatedVertices(Vertex start, Direction direction, String label, String nodeType) {
-		GraphTraversal<Vertex, Vertex> pipe = this.g.V(start);
-		switch (direction) {
-			case OUT:
-				pipe.out(label);
-				break;
-			case IN:
-				pipe.in(label);
-				break;
-			case BOTH:
-				pipe.both(label);
-				break;
-			 default:
-				break;
-		}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Vertex> findRelatedVertices(Vertex start, Direction direction, String label, String nodeType) {
+        GraphTraversal<Vertex, Vertex> pipe = this.g.V(start);
+        switch (direction) {
+            case OUT:
+                pipe.out(label);
+                break;
+            case IN:
+                pipe.in(label);
+                break;
+            case BOTH:
+                pipe.both(label);
+                break;
+            default:
+                break;
+        }
 
-		pipe.has(AAIProperties.NODE_TYPE, nodeType).dedup();
-		return pipe.toList();
-	}
+        pipe.has(AAIProperties.NODE_TYPE, nodeType).dedup();
+        return pipe.toList();
+    }
 
-	@Override
-	public Tree<Element> findSubGraph(Vertex start, int iterations, boolean nodeOnly) {
-		final GraphTraversal<Vertex, ?> t = this.g.V(start).emit(v -> true).times(iterations).repeat(
-				__.union(
-					__.outE().has(CONTAINS.toString(), OUT.toString()).inV(),
-					__.inE().has(CONTAINS.toString(), IN.toString()).outV())
-				);
+    @Override
+    public Tree<Element> findSubGraph(Vertex start, int iterations, boolean nodeOnly) {
+        final GraphTraversal<Vertex, ?> t = this.g.V(start).emit(v -> true).times(iterations)
+                .repeat(__.union(__.outE().has(CONTAINS.toString(), OUT.toString()).inV(),
+                        __.inE().has(CONTAINS.toString(), IN.toString()).outV()));
 
-		if (!nodeOnly) {
-			t.union(
-					__.identity(),
-					__.bothE().has(CONTAINS.toString(), NONE.toString()).dedup().otherV()
-			);
-		}
-		t.tree();
-		if (t.hasNext()) {
-			return (Tree)t.next();
-		} else {
-			return new Tree();
-		}
-	}
+        if (!nodeOnly) {
+            t.union(__.identity(), __.bothE().has(CONTAINS.toString(), NONE.toString()).dedup().otherV());
+        }
+        t.tree();
+        if (t.hasNext()) {
+            return (Tree) t.next();
+        } else {
+            return new Tree();
+        }
+    }
 
-	@Override
-	public List<Edge> findEdgesForVersion(Vertex start, Loader loader) {
-	    // From the given start vertex find both the
-		// out edges that has property CONTAINS set to NONE
-		// whose in vertexes has an object that is declared in the oxm
-		// And do the same thing vice versa to get a list of edges
-		// Then check that the edge should not have the property private set to true
-		// and remove the duplicates and return the list of edges
-		final Set<String> objects = loader.getAllObjects().keySet();
-		GraphTraversal<Vertex, Edge> pipeline = this.g
-			.V(start)
-			.union(
-				__.inE().has(CONTAINS.toString(), NONE.toString()).where(__.outV().has(AAIProperties.NODE_TYPE, P.within(objects))),
-				__.outE().has(CONTAINS.toString(), NONE.toString()).where(__.inV().has(AAIProperties.NODE_TYPE, P.within(objects)))
-			)
-			.not(
-				__.has("private", true)
-			)
-			.dedup();
+    @Override
+    public List<Edge> findEdgesForVersion(Vertex start, Loader loader) {
+        // From the given start vertex find both the
+        // out edges that has property CONTAINS set to NONE
+        // whose in vertexes has an object that is declared in the oxm
+        // And do the same thing vice versa to get a list of edges
+        // Then check that the edge should not have the property private set to true
+        // and remove the duplicates and return the list of edges
+        final Set<String> objects = loader.getAllObjects().keySet();
+        GraphTraversal<Vertex, Edge> pipeline = this.g.V(start)
+                .union(__.inE().has(CONTAINS.toString(), NONE.toString())
+                        .where(__.outV().has(AAIProperties.NODE_TYPE, P.within(objects))),
+                        __.outE().has(CONTAINS.toString(), NONE.toString())
+                                .where(__.inV().has(AAIProperties.NODE_TYPE, P.within(objects))))
+                .not(__.has("private", true)).dedup();
 
-		return pipeline.toList();
-	}
+        return pipeline.toList();
+    }
 
-
-	@Override
-	public List<Vertex> findCousinVertices(Vertex start, String... labels) {
-	    // Start at the given vertex
-		// Do a union to copy the start vertex to be run against all
-		// so for the start vertex it gets all of in edges that contains other v set to none
-		// and also all the other out edges with contains other v set to none
-		// And filter the edges based on the property private not set
+    @Override
+    public List<Vertex> findCousinVertices(Vertex start, String... labels) {
+        // Start at the given vertex
+        // Do a union to copy the start vertex to be run against all
+        // so for the start vertex it gets all of in edges that contains other v set to none
+        // and also all the other out edges with contains other v set to none
+        // And filter the edges based on the property private not set
         // so that means it will be a regular edge
-		// and find the other end of the vertex so if setup like this:
-		// v2 -> e1 -> v3
-		// It will return v3
-		GraphTraversal<Vertex, Vertex> pipeline = this.g
-            .V(start)
-            .union(
-                __.inE(labels).has(CONTAINS.toString(), NONE.toString()),
-                __.outE(labels).has(CONTAINS.toString(), NONE.toString())
-            )
-			.not(
-				__.has(PRIVATE.toString(), true)
-			)
-			.otherV()
-			.dedup();
+        // and find the other end of the vertex so if setup like this:
+        // v2 -> e1 -> v3
+        // It will return v3
+        GraphTraversal<Vertex, Vertex> pipeline = this.g.V(start)
+                .union(__.inE(labels).has(CONTAINS.toString(), NONE.toString()),
+                        __.outE(labels).has(CONTAINS.toString(), NONE.toString()))
+                .not(__.has(PRIVATE.toString(), true)).otherV().dedup();
 
-		return pipeline.toList();
-	}
+        return pipeline.toList();
+    }
 
-	public double getDBTimeMsecs() {
-		return (dbTimeMsecs);
-	}
+    public double getDBTimeMsecs() {
+        return (dbTimeMsecs);
+    }
 }
-

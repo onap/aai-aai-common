@@ -17,42 +17,43 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.introspection;
 
 public class IntrospectorFactory {
 
-	/**
-	 * New instance.
-	 *
-	 * @param type the type
-	 * @param o the o
-	 * @return the introspector
-	 */
-	public static Introspector newInstance(ModelType type, Object o) {
-		
-		if (type.equals(ModelType.MOXY)) {
-			return new MoxyStrategy(o);
-		} else {
-			throw new IllegalArgumentException("Unknown class type: " + type); 
-		}
-		
-	}
-	
-	/**
-	 * New instance.
-	 *
-	 * @param type the type
-	 * @param o the o
-	 * @param namedType the named type
-	 * @return the introspector
-	 */
-	public static Introspector newInstance(ModelType type, Object o, String namedType) {
-		
-		if (type.equals(ModelType.JSON)) {
-			return new JSONStrategy(o, namedType);
-		} else {
-			throw new IllegalArgumentException("Unknown class type: " + type); 
-		}
-		
-	}
+    /**
+     * New instance.
+     *
+     * @param type the type
+     * @param o the o
+     * @return the introspector
+     */
+    public static Introspector newInstance(ModelType type, Object o) {
+
+        if (type.equals(ModelType.MOXY)) {
+            return new MoxyStrategy(o);
+        } else {
+            throw new IllegalArgumentException("Unknown class type: " + type);
+        }
+
+    }
+
+    /**
+     * New instance.
+     *
+     * @param type the type
+     * @param o the o
+     * @param namedType the named type
+     * @return the introspector
+     */
+    public static Introspector newInstance(ModelType type, Object o, String namedType) {
+
+        if (type.equals(ModelType.JSON)) {
+            return new JSONStrategy(o, namedType);
+        } else {
+            throw new IllegalArgumentException("Unknown class type: " + type);
+        }
+
+    }
 }

@@ -17,6 +17,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.serialization.engines.query;
 
 import static org.junit.Assert.*;
@@ -45,46 +46,43 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {
-		ConfigConfiguration.class,
-		AAICoreFakeEdgesConfigTranslator.class,
-		EdgeIngestor.class,
-		EdgeSerializer.class
-})
+@ContextConfiguration(
+        classes = {ConfigConfiguration.class, AAICoreFakeEdgesConfigTranslator.class, EdgeIngestor.class,
+                EdgeSerializer.class})
 @DirtiesContext
 public class GraphTraversalQueryEngine_needsFakeEdgeRulesTest {
-	@Autowired
-	EdgeSerializer edgeSer;
-	
-	@Test
-	public void testFindDeletable() throws AAIException {
-		//setup
-		Graph graph = TinkerGraph.open();
-		Vertex parent = graph.addVertex(T.id, "00", "aai-node-type", "test-parent");
-		Vertex child = graph.addVertex(T.id, "10", "aai-node-type", "test-child");
-		Vertex cousin = graph.addVertex(T.id, "20", "aai-node-type", "test-cousin");
-		Vertex grandchild = graph.addVertex(T.id, "30", "aai-node-type", "test-grandchild");
+    @Autowired
+    EdgeSerializer edgeSer;
 
-		GraphTraversalSource g = graph.traversal();
-		
-		edgeSer.addTreeEdge(g, parent, child); //delete-other-v=none, no cascade
-		edgeSer.addTreeEdge(g, child, grandchild); //d-o-v=out, yes from child
-		edgeSer.addEdge(g, cousin, child); //d-o-v=out, yes from cousin
-		
-		List<Vertex> parentExpected = new ArrayList<>(Arrays.asList(parent));
-		List<Vertex> childExpected = new ArrayList<>(Arrays.asList(child, grandchild));
-		List<Vertex> cousinExpected = new ArrayList<>(Arrays.asList(cousin, child, grandchild));
-		
-		GraphTraversalQueryEngine engine = new GraphTraversalQueryEngine(g);
-		
-		//tests
-		List<Vertex> parentDeletes = engine.findDeletable(parent);
-		assertTrue(parentExpected.containsAll(parentDeletes) && parentDeletes.containsAll(parentExpected));
-		
-		List<Vertex> childDeletes = engine.findDeletable(child);
-		assertTrue(childExpected.containsAll(childDeletes) && childDeletes.containsAll(childExpected));
-		
-		List<Vertex> cousinDeletes = engine.findDeletable(cousin);
-		assertTrue(cousinExpected.containsAll(cousinDeletes) && cousinDeletes.containsAll(cousinExpected));
-	}
+    @Test
+    public void testFindDeletable() throws AAIException {
+        // setup
+        Graph graph = TinkerGraph.open();
+        Vertex parent = graph.addVertex(T.id, "00", "aai-node-type", "test-parent");
+        Vertex child = graph.addVertex(T.id, "10", "aai-node-type", "test-child");
+        Vertex cousin = graph.addVertex(T.id, "20", "aai-node-type", "test-cousin");
+        Vertex grandchild = graph.addVertex(T.id, "30", "aai-node-type", "test-grandchild");
+
+        GraphTraversalSource g = graph.traversal();
+
+        edgeSer.addTreeEdge(g, parent, child); // delete-other-v=none, no cascade
+        edgeSer.addTreeEdge(g, child, grandchild); // d-o-v=out, yes from child
+        edgeSer.addEdge(g, cousin, child); // d-o-v=out, yes from cousin
+
+        List<Vertex> parentExpected = new ArrayList<>(Arrays.asList(parent));
+        List<Vertex> childExpected = new ArrayList<>(Arrays.asList(child, grandchild));
+        List<Vertex> cousinExpected = new ArrayList<>(Arrays.asList(cousin, child, grandchild));
+
+        GraphTraversalQueryEngine engine = new GraphTraversalQueryEngine(g);
+
+        // tests
+        List<Vertex> parentDeletes = engine.findDeletable(parent);
+        assertTrue(parentExpected.containsAll(parentDeletes) && parentDeletes.containsAll(parentExpected));
+
+        List<Vertex> childDeletes = engine.findDeletable(child);
+        assertTrue(childExpected.containsAll(childDeletes) && childDeletes.containsAll(childExpected));
+
+        List<Vertex> cousinDeletes = engine.findDeletable(cousin);
+        assertTrue(cousinExpected.containsAll(cousinDeletes) && cousinDeletes.containsAll(cousinExpected));
+    }
 }

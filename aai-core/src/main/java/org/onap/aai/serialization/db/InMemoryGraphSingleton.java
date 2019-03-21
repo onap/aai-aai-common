@@ -17,42 +17,42 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.serialization.db;
 
-import org.onap.aai.dbmap.DBConnectionType;
-
 import org.janusgraph.core.JanusGraph;
+import org.onap.aai.dbmap.DBConnectionType;
 
 public class InMemoryGraphSingleton extends GraphSingleton {
 
-	private static JanusGraph inMemgraph;
+    private static JanusGraph inMemgraph;
 
-	private static class Helper {
-		private static final InMemoryGraphSingleton INSTANCE = new InMemoryGraphSingleton();
-	}
+    private static class Helper {
+        private static final InMemoryGraphSingleton INSTANCE = new InMemoryGraphSingleton();
+    }
 
-	/**
-	 * Gets the single instance of JanusGraphSingleton.
-	 *
-	 * @return single instance of JanusGraphSingleton
-	 */
-	public static InMemoryGraphSingleton getInstance(JanusGraph graph) {
-		inMemgraph = graph;
-		return Helper.INSTANCE;
-	}
+    /**
+     * Gets the single instance of JanusGraphSingleton.
+     *
+     * @return single instance of JanusGraphSingleton
+     */
+    public static InMemoryGraphSingleton getInstance(JanusGraph graph) {
+        inMemgraph = graph;
+        return Helper.INSTANCE;
+    }
 
-	/**
-	 * Gets the tx graph.
-	 *
-	 * @return the tx graph
-	 */
-	@Override
-	public JanusGraph getTxGraph() {
-		return inMemgraph;
-	}
+    /**
+     * Gets the tx graph.
+     *
+     * @return the tx graph
+     */
+    @Override
+    public JanusGraph getTxGraph() {
+        return inMemgraph;
+    }
 
-	@Override
-	public JanusGraph getTxGraph(DBConnectionType connectionType) {
-		return inMemgraph;
-	}
+    @Override
+    public JanusGraph getTxGraph(DBConnectionType connectionType) {
+        return inMemgraph;
+    }
 }

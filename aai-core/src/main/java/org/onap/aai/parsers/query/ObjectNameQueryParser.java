@@ -20,16 +20,17 @@
 /**
  * 
  */
+
 package org.onap.aai.parsers.query;
 
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.query.builder.QueryBuilder;
 
 public class ObjectNameQueryParser extends QueryParser {
-	
-	public ObjectNameQueryParser(Loader loader, QueryBuilder queryBuilder, String objName) {
-		super(loader, queryBuilder);
-		this.resultResource = objName;
-	}
+
+    public ObjectNameQueryParser(Loader loader, QueryBuilder queryBuilder, String objName) {
+        super(loader, queryBuilder);
+        this.resultResource = objName;
+    }
 
 }

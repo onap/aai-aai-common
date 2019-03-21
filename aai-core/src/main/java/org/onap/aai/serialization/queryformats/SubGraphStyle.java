@@ -17,10 +17,9 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.serialization.queryformats;
 
 public enum SubGraphStyle {
-	star,
-	prune,
-	no_op
+    star, prune, no_op
 }

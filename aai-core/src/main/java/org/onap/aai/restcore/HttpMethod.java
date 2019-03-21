@@ -17,17 +17,12 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.restcore;
 
 /**
  * The Enum HttpMethod.
  */
 public enum HttpMethod {
-	PUT,
-	MERGE_PATCH,
-	DELETE,
-	PUT_EDGE,
-	DELETE_EDGE,
-	GET,
-    GET_RELATIONSHIP;
+    PUT, MERGE_PATCH, DELETE, PUT_EDGE, DELETE_EDGE, GET, GET_RELATIONSHIP;
 }

@@ -19,6 +19,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.domain.restPolicyException;
 
 import static org.junit.Assert.assertEquals;
@@ -30,9 +31,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.onap.aai.AAISetup;
 
-public class PolicyExceptionTest extends AAISetup{
+public class PolicyExceptionTest extends AAISetup {
     private PolicyException exception;
-    
+
     @Before
     public void setup() {
         exception = new PolicyException();
@@ -43,13 +44,13 @@ public class PolicyExceptionTest extends AAISetup{
         exception.setAdditionalProperty("property1", "value1");
         assertEquals(exception.getAdditionalProperties().get("property1"), "value1");
     }
-    
+
     @Test
     public void testGetMessageId() throws Exception {
         exception.setMessageId("samplemessage");
         assertEquals(exception.getMessageId(), "samplemessage");
     }
-    
+
     @Test
     public void testGetText() throws Exception {
         exception.setText("sampletext");
@@ -63,6 +64,6 @@ public class PolicyExceptionTest extends AAISetup{
         expectedVariables.add("secondvariable");
         exception.setVariables(expectedVariables);
         assertEquals(exception.getVariables(), expectedVariables);
-        
+
     }
 }

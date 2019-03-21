@@ -17,21 +17,22 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.serialization.db;
 
 /* This is class is just a wrapper of its parent */
 public class JanusGraphSingleton extends GraphSingleton {
 
-	private static class Helper {
-		private static final JanusGraphSingleton INSTANCE = new JanusGraphSingleton();
-	}
-	
-	/**
-	 * Gets the single instance of JanusGraphSingleton.
-	 *
-	 * @return single instance of JanusGraphSingleton
-	 */
-	public static JanusGraphSingleton getInstance() {
-		return Helper.INSTANCE;
-	}
+    private static class Helper {
+        private static final JanusGraphSingleton INSTANCE = new JanusGraphSingleton();
+    }
+
+    /**
+     * Gets the single instance of JanusGraphSingleton.
+     *
+     * @return single instance of JanusGraphSingleton
+     */
+    public static JanusGraphSingleton getInstance() {
+        return Helper.INSTANCE;
+    }
 }

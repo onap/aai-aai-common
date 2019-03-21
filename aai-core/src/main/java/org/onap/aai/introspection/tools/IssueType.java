@@ -17,8 +17,9 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.introspection.tools;
 
 public enum IssueType {
-	MISSING_REQUIRED_PROP, MISSING_KEY_PROP, EXCEEDED_ALLOWED_DEPTH, PROPERTY_NOT_VISIBLE, DEPENDENT_PROP_NOT_FOUND
+    MISSING_REQUIRED_PROP, MISSING_KEY_PROP, EXCEEDED_ALLOWED_DEPTH, PROPERTY_NOT_VISIBLE, DEPENDENT_PROP_NOT_FOUND
 }

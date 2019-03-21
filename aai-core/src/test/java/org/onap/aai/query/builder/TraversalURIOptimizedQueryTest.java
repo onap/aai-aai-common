@@ -17,12 +17,14 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.query.builder;
 
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.Tree;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
+
 public class TraversalURIOptimizedQueryTest extends TraversalQueryTest {
 
     @Override
@@ -44,7 +46,6 @@ public class TraversalURIOptimizedQueryTest extends TraversalQueryTest {
     protected QueryBuilder<Vertex> getNewVertexTraversalWithTestEdgeRules() {
         return new TraversalURIOptimizedQuery<>(loader, g);
     }
-
 
     @Override
     protected QueryBuilder<Vertex> getNewVertexTraversal() {

@@ -17,28 +17,30 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.util;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.annotation.Generated;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Generated;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
-@JsonPropertyOrder({
-    "entity"
-})
+@JsonPropertyOrder({"entity"})
 public class EntityList {
 
     @JsonProperty("entity")
@@ -49,7 +51,7 @@ public class EntityList {
     /**
      * 
      * @return
-     *     The entity
+     *         The entity
      */
     @JsonProperty("entity")
     public List<Entity> getEntity() {
@@ -59,7 +61,7 @@ public class EntityList {
     /**
      * 
      * @param entity
-     *     The entity
+     *        The entity
      */
     @JsonProperty("entity")
     public void setEntity(List<Entity> entity) {
@@ -105,7 +107,8 @@ public class EntityList {
             return false;
         }
         EntityList rhs = ((EntityList) other);
-        return new EqualsBuilder().append(entity, rhs.entity).append(additionalProperties, rhs.additionalProperties).isEquals();
+        return new EqualsBuilder().append(entity, rhs.entity).append(additionalProperties, rhs.additionalProperties)
+                .isEquals();
     }
 
 }

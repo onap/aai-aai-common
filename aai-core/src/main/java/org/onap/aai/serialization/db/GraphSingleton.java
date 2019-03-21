@@ -17,52 +17,53 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.serialization.db;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.janusgraph.core.JanusGraph;
 import org.onap.aai.dbmap.AAIGraph;
 import org.onap.aai.dbmap.DBConnectionType;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 /* This class simply calls AAIGraph under the covers for now */
 public class GraphSingleton {
 
-	protected AtomicInteger totalCount = new AtomicInteger();
-	
-	private static class Helper {
-		private static final GraphSingleton INSTANCE = new GraphSingleton();
-	}
-	
-	/**
-	 * Gets the single instance of GraphSingleton.
-	 *
-	 * @return single instance of GraphSingleton
-	 */
-	public static GraphSingleton getInstance() {
-		return Helper.INSTANCE;
+    protected AtomicInteger totalCount = new AtomicInteger();
 
-	}
-	
-	/**
-	 * Gets the count.
-	 *
-	 * @return the count
-	 */
-	public AtomicInteger getCount() {
-		return totalCount;
-	}
-	
-	/**
-	 * Gets the tx graph.
-	 *
-	 * @return the tx graph
-	 */
-	public JanusGraph getTxGraph() {
-		return AAIGraph.getInstance().getGraph();
-	}
-	
-	public JanusGraph getTxGraph(DBConnectionType connectionType) {
-		return AAIGraph.getInstance().getGraph(connectionType);
-	}
+    private static class Helper {
+        private static final GraphSingleton INSTANCE = new GraphSingleton();
+    }
+
+    /**
+     * Gets the single instance of GraphSingleton.
+     *
+     * @return single instance of GraphSingleton
+     */
+    public static GraphSingleton getInstance() {
+        return Helper.INSTANCE;
+
+    }
+
+    /**
+     * Gets the count.
+     *
+     * @return the count
+     */
+    public AtomicInteger getCount() {
+        return totalCount;
+    }
+
+    /**
+     * Gets the tx graph.
+     *
+     * @return the tx graph
+     */
+    public JanusGraph getTxGraph() {
+        return AAIGraph.getInstance().getGraph();
+    }
+
+    public JanusGraph getTxGraph(DBConnectionType connectionType) {
+        return AAIGraph.getInstance().getGraph(connectionType);
+    }
 }

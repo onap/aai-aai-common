@@ -17,31 +17,30 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.introspection;
 
 import org.junit.Test;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.springframework.test.annotation.DirtiesContext;
 
-
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class MoxyEngineTest extends IntrospectorTestSpec {
 
     /**
      * Container object.
-     * @throws AAIUnknownObjectException 
+     * 
+     * @throws AAIUnknownObjectException
      */
     @Test
     public void containerObject() throws AAIUnknownObjectException {
-        
+
         Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDepthVersion());
-        
+
         Introspector obj = loader.introspectorFromName("port-groups");
 
         this.containerTestSet(obj);
-        
+
     }
-    
-    
-    
+
 }

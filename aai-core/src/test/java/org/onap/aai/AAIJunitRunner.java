@@ -17,13 +17,14 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
-package org.onap.aai;
 
-import org.junit.runners.Parameterized;
-import org.onap.aai.util.AAIConstants;
+package org.onap.aai;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+
+import org.junit.runners.Parameterized;
+import org.onap.aai.util.AAIConstants;
 
 public class AAIJunitRunner extends Parameterized {
 
@@ -33,12 +34,12 @@ public class AAIJunitRunner extends Parameterized {
         modifyOxmHome();
     }
 
-    public void setProps(){
+    public void setProps() {
         System.setProperty("AJSC_HOME", ".");
         System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
     }
 
-    public void modifyOxmHome(){
+    public void modifyOxmHome() {
         try {
             Field aaiConstantsField = AAIConstants.class.getField("AAI_HOME_ETC_OXM");
             setFinalStatic(aaiConstantsField, "../aai-schema/src/main/resources/oxm/");

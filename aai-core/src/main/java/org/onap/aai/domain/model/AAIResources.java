@@ -17,69 +17,69 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
-package org.onap.aai.domain.model;
 
-import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
+package org.onap.aai.domain.model;
 
 import java.util.HashMap;
 
+import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
+
 public class AAIResources {
-	
-	private DynamicJAXBContext jaxbContext;
-	
-	private HashMap<String, AAIResource> aaiResources;
-	private HashMap<String, AAIResource> resourceLookup;
-	
-	
-	/**
-	 * Gets the aai resources.
-	 *
-	 * @return the aai resources
-	 */
-	public HashMap<String, AAIResource> getAaiResources() {
-		if (aaiResources == null) { 
-			aaiResources = new HashMap<String, AAIResource>();
-		}
-		return aaiResources;
-	}
 
-	/**
-	 * Gets the jaxb context.
-	 *
-	 * @return the jaxb context
-	 */
-	public DynamicJAXBContext getJaxbContext() {
-		return jaxbContext;
-	}
+    private DynamicJAXBContext jaxbContext;
 
-	/**
-	 * Sets the jaxb context.
-	 *
-	 * @param jaxbContext the new jaxb context
-	 */
-	public void setJaxbContext(DynamicJAXBContext jaxbContext) {
-		this.jaxbContext = jaxbContext;
-	}
+    private HashMap<String, AAIResource> aaiResources;
+    private HashMap<String, AAIResource> resourceLookup;
 
-	/**
-	 * Gets the resource lookup.
-	 *
-	 * @return the resource lookup
-	 */
-	public HashMap<String, AAIResource> getResourceLookup() {
-		if (resourceLookup == null) { 
-			resourceLookup = new HashMap<String, AAIResource>();
-		}
-		return resourceLookup;
-	}
+    /**
+     * Gets the aai resources.
+     *
+     * @return the aai resources
+     */
+    public HashMap<String, AAIResource> getAaiResources() {
+        if (aaiResources == null) {
+            aaiResources = new HashMap<String, AAIResource>();
+        }
+        return aaiResources;
+    }
 
-	/**
-	 * Sets the resource lookup.
-	 *
-	 * @param resourceLookup the resource lookup
-	 */
-	public void setResourceLookup(HashMap<String, AAIResource> resourceLookup) {
-		this.resourceLookup = resourceLookup;
-	}
-	
+    /**
+     * Gets the jaxb context.
+     *
+     * @return the jaxb context
+     */
+    public DynamicJAXBContext getJaxbContext() {
+        return jaxbContext;
+    }
+
+    /**
+     * Sets the jaxb context.
+     *
+     * @param jaxbContext the new jaxb context
+     */
+    public void setJaxbContext(DynamicJAXBContext jaxbContext) {
+        this.jaxbContext = jaxbContext;
+    }
+
+    /**
+     * Gets the resource lookup.
+     *
+     * @return the resource lookup
+     */
+    public HashMap<String, AAIResource> getResourceLookup() {
+        if (resourceLookup == null) {
+            resourceLookup = new HashMap<String, AAIResource>();
+        }
+        return resourceLookup;
+    }
+
+    /**
+     * Sets the resource lookup.
+     *
+     * @param resourceLookup the resource lookup
+     */
+    public void setResourceLookup(HashMap<String, AAIResource> resourceLookup) {
+        this.resourceLookup = resourceLookup;
+    }
+
 }

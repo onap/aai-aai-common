@@ -19,6 +19,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.dmaap;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
@@ -33,16 +34,17 @@ public class AAIDmaapEventJMSProducer implements MessageProducer {
     private JmsTemplate jmsTemplate;
 
     public AAIDmaapEventJMSProducer() {
-        if("true".equals(AAIConfig.get("aai.jms.enable", "true"))){
+        if ("true".equals(AAIConfig.get("aai.jms.enable", "true"))) {
             this.jmsTemplate = new JmsTemplate();
             String activeMqTcpUrl = System.getProperty("activemq.tcp.url", "tcp://localhost:61547");
-            this.jmsTemplate.setConnectionFactory(new CachingConnectionFactory(new ActiveMQConnectionFactory(activeMqTcpUrl)));
+            this.jmsTemplate
+                    .setConnectionFactory(new CachingConnectionFactory(new ActiveMQConnectionFactory(activeMqTcpUrl)));
             this.jmsTemplate.setDefaultDestination(new ActiveMQQueue("IN_QUEUE"));
         }
     }
 
     public void sendMessageToDefaultDestination(JSONObject finalJson) {
-        if(jmsTemplate != null){
+        if (jmsTemplate != null) {
             jmsTemplate.convertAndSend(finalJson.toString());
             CachingConnectionFactory ccf = (CachingConnectionFactory) this.jmsTemplate.getConnectionFactory();
             ccf.destroy();

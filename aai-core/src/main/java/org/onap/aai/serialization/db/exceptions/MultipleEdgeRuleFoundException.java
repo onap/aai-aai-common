@@ -17,23 +17,24 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.serialization.db.exceptions;
 
 import org.onap.aai.exceptions.AAIException;
 
 public class MultipleEdgeRuleFoundException extends AAIException {
 
-	private static final long serialVersionUID = -906843868234976763L;
+    private static final long serialVersionUID = -906843868234976763L;
 
-	public MultipleEdgeRuleFoundException(String message) {
-		super("AAI_6107", message);
-	}
+    public MultipleEdgeRuleFoundException(String message) {
+        super("AAI_6107", message);
+    }
 
-	public MultipleEdgeRuleFoundException(Throwable cause) {
-		super("AAI_6107",cause);
-	}
+    public MultipleEdgeRuleFoundException(Throwable cause) {
+        super("AAI_6107", cause);
+    }
 
-	public MultipleEdgeRuleFoundException(String message, Throwable cause) {
-		super("AAI_6107", cause, message);
-	}
+    public MultipleEdgeRuleFoundException(String message, Throwable cause) {
+        super("AAI_6107", cause, message);
+    }
 }

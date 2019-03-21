@@ -24,22 +24,23 @@
 // Generated on: 2015.10.28 at 05:53:17 PM EDT 
 //
 
-
 package org.onap.aai.domain.restResponseInfo;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for anonymous complex type.
+ * <p>
+ * Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -88,9 +89,7 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "responseMessages"
-})
+@XmlType(name = "", propOrder = {"responseMessages"})
 @XmlRootElement(name = "Info")
 public class Info {
 
@@ -100,9 +99,9 @@ public class Info {
      * Gets the value of the responseMessages property.
      * 
      * @return
-     *     possible object is
-     *     {@link ResponseMessages }
-     *     
+     *         possible object is
+     *         {@link ResponseMessages }
+     * 
      */
     public ResponseMessages getResponseMessages() {
         return responseMessages;
@@ -112,19 +111,20 @@ public class Info {
      * Sets the value of the responseMessages property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link ResponseMessages }
-     *     
+     *        allowed object is
+     *        {@link ResponseMessages }
+     * 
      */
     public void setResponseMessages(ResponseMessages value) {
         this.responseMessages = value;
     }
 
-
     /**
-     * <p>Java class for anonymous complex type.
+     * <p>
+     * Java class for anonymous complex type.
      * 
-     * <p>The following schema fragment specifies the expected content contained within this class.
+     * <p>
+     * The following schema fragment specifies the expected content contained within this class.
      * 
      * <pre>
      * &lt;complexType>
@@ -163,9 +163,7 @@ public class Info {
      * 
      */
     @XmlAccessorType(XmlAccessType.FIELD)
-    @XmlType(name = "", propOrder = {
-        "responseMessage"
-    })
+    @XmlType(name = "", propOrder = {"responseMessage"})
     public static class ResponseMessages {
 
         protected List<ResponseMessage> responseMessage;
@@ -181,8 +179,9 @@ public class Info {
          * 
          * <p>
          * For example, to add a new item, do as follows:
+         * 
          * <pre>
-         *    getResponseMessage().add(newItem);
+         * getResponseMessage().add(newItem);
          * </pre>
          * 
          * 
@@ -199,11 +198,12 @@ public class Info {
             return this.responseMessage;
         }
 
-
         /**
-         * <p>Java class for anonymous complex type.
+         * <p>
+         * Java class for anonymous complex type.
          * 
-         * <p>The following schema fragment specifies the expected content contained within this class.
+         * <p>
+         * The following schema fragment specifies the expected content contained within this class.
          * 
          * <pre>
          * &lt;complexType>
@@ -232,11 +232,7 @@ public class Info {
          * 
          */
         @XmlAccessorType(XmlAccessType.FIELD)
-        @XmlType(name = "", propOrder = {
-            "messageId",
-            "text",
-            "variables"
-        })
+        @XmlType(name = "", propOrder = {"messageId", "text", "variables"})
         public static class ResponseMessage {
 
             @XmlElement(required = true)
@@ -250,9 +246,9 @@ public class Info {
              * Gets the value of the messageId property.
              * 
              * @return
-             *     possible object is
-             *     {@link String }
-             *     
+             *         possible object is
+             *         {@link String }
+             * 
              */
             public String getMessageId() {
                 return messageId;
@@ -262,9 +258,9 @@ public class Info {
              * Sets the value of the messageId property.
              * 
              * @param value
-             *     allowed object is
-             *     {@link String }
-             *     
+             *        allowed object is
+             *        {@link String }
+             * 
              */
             public void setMessageId(String value) {
                 this.messageId = value;
@@ -274,9 +270,9 @@ public class Info {
              * Gets the value of the text property.
              * 
              * @return
-             *     possible object is
-             *     {@link String }
-             *     
+             *         possible object is
+             *         {@link String }
+             * 
              */
             public String getText() {
                 return text;
@@ -286,9 +282,9 @@ public class Info {
              * Sets the value of the text property.
              * 
              * @param value
-             *     allowed object is
-             *     {@link String }
-             *     
+             *        allowed object is
+             *        {@link String }
+             * 
              */
             public void setText(String value) {
                 this.text = value;
@@ -298,9 +294,9 @@ public class Info {
              * Gets the value of the variables property.
              * 
              * @return
-             *     possible object is
-             *     {@link Variables }
-             *     
+             *         possible object is
+             *         {@link Variables }
+             * 
              */
             public Variables getVariables() {
                 return variables;
@@ -310,19 +306,20 @@ public class Info {
              * Sets the value of the variables property.
              * 
              * @param value
-             *     allowed object is
-             *     {@link Variables }
-             *     
+             *        allowed object is
+             *        {@link Variables }
+             * 
              */
             public void setVariables(Variables value) {
                 this.variables = value;
             }
 
-
             /**
-             * <p>Java class for anonymous complex type.
+             * <p>
+             * Java class for anonymous complex type.
              * 
-             * <p>The following schema fragment specifies the expected content contained within this class.
+             * <p>
+             * The following schema fragment specifies the expected content contained within this class.
              * 
              * <pre>
              * &lt;complexType>
@@ -339,9 +336,7 @@ public class Info {
              * 
              */
             @XmlAccessorType(XmlAccessType.FIELD)
-            @XmlType(name = "", propOrder = {
-                "variable"
-            })
+            @XmlType(name = "", propOrder = {"variable"})
             public static class Variables {
 
                 protected List<String> variable;
@@ -357,8 +352,9 @@ public class Info {
                  * 
                  * <p>
                  * For example, to add a new item, do as follows:
+                 * 
                  * <pre>
-                 *    getVariable().add(newItem);
+                 * getVariable().add(newItem);
                  * </pre>
                  * 
                  * 

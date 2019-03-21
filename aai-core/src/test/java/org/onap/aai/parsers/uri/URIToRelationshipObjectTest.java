@@ -17,7 +17,21 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.parsers.uri;
+
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertTrue;
+
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import javax.annotation.PostConstruct;
+import javax.ws.rs.core.UriBuilder;
+import javax.xml.bind.JAXBException;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -27,31 +41,20 @@ import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.*;
 import org.onap.aai.setup.SchemaVersion;
 
-import javax.annotation.PostConstruct;
-import javax.ws.rs.core.UriBuilder;
-import javax.xml.bind.JAXBException;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertTrue;
-
 public class URIToRelationshipObjectTest extends AAISetup {
 
-    private SchemaVersion latest ;
+    private SchemaVersion latest;
     private Loader loader;
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
     @PostConstruct
-    public void createLoader(){
+    public void createLoader() {
         latest = schemaVersions.getDefaultVersion();
         loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, latest);
     }
+
     /**
      * Uri.
      *
@@ -59,20 +62,24 @@ public class URIToRelationshipObjectTest extends AAISetup {
      * @throws AAIException the AAI exception
      * @throws IllegalArgumentException the illegal argument exception
      * @throws UnsupportedEncodingException the unsupported encoding exception
-     * @throws URISyntaxException 
+     * @throws URISyntaxException
      * @throws MalformedURLException the malformed URL exception
      */
     @Test
-    public void uri() throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException, URISyntaxException {
-        
-        URI uri = UriBuilder.fromPath("/aai/" + loader.getVersion() + "/cloud-infrastructure/cloud-regions/cloud-region/mycloudregionowner/mycloudregionid/tenants/tenant/key1/vservers/vserver/key2/l-interfaces/l-interface/key3").build();
+    public void uri() throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException,
+            URISyntaxException {
+
+        URI uri = UriBuilder.fromPath("/aai/" + loader.getVersion()
+                + "/cloud-infrastructure/cloud-regions/cloud-region/mycloudregionowner/mycloudregionid/tenants/tenant/key1/vservers/vserver/key2/l-interfaces/l-interface/key3")
+                .build();
         URIToRelationshipObject parse = new URIToRelationshipObject(loader, uri);
         Introspector result = parse.getResult();
-        String expected = "\\{\"related-to\":\"l-interface\",\"related-link\":\"/aai/" + latest + "/cloud-infrastructure/cloud-regions/cloud-region/mycloudregionowner/mycloudregionid/tenants/tenant/key1/vservers/vserver/key2/l-interfaces/l-interface/key3\",\"relationship-data\":\\[\\{\"relationship-key\":\"cloud-region.cloud-owner\",\"relationship-value\":\"mycloudregionowner\"\\},\\{\"relationship-key\":\"cloud-region.cloud-region-id\",\"relationship-value\":\"mycloudregionid\"\\},\\{\"relationship-key\":\"tenant.tenant-id\",\"relationship-value\":\"key1\"\\},\\{\"relationship-key\":\"vserver.vserver-id\",\"relationship-value\":\"key2\"\\},\\{\"relationship-key\":\"l-interface.interface-name\",\"relationship-value\":\"key3\"\\}\\]\\}";
+        String expected = "\\{\"related-to\":\"l-interface\",\"related-link\":\"/aai/" + latest
+                + "/cloud-infrastructure/cloud-regions/cloud-region/mycloudregionowner/mycloudregionid/tenants/tenant/key1/vservers/vserver/key2/l-interfaces/l-interface/key3\",\"relationship-data\":\\[\\{\"relationship-key\":\"cloud-region.cloud-owner\",\"relationship-value\":\"mycloudregionowner\"\\},\\{\"relationship-key\":\"cloud-region.cloud-region-id\",\"relationship-value\":\"mycloudregionid\"\\},\\{\"relationship-key\":\"tenant.tenant-id\",\"relationship-value\":\"key1\"\\},\\{\"relationship-key\":\"vserver.vserver-id\",\"relationship-value\":\"key2\"\\},\\{\"relationship-key\":\"l-interface.interface-name\",\"relationship-value\":\"key3\"\\}\\]\\}";
         assertTrue("blah", result.marshal(false).matches(expected));
-        
+
     }
-    
+
     /**
      * Uri no version.
      *
@@ -80,18 +87,21 @@ public class URIToRelationshipObjectTest extends AAISetup {
      * @throws AAIException the AAI exception
      * @throws IllegalArgumentException the illegal argument exception
      * @throws UnsupportedEncodingException the unsupported encoding exception
-     * @throws URISyntaxException 
+     * @throws URISyntaxException
      * @throws MalformedURLException the malformed URL exception
      */
     @Test
-    public void uriNoVersion() throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException, URISyntaxException {
-        URI uri = UriBuilder.fromPath("/cloud-infrastructure/cloud-regions/cloud-region/mycloudregionowner/mycloudregionid/tenants/tenant/key1/vservers/vserver/key2/l-interfaces/l-interface/key3").build();
+    public void uriNoVersion() throws JAXBException, AAIException, IllegalArgumentException,
+            UnsupportedEncodingException, URISyntaxException {
+        URI uri = UriBuilder.fromPath(
+                "/cloud-infrastructure/cloud-regions/cloud-region/mycloudregionowner/mycloudregionid/tenants/tenant/key1/vservers/vserver/key2/l-interfaces/l-interface/key3")
+                .build();
         URIToRelationshipObject parse = new URIToRelationshipObject(loader, uri);
         Introspector result = parse.getResult();
-        String expected = "\\{\"related-to\":\"l-interface\",\"related-link\":\"/aai/" + latest + "/cloud-infrastructure/cloud-regions/cloud-region/mycloudregionowner/mycloudregionid/tenants/tenant/key1/vservers/vserver/key2/l-interfaces/l-interface/key3\",\"relationship-data\":\\[\\{\"relationship-key\":\"cloud-region.cloud-owner\",\"relationship-value\":\"mycloudregionowner\"\\},\\{\"relationship-key\":\"cloud-region.cloud-region-id\",\"relationship-value\":\"mycloudregionid\"\\},\\{\"relationship-key\":\"tenant.tenant-id\",\"relationship-value\":\"key1\"\\},\\{\"relationship-key\":\"vserver.vserver-id\",\"relationship-value\":\"key2\"\\},\\{\"relationship-key\":\"l-interface.interface-name\",\"relationship-value\":\"key3\"\\}\\]\\}";
+        String expected = "\\{\"related-to\":\"l-interface\",\"related-link\":\"/aai/" + latest
+                + "/cloud-infrastructure/cloud-regions/cloud-region/mycloudregionowner/mycloudregionid/tenants/tenant/key1/vservers/vserver/key2/l-interfaces/l-interface/key3\",\"relationship-data\":\\[\\{\"relationship-key\":\"cloud-region.cloud-owner\",\"relationship-value\":\"mycloudregionowner\"\\},\\{\"relationship-key\":\"cloud-region.cloud-region-id\",\"relationship-value\":\"mycloudregionid\"\\},\\{\"relationship-key\":\"tenant.tenant-id\",\"relationship-value\":\"key1\"\\},\\{\"relationship-key\":\"vserver.vserver-id\",\"relationship-value\":\"key2\"\\},\\{\"relationship-key\":\"l-interface.interface-name\",\"relationship-value\":\"key3\"\\}\\]\\}";
         assertTrue("blah", result.marshal(false).matches(expected));
 
-        
     }
 
     /**
@@ -101,19 +111,25 @@ public class URIToRelationshipObjectTest extends AAISetup {
      * @throws AAIException the AAI exception
      * @throws IllegalArgumentException the illegal argument exception
      * @throws UnsupportedEncodingException the unsupported encoding exception
-     * @throws URISyntaxException 
+     * @throws URISyntaxException
      * @throws MalformedURLException the malformed URL exception
      */
     @Test
-    public void doubleKeyRelationship() throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException, URISyntaxException {
-        URI uri = UriBuilder.fromPath("/aai/" + latest + "/cloud-infrastructure/complexes/complex/key1/ctag-pools/ctag-pool/key2/key3/").build();
+    public void doubleKeyRelationship() throws JAXBException, AAIException, IllegalArgumentException,
+            UnsupportedEncodingException, URISyntaxException {
+        URI uri =
+                UriBuilder
+                        .fromPath("/aai/" + latest
+                                + "/cloud-infrastructure/complexes/complex/key1/ctag-pools/ctag-pool/key2/key3/")
+                        .build();
         URIToRelationshipObject parse = new URIToRelationshipObject(loader, uri);
         Introspector result = parse.getResult();
-        String expected = "\\{\"related-to\":\"ctag-pool\",\"related-link\":\"/aai/" + latest + "/cloud-infrastructure/complexes/complex/key1/ctag-pools/ctag-pool/key2/key3\",\"relationship-data\":\\[\\{\"relationship-key\":\"complex.physical-location-id\",\"relationship-value\":\"key1\"\\},\\{\"relationship-key\":\"ctag-pool.target-pe\",\"relationship-value\":\"key2\"\\},\\{\"relationship-key\":\"ctag-pool.availability-zone-name\",\"relationship-value\":\"key3\"\\}\\]\\}";
+        String expected = "\\{\"related-to\":\"ctag-pool\",\"related-link\":\"/aai/" + latest
+                + "/cloud-infrastructure/complexes/complex/key1/ctag-pools/ctag-pool/key2/key3\",\"relationship-data\":\\[\\{\"relationship-key\":\"complex.physical-location-id\",\"relationship-value\":\"key1\"\\},\\{\"relationship-key\":\"ctag-pool.target-pe\",\"relationship-value\":\"key2\"\\},\\{\"relationship-key\":\"ctag-pool.availability-zone-name\",\"relationship-value\":\"key3\"\\}\\]\\}";
         assertTrue("blah", result.marshal(false).matches(expected));
 
     }
-    
+
     /**
      * Uri with non string key.
      *
@@ -121,17 +137,24 @@ public class URIToRelationshipObjectTest extends AAISetup {
      * @throws AAIException the AAI exception
      * @throws IllegalArgumentException the illegal argument exception
      * @throws UnsupportedEncodingException the unsupported encoding exception
-     * @throws URISyntaxException 
+     * @throws URISyntaxException
      * @throws MalformedURLException the malformed URL exception
      */
     @Test
-    public void uriWithNonStringKey() throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException, URISyntaxException {
-        URI uri = UriBuilder.fromPath("/aai/" + latest + "/network/vces/vce/key1/port-groups/port-group/key2/cvlan-tags/cvlan-tag/144").build();
+    public void uriWithNonStringKey() throws JAXBException, AAIException, IllegalArgumentException,
+            UnsupportedEncodingException, URISyntaxException {
+        URI uri =
+                UriBuilder
+                        .fromPath("/aai/" + latest
+                                + "/network/vces/vce/key1/port-groups/port-group/key2/cvlan-tags/cvlan-tag/144")
+                        .build();
         URIToRelationshipObject parse = new URIToRelationshipObject(loader, uri);
         Introspector result = parse.getResult();
-        String expected = "\\{\"related-to\":\"cvlan-tag\",\"related-link\":\"/aai/" + latest + "/network/vces/vce/key1/port-groups/port-group/key2/cvlan-tags/cvlan-tag/144\",\"relationship-data\":\\[\\{\"relationship-key\":\"vce.vnf-id\",\"relationship-value\":\"key1\"\\},\\{\"relationship-key\":\"port-group.interface-id\",\"relationship-value\":\"key2\"\\},\\{\"relationship-key\":\"cvlan-tag.cvlan-tag\",\"relationship-value\":\"144\"\\}\\]\\}";
+        String expected = "\\{\"related-to\":\"cvlan-tag\",\"related-link\":\"/aai/" + latest
+                + "/network/vces/vce/key1/port-groups/port-group/key2/cvlan-tags/cvlan-tag/144\",\"relationship-data\":\\[\\{\"relationship-key\":\"vce.vnf-id\",\"relationship-value\":\"key1\"\\},\\{\"relationship-key\":\"port-group.interface-id\",\"relationship-value\":\"key2\"\\},\\{\"relationship-key\":\"cvlan-tag.cvlan-tag\",\"relationship-value\":\"144\"\\}\\]\\}";
         assertTrue("blah", result.marshal(false).matches(expected));
     }
+
     /**
      * Bad URI.
      *
@@ -142,12 +165,14 @@ public class URIToRelationshipObjectTest extends AAISetup {
      */
     @Test
     public void badURI() throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException {
-        URI uri = UriBuilder.fromPath("/aai/" + loader.getVersion() + "/cloud-infrastructure/cloud-regions/cloud-region/mycloudregionowner/mycloudregionid/tenants/tenant/key1/vservers/vserver/key2/l-interadsfaces/l-interface/key3").build();
-        
+        URI uri = UriBuilder.fromPath("/aai/" + loader.getVersion()
+                + "/cloud-infrastructure/cloud-regions/cloud-region/mycloudregionowner/mycloudregionid/tenants/tenant/key1/vservers/vserver/key2/l-interadsfaces/l-interface/key3")
+                .build();
+
         thrown.expect(AAIException.class);
-        thrown.expect(hasProperty("code",  is("AAI_3000")));
-        
+        thrown.expect(hasProperty("code", is("AAI_3000")));
+
         URIToObject parse = new URIToObject(loader, uri);
-        
+
     }
 }

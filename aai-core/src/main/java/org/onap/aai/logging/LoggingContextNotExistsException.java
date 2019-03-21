@@ -17,9 +17,10 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.logging;
 
 public class LoggingContextNotExistsException extends RuntimeException {
 
-	private static final long serialVersionUID = -4965807709525739623L;
+    private static final long serialVersionUID = -4965807709525739623L;
 }

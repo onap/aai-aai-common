@@ -17,9 +17,20 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.rest;
 
+import static org.junit.Assert.assertEquals;
+
 import com.jayway.jsonpath.JsonPath;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
+import java.util.Collection;
+
+import javax.ws.rs.core.Response;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,14 +43,6 @@ import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.test.annotation.DirtiesContext;
-
-import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
-import java.util.Collection;
-
-import static org.junit.Assert.assertEquals;
 
 @RunWith(value = Parameterized.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
@@ -56,9 +59,7 @@ public class EntitlementTest extends AAISetup {
 
     @Parameterized.Parameters(name = "QueryStyle.{0}")
     public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][]{
-            {QueryStyle.TRAVERSAL_URI}
-        });
+        return Arrays.asList(new Object[][] {{QueryStyle.TRAVERSAL_URI}});
     }
 
     @Before
@@ -72,7 +73,7 @@ public class EntitlementTest extends AAISetup {
     public void testPutGenericVnfAndThenInsertEntitlement() throws IOException, AAIException {
         String entitlementPayload = PayloadUtil.getResourcePayload("entitlement.json");
         String entitlementUri = "/aai/v14/network/generic-vnfs/generic-vnf/vnf1/entitlements/entitlement/g1/r1";
-        Response response     = httpTestUtil.doPut(vnfUri, vnfPayload);
+        Response response = httpTestUtil.doPut(vnfUri, vnfPayload);
         assertEquals("Expected the Generic Vnf to be created", 201, response.getStatus());
 
         response = httpTestUtil.doGet(vnfUri);
@@ -80,7 +81,7 @@ public class EntitlementTest extends AAISetup {
         String jsonResponse = response.getEntity().toString();
         JSONAssert.assertEquals(vnfPayload, jsonResponse, false);
 
-        response     = httpTestUtil.doPut(entitlementUri, entitlementPayload);
+        response = httpTestUtil.doPut(entitlementUri, entitlementPayload);
         assertEquals("Expected the Entitlement to be created", 201, response.getStatus());
     }
 

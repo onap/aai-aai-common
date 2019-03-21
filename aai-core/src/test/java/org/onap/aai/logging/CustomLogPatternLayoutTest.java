@@ -17,31 +17,32 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.logging;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.onap.aai.logging.CNName;
 import org.onap.aai.logging.CustomLogPatternLayout;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 public class CustomLogPatternLayoutTest {
-    
+
     /**
      * Test null when defaultConverterMap doesn't have corresponding entry.
      */
     @Test
-    public void testNull(){
+    public void testNull() {
         String s = CustomLogPatternLayout.defaultConverterMap.get("z");
         assertFalse("Entry not found for key 'z'", CNName.class.getName().equals(s));
     }
-    
+
     /**
      * Test defaultConverterMap when valid entry exists.
      */
     @Test
-    public void testEntryFor_Z(){
+    public void testEntryFor_Z() {
         CustomLogPatternLayout layout = new CustomLogPatternLayout();
         String s = CustomLogPatternLayout.defaultConverterMap.get("z");
         assertTrue("Entry not found for key 'z'", CNName.class.getName().equals(s));

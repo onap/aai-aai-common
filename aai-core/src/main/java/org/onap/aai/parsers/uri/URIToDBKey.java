@@ -17,19 +17,22 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.parsers.uri;
 
 import com.google.common.base.Joiner;
-import org.onap.aai.exceptions.AAIException;
-import org.onap.aai.introspection.Introspector;
-import org.onap.aai.introspection.Loader;
-import org.onap.aai.edges.enums.EdgeType;
 
-import javax.ws.rs.core.MultivaluedMap;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.ws.rs.core.MultivaluedMap;
+
+import org.onap.aai.edges.enums.EdgeType;
+import org.onap.aai.exceptions.AAIException;
+import org.onap.aai.introspection.Introspector;
+import org.onap.aai.introspection.Loader;
 
 /**
  * Creates a Unique database key from a URI
@@ -38,69 +41,69 @@ import java.util.List;
  */
 public class URIToDBKey implements Parsable {
 
-	
-	private List<String> dbKeys = new ArrayList<>();
+    private List<String> dbKeys = new ArrayList<>();
 
-	/**
-	 * Instantiates a new URI to DB key.
-	 *
-	 * @param loader the loader
-	 * @param uri the uri
-	 * @throws IllegalArgumentException the illegal argument exception
-	 * @throws AAIException the AAI exception
-	 * @throws UnsupportedEncodingException the unsupported encoding exception
-	 */
-	public URIToDBKey(Loader loader, URI uri) throws IllegalArgumentException, AAIException, UnsupportedEncodingException {
-		URIParser parser = new URIParser(loader, uri);
-		parser.parse(this);
-	}
+    /**
+     * Instantiates a new URI to DB key.
+     *
+     * @param loader the loader
+     * @param uri the uri
+     * @throws IllegalArgumentException the illegal argument exception
+     * @throws AAIException the AAI exception
+     * @throws UnsupportedEncodingException the unsupported encoding exception
+     */
+    public URIToDBKey(Loader loader, URI uri)
+            throws IllegalArgumentException, AAIException, UnsupportedEncodingException {
+        URIParser parser = new URIParser(loader, uri);
+        parser.parse(this);
+    }
 
-	/**
-	 * @{inheritDoc}
-	 */
-	@Override
-	public void processNamespace(Introspector obj) {
-	
-	}
-	
-	/**
-	 * @{inheritDoc}
-	 */
-	@Override
-	public String getCloudRegionTransform() {
-		return "add";
-	}
-	
-	/**
-	 * Gets the result.
-	 *
-	 * @return the result
-	 */
-	public Object getResult() {
-		return Joiner.on("/").join(this.dbKeys);
-	}
+    /**
+     * @{inheritDoc}
+     */
+    @Override
+    public void processNamespace(Introspector obj) {
 
-	/**
-	 * @{inheritDoc}
-	 */
-	@Override
-	public boolean useOriginalLoader() {
-		return false;
-	}
+    }
 
-	@Override
-	public void processObject(Introspector obj, EdgeType type, MultivaluedMap<String, String> uriKeys)
-			throws AAIException {
+    /**
+     * @{inheritDoc}
+     */
+    @Override
+    public String getCloudRegionTransform() {
+        return "add";
+    }
 
-		dbKeys.add(obj.getDbName());
+    /**
+     * Gets the result.
+     *
+     * @return the result
+     */
+    public Object getResult() {
+        return Joiner.on("/").join(this.dbKeys);
+    }
 
-		for (String key : uriKeys.keySet()) {
-			dbKeys.add(uriKeys.getFirst(key).toString());
-		}		
-	}
+    /**
+     * @{inheritDoc}
+     */
+    @Override
+    public boolean useOriginalLoader() {
+        return false;
+    }
 
-	@Override
-	public void processContainer(Introspector obj, EdgeType type, MultivaluedMap<String, String> uriKeys,
-			boolean isFinalContainer) {
-	}
+    @Override
+    public void processObject(Introspector obj, EdgeType type, MultivaluedMap<String, String> uriKeys)
+            throws AAIException {
+
+        dbKeys.add(obj.getDbName());
+
+        for (String key : uriKeys.keySet()) {
+            dbKeys.add(uriKeys.getFirst(key).toString());
+        }
+    }
+
+    @Override
+    public void processContainer(Introspector obj, EdgeType type, MultivaluedMap<String, String> uriKeys,
+            boolean isFinalContainer) {
+    }
 }

@@ -19,10 +19,17 @@
  *
  * ECOMP is a trademark and service mark of AT&T Intellectual Property.
  */
+
 package org.onap.aai.serialization.db;
 
+import static junit.framework.TestCase.fail;
+import static org.junit.Assert.assertEquals;
 
 import com.google.common.collect.Multimap;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.junit.Rule;
 import org.junit.Test;
@@ -37,64 +44,49 @@ import org.onap.aai.edges.exceptions.EdgeRuleNotFoundException;
 import org.onap.aai.setup.SchemaVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static junit.framework.TestCase.fail;
-import static org.junit.Assert.assertEquals;
-
 public class EdgeRulesTest extends AAISetup {
 
-	//set thrown.expect to whatever a specific test needs
-	//this establishes a default of expecting no exceptions to be thrown
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+    // set thrown.expect to whatever a specific test needs
+    // this establishes a default of expecting no exceptions to be thrown
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
-	@Autowired
-	private EdgeIngestor edgeIngestor;
+    @Autowired
+    private EdgeIngestor edgeIngestor;
 
-	@Test
-	public void verifyOutDirection() throws EdgeRuleNotFoundException, AmbiguousRuleChoiceException {
+    @Test
+    public void verifyOutDirection() throws EdgeRuleNotFoundException, AmbiguousRuleChoiceException {
 
-	    EdgeRuleQuery ruleQuery = new EdgeRuleQuery
-            .Builder("cloud-region", "flavor")
-            .edgeType(EdgeType.TREE)
-            .build();
-
-		EdgeRule rule = edgeIngestor.getRule(ruleQuery);
-
-		assertEquals("out direction", rule.getDirection(), Direction.IN);
-	}
-
-	@Test
-	public void verifyOutFlippedDirection() throws EdgeRuleNotFoundException, AmbiguousRuleChoiceException {
-
-        EdgeRuleQuery ruleQuery = new EdgeRuleQuery
-            .Builder("flavor", "cloud-region")
-            .edgeType(EdgeType.TREE)
-            .build();
+        EdgeRuleQuery ruleQuery = new EdgeRuleQuery.Builder("cloud-region", "flavor").edgeType(EdgeType.TREE).build();
 
         EdgeRule rule = edgeIngestor.getRule(ruleQuery);
 
-		assertEquals("in direction", rule.getDirection(), Direction.OUT);
-	}
+        assertEquals("out direction", rule.getDirection(), Direction.IN);
+    }
 
-	@Test
-	public void verifyMultipleGet() throws EdgeRuleNotFoundException {
+    @Test
+    public void verifyOutFlippedDirection() throws EdgeRuleNotFoundException, AmbiguousRuleChoiceException {
 
-        EdgeRuleQuery ruleQuery = new EdgeRuleQuery
-            .Builder("model-element", "model-ver")
-            .edgeType(EdgeType.TREE)
-            .build();
+        EdgeRuleQuery ruleQuery = new EdgeRuleQuery.Builder("flavor", "cloud-region").edgeType(EdgeType.TREE).build();
 
-		Multimap<String, EdgeRule> ruleMap = edgeIngestor.getRules(ruleQuery);
+        EdgeRule rule = edgeIngestor.getRule(ruleQuery);
+
+        assertEquals("in direction", rule.getDirection(), Direction.OUT);
+    }
+
+    @Test
+    public void verifyMultipleGet() throws EdgeRuleNotFoundException {
+
+        EdgeRuleQuery ruleQuery =
+                new EdgeRuleQuery.Builder("model-element", "model-ver").edgeType(EdgeType.TREE).build();
+
+        Multimap<String, EdgeRule> ruleMap = edgeIngestor.getRules(ruleQuery);
 
         for (EdgeRule edgeRule : ruleMap.get("model|model-ver")) {
-            assertEquals("has isA rule", "org.onap.relationships.inventory.IsA",
-                edgeRule.getLabel());
+            assertEquals("has isA rule", "org.onap.relationships.inventory.IsA", edgeRule.getLabel());
         }
 
-	}
+    }
 
     @Test
     public void verifyAllRules() throws EdgeRuleNotFoundException {
@@ -105,29 +97,30 @@ public class EdgeRulesTest extends AAISetup {
         for (SchemaVersion v : schemaVersions.getVersions()) {
             Multimap<String, EdgeRule> all = edgeIngestor.getAllRules(schemaVersions.getDefaultVersion());
 
-            //this part verifies the default properties
+            // this part verifies the default properties
             // 1) can have only at most 1 containment edge between same node type pair
             // 2) if there is at least 1 cousin edge, there must be exactly 1 cousin edge with default=true
             for (String key : all.keySet()) {
 
                 Collection<EdgeRule> edgeRuleCollection = all.get(key);
 
-                boolean foundContainment = false; //can have at most 1 containment rel btwn same pair of node types
+                boolean foundContainment = false; // can have at most 1 containment rel btwn same pair of node types
                 boolean foundCousin = false;
-                boolean cousinDefault = false; //if there is a cousin edge there must be at least 1 default cousin defined
-                Set<String> labels = new HashSet<>(); //all edges between the same pair must have different labels
+                boolean cousinDefault = false; // if there is a cousin edge there must be at least 1 default cousin
+                                               // defined
+                Set<String> labels = new HashSet<>(); // all edges between the same pair must have different labels
                 int cousinCount = 0;
 
-                for(EdgeRule rule: edgeRuleCollection){
+                for (EdgeRule rule : edgeRuleCollection) {
                     EdgeRule match = rule;
-                    //check containment
+                    // check containment
                     if (!("NONE".equals(match.getContains()))) {
                         if (foundContainment) {
                             fail("more than one containment edge defined for " + v.toString() + " " + key);
                         } else {
                             foundContainment = true;
                         }
-                    } else { //check cousin stuff
+                    } else { // check cousin stuff
                         foundCousin = true;
                         cousinCount++;
                         if (match.isDefault()) {
@@ -139,7 +132,7 @@ public class EdgeRulesTest extends AAISetup {
                         }
                     }
 
-                    //check labels
+                    // check labels
                     String label = match.getLabel();
                     if (labels.contains(label)) {
                         fail("same label found for multiple edges for " + v.toString() + " " + key);
@@ -148,7 +141,8 @@ public class EdgeRulesTest extends AAISetup {
                     }
                 }
                 if (foundCousin && !cousinDefault && cousinCount > 1) {
-                    fail("there is at least one cousin edge but none are designated the default for " + v.toString() + " " + key);
+                    fail("there is at least one cousin edge but none are designated the default for " + v.toString()
+                            + " " + key);
                 }
             }
         }

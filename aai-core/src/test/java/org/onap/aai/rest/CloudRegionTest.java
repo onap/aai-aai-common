@@ -17,9 +17,19 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.rest;
 
+import static org.junit.Assert.assertEquals;
+
 import com.jayway.jsonpath.JsonPath;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
+
+import javax.ws.rs.core.Response;
+
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -31,13 +41,6 @@ import org.onap.aai.PayloadUtil;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.skyscreamer.jsonassert.JSONAssert;
-
-import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * <b>CloudRegionTest</b> is testing if you put a cloud region with all
@@ -54,14 +57,11 @@ public class CloudRegionTest extends AAISetup {
 
     @Parameterized.Parameters(name = "QueryStyle.{0}")
     public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][]{
-                {QueryStyle.TRAVERSAL},
-                {QueryStyle.TRAVERSAL_URI}
-        });
+        return Arrays.asList(new Object[][] {{QueryStyle.TRAVERSAL}, {QueryStyle.TRAVERSAL_URI}});
     }
 
     @Before
-    public void setUp(){
+    public void setUp() {
         httpTestUtil = new HttpTestUtil(queryStyle);
     }
 
@@ -70,9 +70,10 @@ public class CloudRegionTest extends AAISetup {
     public void testPutWithAllCloudRegionChildrenNodesAndCheckIfDeleteIsSuccessful() throws IOException, AAIException {
 
         String cloudRegionPayload = PayloadUtil.getResourcePayload("cloud-region-with-all-children.json");
-        String cloudRegionUri = "/aai/v12/cloud-infrastructure/cloud-regions/cloud-region/junit-cloud-owner/junit-cloud-region";
+        String cloudRegionUri =
+                "/aai/v12/cloud-infrastructure/cloud-regions/cloud-region/junit-cloud-owner/junit-cloud-region";
 
-        Response response     = httpTestUtil.doPut(cloudRegionUri, cloudRegionPayload);
+        Response response = httpTestUtil.doPut(cloudRegionUri, cloudRegionPayload);
         assertEquals("Expected the cloud region to be created", 201, response.getStatus());
 
         response = httpTestUtil.doGet(cloudRegionUri);

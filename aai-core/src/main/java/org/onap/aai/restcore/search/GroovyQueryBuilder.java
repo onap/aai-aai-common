@@ -17,10 +17,14 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.restcore.search;
 
 import groovy.lang.Binding;
 import groovy.lang.Script;
+
+import java.util.Map;
+
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.onap.aai.config.SpringContextAware;
@@ -32,8 +36,6 @@ import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 import org.onap.aai.setup.SchemaVersions;
 
-import java.util.Map;
-
 /**
  * Creates and returns a groovy shell with the
  * configuration to statically import graph classes
@@ -41,34 +43,35 @@ import java.util.Map;
  */
 public class GroovyQueryBuilder extends AAIAbstractGroovyShell {
 
-	public GroovyQueryBuilder() {
-		super();
-	}
+    public GroovyQueryBuilder() {
+        super();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String executeTraversal (TransactionalGraphEngine engine, String traversal, Map<String, Object> params) {
-		QueryBuilder<Vertex> builder = engine.getQueryBuilder(QueryStyle.GREMLIN_TRAVERSAL);
-		SchemaVersions schemaVersions = (SchemaVersions) SpringContextAware.getBean("schemaVersions");
-		Loader loader = SpringContextAware.getBean(LoaderFactory.class).createLoaderForVersion(ModelType.MOXY,  schemaVersions.getDefaultVersion());
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String executeTraversal(TransactionalGraphEngine engine, String traversal, Map<String, Object> params) {
+        QueryBuilder<Vertex> builder = engine.getQueryBuilder(QueryStyle.GREMLIN_TRAVERSAL);
+        SchemaVersions schemaVersions = (SchemaVersions) SpringContextAware.getBean("schemaVersions");
+        Loader loader = SpringContextAware.getBean(LoaderFactory.class).createLoaderForVersion(ModelType.MOXY,
+                schemaVersions.getDefaultVersion());
 
-		builder.changeLoader(loader);
-		Binding binding = new Binding(params);
-		binding.setVariable("builder", builder);
-		Script script = shell.parse(traversal);
-		script.setBinding(binding);
-		script.run();
+        builder.changeLoader(loader);
+        Binding binding = new Binding(params);
+        binding.setVariable("builder", builder);
+        Script script = shell.parse(traversal);
+        script.setBinding(binding);
+        script.run();
 
-		return builder.getQuery();
-	}
+        return builder.getQuery();
+    }
 
-	/**
-	 * @throws UnsupportedOperationException
-	 */
-	@Override
-	public GraphTraversal<?, ?> executeTraversal(String traversal, Map<String, Object> params) {
-		throw new UnsupportedOperationException();
-	}
+    /**
+     * @throws UnsupportedOperationException
+     */
+    @Override
+    public GraphTraversal<?, ?> executeTraversal(String traversal, Map<String, Object> params) {
+        throw new UnsupportedOperationException();
+    }
 }

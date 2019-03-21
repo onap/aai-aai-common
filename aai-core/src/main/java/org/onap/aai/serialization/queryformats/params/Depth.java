@@ -17,11 +17,12 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.serialization.queryformats.params;
 
 @Inject(name = "depth")
 public interface Depth<T> {
 
-	@Setter
-	public T depth(Integer depth);
+    @Setter
+    public T depth(Integer depth);
 }

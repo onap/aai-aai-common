@@ -17,7 +17,10 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai;
+
+import java.util.Map;
 
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -47,31 +50,16 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.rules.SpringClassRule;
 import org.springframework.test.context.junit4.rules.SpringMethodRule;
 
-import java.util.Map;
-
-
-@ContextConfiguration(classes = {
-        ConfigConfiguration.class,
-		TestUtilConfigTranslatorforDataLink.class,
-        EdgeIngestor.class,
-        EdgeSerializer.class,
-        NodeIngestor.class,
-        SpringContextAware.class,
-        IntrospectionConfig.class,  
-        RestBeanConfig.class
-})
-@TestPropertySource(properties = {
-		"schema.uri.base.path = /aai",
-		"schema.xsd.maxoccurs = 5000",
-		"schema.version.api.default = v4",
-		"schema.version.edge.label.start = v4",
-		"schema.version.depth.start = v3",
-		"schema.version.app.root.start = v4",
-		"schema.version.related.link.start = v4",
-		"schema.version.namespace.change.start = v4",
-		"schema.version.list = v1,v2,v3,v4",
-        "schema.translator.list = config"
-})
+@ContextConfiguration(
+        classes = {ConfigConfiguration.class, TestUtilConfigTranslatorforDataLink.class, EdgeIngestor.class,
+                EdgeSerializer.class, NodeIngestor.class, SpringContextAware.class, IntrospectionConfig.class,
+                RestBeanConfig.class})
+@TestPropertySource(
+        properties = {"schema.uri.base.path = /aai", "schema.xsd.maxoccurs = 5000", "schema.version.api.default = v4",
+                "schema.version.edge.label.start = v4", "schema.version.depth.start = v3",
+                "schema.version.app.root.start = v4", "schema.version.related.link.start = v4",
+                "schema.version.namespace.change.start = v4", "schema.version.list = v1,v2,v3,v4",
+                "schema.translator.list = config"})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public abstract class DataLinkSetup {
 
@@ -82,29 +70,29 @@ public abstract class DataLinkSetup {
     public final SpringMethodRule springMethodRule = new SpringMethodRule();
 
     @Autowired
-	protected  Map<SchemaVersion, MoxyLoader>  moxyLoaderInstance;
-	
-	@Autowired
-	protected HttpEntry traversalHttpEntry;
-	
-	@Autowired
-	protected HttpEntry traversalUriHttpEntry;
-	
-	@Autowired
-	protected NodeIngestor nodeIngestor;
-	
-	@Autowired
-	protected LoaderFactory loaderFactory;
+    protected Map<SchemaVersion, MoxyLoader> moxyLoaderInstance;
 
-	@Autowired
-	protected SchemaVersions schemaVersions;
+    @Autowired
+    protected HttpEntry traversalHttpEntry;
 
-	@Value("${schema.uri.base.path}")
-	protected String basePath;
+    @Autowired
+    protected HttpEntry traversalUriHttpEntry;
 
-	@Value("${schema.xsd.maxoccurs}")
-	protected String maxOccurs;	
-	
+    @Autowired
+    protected NodeIngestor nodeIngestor;
+
+    @Autowired
+    protected LoaderFactory loaderFactory;
+
+    @Autowired
+    protected SchemaVersions schemaVersions;
+
+    @Value("${schema.uri.base.path}")
+    protected String basePath;
+
+    @Value("${schema.xsd.maxoccurs}")
+    protected String maxOccurs;
+
     protected static final String SERVICE_NAME = "JUNIT";
 
     @BeforeClass
@@ -112,9 +100,8 @@ public abstract class DataLinkSetup {
         System.setProperty("AJSC_HOME", ".");
         System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
         System.setProperty("aai.service.name", SERVICE_NAME);
-        QueryFormatTestHelper.setFinalStatic(AAIConstants.class.getField("AAI_HOME_ETC_OXM"), "src/test/resources/bundleconfig-local/etc/oxm/");
+        QueryFormatTestHelper.setFinalStatic(AAIConstants.class.getField("AAI_HOME_ETC_OXM"),
+                "src/test/resources/bundleconfig-local/etc/oxm/");
     }
-	
-	
-	
+
 }

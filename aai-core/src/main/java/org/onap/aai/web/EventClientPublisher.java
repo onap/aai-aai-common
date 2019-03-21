@@ -17,10 +17,15 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.web;
 
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
+
+import java.io.UnsupportedEncodingException;
+import java.util.Base64;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -28,9 +33,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
-
-import java.io.UnsupportedEncodingException;
-import java.util.Base64;
 
 @Configuration
 public class EventClientPublisher {
@@ -67,21 +69,20 @@ public class EventClientPublisher {
     @Value("${dmaap.ribbon.contentType:application/json}")
     private String contentType;
 
-    @Bean(name="dmaapRestTemplate")
-    public RestTemplate dmaapRestTemplate(){
+    @Bean(name = "dmaapRestTemplate")
+    public RestTemplate dmaapRestTemplate() {
         return new RestTemplate();
     }
 
-    @Bean(name="dmaapHeaders")
-    public HttpHeaders dmaapHeaders() throws UnsupportedEncodingException
-    {
+    @Bean(name = "dmaapHeaders")
+    public HttpHeaders dmaapHeaders() throws UnsupportedEncodingException {
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 
-        if(username != null && password != null){
+        if (username != null && password != null) {
 
-            if(!StringUtils.EMPTY.equals(username) && !StringUtils.EMPTY.equals(password)){
+            if (!StringUtils.EMPTY.equals(username) && !StringUtils.EMPTY.equals(password)) {
 
                 byte[] userPass = (username + ":" + password).getBytes("UTF-8");
 

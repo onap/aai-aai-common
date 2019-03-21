@@ -17,28 +17,28 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.introspection.sideeffect.exceptions;
 
 import org.onap.aai.exceptions.AAIException;
 
 public class AAIMissingRequiredPropertyException extends AAIException {
 
+    private static final long serialVersionUID = -8907079650472014019L;
 
-	private static final long serialVersionUID = -8907079650472014019L;
+    public AAIMissingRequiredPropertyException() {
+    }
 
-	public AAIMissingRequiredPropertyException() {}
+    public AAIMissingRequiredPropertyException(String message) {
+        super("AAI_5107", message);
+    }
 
-	public AAIMissingRequiredPropertyException(String message) {
-		super("AAI_5107", message);
-	}
+    public AAIMissingRequiredPropertyException(Throwable cause) {
+        super("AAI_5107", cause);
+    }
 
-	public AAIMissingRequiredPropertyException(Throwable cause) {
-		super("AAI_5107",cause);
-	}
+    public AAIMissingRequiredPropertyException(String message, Throwable cause) {
+        super("AAI_5107", cause, message);
+    }
 
-	public AAIMissingRequiredPropertyException(String message, Throwable cause) {
-		super("AAI_5107", cause, message);
-	}
-	
-	
 }

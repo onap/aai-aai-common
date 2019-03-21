@@ -17,16 +17,16 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.introspection.tools;
 
 public interface IssueResolver {
 
-	
-	/**
-	 * Resolve issue.
-	 *
-	 * @param issue the issue
-	 * @return true, if successful
-	 */
-	public boolean resolveIssue(Issue issue);
+    /**
+     * Resolve issue.
+     *
+     * @param issue the issue
+     * @return true, if successful
+     */
+    public boolean resolveIssue(Issue issue);
 }

@@ -17,13 +17,14 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.logging;
 
-import org.junit.Test;
+import static org.junit.Assert.*;
 
 import java.util.*;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
 
 public class LoggingContextTest {
 
@@ -33,9 +34,10 @@ public class LoggingContextTest {
     public void testStopWatch() {
         try {
             LoggingContext.stopWatchStop();
-            throw new AssertionError("No exception thrown when LoggingContext.stopWatchStop() called without a prior LoggingContext.stopWatchStart()");
+            throw new AssertionError(
+                    "No exception thrown when LoggingContext.stopWatchStop() called without a prior LoggingContext.stopWatchStart()");
         } catch (StopWatchNotStartedException e) {
-            //Expected
+            // Expected
         }
 
         LoggingContext.stopWatchStart();
@@ -46,12 +48,12 @@ public class LoggingContextTest {
             LoggingContext.stopWatchStop();
             throw new AssertionError("No exception thrown when LoggingContext.stopWatchStop() twice in succession");
         } catch (StopWatchNotStartedException e) {
-            //Expected
+            // Expected
         }
     }
 
     @Test
-    public void testRequestId() { //AKA Transaction ID
+    public void testRequestId() { // AKA Transaction ID
         final String sUuid = "57d51eaa-edc6-4f50-a69d-f2d4d2445120";
 
         LoggingContext.requestId(sUuid);
@@ -64,12 +66,12 @@ public class LoggingContextTest {
 
         assertEquals(LoggingContext.requestId(), uuid);
 
-        LoggingContext.requestId("foo"); //Illegal - this will result in a new, randomly
-                                        //generated UUID as per the logging spec
+        LoggingContext.requestId("foo"); // Illegal - this will result in a new, randomly
+                                         // generated UUID as per the logging spec
 
-        assertNotNull(LoggingContext.requestId()); //Make sure ANY UUID was assigned
-        assertNotEquals(LoggingContext.requestId(), uuid); //Make sure it actually changed from the last
-                                                            //known valid UUID
+        assertNotNull(LoggingContext.requestId()); // Make sure ANY UUID was assigned
+        assertNotEquals(LoggingContext.requestId(), uuid); // Make sure it actually changed from the last
+                                                           // known valid UUID
     }
 
     @Test
@@ -83,13 +85,13 @@ public class LoggingContextTest {
     @Test
     public void testSaveRestore() {
 
-        final Deque<Map<String, String>> contexts  = new LinkedList<Map<String, String>> ();
+        final Deque<Map<String, String>> contexts = new LinkedList<Map<String, String>>();
 
         LoggingContext.init();
 
         for (int i = 0; i < MAX_STORED_CONTEXTS; i++) {
             LoggingContext.customField1(String.valueOf(i));
-    
+
             assertEquals(LoggingContext.customField1(), String.valueOf(i));
 
             LoggingContext.save();

@@ -19,6 +19,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.rest;
 
 import static org.junit.Assert.*;
@@ -30,11 +31,11 @@ public class RestHandlerTest {
     @Test
     public void testGetInstance() {
 
-       RestHandlerService firstInstance = RestHandlerService.getInstance();
-       RestHandlerService secondInstance = RestHandlerService.getInstance();
-       assertNotNull(firstInstance);
-       assertNotNull(secondInstance);
-       assertTrue(firstInstance == secondInstance);
+        RestHandlerService firstInstance = RestHandlerService.getInstance();
+        RestHandlerService secondInstance = RestHandlerService.getInstance();
+        assertNotNull(firstInstance);
+        assertNotNull(secondInstance);
+        assertTrue(firstInstance == secondInstance);
 
     }
 }

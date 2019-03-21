@@ -17,11 +17,9 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.domain.restServiceException;
 
-import java.util.HashMap;
-import java.util.Map;
-import javax.annotation.Generated;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -29,11 +27,14 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.Generated;
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
-@JsonPropertyOrder({
-    "serviceException"
-})
+@JsonPropertyOrder({"serviceException"})
 public class RequestError {
 
     @JsonProperty("serviceException")
@@ -44,7 +45,7 @@ public class RequestError {
     /**
      * Gets the service exception.
      *
-     * @return     The serviceException
+     * @return The serviceException
      */
     @JsonProperty("serviceException")
     public ServiceException getServiceException() {
@@ -54,7 +55,7 @@ public class RequestError {
     /**
      * Sets the service exception.
      *
-     * @param serviceException     The serviceException
+     * @param serviceException The serviceException
      */
     @JsonProperty("serviceException")
     public void setServiceException(ServiceException serviceException) {

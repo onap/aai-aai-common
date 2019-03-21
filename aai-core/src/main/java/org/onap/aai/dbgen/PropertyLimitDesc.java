@@ -17,10 +17,9 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.dbgen;
 
 public enum PropertyLimitDesc {
-	SHOW_NONE,
-	SHOW_ALL,
-	SHOW_NAME_AND_KEYS_ONLY
+    SHOW_NONE, SHOW_ALL, SHOW_NAME_AND_KEYS_ONLY
 }

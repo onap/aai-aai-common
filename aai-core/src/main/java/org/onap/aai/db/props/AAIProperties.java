@@ -19,6 +19,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.db.props;
 
 public class AAIProperties {
@@ -34,9 +35,9 @@ public class AAIProperties {
     public static final String LINKED = "linked";
     public static final String DB_ALIAS_SUFFIX = "-local";
     public static final String AAI_UUID = "aai-uuid";
-    
+
     private AAIProperties() {
-        
+
     }
 
 }

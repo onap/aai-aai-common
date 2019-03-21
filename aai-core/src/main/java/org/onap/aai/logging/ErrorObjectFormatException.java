@@ -17,13 +17,14 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.logging;
 
 public class ErrorObjectFormatException extends Exception {
 
-	private static final long serialVersionUID = 3732705544448553685L;
+    private static final long serialVersionUID = 3732705544448553685L;
 
-	public ErrorObjectFormatException() {
-		super();
-	}
+    public ErrorObjectFormatException() {
+        super();
+    }
 }

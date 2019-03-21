@@ -17,8 +17,9 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.introspection;
 
 public enum ModelType {
-	MOXY, POJO, JSON
+    MOXY, POJO, JSON
 }

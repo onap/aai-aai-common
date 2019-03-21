@@ -17,31 +17,33 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.logging;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import ch.qos.logback.classic.Level;
-
 import ch.qos.logback.classic.spi.ILoggingEvent;
+
 import org.junit.*;
 import org.onap.aai.logging.LoggingContext.LoggingField;
 
 public class EcompResponseDescriptionTest {
 
-	EcompResponseDescription _ecompResponseDescription;
+    EcompResponseDescription _ecompResponseDescription;
     ILoggingEvent mockEvent;
 
     @Before
     public void setUp() throws Exception {
 
         mockEvent = mock(ILoggingEvent.class);
-        _ecompResponseDescription= spy(EcompResponseDescription.class);
+        _ecompResponseDescription = spy(EcompResponseDescription.class);
 
     }
+
     @Test
-    public void getDefaultDesc(){
+    public void getDefaultDesc() {
         assertEquals(_ecompResponseDescription.convert(mockEvent), _ecompResponseDescription.DefaultDescription);
     }
 

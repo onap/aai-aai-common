@@ -17,6 +17,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.query.builder;
 
 import java.io.UnsupportedEncodingException;
@@ -39,103 +40,102 @@ import org.onap.aai.parsers.query.TraversalStrategy;
  */
 public class GremlinTraversal<E> extends GremlinQueryBuilder<E> {
 
-	
-	/**
-	 * Instantiates a new gremlin traversal.
-	 *
-	 * @param loader the loader
-	 */
-	public GremlinTraversal(Loader loader, GraphTraversalSource source) {
-		super(loader, source);
-		this.factory = new TraversalStrategy(this.loader, this);
-	}
-	
-	/**
-	 * Instantiates a new gremlin traversal.
-	 *
-	 * @param loader the loader
-	 * @param start the start
-	 */
-	public GremlinTraversal(Loader loader, GraphTraversalSource source, Vertex start) {
-		super(loader, source, start);
-		this.factory = new TraversalStrategy(this.loader, this);
-	}
-	
+    /**
+     * Instantiates a new gremlin traversal.
+     *
+     * @param loader the loader
+     */
+    public GremlinTraversal(Loader loader, GraphTraversalSource source) {
+        super(loader, source);
+        this.factory = new TraversalStrategy(this.loader, this);
+    }
 
-	protected GremlinTraversal(List<String> traversal, Loader loader, GraphTraversalSource source, GremlinQueryBuilder<E> gtb) {
-		super(loader, source);
-		this.list = traversal;
-		this.stepIndex = gtb.getStepIndex();
-		this.parentStepIndex = gtb.getParentStepIndex();
-		this.containerStepIndex = gtb.getContainerStepIndex();
-		this.factory = new TraversalStrategy(this.loader, this);
-		this.start = gtb.getStart();
-	}
-	
-	/**
-	 * @{inheritDoc}
-	 */
-	@Override
-	public QueryParser createQueryFromURI(URI uri) throws UnsupportedEncodingException, AAIException {
-		return factory.buildURIParser(uri);
-	}
+    /**
+     * Instantiates a new gremlin traversal.
+     *
+     * @param loader the loader
+     * @param start the start
+     */
+    public GremlinTraversal(Loader loader, GraphTraversalSource source, Vertex start) {
+        super(loader, source, start);
+        this.factory = new TraversalStrategy(this.loader, this);
+    }
 
-	/**
-	 * @{inheritDoc}
-	 */
-	@Override
-	public QueryParser createQueryFromRelationship(Introspector relationship) throws UnsupportedEncodingException, AAIException {
-		return factory.buildRelationshipParser(relationship);
-	}
+    protected GremlinTraversal(List<String> traversal, Loader loader, GraphTraversalSource source,
+            GremlinQueryBuilder<E> gtb) {
+        super(loader, source);
+        this.list = traversal;
+        this.stepIndex = gtb.getStepIndex();
+        this.parentStepIndex = gtb.getParentStepIndex();
+        this.containerStepIndex = gtb.getContainerStepIndex();
+        this.factory = new TraversalStrategy(this.loader, this);
+        this.start = gtb.getStart();
+    }
 
+    /**
+     * @{inheritDoc}
+     */
+    @Override
+    public QueryParser createQueryFromURI(URI uri) throws UnsupportedEncodingException, AAIException {
+        return factory.buildURIParser(uri);
+    }
 
-	/**
-	 * @{inheritDoc}
-	 */
-	@Override
-	public QueryParser createQueryFromURI(URI uri, MultivaluedMap<String, String> queryParams)
-			throws UnsupportedEncodingException, AAIException {
-		return factory.buildURIParser(uri, queryParams);
-	}
-	
-	/**
-	 * @{inheritDoc}
-	 */
-	@Override
-	public QueryParser createQueryFromObjectName(String objName) {
-		return factory.buildObjectNameParser(objName);
-	}
-	
-	/**
-	 * @{inheritDoc}
-	 */
-	@Override
-	public QueryBuilder<E> newInstance(Vertex start) {
-		return new GremlinTraversal<>(loader, source, start);
-	}
+    /**
+     * @{inheritDoc}
+     */
+    @Override
+    public QueryParser createQueryFromRelationship(Introspector relationship)
+            throws UnsupportedEncodingException, AAIException {
+        return factory.buildRelationshipParser(relationship);
+    }
 
-	/**
-	 * @{inheritDoc}
-	 */
-	@Override
-	public QueryBuilder<E> newInstance() {
-		return new GremlinTraversal<>(loader, source);
-	}
-	
-	@Override
-	protected QueryBuilder<E> cloneQueryAtStep(int index) {
-		
-		int idx = index;
-		
-		if (idx == 0) {
-			idx = stepIndex;
-		}
-		
-		List<String> newList = new ArrayList<>();
-		for (int i = 0; i < idx; i++) {
-			newList.add(this.list.get(i));
-		}
-		
-		return new GremlinTraversal<>(newList, loader, source, this);
-	}
+    /**
+     * @{inheritDoc}
+     */
+    @Override
+    public QueryParser createQueryFromURI(URI uri, MultivaluedMap<String, String> queryParams)
+            throws UnsupportedEncodingException, AAIException {
+        return factory.buildURIParser(uri, queryParams);
+    }
+
+    /**
+     * @{inheritDoc}
+     */
+    @Override
+    public QueryParser createQueryFromObjectName(String objName) {
+        return factory.buildObjectNameParser(objName);
+    }
+
+    /**
+     * @{inheritDoc}
+     */
+    @Override
+    public QueryBuilder<E> newInstance(Vertex start) {
+        return new GremlinTraversal<>(loader, source, start);
+    }
+
+    /**
+     * @{inheritDoc}
+     */
+    @Override
+    public QueryBuilder<E> newInstance() {
+        return new GremlinTraversal<>(loader, source);
+    }
+
+    @Override
+    protected QueryBuilder<E> cloneQueryAtStep(int index) {
+
+        int idx = index;
+
+        if (idx == 0) {
+            idx = stepIndex;
+        }
+
+        List<String> newList = new ArrayList<>();
+        for (int i = 0; i < idx; i++) {
+            newList.add(this.list.get(i));
+        }
+
+        return new GremlinTraversal<>(newList, loader, source, this);
+    }
 }

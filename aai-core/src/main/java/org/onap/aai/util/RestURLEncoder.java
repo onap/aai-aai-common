@@ -17,24 +17,23 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.util;
 
 import java.io.UnsupportedEncodingException;
-import org.springframework.web.util.UriUtils;
 
+import org.springframework.web.util.UriUtils;
 
 public class RestURLEncoder {
 
-	
-	/**
-	 * Encode URL.
-	 *
-	 * @param nodeKey the node key
-	 * @return the string
-	 * @throws UnsupportedEncodingException the unsupported encoding exception
-	 */
-	public static final String encodeURL (String nodeKey) throws UnsupportedEncodingException {
-		return UriUtils.encode(nodeKey, "UTF-8").replaceAll("\\+", "%20");
-	}
+    /**
+     * Encode URL.
+     *
+     * @param nodeKey the node key
+     * @return the string
+     * @throws UnsupportedEncodingException the unsupported encoding exception
+     */
+    public static final String encodeURL(String nodeKey) throws UnsupportedEncodingException {
+        return UriUtils.encode(nodeKey, "UTF-8").replaceAll("\\+", "%20");
+    }
 }
-

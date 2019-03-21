@@ -17,11 +17,12 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.logging;
 
 public class CustomLogPatternLayout extends ch.qos.logback.access.PatternLayout {
-	static {
-		defaultConverterMap.put("z", CNName.class.getName());
-		defaultConverterMap.put("y", DME2RestFlag.class.getName());
-	}
+    static {
+        defaultConverterMap.put("z", CNName.class.getName());
+        defaultConverterMap.put("y", DME2RestFlag.class.getName());
+    }
 }

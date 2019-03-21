@@ -17,9 +17,19 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.rest;
 
+import static org.junit.Assert.assertEquals;
+
 import com.jayway.jsonpath.JsonPath;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
+
+import javax.ws.rs.core.Response;
+
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -32,13 +42,6 @@ import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.skyscreamer.jsonassert.JSONAssert;
 
-import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-
-import static org.junit.Assert.assertEquals;
-
 @RunWith(value = Parameterized.class)
 public class VipAddressListTest extends AAISetup {
 
@@ -49,13 +52,11 @@ public class VipAddressListTest extends AAISetup {
 
     @Parameterized.Parameters(name = "QueryStyle.{0}")
     public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][]{
-                {QueryStyle.TRAVERSAL_URI}
-        });
+        return Arrays.asList(new Object[][] {{QueryStyle.TRAVERSAL_URI}});
     }
 
     @Before
-    public void setUp(){
+    public void setUp() {
         httpTestUtil = new HttpTestUtil(queryStyle);
     }
 
@@ -63,9 +64,10 @@ public class VipAddressListTest extends AAISetup {
     public void testPutWithAllCloudRegionChildrenNodesAndCheckIfDeleteIsSuccessful() throws IOException, AAIException {
 
         String cloudRegionPayload = PayloadUtil.getResourcePayload("cloud-region.json");
-        String cloudRegionUri = "/aai/v14/cloud-infrastructure/cloud-regions/cloud-region/cloud-region-owner-with-vip-ipv4/cloud-region-id-with-vip-ipv4";
+        String cloudRegionUri =
+                "/aai/v14/cloud-infrastructure/cloud-regions/cloud-region/cloud-region-owner-with-vip-ipv4/cloud-region-id-with-vip-ipv4";
 
-        Response response     = httpTestUtil.doPut(cloudRegionUri, cloudRegionPayload);
+        Response response = httpTestUtil.doPut(cloudRegionUri, cloudRegionPayload);
         assertEquals("Expected the cloud region to be created", 201, response.getStatus());
 
         response = httpTestUtil.doGet(cloudRegionUri);
@@ -77,7 +79,7 @@ public class VipAddressListTest extends AAISetup {
         String vipIpv4Uri = cloudRegionUri + "/vip-ipv4-address-list/vip-ipv4-address-list-1";
         String vipIpv4Payload = PayloadUtil.getResourcePayload("vip-ipv4-address-list.json");
 
-        response     = httpTestUtil.doPut(vipIpv4Uri, vipIpv4Payload);
+        response = httpTestUtil.doPut(vipIpv4Uri, vipIpv4Payload);
         assertEquals("Expected the ipv4 address list to be created", 201, response.getStatus());
 
         response = httpTestUtil.doGet(vipIpv4Uri);

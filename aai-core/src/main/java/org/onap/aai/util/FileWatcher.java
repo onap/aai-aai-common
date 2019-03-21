@@ -17,42 +17,44 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.util;
 
-import java.util.*;
 import java.io.*;
+import java.util.*;
 
 public abstract class FileWatcher extends TimerTask {
-  private long timeStamp;
-  private File file;
+    private long timeStamp;
+    private File file;
 
-  /**
-   * Instantiates a new file watcher.
-   *
-   * @param file the file
-   */
-  public FileWatcher( File file ) {
-    this.file = file;
-    this.timeStamp = file.lastModified();
-  }
-
-  /**
-   * runs a timer task
-   * @see TimerTask.run
-   */
-  public final void run() {
-    long timeStamp = file.lastModified();
-
-    if( (timeStamp - this.timeStamp) > 500 ) {
-      this.timeStamp = timeStamp;
-      onChange(file);
+    /**
+     * Instantiates a new file watcher.
+     *
+     * @param file the file
+     */
+    public FileWatcher(File file) {
+        this.file = file;
+        this.timeStamp = file.lastModified();
     }
-  }
-  
-  /**
-   * On change.
-   *
-   * @param file the file
-   */
-  protected abstract void onChange( File file );
+
+    /**
+     * runs a timer task
+     * 
+     * @see TimerTask.run
+     */
+    public final void run() {
+        long timeStamp = file.lastModified();
+
+        if ((timeStamp - this.timeStamp) > 500) {
+            this.timeStamp = timeStamp;
+            onChange(file);
+        }
+    }
+
+    /**
+     * On change.
+     *
+     * @param file the file
+     */
+    protected abstract void onChange(File file);
 }

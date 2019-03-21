@@ -17,32 +17,39 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.concurrent;
-import java.util.concurrent.Callable;
+
 import java.util.Map;
+import java.util.concurrent.Callable;
+
 import org.slf4j.MDC;
 
 /**
- * The Class AaiCallable ensures that the Callable gets a copy of the MDC, so that any logging related fields are preserved
+ * The Class AaiCallable ensures that the Callable gets a copy of the MDC, so that any logging related fields are
+ * preserved
  */
 public abstract class AaiCallable<T> implements Callable<T> {
-	private Map<String,String> mdcCopy;
-	/**
-	 * The constructor.
-	 */
-	@SuppressWarnings("unchecked")
-	public AaiCallable() {
+    private Map<String, String> mdcCopy;
+
+    /**
+     * The constructor.
+     */
+    @SuppressWarnings("unchecked")
+    public AaiCallable() {
         mdcCopy = MDC.getCopyOfContextMap();
     }
-	/**
-	 * The call method
-	 */
+
+    /**
+     * The call method
+     */
     public T call() throws Exception {
-    	MDC.setContextMap(mdcCopy);
+        MDC.setContextMap(mdcCopy);
         return process();
     }
+
     /**
-	 * The process method
-	 */
+     * The process method
+     */
     public abstract T process() throws Exception;
 }

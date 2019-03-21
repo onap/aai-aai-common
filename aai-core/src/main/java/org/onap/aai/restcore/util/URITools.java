@@ -17,6 +17,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.restcore.util;
 
 import java.io.UnsupportedEncodingException;
@@ -33,83 +34,85 @@ import java.util.regex.Pattern;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 
-import org.springframework.web.util.UriUtils;
-
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.sideeffect.exceptions.AAIMissingRequiredPropertyException;
 import org.onap.aai.schema.enums.PropertyMetadata;
+import org.springframework.web.util.UriUtils;
 
 public class URITools {
 
-	protected static final Pattern template = Pattern.compile("\\{(.*?)\\}");
+    protected static final Pattern template = Pattern.compile("\\{(.*?)\\}");
 
-	public static MultivaluedMap<String, String> getQueryMap(URI uri) {
-		MultivaluedMap<String, String> result = new MultivaluedHashMap<>();
-		String queryParams = uri.getRawQuery();
-		if (queryParams != null) {
-			try {
-				String[] sections = queryParams.split("&");
-				String[] query = null;
-				String key, value = "";
-				for (String section : sections) {
-					query = section.split("=");
-					key = UriUtils.decode(query[0], "UTF-8");
-					if(query[1] != null){
-						query[1] = query[1].replaceAll("\\+", "%20");
-					}
-					value = UriUtils.decode(query[1], "UTF-8");
-					if (result.containsKey(key)) {
-						result.add(key, value);
-					} else {
-						result.putSingle(key, value);
-					}
-				}
-			} catch (UnsupportedEncodingException e ) {
-				
-			}
-		}
-		return result;
-		
-	}
-	
-	public static Optional<String> replaceTemplates(Introspector obj, String uriString, PropertyMetadata metadata, boolean replaceWithWildcard) throws AAIMissingRequiredPropertyException {
-		String result = uriString;
-		final Map<String, String> propMap = URITools.findProperties(obj, uriString, metadata, replaceWithWildcard);
-		if (propMap.isEmpty()) {
-			return Optional.empty();
-		}
-		for (Entry<String, String> entry : propMap.entrySet()) {
-			result = result.replaceAll("\\{" + entry.getKey() + "\\}", entry.getValue());
-		}
-		//drop out wildcards if they exist
-		result = result.replaceFirst("/[^/]+?(?:/\\*)+", "");
-		return Optional.of(result);
-	}
-	
-	private static Map<String, String> findProperties(Introspector obj, String uriString, PropertyMetadata metadata, boolean replaceWithWildcard) throws AAIMissingRequiredPropertyException {
-		
-		final Map<String, String> result = new HashMap<>();
-		final Set<String> missing = new LinkedHashSet<>();
-		Matcher m = template.matcher(uriString);
-		int properties = 0;
-		while (m.find()) {
-			String propName = m.group(1);
-			String value = obj.getValue(propName);
-			properties++;
-			if (value != null) {
-				result.put(propName, value);
-			} else {
-				if (replaceWithWildcard) {
-					result.put(propName, "*");
-				}
-				missing.add(propName);
-			}
-		}
-		
-		if (!missing.isEmpty() && (properties != missing.size())) {
-			throw new AAIMissingRequiredPropertyException("Cannot complete " + metadata.toString() + " uri. Missing properties " + missing);
-		}
-		return result;
-	}
-	
+    public static MultivaluedMap<String, String> getQueryMap(URI uri) {
+        MultivaluedMap<String, String> result = new MultivaluedHashMap<>();
+        String queryParams = uri.getRawQuery();
+        if (queryParams != null) {
+            try {
+                String[] sections = queryParams.split("&");
+                String[] query = null;
+                String key, value = "";
+                for (String section : sections) {
+                    query = section.split("=");
+                    key = UriUtils.decode(query[0], "UTF-8");
+                    if (query[1] != null) {
+                        query[1] = query[1].replaceAll("\\+", "%20");
+                    }
+                    value = UriUtils.decode(query[1], "UTF-8");
+                    if (result.containsKey(key)) {
+                        result.add(key, value);
+                    } else {
+                        result.putSingle(key, value);
+                    }
+                }
+            } catch (UnsupportedEncodingException e) {
+
+            }
+        }
+        return result;
+
+    }
+
+    public static Optional<String> replaceTemplates(Introspector obj, String uriString, PropertyMetadata metadata,
+            boolean replaceWithWildcard) throws AAIMissingRequiredPropertyException {
+        String result = uriString;
+        final Map<String, String> propMap = URITools.findProperties(obj, uriString, metadata, replaceWithWildcard);
+        if (propMap.isEmpty()) {
+            return Optional.empty();
+        }
+        for (Entry<String, String> entry : propMap.entrySet()) {
+            result = result.replaceAll("\\{" + entry.getKey() + "\\}", entry.getValue());
+        }
+        // drop out wildcards if they exist
+        result = result.replaceFirst("/[^/]+?(?:/\\*)+", "");
+        return Optional.of(result);
+    }
+
+    private static Map<String, String> findProperties(Introspector obj, String uriString, PropertyMetadata metadata,
+            boolean replaceWithWildcard) throws AAIMissingRequiredPropertyException {
+
+        final Map<String, String> result = new HashMap<>();
+        final Set<String> missing = new LinkedHashSet<>();
+        Matcher m = template.matcher(uriString);
+        int properties = 0;
+        while (m.find()) {
+            String propName = m.group(1);
+            String value = obj.getValue(propName);
+            properties++;
+            if (value != null) {
+                result.put(propName, value);
+            } else {
+                if (replaceWithWildcard) {
+                    result.put(propName, "*");
+                }
+                missing.add(propName);
+            }
+        }
+
+        if (!missing.isEmpty() && (properties != missing.size())) {
+            throw new AAIMissingRequiredPropertyException(
+                    "Cannot complete " + metadata.toString() + " uri. Missing properties " + missing);
+        }
+        return result;
+    }
+
 }

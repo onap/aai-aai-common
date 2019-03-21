@@ -17,14 +17,15 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.logging;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import ch.qos.logback.classic.Level;
-
 import ch.qos.logback.classic.spi.ILoggingEvent;
+
 import org.junit.*;
 
 public class EcompErrorCategoryTest {
@@ -36,11 +37,12 @@ public class EcompErrorCategoryTest {
     public void setUp() throws Exception {
 
         mockEvent = mock(ILoggingEvent.class);
-        _ecompErrorCategory= spy(EcompErrorCategory.class);
+        _ecompErrorCategory = spy(EcompErrorCategory.class);
 
     }
+
     @Test
-    public void warn(){
+    public void warn() {
         String defaultCategory = "WARN";
         assertEquals(_ecompErrorCategory.convert(mockEvent), defaultCategory);
     }

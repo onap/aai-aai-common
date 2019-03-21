@@ -17,6 +17,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.query.builder;
 
 import java.util.*;
@@ -37,9 +38,10 @@ public class QueryTestsConfigTranslator extends AbstractConfigTranslator {
     public QueryTestsConfigTranslator(SchemaLocationsBean bean, SchemaConfigVersions schemaVersions) {
         super(bean, schemaVersions);
     }
-    
-    
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.onap.aai.setup.ConfigTranslator#getEdgeFiles()
      */
     @Override

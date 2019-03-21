@@ -17,28 +17,29 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.serialization.db;
 
 import org.onap.aai.edges.enums.EdgeProperty;
 
 public class EdgeProperties {
 
-	public static String out(EdgeProperty prop) {
+    public static String out(EdgeProperty prop) {
 
-		return out(prop.toString());
-	}
+        return out(prop.toString());
+    }
 
-	public static String in(EdgeProperty prop) {
-		return in(prop.toString());
-	}
-	
-	public static String out(String prop) {
+    public static String in(EdgeProperty prop) {
+        return in(prop.toString());
+    }
 
-		return prop;
-	}
+    public static String out(String prop) {
 
-	public static String in(String prop) {
-		return prop + "-REV";
-	}
+        return prop;
+    }
+
+    public static String in(String prop) {
+        return prop + "-REV";
+    }
 
 }

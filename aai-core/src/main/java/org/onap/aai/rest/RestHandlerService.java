@@ -17,6 +17,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.rest;
 
 import java.util.concurrent.Executors;
@@ -25,11 +26,12 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class RestHandlerService {
     private static RestHandlerService single_instance = null;
     public ThreadPoolExecutor executor;
+
     // private constructor restricted to this class itself
-    private RestHandlerService()
-    {
+    private RestHandlerService() {
         executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(50);
     }
+
     /**
      * Gets the single instance of RestHandlerService.
      *

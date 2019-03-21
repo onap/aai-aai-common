@@ -17,6 +17,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.config;
 
 import org.onap.aai.auth.AAIAuthCore;
@@ -33,7 +34,7 @@ public class AuthorizationConfiguration {
     private String basePath;
 
     @Bean
-    public AAIAuthCore aaiAuthCore(){
+    public AAIAuthCore aaiAuthCore() {
         return new AAIAuthCore(basePath);
     }
 }

@@ -17,74 +17,78 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.parsers.query;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+
+import javax.ws.rs.core.MultivaluedMap;
 
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.query.builder.QueryBuilder;
 
-import javax.ws.rs.core.MultivaluedMap;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-
 /**
  * The Class QueryParserStrategy.
  */
 public abstract class QueryParserStrategy {
 
-	protected Loader loader = null;
-	
-	protected QueryBuilder builder = null;
-	
-	/**
-	 * Instantiates a new query parser strategy.
-	 *
-	 * @param loader the loader
-	 * @param builder the builder
-	 */
-	public QueryParserStrategy(Loader loader, QueryBuilder builder) {
-		
-		this.loader = loader;
-		this.builder = builder;
-	}
-	
-	/**
-	 * Builds the URI parser.
-	 *
-	 * @param uri the uri
-	 * @return the query parser
-	 * @throws UnsupportedEncodingException the unsupported encoding exception
-	 * @throws AAIException the AAI exception
-	 */
-	public abstract QueryParser buildURIParser(URI uri) throws UnsupportedEncodingException, AAIException;
-	
-	/**
-	 * Builds the URI parser.
-	 *
-	 * @param uri the uri
-	 * @param queryParams the query params
-	 * @return the query parser
-	 * @throws UnsupportedEncodingException the unsupported encoding exception
-	 * @throws AAIException the AAI exception
-	 */
-	public abstract QueryParser buildURIParser(URI uri,MultivaluedMap<String, String> queryParams) throws UnsupportedEncodingException, AAIException;
+    protected Loader loader = null;
 
-	/**
-	 * Builds the relationship parser.
-	 *
-	 * @param obj the obj
-	 * @return the query parser
-	 * @throws UnsupportedEncodingException the unsupported encoding exception
-	 * @throws AAIException the AAI exception
-	 */
-	public abstract QueryParser buildRelationshipParser(Introspector obj) throws UnsupportedEncodingException, AAIException;
-	
-	/**
-	 * Builds an ObjectNameQueryParser. 
-	 * 
-	 * @param objName - the name of the object type as used in the database
-	 * @return
-	 */
-	public abstract QueryParser buildObjectNameParser(String objName);
+    protected QueryBuilder builder = null;
+
+    /**
+     * Instantiates a new query parser strategy.
+     *
+     * @param loader the loader
+     * @param builder the builder
+     */
+    public QueryParserStrategy(Loader loader, QueryBuilder builder) {
+
+        this.loader = loader;
+        this.builder = builder;
+    }
+
+    /**
+     * Builds the URI parser.
+     *
+     * @param uri the uri
+     * @return the query parser
+     * @throws UnsupportedEncodingException the unsupported encoding exception
+     * @throws AAIException the AAI exception
+     */
+    public abstract QueryParser buildURIParser(URI uri) throws UnsupportedEncodingException, AAIException;
+
+    /**
+     * Builds the URI parser.
+     *
+     * @param uri the uri
+     * @param queryParams the query params
+     * @return the query parser
+     * @throws UnsupportedEncodingException the unsupported encoding exception
+     * @throws AAIException the AAI exception
+     */
+    public abstract QueryParser buildURIParser(URI uri, MultivaluedMap<String, String> queryParams)
+            throws UnsupportedEncodingException, AAIException;
+
+    /**
+     * Builds the relationship parser.
+     *
+     * @param obj the obj
+     * @return the query parser
+     * @throws UnsupportedEncodingException the unsupported encoding exception
+     * @throws AAIException the AAI exception
+     */
+    public abstract QueryParser buildRelationshipParser(Introspector obj)
+            throws UnsupportedEncodingException, AAIException;
+
+    /**
+     * Builds an ObjectNameQueryParser.
+     * 
+     * @param objName - the name of the object type as used in the database
+     * @return
+     */
+    public abstract QueryParser buildObjectNameParser(String objName);
 }

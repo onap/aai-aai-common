@@ -17,31 +17,32 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.introspection.tools;
+
+import java.util.Map;
 
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.schema.enums.PropertyMetadata;
 
-import java.util.Map;
-
 public class DefaultFields implements IssueResolver {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean resolveIssue(Issue issue) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean resolveIssue(Issue issue) {
 
-		Introspector obj = issue.getIntrospector();
-		if (issue.getType().equals(IssueType.MISSING_REQUIRED_PROP)) {
-			Map<PropertyMetadata, String> metadata = obj.getPropertyMetadata(issue.getPropName());
-			if (metadata.containsKey(PropertyMetadata.DEFAULT_VALUE)) {
-				obj.setValue(issue.getPropName(), metadata.get(PropertyMetadata.DEFAULT_VALUE));
-				return true;
-			}
-		}
-		
-		return false;
-	}
+        Introspector obj = issue.getIntrospector();
+        if (issue.getType().equals(IssueType.MISSING_REQUIRED_PROP)) {
+            Map<PropertyMetadata, String> metadata = obj.getPropertyMetadata(issue.getPropName());
+            if (metadata.containsKey(PropertyMetadata.DEFAULT_VALUE)) {
+                obj.setValue(issue.getPropName(), metadata.get(PropertyMetadata.DEFAULT_VALUE));
+                return true;
+            }
+        }
+
+        return false;
+    }
 
 }

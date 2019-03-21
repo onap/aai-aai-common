@@ -17,25 +17,27 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.introspection.exceptions;
 
 import org.onap.aai.exceptions.AAIException;
 
 public class AAIUnknownObjectException extends AAIException {
 
-	private static final long serialVersionUID = -504200228742133774L;
+    private static final long serialVersionUID = -504200228742133774L;
 
-	public AAIUnknownObjectException() {}
+    public AAIUnknownObjectException() {
+    }
 
-	public AAIUnknownObjectException(String message) {
-		super("AAI_3000", message);
-	}
+    public AAIUnknownObjectException(String message) {
+        super("AAI_3000", message);
+    }
 
-	public AAIUnknownObjectException(Throwable cause) {
-		super("AAI_3000", cause);
-	}
+    public AAIUnknownObjectException(Throwable cause) {
+        super("AAI_3000", cause);
+    }
 
-	public AAIUnknownObjectException(String message, Throwable cause) {
-		super("AAI_3000", cause, message);
-	}
+    public AAIUnknownObjectException(String message, Throwable cause) {
+        super("AAI_3000", cause, message);
+    }
 }

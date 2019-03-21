@@ -17,19 +17,20 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.introspection.tools;
 
 public class RemoveNonVisibleProperty implements IssueResolver {
 
-	@Override
-	public boolean resolveIssue(Issue issue) {
+    @Override
+    public boolean resolveIssue(Issue issue) {
 
-		if (IssueType.PROPERTY_NOT_VISIBLE.equals(issue.getType())) {
-			//remove property value
-			issue.getIntrospector().setValue(issue.getPropName(), null);
-			return true;
-		}
-		return false;
-	}
+        if (IssueType.PROPERTY_NOT_VISIBLE.equals(issue.getType())) {
+            // remove property value
+            issue.getIntrospector().setValue(issue.getPropName(), null);
+            return true;
+        }
+        return false;
+    }
 
 }

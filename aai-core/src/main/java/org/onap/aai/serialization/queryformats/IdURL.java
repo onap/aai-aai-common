@@ -17,10 +17,14 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.serialization.queryformats;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
+import java.util.Optional;
+
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.exceptions.AAIException;
@@ -30,42 +34,39 @@ import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
 import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
 
-import java.util.Optional;
-
 public class IdURL extends MultiFormatMapper {
 
-	private final UrlBuilder urlBuilder;
-	private final JsonParser parser;
-	private final Loader loader;
+    private final UrlBuilder urlBuilder;
+    private final JsonParser parser;
+    private final Loader loader;
 
-	public IdURL (Loader loader, UrlBuilder urlBuilder) throws AAIException {
-		this.urlBuilder = urlBuilder;
-		this.parser = new JsonParser();
-		this.loader = loader;
-	}
-	
-	@Override
-	public int parallelThreshold() {
-		return 2500;
-	}
+    public IdURL(Loader loader, UrlBuilder urlBuilder) throws AAIException {
+        this.urlBuilder = urlBuilder;
+        this.parser = new JsonParser();
+        this.loader = loader;
+    }
 
-	@Override
-	protected Optional<JsonObject> getJsonFromVertex(Vertex v) throws AAIFormatVertexException {
+    @Override
+    public int parallelThreshold() {
+        return 2500;
+    }
 
-		try {
-			final Introspector searchResult = this.loader.introspectorFromName("result-data");
+    @Override
+    protected Optional<JsonObject> getJsonFromVertex(Vertex v) throws AAIFormatVertexException {
 
-			searchResult.setValue("resource-type", v.value(AAIProperties.NODE_TYPE));
-			searchResult.setValue("resource-link", this.urlBuilder.id(v));
+        try {
+            final Introspector searchResult = this.loader.introspectorFromName("result-data");
 
-			final String json = searchResult.marshal(false);
+            searchResult.setValue("resource-type", v.value(AAIProperties.NODE_TYPE));
+            searchResult.setValue("resource-link", this.urlBuilder.id(v));
 
-			return Optional.of(parser.parse(json).getAsJsonObject());
-			
-		} catch (AAIUnknownObjectException e) {
-			throw new RuntimeException("Fatal error - result-data object does not exist!");
-		}
-			
-		
-	}
+            final String json = searchResult.marshal(false);
+
+            return Optional.of(parser.parse(json).getAsJsonObject());
+
+        } catch (AAIUnknownObjectException e) {
+            throw new RuntimeException("Fatal error - result-data object does not exist!");
+        }
+
+    }
 }

@@ -17,23 +17,25 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.serialization.queryformats.exceptions;
 
 public class AAIFormatVertexException extends Exception {
 
-	private static final long serialVersionUID = -5814240841844624097L;
+    private static final long serialVersionUID = -5814240841844624097L;
 
-	public AAIFormatVertexException() {}
+    public AAIFormatVertexException() {
+    }
 
-	public AAIFormatVertexException(String message) {
-		super(message);
-	}
+    public AAIFormatVertexException(String message) {
+        super(message);
+    }
 
-	public AAIFormatVertexException(Throwable cause) {
-		super(cause);
-	}
+    public AAIFormatVertexException(Throwable cause) {
+        super(cause);
+    }
 
-	public AAIFormatVertexException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public AAIFormatVertexException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

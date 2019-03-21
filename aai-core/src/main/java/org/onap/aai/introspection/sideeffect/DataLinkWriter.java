@@ -17,7 +17,17 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.introspection.sideeffect;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Optional;
+
+import javax.ws.rs.core.MultivaluedMap;
 
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.onap.aai.db.props.AAIProperties;
@@ -31,78 +41,75 @@ import org.onap.aai.schema.enums.PropertyMetadata;
 import org.onap.aai.serialization.db.DBSerializer;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 
-import javax.ws.rs.core.MultivaluedMap;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.Optional;
-
 public class DataLinkWriter extends SideEffect {
 
-	public DataLinkWriter(Introspector obj, Vertex self, TransactionalGraphEngine dbEngine, DBSerializer serializer) {
-		super(obj, self, dbEngine, serializer);
-	}
+    public DataLinkWriter(Introspector obj, Vertex self, TransactionalGraphEngine dbEngine, DBSerializer serializer) {
+        super(obj, self, dbEngine, serializer);
+    }
 
-	@Override
-	protected PropertyMetadata getPropertyMetadata() {
-		return PropertyMetadata.DATA_LINK;
-	}
+    @Override
+    protected PropertyMetadata getPropertyMetadata() {
+        return PropertyMetadata.DATA_LINK;
+    }
 
-	@Override
-	protected void processURI(Optional<String> completeUri, Entry<String, String> entry)
-			throws URISyntaxException, UnsupportedEncodingException, AAIException {
-		if (completeUri.isPresent()) {
-			URI uri = new URI(completeUri.get());
-			MultivaluedMap<String, String> map = URITools.getQueryMap(uri);
-			QueryParser uriQuery = dbEngine.getQueryBuilder(this.latestLoader).createQueryFromURI(uri, map);
-			List<Vertex> results = uriQuery.getQueryBuilder().toList();
-			if (results.size() == 1) {
-				if (results.get(0).<Boolean>property(AAIProperties.LINKED).orElse(false) && obj.getValue(entry.getKey()) == null) {
-					//delete vertex because property was removed
-					serializer.delete(results.get(0), "", false);
-				} else {
-					//link vertex that already exists
-					this.addLinkedProperty(results.get(0));
-				}
- 			} else {
-				if (results.isEmpty()) {
-					//locate previously linked vertex
-					List<Vertex> linkedVertices = uriQuery.getQueryBuilder().getContainerQuery().getVerticesByProperty(AAIProperties.LINKED, true).toList();
-					if (!linkedVertices.isEmpty()) {
-						if (linkedVertices.size() > 1) {
-							throw new AAIMultiplePropertiesException("multiple vertices found for single cardinality propery found when searching " + uri);
-						} else {
-							//found one, remove the linked property because it didn't match the uri
-							linkedVertices.get(0).property(AAIProperties.LINKED).remove();
-						}
-					}
-					if (obj.getValue(entry.getKey()) != null) {
-						//add new vertex to database if we have values
-						URIToObject parser = new URIToObject(this.latestLoader, uri);
-						Introspector resultObj = parser.getEntity();
-						Vertex newV = serializer.createNewVertex(resultObj);
-						serializer.serializeToDb(resultObj, newV, uriQuery, completeUri.get(), this.latestLoader.getVersion().toString());
-						this.addLinkedProperty(newV);
-					}
-				} else if (results.size() > 1) {
-					throw new AAIMultiplePropertiesException("multiple values of " + entry.getKey() + " found when searching " + uri);
-				}
-			}
-		} else {
-			//skip processing because no required properties were specified
-		}
-	}
-	
-	@Override
-	protected boolean replaceWithWildcard() {
-		return true;
-	}
-	
-	private void addLinkedProperty(Vertex v) {
-		v.property(AAIProperties.LINKED, true);
-	}
+    @Override
+    protected void processURI(Optional<String> completeUri, Entry<String, String> entry)
+            throws URISyntaxException, UnsupportedEncodingException, AAIException {
+        if (completeUri.isPresent()) {
+            URI uri = new URI(completeUri.get());
+            MultivaluedMap<String, String> map = URITools.getQueryMap(uri);
+            QueryParser uriQuery = dbEngine.getQueryBuilder(this.latestLoader).createQueryFromURI(uri, map);
+            List<Vertex> results = uriQuery.getQueryBuilder().toList();
+            if (results.size() == 1) {
+                if (results.get(0).<Boolean>property(AAIProperties.LINKED).orElse(false)
+                        && obj.getValue(entry.getKey()) == null) {
+                    // delete vertex because property was removed
+                    serializer.delete(results.get(0), "", false);
+                } else {
+                    // link vertex that already exists
+                    this.addLinkedProperty(results.get(0));
+                }
+            } else {
+                if (results.isEmpty()) {
+                    // locate previously linked vertex
+                    List<Vertex> linkedVertices = uriQuery.getQueryBuilder().getContainerQuery()
+                            .getVerticesByProperty(AAIProperties.LINKED, true).toList();
+                    if (!linkedVertices.isEmpty()) {
+                        if (linkedVertices.size() > 1) {
+                            throw new AAIMultiplePropertiesException(
+                                    "multiple vertices found for single cardinality propery found when searching "
+                                            + uri);
+                        } else {
+                            // found one, remove the linked property because it didn't match the uri
+                            linkedVertices.get(0).property(AAIProperties.LINKED).remove();
+                        }
+                    }
+                    if (obj.getValue(entry.getKey()) != null) {
+                        // add new vertex to database if we have values
+                        URIToObject parser = new URIToObject(this.latestLoader, uri);
+                        Introspector resultObj = parser.getEntity();
+                        Vertex newV = serializer.createNewVertex(resultObj);
+                        serializer.serializeToDb(resultObj, newV, uriQuery, completeUri.get(),
+                                this.latestLoader.getVersion().toString());
+                        this.addLinkedProperty(newV);
+                    }
+                } else if (results.size() > 1) {
+                    throw new AAIMultiplePropertiesException(
+                            "multiple values of " + entry.getKey() + " found when searching " + uri);
+                }
+            }
+        } else {
+            // skip processing because no required properties were specified
+        }
+    }
 
+    @Override
+    protected boolean replaceWithWildcard() {
+        return true;
+    }
+
+    private void addLinkedProperty(Vertex v) {
+        v.property(AAIProperties.LINKED, true);
+    }
 
 }

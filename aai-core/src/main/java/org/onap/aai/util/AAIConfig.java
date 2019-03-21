@@ -17,7 +17,11 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.util;
+
+import com.att.eelf.configuration.EELFLogger;
+import com.att.eelf.configuration.EELFManager;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -25,49 +29,45 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.util.Properties;
-import org.onap.aai.logging.LoggingContext;
-import org.onap.aai.logging.LoggingContext.StatusCode;
-
 import java.util.UUID;
 
 import org.eclipse.jetty.util.security.Password;
-
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.logging.ErrorLogHelper;
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
-
+import org.onap.aai.logging.LoggingContext;
+import org.onap.aai.logging.LoggingContext.StatusCode;
 
 public class AAIConfig {
 
-	private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(AAIConfig.class);
-	private static final String GLOBAL_PROP_FILE_NAME = AAIConstants.AAI_CONFIG_FILENAME;
-	private static Properties serverProps;
+    private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(AAIConfig.class);
+    private static final String GLOBAL_PROP_FILE_NAME = AAIConstants.AAI_CONFIG_FILENAME;
+    private static Properties serverProps;
     private static boolean propsInitialized = false;
 
     /**
      * Instantiates a new AAI config.
      */
     // Don't instantiate
-    private AAIConfig() {}
+    private AAIConfig() {
+    }
 
     /**
      * Inits the.
      *
      * @throws AAIException the AAI exception
      */
-    public synchronized static void init() throws AAIException{
+    public synchronized static void init() throws AAIException {
 
-    	LoggingContext.save();
-		LoggingContext.component("config");
-		LoggingContext.partnerName("NA");
-		LoggingContext.targetEntity("AAI");
-		LoggingContext.requestId(UUID.randomUUID().toString());
-		LoggingContext.serviceName("AAI");
-		LoggingContext.targetServiceName("init");
-		LoggingContext.statusCode(StatusCode.COMPLETE);
+        LoggingContext.save();
+        LoggingContext.component("config");
+        LoggingContext.partnerName("NA");
+        LoggingContext.targetEntity("AAI");
+        LoggingContext.requestId(UUID.randomUUID().toString());
+        LoggingContext.serviceName("AAI");
+        LoggingContext.targetServiceName("init");
+        LoggingContext.statusCode(StatusCode.COMPLETE);
 
-		LOGGER.info("Initializing AAIConfig");
+        LOGGER.info("Initializing AAIConfig");
 
         AAIConfig.getConfigFile();
         AAIConfig.reloadConfig();
@@ -99,15 +99,15 @@ public class AAIConfig {
 
         LOGGER.debug("Reloading config from " + propFileName);
 
-        try(InputStream is = new FileInputStream(propFileName)) {
+        try (InputStream is = new FileInputStream(propFileName)) {
             newServerProps = new Properties();
             newServerProps.load(is);
             propsInitialized = true;
             serverProps = newServerProps;
         } catch (FileNotFoundException fnfe) {
-        	ErrorLogHelper.logError("AAI_4001", " " + propFileName + ". Exception: "+fnfe.getMessage());
+            ErrorLogHelper.logError("AAI_4001", " " + propFileName + ". Exception: " + fnfe.getMessage());
         } catch (IOException e) {
-        	ErrorLogHelper.logError("AAI_4002", " " + propFileName + ". IOException: "+e.getMessage());
+            ErrorLogHelper.logError("AAI_4002", " " + propFileName + ". IOException: " + e.getMessage());
         }
     }
 
@@ -119,15 +119,15 @@ public class AAIConfig {
      * @return the string
      */
     public static String get(String key, String defaultValue) {
-    	String result = defaultValue;
-    	try {
-    		result = get (key);
-    	} catch ( AAIException a ) {
-    	}
-    	if (result == null || result.isEmpty()) {
-    		result = defaultValue;
-    	}
-    	return ( result );
+        String result = defaultValue;
+        try {
+            result = get(key);
+        } catch (AAIException a) {
+        }
+        if (result == null || result.isEmpty()) {
+            result = defaultValue;
+        }
+        return (result);
     }
 
     /**
@@ -138,36 +138,37 @@ public class AAIConfig {
      * @throws AAIException the AAI exception
      */
     public static String get(String key) throws AAIException {
-    	String response = null;
+        String response = null;
 
-    	if (key.equals(AAIConstants.AAI_NODENAME)) {
-    		// Get this from InetAddress rather than the properties file
-    		String nodeName = getNodeName();
-    		if (nodeName != null) {
-    			return nodeName;
-    		}
-    		// else get from property file
-    	}
+        if (key.equals(AAIConstants.AAI_NODENAME)) {
+            // Get this from InetAddress rather than the properties file
+            String nodeName = getNodeName();
+            if (nodeName != null) {
+                return nodeName;
+            }
+            // else get from property file
+        }
 
-    	if (!propsInitialized || (serverProps == null)) {
-    		reloadConfig();
-    	}
+        if (!propsInitialized || (serverProps == null)) {
+            reloadConfig();
+        }
 
-    	if ((key.endsWith("password") || key.endsWith("passwd") || key.endsWith("apisecret")) && serverProps.containsKey(key+".x")) {
-    		String valx = serverProps.getProperty(key+".x");
-    		return Password.deobfuscate(valx);
-    	}
+        if ((key.endsWith("password") || key.endsWith("passwd") || key.endsWith("apisecret"))
+                && serverProps.containsKey(key + ".x")) {
+            String valx = serverProps.getProperty(key + ".x");
+            return Password.deobfuscate(valx);
+        }
 
-    	if (!serverProps.containsKey(key)) {
-    		throw new AAIException("AAI_4005", "Property key "+key+" cannot be found");
-    	} else {
-    		response = serverProps.getProperty(key);
-    		if (response == null || response.isEmpty()) {
-    			throw new AAIException("AAI_4005", "Property key "+key+" is null or empty");
-    		}
-    	}
-    	return response;
-	}
+        if (!serverProps.containsKey(key)) {
+            throw new AAIException("AAI_4005", "Property key " + key + " cannot be found");
+        } else {
+            response = serverProps.getProperty(key);
+            if (response == null || response.isEmpty()) {
+                throw new AAIException("AAI_4005", "Property key " + key + " is null or empty");
+            }
+        }
+        return response;
+    }
 
     /**
      * Gets the int.
@@ -176,9 +177,9 @@ public class AAIConfig {
      * @return the int
      * @throws AAIException the AAI exception
      */
-    public static int getInt(String key) throws AAIException{
-    	return Integer.parseInt(AAIConfig.get(key));
-	}
+    public static int getInt(String key) throws AAIException {
+        return Integer.parseInt(AAIConfig.get(key));
+    }
 
     /**
      * Gets the int.
@@ -190,44 +191,42 @@ public class AAIConfig {
         return Integer.parseInt(AAIConfig.get(key, value));
     }
 
-	/**
-	 * Gets the server props.
-	 *
-	 * @return the server props
-	 */
-	public static Properties getServerProps() {
-		return serverProps;
-	}
+    /**
+     * Gets the server props.
+     *
+     * @return the server props
+     */
+    public static Properties getServerProps() {
+        return serverProps;
+    }
 
-	/**
-	 * Gets the node name.
-	 *
-	 * @return the node name
-	 */
-	public static String getNodeName() {
-		try {
+    /**
+     * Gets the node name.
+     *
+     * @return the node name
+     */
+    public static String getNodeName() {
+        try {
             InetAddress ip = InetAddress.getLocalHost();
             if (ip != null) {
-                   String hostname = ip.getHostName();
-                   if (hostname != null) {
-                	   return hostname;
-                   }
+                String hostname = ip.getHostName();
+                if (hostname != null) {
+                    return hostname;
+                }
             }
-		} catch (Exception e) {
-			return null;
-		}
-		return null;
-	}
+        } catch (Exception e) {
+            return null;
+        }
+        return null;
+    }
 
-
-	/**
-	 * Check if a null or an Empty string is passed in.
-	 *
-	 * @param s the s
-	 * @return boolean
-	 */
-	public static boolean isEmpty(String s)
-	{
-		return (s == null || s.length() == 0);
-	}
+    /**
+     * Check if a null or an Empty string is passed in.
+     *
+     * @param s the s
+     * @return boolean
+     */
+    public static boolean isEmpty(String s) {
+        return (s == null || s.length() == 0);
+    }
 }

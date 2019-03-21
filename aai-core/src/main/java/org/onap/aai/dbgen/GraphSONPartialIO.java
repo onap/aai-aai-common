@@ -17,7 +17,16 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.dbgen;
+
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.io.Io;
@@ -28,21 +37,15 @@ import org.apache.tinkerpop.gremlin.structure.io.graphson.GraphSONReader;
 import org.apache.tinkerpop.gremlin.structure.io.graphson.GraphSONVersion;
 import org.apache.tinkerpop.gremlin.structure.io.graphson.GraphSONWriter;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Optional;
-import java.util.function.Consumer;
-
 /**
- * Constructs GraphSON IO implementations given a {@link Graph} and {@link IoRegistry}. Implementers of the {@link Graph}
+ * Constructs GraphSON IO implementations given a {@link Graph} and {@link IoRegistry}. Implementers of the
+ * {@link Graph}
  * interfaces should see the {@link GraphSONMapper} for information on the expectations for the {@link IoRegistry}.
  *
  * @author Stephen Mallette (http://stephen.genoprime.com)
  */
-public final class GraphSONPartialIO implements Io<GraphSONPartialReader.Builder, GraphSONWriter.Builder, GraphSONMapper.Builder> {
+public final class GraphSONPartialIO
+        implements Io<GraphSONPartialReader.Builder, GraphSONWriter.Builder, GraphSONMapper.Builder> {
     private final IoRegistry registry;
     private final Graph graph;
     private final Optional<Consumer<Mapper.Builder>> onMapper;
@@ -76,8 +79,8 @@ public final class GraphSONPartialIO implements Io<GraphSONPartialReader.Builder
      */
     @Override
     public GraphSONMapper.Builder mapper() {
-        final GraphSONMapper.Builder builder = (null == this.registry) ?
-                GraphSONMapper.build().version(version) : GraphSONMapper.build().version(version).addRegistry(this.registry);
+        final GraphSONMapper.Builder builder = (null == this.registry) ? GraphSONMapper.build().version(version)
+                : GraphSONMapper.build().version(version).addRegistry(this.registry);
         onMapper.ifPresent(c -> c.accept(builder));
         return builder;
     }
@@ -151,7 +154,8 @@ public final class GraphSONPartialIO implements Io<GraphSONPartialReader.Builder
 
         @Override
         public GraphSONPartialIO create() {
-            if (null == graph) throw new IllegalArgumentException("The graph argument was not specified");
+            if (null == graph)
+                throw new IllegalArgumentException("The graph argument was not specified");
             return new GraphSONPartialIO(this);
         }
     }

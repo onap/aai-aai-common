@@ -17,12 +17,10 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.introspection;
 
 public enum Visibility {
 
-	internal,
-	external,
-	deployment,
-	all
+    internal, external, deployment, all
 }

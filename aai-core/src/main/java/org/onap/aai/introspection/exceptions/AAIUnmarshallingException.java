@@ -17,25 +17,27 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.introspection.exceptions;
 
 import org.onap.aai.exceptions.AAIException;
 
 public class AAIUnmarshallingException extends AAIException {
 
-	private static final long serialVersionUID = -5615651557821878103L;
+    private static final long serialVersionUID = -5615651557821878103L;
 
-	public AAIUnmarshallingException() {}
+    public AAIUnmarshallingException() {
+    }
 
-	public AAIUnmarshallingException(String message) {
-		super("AAI_3000", message);
-	}
+    public AAIUnmarshallingException(String message) {
+        super("AAI_3000", message);
+    }
 
-	public AAIUnmarshallingException(Throwable cause) {
-		super("AAI_3000",cause);
-	}
+    public AAIUnmarshallingException(Throwable cause) {
+        super("AAI_3000", cause);
+    }
 
-	public AAIUnmarshallingException(String message, Throwable cause) {
-		super("AAI_3000", cause, message);
-	}
+    public AAIUnmarshallingException(String message, Throwable cause) {
+        super("AAI_3000", cause, message);
+    }
 }

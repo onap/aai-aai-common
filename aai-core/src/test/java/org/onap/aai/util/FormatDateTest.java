@@ -17,8 +17,8 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
-package org.onap.aai.util;
 
+package org.onap.aai.util;
 
 import java.time.zone.ZoneRulesException;
 
@@ -29,46 +29,39 @@ import org.junit.Test;
 @Ignore
 public class FormatDateTest {
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testExceptionThrownWhenInvalidPatternIsPassed() {
+        FormatDate formatDate = new FormatDate("XX/TT/GGGG");
+        formatDate.getDateTime();
+    }
 
-	@Test(expected=IllegalArgumentException.class)
-	public void testExceptionThrownWhenInvalidPatternIsPassed()
-	{
-		FormatDate formatDate = new FormatDate("XX/TT/GGGG");
-		formatDate.getDateTime();
-	}
-	
-	@Test
-	public void correctPattern()
-	{
-		FormatDate formatDate = new FormatDate("dd/mm/yyyy");
-		Assert.assertNotNull(formatDate.getDateTime());
-	}
-	
-	@Test(expected=IllegalArgumentException.class)
-	public void invalidPattern()
-	{
-		FormatDate formatDate = new FormatDate("XX/TT/GGGG","GMT");
-		formatDate.getDateTime();
-	}
-	
-	@Test(expected=ZoneRulesException.class)
-	public void invalidZone()
-	{
-		FormatDate formatDate = new FormatDate("dd/mm/yyyy","IST");
-		formatDate.getDateTime();
-	}
-	
-	@Test(expected=IllegalArgumentException.class)
-	public void testExceptionThrownWhenInvalidPatternAndZoneIsPassed()
-	{
-		FormatDate formatDate = new FormatDate("XX/TT/GGGG","IST");
-		formatDate.getDateTime();
-	}
-	
-	@Test
-	public void correctPatternAndZone()
-	{
-		FormatDate formatDate = new FormatDate("dd/mm/yyyy","GMT");
-		Assert.assertNotNull(formatDate.getDateTime());
-	}
+    @Test
+    public void correctPattern() {
+        FormatDate formatDate = new FormatDate("dd/mm/yyyy");
+        Assert.assertNotNull(formatDate.getDateTime());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void invalidPattern() {
+        FormatDate formatDate = new FormatDate("XX/TT/GGGG", "GMT");
+        formatDate.getDateTime();
+    }
+
+    @Test(expected = ZoneRulesException.class)
+    public void invalidZone() {
+        FormatDate formatDate = new FormatDate("dd/mm/yyyy", "IST");
+        formatDate.getDateTime();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testExceptionThrownWhenInvalidPatternAndZoneIsPassed() {
+        FormatDate formatDate = new FormatDate("XX/TT/GGGG", "IST");
+        formatDate.getDateTime();
+    }
+
+    @Test
+    public void correctPatternAndZone() {
+        FormatDate formatDate = new FormatDate("dd/mm/yyyy", "GMT");
+        Assert.assertNotNull(formatDate.getDateTime());
+    }
 }

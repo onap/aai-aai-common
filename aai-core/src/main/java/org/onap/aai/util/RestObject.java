@@ -17,14 +17,16 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.util;
 
 public class RestObject<T> {
 
-	/**
-	 * Generic version of the RestObject class.
-	 * @param <T> the type of the value being called for the Rest object interface
-	 */
+    /**
+     * Generic version of the RestObject class.
+     * 
+     * @param <T> the type of the value being called for the Rest object interface
+     */
     // T stands for "Type"
     private T t;
 
@@ -33,13 +35,17 @@ public class RestObject<T> {
      *
      * @param t the t
      */
-    public void set(T t) { this.t = t; }
-    
+    public void set(T t) {
+        this.t = t;
+    }
+
     /**
      * Gets the.
      *
      * @return the t
      */
-    public T get() { return t; }
-	
+    public T get() {
+        return t;
+    }
+
 }

@@ -17,6 +17,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.logging;
 
 import ch.qos.logback.access.pattern.AccessConverter;
@@ -24,31 +25,31 @@ import ch.qos.logback.access.spi.IAccessEvent;
 
 public class DME2RestFlag extends AccessConverter {
 
-	/**
-	 * @{inheritDoc}
-	 */
-	@Override
-	public String convert(IAccessEvent accessEvent) {
-		if (!isStarted()) {
-			return "INACTIVE_HEADER_CONV";
-		}
+    /**
+     * @{inheritDoc}
+     */
+    @Override
+    public String convert(IAccessEvent accessEvent) {
+        if (!isStarted()) {
+            return "INACTIVE_HEADER_CONV";
+        }
 
-		String flag = "-";
+        String flag = "-";
 
-		if (accessEvent.getRequestParameter("envContext").length > 0
-				&& !accessEvent.getRequestParameter("envContext")[0].isEmpty()
-				&& !accessEvent.getRequestParameter("envContext")[0].equals("-")
-				&& accessEvent.getRequestParameter("routeOffer").length > 0
-				&& !accessEvent.getRequestParameter("routeOffer")[0].isEmpty()
-				&& !accessEvent.getRequestParameter("routeOffer")[0].equals("-")
-				&& accessEvent.getRequestParameter("version").length > 0
-				&& !accessEvent.getRequestParameter("version")[0].isEmpty()
-				&& !accessEvent.getRequestParameter("version")[0].equals("-")) {
-			flag = "DME2";
-		} else {
-			flag = "REST";
-		}
+        if (accessEvent.getRequestParameter("envContext").length > 0
+                && !accessEvent.getRequestParameter("envContext")[0].isEmpty()
+                && !accessEvent.getRequestParameter("envContext")[0].equals("-")
+                && accessEvent.getRequestParameter("routeOffer").length > 0
+                && !accessEvent.getRequestParameter("routeOffer")[0].isEmpty()
+                && !accessEvent.getRequestParameter("routeOffer")[0].equals("-")
+                && accessEvent.getRequestParameter("version").length > 0
+                && !accessEvent.getRequestParameter("version")[0].isEmpty()
+                && !accessEvent.getRequestParameter("version")[0].equals("-")) {
+            flag = "DME2";
+        } else {
+            flag = "REST";
+        }
 
-		return flag;
-	}
+        return flag;
+    }
 }

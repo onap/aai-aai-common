@@ -19,25 +19,24 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
-package org.onap.aai.util; 
- 
+
+package org.onap.aai.util;
+
+import static org.junit.Assert.assertEquals;
+
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-
 public class MapperUtilTest {
-
-    
 
     private JSONObject expectedJson;
     private JSONObject sampleJson;
 
     @Before
-    public void setup(){
-       expectedJson = new JSONObject();
-       sampleJson = new JSONObject();
+    public void setup() {
+        expectedJson = new JSONObject();
+        sampleJson = new JSONObject();
     }
 
     @Test
@@ -46,8 +45,8 @@ public class MapperUtilTest {
         expectedJson.put("shape", "box");
         SampleClass sample = new SampleClass("black", "box");
         assertEquals(expectedJson.toString(), MapperUtil.writeAsJSONString(sample));
-    } 
-    
+    }
+
     @Test
     public void readAsObjectOfTest() throws Exception {
         sampleJson.put("color", "black");
@@ -56,19 +55,21 @@ public class MapperUtilTest {
         SampleClass actualObject = MapperUtil.readAsObjectOf(SampleClass.class, sampleJson.toString());
         assertEquals(expectedObject.getColor(), actualObject.getColor());
         assertEquals(expectedObject.getShape(), actualObject.getShape());
-    } 
+    }
 }
 
-class SampleClass { 
-    private String color; 
-    private String shape; 
+
+class SampleClass {
+    private String color;
+    private String shape;
 
     public SampleClass() {
-        
+
     }
-    public SampleClass(String c, String s){
-        color = c; 
-        shape = s; 
+
+    public SampleClass(String c, String s) {
+        color = c;
+        shape = s;
     }
 
     public String getColor() {

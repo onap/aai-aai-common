@@ -17,23 +17,24 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.logging;
 
 import ch.qos.logback.access.PatternLayout;
 
 public class CustomLogPatternLayoutEncoder extends ch.qos.logback.access.PatternLayoutEncoder {
 
-/**
- * @{inheritDoc}
- */
-	@Override
-	public void start(){
-		PatternLayout patternLayout = new CustomLogPatternLayout();
-		patternLayout.setContext(context);
-		patternLayout.setPattern(getPattern());
-		patternLayout.start();
-		this.layout = patternLayout;
-		super.start();
-	}
+    /**
+     * @{inheritDoc}
+     */
+    @Override
+    public void start() {
+        PatternLayout patternLayout = new CustomLogPatternLayout();
+        patternLayout.setContext(context);
+        patternLayout.setPattern(getPattern());
+        patternLayout.start();
+        this.layout = patternLayout;
+        super.start();
+    }
 
 }

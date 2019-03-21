@@ -17,50 +17,50 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
-package org.onap.aai.logging;
 
-import org.onap.aai.logging.LoggingContext.LoggingField;
+package org.onap.aai.logging;
 
 import ch.qos.logback.classic.pattern.ClassicConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 
+import org.onap.aai.logging.LoggingContext.LoggingField;
+
 public class EcompElapsedTime extends ClassicConverter {
 
-	private static final String DEFAULT_ELAPSED_TIME_FORMAT = "%d";
+    private static final String DEFAULT_ELAPSED_TIME_FORMAT = "%d";
 
-	private String ELAPSED_TIME_FORMAT;
+    private String ELAPSED_TIME_FORMAT;
 
-	@Override
-	public void start() {
-		ELAPSED_TIME_FORMAT = getFirstOption();
-	}
+    @Override
+    public void start() {
+        ELAPSED_TIME_FORMAT = getFirstOption();
+    }
 
-	@Override
-	public String convert(ILoggingEvent event) {
-		final long end = event.getTimeStamp();
+    @Override
+    public String convert(ILoggingEvent event) {
+        final long end = event.getTimeStamp();
 
-		if (!event.getMDCPropertyMap().containsKey(LoggingField.START_TIME.toString())) {
-			return format(0);
-		} else if (event.getMDCPropertyMap().containsKey(LoggingField.ELAPSED_TIME.toString())) {
-			return format(
-						Integer.parseInt(event.getMDCPropertyMap().get(LoggingField.ELAPSED_TIME.toString()))
-					);
-		}
+        if (!event.getMDCPropertyMap().containsKey(LoggingField.START_TIME.toString())) {
+            return format(0);
+        } else if (event.getMDCPropertyMap().containsKey(LoggingField.ELAPSED_TIME.toString())) {
+            return format(Integer.parseInt(event.getMDCPropertyMap().get(LoggingField.ELAPSED_TIME.toString())));
+        }
 
-		final long start = LogFormatTools.toTimestamp(event.getMDCPropertyMap().get(LoggingField.START_TIME.toString()));
+        final long start =
+                LogFormatTools.toTimestamp(event.getMDCPropertyMap().get(LoggingField.START_TIME.toString()));
 
-		return format(end - start);
-	}
+        return format(end - start);
+    }
 
-	private String format(long elapsedTime) {
-		if (ELAPSED_TIME_FORMAT == null) {
-			return format(DEFAULT_ELAPSED_TIME_FORMAT, elapsedTime);
-		}
+    private String format(long elapsedTime) {
+        if (ELAPSED_TIME_FORMAT == null) {
+            return format(DEFAULT_ELAPSED_TIME_FORMAT, elapsedTime);
+        }
 
-		return format (ELAPSED_TIME_FORMAT, elapsedTime);
-	}
+        return format(ELAPSED_TIME_FORMAT, elapsedTime);
+    }
 
-	private String format(String format, long elapsedTime) {
-		return String.format(format, elapsedTime);
-	}
+    private String format(String format, long elapsedTime) {
+        return String.format(format, elapsedTime);
+    }
 }

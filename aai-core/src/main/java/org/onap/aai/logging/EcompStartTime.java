@@ -17,22 +17,23 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
-package org.onap.aai.logging;
 
-import org.onap.aai.logging.LoggingContext.LoggingField;
+package org.onap.aai.logging;
 
 import ch.qos.logback.classic.pattern.ClassicConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 
+import org.onap.aai.logging.LoggingContext.LoggingField;
+
 public class EcompStartTime extends ClassicConverter {
 
-	@Override
-	public String convert(ILoggingEvent event) {
+    @Override
+    public String convert(ILoggingEvent event) {
 
-		if (!event.getMDCPropertyMap().containsKey(LoggingField.START_TIME.toString())) {
-			return LogFormatTools.toDate(event.getTimeStamp());
-		}
+        if (!event.getMDCPropertyMap().containsKey(LoggingField.START_TIME.toString())) {
+            return LogFormatTools.toDate(event.getTimeStamp());
+        }
 
-		return event.getMDCPropertyMap().get(LoggingField.START_TIME.toString());
-	}
+        return event.getMDCPropertyMap().get(LoggingField.START_TIME.toString());
+    }
 }

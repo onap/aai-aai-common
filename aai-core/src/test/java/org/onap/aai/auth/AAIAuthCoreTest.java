@@ -17,21 +17,22 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.auth;
+
+import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.onap.aai.AAISetup;
 import org.onap.aai.auth.exceptions.AAIUnrecognizedFunctionException;
 
-import static org.junit.Assert.*;
-
 public class AAIAuthCoreTest extends AAISetup {
 
     private AAIAuthCore authCore;
 
     @Before
-    public void setup(){
+    public void setup() {
         authCore = new AAIAuthCore("/aai");
     }
 
@@ -40,16 +41,16 @@ public class AAIAuthCoreTest extends AAISetup {
 
         String uri = "/aai/v3/search/edge-tag-query";
         assertEquals("Get aai function name from " + uri, "search", authCore.getAuthPolicyFunctName(uri));
-        
+
         uri = "/aai/v10/search/edge-tag-query";
         assertEquals("Get aai function name from " + uri, "search", authCore.getAuthPolicyFunctName(uri));
 
         uri = "/aai/search/model";
         assertEquals("Get aai function name from " + uri, "search", authCore.getAuthPolicyFunctName(uri));
-        
+
         uri = "/aai/v9/cloud-infrastructure/cloud-regions/cloud-region/somecloudregion/some-cloud-owner";
         assertEquals("Get aai function name from " + uri, "cloud-infrastructure", authCore.getAuthPolicyFunctName(uri));
-        
+
         uri = "/aai/v8/network/pnfs/pnf/ff4ca01orc/p-interfaces";
         assertEquals("Get aai function name from " + uri, "network", authCore.getAuthPolicyFunctName(uri));
 
@@ -91,17 +92,20 @@ public class AAIAuthCoreTest extends AAISetup {
 
     @Test
     public void validUsernameContainsTheWildcardIdAuthTest() throws AAIUnrecognizedFunctionException {
-        assertTrue(authCore.authorize("cn=blah, testWildcardId, O=".toLowerCase(), "/aai/v0/testFunction/someUri", "PUT", "", "aafWildCardIssuer"));
+        assertTrue(authCore.authorize("cn=blah, testWildcardId, O=".toLowerCase(), "/aai/v0/testFunction/someUri",
+                "PUT", "", "aafWildCardIssuer"));
     }
 
     @Test
     public void validUsernameContainsTheWildcardIdInvalidIssuerAuthTest() throws AAIUnrecognizedFunctionException {
-        assertFalse(authCore.authorize("cn=blah, testWildcardId, O=".toLowerCase(), "/aai/v0/testFunction/someUri", "PUT", "", "invalidIssuer"));
+        assertFalse(authCore.authorize("cn=blah, testWildcardId, O=".toLowerCase(), "/aai/v0/testFunction/someUri",
+                "PUT", "", "invalidIssuer"));
     }
 
     @Test
     public void invalidUsernameContainsRegularUsernameAuthTest() throws AAIUnrecognizedFunctionException {
-        assertFalse(authCore.authorize("cn=blah, testUser, O=".toLowerCase(), "/aai/v0/testFunction/someUri", "PUT", ""));
+        assertFalse(
+                authCore.authorize("cn=blah, testUser, O=".toLowerCase(), "/aai/v0/testFunction/someUri", "PUT", ""));
     }
 
     @Test
@@ -116,93 +120,115 @@ public class AAIAuthCoreTest extends AAISetup {
 
     @Test
     public void validUsernameViaHaProxyAuthTest() throws AAIUnrecognizedFunctionException {
-        assertTrue(authCore.authorize("ha-proxy-user".toLowerCase(), "/aai/v0/testFunction/someUri", "PUT", "testUser".toLowerCase()));
+        assertTrue(authCore.authorize("ha-proxy-user".toLowerCase(), "/aai/v0/testFunction/someUri", "PUT",
+                "testUser".toLowerCase()));
     }
 
     @Test
     public void validUsernameInvalidHttpMethodViaHaProxyAuthTest() throws AAIUnrecognizedFunctionException {
-        assertFalse(authCore.authorize("ha-proxy-user".toLowerCase(), "/aai/v0/testFunction/someUri", "POST", "testUser".toLowerCase()));
+        assertFalse(authCore.authorize("ha-proxy-user".toLowerCase(), "/aai/v0/testFunction/someUri", "POST",
+                "testUser".toLowerCase()));
     }
 
     @Test(expected = AAIUnrecognizedFunctionException.class)
     public void validUsernameInvalidFunctionInURIViaHaProxyAuthTest() throws AAIUnrecognizedFunctionException {
-        authCore.authorize("ha-proxy-user".toLowerCase(), "/aai/v0/badFunction/someUri", "PUT", "testUser".toLowerCase());
+        authCore.authorize("ha-proxy-user".toLowerCase(), "/aai/v0/badFunction/someUri", "PUT",
+                "testUser".toLowerCase());
     }
 
     @Test
     public void invalidUsernameViaHaProxyAuthTest() throws AAIUnrecognizedFunctionException {
-        assertFalse(authCore.authorize("ha-proxy-user".toLowerCase(), "/aai/v0/testFunction/someUri", "PUT", "invlaidTestUser".toLowerCase()));
+        assertFalse(authCore.authorize("ha-proxy-user".toLowerCase(), "/aai/v0/testFunction/someUri", "PUT",
+                "invlaidTestUser".toLowerCase()));
     }
 
     @Test
     public void validUsernameIsTheExactWildcardIdViaHaProxyAuthTest() throws AAIUnrecognizedFunctionException {
-        assertTrue(authCore.authorize("ha-proxy-user".toLowerCase(), "/aai/v0/testFunction/someUri", "PUT", "testWildcardId".toLowerCase()));
+        assertTrue(authCore.authorize("ha-proxy-user".toLowerCase(), "/aai/v0/testFunction/someUri", "PUT",
+                "testWildcardId".toLowerCase()));
     }
 
     @Test
     public void validUsernameContainsTheWildcardIdViaHaProxyAuthTest() throws AAIUnrecognizedFunctionException {
-        assertTrue(authCore.authorize("ha-proxy-user".toLowerCase(), "/aai/v0/testFunction/someUri", "PUT", "cn=blah, testWildcardId, O=".toLowerCase(), "aafWildCardIssuer"));
+        assertTrue(authCore.authorize("ha-proxy-user".toLowerCase(), "/aai/v0/testFunction/someUri", "PUT",
+                "cn=blah, testWildcardId, O=".toLowerCase(), "aafWildCardIssuer"));
     }
 
     @Test
     public void invalidUsernameContainsRegularUsernameViaHaProxyAuthTest() throws AAIUnrecognizedFunctionException {
-        assertFalse(authCore.authorize("ha-proxy-user".toLowerCase(), "/aai/v0/testFunction/someUri", "PUT", "cn=blah, testUser, O=".toLowerCase()));
+        assertFalse(authCore.authorize("ha-proxy-user".toLowerCase(), "/aai/v0/testFunction/someUri", "PUT",
+                "cn=blah, testUser, O=".toLowerCase()));
     }
 
     @Test
     public void haProxyUsernameTwiceAuthTest() throws AAIUnrecognizedFunctionException {
-        assertFalse(authCore.authorize("ha-proxy-user".toLowerCase(), "/aai/v0/testFunction/someUri", "PUT", "ha-proxy-user".toLowerCase()));
+        assertFalse(authCore.authorize("ha-proxy-user".toLowerCase(), "/aai/v0/testFunction/someUri", "PUT",
+                "ha-proxy-user".toLowerCase()));
     }
-
 
     @Test
     public void haProxyWildcardIdAuthTest() throws AAIUnrecognizedFunctionException {
-        assertTrue(authCore.authorize("cn=blah, ha-proxy-wildcard-id, O=".toLowerCase(), "/aai/util/echo", "GET", "", "aafWildCardIssuer"));
+        assertTrue(authCore.authorize("cn=blah, ha-proxy-wildcard-id, O=".toLowerCase(), "/aai/util/echo", "GET", "",
+                "aafWildCardIssuer"));
     }
 
     @Test
     public void haProxyWildcardIdInvalidFunctionAuthTest() throws AAIUnrecognizedFunctionException {
-        assertFalse(authCore.authorize("cn=blah, ha-proxy-wildcard-id, O=".toLowerCase(), "/aai/v0/testFunction/someUri", "PUT", ""));
+        assertFalse(authCore.authorize("cn=blah, ha-proxy-wildcard-id, O=".toLowerCase(),
+                "/aai/v0/testFunction/someUri", "PUT", ""));
     }
 
     @Test
     public void validUsernameViaHaProxyWildcardIdAuthTest() throws AAIUnrecognizedFunctionException {
-        assertTrue(authCore.authorize("cn=blah, ha-proxy-wildcard-id, O=".toLowerCase(), "/aai/v0/testFunction/someUri", "PUT", "testUser".toLowerCase(), "aafWildCardIssuer"));
+        assertTrue(authCore.authorize("cn=blah, ha-proxy-wildcard-id, O=".toLowerCase(), "/aai/v0/testFunction/someUri",
+                "PUT", "testUser".toLowerCase(), "aafWildCardIssuer"));
     }
 
     @Test
     public void validUsernameInvalidHttpMethodViaHaProxyWildcardIdAuthTest() throws AAIUnrecognizedFunctionException {
-        assertFalse(authCore.authorize("cn=blah, ha-proxy-wildcard-id, O=".toLowerCase(), "/aai/v0/testFunction/someUri", "POST", "testUser".toLowerCase()));
+        assertFalse(authCore.authorize("cn=blah, ha-proxy-wildcard-id, O=".toLowerCase(),
+                "/aai/v0/testFunction/someUri", "POST", "testUser".toLowerCase()));
     }
 
     @Test(expected = AAIUnrecognizedFunctionException.class)
-    public void validUsernameInvalidFunctionInURIViaHaProxyWildcardIdAuthTest() throws AAIUnrecognizedFunctionException {
-        authCore.authorize("cn=blah, ha-proxy-wildcard-id, O=".toLowerCase(), "/aai/v0/badFunction/someUri", "PUT", "testUser".toLowerCase());
+    public void validUsernameInvalidFunctionInURIViaHaProxyWildcardIdAuthTest()
+            throws AAIUnrecognizedFunctionException {
+        authCore.authorize("cn=blah, ha-proxy-wildcard-id, O=".toLowerCase(), "/aai/v0/badFunction/someUri", "PUT",
+                "testUser".toLowerCase());
     }
 
     @Test
     public void invalidUsernameViaHaProxyWildcardIdAuthTest() throws AAIUnrecognizedFunctionException {
-        assertFalse(authCore.authorize("cn=blah, ha-proxy-wildcard-id, O=".toLowerCase(), "/aai/v0/testFunction/someUri", "PUT", "invlaidTestUser".toLowerCase()));
+        assertFalse(authCore.authorize("cn=blah, ha-proxy-wildcard-id, O=".toLowerCase(),
+                "/aai/v0/testFunction/someUri", "PUT", "invlaidTestUser".toLowerCase()));
     }
 
     @Test
-    public void validUsernameIsTheExactWildcardIdViaHaProxyWildcardIdAuthTest() throws AAIUnrecognizedFunctionException {
-        assertTrue(authCore.authorize("cn=blah, ha-proxy-wildcard-id, O=".toLowerCase(), "/aai/v0/testFunction/someUri", "PUT", "testWildcardId".toLowerCase(), "aafWildCardIssuer"));
+    public void validUsernameIsTheExactWildcardIdViaHaProxyWildcardIdAuthTest()
+            throws AAIUnrecognizedFunctionException {
+        assertTrue(authCore.authorize("cn=blah, ha-proxy-wildcard-id, O=".toLowerCase(), "/aai/v0/testFunction/someUri",
+                "PUT", "testWildcardId".toLowerCase(), "aafWildCardIssuer"));
     }
 
     @Test
-    public void validUsernameContainsTheWildcardIdViaHaProxyWildcardIdAuthTest() throws AAIUnrecognizedFunctionException {
-        assertTrue(authCore.authorize("cn=blah, ha-proxy-wildcard-id, O=".toLowerCase(), "/aai/v0/testFunction/someUri", "PUT", "cn=blah, testWildcardId, O=".toLowerCase(), "aafWildCardIssuer"));
+    public void validUsernameContainsTheWildcardIdViaHaProxyWildcardIdAuthTest()
+            throws AAIUnrecognizedFunctionException {
+        assertTrue(authCore.authorize("cn=blah, ha-proxy-wildcard-id, O=".toLowerCase(), "/aai/v0/testFunction/someUri",
+                "PUT", "cn=blah, testWildcardId, O=".toLowerCase(), "aafWildCardIssuer"));
     }
 
     @Test
-    public void validUsernameContainsTheWildcardIdViaHaProxyWildcardIdInvalidIssuerAuthTest() throws AAIUnrecognizedFunctionException {
-        assertFalse(authCore.authorize("cn=blah, ha-proxy-wildcard-id, O=".toLowerCase(), "/aai/v0/testFunction/someUri", "PUT", "cn=blah, testWildcardId, O=".toLowerCase(), "invalidIssuer"));
+    public void validUsernameContainsTheWildcardIdViaHaProxyWildcardIdInvalidIssuerAuthTest()
+            throws AAIUnrecognizedFunctionException {
+        assertFalse(authCore.authorize("cn=blah, ha-proxy-wildcard-id, O=".toLowerCase(),
+                "/aai/v0/testFunction/someUri", "PUT", "cn=blah, testWildcardId, O=".toLowerCase(), "invalidIssuer"));
     }
 
     @Test
-    public void invalidUsernameContainsRegularUsernameViaHaProxyWildcardIdAuthTest() throws AAIUnrecognizedFunctionException {
-        assertFalse(authCore.authorize("cn=blah, ha-proxy-wildcard-id, O=".toLowerCase(), "/aai/v0/testFunction/someUri", "PUT", "cn=blah, testUser, O=".toLowerCase()));
+    public void invalidUsernameContainsRegularUsernameViaHaProxyWildcardIdAuthTest()
+            throws AAIUnrecognizedFunctionException {
+        assertFalse(authCore.authorize("cn=blah, ha-proxy-wildcard-id, O=".toLowerCase(),
+                "/aai/v0/testFunction/someUri", "PUT", "cn=blah, testUser, O=".toLowerCase()));
     }
 
 }

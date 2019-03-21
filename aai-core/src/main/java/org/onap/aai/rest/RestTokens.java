@@ -17,19 +17,20 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.rest;
 
 public enum RestTokens {
 
-	COUSIN("related-to");
-	private final String name;
+    COUSIN("related-to");
+    private final String name;
 
-	private RestTokens(String name) { 
-		this.name = name;
-	}
+    private RestTokens(String name) {
+        this.name = name;
+    }
 
-	@Override
-	public String toString() {
-		return name;
-	}
+    @Override
+    public String toString() {
+        return name;
+    }
 }

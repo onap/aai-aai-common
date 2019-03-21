@@ -17,11 +17,13 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.logging;
 
-import org.onap.aai.logging.LoggingContext.LoggingField;
 import ch.qos.logback.classic.pattern.ClassicConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
+
+import org.onap.aai.logging.LoggingContext.LoggingField;
 
 public class EcompStatusCode extends ClassicConverter {
     @Override
@@ -32,4 +34,3 @@ public class EcompStatusCode extends ClassicConverter {
         return event.getMDCPropertyMap().get(LoggingField.STATUS_CODE.toString());
     }
 }
-

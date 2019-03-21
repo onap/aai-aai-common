@@ -17,10 +17,17 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.serialization.queryformats;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.exceptions.AAIException;
@@ -33,132 +40,140 @@ import org.onap.aai.serialization.queryformats.params.Depth;
 import org.onap.aai.serialization.queryformats.params.NodesOnly;
 import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
 
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 public class Resource extends MultiFormatMapper {
 
-	private final Loader loader;
-	private final DBSerializer serializer;
-	private final JsonParser parser;
-	private final UrlBuilder urlBuilder;
-	private final boolean includeUrl;
-	private final boolean nodesOnly;
-	private final int depth;
-	private Resource (Builder builder) {
-		this.parser = new JsonParser();
-		this.loader = builder.getLoader();
-		this.serializer = builder.getSerializer();
-		this.urlBuilder = builder.getUrlBuilder();
-		this.includeUrl = builder.isIncludeUrl();
-		this.nodesOnly = builder.isNodesOnly();
-		this.depth = builder.getDepth();
-	}
+    private final Loader loader;
+    private final DBSerializer serializer;
+    private final JsonParser parser;
+    private final UrlBuilder urlBuilder;
+    private final boolean includeUrl;
+    private final boolean nodesOnly;
+    private final int depth;
 
-	@Override
-	protected Optional<JsonObject> getJsonFromVertex(Vertex v) throws AAIFormatVertexException {
+    private Resource(Builder builder) {
+        this.parser = new JsonParser();
+        this.loader = builder.getLoader();
+        this.serializer = builder.getSerializer();
+        this.urlBuilder = builder.getUrlBuilder();
+        this.includeUrl = builder.isIncludeUrl();
+        this.nodesOnly = builder.isNodesOnly();
+        this.depth = builder.getDepth();
+    }
 
-		JsonObject json = new JsonObject();
+    @Override
+    protected Optional<JsonObject> getJsonFromVertex(Vertex v) throws AAIFormatVertexException {
 
-		if (this.includeUrl) {
-			json.addProperty("url", this.urlBuilder.pathed(v));
-		}
-		Optional<JsonObject> jsonObject = this.vertexToJsonObject(v);
-		if (jsonObject.isPresent()) {
-			json.add(v.<String>property(AAIProperties.NODE_TYPE).orElse(null), jsonObject.get());
-		} else {
-			return Optional.empty();
-		}
-		return Optional.of(json);
-	}
+        JsonObject json = new JsonObject();
 
-	protected Optional<JsonObject> vertexToJsonObject(Vertex v) throws AAIFormatVertexException {
-		try {
-			final Introspector obj = getLoader().introspectorFromName(
-										v.<String>property(AAIProperties.NODE_TYPE)
-											.orElse(null)
-									 );
+        if (this.includeUrl) {
+            json.addProperty("url", this.urlBuilder.pathed(v));
+        }
+        Optional<JsonObject> jsonObject = this.vertexToJsonObject(v);
+        if (jsonObject.isPresent()) {
+            json.add(v.<String>property(AAIProperties.NODE_TYPE).orElse(null), jsonObject.get());
+        } else {
+            return Optional.empty();
+        }
+        return Optional.of(json);
+    }
 
-			final List<Vertex> wrapper = new ArrayList<>();
+    protected Optional<JsonObject> vertexToJsonObject(Vertex v) throws AAIFormatVertexException {
+        try {
+            final Introspector obj =
+                    getLoader().introspectorFromName(v.<String>property(AAIProperties.NODE_TYPE).orElse(null));
 
-			wrapper.add(v);
+            final List<Vertex> wrapper = new ArrayList<>();
 
-			try {
-				getSerializer().dbToObject(wrapper, obj, this.depth, this.nodesOnly, "false");
-			} catch (AAIException | UnsupportedEncodingException  e) {
-				throw new AAIFormatVertexException("Failed to format vertex - error while serializing: " + e.getMessage(), e);
-			}
+            wrapper.add(v);
 
-			final String json = obj.marshal(false);
+            try {
+                getSerializer().dbToObject(wrapper, obj, this.depth, this.nodesOnly, "false");
+            } catch (AAIException | UnsupportedEncodingException e) {
+                throw new AAIFormatVertexException(
+                        "Failed to format vertex - error while serializing: " + e.getMessage(), e);
+            }
 
-			return Optional.of(getParser().parse(json).getAsJsonObject());
-		} catch (AAIUnknownObjectException e) {
-			return Optional.empty();
-		}
-	}
+            final String json = obj.marshal(false);
 
-	@Override
-	public int parallelThreshold() {
-		return 20;
-	}
+            return Optional.of(getParser().parse(json).getAsJsonObject());
+        } catch (AAIUnknownObjectException e) {
+            return Optional.empty();
+        }
+    }
 
-	private Loader getLoader() { return loader; }
-	private DBSerializer getSerializer() { return serializer; }
-	private JsonParser getParser() { return parser; }
-	
-	public static class Builder implements NodesOnly<Builder>, Depth<Builder> {
-		
-		private final Loader loader;
-		private final DBSerializer serializer;
-		private final UrlBuilder urlBuilder;
-		private boolean includeUrl = false;
-		private boolean nodesOnly = false;
-		private int depth = 1;
-		public Builder(Loader loader, DBSerializer serializer, UrlBuilder urlBuilder) {
-			this.loader = loader;
-			this.serializer = serializer;
-			this.urlBuilder = urlBuilder;
-		}
-		
-		protected Loader getLoader() {
-			return this.loader;
-		}
+    @Override
+    public int parallelThreshold() {
+        return 20;
+    }
 
-		protected DBSerializer getSerializer() {
-			return this.serializer;
-		}
+    private Loader getLoader() {
+        return loader;
+    }
 
-		protected UrlBuilder getUrlBuilder() {
-			return this.urlBuilder;
-		}
-		
-		public Builder includeUrl() {
-			this.includeUrl = true;
-			return this;
-		}
-		
-		public Builder nodesOnly(Boolean nodesOnly) {
-			this.nodesOnly = nodesOnly;
-			return this;
-		}
-		public boolean isNodesOnly() {
-			return this.nodesOnly;
-		}
-		public Builder depth(Integer depth) {
-			this.depth = depth;
-			return this;
-		}
-		public int getDepth() {
-			return this.depth;
-		}
-		public boolean isIncludeUrl() {
-			return this.includeUrl;
-		}
-		
-		public Resource build() {
-			return new Resource(this);
-		}
-	}
+    private DBSerializer getSerializer() {
+        return serializer;
+    }
+
+    private JsonParser getParser() {
+        return parser;
+    }
+
+    public static class Builder implements NodesOnly<Builder>, Depth<Builder> {
+
+        private final Loader loader;
+        private final DBSerializer serializer;
+        private final UrlBuilder urlBuilder;
+        private boolean includeUrl = false;
+        private boolean nodesOnly = false;
+        private int depth = 1;
+
+        public Builder(Loader loader, DBSerializer serializer, UrlBuilder urlBuilder) {
+            this.loader = loader;
+            this.serializer = serializer;
+            this.urlBuilder = urlBuilder;
+        }
+
+        protected Loader getLoader() {
+            return this.loader;
+        }
+
+        protected DBSerializer getSerializer() {
+            return this.serializer;
+        }
+
+        protected UrlBuilder getUrlBuilder() {
+            return this.urlBuilder;
+        }
+
+        public Builder includeUrl() {
+            this.includeUrl = true;
+            return this;
+        }
+
+        public Builder nodesOnly(Boolean nodesOnly) {
+            this.nodesOnly = nodesOnly;
+            return this;
+        }
+
+        public boolean isNodesOnly() {
+            return this.nodesOnly;
+        }
+
+        public Builder depth(Integer depth) {
+            this.depth = depth;
+            return this;
+        }
+
+        public int getDepth() {
+            return this.depth;
+        }
+
+        public boolean isIncludeUrl() {
+            return this.includeUrl;
+        }
+
+        public Resource build() {
+            return new Resource(this);
+        }
+    }
 }

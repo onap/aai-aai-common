@@ -17,10 +17,9 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.introspection.tools;
 
 public enum Severity {
-	WARNING,
-	ERROR,
-	CRITICAL
+    WARNING, ERROR, CRITICAL
 }

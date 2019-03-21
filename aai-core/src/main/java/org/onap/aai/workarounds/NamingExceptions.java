@@ -17,62 +17,63 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.workarounds;
 
 public class NamingExceptions {
 
-	/**
-	 * Instantiates a new naming exceptions.
-	 */
-	private NamingExceptions() {
-		
-	}
-	
-	private static class Helper {
-		private static final NamingExceptions INSTANCE = new NamingExceptions();
-	}
-	
-	/**
-	 * Gets the single instance of NamingExceptions.
-	 *
-	 * @return single instance of NamingExceptions
-	 */
-	public static NamingExceptions getInstance() {
-		return Helper.INSTANCE;
-	}
-	
-	/**
-	 * Gets the object name.
-	 *
-	 * @param name the name
-	 * @return the object name
-	 */
-	public String getObjectName(String name) {
-		
-		String result = name;
-	
-		if (name.equals("cvlan-tag")) {
-			result = "cvlan-tag-entry";
-		}
-		
-		return result;
-	}
-	
-	/**
-	 * Gets the DB name.
-	 *
-	 * @param name the name
-	 * @return the DB name
-	 */
-	public String getDBName(String name) {
-		
-		String result = name;
-		
-		if (name.equals("cvlan-tag-entry")) {
-			result = "cvlan-tag";
-		}
-		
-		return result;
-		
-	}
+    /**
+     * Instantiates a new naming exceptions.
+     */
+    private NamingExceptions() {
+
+    }
+
+    private static class Helper {
+        private static final NamingExceptions INSTANCE = new NamingExceptions();
+    }
+
+    /**
+     * Gets the single instance of NamingExceptions.
+     *
+     * @return single instance of NamingExceptions
+     */
+    public static NamingExceptions getInstance() {
+        return Helper.INSTANCE;
+    }
+
+    /**
+     * Gets the object name.
+     *
+     * @param name the name
+     * @return the object name
+     */
+    public String getObjectName(String name) {
+
+        String result = name;
+
+        if (name.equals("cvlan-tag")) {
+            result = "cvlan-tag-entry";
+        }
+
+        return result;
+    }
+
+    /**
+     * Gets the DB name.
+     *
+     * @param name the name
+     * @return the DB name
+     */
+    public String getDBName(String name) {
+
+        String result = name;
+
+        if (name.equals("cvlan-tag-entry")) {
+            result = "cvlan-tag";
+        }
+
+        return result;
+
+    }
 }

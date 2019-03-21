@@ -17,9 +17,9 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.dbmap;
 
 public enum DBConnectionType {
-	REALTIME,
-	CACHED
+    REALTIME, CACHED
 }

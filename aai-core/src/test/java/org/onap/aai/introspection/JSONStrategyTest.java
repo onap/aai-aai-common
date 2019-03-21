@@ -17,26 +17,26 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.introspection;
 
-import org.json.simple.JSONArray;
+import java.util.HashSet;
+import java.util.Set;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.onap.aai.AAISetup;
 
-import java.util.HashSet;
-import java.util.Set;
-
-public class JSONStrategyTest extends AAISetup{
+public class JSONStrategyTest extends AAISetup {
     private JSONStrategy jsonStrategy;
     private JSONStrategy jsonStrategyContainer;
     private JSONStrategy jsonStrategyComplex;
 
     @Before
-    public void setup(){
+    public void setup() {
         try {
             JSONObject pserver = new JSONObject();
             pserver.put("hostname", "value1");
@@ -54,14 +54,13 @@ public class JSONStrategyTest extends AAISetup{
             JSONObject complex = new JSONObject();
             complex.put("pserver", pserver);
             jsonStrategyComplex = new JSONStrategy(complex, "pservers-type");
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             System.out.println("error during setup: " + e.getMessage());
         }
     }
 
     @Test
-    public void getSetTest(){
+    public void getSetTest() {
         jsonStrategy.setValue("ramInMegabytes", 1024);
         Assert.assertEquals("value1", jsonStrategy.getValue("hostname"));
         Assert.assertEquals(4, jsonStrategy.getValue("numberofCpus"));
@@ -79,7 +78,8 @@ public class JSONStrategyTest extends AAISetup{
     @Test
     public void getGenericTypeTest() {
         // If the values of this object are arrays, return the type within the array
-        Assert.assertEquals("class org.json.simple.JSONObject" , jsonStrategyContainer.getGenericTypeClass("pservers").toString());
+        Assert.assertEquals("class org.json.simple.JSONObject",
+                jsonStrategyContainer.getGenericTypeClass("pservers").toString());
     }
 
     @Test
@@ -87,6 +87,7 @@ public class JSONStrategyTest extends AAISetup{
         Assert.assertEquals("org.json.simple.JSONObject", jsonStrategy.getJavaClassName());
         Assert.assertEquals("org.json.simple.JSONObject", jsonStrategyContainer.getJavaClassName());
     }
+
     @Test
     public void getTypeTest() {
         Assert.assertEquals("java.lang.String", jsonStrategy.getType("hostname"));
@@ -100,16 +101,19 @@ public class JSONStrategyTest extends AAISetup{
 
     @Test
     public void newInstanceOfPropertyTest() {
-        Assert.assertEquals("class org.json.simple.JSONArray", jsonStrategyContainer.newInstanceOfProperty("pservers").getClass().toString());
+        Assert.assertEquals("class org.json.simple.JSONArray",
+                jsonStrategyContainer.newInstanceOfProperty("pservers").getClass().toString());
     }
 
     @Test(expected = NullPointerException.class)
     public void newInvalidInstanceOfPropertyTest() {
         Assert.assertEquals(null, jsonStrategyContainer.newInstanceOfProperty("invalid").getClass().toString());
     }
+
     @Test
     public void newInstanceOfNestedPropertyTest() {
-        Assert.assertEquals("class org.json.simple.JSONObject", jsonStrategyContainer.newInstanceOfNestedProperty("pservers").getClass().toString());
+        Assert.assertEquals("class org.json.simple.JSONObject",
+                jsonStrategyContainer.newInstanceOfNestedProperty("pservers").getClass().toString());
     }
 
     @Test(expected = NullPointerException.class)

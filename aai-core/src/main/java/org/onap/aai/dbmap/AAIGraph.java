@@ -19,7 +19,11 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.dbmap;
+
+import com.att.eelf.configuration.EELFLogger;
+import com.att.eelf.configuration.EELFManager;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -33,15 +37,12 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.io.IoCore;
+import org.janusgraph.core.JanusGraph;
+import org.janusgraph.core.JanusGraphFactory;
+import org.janusgraph.core.schema.JanusGraphManagement;
 import org.onap.aai.dbgen.SchemaGenerator;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.util.AAIConstants;
-
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
-import org.janusgraph.core.JanusGraphFactory;
-import org.janusgraph.core.JanusGraph;
-import org.janusgraph.core.schema.JanusGraphManagement;
 
 /**
  * Database Mapping class which acts as the middle man between the REST
@@ -52,7 +53,7 @@ import org.janusgraph.core.schema.JanusGraphManagement;
  * rules such as keys/required properties are handled by calling DBMeth methods
  * which are driven by a specification file in json.
  * 
- 
+ * 
  */
 public class AAIGraph {
 
@@ -62,8 +63,6 @@ public class AAIGraph {
     private static final String REALTIME_DB = "realtime";
     private static final String CACHED_DB = "cached";
     private static boolean isInit = false;
-
-
 
     /**
      * Instantiates a new AAI graph.
@@ -85,14 +84,15 @@ public class AAIGraph {
             throw new RuntimeException("Failed to instantiate graphs", e);
         }
     }
-    
+
     private static class Helper {
         private static final AAIGraph INSTANCE = new AAIGraph();
+
         private Helper() {
-            
+
         }
     }
-    
+
     /**
      * Gets the single instance of AAIGraph.
      *
@@ -106,16 +106,18 @@ public class AAIGraph {
     public static boolean isInit() {
         return isInit;
     }
-    
+
     private void loadGraph(String name, String configPath, String serviceName) throws Exception {
         // Graph being opened by JanusGraphFactory is being placed in hashmap to be used later
         // These graphs shouldn't be closed until the application shutdown
         try {
-            PropertiesConfiguration propertiesConfiguration = new AAIGraphConfig.Builder(configPath).forService(serviceName).withGraphType(name).buildConfiguration();
+            PropertiesConfiguration propertiesConfiguration = new AAIGraphConfig.Builder(configPath)
+                    .forService(serviceName).withGraphType(name).buildConfiguration();
             JanusGraph graph = JanusGraphFactory.open(propertiesConfiguration);
 
             Properties graphProps = new Properties();
-            propertiesConfiguration.getKeys().forEachRemaining(k -> graphProps.setProperty(k, propertiesConfiguration.getString(k)));
+            propertiesConfiguration.getKeys()
+                    .forEachRemaining(k -> graphProps.setProperty(k, propertiesConfiguration.getString(k)));
 
             if ("inmemory".equals(graphProps.get("storage.backend"))) {
                 // Load the propertyKeys, indexes and edge-Labels into the DB
@@ -149,8 +151,7 @@ public class AAIGraph {
                     transaction.tx().commit();
                     logAndPrint(logger, "Snapshot loaded to inmemory graph.");
                 } catch (Exception e) {
-                    logAndPrint(logger,
-                        "ERROR: Could not load datasnapshot to in memory graph. \n"
+                    logAndPrint(logger, "ERROR: Could not load datasnapshot to in memory graph. \n"
                             + ExceptionUtils.getFullStackTrace(e));
                     throw new RuntimeException(e);
                 }
@@ -161,9 +162,9 @@ public class AAIGraph {
     private void loadSchema(JanusGraph graph) {
         // Load the propertyKeys, indexes and edge-Labels into the DB
         JanusGraphManagement graphMgt = graph.openManagement();
-        
+
         System.out.println("-- loading schema into JanusGraph");
-        SchemaGenerator.loadSchemaIntoJanusGraph( graph, graphMgt, "inmemory");
+        SchemaGenerator.loadSchemaIntoJanusGraph(graph, graphMgt, "inmemory");
     }
 
     /**
@@ -181,16 +182,16 @@ public class AAIGraph {
     public JanusGraph getGraph() {
         return graphs.get(REALTIME_DB);
     }
-    
+
     public void graphShutdown(DBConnectionType connectionType) {
-        
+
         graphs.get(this.getGraphName(connectionType)).close();
     }
-    
+
     public JanusGraph getGraph(DBConnectionType connectionType) {
         return graphs.get(this.getGraphName(connectionType));
     }
-    
+
     private String getGraphName(DBConnectionType connectionType) {
         String graphName = "";
         if (DBConnectionType.CACHED.equals(connectionType)) {
@@ -198,10 +199,10 @@ public class AAIGraph {
         } else if (DBConnectionType.REALTIME.equals(connectionType)) {
             graphName = this.REALTIME_DB;
         }
-        
+
         return graphName;
     }
-    
+
     private void logAndPrint(EELFLogger logger, String msg) {
         System.out.println(msg);
         logger.info(msg);

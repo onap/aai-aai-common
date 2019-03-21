@@ -17,15 +17,11 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.introspection.sideeffect;
 
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
-import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.onap.aai.exceptions.AAIException;
-import org.onap.aai.introspection.Introspector;
-import org.onap.aai.serialization.db.DBSerializer;
-import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
@@ -33,68 +29,76 @@ import java.net.URISyntaxException;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.onap.aai.exceptions.AAIException;
+import org.onap.aai.introspection.Introspector;
+import org.onap.aai.serialization.db.DBSerializer;
+import org.onap.aai.serialization.engines.TransactionalGraphEngine;
+
 public class SideEffectRunner {
 
-	protected final TransactionalGraphEngine dbEngine;
-	protected final DBSerializer serializer;
-	protected final Set<Class<? extends SideEffect>> sideEffects;
-	protected SideEffectRunner(Builder builder) {
-		this.dbEngine = builder.getDbEngine();
-		this.serializer = builder.getSerializer();
-		this.sideEffects = builder.getSideEffects();
-	}
-	
-	public void execute(Introspector obj, Vertex self) throws AAIException {
-		
-		for (Class<? extends SideEffect> se : sideEffects) {
-			try {
-				se.getConstructor(Introspector.class, Vertex.class, TransactionalGraphEngine.class, DBSerializer.class)
-				.newInstance(obj, self, dbEngine, serializer).execute();
-			} catch (UnsupportedEncodingException | InstantiationException | IllegalAccessException
-					| IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException
-					| URISyntaxException e) {
-				throw new AAIException("strange exception", e);
-			}
-		}		
-	}
+    protected final TransactionalGraphEngine dbEngine;
+    protected final DBSerializer serializer;
+    protected final Set<Class<? extends SideEffect>> sideEffects;
 
-	public static class Builder {
-		
-		private final TransactionalGraphEngine dbEngine;
-		private final DBSerializer serializer;
-		private final Set<Class<? extends SideEffect>> sideEffects;
-		
-		public Builder(final TransactionalGraphEngine dbEngine, final DBSerializer serializer) {
-			this.dbEngine = dbEngine;
-			this.serializer = serializer;
-			this.sideEffects = new LinkedHashSet<>();
-		}
-		
-		public Builder addSideEffect(Class<? extends SideEffect> se) {
-			sideEffects.add(se);
-			return this;
-		}
-		
-		public Builder addSideEffects(Class<? extends SideEffect>... sideEffects) {
-			for (Class<? extends SideEffect> se : sideEffects) {
-				this.addSideEffect(se);
-			}
-			return this;
-		}
-		
-		public SideEffectRunner build() {
-			return new SideEffectRunner(this);
-		}
-		protected TransactionalGraphEngine getDbEngine() {
-			return dbEngine;
-		}
+    protected SideEffectRunner(Builder builder) {
+        this.dbEngine = builder.getDbEngine();
+        this.serializer = builder.getSerializer();
+        this.sideEffects = builder.getSideEffects();
+    }
 
-		protected DBSerializer getSerializer() {
-			return serializer;
-		}
+    public void execute(Introspector obj, Vertex self) throws AAIException {
 
-		protected Set<Class<? extends SideEffect>> getSideEffects() {
-			return sideEffects;
-		}
-	}
+        for (Class<? extends SideEffect> se : sideEffects) {
+            try {
+                se.getConstructor(Introspector.class, Vertex.class, TransactionalGraphEngine.class, DBSerializer.class)
+                        .newInstance(obj, self, dbEngine, serializer).execute();
+            } catch (UnsupportedEncodingException | InstantiationException | IllegalAccessException
+                    | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException
+                    | URISyntaxException e) {
+                throw new AAIException("strange exception", e);
+            }
+        }
+    }
+
+    public static class Builder {
+
+        private final TransactionalGraphEngine dbEngine;
+        private final DBSerializer serializer;
+        private final Set<Class<? extends SideEffect>> sideEffects;
+
+        public Builder(final TransactionalGraphEngine dbEngine, final DBSerializer serializer) {
+            this.dbEngine = dbEngine;
+            this.serializer = serializer;
+            this.sideEffects = new LinkedHashSet<>();
+        }
+
+        public Builder addSideEffect(Class<? extends SideEffect> se) {
+            sideEffects.add(se);
+            return this;
+        }
+
+        public Builder addSideEffects(Class<? extends SideEffect>... sideEffects) {
+            for (Class<? extends SideEffect> se : sideEffects) {
+                this.addSideEffect(se);
+            }
+            return this;
+        }
+
+        public SideEffectRunner build() {
+            return new SideEffectRunner(this);
+        }
+
+        protected TransactionalGraphEngine getDbEngine() {
+            return dbEngine;
+        }
+
+        protected DBSerializer getSerializer() {
+            return serializer;
+        }
+
+        protected Set<Class<? extends SideEffect>> getSideEffects() {
+            return sideEffects;
+        }
+    }
 }

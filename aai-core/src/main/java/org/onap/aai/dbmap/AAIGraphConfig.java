@@ -17,18 +17,16 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.dbmap;
+
+import static org.janusgraph.graphdb.configuration.GraphDatabaseConfiguration.*;
 
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterators;
-import org.janusgraph.diskstorage.configuration.ConfigElement;
-import org.janusgraph.diskstorage.configuration.backend.CommonsConfiguration;
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.PropertiesConfiguration;
-import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -37,68 +35,74 @@ import java.util.Iterator;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-import static org.janusgraph.graphdb.configuration.GraphDatabaseConfiguration.*;
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.commons.lang.StringUtils;
+import org.janusgraph.diskstorage.configuration.ConfigElement;
+import org.janusgraph.diskstorage.configuration.backend.CommonsConfiguration;
 
 /**
  * For building a config that JanusGraphFactory.open can use with an identifiable graph.unique-instance-id
  */
 public class AAIGraphConfig {
 
-	private static final EELFLogger logger = EELFManager.getInstance().getLogger(AAIGraphConfig.class);
+    private static final EELFLogger logger = EELFManager.getInstance().getLogger(AAIGraphConfig.class);
 
-	private AAIGraphConfig(){};
+    private AAIGraphConfig() {
+    };
 
-	public PropertiesConfiguration getCc(String configPath, String graphType, String service) throws ConfigurationException, FileNotFoundException {
+    public PropertiesConfiguration getCc(String configPath, String graphType, String service)
+            throws ConfigurationException, FileNotFoundException {
 
-		PropertiesConfiguration cc = this.loadJanusGraphPropFile(configPath);
+        PropertiesConfiguration cc = this.loadJanusGraphPropFile(configPath);
 
-		String uid = ManagementFactory.getRuntimeMXBean().getName() + "_" + service  + "_" + graphType + "_" + System.currentTimeMillis();
-		for (char c : ConfigElement.ILLEGAL_CHARS) {
-			uid = StringUtils.replaceChars(uid, c,'_');
-		}
+        String uid = ManagementFactory.getRuntimeMXBean().getName() + "_" + service + "_" + graphType + "_"
+                + System.currentTimeMillis();
+        for (char c : ConfigElement.ILLEGAL_CHARS) {
+            uid = StringUtils.replaceChars(uid, c, '_');
+        }
 
-		cc.addProperty("graph.unique-instance-id", uid);
+        cc.addProperty("graph.unique-instance-id", uid);
 
-		return cc;
-	}
+        return cc;
+    }
 
+    private PropertiesConfiguration loadJanusGraphPropFile(String shortcutOrFile)
+            throws ConfigurationException, FileNotFoundException {
+        File file = new File(shortcutOrFile);
+        if (file.exists()) {
+            PropertiesConfiguration propertiesConfiguration = new PropertiesConfiguration();
+            propertiesConfiguration.setAutoSave(false);
+            propertiesConfiguration.load(shortcutOrFile);
+            return propertiesConfiguration;
+        } else {
+            throw new FileNotFoundException(shortcutOrFile);
+        }
+    }
 
-	private PropertiesConfiguration loadJanusGraphPropFile(String shortcutOrFile) throws ConfigurationException, FileNotFoundException {
-		File file = new File(shortcutOrFile);
-		if (file.exists()) {
-			PropertiesConfiguration propertiesConfiguration = new PropertiesConfiguration();
-			propertiesConfiguration.setAutoSave(false);
-			propertiesConfiguration.load(shortcutOrFile);
-			return propertiesConfiguration;
-		} else {
-			throw new FileNotFoundException(shortcutOrFile);
-		}
-	}
+    public static class Builder {
+        private String configPath;
+        private String graphType;
+        private String service;
 
-	public static class Builder {
-		private String configPath;
-		private String graphType;
-		private String service;
+        public Builder(String configPath) {
+            this.configPath = configPath;
+        }
 
-		public Builder(String configPath) {
-			this.configPath = configPath;
-		}
+        public Builder withGraphType(String graphType) {
+            this.graphType = Objects.toString(graphType, "NA");
+            return this;
+        }
 
-		public Builder withGraphType(String graphType) {
-			this.graphType = Objects.toString(graphType, "NA");
-			return this;
-		}
+        public Builder forService(String service) {
+            this.service = Objects.toString(service, "NA");
+            return this;
+        }
 
-		public Builder forService(String service) {
-			this.service = Objects.toString(service, "NA");
-			return this;
-		}
+        public PropertiesConfiguration buildConfiguration() throws ConfigurationException, FileNotFoundException {
+            return new AAIGraphConfig().getCc(this.configPath, this.graphType, this.service);
+        }
 
-		public PropertiesConfiguration buildConfiguration() throws ConfigurationException, FileNotFoundException {
-			return new AAIGraphConfig().getCc(this.configPath, this.graphType, this.service);
-		}
-
-	}
-
+    }
 
 }

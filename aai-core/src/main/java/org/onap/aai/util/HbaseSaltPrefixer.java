@@ -17,6 +17,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.util;
 
 /*
@@ -26,34 +27,35 @@ package org.onap.aai.util;
  * as these keys are generated in a couple places, I made a class to contain that logic
  */
 public class HbaseSaltPrefixer {
-	private int NUM_REGION_BUCKETS = 3; //the number of hbase region servers per cluster
+    private int NUM_REGION_BUCKETS = 3; // the number of hbase region servers per cluster
 
-	private static class SingletonHolder{
-		private static final HbaseSaltPrefixer INSTANCE = new HbaseSaltPrefixer();
-	}
-	
-	/**
-	 * Instantiates a new hbase salt prefixer.
-	 */
-	private HbaseSaltPrefixer(){}
-	
-	/**
-	 * Gets the single instance of HbaseSaltPrefixer.
-	 *
-	 * @return single instance of HbaseSaltPrefixer
-	 */
-	public static HbaseSaltPrefixer getInstance() {
-		return SingletonHolder.INSTANCE;
-	}
-	
-	/**
-	 * Prepend salt.
-	 *
-	 * @param key the key
-	 * @return the string
-	 */
-	public String prependSalt(String key) {
-		int salt = Math.abs(key.hashCode()) % NUM_REGION_BUCKETS;
-		return salt + "-" + key;
-	}
+    private static class SingletonHolder {
+        private static final HbaseSaltPrefixer INSTANCE = new HbaseSaltPrefixer();
+    }
+
+    /**
+     * Instantiates a new hbase salt prefixer.
+     */
+    private HbaseSaltPrefixer() {
+    }
+
+    /**
+     * Gets the single instance of HbaseSaltPrefixer.
+     *
+     * @return single instance of HbaseSaltPrefixer
+     */
+    public static HbaseSaltPrefixer getInstance() {
+        return SingletonHolder.INSTANCE;
+    }
+
+    /**
+     * Prepend salt.
+     *
+     * @param key the key
+     * @return the string
+     */
+    public String prependSalt(String key) {
+        int salt = Math.abs(key.hashCode()) % NUM_REGION_BUCKETS;
+        return salt + "-" + key;
+    }
 }

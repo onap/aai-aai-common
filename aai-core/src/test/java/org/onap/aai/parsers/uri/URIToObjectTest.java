@@ -17,10 +17,20 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.parsers.uri;
 
-import org.onap.aai.schema.enums.ObjectMetadata;
-import org.onap.aai.setup.SchemaVersion;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.util.HashMap;
+
+import javax.annotation.PostConstruct;
+import javax.ws.rs.core.UriBuilder;
+import javax.xml.bind.JAXBException;
 
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -31,25 +41,16 @@ import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.*;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
+import org.onap.aai.schema.enums.ObjectMetadata;
+import org.onap.aai.setup.SchemaVersion;
 import org.springframework.test.annotation.DirtiesContext;
-
-import javax.annotation.PostConstruct;
-import javax.ws.rs.core.UriBuilder;
-import javax.xml.bind.JAXBException;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.util.HashMap;
-
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class URIToObjectTest extends AAISetup {
 
-    private SchemaVersion version ;
+    private SchemaVersion version;
     private SchemaVersion currentVersion;
-    private Loader loader ;
+    private Loader loader;
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -63,7 +64,7 @@ public class URIToObjectTest extends AAISetup {
      * @throws UnsupportedEncodingException the unsupported encoding exception
      */
     @PostConstruct
-    public void createLoader(){
+    public void createLoader() {
         version = schemaVersions.getRelatedLinkVersion();
         currentVersion = schemaVersions.getDefaultVersion();
         loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getRelatedLinkVersion());
@@ -71,10 +72,13 @@ public class URIToObjectTest extends AAISetup {
 
     @Test
     public void uri() throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException {
-        URI uri = UriBuilder.fromPath("/aai/" + loader.getVersion() + "/cloud-infrastructure/cloud-regions/cloud-region/mycloudowner/mycloudregionid/tenants/tenant/key1/vservers/vserver/key2/l-interfaces/l-interface/key3").build();
+        URI uri = UriBuilder.fromPath("/aai/" + loader.getVersion()
+                + "/cloud-infrastructure/cloud-regions/cloud-region/mycloudowner/mycloudregionid/tenants/tenant/key1/vservers/vserver/key2/l-interfaces/l-interface/key3")
+                .build();
         URIToObject parse = new URIToObject(loader, uri);
         Introspector result = parse.getTopEntity();
-        String expected = "{\"cloud-owner\":\"mycloudowner\",\"cloud-region-id\":\"mycloudregionid\",\"tenants\":{\"tenant\":[{\"tenant-id\":\"key1\",\"vservers\":{\"vserver\":[{\"vserver-id\":\"key2\",\"l-interfaces\":{\"l-interface\":[{\"interface-name\":\"key3\"}]}}]}}]}}";
+        String expected =
+                "{\"cloud-owner\":\"mycloudowner\",\"cloud-region-id\":\"mycloudregionid\",\"tenants\":{\"tenant\":[{\"tenant-id\":\"key1\",\"vservers\":{\"vserver\":[{\"vserver-id\":\"key2\",\"l-interfaces\":{\"l-interface\":[{\"interface-name\":\"key3\"}]}}]}}]}}";
         String topEntity = "cloud-region";
         String entity = "l-interface";
 
@@ -92,8 +96,11 @@ public class URIToObjectTest extends AAISetup {
      * @throws AAIUnknownObjectException
      */
     @Test
-    public void uriNoVersion() throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException, AAIUnknownObjectException {
-        URI uri = UriBuilder.fromPath("/cloud-infrastructure/cloud-regions/cloud-region/mycloudowner/mycloudregionid/tenants/tenant/key1/vservers/vserver/key2/l-interfaces/l-interface/key3").build();
+    public void uriNoVersion() throws JAXBException, AAIException, IllegalArgumentException,
+            UnsupportedEncodingException, AAIUnknownObjectException {
+        URI uri = UriBuilder.fromPath(
+                "/cloud-infrastructure/cloud-regions/cloud-region/mycloudowner/mycloudregionid/tenants/tenant/key1/vservers/vserver/key2/l-interfaces/l-interface/key3")
+                .build();
         HashMap<String, Introspector> relatedObjects = new HashMap<>();
         Introspector tenantObj = this.loader.introspectorFromName("tenant");
         tenantObj.setValue("tenant-id", "key1");
@@ -106,15 +113,14 @@ public class URIToObjectTest extends AAISetup {
 
         URIToObject parse = new URIToObject(loader, uri, relatedObjects);
         Introspector result = parse.getTopEntity();
-        String expected = "{\"cloud-owner\":\"mycloudowner\",\"cloud-region-id\":\"mycloudregionid\",\"tenants\":{\"tenant\":[{\"tenant-id\":\"key1\",\"tenant-name\":\"name1\",\"vservers\":{\"vserver\":[{\"vserver-id\":\"key2\",\"vserver-name\":\"name2\",\"l-interfaces\":{\"l-interface\":[{\"interface-name\":\"key3\"}]}}]}}]}}";
+        String expected =
+                "{\"cloud-owner\":\"mycloudowner\",\"cloud-region-id\":\"mycloudregionid\",\"tenants\":{\"tenant\":[{\"tenant-id\":\"key1\",\"tenant-name\":\"name1\",\"vservers\":{\"vserver\":[{\"vserver-id\":\"key2\",\"vserver-name\":\"name2\",\"l-interfaces\":{\"l-interface\":[{\"interface-name\":\"key3\"}]}}]}}]}}";
         String topEntity = "cloud-region";
         String entity = "l-interface";
 
         testSet(result.marshal(false), parse, expected, topEntity, entity, version);
 
-
     }
-
 
     /**
      * Bad URI.
@@ -126,10 +132,12 @@ public class URIToObjectTest extends AAISetup {
      */
     @Test
     public void badURI() throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException {
-        URI uri = UriBuilder.fromPath("/aai/" + loader.getVersion() + "/cloud-infrastructure/cloud-regions/cloud-region/mycloudowner/mycloudregionid/tenants/tenant/key1/vservers/vserver/key2/l-interadsfaces/l-interface/key3").build();
+        URI uri = UriBuilder.fromPath("/aai/" + loader.getVersion()
+                + "/cloud-infrastructure/cloud-regions/cloud-region/mycloudowner/mycloudregionid/tenants/tenant/key1/vservers/vserver/key2/l-interadsfaces/l-interface/key3")
+                .build();
 
         thrown.expect(AAIException.class);
-        thrown.expect(hasProperty("code",  is("AAI_3000")));
+        thrown.expect(hasProperty("code", is("AAI_3000")));
 
         new URIToObject(loader, uri);
     }
@@ -143,11 +151,15 @@ public class URIToObjectTest extends AAISetup {
      * @throws UnsupportedEncodingException the unsupported encoding exception
      */
     @Test
-    public void startsWithValidNamespace() throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException {
-        URI uri = UriBuilder.fromPath("/cloud-infrastructure/cloud-regions/cloud-region/mycloudowner/mycloudregionid/tenants/tenant/key1/vservers/vserver/key2/l-interfaces/l-interface/key3").build();
+    public void startsWithValidNamespace()
+            throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException {
+        URI uri = UriBuilder.fromPath(
+                "/cloud-infrastructure/cloud-regions/cloud-region/mycloudowner/mycloudregionid/tenants/tenant/key1/vservers/vserver/key2/l-interfaces/l-interface/key3")
+                .build();
         URIToObject parse = new URIToObject(loader, uri);
         Introspector result = parse.getTopEntity();
-        String expected = "{\"cloud-owner\":\"mycloudowner\",\"cloud-region-id\":\"mycloudregionid\",\"tenants\":{\"tenant\":[{\"tenant-id\":\"key1\",\"vservers\":{\"vserver\":[{\"vserver-id\":\"key2\",\"l-interfaces\":{\"l-interface\":[{\"interface-name\":\"key3\"}]}}]}}]}}";
+        String expected =
+                "{\"cloud-owner\":\"mycloudowner\",\"cloud-region-id\":\"mycloudregionid\",\"tenants\":{\"tenant\":[{\"tenant-id\":\"key1\",\"vservers\":{\"vserver\":[{\"vserver-id\":\"key2\",\"l-interfaces\":{\"l-interface\":[{\"interface-name\":\"key3\"}]}}]}}]}}";
         String topEntity = "cloud-region";
         String entity = "l-interface";
 
@@ -163,7 +175,8 @@ public class URIToObjectTest extends AAISetup {
      * @throws UnsupportedEncodingException the unsupported encoding exception
      */
     @Test
-    public void singleTopLevel() throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException {
+    public void singleTopLevel()
+            throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException {
         URI uri = UriBuilder.fromPath("/network/generic-vnfs/generic-vnf/key1").build();
         URIToObject parse = new URIToObject(loader, uri);
         Introspector result = parse.getTopEntity();
@@ -186,11 +199,14 @@ public class URIToObjectTest extends AAISetup {
      */
     @Test
     @Ignore
-    public void namingExceptions() throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException {
-        URI uri = UriBuilder.fromPath("network/vces/vce/key1/port-groups/port-group/key2/cvlan-tags/cvlan-tag/655").build();
+    public void namingExceptions()
+            throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException {
+        URI uri = UriBuilder.fromPath("network/vces/vce/key1/port-groups/port-group/key2/cvlan-tags/cvlan-tag/655")
+                .build();
         URIToObject parse = new URIToObject(loader, uri);
         Introspector result = parse.getTopEntity();
-        String expected = "{\"vnf-id\":\"key1\",\"port-groups\":{\"port-group\":[{\"interface-id\":\"key2\",\"cvlan-tags\":{\"cvlan-tag-entry\":[{\"cvlan-tag\":655}]}}]}}";
+        String expected =
+                "{\"vnf-id\":\"key1\",\"port-groups\":{\"port-group\":[{\"interface-id\":\"key2\",\"cvlan-tags\":{\"cvlan-tag-entry\":[{\"cvlan-tag\":655}]}}]}}";
         String topEntity = "vce";
         String entity = "cvlan-tag";
 
@@ -208,18 +224,22 @@ public class URIToObjectTest extends AAISetup {
     @Test
     @Ignore
     public void noListObject() throws IllegalArgumentException, UnsupportedEncodingException, AAIException {
-        URI uri = UriBuilder.fromPath("/aai/v6/network/vpls-pes/vpls-pe/0e6189fd-9257-49b9-a3be-d7ba980ccfc9/lag-interfaces/lag-interface/8ae5aa76-d597-4382-b219-04f266fe5e37/l-interfaces/l-interface/9e141d03-467b-437f-b4eb-b3133ec1e205/l3-interface-ipv4-address-list/8f19f0ea-a81f-488e-8d5c-9b7b53696c11").build();
+        URI uri = UriBuilder.fromPath(
+                "/aai/v6/network/vpls-pes/vpls-pe/0e6189fd-9257-49b9-a3be-d7ba980ccfc9/lag-interfaces/lag-interface/8ae5aa76-d597-4382-b219-04f266fe5e37/l-interfaces/l-interface/9e141d03-467b-437f-b4eb-b3133ec1e205/l3-interface-ipv4-address-list/8f19f0ea-a81f-488e-8d5c-9b7b53696c11")
+                .build();
         URIToObject parse = new URIToObject(loader, uri);
         Introspector result = parse.getTopEntity();
         String topEntity = "vpls-pe";
         String entity = "l3-interface-ipv4-address-list";
-        String expected = "{\"equipment-name\":\"0e6189fd-9257-49b9-a3be-d7ba980ccfc9\",\"lag-interfaces\":{\"lag-interface\":[{\"interface-name\":\"8ae5aa76-d597-4382-b219-04f266fe5e37\",\"l-interfaces\":{\"l-interface\":[{\"interface-name\":\"9e141d03-467b-437f-b4eb-b3133ec1e205\",\"l3-interface-ipv4-address-list\":[{\"l3-interface-ipv4-address\":\"8f19f0ea-a81f-488e-8d5c-9b7b53696c11\"}]}]}}]}}";
+        String expected =
+                "{\"equipment-name\":\"0e6189fd-9257-49b9-a3be-d7ba980ccfc9\",\"lag-interfaces\":{\"lag-interface\":[{\"interface-name\":\"8ae5aa76-d597-4382-b219-04f266fe5e37\",\"l-interfaces\":{\"l-interface\":[{\"interface-name\":\"9e141d03-467b-437f-b4eb-b3133ec1e205\",\"l3-interface-ipv4-address-list\":[{\"l3-interface-ipv4-address\":\"8f19f0ea-a81f-488e-8d5c-9b7b53696c11\"}]}]}}]}}";
         testSet(result.marshal(false), parse, expected, topEntity, entity, version);
 
     }
 
     @Test
-    public void relativePath() throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException {
+    public void relativePath()
+            throws JAXBException, AAIException, IllegalArgumentException, UnsupportedEncodingException {
         URI uri = UriBuilder.fromPath("./l-interfaces/l-interface/key1").build();
         URIToObject parse = new URIToObject(loader, uri);
         Introspector result = parse.getEntity();
@@ -242,7 +262,8 @@ public class URIToObjectTest extends AAISetup {
      * @param entity the entity
      * @param version the version
      */
-    public void testSet(String json, URIToObject parse, String expected, String topEntity, String entity, SchemaVersion version) {
+    public void testSet(String json, URIToObject parse, String expected, String topEntity, String entity,
+            SchemaVersion version) {
         assertEquals("blah", expected, json);
 
         assertEquals("top entity", topEntity, parse.getTopEntityName());

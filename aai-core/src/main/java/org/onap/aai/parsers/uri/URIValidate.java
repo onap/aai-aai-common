@@ -17,46 +17,47 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
-package org.onap.aai.parsers.uri;
 
-import org.onap.aai.exceptions.AAIException;
-import org.onap.aai.introspection.Introspector;
-import org.onap.aai.edges.enums.EdgeType;
+package org.onap.aai.parsers.uri;
 
 import javax.ws.rs.core.MultivaluedMap;
 
+import org.onap.aai.edges.enums.EdgeType;
+import org.onap.aai.exceptions.AAIException;
+import org.onap.aai.introspection.Introspector;
+
 class URIValidate implements Parsable {
 
-	@Override
-	public void processNamespace(Introspector obj) {
-		//NO-OP
-		//just want to make sure this URI has valid tokens
+    @Override
+    public void processNamespace(Introspector obj) {
+        // NO-OP
+        // just want to make sure this URI has valid tokens
 
-	}
+    }
 
-	@Override
-	public String getCloudRegionTransform() {
-		return "none";
-	}
+    @Override
+    public String getCloudRegionTransform() {
+        return "none";
+    }
 
-	@Override
-	public boolean useOriginalLoader() {
-		
-		return true;
-	}
+    @Override
+    public boolean useOriginalLoader() {
 
-	@Override
-	public void processObject(Introspector obj, EdgeType type, MultivaluedMap<String, String> uriKeys)
-			throws AAIException {
-		//NO-OP
-		//just want to make sure this URI has valid tokens
-	}
+        return true;
+    }
 
-	@Override
-	public void processContainer(Introspector obj, EdgeType type, MultivaluedMap<String, String> uriKeys,
-			boolean isFinalContainer) throws AAIException {
-		//NO-OP
-		//just want to make sure this URI has valid tokens
-	}
+    @Override
+    public void processObject(Introspector obj, EdgeType type, MultivaluedMap<String, String> uriKeys)
+            throws AAIException {
+        // NO-OP
+        // just want to make sure this URI has valid tokens
+    }
+
+    @Override
+    public void processContainer(Introspector obj, EdgeType type, MultivaluedMap<String, String> uriKeys,
+            boolean isFinalContainer) throws AAIException {
+        // NO-OP
+        // just want to make sure this URI has valid tokens
+    }
 
 }

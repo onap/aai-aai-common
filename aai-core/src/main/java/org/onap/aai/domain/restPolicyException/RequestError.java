@@ -17,11 +17,9 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.domain.restPolicyException;
 
-import java.util.HashMap;
-import java.util.Map;
-import javax.annotation.Generated;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -29,11 +27,14 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.Generated;
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
-@JsonPropertyOrder({
-    "policyException"
-})
+@JsonPropertyOrder({"policyException"})
 public class RequestError {
 
     @JsonProperty("policyException")
@@ -44,7 +45,7 @@ public class RequestError {
     /**
      * Gets the policy exception.
      *
-     * @return     The policyException
+     * @return The policyException
      */
     @JsonProperty("policyException")
     public PolicyException getPolicyException() {
@@ -54,7 +55,7 @@ public class RequestError {
     /**
      * Sets the policy exception.
      *
-     * @param policyException     The policyException
+     * @param policyException The policyException
      */
     @JsonProperty("policyException")
     public void setPolicyException(PolicyException policyException) {
@@ -83,4 +84,3 @@ public class RequestError {
     }
 
 }
-

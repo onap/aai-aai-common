@@ -17,8 +17,9 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.query.builder.optimization;
 
 public enum OptimizeEnum {
-    URI,NONE
+    URI, NONE
 }

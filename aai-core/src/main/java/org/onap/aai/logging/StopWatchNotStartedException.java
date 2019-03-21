@@ -17,25 +17,26 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.logging;
 
 public class StopWatchNotStartedException extends RuntimeException {
 
-	private static final long serialVersionUID = -4540164295822859408L;
+    private static final long serialVersionUID = -4540164295822859408L;
 
-	public StopWatchNotStartedException() {
-		super();
-	}
+    public StopWatchNotStartedException() {
+        super();
+    }
 
-	public StopWatchNotStartedException(String message) {
-		super(message);
-	}
+    public StopWatchNotStartedException(String message) {
+        super(message);
+    }
 
-	public StopWatchNotStartedException(Throwable cause) {
-		super(cause);
-	}
+    public StopWatchNotStartedException(Throwable cause) {
+        super(cause);
+    }
 
-	public StopWatchNotStartedException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public StopWatchNotStartedException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

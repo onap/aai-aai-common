@@ -19,12 +19,14 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.util;
 
-import org.onap.aai.exceptions.AAIException;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
+
+import org.onap.aai.exceptions.AAIException;
 
 public class MapperUtil {
 
@@ -34,7 +36,7 @@ public class MapperUtil {
     private MapperUtil() {
         // prevent instantiation
     }
-    
+
     /**
      * Read as object of.
      *

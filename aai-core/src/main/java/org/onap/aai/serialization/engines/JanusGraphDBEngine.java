@@ -17,6 +17,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.serialization.engines;
 
 import java.util.ArrayList;
@@ -31,70 +32,70 @@ import org.onap.aai.serialization.db.JanusGraphSingleton;
 
 public class JanusGraphDBEngine extends TransactionalGraphEngine {
 
-	/**
-	 * Instantiates a new JanusGraph DB engine.
-	 *
-	 * @param style the style
-	 * @param loader the loader
-	 */
-	public JanusGraphDBEngine(QueryStyle style, DBConnectionType connectionType, Loader loader) {
-		super(style, loader, connectionType, JanusGraphSingleton.getInstance());
-	}
-	
-	/**
-	 * Instantiates a new JanusGraph DB engine.
-	 *
-	 * @param style the style
-	 * @param loader the loader
-	 * @param connect the connect
-	 */
-	public JanusGraphDBEngine(QueryStyle style, Loader loader, boolean connect) {
-		super(style, loader);
-		if (connect) {
-			this.singleton = JanusGraphSingleton.getInstance();
-		}
-	}
+    /**
+     * Instantiates a new JanusGraph DB engine.
+     *
+     * @param style the style
+     * @param loader the loader
+     */
+    public JanusGraphDBEngine(QueryStyle style, DBConnectionType connectionType, Loader loader) {
+        super(style, loader, connectionType, JanusGraphSingleton.getInstance());
+    }
 
-	/**
-	 * {@inheritDoc} 
-	 */
-	@Override
-	public boolean setListProperty(Vertex v, String name, List<?> objs) {
+    /**
+     * Instantiates a new JanusGraph DB engine.
+     *
+     * @param style the style
+     * @param loader the loader
+     * @param connect the connect
+     */
+    public JanusGraphDBEngine(QueryStyle style, Loader loader, boolean connect) {
+        super(style, loader);
+        if (connect) {
+            this.singleton = JanusGraphSingleton.getInstance();
+        }
+    }
 
-		//clear out list full replace style
-		
-		Iterator<VertexProperty<Object>> iterator = v.properties(name);
-		while (iterator.hasNext()) {
-			iterator.next().remove();
-		}
-		if (objs != null) {
-			for (Object obj : objs) {
-				v.property(name, obj);
-			}
-		}
-		return true;
-	}
-	
-	/**
-	 * {@inheritDoc} 
-	 */
-	@Override
-	public List<Object> getListProperty(Vertex v, String name) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean setListProperty(Vertex v, String name, List<?> objs) {
 
-		List<Object> result = new ArrayList<Object>();
-		
-		Iterator<VertexProperty<Object>> iterator = v.properties(name);
-		
-		while (iterator.hasNext()) {
-			result.add(iterator.next().value());
-		}
-		
-		if (result.size() == 0) {
-			result = null;
-		}
-		
-		return result;
+        // clear out list full replace style
 
-	}
-	
+        Iterator<VertexProperty<Object>> iterator = v.properties(name);
+        while (iterator.hasNext()) {
+            iterator.next().remove();
+        }
+        if (objs != null) {
+            for (Object obj : objs) {
+                v.property(name, obj);
+            }
+        }
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Object> getListProperty(Vertex v, String name) {
+
+        List<Object> result = new ArrayList<Object>();
+
+        Iterator<VertexProperty<Object>> iterator = v.properties(name);
+
+        while (iterator.hasNext()) {
+            result.add(iterator.next().value());
+        }
+
+        if (result.size() == 0) {
+            result = null;
+        }
+
+        return result;
+
+    }
+
 }

@@ -17,6 +17,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.query.builder.optimization.tests;
 
 import org.junit.BeforeClass;
@@ -32,7 +33,7 @@ public class AOneTenantOneVserversPerTenantTest extends AbstractGraphTraversalBu
 
     @BeforeClass
     public void setup() throws Exception {
-        setupData(tenantNum,vserverPerTenantNum, prefix);
+        setupData(tenantNum, vserverPerTenantNum, prefix);
     }
 
     @Override

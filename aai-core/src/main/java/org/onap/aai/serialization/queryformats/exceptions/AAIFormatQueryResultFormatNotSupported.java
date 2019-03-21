@@ -17,23 +17,25 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.serialization.queryformats.exceptions;
 
 public class AAIFormatQueryResultFormatNotSupported extends Exception {
 
-	private static final long serialVersionUID = -5814240842844624097L;
+    private static final long serialVersionUID = -5814240842844624097L;
 
-	public AAIFormatQueryResultFormatNotSupported() {}
+    public AAIFormatQueryResultFormatNotSupported() {
+    }
 
-	public AAIFormatQueryResultFormatNotSupported(String message) {
-		super(message);
-	}
+    public AAIFormatQueryResultFormatNotSupported(String message) {
+        super(message);
+    }
 
-	public AAIFormatQueryResultFormatNotSupported(Throwable cause) {
-		super(cause);
-	}
+    public AAIFormatQueryResultFormatNotSupported(Throwable cause) {
+        super(cause);
+    }
 
-	public AAIFormatQueryResultFormatNotSupported(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public AAIFormatQueryResultFormatNotSupported(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

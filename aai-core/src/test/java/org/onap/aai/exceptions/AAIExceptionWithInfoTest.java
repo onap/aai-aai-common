@@ -17,18 +17,18 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.exceptions;
+
+import static org.junit.Assert.assertEquals;
+
+import java.util.HashMap;
 
 import org.junit.Test;
 import org.onap.aai.AAISetup;
 
-import java.util.HashMap;
-
-import static org.junit.Assert.assertEquals;
-
 public class AAIExceptionWithInfoTest extends AAISetup {
 
-    
     private static final HashMap<String, Object> map = new HashMap<String, Object>();
 
     {
@@ -124,11 +124,11 @@ public class AAIExceptionWithInfoTest extends AAISetup {
         HashMap<String, Object> newMap = new HashMap<String, Object>();
         newMap.put("itemInteger", 2);
         exception.setInfoHash(newMap);
-        
+
         assertEquals(newMap, exception.getInfoHash());
         assertEquals(info, exception.getInfo());
     }
-    
+
     /**
      * Test set info.
      */
@@ -138,7 +138,7 @@ public class AAIExceptionWithInfoTest extends AAISetup {
 
         String newInfo = "This is updated info.";
         exception.setInfo(newInfo);
-        
+
         assertEquals(map, exception.getInfoHash());
         assertEquals(newInfo, exception.getInfo());
     }

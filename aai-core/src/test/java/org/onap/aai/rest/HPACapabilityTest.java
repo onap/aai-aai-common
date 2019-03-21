@@ -17,11 +17,19 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.rest;
+
+import static org.junit.Assert.assertEquals;
 
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 import com.jayway.jsonpath.JsonPath;
+
+import java.util.*;
+
+import javax.ws.rs.core.Response;
+
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -32,11 +40,6 @@ import org.onap.aai.HttpTestUtil;
 import org.onap.aai.PayloadUtil;
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.skyscreamer.jsonassert.JSONAssert;
-
-import javax.ws.rs.core.Response;
-import java.util.*;
-
-import static org.junit.Assert.assertEquals;
 
 @Ignore
 @RunWith(AAIJunitRunner.class)
@@ -51,9 +54,7 @@ public class HPACapabilityTest {
 
     @Parameterized.Parameters(name = "QueryStyle.{0}")
     public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][]{
-                {QueryStyle.TRAVERSAL}
-        });
+        return Arrays.asList(new Object[][] {{QueryStyle.TRAVERSAL}});
     }
 
     @Before
@@ -82,9 +83,7 @@ public class HPACapabilityTest {
 
         String cloudRegionPayload = PayloadUtil.getTemplatePayload("hpa.json", templateValuesMap);
         String cloudRegionUri = String.format("/aai/v14/cloud-infrastructure/cloud-regions/cloud-region/%s/%s",
-                templateValuesMap.get("cloud-owner"),
-                templateValuesMap.get("cloud-region-id")
-        );
+                templateValuesMap.get("cloud-owner"), templateValuesMap.get("cloud-region-id"));
 
         Response response = httpTestUtil.doPut(cloudRegionUri, cloudRegionPayload);
         assertEquals("Expected the cloud region to be created", 201, response.getStatus());
@@ -141,9 +140,9 @@ public class HPACapabilityTest {
         System.out.println("#########################Flavor Response#########################");
         String responseStr = response.getEntity().toString();
 
-        List<String> capabilityIds = JsonPath.read(responseStr,
-                "$.hpa-capabilities.hpa-capability[*].hpa-capability-id");
-        for(String capabilityId : capabilityIds) {
+        List<String> capabilityIds =
+                JsonPath.read(responseStr, "$.hpa-capabilities.hpa-capability[*].hpa-capability-id");
+        for (String capabilityId : capabilityIds) {
             deleteHPACapability(flavorUri, capabilityId);
         }
 

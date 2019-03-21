@@ -17,12 +17,13 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.exceptions;
+
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 import org.onap.aai.AAISetup;
-
-import static org.junit.Assert.assertEquals;
 
 public class AAIExceptionTest extends AAISetup {
 
@@ -30,7 +31,7 @@ public class AAIExceptionTest extends AAISetup {
     private static final String details = "This is a detailed description of the exception.";
     private static final Throwable cause = new RuntimeException("This is a runtime exception.");
     private static final Throwable noMessage = new RuntimeException();
-    
+
     /**
      * Test constructor with 0 params.
      *
@@ -41,7 +42,7 @@ public class AAIExceptionTest extends AAISetup {
         AAIException exception = new AAIException();
         assertEquals(exception, exception);
     }
-    
+
     /**
      * Test constructor with 1 params.
      *
@@ -52,7 +53,7 @@ public class AAIExceptionTest extends AAISetup {
         AAIException exception = new AAIException(code);
         assertEquals(exception, exception);
     }
-    
+
     /**
      * Test constructor with 2 params details.
      *
@@ -63,7 +64,7 @@ public class AAIExceptionTest extends AAISetup {
         AAIException exception = new AAIException(code, details);
         assertEquals(details, exception.getMessage());
     }
-    
+
     /**
      * Test constructor with 2 params cause.
      *
@@ -74,7 +75,7 @@ public class AAIExceptionTest extends AAISetup {
         AAIException exception = new AAIException(code, cause);
         assertEquals("java.lang.RuntimeException: This is a runtime exception.", exception.getMessage());
     }
-    
+
     /**
      * Test constructor with 2 params null message.
      *
@@ -85,7 +86,7 @@ public class AAIExceptionTest extends AAISetup {
         AAIException exception = new AAIException(code, noMessage);
         assertEquals(noMessage.toString(), exception.getMessage());
     }
-    
+
     /**
      * Test constructor with 3 params.
      *
@@ -97,7 +98,7 @@ public class AAIExceptionTest extends AAISetup {
         String details = "This is a detailed description of the exception.";
         assertEquals(details, exception.getMessage());
     }
-    
+
     /**
      * Test constructor with 3 params null message.
      *

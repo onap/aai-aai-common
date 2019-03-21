@@ -17,17 +17,19 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.util;
 
-import org.onap.aai.util.RestObject;
-
 import org.onap.aai.exceptions.AAIException;
+import org.onap.aai.util.RestObject;
 
 public interface RestControllerInterface {
 
-    public <T> void Get(T t, String sourceID, String transId, String path, RestObject<T> restObject, boolean oldserver) throws AAIException;
+    public <T> void Get(T t, String sourceID, String transId, String path, RestObject<T> restObject, boolean oldserver)
+            throws AAIException;
 
-    public <T> void Get(T t, String sourceID, String transId, String path, RestObject<T> restObject, String apiVersion) throws AAIException;
+    public <T> void Get(T t, String sourceID, String transId, String path, RestObject<T> restObject, String apiVersion)
+            throws AAIException;
 
     public <T> void Patch(T t, String sourceID, String transId, String path) throws AAIException;
 
@@ -39,5 +41,5 @@ public interface RestControllerInterface {
 
     public <T> T getInstance(Class<T> clazz) throws IllegalAccessException, InstantiationException;
 
-    public <T> T DoesResourceExist(String resourcePath, String resourceClassName, String fromAppId, String transId) ;
+    public <T> T DoesResourceExist(String resourcePath, String resourceClassName, String fromAppId, String transId);
 }

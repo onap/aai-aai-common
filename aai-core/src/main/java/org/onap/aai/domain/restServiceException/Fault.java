@@ -24,22 +24,23 @@
 // Generated on: 2015.02.11 at 04:54:29 PM EST 
 //
 
-
 package org.onap.aai.domain.restServiceException;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for anonymous complex type.
+ * <p>
+ * Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -88,9 +89,7 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "requestError"
-})
+@XmlType(name = "", propOrder = {"requestError"})
 @XmlRootElement(name = "Fault")
 public class Fault {
 
@@ -101,9 +100,9 @@ public class Fault {
      * Gets the value of the requestError property.
      * 
      * @return
-     *     possible object is
-     *     {@link RequestError }
-     *     
+     *         possible object is
+     *         {@link RequestError }
+     * 
      */
     public RequestError getRequestError() {
         return requestError;
@@ -113,19 +112,20 @@ public class Fault {
      * Sets the value of the requestError property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link RequestError }
-     *     
+     *        allowed object is
+     *        {@link RequestError }
+     * 
      */
     public void setRequestError(RequestError value) {
         this.requestError = value;
     }
 
-
     /**
-     * <p>Java class for anonymous complex type.
+     * <p>
+     * Java class for anonymous complex type.
      * 
-     * <p>The following schema fragment specifies the expected content contained within this class.
+     * <p>
+     * The following schema fragment specifies the expected content contained within this class.
      * 
      * <pre>
      * &lt;complexType>
@@ -164,9 +164,7 @@ public class Fault {
      * 
      */
     @XmlAccessorType(XmlAccessType.FIELD)
-    @XmlType(name = "", propOrder = {
-        "serviceException"
-    })
+    @XmlType(name = "", propOrder = {"serviceException"})
     public static class RequestError {
 
         @XmlElement(required = true)
@@ -176,9 +174,9 @@ public class Fault {
          * Gets the value of the serviceException property.
          * 
          * @return
-         *     possible object is
-         *     {@link ServiceException }
-         *     
+         *         possible object is
+         *         {@link ServiceException }
+         * 
          */
         public ServiceException getServiceException() {
             return serviceException;
@@ -188,19 +186,20 @@ public class Fault {
          * Sets the value of the serviceException property.
          * 
          * @param value
-         *     allowed object is
-         *     {@link ServiceException }
-         *     
+         *        allowed object is
+         *        {@link ServiceException }
+         * 
          */
         public void setServiceException(ServiceException value) {
             this.serviceException = value;
         }
 
-
         /**
-         * <p>Java class for anonymous complex type.
+         * <p>
+         * Java class for anonymous complex type.
          * 
-         * <p>The following schema fragment specifies the expected content contained within this class.
+         * <p>
+         * The following schema fragment specifies the expected content contained within this class.
          * 
          * <pre>
          * &lt;complexType>
@@ -229,11 +228,7 @@ public class Fault {
          * 
          */
         @XmlAccessorType(XmlAccessType.FIELD)
-        @XmlType(name = "", propOrder = {
-            "messageId",
-            "text",
-            "variables"
-        })
+        @XmlType(name = "", propOrder = {"messageId", "text", "variables"})
         public static class ServiceException {
 
             @XmlElement(required = true)
@@ -247,9 +242,9 @@ public class Fault {
              * Gets the value of the messageId property.
              * 
              * @return
-             *     possible object is
-             *     {@link String }
-             *     
+             *         possible object is
+             *         {@link String }
+             * 
              */
             public String getMessageId() {
                 return messageId;
@@ -259,9 +254,9 @@ public class Fault {
              * Sets the value of the messageId property.
              * 
              * @param value
-             *     allowed object is
-             *     {@link String }
-             *     
+             *        allowed object is
+             *        {@link String }
+             * 
              */
             public void setMessageId(String value) {
                 this.messageId = value;
@@ -271,9 +266,9 @@ public class Fault {
              * Gets the value of the text property.
              * 
              * @return
-             *     possible object is
-             *     {@link String }
-             *     
+             *         possible object is
+             *         {@link String }
+             * 
              */
             public String getText() {
                 return text;
@@ -283,9 +278,9 @@ public class Fault {
              * Sets the value of the text property.
              * 
              * @param value
-             *     allowed object is
-             *     {@link String }
-             *     
+             *        allowed object is
+             *        {@link String }
+             * 
              */
             public void setText(String value) {
                 this.text = value;
@@ -295,9 +290,9 @@ public class Fault {
              * Gets the value of the variables property.
              * 
              * @return
-             *     possible object is
-             *     {@link Variables }
-             *     
+             *         possible object is
+             *         {@link Variables }
+             * 
              */
             public Variables getVariables() {
                 return variables;
@@ -307,19 +302,20 @@ public class Fault {
              * Sets the value of the variables property.
              * 
              * @param value
-             *     allowed object is
-             *     {@link Variables }
-             *     
+             *        allowed object is
+             *        {@link Variables }
+             * 
              */
             public void setVariables(Variables value) {
                 this.variables = value;
             }
 
-
             /**
-             * <p>Java class for anonymous complex type.
+             * <p>
+             * Java class for anonymous complex type.
              * 
-             * <p>The following schema fragment specifies the expected content contained within this class.
+             * <p>
+             * The following schema fragment specifies the expected content contained within this class.
              * 
              * <pre>
              * &lt;complexType>
@@ -336,9 +332,7 @@ public class Fault {
              * 
              */
             @XmlAccessorType(XmlAccessType.FIELD)
-            @XmlType(name = "", propOrder = {
-                "variable"
-            })
+            @XmlType(name = "", propOrder = {"variable"})
             public static class Variables {
 
                 protected List<String> variable;
@@ -354,8 +348,9 @@ public class Fault {
                  * 
                  * <p>
                  * For example, to add a new item, do as follows:
+                 * 
                  * <pre>
-                 *    getVariable().add(newItem);
+                 * getVariable().add(newItem);
                  * </pre>
                  * 
                  * 

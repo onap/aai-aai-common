@@ -17,10 +17,24 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai;
+
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import javax.ws.rs.core.*;
+
 import org.javatuples.Pair;
 import org.mockito.Mockito;
 import org.onap.aai.config.SpringContextAware;
@@ -28,7 +42,6 @@ import org.onap.aai.dbmap.DBConnectionType;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
-import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.parsers.query.QueryParser;
 import org.onap.aai.parsers.uri.URIToObject;
 import org.onap.aai.rest.db.DBRequest;
@@ -37,25 +50,14 @@ import org.onap.aai.restcore.HttpMethod;
 import org.onap.aai.restcore.RESTAPI;
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
+import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.setup.SchemaVersions;
-
-import javax.ws.rs.core.*;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
 
 public class HttpTestUtil extends RESTAPI {
 
+    protected HttpEntry traversalHttpEntry;
 
-	protected HttpEntry traversalHttpEntry;
-
-	protected HttpEntry traversalUriHttpEntry;
+    protected HttpEntry traversalUriHttpEntry;
 
     private static final EELFLogger logger = EELFManager.getInstance().getLogger(HttpTestUtil.class);
 
@@ -80,13 +82,13 @@ public class HttpTestUtil extends RESTAPI {
 
     }
 
-    public void init(){
+    public void init() {
 
-        httpHeaders         = Mockito.mock(HttpHeaders.class);
-        uriInfo             = Mockito.mock(UriInfo.class);
+        httpHeaders = Mockito.mock(HttpHeaders.class);
+        uriInfo = Mockito.mock(UriInfo.class);
 
-        headersMultiMap     = new MultivaluedHashMap<>();
-        queryParameters     = Mockito.spy(new MultivaluedHashMap<>());
+        headersMultiMap = new MultivaluedHashMap<>();
+        queryParameters = Mockito.spy(new MultivaluedHashMap<>());
 
         headersMultiMap.add("X-FromAppId", "JUNIT");
         headersMultiMap.add("X-TransactionId", UUID.randomUUID().toString());
@@ -121,25 +123,25 @@ public class HttpTestUtil extends RESTAPI {
 
         try {
 
-            if(uri.startsWith("/aai/")){
+            if (uri.startsWith("/aai/")) {
                 uri = uri.substring(5);
             }
 
             logger.info("Starting the put request for the uri {} with payload {}", uri, payload);
 
-            String [] arr = uri.split("/");
+            String[] arr = uri.split("/");
 
             SchemaVersion version = null;
 
-            if(arr != null && arr.length > 1){
-                if(arr[0].matches("^v\\d+")){
+            if (arr != null && arr.length > 1) {
+                if (arr[0].matches("^v\\d+")) {
                     version = new SchemaVersion(arr[0]);
                     uri = uri.replaceAll("^v\\d+", "");
                 }
             }
 
             SchemaVersions schemaVersions = (SchemaVersions) SpringContextAware.getBean("schemaVersions");
-            if(version == null){
+            if (version == null) {
                 version = schemaVersions.getDefaultVersion();
             }
             Mockito.when(uriInfo.getPath()).thenReturn(uri);
@@ -147,8 +149,8 @@ public class HttpTestUtil extends RESTAPI {
             DBConnectionType type = DBConnectionType.REALTIME;
 
             traversalHttpEntry.setHttpEntryProperties(version, type);
-            Loader loader         = traversalHttpEntry.getLoader();
-            dbEngine              = traversalHttpEntry.getDbEngine();
+            Loader loader = traversalHttpEntry.getLoader();
+            dbEngine = traversalHttpEntry.getDbEngine();
 
             URI uriObject = UriBuilder.fromPath(uri).build();
             URIToObject uriToObject = new URIToObject(loader, uriObject);
@@ -156,13 +158,13 @@ public class HttpTestUtil extends RESTAPI {
             String objType = uriToObject.getEntityName();
             QueryParser uriQuery = dbEngine.getQueryBuilder().createQueryFromURI(uriObject);
 
-
             logger.info("Unmarshalling the payload to this {}", objType);
 
             Introspector obj;
             HttpMethod httpMethod;
-            if(uri.contains("/relationship-list/relationship")){
-                obj = loader.unmarshal("relationship", payload, org.onap.aai.restcore.MediaType.getEnum("application/json"));
+            if (uri.contains("/relationship-list/relationship")) {
+                obj = loader.unmarshal("relationship", payload,
+                        org.onap.aai.restcore.MediaType.getEnum("application/json"));
                 httpMethod = HttpMethod.PUT_EDGE;
             } else {
                 obj = loader.unmarshal(objType, payload, org.onap.aai.restcore.MediaType.getEnum("application/json"));
@@ -170,36 +172,36 @@ public class HttpTestUtil extends RESTAPI {
                 this.validateIntrospector(obj, loader, uriObject, httpMethod);
             }
 
-
-            DBRequest dbRequest =
-                    new DBRequest.Builder(httpMethod, uriObject, uriQuery, obj, httpHeaders, uriInfo, "JUNIT-TRANSACTION")
-                            .rawRequestContent(payload).build();
+            DBRequest dbRequest = new DBRequest.Builder(httpMethod, uriObject, uriQuery, obj, httpHeaders, uriInfo,
+                    "JUNIT-TRANSACTION").rawRequestContent(payload).build();
 
             List<DBRequest> dbRequestList = new ArrayList<>();
             dbRequestList.add(dbRequest);
 
-            Pair<Boolean, List<Pair<URI, Response>>> responsesTuple  = traversalHttpEntry.process(dbRequestList, "JUNIT");
+            Pair<Boolean, List<Pair<URI, Response>>> responsesTuple =
+                    traversalHttpEntry.process(dbRequestList, "JUNIT");
             response = responsesTuple.getValue1().get(0).getValue1();
 
         } catch (AAIException e) {
             response = this.consumerExceptionResponseGenerator(httpHeaders, uriInfo, HttpMethod.PUT, e);
             success = false;
-        } catch(Exception e){
+        } catch (Exception e) {
             AAIException ex = new AAIException("AAI_4000", e);
             response = this.consumerExceptionResponseGenerator(httpHeaders, uriInfo, HttpMethod.PUT, ex);
             success = false;
         } finally {
-            if(success){
-                if(response != null){
-                    if((response.getStatus() / 100) == 2){
-                        logger.info("Successfully completed the PUT request with status {} and committing it to DB", response.getStatus());
+            if (success) {
+                if (response != null) {
+                    if ((response.getStatus() / 100) == 2) {
+                        logger.info("Successfully completed the PUT request with status {} and committing it to DB",
+                                response.getStatus());
                     } else {
                         logFailure(HttpMethod.PUT, response);
                     }
                 }
                 dbEngine.commit();
             } else {
-                if(response != null) {
+                if (response != null) {
                     logFailure(HttpMethod.PUT, response);
                 }
                 dbEngine.rollback();
@@ -209,7 +211,7 @@ public class HttpTestUtil extends RESTAPI {
         return response;
     }
 
-    public Response doGet(String uri, String depth){
+    public Response doGet(String uri, String depth) {
 
         this.init();
         Response response = null;
@@ -218,36 +220,36 @@ public class HttpTestUtil extends RESTAPI {
 
         try {
 
-            if(uri.startsWith("/aai/")){
+            if (uri.startsWith("/aai/")) {
                 uri = uri.substring(5);
             }
 
             logger.info("Starting the GET request for the uri {} with depth {}", uri, depth);
 
-            String [] arr = uri.split("/");
+            String[] arr = uri.split("/");
 
             SchemaVersion version = null;
 
-            if(arr != null && arr.length > 1){
-                if(arr[0].matches("^v\\d+")){
+            if (arr != null && arr.length > 1) {
+                if (arr[0].matches("^v\\d+")) {
                     version = new SchemaVersion(arr[0]);
                     uri = uri.replaceAll("^v\\d+", "");
                 }
             }
 
             SchemaVersions schemaVersions = (SchemaVersions) SpringContextAware.getBean("schemaVersions");
-            if(version == null){
+            if (version == null) {
                 version = schemaVersions.getDefaultVersion();
             }
 
             DBConnectionType type = DBConnectionType.REALTIME;
             traversalHttpEntry.setHttpEntryProperties(version, type);
-            Loader loader         = traversalHttpEntry.getLoader();
-            dbEngine              = traversalHttpEntry.getDbEngine();
+            Loader loader = traversalHttpEntry.getLoader();
+            dbEngine = traversalHttpEntry.getDbEngine();
 
             URI uriObject = UriBuilder.fromPath(uri).build();
 
-            if(depth != null){
+            if (depth != null) {
                 queryParameters.add("depth", depth);
             }
 
@@ -266,28 +268,29 @@ public class HttpTestUtil extends RESTAPI {
 
             Introspector obj = loader.introspectorFromName(objType);
 
-            DBRequest dbRequest =
-                new DBRequest.Builder(HttpMethod.GET, uriObject, uriQuery, obj, httpHeaders, uriInfo, "JUNIT-TRANSACTION")
-                    .build();
+            DBRequest dbRequest = new DBRequest.Builder(HttpMethod.GET, uriObject, uriQuery, obj, httpHeaders, uriInfo,
+                    "JUNIT-TRANSACTION").build();
 
             List<DBRequest> dbRequestList = new ArrayList<>();
             dbRequestList.add(dbRequest);
 
-            Pair<Boolean, List<Pair<URI, Response>>> responsesTuple  = traversalHttpEntry.process(dbRequestList, "JUNIT");
+            Pair<Boolean, List<Pair<URI, Response>>> responsesTuple =
+                    traversalHttpEntry.process(dbRequestList, "JUNIT");
             response = responsesTuple.getValue1().get(0).getValue1();
 
         } catch (AAIException e) {
             response = this.consumerExceptionResponseGenerator(httpHeaders, uriInfo, HttpMethod.PUT, e);
             success = false;
-        } catch(Exception e){
+        } catch (Exception e) {
             AAIException ex = new AAIException("AAI_4000", e);
             response = this.consumerExceptionResponseGenerator(httpHeaders, uriInfo, HttpMethod.PUT, ex);
             success = false;
         } finally {
-            if(success){
-                if(response != null){
-                    if((response.getStatus() / 100) == 2){
-                        logger.info("Successfully completed the GET request with status {} and committing it to DB", response.getStatus());
+            if (success) {
+                if (response != null) {
+                    if ((response.getStatus() / 100) == 2) {
+                        logger.info("Successfully completed the GET request with status {} and committing it to DB",
+                                response.getStatus());
                     } else {
                         logFailure(HttpMethod.GET, response);
                     }
@@ -318,21 +321,21 @@ public class HttpTestUtil extends RESTAPI {
             uri = uri.replaceAll("/aai/", "");
             logger.info("Starting the delete request for the uri {} with resource version {}", uri, resourceVersion);
 
-            String [] arr = uri.split("/");
+            String[] arr = uri.split("/");
 
             SchemaVersion version = null;
 
-            if(arr != null && arr.length > 1){
-                if(arr[0].matches("^v\\d+")){
+            if (arr != null && arr.length > 1) {
+                if (arr[0].matches("^v\\d+")) {
                     version = new SchemaVersion(arr[0]);
-                    if(!uri.contains("relationship-list/relationship")){
+                    if (!uri.contains("relationship-list/relationship")) {
                         uri = uri.replaceAll("^v\\d+", "");
                     }
                 }
             }
 
             SchemaVersions schemaVersions = (SchemaVersions) SpringContextAware.getBean("schemaVersions");
-            if(version == null){
+            if (version == null) {
                 version = schemaVersions.getDefaultVersion();
             }
 
@@ -341,8 +344,8 @@ public class HttpTestUtil extends RESTAPI {
             traversalHttpEntry.setHttpEntryProperties(version, type);
 
             traversalHttpEntry.setHttpEntryProperties(version, type);
-            Loader loader         = traversalHttpEntry.getLoader();
-            dbEngine              = traversalHttpEntry.getDbEngine();
+            Loader loader = traversalHttpEntry.getLoader();
+            dbEngine = traversalHttpEntry.getDbEngine();
 
             URI uriObject = UriBuilder.fromPath(uri).build();
             URIToObject uriToObject = new URIToObject(loader, uriObject);
@@ -355,7 +358,7 @@ public class HttpTestUtil extends RESTAPI {
 
             Introspector obj;
             HttpMethod httpMethod;
-            if(uri.contains("/relationship-list/relationship")){
+            if (uri.contains("/relationship-list/relationship")) {
                 obj = loader.introspectorFromName("relationship");
                 httpMethod = HttpMethod.DELETE_EDGE;
             } else {
@@ -363,28 +366,29 @@ public class HttpTestUtil extends RESTAPI {
                 httpMethod = HttpMethod.DELETE;
             }
 
-            DBRequest dbRequest =
-                    new DBRequest.Builder(httpMethod, uriObject, uriQuery, obj, httpHeaders, uriInfo, "JUNIT-TRANSACTION")
-                            .build();
+            DBRequest dbRequest = new DBRequest.Builder(httpMethod, uriObject, uriQuery, obj, httpHeaders, uriInfo,
+                    "JUNIT-TRANSACTION").build();
 
             List<DBRequest> dbRequestList = new ArrayList<>();
             dbRequestList.add(dbRequest);
 
-            Pair<Boolean, List<Pair<URI, Response>>> responsesTuple  = traversalHttpEntry.process(dbRequestList, "JUNIT");
+            Pair<Boolean, List<Pair<URI, Response>>> responsesTuple =
+                    traversalHttpEntry.process(dbRequestList, "JUNIT");
             response = responsesTuple.getValue1().get(0).getValue1();
 
         } catch (AAIException e) {
             response = this.consumerExceptionResponseGenerator(httpHeaders, uriInfo, HttpMethod.PUT, e);
             success = false;
-        } catch(Exception e){
+        } catch (Exception e) {
             AAIException ex = new AAIException("AAI_4000", e);
             response = this.consumerExceptionResponseGenerator(httpHeaders, uriInfo, HttpMethod.PUT, ex);
             success = false;
         } finally {
-            if(success){
-                if(response != null){
-                    if((response.getStatus() / 100) == 2){
-                        logger.info("Successfully completed the DELETE request with status {} and committing it to DB", response.getStatus());
+            if (success) {
+                if (response != null) {
+                    if ((response.getStatus() / 100) == 2) {
+                        logger.info("Successfully completed the DELETE request with status {} and committing it to DB",
+                                response.getStatus());
                     } else {
                         logFailure(HttpMethod.DELETE, response);
                     }
@@ -399,8 +403,9 @@ public class HttpTestUtil extends RESTAPI {
         return response;
     }
 
-    public static void logFailure(HttpMethod httpMethod, Response response){
-        logger.info("Unable to complete the {} request with status {} and rolling back", httpMethod.toString(), response.getStatus());
+    public static void logFailure(HttpMethod httpMethod, Response response) {
+        logger.info("Unable to complete the {} request with status {} and rolling back", httpMethod.toString(),
+                response.getStatus());
         logger.info("Response body of failed request {}", response.getEntity());
 
     }

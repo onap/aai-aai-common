@@ -17,23 +17,24 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.serialization.queryformats.exceptions;
 
 import org.onap.aai.exceptions.AAIException;
 
 public class QueryParamInjectionException extends AAIException {
 
-	private static final long serialVersionUID = -5575661036426538012L;
+    private static final long serialVersionUID = -5575661036426538012L;
 
-	public QueryParamInjectionException(String message) {
-		super("AAI_4017", message);
-	}
+    public QueryParamInjectionException(String message) {
+        super("AAI_4017", message);
+    }
 
-	public QueryParamInjectionException(Throwable cause) {
-		super("AAI_4017",cause);
-	}
+    public QueryParamInjectionException(Throwable cause) {
+        super("AAI_4017", cause);
+    }
 
-	public QueryParamInjectionException(String message, Throwable cause) {
-		super("AAI_4017", cause, message);
-	}
+    public QueryParamInjectionException(String message, Throwable cause) {
+        super("AAI_4017", cause, message);
+    }
 }

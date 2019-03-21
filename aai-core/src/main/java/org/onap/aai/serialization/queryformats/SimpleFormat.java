@@ -17,10 +17,17 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.serialization.queryformats;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Property;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
@@ -30,62 +37,54 @@ import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
 
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 public class SimpleFormat extends RawFormat {
 
+    protected SimpleFormat(Builder builder) {
+        super(builder);
 
-	protected SimpleFormat(Builder builder) {
-		super(builder);
-	
-	}
-	
-	@Override
-	public int parallelThreshold() {
-		return 20;
-	}
-	
-	@Override
-	public Optional<JsonObject> createPropertiesObject(Vertex v) throws AAIFormatVertexException {
-		try {
-			final Introspector obj = loader.introspectorFromName(
-										v.<String>property(AAIProperties.NODE_TYPE)
-											.orElse(null)
-									 );
+    }
 
-			final List<Vertex> wrapper = new ArrayList<>();
+    @Override
+    public int parallelThreshold() {
+        return 20;
+    }
 
-			wrapper.add(v);
+    @Override
+    public Optional<JsonObject> createPropertiesObject(Vertex v) throws AAIFormatVertexException {
+        try {
+            final Introspector obj =
+                    loader.introspectorFromName(v.<String>property(AAIProperties.NODE_TYPE).orElse(null));
 
-			try {
-				serializer.dbToObject(wrapper, obj, this.depth, true, "false");
-			} catch (AAIException | UnsupportedEncodingException  e) {
-				throw new AAIFormatVertexException("Failed to format vertex - error while serializing: " + e.getMessage(), e);
-			}
+            final List<Vertex> wrapper = new ArrayList<>();
 
-			final String json = obj.marshal(false);
-			return Optional.of(parser.parse(json).getAsJsonObject());
-		} catch (AAIUnknownObjectException e) {
-			return Optional.empty();
-		}
-		
+            wrapper.add(v);
 
-	}
+            try {
+                serializer.dbToObject(wrapper, obj, this.depth, true, "false");
+            } catch (AAIException | UnsupportedEncodingException e) {
+                throw new AAIFormatVertexException(
+                        "Failed to format vertex - error while serializing: " + e.getMessage(), e);
+            }
 
-	@Override
-	protected void addEdge(Edge e, Vertex v,  JsonArray array) throws AAIFormatVertexException {
+            final String json = obj.marshal(false);
+            return Optional.of(parser.parse(json).getAsJsonObject());
+        } catch (AAIUnknownObjectException e) {
+            return Optional.empty();
+        }
 
-		Property property = e.property("private");
+    }
 
-		if(property.isPresent()){
-		    if("true".equals(e.property("private").value().toString())){
-		    	return;
-			}
-		}
+    @Override
+    protected void addEdge(Edge e, Vertex v, JsonArray array) throws AAIFormatVertexException {
 
-		super.addEdge(e, v, array);
-	}
+        Property property = e.property("private");
+
+        if (property.isPresent()) {
+            if ("true".equals(e.property("private").value().toString())) {
+                return;
+            }
+        }
+
+        super.addEdge(e, v, array);
+    }
 }

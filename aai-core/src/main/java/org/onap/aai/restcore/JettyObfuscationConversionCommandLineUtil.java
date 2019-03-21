@@ -17,6 +17,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.restcore;
 
 import org.apache.commons.cli.BasicParser;
@@ -47,50 +48,50 @@ import org.eclipse.jetty.util.security.Password;
  * the-secret-to-hide-the-secret problem.
  */
 public class JettyObfuscationConversionCommandLineUtil {
-	
-	/**
-	 * The main method.
-	 *
-	 * @param args the arguments
-	 */
-	public static void main(String[] args){
-		Options options = new Options();
-		options.addOption("e", true, "obfuscate the given string");
-		options.addOption("d", true, "deobfuscate the given string");
-		
-		CommandLineParser parser = new BasicParser();
-		
-		try {
-			CommandLine cmd = parser.parse(options, args);
-			String toProcess = null;
-			
-			if (cmd.hasOption("e")){
-				toProcess = cmd.getOptionValue("e");
-				String encoded = Password.obfuscate(toProcess);
-				System.out.println(encoded);
-			} else if (cmd.hasOption("d")) {
-				toProcess = cmd.getOptionValue("d");
-				String decoded_str = Password.deobfuscate(toProcess);
-				System.out.println(decoded_str);
-			} else {
-				usage();
-			}
-		} catch (ParseException e) {
-			System.out.println("failed to parse input");
-			System.out.println(e.toString());
-			usage();
-		} catch (Exception e) {
-			System.out.println("exception:" + e.toString());
-		}
-	}
-	
-	/**
-	 * Usage.
-	 */
-	private static void usage(){
-		System.out.println("usage:");;
-		System.out.println("-e [string] to obfuscate");
-		System.out.println("-d [string] to deobfuscate");
-		System.out.println("-h help");
-	}
+
+    /**
+     * The main method.
+     *
+     * @param args the arguments
+     */
+    public static void main(String[] args) {
+        Options options = new Options();
+        options.addOption("e", true, "obfuscate the given string");
+        options.addOption("d", true, "deobfuscate the given string");
+
+        CommandLineParser parser = new BasicParser();
+
+        try {
+            CommandLine cmd = parser.parse(options, args);
+            String toProcess = null;
+
+            if (cmd.hasOption("e")) {
+                toProcess = cmd.getOptionValue("e");
+                String encoded = Password.obfuscate(toProcess);
+                System.out.println(encoded);
+            } else if (cmd.hasOption("d")) {
+                toProcess = cmd.getOptionValue("d");
+                String decoded_str = Password.deobfuscate(toProcess);
+                System.out.println(decoded_str);
+            } else {
+                usage();
+            }
+        } catch (ParseException e) {
+            System.out.println("failed to parse input");
+            System.out.println(e.toString());
+            usage();
+        } catch (Exception e) {
+            System.out.println("exception:" + e.toString());
+        }
+    }
+
+    /**
+     * Usage.
+     */
+    private static void usage() {
+        System.out.println("usage:");;
+        System.out.println("-e [string] to obfuscate");
+        System.out.println("-d [string] to deobfuscate");
+        System.out.println("-h help");
+    }
 }

@@ -17,6 +17,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.serialization.queryformats.params;
 
 import java.lang.annotation.Retention;
@@ -25,9 +26,10 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Inject {
 
-	/**
-	 * The way the query parameter appears in the URI
-	 * @return
-	 */
-	String name();
+    /**
+     * The way the query parameter appears in the URI
+     * 
+     * @return
+     */
+    String name();
 }

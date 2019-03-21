@@ -17,8 +17,9 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.serialization.engines;
 
 public enum QueryStyle {
-	GREMLIN_TRAVERSAL, GREMLIN_UNIQUE, GREMLINPIPELINE_TRAVERSAL, TRAVERSAL, TRAVERSAL_URI
+    GREMLIN_TRAVERSAL, GREMLIN_UNIQUE, GREMLINPIPELINE_TRAVERSAL, TRAVERSAL, TRAVERSAL_URI
 }

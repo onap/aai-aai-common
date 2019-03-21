@@ -17,7 +17,14 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.query.builder.optimization;
+
+import java.lang.reflect.Method;
+import java.net.URI;
+
+import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.MultivaluedMap;
 
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.junit.Before;
@@ -26,12 +33,8 @@ import org.onap.aai.query.builder.QueryBuilder;
 import org.onap.aai.query.builder.TraversalQuery;
 import org.onap.aai.query.builder.TraversalURIOptimizedQuery;
 
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
-import java.lang.reflect.Method;
-import java.net.URI;
-
-public abstract class AbstractGraphTraversalBuilderTestQueryiesToRun extends AbstractGraphTraversalBuilderOptmizationTest {
+public abstract class AbstractGraphTraversalBuilderTestQueryiesToRun
+        extends AbstractGraphTraversalBuilderOptmizationTest {
 
     protected static final String CLOUD_OWNER_1 = "cloud-owner-1";
     protected static final String CLOUD_REGION_ID_1 = "cloud-region-id-1";
@@ -52,7 +55,6 @@ public abstract class AbstractGraphTraversalBuilderTestQueryiesToRun extends Abs
 
     protected abstract String getPrefix();
 
-
     private QueryBuilder<Vertex> getQueryBuilder(OptimizeEnum optimized) {
         if (OptimizeEnum.URI.equals(optimized)) {
             return new TraversalURIOptimizedQuery<>(loader, g);
@@ -63,7 +65,8 @@ public abstract class AbstractGraphTraversalBuilderTestQueryiesToRun extends Abs
 
     private void callTest(String methodName, int numResultsExpected) throws Exception {
         String queryMethodName = methodName.replace("Test", "Query");
-        Method method = AbstractGraphTraversalBuilderTestQueryiesToRun.class.getMethod(queryMethodName, OptimizeEnum.class);
+        Method method =
+                AbstractGraphTraversalBuilderTestQueryiesToRun.class.getMethod(queryMethodName, OptimizeEnum.class);
         this.execute(method, numResultsExpected);
     }
 
@@ -74,7 +77,8 @@ public abstract class AbstractGraphTraversalBuilderTestQueryiesToRun extends Abs
     }
 
     public QueryBuilder<Vertex> vserverQuery(OptimizeEnum optimized) throws Exception {
-        URI uri = new URI(String.format(vserverUriPattern, getPrefix() + CLOUD_OWNER_1, getPrefix() + CLOUD_REGION_ID_1, tenantId, vserverId));
+        URI uri = new URI(String.format(vserverUriPattern, getPrefix() + CLOUD_OWNER_1, getPrefix() + CLOUD_REGION_ID_1,
+                tenantId, vserverId));
         return getQueryBuilder(optimized).createQueryFromURI(uri).getQueryBuilder();
     }
 
@@ -85,7 +89,9 @@ public abstract class AbstractGraphTraversalBuilderTestQueryiesToRun extends Abs
     }
 
     public QueryBuilder<Vertex> vserversUnderATenantQuery(OptimizeEnum optimized) throws Exception {
-        URI uri = new URI(String.format(tenantUriPattern, getPrefix() + CLOUD_OWNER_1, getPrefix() + CLOUD_REGION_ID_1, tenantId) + "/vservers");
+        URI uri = new URI(
+                String.format(tenantUriPattern, getPrefix() + CLOUD_OWNER_1, getPrefix() + CLOUD_REGION_ID_1, tenantId)
+                        + "/vservers");
         return getQueryBuilder(optimized).createQueryFromURI(uri).getQueryBuilder();
     }
 
@@ -96,7 +102,9 @@ public abstract class AbstractGraphTraversalBuilderTestQueryiesToRun extends Abs
     }
 
     public QueryBuilder<Vertex> vserversUnderATenantWithNonIndexPropertyQuery(OptimizeEnum optimized) throws Exception {
-        URI uri = new URI(String.format(tenantUriPattern, getPrefix() + CLOUD_OWNER_1, getPrefix() + CLOUD_REGION_ID_1, tenantId) + "/vservers");
+        URI uri = new URI(
+                String.format(tenantUriPattern, getPrefix() + CLOUD_OWNER_1, getPrefix() + CLOUD_REGION_ID_1, tenantId)
+                        + "/vservers");
         MultivaluedMap<String, String> map = new MultivaluedHashMap<>();
         map.putSingle(VSERVER_SELFLINK, randomFromList);
         return getQueryBuilder(optimized).createQueryFromURI(uri, map).getQueryBuilder();
@@ -108,8 +116,11 @@ public abstract class AbstractGraphTraversalBuilderTestQueryiesToRun extends Abs
         callTest(methodName, Integer.MIN_VALUE);
     }
 
-    public QueryBuilder<Vertex> vserversUnderATenantWithIndexPropertyWhereValueIsInMultipleQuery(OptimizeEnum optimized) throws Exception {
-        URI uri = new URI(String.format(tenantUriPattern, getPrefix() + CLOUD_OWNER_1, getPrefix() + CLOUD_REGION_ID_1, tenantId) + "/vservers");
+    public QueryBuilder<Vertex> vserversUnderATenantWithIndexPropertyWhereValueIsInMultipleQuery(OptimizeEnum optimized)
+            throws Exception {
+        URI uri = new URI(
+                String.format(tenantUriPattern, getPrefix() + CLOUD_OWNER_1, getPrefix() + CLOUD_REGION_ID_1, tenantId)
+                        + "/vservers");
         MultivaluedMap<String, String> map = new MultivaluedHashMap<>();
         map.putSingle(PROV_STATUS, randomFromList);
         return getQueryBuilder(optimized).createQueryFromURI(uri, map).getQueryBuilder();
@@ -121,8 +132,11 @@ public abstract class AbstractGraphTraversalBuilderTestQueryiesToRun extends Abs
         callTest(methodName, Integer.MIN_VALUE);
     }
 
-    public QueryBuilder<Vertex> vserversUnderATenantWithIndexPropertyWhereValueIsSemiUniqueQuery(OptimizeEnum optimized) throws Exception {
-        URI uri = new URI(String.format(tenantUriPattern, getPrefix() + CLOUD_OWNER_1, getPrefix() + CLOUD_REGION_ID_1, tenantId) + "/vservers");
+    public QueryBuilder<Vertex> vserversUnderATenantWithIndexPropertyWhereValueIsSemiUniqueQuery(OptimizeEnum optimized)
+            throws Exception {
+        URI uri = new URI(
+                String.format(tenantUriPattern, getPrefix() + CLOUD_OWNER_1, getPrefix() + CLOUD_REGION_ID_1, tenantId)
+                        + "/vservers");
         MultivaluedMap<String, String> map = new MultivaluedHashMap<>();
         map.putSingle(VSERVER_NAME, vserverName);
         return getQueryBuilder(optimized).createQueryFromURI(uri, map).getQueryBuilder();
@@ -136,7 +150,8 @@ public abstract class AbstractGraphTraversalBuilderTestQueryiesToRun extends Abs
     }
 
     public QueryBuilder<Vertex> nonExistentVserverQuery(OptimizeEnum optimized) throws Exception {
-        URI uri = new URI(String.format(vserverUriPattern, getPrefix() + CLOUD_OWNER_1, getPrefix() + CLOUD_REGION_ID_1, tenantId, "does-not-exist"));
+        URI uri = new URI(String.format(vserverUriPattern, getPrefix() + CLOUD_OWNER_1, getPrefix() + CLOUD_REGION_ID_1,
+                tenantId, "does-not-exist"));
         return getQueryBuilder(optimized).createQueryFromURI(uri).getQueryBuilder();
     }
 
@@ -147,7 +162,8 @@ public abstract class AbstractGraphTraversalBuilderTestQueryiesToRun extends Abs
     }
 
     public QueryBuilder<Vertex> vserverWithNonExistentTenantQuery(OptimizeEnum optimized) throws Exception {
-        URI uri = new URI(String.format(vserverUriPattern, getPrefix() + CLOUD_OWNER_1, getPrefix() + CLOUD_REGION_ID_1, "does-not-exist", vserverId));
+        URI uri = new URI(String.format(vserverUriPattern, getPrefix() + CLOUD_OWNER_1, getPrefix() + CLOUD_REGION_ID_1,
+                "does-not-exist", vserverId));
         return getQueryBuilder(optimized).createQueryFromURI(uri).getQueryBuilder();
     }
 
@@ -158,7 +174,8 @@ public abstract class AbstractGraphTraversalBuilderTestQueryiesToRun extends Abs
     }
 
     public QueryBuilder<Vertex> vserverWithValidQueryParameterQuery(OptimizeEnum optimized) throws Exception {
-        URI uri = new URI(String.format(vserverUriPattern, getPrefix() + CLOUD_OWNER_1, getPrefix() + CLOUD_REGION_ID_1, tenantId, vserverId));
+        URI uri = new URI(String.format(vserverUriPattern, getPrefix() + CLOUD_OWNER_1, getPrefix() + CLOUD_REGION_ID_1,
+                tenantId, vserverId));
         MultivaluedMap<String, String> map = new MultivaluedHashMap<>();
         map.putSingle("vserver-name2", "someName");
         return getQueryBuilder(optimized).createQueryFromURI(uri, map).getQueryBuilder();
@@ -176,6 +193,5 @@ public abstract class AbstractGraphTraversalBuilderTestQueryiesToRun extends Abs
         map.putSingle("in-maint", "false");
         return getQueryBuilder(optimized).createQueryFromURI(uri, map).getQueryBuilder();
     }
-
 
 }

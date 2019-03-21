@@ -17,7 +17,13 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.serialization.queryformats.utils;
+
+import static org.junit.Assert.assertEquals;
+
+import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.MultivaluedMap;
 
 import org.junit.Test;
 import org.mockito.Mock;
@@ -28,31 +34,28 @@ import org.onap.aai.serialization.db.DBSerializer;
 import org.onap.aai.serialization.queryformats.Resource;
 import org.onap.aai.serialization.queryformats.Resource.Builder;
 
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
-
-import static org.junit.Assert.assertEquals;
-
 public class QueryParamInjectorTest {
 
-	
-	@Mock private Loader loader;
-	@Mock private DBSerializer serializer;
-	@Mock private UrlBuilder urlBuilder;
-	
-	@Test
-	public void test() throws AAIException {
-		MockitoAnnotations.initMocks(this);
-		QueryParamInjector injector = QueryParamInjector.getInstance();
-		
-		Builder b = new Builder(loader, serializer, urlBuilder);
-		MultivaluedMap<String, String> params = new MultivaluedHashMap<>(); 
-		params.putSingle("nodesOnly", "true");
-		params.putSingle("depth", "10");
-		params.putSingle("invalid", "1000");
-		injector.injectParams(b, params);
-		
-		assertEquals("is nodes only", true, b.isNodesOnly());
-		assertEquals("is depth 10", 10, b.getDepth());
-	}
+    @Mock
+    private Loader loader;
+    @Mock
+    private DBSerializer serializer;
+    @Mock
+    private UrlBuilder urlBuilder;
+
+    @Test
+    public void test() throws AAIException {
+        MockitoAnnotations.initMocks(this);
+        QueryParamInjector injector = QueryParamInjector.getInstance();
+
+        Builder b = new Builder(loader, serializer, urlBuilder);
+        MultivaluedMap<String, String> params = new MultivaluedHashMap<>();
+        params.putSingle("nodesOnly", "true");
+        params.putSingle("depth", "10");
+        params.putSingle("invalid", "1000");
+        injector.injectParams(b, params);
+
+        assertEquals("is nodes only", true, b.isNodesOnly());
+        assertEquals("is depth 10", 10, b.getDepth());
+    }
 }

@@ -17,11 +17,23 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.rest;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 import com.jayway.jsonpath.JsonPath;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.ws.rs.core.Response;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,23 +42,13 @@ import org.onap.aai.AAISetup;
 import org.onap.aai.HttpTestUtil;
 import org.onap.aai.PayloadUtil;
 import org.onap.aai.introspection.*;
-
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.test.annotation.DirtiesContext;
 
-import javax.ws.rs.core.Response;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 @RunWith(value = Parameterized.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
-public class PserverTest extends AAISetup{
+public class PserverTest extends AAISetup {
 
     private static EELFLogger logger = EELFManager.getInstance().getLogger(PserverTest.class);
     private HttpTestUtil httpTestUtil;
@@ -57,15 +59,11 @@ public class PserverTest extends AAISetup{
 
     @Parameterized.Parameters(name = "QueryStyle.{0}")
     public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][]{
-                {QueryStyle.TRAVERSAL},
-                {QueryStyle.TRAVERSAL_URI}
-        });
+        return Arrays.asList(new Object[][] {{QueryStyle.TRAVERSAL}, {QueryStyle.TRAVERSAL_URI}});
     }
 
-
     @Before
-    public void setUp(){
+    public void setUp() {
         httpTestUtil = new HttpTestUtil(queryStyle);
         relationshipMap = new HashMap<>();
     }
@@ -103,7 +101,8 @@ public class PserverTest extends AAISetup{
         response = httpTestUtil.doPut(cloudRegionUri, "{}");
         assertNotNull("Expected the response to be not null", response);
         assertEquals("Expect the cloud region to be created", 201, response.getStatus());
-        logger.info("Successfully able to create the cloud region with payload that has no keys to be retrieved from uri");
+        logger.info(
+                "Successfully able to create the cloud region with payload that has no keys to be retrieved from uri");
 
         response = httpTestUtil.doGet(cloudRegionUri);
         assertNotNull("Expected the response to be not null", response);
@@ -120,7 +119,7 @@ public class PserverTest extends AAISetup{
         assertEquals("Expect the cloud region relationship to pserver to be created", 200, response.getStatus());
         logger.info("Successfully created the relationship between cloud region and pserver");
 
-        response =  httpTestUtil.doGet(cloudRegionUri);
+        response = httpTestUtil.doGet(cloudRegionUri);
         assertNotNull("Expected the response to be not null", response);
         assertEquals("Expect the cloud region to be created", 200, response.getStatus());
         logger.info("Successfully retrieved the cloud region from db");

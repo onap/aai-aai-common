@@ -17,19 +17,20 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.logging;
 
 import ch.qos.logback.classic.PatternLayout;
 
 public class EcompPatternLayout extends PatternLayout {
-	static {
-		PatternLayout.defaultConverterMap.put("ecompStartTime", EcompStartTime.class.getName());
-		PatternLayout.defaultConverterMap.put("ecompElapsedTime", EcompElapsedTime.class.getName());
-		PatternLayout.defaultConverterMap.put("eelfClassOfCaller", EelfClassOfCaller.class.getName());
-		PatternLayout.defaultConverterMap.put("ecompErrorCategory", EcompErrorCategory.class.getName());
-		PatternLayout.defaultConverterMap.put("ecompResponseCode", EcompResponseCode.class.getName());
-		PatternLayout.defaultConverterMap.put("ecompResponseDescription", EcompResponseDescription.class.getName());
-		PatternLayout.defaultConverterMap.put("ecompStatusCode", EcompStatusCode.class.getName());
-		PatternLayout.defaultConverterMap.put("ecompServiceName", EcompServiceName.class.getName());
-	}
+    static {
+        PatternLayout.defaultConverterMap.put("ecompStartTime", EcompStartTime.class.getName());
+        PatternLayout.defaultConverterMap.put("ecompElapsedTime", EcompElapsedTime.class.getName());
+        PatternLayout.defaultConverterMap.put("eelfClassOfCaller", EelfClassOfCaller.class.getName());
+        PatternLayout.defaultConverterMap.put("ecompErrorCategory", EcompErrorCategory.class.getName());
+        PatternLayout.defaultConverterMap.put("ecompResponseCode", EcompResponseCode.class.getName());
+        PatternLayout.defaultConverterMap.put("ecompResponseDescription", EcompResponseDescription.class.getName());
+        PatternLayout.defaultConverterMap.put("ecompStatusCode", EcompStatusCode.class.getName());
+        PatternLayout.defaultConverterMap.put("ecompServiceName", EcompServiceName.class.getName());
+    }
 }

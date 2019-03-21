@@ -19,6 +19,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.auth.exceptions;
 
 import org.onap.aai.exceptions.AAIException;
@@ -28,14 +29,15 @@ public class AAIUnrecognizedFunctionException extends AAIException {
     private static final String AAI_3012 = "AAI_3012";
     private static final long serialVersionUID = 3297064867724071290L;
 
-    public AAIUnrecognizedFunctionException() {}
+    public AAIUnrecognizedFunctionException() {
+    }
 
     public AAIUnrecognizedFunctionException(String message) {
         super(AAI_3012, message);
     }
 
     public AAIUnrecognizedFunctionException(Throwable cause) {
-        super(AAI_3012,cause);
+        super(AAI_3012, cause);
     }
 
     public AAIUnrecognizedFunctionException(String message, Throwable cause) {

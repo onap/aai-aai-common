@@ -19,15 +19,16 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.config;
 
 import org.onap.aai.edges.EdgeIngestor;
 import org.onap.aai.nodes.NodeIngestor;
+import org.onap.aai.serialization.db.EdgeSerializer;
 import org.onap.aai.setup.AAIConfigTranslator;
 import org.onap.aai.setup.ConfigTranslator;
-import org.onap.aai.setup.SchemaLocationsBean;
 import org.onap.aai.setup.SchemaConfigVersions;
-import org.onap.aai.serialization.db.EdgeSerializer;
+import org.onap.aai.setup.SchemaLocationsBean;
 import org.onap.aai.validation.CheckEverythingStrategy;
 import org.onap.aai.validation.SchemaErrorStrategy;
 import org.onap.aai.validation.nodes.DefaultDuplicateNodeDefinitionValidationModule;
@@ -36,13 +37,14 @@ import org.onap.aai.validation.nodes.NodeValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.*;
+
 @Import({NodesConfiguration.class, EdgesConfiguration.class})
 @Configuration
 @PropertySource(value = "classpath:schema-ingest.properties", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${schema.ingest.file}", ignoreResourceNotFound = true)
 public class SchemaConfiguration {
 
-    //TODO : Inject this directly into nodeIngestor
+    // TODO : Inject this directly into nodeIngestor
     @Autowired(required = false)
     NodesConfiguration nodesConfiguration;
 
@@ -50,12 +52,12 @@ public class SchemaConfiguration {
     EdgesConfiguration edgesConfiguration;
 
     @Bean
-    public EdgeIngestor edgeIngestor(){
+    public EdgeIngestor edgeIngestor() {
         return edgesConfiguration.edgeIngestor();
     }
 
     @Bean
-    public EdgeSerializer edgeSerializer(EdgeIngestor edgeIngestor){
+    public EdgeSerializer edgeSerializer(EdgeIngestor edgeIngestor) {
         return new EdgeSerializer(edgeIngestor);
     }
 
@@ -64,32 +66,29 @@ public class SchemaConfiguration {
         return nodesConfiguration.nodeIngestor();
     }
 
-
     @Bean(name = "configTranslator")
     @ConditionalOnProperty(name = "schema.translator.list", havingValue = "config", matchIfMissing = true)
-    public ConfigTranslator configTranslator(SchemaLocationsBean schemaLocationsBean, SchemaConfigVersions schemaVersions) {
+    public ConfigTranslator configTranslator(SchemaLocationsBean schemaLocationsBean,
+            SchemaConfigVersions schemaVersions) {
         return new AAIConfigTranslator(schemaLocationsBean, schemaVersions);
     }
 
     @Bean
     @ConditionalOnProperty(name = "schema.translator.list", havingValue = "config", matchIfMissing = true)
-    public SchemaErrorStrategy schemaErrorStrategy(){
+    public SchemaErrorStrategy schemaErrorStrategy() {
         return new CheckEverythingStrategy();
-	}
+    }
 
-	@Bean
-	@ConditionalOnProperty(name = "schema.translator.list", havingValue = "config", matchIfMissing = true)
-	public DuplicateNodeDefinitionValidationModule duplicateNodeDefinitionValidationModule(){
-    	return new DefaultDuplicateNodeDefinitionValidationModule();
-	}
+    @Bean
+    @ConditionalOnProperty(name = "schema.translator.list", havingValue = "config", matchIfMissing = true)
+    public DuplicateNodeDefinitionValidationModule duplicateNodeDefinitionValidationModule() {
+        return new DefaultDuplicateNodeDefinitionValidationModule();
+    }
 
-	@Bean
-	@ConditionalOnProperty(name = "schema.translator.list", havingValue = "config", matchIfMissing = true)
-	public NodeValidator nodeValidator(
-			ConfigTranslator configTranslator,
-			SchemaErrorStrategy schemaErrorStrategy,
-			DuplicateNodeDefinitionValidationModule duplicateNodeDefinitionValidationModule
-	){
+    @Bean
+    @ConditionalOnProperty(name = "schema.translator.list", havingValue = "config", matchIfMissing = true)
+    public NodeValidator nodeValidator(ConfigTranslator configTranslator, SchemaErrorStrategy schemaErrorStrategy,
+            DuplicateNodeDefinitionValidationModule duplicateNodeDefinitionValidationModule) {
         return new NodeValidator(configTranslator, schemaErrorStrategy, duplicateNodeDefinitionValidationModule);
-	}
+    }
 }

@@ -17,8 +17,8 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
-package org.onap.aai.config;
 
+package org.onap.aai.config;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -31,31 +31,30 @@ public class SpringContextAware implements ApplicationContextAware {
     private static ApplicationContext context = null;
 
     public static ApplicationContext getApplicationContext() {
-    	return context;
+        return context;
     }
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-    	context = applicationContext;
+        context = applicationContext;
     }
-    
-    
-	public static <T> T getBean(String beanName, Class<T> requiredType) {
-		if(context != null){
-			return context.getBean(beanName, requiredType);
-		 }
-        return null;
-	}
 
-	public static <T> T getBean(Class<T> clazz){
-        if(context != null){
+    public static <T> T getBean(String beanName, Class<T> requiredType) {
+        if (context != null) {
+            return context.getBean(beanName, requiredType);
+        }
+        return null;
+    }
+
+    public static <T> T getBean(Class<T> clazz) {
+        if (context != null) {
             return context.getBean(clazz);
         }
         return null;
     }
 
-    public static Object getBean(String bean){
-        if(context != null){
+    public static Object getBean(String bean) {
+        if (context != null) {
             return context.getBean(bean);
         }
         return null;

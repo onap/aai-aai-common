@@ -17,24 +17,25 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.parsers.exceptions;
 
 import org.onap.aai.exceptions.AAIException;
 
 public class AAIIdentityMapParseException extends AAIException {
 
-	private static final long serialVersionUID = -888876613879411865L;
-	
-	public AAIIdentityMapParseException(String message) {
-		super("AAI_3000", message);
-	}
+    private static final long serialVersionUID = -888876613879411865L;
 
-	public AAIIdentityMapParseException(Throwable cause) {
-		super("AAI_3000",cause);
-	}
+    public AAIIdentityMapParseException(String message) {
+        super("AAI_3000", message);
+    }
 
-	public AAIIdentityMapParseException(String message, Throwable cause) {
-		super("AAI_3000", cause, message);
-	}
+    public AAIIdentityMapParseException(Throwable cause) {
+        super("AAI_3000", cause);
+    }
+
+    public AAIIdentityMapParseException(String message, Throwable cause) {
+        super("AAI_3000", cause, message);
+    }
 
 }

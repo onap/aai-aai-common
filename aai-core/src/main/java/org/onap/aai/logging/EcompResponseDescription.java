@@ -17,28 +17,30 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
-package org.onap.aai.logging;
 
-import org.onap.aai.logging.LoggingContext.LoggingField;
+package org.onap.aai.logging;
 
 import ch.qos.logback.classic.pattern.ClassicConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 
-public class EcompResponseDescription extends ClassicConverter {
-	public final static String DefaultDescription = "Unknown response/error description";
-	@Override
-	public String convert(ILoggingEvent event) {
+import org.onap.aai.logging.LoggingContext.LoggingField;
 
-		if (!event.getMDCPropertyMap().containsKey(LoggingField.RESPONSE_DESCRIPTION.toString())) {
-			return (DefaultDescription);
-		}
-		// Replace pipes and new lines
-		String currentDesc = event.getMDCPropertyMap().get(LoggingField.RESPONSE_DESCRIPTION.toString());
-		if ( (currentDesc == null) || (currentDesc.length() == 0) ) {
-			return (DefaultDescription);
-		}
-		currentDesc = currentDesc.replaceAll("|", "!");
-		currentDesc = currentDesc.replaceAll("[\\r\\n]+", "^");
-		return event.getMDCPropertyMap().get(LoggingField.RESPONSE_DESCRIPTION.toString());
-	}
+public class EcompResponseDescription extends ClassicConverter {
+    public final static String DefaultDescription = "Unknown response/error description";
+
+    @Override
+    public String convert(ILoggingEvent event) {
+
+        if (!event.getMDCPropertyMap().containsKey(LoggingField.RESPONSE_DESCRIPTION.toString())) {
+            return (DefaultDescription);
+        }
+        // Replace pipes and new lines
+        String currentDesc = event.getMDCPropertyMap().get(LoggingField.RESPONSE_DESCRIPTION.toString());
+        if ((currentDesc == null) || (currentDesc.length() == 0)) {
+            return (DefaultDescription);
+        }
+        currentDesc = currentDesc.replaceAll("|", "!");
+        currentDesc = currentDesc.replaceAll("[\\r\\n]+", "^");
+        return event.getMDCPropertyMap().get(LoggingField.RESPONSE_DESCRIPTION.toString());
+    }
 }

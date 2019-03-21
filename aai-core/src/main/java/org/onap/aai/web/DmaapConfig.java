@@ -17,7 +17,10 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.web;
+
+import javax.annotation.PostConstruct;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.broker.BrokerService;
@@ -35,8 +38,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.jms.connection.CachingConnectionFactory;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
-
-import javax.annotation.PostConstruct;
 import org.springframework.web.client.RestTemplate;
 
 @Profile("dmaap")
@@ -58,7 +59,7 @@ public class DmaapConfig {
     private String bindAddress;
 
     @PostConstruct
-    public void init(){
+    public void init() {
         System.setProperty("activemq.tcp.url", bindAddress);
     }
 
@@ -76,22 +77,22 @@ public class DmaapConfig {
     }
 
     @Bean(name = "connectionFactory")
-    public ActiveMQConnectionFactory activeMQConnectionFactory(){
+    public ActiveMQConnectionFactory activeMQConnectionFactory() {
         return new ActiveMQConnectionFactory(bindAddress);
     }
 
     @Bean
-    public CachingConnectionFactory cachingConnectionFactory(){
+    public CachingConnectionFactory cachingConnectionFactory() {
         return new CachingConnectionFactory(activeMQConnectionFactory());
     }
 
     @Bean(name = "destinationQueue")
-    public ActiveMQQueue activeMQQueue(){
+    public ActiveMQQueue activeMQQueue() {
         return new ActiveMQQueue("IN_QUEUE");
     }
 
     @Bean
-    public JmsTemplate jmsTemplate(){
+    public JmsTemplate jmsTemplate() {
         JmsTemplate jmsTemplate = new JmsTemplate();
 
         jmsTemplate.setConnectionFactory(activeMQConnectionFactory());
@@ -101,11 +102,11 @@ public class DmaapConfig {
     }
 
     @Bean
-    public AAIDmaapEventJMSProducer jmsProducer(){
+    public AAIDmaapEventJMSProducer jmsProducer() {
         return new AAIDmaapEventJMSProducer();
     }
 
-    @Bean(name="jmsConsumer")
+    @Bean(name = "jmsConsumer")
     public AAIDmaapEventJMSConsumer jmsConsumer() throws Exception {
         return new AAIDmaapEventJMSConsumer(ctx.getEnvironment(), dmaapRestTemplate, dmaapHeaders);
     }

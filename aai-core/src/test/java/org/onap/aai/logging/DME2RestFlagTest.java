@@ -17,12 +17,15 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.logging;
+
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import ch.qos.logback.access.spi.IAccessEvent;
-import org.junit.*;
 
+import ch.qos.logback.access.spi.IAccessEvent;
+
+import org.junit.*;
 
 public class DME2RestFlagTest {
 
@@ -31,51 +34,49 @@ public class DME2RestFlagTest {
 
     String[] temp = new String[4];
 
-
     @Before
     public void setUp() throws Exception {
 
         mockAccEvent = mock(IAccessEvent.class);
-        _DME2RestFlag= spy(DME2RestFlag.class);
+        _DME2RestFlag = spy(DME2RestFlag.class);
 
     }
-    private DME2RestFlag getTestObj(final boolean instanceStarted){
-        return new DME2RestFlag(){
+
+    private DME2RestFlag getTestObj(final boolean instanceStarted) {
+        return new DME2RestFlag() {
             @Override
-            public
-            boolean isStarted(){
+            public boolean isStarted() {
                 return instanceStarted;
             }
         };
     }
 
     @Test
-    public void convertTestAllValid(){
-        temp[0]= "temp1";
+    public void convertTestAllValid() {
+        temp[0] = "temp1";
         temp[1] = "-";
         when(mockAccEvent.getRequestParameter("envContext")).thenReturn(temp);
         when(mockAccEvent.getRequestParameter("routeOffer")).thenReturn(temp);
         when(mockAccEvent.getRequestParameter("version")).thenReturn(temp);
         _DME2RestFlag = getTestObj(true);
-        assertEquals(_DME2RestFlag.convert(mockAccEvent),"DME2");
+        assertEquals(_DME2RestFlag.convert(mockAccEvent), "DME2");
     }
 
     @Test
-    public void convertMissingRouteTest(){
-        temp[0]= "";
+    public void convertMissingRouteTest() {
+        temp[0] = "";
         temp[1] = "-";
         when(mockAccEvent.getRequestParameter("envContext")).thenReturn(temp);
         when(mockAccEvent.getRequestParameter("routeOffer")).thenReturn(temp);
         when(mockAccEvent.getRequestParameter("version")).thenReturn(temp);
         _DME2RestFlag = getTestObj(true);
-        assertEquals(_DME2RestFlag.convert(mockAccEvent),"REST");
+        assertEquals(_DME2RestFlag.convert(mockAccEvent), "REST");
     }
 
     @Test
-    public void convertIsStartedFalseTest(){
+    public void convertIsStartedFalseTest() {
         _DME2RestFlag = getTestObj(false);
-        assertEquals(_DME2RestFlag.convert(mockAccEvent),"INACTIVE_HEADER_CONV");
+        assertEquals(_DME2RestFlag.convert(mockAccEvent), "INACTIVE_HEADER_CONV");
     }
-
 
 }

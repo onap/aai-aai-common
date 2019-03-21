@@ -17,31 +17,27 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai;
 
-
 import org.junit.BeforeClass;
-
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.onap.aai.edges.EdgeIngestor;
 import org.onap.aai.nodes.NodeIngestor;
 import org.onap.aai.serialization.queryformats.QueryFormatTestHelper;
 import org.onap.aai.setup.SchemaLocationsBean;
-import org.onap.aai.util.AAIConstants;
 import org.onap.aai.testutils.TestUtilConfigTranslatorforEdges;
+import org.onap.aai.util.AAIConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.rules.SpringClassRule;
 import org.springframework.test.context.junit4.rules.SpringMethodRule;
 
-@ContextConfiguration(classes = {
-        SchemaLocationsBean.class,
-        TestUtilConfigTranslatorforEdges.class,
-        EdgeIngestor.class,
-        NodeIngestor.class
-})
+@ContextConfiguration(
+        classes = {SchemaLocationsBean.class, TestUtilConfigTranslatorforEdges.class, EdgeIngestor.class,
+                NodeIngestor.class})
 
 @TestPropertySource(properties = {"schemaIngestPropLoc = src/test/resources/schemaIngest/schemaIngestTest.properties"})
 public abstract class AAISetupForSwagger {
@@ -52,11 +48,9 @@ public abstract class AAISetupForSwagger {
     @Rule
     public final SpringMethodRule springMethodRule = new SpringMethodRule();
 
-   
     @Autowired
     protected NodeIngestor nodeIngestor;
-    
-    
+
     protected static final String SERVICE_NAME = "JUNIT";
 
     @BeforeClass
@@ -64,9 +58,8 @@ public abstract class AAISetupForSwagger {
         System.setProperty("AJSC_HOME", ".");
         System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
         System.setProperty("aai.service.name", SERVICE_NAME);
-        QueryFormatTestHelper.setFinalStatic(AAIConstants.class.getField("AAI_HOME_ETC_OXM"), "src/test/resources/bundleconfig-local/etc/oxm/");
+        QueryFormatTestHelper.setFinalStatic(AAIConstants.class.getField("AAI_HOME_ETC_OXM"),
+                "src/test/resources/bundleconfig-local/etc/oxm/");
     }
-    
-    
-    
+
 }

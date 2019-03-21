@@ -17,10 +17,12 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.logging;
 
 import ch.qos.logback.classic.pattern.ClassicConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
+
 import org.onap.aai.logging.LoggingContext.LoggingField;
 
 public class EcompServiceName extends ClassicConverter {
@@ -32,4 +34,3 @@ public class EcompServiceName extends ClassicConverter {
         return event.getMDCPropertyMap().get(LoggingField.SERVICE_NAME.toString());
     }
 }
-

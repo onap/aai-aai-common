@@ -17,6 +17,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.util;
 
 import static org.junit.Assert.assertEquals;
@@ -39,92 +40,92 @@ import org.onap.aai.exceptions.AAIException;
 
 public class AAIConfigTest extends AAISetup {
 
-	@BeforeClass
-	public static void setUp() throws AAIException {
-		AAIConfig.init();
-	}
+    @BeforeClass
+    public static void setUp() throws AAIException {
+        AAIConfig.init();
+    }
 
-	@Test
-	public void testGetConfigFile() {
-		String res = AAIConfig.getConfigFile();
-		assertNotNull(res);
-		assertTrue(res.endsWith("aaiconfig.properties"));
-	}
+    @Test
+    public void testGetConfigFile() {
+        String res = AAIConfig.getConfigFile();
+        assertNotNull(res);
+        assertTrue(res.endsWith("aaiconfig.properties"));
+    }
 
-	@Test
-	public void testGetStringString() {
-		String res = AAIConfig.get("aai.notificationEvent.default.sourceName", "somerandomvalue");
-		assertNotNull(res);
-		assertEquals("aai", res);
-	}
+    @Test
+    public void testGetStringString() {
+        String res = AAIConfig.get("aai.notificationEvent.default.sourceName", "somerandomvalue");
+        assertNotNull(res);
+        assertEquals("aai", res);
+    }
 
-	@Test
-	public void testGetStringStringReturnDefaultvalue() {
-		String res = AAIConfig.get("key", "result");
-		assertNotNull(res);
-		assertEquals("result", res);
-	}
+    @Test
+    public void testGetStringStringReturnDefaultvalue() {
+        String res = AAIConfig.get("key", "result");
+        assertNotNull(res);
+        assertEquals("result", res);
+    }
 
-	@Test(expected = AAIException.class)
-	public void testGetStringInvalidKey() throws AAIException {
-		AAIConfig.get("key");
-	}
+    @Test(expected = AAIException.class)
+    public void testGetStringInvalidKey() throws AAIException {
+        AAIConfig.get("key");
+    }
 
-	@Test(expected = AAIException.class)
-	public void testGetStringEmptyResponse() throws AAIException {
-		AAIConfig.get("aai.response.null");
-	}
+    @Test(expected = AAIException.class)
+    public void testGetStringEmptyResponse() throws AAIException {
+        AAIConfig.get("aai.response.null");
+    }
 
-	@Test
-	public void testGetStringReloadConfig() throws AAIException {
-		String res = AAIConfig.get("aai.config.nodename");
-		assertNotNull(res);
-		assertEquals(AAIConfig.getNodeName(), res);
-	}
+    @Test
+    public void testGetStringReloadConfig() throws AAIException {
+        String res = AAIConfig.get("aai.config.nodename");
+        assertNotNull(res);
+        assertEquals(AAIConfig.getNodeName(), res);
+    }
 
-	@Test
-	public void testGetStringPassword() throws AAIException {
-		String res = AAIConfig.get("aai.example.passwd");
-		assertNotNull(res);
-		assertEquals("changeit", res);
-	}
+    @Test
+    public void testGetStringPassword() throws AAIException {
+        String res = AAIConfig.get("aai.example.passwd");
+        assertNotNull(res);
+        assertEquals("changeit", res);
+    }
 
-	@Test(expected=NumberFormatException.class)
-	public void testGetIntInvalidInput() throws AAIException {
-		AAIConfig.getInt("aai.example.string");
-	}
+    @Test(expected = NumberFormatException.class)
+    public void testGetIntInvalidInput() throws AAIException {
+        AAIConfig.getInt("aai.example.string");
+    }
 
-	@Test
-	public void testGetInt() throws AAIException {
-		int res = AAIConfig.getInt("aai.example.int");
-		assertNotNull(res);
-		assertEquals(7748, res);
-	}
+    @Test
+    public void testGetInt() throws AAIException {
+        int res = AAIConfig.getInt("aai.example.int");
+        assertNotNull(res);
+        assertEquals(7748, res);
+    }
 
-	@Test
-	public void testGetNodeName() throws UnknownHostException {
-		InetAddress ip = InetAddress.getLocalHost();
-		String res = AAIConfig.getNodeName();
-		assertNotNull(res);
-		assertEquals(ip.getHostName(), res);
-	}
+    @Test
+    public void testGetNodeName() throws UnknownHostException {
+        InetAddress ip = InetAddress.getLocalHost();
+        String res = AAIConfig.getNodeName();
+        assertNotNull(res);
+        assertEquals(ip.getHostName(), res);
+    }
 
-	@Test
-	public void testIsEmpty() {
-		boolean res = AAIConfig.isEmpty("hllo world");
-		assertFalse(res);
-	}
+    @Test
+    public void testIsEmpty() {
+        boolean res = AAIConfig.isEmpty("hllo world");
+        assertFalse(res);
+    }
 
-	@Test
-	public void testIsEmptyEmpty() {
-		boolean res = AAIConfig.isEmpty("");
-		assertTrue(res);
-	}
+    @Test
+    public void testIsEmptyEmpty() {
+        boolean res = AAIConfig.isEmpty("");
+        assertTrue(res);
+    }
 
-	@Test
-	public void testIsEmptyNull() {
-		boolean res = AAIConfig.isEmpty(null);
-		assertTrue(res);
-	}
+    @Test
+    public void testIsEmptyNull() {
+        boolean res = AAIConfig.isEmpty(null);
+        assertTrue(res);
+    }
 
 }
