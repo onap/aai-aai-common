@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,16 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.restclient;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.security.KeyStore;
+
+import javax.annotation.PostConstruct;
+import javax.net.ssl.SSLContext;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -26,13 +35,6 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.client.RestTemplate;
-
-import javax.annotation.PostConstruct;
-import javax.net.ssl.SSLContext;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.security.KeyStore;
 
 public abstract class TwoWaySSLRestClient extends RestClient {
 
@@ -47,20 +49,15 @@ public abstract class TwoWaySSLRestClient extends RestClient {
         String keyStore = getKeystorePath();
         String trustStore = getTruststorePath();
 
-        SSLContext sslContext = SSLContextBuilder
-            .create()
+        SSLContext sslContext = SSLContextBuilder.create()
             .loadKeyMaterial(loadPfx(keyStore, keyStorePassword), keyStorePassword)
-            .loadTrustMaterial(ResourceUtils.getFile(trustStore), trustStorePassword)
-            .build();
+            .loadTrustMaterial(ResourceUtils.getFile(trustStore), trustStorePassword).build();
 
-        HttpClient client = HttpClients.custom()
-            .setSSLContext(sslContext)
-            .setSSLHostnameVerifier((s, sslSession) -> true)
-            .build();
+        HttpClient client = HttpClients.custom().setSSLContext(sslContext)
+            .setSSLHostnameVerifier((s, sslSession) -> true).build();
 
         restTemplate = new RestTemplateBuilder()
-            .requestFactory(new HttpComponentsClientHttpRequestFactory(client))
-            .build();
+            .requestFactory(new HttpComponentsClientHttpRequestFactory(client)).build();
 
         restTemplate.setErrorHandler(new RestClientResponseErrorHandler(getLogger()));
 

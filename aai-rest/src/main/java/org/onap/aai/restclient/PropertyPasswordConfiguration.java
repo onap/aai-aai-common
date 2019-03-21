@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,13 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.restclient;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -26,12 +32,8 @@ import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-public class PropertyPasswordConfiguration implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+public class PropertyPasswordConfiguration
+    implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
     private static final Pattern decodePasswordPattern = Pattern.compile("password\\((.*?)\\)");
 
@@ -44,15 +46,18 @@ public class PropertyPasswordConfiguration implements ApplicationContextInitiali
             Map<String, Object> propertyOverrides = new LinkedHashMap<>();
             decodePasswords(propertySource, propertyOverrides);
             if (!propertyOverrides.isEmpty()) {
-                PropertySource<?> decodedProperties = new MapPropertySource("decoded " + propertySource.getName(), propertyOverrides);
-                environment.getPropertySources().addBefore(propertySource.getName(), decodedProperties);
+                PropertySource<?> decodedProperties =
+                    new MapPropertySource("decoded " + propertySource.getName(), propertyOverrides);
+                environment.getPropertySources().addBefore(propertySource.getName(),
+                    decodedProperties);
             }
         }
     }
 
     private void decodePasswords(PropertySource<?> source, Map<String, Object> propertyOverrides) {
         if (source instanceof EnumerablePropertySource) {
-            EnumerablePropertySource<?> enumerablePropertySource = (EnumerablePropertySource<?>) source;
+            EnumerablePropertySource<?> enumerablePropertySource =
+                (EnumerablePropertySource<?>) source;
             for (String key : enumerablePropertySource.getPropertyNames()) {
                 Object rawValue = source.getProperty(key);
                 if (rawValue instanceof String) {
@@ -64,7 +69,8 @@ public class PropertyPasswordConfiguration implements ApplicationContextInitiali
     }
 
     private String decodePasswordsInString(String input) {
-        if (input == null) return null;
+        if (input == null)
+            return null;
         StringBuffer output = new StringBuffer();
         Matcher matcher = decodePasswordPattern.matcher(input);
         while (matcher.find()) {
