@@ -1,4 +1,4 @@
-/** 
+/**
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,9 +37,13 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {NodesConfiguration.class, BadNodeConfigForValidationTest.class,
-        CheckEverythingStrategy.class, DefaultVersionValidationModule.class, VersionValidator.class})
-@TestPropertySource(properties = { "schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-wiring-test-local.properties" })
+@ContextConfiguration(
+    classes = {NodesConfiguration.class, BadNodeConfigForValidationTest.class,
+        CheckEverythingStrategy.class, DefaultVersionValidationModule.class,
+        VersionValidator.class})
+@TestPropertySource(
+    properties = {
+        "schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-wiring-test-local.properties"})
 @SpringBootTest
 public class VersionValidatorRainyDayTest {
     @Autowired

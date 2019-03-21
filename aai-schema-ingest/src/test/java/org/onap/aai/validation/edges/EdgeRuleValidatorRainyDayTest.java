@@ -1,4 +1,4 @@
-/** 
+/**
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.onap.aai.config.NodesConfiguration;
 import org.onap.aai.nodes.NodeIngestor;
-
 import org.onap.aai.setup.SchemaVersionsBean;
 import org.onap.aai.testutils.BadEdgeConfigForValidationTest;
 import org.onap.aai.validation.CheckEverythingStrategy;
@@ -38,11 +37,15 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {NodesConfiguration.class, BadEdgeConfigForValidationTest.class,
-        CheckEverythingStrategy.class, DefaultEdgeFieldsValidationModule.class, UniqueLabelValidationModule.class,
-        SingleContainmentValidationModule.class, CousinDefaultingValidationModule.class, NodeTypesValidationModule.class,
+@ContextConfiguration(
+    classes = {NodesConfiguration.class, BadEdgeConfigForValidationTest.class,
+        CheckEverythingStrategy.class, DefaultEdgeFieldsValidationModule.class,
+        UniqueLabelValidationModule.class, SingleContainmentValidationModule.class,
+        CousinDefaultingValidationModule.class, NodeTypesValidationModule.class,
         EdgeRuleValidator.class})
-@TestPropertySource(properties = { "schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-wiring-test-local.properties" })
+@TestPropertySource(
+    properties = {
+        "schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-wiring-test-local.properties"})
 @SpringBootTest
 public class EdgeRuleValidatorRainyDayTest {
     @Autowired
@@ -50,11 +53,12 @@ public class EdgeRuleValidatorRainyDayTest {
 
     @Test
     public void test() {
-        assertNotNull(validator); //verify spring wiring OK
+        assertNotNull(validator); // verify spring wiring OK
         assertFalse(validator.validate());
         String errors = validator.getErrorMsg();
         assertTrue(errors.contains("missing required fields: delete-other-v"));
-        assertTrue(errors.contains("has multiple rules using the same label: org.onap.relationships.inventory.Source"));
+        assertTrue(errors.contains(
+            "has multiple rules using the same label: org.onap.relationships.inventory.Source"));
         assertTrue(errors.contains("Invalid node type(s) found: gooble"));
     }
 }

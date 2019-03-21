@@ -10,7 +10,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,6 +19,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.config;
 
 import org.onap.aai.restclient.*;
@@ -59,21 +60,25 @@ public class RestConfiguration {
     }
 
     /*
-    In the below cases bean name and method names are different because all of them qualify as restClient
+     * In the below cases bean name and method names are different because all of them qualify as
+     * restClient
      */
-    @Bean(name="restClient")
-    @ConditionalOnProperty(name = "schema.service.client", havingValue = "two-way-ssl", matchIfMissing = true)
+    @Bean(name = "restClient")
+    @ConditionalOnProperty(
+        name = "schema.service.client",
+        havingValue = "two-way-ssl",
+        matchIfMissing = true)
     public RestClient getSchemaServiceTwoWayClient() {
         return new SchemaServiceRestClient();
     }
 
-    @Bean(name="restClient")
+    @Bean(name = "restClient")
     @ConditionalOnProperty(name = "schema.service.client", havingValue = "no-auth")
     public RestClient getSchemaServiceNoAuthClient() {
         return new SchemaServiceNoAuthClient();
     }
 
-    @Bean(name="restClient")
+    @Bean(name = "restClient")
     @ConditionalOnProperty(name = "schema.service.client", havingValue = "one-way-ssl")
     public RestClient getSchemaServiceOneWayClient() {
         return new SchemaServiceOneWayClient();

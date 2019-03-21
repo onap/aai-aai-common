@@ -10,7 +10,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,23 +19,26 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.restclient;
 
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
+
+import java.util.Collections;
+import java.util.Map;
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.UUID;
-
 @Component(value = "schema-service-rest-client")
 public class SchemaServiceRestClient extends TwoWaySSLRestClient {
-    private static EELFLogger logger = EELFManager.getInstance().getLogger(SchemaServiceRestClient.class);
+    private static EELFLogger logger =
+        EELFManager.getInstance().getLogger(SchemaServiceRestClient.class);
 
     @Value("${schema.service.base.url}")
     private String baseUrl;
@@ -54,7 +57,7 @@ public class SchemaServiceRestClient extends TwoWaySSLRestClient {
 
     @Override
     public String getBaseUrl() {
-       return baseUrl;
+        return baseUrl;
     }
 
     @Override
@@ -81,11 +84,14 @@ public class SchemaServiceRestClient extends TwoWaySSLRestClient {
     public MultiValueMap<String, String> getHeaders(Map<String, String> headers) {
         HttpHeaders httpHeaders = new HttpHeaders();
 
-        String defaultAccept = headers.getOrDefault(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON.toString());
-        String defaultContentType = headers.getOrDefault(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON.toString());
+        String defaultAccept =
+            headers.getOrDefault(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON.toString());
+        String defaultContentType =
+            headers.getOrDefault(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON.toString());
 
         if (headers.isEmpty()) {
-            httpHeaders.setAccept(Collections.singletonList(MediaType.parseMediaType(defaultAccept)));
+            httpHeaders
+                .setAccept(Collections.singletonList(MediaType.parseMediaType(defaultAccept)));
             httpHeaders.setContentType(MediaType.parseMediaType(defaultContentType));
         }
 

@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,25 +25,18 @@ package org.onap.aai.edges.enums;
  *
  */
 public enum EdgeField {
-	FROM("from"),
-	TO("to"),
-	LABEL("label"),
-	DIRECTION("direction"),
-	MULTIPLICITY("multiplicity"),
-	CONTAINS("contains-other-v"),
-	DELETE_OTHER_V("delete-other-v"),
-	PREVENT_DELETE("prevent-delete"),
-	DEFAULT("default"),
-	PRIVATE("private"),
-	DESCRIPTION("description");
-	private final String name;
+    FROM("from"), TO("to"), LABEL("label"), DIRECTION("direction"), MULTIPLICITY(
+        "multiplicity"), CONTAINS("contains-other-v"), DELETE_OTHER_V(
+            "delete-other-v"), PREVENT_DELETE("prevent-delete"), DEFAULT(
+                "default"), PRIVATE("private"), DESCRIPTION("description");
+    private final String name;
 
-	private EdgeField(String name) {
-		this.name = name;
-	}
+    private EdgeField(String name) {
+        this.name = name;
+    }
 
-	@Override
-	public String toString() {
-		return name;
-	}
+    @Override
+    public String toString() {
+        return name;
+    }
 }

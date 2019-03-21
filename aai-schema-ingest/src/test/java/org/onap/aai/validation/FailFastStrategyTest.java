@@ -1,4 +1,4 @@
-/** 
+/**
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,16 +31,16 @@ import org.onap.aai.validation.FailFastStrategy;
 public class FailFastStrategyTest {
     @Rule
     public ExpectedException thrown = ExpectedException.none();
-    
+
     @Test
     public void test() {
         FailFastStrategy strat = new FailFastStrategy();
-        
-        //simulate no issues found
+
+        // simulate no issues found
         assertTrue(strat.isOK());
         assertTrue("No errors found.".equals(strat.getErrorMsg()));
-        
-        //simulate an issue found
+
+        // simulate an issue found
         String testError = "hi i'm a problem";
         thrown.expect(AAISchemaValidationException.class);
         thrown.expectMessage(testError);

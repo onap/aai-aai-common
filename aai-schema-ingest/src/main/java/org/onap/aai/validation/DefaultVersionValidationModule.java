@@ -1,4 +1,4 @@
-/** 
+/**
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,6 +21,7 @@
 /**
  * 
  */
+
 package org.onap.aai.validation;
 
 import java.util.List;
@@ -41,21 +42,25 @@ public class DefaultVersionValidationModule implements VersionValidationModule {
 
     private ConfigTranslator config;
 
-	@Autowired
-	public DefaultVersionValidationModule(ConfigTranslator config) {
+    @Autowired
+    public DefaultVersionValidationModule(ConfigTranslator config) {
 
-	    this.config = config;
-	}
+        this.config = config;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.onap.aai.validation.VersionValidationModule#validate(org.onap.aai.setup.ConfigTranslator)
-	 */
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.onap.aai.validation.VersionValidationModule#validate(org.onap.aai.setup.ConfigTranslator)
+     */
     @Override
     public String validate() {
         Map<SchemaVersion, List<String>> nodeConfig = config.getNodeFiles();
         Map<SchemaVersion, List<String>> edgeConfig = config.getEdgeFiles();
 
-        StringBuilder missingVers = new StringBuilder().append("Missing schema for the following versions: ");
+        StringBuilder missingVers =
+            new StringBuilder().append("Missing schema for the following versions: ");
         boolean isMissing = false;
         for (SchemaVersion v : config.getSchemaVersions().getVersions()) {
             if (nodeConfig.get(v) == null) {

@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,23 +17,21 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.edges.enums;
 
 public enum MultiplicityRule {
-	MANY2ONE,
-	ONE2MANY,
-	ONE2ONE,
-	MANY2MANY;
-	
-	public static MultiplicityRule getValue(String multiplicity) {
-		if ("Many2Many".equalsIgnoreCase(multiplicity)) {
-			return MANY2MANY;
-		} else if ("One2Many".equalsIgnoreCase(multiplicity)) {
-			return ONE2MANY;
-		} else if ("One2One".equalsIgnoreCase(multiplicity)) {
-			return ONE2ONE;
-		} else { //should be "Many2One"
-			return MANY2ONE;
-		}
-	}
+    MANY2ONE, ONE2MANY, ONE2ONE, MANY2MANY;
+
+    public static MultiplicityRule getValue(String multiplicity) {
+        if ("Many2Many".equalsIgnoreCase(multiplicity)) {
+            return MANY2MANY;
+        } else if ("One2Many".equalsIgnoreCase(multiplicity)) {
+            return ONE2MANY;
+        } else if ("One2One".equalsIgnoreCase(multiplicity)) {
+            return ONE2ONE;
+        } else { // should be "Many2One"
+            return MANY2ONE;
+        }
+    }
 }

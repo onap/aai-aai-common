@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,17 +25,16 @@ package org.onap.aai.edges.enums;
  * (ie which have a directional value)
  */
 public enum EdgeProperty {
-	CONTAINS("contains-other-v"),
-	DELETE_OTHER_V("delete-other-v"),
-	PREVENT_DELETE("prevent-delete");
-	private final String name;
+    CONTAINS("contains-other-v"), DELETE_OTHER_V("delete-other-v"), PREVENT_DELETE(
+        "prevent-delete");
+    private final String name;
 
-	private EdgeProperty(String name) {
-		this.name = name;
-	}
+    private EdgeProperty(String name) {
+        this.name = name;
+    }
 
-	@Override
-	public String toString() {
-		return name;
-	}
+    @Override
+    public String toString() {
+        return name;
+    }
 }

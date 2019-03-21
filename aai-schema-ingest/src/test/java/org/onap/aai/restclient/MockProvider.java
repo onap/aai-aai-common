@@ -17,6 +17,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.restclient;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +28,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
 @Configuration
-@PropertySource(value = "classpath:schema-ingest.properties", ignoreResourceNotFound=true)
-@PropertySource(value = "file:${schema.ingest.file}", ignoreResourceNotFound=true)
+@PropertySource(value = "classpath:schema-ingest.properties", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${schema.ingest.file}", ignoreResourceNotFound = true)
 public class MockProvider {
 
     @Value("${mock.filename}")
@@ -49,10 +50,9 @@ public class MockProvider {
         };
     }
 
-    @Bean(name="restClient")
+    @Bean(name = "restClient")
     @ConditionalOnProperty(name = "schema.service.client", havingValue = "mock-no-auth")
     public RestClient getSchemaServiceNoAuthClient() {
         return new MockRestClient(fileName);
     }
 }
-

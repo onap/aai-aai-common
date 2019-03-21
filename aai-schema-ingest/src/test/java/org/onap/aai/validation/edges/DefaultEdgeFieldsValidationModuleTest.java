@@ -1,4 +1,4 @@
-/** 
+/**
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -39,7 +39,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class DefaultEdgeFieldsValidationModuleTest {
     @Autowired
     EdgeFieldsValidationModule validator;
-    
+
     @Test
     public void test() {
         Map<String, String> test = new HashMap<>();
@@ -47,15 +47,17 @@ public class DefaultEdgeFieldsValidationModuleTest {
             test.put(f.toString(), "test");
         }
         assertTrue("".equals(validator.verifyFields(test)));
-        
+
         test.remove(EdgeField.DESCRIPTION.toString());
-        assertTrue("".equals(validator.verifyFields(test))); //bc description is optional
-        
+        assertTrue("".equals(validator.verifyFields(test))); // bc description is optional
+
         test.remove(EdgeField.CONTAINS.toString());
-        assertTrue(validator.verifyFields(test).contains("missing required fields: contains-other-v"));
-        
+        assertTrue(
+            validator.verifyFields(test).contains("missing required fields: contains-other-v"));
+
         test.remove(EdgeField.FROM.toString());
-        assertTrue(validator.verifyFields(test).contains("missing required fields: from contains-other-v"));
+        assertTrue(validator.verifyFields(test)
+            .contains("missing required fields: from contains-other-v"));
     }
 
 }

@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +17,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.edges;
 
 import static org.junit.Assert.*;
@@ -44,12 +45,12 @@ public class EdgeRuleTest {
         rule.put("private", "true");
 
         EdgeRule r = new EdgeRule(rule);
-        
+
         r.flipDirection();
         assertTrue(Direction.IN.equals(r.getDirection()));
         r.flipDirection();
         assertTrue(Direction.OUT.equals(r.getDirection()));
-        
+
         rule.put("direction", "BOTH");
         EdgeRule r2 = new EdgeRule(rule);
         r2.flipDirection();

@@ -1,4 +1,4 @@
-/** 
+/**
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,6 +21,7 @@
 /**
  * 
  */
+
 package org.onap.aai.validation;
 
 /**
@@ -29,33 +30,39 @@ package org.onap.aai.validation;
  * process to abort.
  */
 public class FailFastStrategy implements SchemaErrorStrategy {
-	private boolean isOK = true;
-	private String errorMsg = "No errors found.";
+    private boolean isOK = true;
+    private String errorMsg = "No errors found.";
 
-	/* (non-Javadoc)
-	 * @see org.onap.aai.edges.validation.SchemaErrorStrategy#isOK()
-	 */
-	@Override
-	public boolean isOK() {
-		return isOK;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.onap.aai.edges.validation.SchemaErrorStrategy#isOK()
+     */
+    @Override
+    public boolean isOK() {
+        return isOK;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.onap.aai.edges.validation.SchemaErrorStrategy#getErrorMsg()
-	 */
-	@Override
-	public String getErrorMsg() {
-		return errorMsg;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.onap.aai.edges.validation.SchemaErrorStrategy#getErrorMsg()
+     */
+    @Override
+    public String getErrorMsg() {
+        return errorMsg;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.onap.aai.edges.validation.SchemaErrorStrategy#notifyOnError(java.lang.String)
-	 */
-	@Override
-	public void notifyOnError(String errorMsg) {
-		isOK = false;
-		this.errorMsg = errorMsg;
-		throw new AAISchemaValidationException(errorMsg);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.onap.aai.edges.validation.SchemaErrorStrategy#notifyOnError(java.lang.String)
+     */
+    @Override
+    public void notifyOnError(String errorMsg) {
+        isOK = false;
+        this.errorMsg = errorMsg;
+        throw new AAISchemaValidationException(errorMsg);
+    }
 
 }

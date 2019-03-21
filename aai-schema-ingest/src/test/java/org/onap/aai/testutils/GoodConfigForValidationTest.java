@@ -1,4 +1,4 @@
-/** 
+/**
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,15 +20,15 @@
 
 package org.onap.aai.testutils;
 
-import org.onap.aai.setup.ConfigTranslator;
-import org.onap.aai.setup.SchemaLocationsBean;
-import org.onap.aai.setup.SchemaVersion;
-import org.onap.aai.setup.SchemaVersions;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+
+import org.onap.aai.setup.ConfigTranslator;
+import org.onap.aai.setup.SchemaLocationsBean;
+import org.onap.aai.setup.SchemaVersion;
+import org.onap.aai.setup.SchemaVersions;
 
 /**
  * All schema files here are valid for sunny day validator testing
@@ -47,7 +47,7 @@ public class GoodConfigForValidationTest extends ConfigTranslator {
         List<String> files = new ArrayList<>();
         files.add("src/test/resources/oxm/goodConfigForValidationTest_oxm.xml");
         Map<SchemaVersion, List<String>> input = new TreeMap<>();
-        //input.put(SchemaVersion.getLatest(), files);
+        // input.put(SchemaVersion.getLatest(), files);
         for (SchemaVersion v : schemaVersions.getVersions()) {
             input.put(v, files);
         }
@@ -59,12 +59,11 @@ public class GoodConfigForValidationTest extends ConfigTranslator {
         Map<SchemaVersion, List<String>> input = new TreeMap<>();
         List<String> files = new ArrayList<>();
         files.add("src/test/resources/edgeRules/test3.json");
-        //input.put(SchemaVersion.getLatest(), files);
+        // input.put(SchemaVersion.getLatest(), files);
         for (SchemaVersion v : schemaVersions.getVersions()) {
             input.put(v, files);
         }
         return input;
     }
 
-    
 }

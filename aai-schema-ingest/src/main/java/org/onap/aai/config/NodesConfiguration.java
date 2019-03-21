@@ -10,7 +10,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,10 +19,17 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.config;
 
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.onap.aai.nodes.NodeIngestor;
 import org.onap.aai.setup.SchemaVersions;
 import org.onap.aai.setup.Translator;
@@ -33,12 +40,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-@Import({SchemaServiceConfiguration.class, ConfigConfiguration.class, TranslatorConfiguration.class})
+@Import({SchemaServiceConfiguration.class, ConfigConfiguration.class,
+    TranslatorConfiguration.class})
 @PropertySource(value = "classpath:schema-ingest.properties", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${schema.ingest.file}", ignoreResourceNotFound = true)
 @Configuration
@@ -46,7 +49,8 @@ public class NodesConfiguration {
 
     private static final String CONFIG_TRANSLATOR = "config";
     private static final String SCHEMA_SERVICE_TRANSLATOR = "schema-service";
-    private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(NodesConfiguration.class);
+    private static final EELFLogger LOGGER =
+        EELFManager.getInstance().getLogger(NodesConfiguration.class);
 
     @Autowired(required = false)
     SchemaServiceConfiguration schemaConfiguration;

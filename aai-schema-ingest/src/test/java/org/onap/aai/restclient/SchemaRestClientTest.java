@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,11 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.restclient;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -31,13 +35,12 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @Ignore
 @RunWith(SpringJUnit4ClassRunner.class)
-@TestPropertySource(locations = "/schemaService/schema-service-rest.properties" )
-@ContextConfiguration(classes = {RestClientFactoryConfiguration.class, SchemaServiceRestClient.class, RestClientFactory.class, PropertyPasswordConfiguration.class})
+@TestPropertySource(locations = "/schemaService/schema-service-rest.properties")
+@ContextConfiguration(
+    classes = {RestClientFactoryConfiguration.class, SchemaServiceRestClient.class,
+        RestClientFactory.class, PropertyPasswordConfiguration.class})
 
 @SpringBootTest
 public class SchemaRestClientTest {
@@ -47,21 +50,16 @@ public class SchemaRestClientTest {
     private RestClientFactory restClientFactory;
 
     @Test
-    public void  testGetRequestToSchemaService() {
+    public void testGetRequestToSchemaService() {
         ResponseEntity aaiResponse;
         RestClient restClient = null;
 
-            restClient = restClientFactory
-                .getRestClient(SCHEMA_SERVICE);
+        restClient = restClientFactory.getRestClient(SCHEMA_SERVICE);
 
         String uri = "";
         Map<String, String> headersMap = new HashMap<>();
         String content = "";
-        aaiResponse = restClient.execute(
-            uri,
-            HttpMethod.GET,
-            headersMap,
-            content);
-        System.out.println("Helo"+aaiResponse.getStatusCode());
+        aaiResponse = restClient.execute(uri, HttpMethod.GET, headersMap, content);
+        System.out.println("Helo" + aaiResponse.getStatusCode());
     }
 }

@@ -1,4 +1,4 @@
-/** 
+/**
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,14 +22,14 @@ package org.onap.aai.validation.edges;
 
 import static org.junit.Assert.*;
 
+import com.jayway.jsonpath.DocumentContext;
+
 import java.util.*;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onap.aai.edges.JsonIngestor;
 import org.onap.aai.setup.SchemaVersion;
-
-import com.jayway.jsonpath.DocumentContext;
 
 public class SingleContainmentValidationModuleTest {
     private static List<DocumentContext> ctxs;
@@ -42,7 +42,7 @@ public class SingleContainmentValidationModuleTest {
         List<String> testFiles = new ArrayList<>();
         testFiles.add("src/test/resources/edgeRules/containsValidationTest.json");
         testRules.put(LATEST, testFiles);
-        
+
         JsonIngestor ji = new JsonIngestor();
         ctxs = ji.ingest(testRules).get(LATEST);
         validator = new SingleContainmentValidationModule();
@@ -57,7 +57,7 @@ public class SingleContainmentValidationModuleTest {
     public void testValidWithNone() {
         assertTrue("".equals(validator.validate("bread|cheese", ctxs)));
     }
-    
+
     @Test
     public void testInvalid() {
         assertTrue(validator.validate("box|cat", ctxs).contains("has multiple containment rules"));

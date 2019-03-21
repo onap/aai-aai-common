@@ -1,4 +1,4 @@
-/** 
+/**
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,7 +30,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.onap.aai.config.NodesConfiguration;
 import org.onap.aai.nodes.NodeIngestor;
-
 import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.setup.SchemaVersionsBean;
 import org.onap.aai.testutils.TestUtilConfigTranslator;
@@ -41,8 +40,12 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {NodesConfiguration.class, TestUtilConfigTranslator.class, NodeTypesValidationModule.class})
-@TestPropertySource(properties = { "schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-wiring-test-local.properties" })
+@ContextConfiguration(
+    classes = {NodesConfiguration.class, TestUtilConfigTranslator.class,
+        NodeTypesValidationModule.class})
+@TestPropertySource(
+    properties = {
+        "schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-wiring-test-local.properties"})
 @SpringBootTest
 public class NodeTypesValidationModuleTest {
     @Autowired
@@ -55,7 +58,8 @@ public class NodeTypesValidationModuleTest {
         testPairs.add("foo|foo");
         testPairs.add("foo|quux");
         assertTrue("".equals(validator.validate(testPairs, new SchemaVersion("v11"))));
-        assertTrue(validator.validate(testPairs, new SchemaVersion("v10")).contains("Invalid node type(s) found: quux")); //bc no quux in v10
+        assertTrue(validator.validate(testPairs, new SchemaVersion("v10"))
+            .contains("Invalid node type(s) found: quux")); // bc no quux in v10
     }
 
     @Test
@@ -64,6 +68,8 @@ public class NodeTypesValidationModuleTest {
         testPairs.add("bar|");
         testPairs.add("|foo");
         testPairs.add("|");
-        assertTrue("".equals(validator.validate(testPairs, new SchemaVersion("v11")))); //bc empty just ignored
+        assertTrue("".equals(validator.validate(testPairs, new SchemaVersion("v11")))); // bc empty
+                                                                                        // just
+                                                                                        // ignored
     }
 }

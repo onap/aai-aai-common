@@ -1,4 +1,4 @@
-/** 
+/**
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,28 +33,29 @@ import org.springframework.stereotype.Component;
 public class NodeValidator {
 
     private ConfigTranslator translator;
-	private SchemaErrorStrategy strat;
-	private DuplicateNodeDefinitionValidationModule dupChecker;
+    private SchemaErrorStrategy strat;
+    private DuplicateNodeDefinitionValidationModule dupChecker;
 
-	@Autowired
-	public NodeValidator( ConfigTranslator translator, SchemaErrorStrategy strategy, DuplicateNodeDefinitionValidationModule dupChecker) {
+    @Autowired
+    public NodeValidator(ConfigTranslator translator, SchemaErrorStrategy strategy,
+        DuplicateNodeDefinitionValidationModule dupChecker) {
         this.translator = translator;
-		this.strat = strategy;
-		this.dupChecker = dupChecker;
-	}
-	
-	public boolean validate() {
-		
-		for(Entry<SchemaVersion, List<String>> entry : translator.getNodeFiles().entrySet()) {
-			String result = dupChecker.findDuplicates(entry.getValue(), entry.getKey());
-			if (!"".equals(result)) {
-				strat.notifyOnError(result);
-			}
-		}
-		return strat.isOK();
-	}
-	
-	public String getErrorMsg() {
-		return strat.getErrorMsg();
-	}
+        this.strat = strategy;
+        this.dupChecker = dupChecker;
+    }
+
+    public boolean validate() {
+
+        for (Entry<SchemaVersion, List<String>> entry : translator.getNodeFiles().entrySet()) {
+            String result = dupChecker.findDuplicates(entry.getValue(), entry.getKey());
+            if (!"".equals(result)) {
+                strat.notifyOnError(result);
+            }
+        }
+        return strat.isOK();
+    }
+
+    public String getErrorMsg() {
+        return strat.getErrorMsg();
+    }
 }

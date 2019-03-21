@@ -1,4 +1,4 @@
-/** 
+/**
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,25 +29,25 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class VersionValidator {
-	private SchemaErrorStrategy strat;
-	private VersionValidationModule verMod;
-	
-	@Autowired
-	public VersionValidator(SchemaErrorStrategy strategy, VersionValidationModule verMod) {
-		this.strat = strategy;
-		this.verMod = verMod;
-	}
-	
-	public boolean validate() {
-		String result = verMod.validate();
-		if (!"".equals(result)) {
-			strat.notifyOnError(result);
-		}
-		
-		return strat.isOK();
-	}
-	
-	public String getErrorMsg() {
-		return strat.getErrorMsg();
-	}
+    private SchemaErrorStrategy strat;
+    private VersionValidationModule verMod;
+
+    @Autowired
+    public VersionValidator(SchemaErrorStrategy strategy, VersionValidationModule verMod) {
+        this.strat = strategy;
+        this.verMod = verMod;
+    }
+
+    public boolean validate() {
+        String result = verMod.validate();
+        if (!"".equals(result)) {
+            strat.notifyOnError(result);
+        }
+
+        return strat.isOK();
+    }
+
+    public String getErrorMsg() {
+        return strat.getErrorMsg();
+    }
 }

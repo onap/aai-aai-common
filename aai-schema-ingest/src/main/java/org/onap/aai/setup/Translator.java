@@ -1,4 +1,4 @@
-/** 
+/**
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,10 +20,11 @@
 
 package org.onap.aai.setup;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import java.io.*;
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
 /**
  * Converts the contents of the schema config file
  * (which lists which schema files to be loaded) to
@@ -32,36 +33,34 @@ import java.util.List;
  */
 public abstract class Translator {
 
-	protected SchemaVersions schemaVersions;
+    protected SchemaVersions schemaVersions;
 
-	public Translator(SchemaVersions schemaVersions) {
-		this.schemaVersions = schemaVersions;
-	}
-	
-	/**
-	 * Translates the contents of the schema config file
-	 * into the input for the NodeIngestor
-	 * 
-	 * @return Map of Version to the list of (string) filenames to be 
-	 * ingested for that version
-	 */
+    public Translator(SchemaVersions schemaVersions) {
+        this.schemaVersions = schemaVersions;
+    }
 
+    /**
+     * Translates the contents of the schema config file
+     * into the input for the NodeIngestor
+     * 
+     * @return Map of Version to the list of (string) filenames to be
+     *         ingested for that version
+     */
 
-    public abstract List<InputStream> getVersionNodeStream(SchemaVersion version) throws IOException;
+    public abstract List<InputStream> getVersionNodeStream(SchemaVersion version)
+        throws IOException;
 
-    public abstract List<String>
-    getJsonPayload(SchemaVersion version) throws IOException;
+    public abstract List<String> getJsonPayload(SchemaVersion version) throws IOException;
 
-	/**
-	 * Translates the contents of the schema config file
-	 * into the input for the EdgeIngestor
-	 * 
-	 * @return Map of Version to the List of (String) filenames to be 
-	 * ingested for that version
-	 */
+    /**
+     * Translates the contents of the schema config file
+     * into the input for the EdgeIngestor
+     * 
+     * @return Map of Version to the List of (String) filenames to be
+     *         ingested for that version
+     */
 
-
-	public SchemaVersions getSchemaVersions(){
+    public SchemaVersions getSchemaVersions() {
         return this.schemaVersions;
-	}
+    }
 }

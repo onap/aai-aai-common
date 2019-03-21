@@ -10,7 +10,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,6 +25,20 @@ package org.onap.aai.nodes;
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 import com.google.common.base.CaseFormat;
+
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.annotation.PostConstruct;
+import javax.xml.XMLConstants;
+import javax.xml.bind.JAXBException;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
@@ -40,27 +54,16 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import javax.annotation.PostConstruct;
-import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBException;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 @Component
 /*
-  NodeIngestor - ingests A&AI OXM files per given config, serves DynamicJAXBContext per version
+ * NodeIngestor - ingests A&AI OXM files per given config, serves DynamicJAXBContext per version
  */
-@PropertySource(value = "classpath:schema-ingest.properties", ignoreResourceNotFound=true)
-@PropertySource(value = "file:${schema.ingest.file}", ignoreResourceNotFound=true)
+@PropertySource(value = "classpath:schema-ingest.properties", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${schema.ingest.file}", ignoreResourceNotFound = true)
 public class NodeIngestor {
 
-    private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(NodeIngestor.class);
+    private static final EELFLogger LOGGER =
+        EELFManager.getInstance().getLogger(NodeIngestor.class);
     private static final Pattern classNamePattern = Pattern.compile("\\.(v\\d+)\\.");
     Map<SchemaVersion, List<String>> filesToIngest;
     private Map<SchemaVersion, DynamicJAXBContext> versionContextMap = new TreeMap<>();
@@ -69,16 +72,16 @@ public class NodeIngestor {
     private String localSchema;
     private SchemaVersions schemaVersions;
     private Set<Translator> translators;
-    
-    //TODO : See if you can get rid of InputStream resets
-     /**
+
+    // TODO : See if you can get rid of InputStream resets
+    /**
      * Instantiates the NodeIngestor bean.
      *
-     * @param  - ConfigTranslator autowired in by Spring framework which
-     * contains the configuration information needed to ingest the desired files.
+     * @param - ConfigTranslator autowired in by Spring framework which
+     *        contains the configuration information needed to ingest the desired files.
      */
 
-     @Autowired
+    @Autowired
     public NodeIngestor(Set<Translator> translatorSet) {
         LOGGER.debug("Local Schema files will be fetched");
         this.translators = translatorSet;
@@ -97,7 +100,8 @@ public class NodeIngestor {
                 continue;
             }
         }
-        if (versionContextMap.isEmpty() || schemaPerVersion.isEmpty() || typesPerVersion.isEmpty()) {
+        if (versionContextMap.isEmpty() || schemaPerVersion.isEmpty()
+            || typesPerVersion.isEmpty()) {
             throw new ExceptionInInitializerError("NodeIngestor could not ingest schema");
         }
     }
@@ -107,7 +111,7 @@ public class NodeIngestor {
             this.localSchema = "true";
         }
 
-	    Boolean retrieveLocalSchema = Boolean.parseBoolean(this.localSchema);
+        Boolean retrieveLocalSchema = Boolean.parseBoolean(this.localSchema);
         /*
          * Set this to default schemaVersion
          */
@@ -120,8 +124,8 @@ public class NodeIngestor {
                 List<InputStream> inputStreams = retrieveOXM(version, translator);
                 LOGGER.debug("Retrieved OXMs from SchemaService");
                 /*
-                IOUtils.copy and copy the inputstream
-                */
+                 * IOUtils.copy and copy the inputstream
+                 */
                 if (inputStreams.isEmpty()) {
                     continue;
                 }
@@ -129,7 +133,8 @@ public class NodeIngestor {
                 final DynamicJAXBContext ctx = ingest(inputStreams);
                 versionContextMap.put(version, ctx);
                 typesPerVersion.put(version, getAllNodeTypes(inputStreams));
-                schemaPerVersion.put(version, createCombinedSchema(inputStreams, version, retrieveLocalSchema));
+                schemaPerVersion.put(version,
+                    createCombinedSchema(inputStreams, version, retrieveLocalSchema));
             }
         } catch (JAXBException | ParserConfigurationException | SAXException | IOException e) {
             throw new ExceptionInInitializerError(e);
@@ -149,18 +154,20 @@ public class NodeIngestor {
         Map<String, Object> properties = new HashMap<>();
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, inputStreams);
         LOGGER.debug("Ingested the InputStream");
-        return DynamicJAXBContextFactory.createContextFromOXM(this.getClass().getClassLoader(), properties);
+        return DynamicJAXBContextFactory.createContextFromOXM(this.getClass().getClassLoader(),
+            properties);
     }
 
-    private Set<String> getAllNodeTypes(List<InputStream> inputStreams) throws ParserConfigurationException, SAXException, IOException {
-        //Reset the InputStream to reset the offset to inital position
+    private Set<String> getAllNodeTypes(List<InputStream> inputStreams)
+        throws ParserConfigurationException, SAXException, IOException {
+        // Reset the InputStream to reset the offset to inital position
         Set<String> types = new HashSet<>();
         final DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         docFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
         final DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 
         for (InputStream inputStream : inputStreams) {
-            //TODO Change this
+            // TODO Change this
             inputStream.reset();
             final Document doc = docBuilder.parse(inputStream);
             final NodeList list = doc.getElementsByTagName("java-type");
@@ -175,7 +182,8 @@ public class NodeIngestor {
         return types;
     }
 
-    private Document createCombinedSchema(List<InputStream> inputStreams, SchemaVersion version, boolean localSchema) throws ParserConfigurationException, SAXException, IOException {
+    private Document createCombinedSchema(List<InputStream> inputStreams, SchemaVersion version,
+        boolean localSchema) throws ParserConfigurationException, SAXException, IOException {
         if (localSchema) {
             return createCombinedSchema(inputStreams, version);
         }
@@ -188,14 +196,16 @@ public class NodeIngestor {
         return masterDocBuilder.parse(inputStream);
     }
 
-    private Document createCombinedSchema(List<InputStream> inputStreams, SchemaVersion version) throws ParserConfigurationException, SAXException, IOException {
+    private Document createCombinedSchema(List<InputStream> inputStreams, SchemaVersion version)
+        throws ParserConfigurationException, SAXException, IOException {
         final DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         docFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
         final DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
         DocumentBuilder masterDocBuilder = docFactory.newDocumentBuilder();
         Document combinedDoc = masterDocBuilder.parse(getShell(version));
         NodeList masterList = combinedDoc.getElementsByTagName("java-types");
-        Node javaTypesContainer = masterList.getLength() == 0 ? combinedDoc.getDocumentElement() : masterList.item(0);
+        Node javaTypesContainer =
+            masterList.getLength() == 0 ? combinedDoc.getDocumentElement() : masterList.item(0);
 
         for (InputStream inputStream : inputStreams) {
             inputStream.reset();
@@ -244,7 +254,6 @@ public class NodeIngestor {
         return schemaPerVersion.get(v);
     }
 
-
     public SchemaVersion getVersionFromClassName(String classname) {
         Matcher m = classNamePattern.matcher(classname);
         if (m.find()) {
@@ -255,23 +264,23 @@ public class NodeIngestor {
         }
     }
 
-    private List<InputStream> retrieveOXM(SchemaVersion version, Translator translator) throws IOException {
-	    /*
-	    Call Schema MS to get versions using RestTemplate or Local
-	     */
+    private List<InputStream> retrieveOXM(SchemaVersion version, Translator translator)
+        throws IOException {
+        /*
+         * Call Schema MS to get versions using RestTemplate or Local
+         */
         return translator.getVersionNodeStream(version);
 
     }
 
     private InputStream getShell(SchemaVersion v) {
-        String source = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-            "<xml-bindings xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence/oxm\" package-name=\"inventory.aai.onap.org." + v.toString().toLowerCase() + "\" xml-mapping-metadata-complete=\"true\">\n" +
-            "	<xml-schema element-form-default=\"QUALIFIED\">\n" +
-            "		<xml-ns namespace-uri=\"http://org.onap.aai.inventory/" + v.toString().toLowerCase() + "\" />\n" +
-            "	</xml-schema>\n" +
-            "	<java-types>\n" +
-            "	</java-types>\n" +
-            "</xml-bindings>";
+        String source = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+            + "<xml-bindings xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence/oxm\" package-name=\"inventory.aai.onap.org."
+            + v.toString().toLowerCase() + "\" xml-mapping-metadata-complete=\"true\">\n"
+            + "	<xml-schema element-form-default=\"QUALIFIED\">\n"
+            + "		<xml-ns namespace-uri=\"http://org.onap.aai.inventory/"
+            + v.toString().toLowerCase() + "\" />\n" + "	</xml-schema>\n" + "	<java-types>\n"
+            + "	</java-types>\n" + "</xml-bindings>";
         return new ByteArrayInputStream(source.getBytes(StandardCharsets.UTF_8));
     }
 }

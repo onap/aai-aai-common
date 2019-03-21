@@ -1,4 +1,4 @@
-/** 
+/**
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,23 +19,6 @@
  */
 
 package org.onap.aai.validation.nodes;
-
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
-import org.onap.aai.config.NodesConfiguration;
-import org.onap.aai.nodes.NodeIngestor;
-
-import org.onap.aai.setup.SchemaVersion;
-
-import org.onap.aai.testutils.SchemaIncompleteTranslator;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.w3c.dom.Document;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -49,31 +32,50 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { SchemaIncompleteTranslator.class, NodesConfiguration.class})
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import org.onap.aai.config.NodesConfiguration;
+import org.onap.aai.nodes.NodeIngestor;
+import org.onap.aai.setup.SchemaVersion;
+import org.onap.aai.testutils.SchemaIncompleteTranslator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.w3c.dom.Document;
 
-@TestPropertySource(properties = { "schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-wiring-test-local.properties" })
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {SchemaIncompleteTranslator.class, NodesConfiguration.class})
+
+@TestPropertySource(
+    properties = {
+        "schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-wiring-test-local.properties"})
 @SpringBootTest
 public class NodeValidatorSchemaIncompleteTest {
     @Autowired
     NodeIngestor ni;
-    
-    //set thrown.expect to whatever a specific test needs
-    //this establishes a default of expecting no exceptions to be thrown
+
+    // set thrown.expect to whatever a specific test needs
+    // this establishes a default of expecting no exceptions to be thrown
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
-    //Throws a NullPointerException because a JavaType is referenced, but not defined
+    // Throws a NullPointerException because a JavaType is referenced, but not defined
     @Test
-    public void testIncompleteCombinedSchema() throws TransformerException, IOException, IllegalStateException {
-        //thrown.expect(NullPointerException.class);
+    public void testIncompleteCombinedSchema()
+        throws TransformerException, IOException, IllegalStateException {
+        // thrown.expect(NullPointerException.class);
 
-        //TODO Change for Exception
+        // TODO Change for Exception
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        printDocument(ni.getSchema(new SchemaVersion("v12")),buffer);
+        printDocument(ni.getSchema(new SchemaVersion("v12")), buffer);
     }
-    
-    public static void printDocument(Document doc, OutputStream out) throws IOException, TransformerException {
+
+    public static void printDocument(Document doc, OutputStream out)
+        throws IOException, TransformerException {
         TransformerFactory tf = TransformerFactory.newInstance();
         Transformer transformer = tf.newTransformer();
         transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
@@ -82,7 +84,7 @@ public class NodeValidatorSchemaIncompleteTest {
         transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
         transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
 
-        transformer.transform(new DOMSource(doc), 
-             new StreamResult(new OutputStreamWriter(out, "UTF-8")));
+        transformer.transform(new DOMSource(doc),
+            new StreamResult(new OutputStreamWriter(out, "UTF-8")));
     }
 }

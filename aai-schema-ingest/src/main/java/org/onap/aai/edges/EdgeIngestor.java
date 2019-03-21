@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,6 +20,9 @@
 
 package org.onap.aai.edges;
 
+import static com.jayway.jsonpath.Criteria.where;
+import static com.jayway.jsonpath.Filter.filter;
+
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 import com.google.common.cache.CacheBuilder;
@@ -30,6 +33,15 @@ import com.google.common.collect.Multimap;
 import com.jayway.jsonpath.Criteria;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.Filter;
+
+import java.io.IOException;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
+
+import javax.annotation.PostConstruct;
+
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.onap.aai.edges.enums.DirectionNotation;
 import org.onap.aai.edges.enums.EdgeField;
@@ -42,23 +54,14 @@ import org.onap.aai.setup.Translator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-import java.io.IOException;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
-
-import static com.jayway.jsonpath.Criteria.where;
-import static com.jayway.jsonpath.Filter.filter;
-
 /**
  * EdgeIngestor - ingests A&AI edge rule schema files per given config, serves that edge rule
- * 	information, including allowing various filters to extract particular rules.
+ * information, including allowing various filters to extract particular rules.
  */
 @Component
 public class EdgeIngestor {
-    private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(EdgeIngestor.class);
+    private static final EELFLogger LOGGER =
+        EELFManager.getInstance().getLogger(EdgeIngestor.class);
     private Map<SchemaVersion, List<DocumentContext>> versionJsonFilesMap = new TreeMap<>();
     private static final String READ_START = "$.rules.[?]";
     private static final String READ_ALL_START = "$.rules.*";
@@ -68,7 +71,7 @@ public class EdgeIngestor {
 
     private Set<String> multipleLabelKeys;
 
-    private LoadingCache<SchemaFilter,Multimap<String,EdgeRule>> cacheFilterStore;
+    private LoadingCache<SchemaFilter, Multimap<String, EdgeRule>> cacheFilterStore;
 
     private LoadingCache<String, String[]> cousinLabelStore;
 
@@ -83,7 +86,7 @@ public class EdgeIngestor {
     @PostConstruct
     public void initialize() {
 
-       for (Translator translator : translators) {
+        for (Translator translator : translators) {
             try {
                 LOGGER.debug("Processing the translator");
                 translateAll(translator);
@@ -93,29 +96,33 @@ public class EdgeIngestor {
                 continue;
             }
         }
-        if (versionJsonFilesMap.isEmpty() || schemaVersions==null ) {
+        if (versionJsonFilesMap.isEmpty() || schemaVersions == null) {
             throw new ExceptionInInitializerError("EdgeIngestor could not ingest edgerules");
         }
     }
 
     public void translateAll(Translator translator) {
         /*
-        Use SchemaVersions from the Translator
+         * Use SchemaVersions from the Translator
          */
         this.schemaVersions = translator.getSchemaVersions();
         List<SchemaVersion> schemaVersionList = this.schemaVersions.getVersions();
         List<String> jsonPayloads = null;
         JsonIngestor ji = new JsonIngestor();
-        Map<SchemaVersion, List<String>> edgeRulesToIngest = new HashMap<>();         // Obtain a map of schema versions to a list of strings. One List per key
+        Map<SchemaVersion, List<String>> edgeRulesToIngest = new HashMap<>(); // Obtain a map of
+                                                                              // schema versions to
+                                                                              // a list of strings.
+                                                                              // One List per key
 
         // Add to the map the JSON file per version.
         for (SchemaVersion version : schemaVersionList) {
             LOGGER.debug("Version being processed" + version);
             // If the flag is set to not use the local files, obtain the Json from the service.
             try {
-                jsonPayloads = translator.getJsonPayload(version);     // need to change this - need to receive the json files.
+                jsonPayloads = translator.getJsonPayload(version); // need to change this - need to
+                                                                   // receive the json files.
             } catch (IOException e) {
-                LOGGER.info("Exception in retrieving the JSON Payload"+e.getMessage());
+                LOGGER.info("Exception in retrieving the JSON Payload" + e.getMessage());
             }
             if (jsonPayloads == null || jsonPayloads.isEmpty()) {
                 continue;
@@ -125,43 +132,40 @@ public class EdgeIngestor {
         }
         versionJsonFilesMap = ji.ingestContent(edgeRulesToIngest);
 
-        this.cacheFilterStore = CacheBuilder.newBuilder()
-            .maximumSize(2000)
-            .build(
-                new CacheLoader<SchemaFilter, Multimap<String, EdgeRule>>() {
-                    @Override
-                    public Multimap<String, EdgeRule> load(SchemaFilter key) {
-                        return extractRules(key);
-                    }
+        this.cacheFilterStore = CacheBuilder.newBuilder().maximumSize(2000)
+            .build(new CacheLoader<SchemaFilter, Multimap<String, EdgeRule>>() {
+                @Override
+                public Multimap<String, EdgeRule> load(SchemaFilter key) {
+                    return extractRules(key);
                 }
-            );
+            });
 
-        this.cousinLabelStore = CacheBuilder.newBuilder()
-            .maximumSize(50)
-            .build(
-                new CacheLoader<String, String[]>() {
-                    @Override
-                    public String[] load(String key) throws Exception {
-                        return retrieveCousinLabels(key);
-                    }
+        this.cousinLabelStore =
+            CacheBuilder.newBuilder().maximumSize(50).build(new CacheLoader<String, String[]>() {
+                @Override
+                public String[] load(String key) throws Exception {
+                    return retrieveCousinLabels(key);
                 }
-            );
+            });
     }
 
-//	//-----methods for getting rule info-----//
-//
+    // //-----methods for getting rule info-----//
+    //
     /**
      * Gets list of all edge rules defined in the latest version's schema
      *
-     * @return Multimap<String, EdgeRule> of node names keys to the EdgeRules associated with those types
-     * 		where the key takes the form of
-     * 			{alphabetically first nodetype}|{alphabetically second nodetype}. Map will be empty if
-     * 		no rules are found.
-     * 		ex: buildAlphabetizedKey("l-interface", "logical-link") -> "l-interface|logical-link"
-     * 			buildAlphabetizedKey("logical-link", "l-interface") -> "l-interface|logical-link"
+     * @return Multimap<String, EdgeRule> of node names keys to the EdgeRules associated with those
+     *         types
+     *         where the key takes the form of
+     *         {alphabetically first nodetype}|{alphabetically second nodetype}. Map will be empty
+     *         if
+     *         no rules are found.
+     *         ex: buildAlphabetizedKey("l-interface", "logical-link") -> "l-interface|logical-link"
+     *         buildAlphabetizedKey("logical-link", "l-interface") -> "l-interface|logical-link"
      *
-     * 	This is alphabetical order to normalize the keys, as sometimes there will be multiple
-     * 	rules for a pair of node types but the from/to value in the json is flipped for some of them.
+     *         This is alphabetical order to normalize the keys, as sometimes there will be multiple
+     *         rules for a pair of node types but the from/to value in the json is flipped for some
+     *         of them.
      * @throws EdgeRuleNotFoundException if none found
      */
     public Multimap<String, EdgeRule> getAllCurrentRules() throws EdgeRuleNotFoundException {
@@ -173,47 +177,53 @@ public class EdgeIngestor {
      *
      * A lazy instantiation to retrieve all this info on first call
      *
-     * @return  a set containing a list of strings where each string is
-     *          concatenated by a pipe (|) character such as aNodeType|bNodeType
+     * @return a set containing a list of strings where each string is
+     *         concatenated by a pipe (|) character such as aNodeType|bNodeType
      */
-    public Set<String> getMultipleLabelKeys(){
+    public Set<String> getMultipleLabelKeys() {
 
-        if(multipleLabelKeys == null){
+        if (multipleLabelKeys == null) {
             multipleLabelKeys = new HashSet<>();
             try {
                 final Multimap<String, EdgeRule> edges = this.getAllCurrentRules();
-                if(edges == null || edges.isEmpty()){
+                if (edges == null || edges.isEmpty()) {
                     LOGGER.warn("Unable to find any edge rules for the latest version");
                     return multipleLabelKeys;
                 }
                 edges.keySet().forEach(key -> {
                     Collection<EdgeRule> rules = edges.get(key);
-                    if(rules.size() > 1){
+                    if (rules.size() > 1) {
                         multipleLabelKeys.add(key);
                     }
                 });
             } catch (EdgeRuleNotFoundException e) {
-                LOGGER.info("For the latest schema version, unable to find any edges with multiple keys");
+                LOGGER.info(
+                    "For the latest schema version, unable to find any edges with multiple keys");
             }
         }
 
         return multipleLabelKeys;
     }
+
     /**
      * Gets list of all edge rules defined in the given version's schema
      *
-     * @return Multimap<String, EdgeRule> of node names keys to the EdgeRules associated with those types
-     * 		where the key takes the form of
-     * 			{alphabetically first nodetype}|{alphabetically second nodetype}. Map will be empty if
-     * 		no rules are found.
-     * 		ex: buildAlphabetizedKey("l-interface", "logical-link") -> "l-interface|logical-link"
-     * 			buildAlphabetizedKey("logical-link", "l-interface") -> "l-interface|logical-link"
+     * @return Multimap<String, EdgeRule> of node names keys to the EdgeRules associated with those
+     *         types
+     *         where the key takes the form of
+     *         {alphabetically first nodetype}|{alphabetically second nodetype}. Map will be empty
+     *         if
+     *         no rules are found.
+     *         ex: buildAlphabetizedKey("l-interface", "logical-link") -> "l-interface|logical-link"
+     *         buildAlphabetizedKey("logical-link", "l-interface") -> "l-interface|logical-link"
      *
-     * 	This is alphabetical order to normalize the keys, as sometimes there will be multiple
-     * 	rules for a pair of node types but the from/to value in the json is flipped for some of them.
+     *         This is alphabetical order to normalize the keys, as sometimes there will be multiple
+     *         rules for a pair of node types but the from/to value in the json is flipped for some
+     *         of them.
      * @throws EdgeRuleNotFoundException if none found
      */
-    public Multimap<String, EdgeRule> getAllRules(SchemaVersion v) throws EdgeRuleNotFoundException {
+    public Multimap<String, EdgeRule> getAllRules(SchemaVersion v)
+        throws EdgeRuleNotFoundException {
         Multimap<String, EdgeRule> found = extractRules(null, v);
         if (found.isEmpty()) {
             throw new EdgeRuleNotFoundException("No rules found for version " + v.toString() + ".");
@@ -228,20 +238,23 @@ public class EdgeIngestor {
      *
      * @param q - EdgeRuleQuery with filter criteria set
      *
-     * @return Multimap<String, EdgeRule> of node names keys to the EdgeRules where the key takes the form of
-     * 			{alphabetically first nodetype}|{alphabetically second nodetype}. Map will be empty if
-     * 			no rules are found.
-     * 		ex: buildAlphabetizedKey("l-interface", "logical-link") -> "l-interface|logical-link"
-     * 			buildAlphabetizedKey("logical-link", "l-interface") -> "l-interface|logical-link"
+     * @return Multimap<String, EdgeRule> of node names keys to the EdgeRules where the key takes
+     *         the form of
+     *         {alphabetically first nodetype}|{alphabetically second nodetype}. Map will be empty
+     *         if
+     *         no rules are found.
+     *         ex: buildAlphabetizedKey("l-interface", "logical-link") -> "l-interface|logical-link"
+     *         buildAlphabetizedKey("logical-link", "l-interface") -> "l-interface|logical-link"
      *
-     * 	This is alphabetical order to normalize the keys, as sometimes there will be multiple
-     * 	rules for a pair of node types but the from/to value in the json is flipped for some of them.
+     *         This is alphabetical order to normalize the keys, as sometimes there will be multiple
+     *         rules for a pair of node types but the from/to value in the json is flipped for some
+     *         of them.
      * @throws EdgeRuleNotFoundException if none found
      */
 
     public Multimap<String, EdgeRule> getRules(EdgeRuleQuery q) throws EdgeRuleNotFoundException {
         Multimap<String, EdgeRule> found = null;
-        if(q.getVersion().isPresent()){
+        if (q.getVersion().isPresent()) {
             found = extractRules(q.getFilter(), q.getVersion().get());
         } else {
             found = extractRules(q.getFilter(), schemaVersions.getDefaultVersion());
@@ -253,7 +266,8 @@ public class EdgeIngestor {
             found.entries().stream().forEach((entry) -> {
                 EdgeRule rule = new EdgeRule(entry.getValue());
                 if (!q.getFromType().equals(rule.getFrom())) {
-                    /* To maintain backwards compatibility with old EdgeRules API,
+                    /*
+                     * To maintain backwards compatibility with old EdgeRules API,
                      * where the direction of the returned EdgeRule would be
                      * flipped (if necessary) to match the directionality of
                      * the input params.
@@ -270,8 +284,6 @@ public class EdgeIngestor {
         }
     }
 
-
-
     /**
      * Gets the rule satisfying the given filter criteria. If there are more than one
      * that match, return the default rule. If there is no clear default to return, or
@@ -281,16 +293,18 @@ public class EdgeIngestor {
      * @return EdgeRule satisfying given criteria
      * @throws EdgeRuleNotFoundException if none found that match
      * @throws AmbiguousRuleChoiceException if multiple match but no way to choice one from them
-     * 			Specifically, if multiple node type pairs come back (ie bar|foo and asdf|foo,
-     * 					no way to know which is appropriate over the others),
-     * 			or if there is a mix of Tree and Cousin edges because again there is no way to
-     * 					know which is "defaulter" than the other.
-     * 			The default property only clarifies among multiple cousin edges of the same node pair,
-     * 				ex: which l-interface|logical-link rule to default to.
+     *         Specifically, if multiple node type pairs come back (ie bar|foo and asdf|foo,
+     *         no way to know which is appropriate over the others),
+     *         or if there is a mix of Tree and Cousin edges because again there is no way to
+     *         know which is "defaulter" than the other.
+     *         The default property only clarifies among multiple cousin edges of the same node
+     *         pair,
+     *         ex: which l-interface|logical-link rule to default to.
      */
-    public EdgeRule getRule(EdgeRuleQuery q) throws EdgeRuleNotFoundException, AmbiguousRuleChoiceException {
+    public EdgeRule getRule(EdgeRuleQuery q)
+        throws EdgeRuleNotFoundException, AmbiguousRuleChoiceException {
         Multimap<String, EdgeRule> found = null;
-        if(q.getVersion().isPresent()){
+        if (q.getVersion().isPresent()) {
             found = extractRules(q.getFilter(), q.getVersion().get());
         } else {
             found = extractRules(q.getFilter(), schemaVersions.getDefaultVersion());
@@ -301,7 +315,7 @@ public class EdgeIngestor {
         }
 
         EdgeRule rule = null;
-        if (found.keys().size() == 1) { //only one found, cool we're done
+        if (found.keys().size() == 1) { // only one found, cool we're done
             for (Entry<String, EdgeRule> e : found.entries()) {
                 rule = e.getValue();
             }
@@ -309,12 +323,13 @@ public class EdgeIngestor {
             rule = getDefaultRule(found);
         }
 
-        if (rule == null) { //should never get here though
+        if (rule == null) { // should never get here though
             throw new EdgeRuleNotFoundException("No rule found for " + q.toString() + ".");
         } else {
             rule = new EdgeRule(rule);
             if (!q.getFromType().equals(rule.getFrom())) {
-                /* To maintain backwards compatibility with old EdgeRules API,
+                /*
+                 * To maintain backwards compatibility with old EdgeRules API,
                  * where the direction of the returned EdgeRule would be
                  * flipped (if necessary) to match the directionality of
                  * the input params.
@@ -328,13 +343,16 @@ public class EdgeIngestor {
         }
     }
 
-    private EdgeRule getDefaultRule(Multimap<String, EdgeRule> found) throws AmbiguousRuleChoiceException {
-        if (found.keySet().size() > 1) { //ie multiple node pairs (a|c and b|c not just all a|c) case
+    private EdgeRule getDefaultRule(Multimap<String, EdgeRule> found)
+        throws AmbiguousRuleChoiceException {
+        if (found.keySet().size() > 1) { // ie multiple node pairs (a|c and b|c not just all a|c)
+                                         // case
             StringBuilder sb = new StringBuilder();
             for (String k : found.keySet()) {
                 sb.append(k).append(" ");
             }
-            throw new AmbiguousRuleChoiceException("No way to select single rule from these pairs: " + sb.toString() + ".");
+            throw new AmbiguousRuleChoiceException(
+                "No way to select single rule from these pairs: " + sb.toString() + ".");
         }
 
         int defaultCount = 0;
@@ -354,6 +372,7 @@ public class EdgeIngestor {
 
         return defRule;
     }
+
     /**
      * Checks if there exists any rule that satisfies the given filter criteria.
      *
@@ -361,7 +380,7 @@ public class EdgeIngestor {
      * @return boolean
      */
     public boolean hasRule(EdgeRuleQuery q) {
-        if(q.getVersion().isPresent()){
+        if (q.getVersion().isPresent()) {
             return !extractRules(q.getFilter(), q.getVersion().get()).isEmpty();
         } else {
             return !extractRules(q.getFilter(), schemaVersions.getDefaultVersion()).isEmpty();
@@ -372,29 +391,29 @@ public class EdgeIngestor {
      * Gets all cousin rules for the given node type in the latest schema version.
      *
      * @param nodeType
-     * @return Multimap<String, EdgeRule> of node names keys to the EdgeRules where the key takes the form of
-     * 			{alphabetically first nodetype}|{alphabetically second nodetype}. Map will be empty if
-     * 			no rules are found.
-     * 		ex: buildAlphabetizedKey("l-interface", "logical-link") -> "l-interface|logical-link"
-     * 			buildAlphabetizedKey("logical-link", "l-interface") -> "l-interface|logical-link"
+     * @return Multimap<String, EdgeRule> of node names keys to the EdgeRules where the key takes
+     *         the form of
+     *         {alphabetically first nodetype}|{alphabetically second nodetype}. Map will be empty
+     *         if
+     *         no rules are found.
+     *         ex: buildAlphabetizedKey("l-interface", "logical-link") -> "l-interface|logical-link"
+     *         buildAlphabetizedKey("logical-link", "l-interface") -> "l-interface|logical-link"
      *
-     * 	This is alphabetical order to normalize the keys, as sometimes there will be multiple
-     * 	rules for a pair of node types but the from/to value in the json is flipped for some of them.
+     *         This is alphabetical order to normalize the keys, as sometimes there will be multiple
+     *         rules for a pair of node types but the from/to value in the json is flipped for some
+     *         of them.
      */
     public Multimap<String, EdgeRule> getCousinRules(String nodeType) {
-        return getCousinRules(nodeType, schemaVersions.getDefaultVersion()); //default to latest
+        return getCousinRules(nodeType, schemaVersions.getDefaultVersion()); // default to latest
     }
 
-    public String[] retrieveCousinLabels(String nodeType){
+    public String[] retrieveCousinLabels(String nodeType) {
 
         Multimap<String, EdgeRule> cousinRules = getCousinRules(nodeType);
         String[] cousinLabels = new String[cousinRules.size()];
 
-        return cousinRules.entries()
-            .stream()
-            .map(entry -> entry.getValue().getLabel())
-            .collect(Collectors.toList())
-            .toArray(cousinLabels);
+        return cousinRules.entries().stream().map(entry -> entry.getValue().getLabel())
+            .collect(Collectors.toList()).toArray(cousinLabels);
     }
 
     public String[] retrieveCachedCousinLabels(String nodeType) throws ExecutionException {
@@ -406,21 +425,26 @@ public class EdgeIngestor {
      *
      * @param nodeType
      * @param v - the version of the edge rules to query
-     * @return Multimap<String, EdgeRule> of node names keys to the EdgeRules where the key takes the form of
-     * 			{alphabetically first nodetype}|{alphabetically second nodetype}. Map will be empty if
-     * 			no rules are found.
-     * 		ex: buildAlphabetizedKey("l-interface", "logical-link") -> "l-interface|logical-link"
-     * 			buildAlphabetizedKey("logical-link", "l-interface") -> "l-interface|logical-link"
+     * @return Multimap<String, EdgeRule> of node names keys to the EdgeRules where the key takes
+     *         the form of
+     *         {alphabetically first nodetype}|{alphabetically second nodetype}. Map will be empty
+     *         if
+     *         no rules are found.
+     *         ex: buildAlphabetizedKey("l-interface", "logical-link") -> "l-interface|logical-link"
+     *         buildAlphabetizedKey("logical-link", "l-interface") -> "l-interface|logical-link"
      *
-     * 	This is alphabetical order to normalize the keys, as sometimes there will be multiple
-     * 	rules for a pair of node types but the from/to value in the json is flipped for some of them.
+     *         This is alphabetical order to normalize the keys, as sometimes there will be multiple
+     *         rules for a pair of node types but the from/to value in the json is flipped for some
+     *         of them.
      */
     public Multimap<String, EdgeRule> getCousinRules(String nodeType, SchemaVersion v) {
-        return extractRules(new EdgeRuleQuery.Builder(nodeType).edgeType(EdgeType.COUSIN).build().getFilter(), v);
+        return extractRules(
+            new EdgeRuleQuery.Builder(nodeType).edgeType(EdgeType.COUSIN).build().getFilter(), v);
     }
 
     /**
      * Returns if the given node type has any cousin relationships in the current version.
+     * 
      * @param nodeType
      * @return boolean
      */
@@ -430,6 +454,7 @@ public class EdgeIngestor {
 
     /**
      * Returns if the given node type has any cousin relationships in the given version.
+     * 
      * @param nodeType
      * @return boolean
      */
@@ -441,14 +466,17 @@ public class EdgeIngestor {
      * Gets all rules where "{given nodeType} contains {otherType}" in the latest schema version.
      *
      * @param nodeType - node type that is the container in the returned relationships
-     * @return Multimap<String, EdgeRule> of node names keys to the EdgeRules where the key takes the form of
-     * 			{alphabetically first nodetype}|{alphabetically second nodetype}. Map will be empty if
-     * 			no rules are found.
-     * 		ex: buildAlphabetizedKey("l-interface", "logical-link") -> "l-interface|logical-link"
-     * 			buildAlphabetizedKey("logical-link", "l-interface") -> "l-interface|logical-link"
+     * @return Multimap<String, EdgeRule> of node names keys to the EdgeRules where the key takes
+     *         the form of
+     *         {alphabetically first nodetype}|{alphabetically second nodetype}. Map will be empty
+     *         if
+     *         no rules are found.
+     *         ex: buildAlphabetizedKey("l-interface", "logical-link") -> "l-interface|logical-link"
+     *         buildAlphabetizedKey("logical-link", "l-interface") -> "l-interface|logical-link"
      *
-     * 	This is alphabetical order to normalize the keys, as sometimes there will be multiple
-     * 	rules for a pair of node types but the from/to value in the json is flipped for some of them.
+     *         This is alphabetical order to normalize the keys, as sometimes there will be multiple
+     *         rules for a pair of node types but the from/to value in the json is flipped for some
+     *         of them.
      */
     public Multimap<String, EdgeRule> getChildRules(String nodeType) {
         return getChildRules(nodeType, schemaVersions.getDefaultVersion());
@@ -458,25 +486,32 @@ public class EdgeIngestor {
      * Gets all rules where "{given nodeType} contains {otherType}" in the given schema version.
      *
      * @param nodeType - node type that is the container in the returned relationships
-     * @return Multimap<String, EdgeRule> of node names keys to the EdgeRules where the key takes the form of
-     * 			{alphabetically first nodetype}|{alphabetically second nodetype}. Map will be empty if
-     * 			no rules are found.
-     * 		ex: buildAlphabetizedKey("l-interface", "logical-link") -> "l-interface|logical-link"
-     * 			buildAlphabetizedKey("logical-link", "l-interface") -> "l-interface|logical-link"
+     * @return Multimap<String, EdgeRule> of node names keys to the EdgeRules where the key takes
+     *         the form of
+     *         {alphabetically first nodetype}|{alphabetically second nodetype}. Map will be empty
+     *         if
+     *         no rules are found.
+     *         ex: buildAlphabetizedKey("l-interface", "logical-link") -> "l-interface|logical-link"
+     *         buildAlphabetizedKey("logical-link", "l-interface") -> "l-interface|logical-link"
      *
-     * 	This is alphabetical order to normalize the keys, as sometimes there will be multiple
-     * 	rules for a pair of node types but the from/to value in the json is flipped for some of them.
+     *         This is alphabetical order to normalize the keys, as sometimes there will be multiple
+     *         rules for a pair of node types but the from/to value in the json is flipped for some
+     *         of them.
      */
     public Multimap<String, EdgeRule> getChildRules(String nodeType, SchemaVersion v) {
-        Filter from = assembleFilterSegments(where(EdgeField.FROM.toString()).is(nodeType), getSameDirectionContainmentCriteria());
-        Filter to = assembleFilterSegments(where(EdgeField.TO.toString()).is(nodeType), getOppositeDirectionContainmentCriteria());
+        Filter from = assembleFilterSegments(where(EdgeField.FROM.toString()).is(nodeType),
+            getSameDirectionContainmentCriteria());
+        Filter to = assembleFilterSegments(where(EdgeField.TO.toString()).is(nodeType),
+            getOppositeDirectionContainmentCriteria());
         Filter total = from.or(to);
 
         return extractRules(total, v);
     }
 
     /**
-     * Returns if the given node type has any child relationships (ie it contains another node type) in the current version.
+     * Returns if the given node type has any child relationships (ie it contains another node type)
+     * in the current version.
+     * 
      * @param nodeType
      * @return boolean
      */
@@ -485,7 +520,9 @@ public class EdgeIngestor {
     }
 
     /**
-     * Returns if the given node type has any child relationships (ie it contains another node type) in the given version.
+     * Returns if the given node type has any child relationships (ie it contains another node type)
+     * in the given version.
+     * 
      * @param nodeType
      * @return boolean
      */
@@ -494,45 +531,57 @@ public class EdgeIngestor {
     }
 
     /**
-     * Gets all rules where "{given nodeType} is contained by {otherType}" in the latest schema version.
+     * Gets all rules where "{given nodeType} is contained by {otherType}" in the latest schema
+     * version.
      *
      * @param nodeType - node type that is the containee in the returned relationships
-     * @return Multimap<String, EdgeRule> of node names keys to the EdgeRules where the key takes the form of
-     * 			{alphabetically first nodetype}|{alphabetically second nodetype}. Map will be empty if
-     * 			no rules are found.
-     * 		ex: buildAlphabetizedKey("l-interface", "logical-link") -> "l-interface|logical-link"
-     * 			buildAlphabetizedKey("logical-link", "l-interface") -> "l-interface|logical-link"
+     * @return Multimap<String, EdgeRule> of node names keys to the EdgeRules where the key takes
+     *         the form of
+     *         {alphabetically first nodetype}|{alphabetically second nodetype}. Map will be empty
+     *         if
+     *         no rules are found.
+     *         ex: buildAlphabetizedKey("l-interface", "logical-link") -> "l-interface|logical-link"
+     *         buildAlphabetizedKey("logical-link", "l-interface") -> "l-interface|logical-link"
      *
-     * 	This is alphabetical order to normalize the keys, as sometimes there will be multiple
-     * 	rules for a pair of node types but the from/to value in the json is flipped for some of them.
+     *         This is alphabetical order to normalize the keys, as sometimes there will be multiple
+     *         rules for a pair of node types but the from/to value in the json is flipped for some
+     *         of them.
      */
     public Multimap<String, EdgeRule> getParentRules(String nodeType) {
         return getParentRules(nodeType, schemaVersions.getDefaultVersion());
     }
 
     /**
-     * Gets all rules where "{given nodeType} is contained by {otherType}" in the given schema version.
+     * Gets all rules where "{given nodeType} is contained by {otherType}" in the given schema
+     * version.
      *
      * @param nodeType - node type that is the containee in the returned relationships
-     * @return Multimap<String, EdgeRule> of node names keys to the EdgeRules where the key takes the form of
-     * 			{alphabetically first nodetype}|{alphabetically second nodetype}. Map will be empty if
-     * 			no rules are found.
-     * 		ex: buildAlphabetizedKey("l-interface", "logical-link") -> "l-interface|logical-link"
-     * 			buildAlphabetizedKey("logical-link", "l-interface") -> "l-interface|logical-link"
+     * @return Multimap<String, EdgeRule> of node names keys to the EdgeRules where the key takes
+     *         the form of
+     *         {alphabetically first nodetype}|{alphabetically second nodetype}. Map will be empty
+     *         if
+     *         no rules are found.
+     *         ex: buildAlphabetizedKey("l-interface", "logical-link") -> "l-interface|logical-link"
+     *         buildAlphabetizedKey("logical-link", "l-interface") -> "l-interface|logical-link"
      *
-     * 	This is alphabetical order to normalize the keys, as sometimes there will be multiple
-     * 	rules for a pair of node types but the from/to value in the json is flipped for some of them.
+     *         This is alphabetical order to normalize the keys, as sometimes there will be multiple
+     *         rules for a pair of node types but the from/to value in the json is flipped for some
+     *         of them.
      */
     public Multimap<String, EdgeRule> getParentRules(String nodeType, SchemaVersion v) {
-        Filter from = assembleFilterSegments(where(EdgeField.FROM.toString()).is(nodeType), getOppositeDirectionContainmentCriteria());
-        Filter to = assembleFilterSegments(where(EdgeField.TO.toString()).is(nodeType), getSameDirectionContainmentCriteria());
+        Filter from = assembleFilterSegments(where(EdgeField.FROM.toString()).is(nodeType),
+            getOppositeDirectionContainmentCriteria());
+        Filter to = assembleFilterSegments(where(EdgeField.TO.toString()).is(nodeType),
+            getSameDirectionContainmentCriteria());
         Filter total = from.or(to);
 
         return extractRules(total, v);
     }
 
     /**
-     * Returns if the given node type has any parent relationships (ie it is contained by another node type) in the current version.
+     * Returns if the given node type has any parent relationships (ie it is contained by another
+     * node type) in the current version.
+     * 
      * @param nodeType
      * @return boolean
      */
@@ -541,7 +590,9 @@ public class EdgeIngestor {
     }
 
     /**
-     * Returns if the given node type has any parent relationships (ie it is contained by another node type) in the given version.
+     * Returns if the given node type has any parent relationships (ie it is contained by another
+     * node type) in the given version.
+     * 
      * @param nodeType
      * @return boolean
      */
@@ -549,22 +600,25 @@ public class EdgeIngestor {
         return !getParentRules(nodeType, v).isEmpty();
     }
 
-	/**
-	 * Applies the given filter to the DocumentContext(s) for the given version to extract
-	 * edge rules, and converts this extracted information into the Multimap form
-	 *
-	 * @param filter - JsonPath filter to read the DocumentContexts with. May be null
-	 * 					to denote no filter, ie get all.
-	 * @param v - The schema version to extract from
-	 * @return Multimap<String, EdgeRule> of node names keys to the EdgeRules where the key takes the form of
-	 * 			{alphabetically first nodetype}|{alphabetically second nodetype}. Map will be empty if
-	 * 			no rules are found.
-	 * 		ex: buildAlphabetizedKey("l-interface", "logical-link") -> "l-interface|logical-link"
-	 * 			buildAlphabetizedKey("logical-link", "l-interface") -> "l-interface|logical-link"
-	 *
-	 * 	This is alphabetical order to normalize the keys, as sometimes there will be multiple
-	 * 	rules for a pair of node types but the from/to value in the json is flipped for some of them.
-	 */
+    /**
+     * Applies the given filter to the DocumentContext(s) for the given version to extract
+     * edge rules, and converts this extracted information into the Multimap form
+     *
+     * @param filter - JsonPath filter to read the DocumentContexts with. May be null
+     *        to denote no filter, ie get all.
+     * @param v - The schema version to extract from
+     * @return Multimap<String, EdgeRule> of node names keys to the EdgeRules where the key takes
+     *         the form of
+     *         {alphabetically first nodetype}|{alphabetically second nodetype}. Map will be empty
+     *         if
+     *         no rules are found.
+     *         ex: buildAlphabetizedKey("l-interface", "logical-link") -> "l-interface|logical-link"
+     *         buildAlphabetizedKey("logical-link", "l-interface") -> "l-interface|logical-link"
+     *
+     *         This is alphabetical order to normalize the keys, as sometimes there will be multiple
+     *         rules for a pair of node types but the from/to value in the json is flipped for some
+     *         of them.
+     */
     private Multimap<String, EdgeRule> extractRules(Filter filter, SchemaVersion v) {
         SchemaFilter schemaFilter = new SchemaFilter(filter, v);
         try {
@@ -575,7 +629,7 @@ public class EdgeIngestor {
         }
     }
 
-    public Multimap<String, EdgeRule> extractRules(SchemaFilter schemaFilter){
+    public Multimap<String, EdgeRule> extractRules(SchemaFilter schemaFilter) {
         List<Map<String, String>> foundRules = new ArrayList<>();
         List<DocumentContext> docs = versionJsonFilesMap.get(schemaFilter.getSchemaVersion());
         if (docs != null) {
@@ -591,115 +645,124 @@ public class EdgeIngestor {
         return convertToEdgeRules(foundRules);
     }
 
-	//-----filter building helpers-----//
-	/**
-	 * ANDs together the given start criteria with each criteria in the pieces list, and
-	 * then ORs together these segments into one filter.
-	 *
-	 * JsonPath doesn't have an OR method on Criteria, only on Filters, so assembling
-	 * a complete filter requires this sort of roundabout construction.
-	 *
-	 * @param start - Criteria of the form where(from/to).is(nodeType)
-	 * 					(ie the start of any A&AI edge rule query)
-	 * @param pieces - Other Criteria to be applied
-	 * @return Filter constructed from the given Criteria
-	 */
-	private Filter assembleFilterSegments(Criteria start, List<Criteria> pieces) {
-		List<Filter> segments = new ArrayList<>();
-		for (Criteria c : pieces) {
-			segments.add(filter(start).and(c));
-		}
-		Filter assembled = segments.remove(0);
-		for (Filter f : segments) {
-			assembled = assembled.or(f);
-		}
-		return assembled;
-	}
+    // -----filter building helpers-----//
+    /**
+     * ANDs together the given start criteria with each criteria in the pieces list, and
+     * then ORs together these segments into one filter.
+     *
+     * JsonPath doesn't have an OR method on Criteria, only on Filters, so assembling
+     * a complete filter requires this sort of roundabout construction.
+     *
+     * @param start - Criteria of the form where(from/to).is(nodeType)
+     *        (ie the start of any A&AI edge rule query)
+     * @param pieces - Other Criteria to be applied
+     * @return Filter constructed from the given Criteria
+     */
+    private Filter assembleFilterSegments(Criteria start, List<Criteria> pieces) {
+        List<Filter> segments = new ArrayList<>();
+        for (Criteria c : pieces) {
+            segments.add(filter(start).and(c));
+        }
+        Filter assembled = segments.remove(0);
+        for (Filter f : segments) {
+            assembled = assembled.or(f);
+        }
+        return assembled;
+    }
 
-	/**
-	 * Builds the sub-Criteria for a containment edge rule query where the direction
-	 * and containment fields must match.
-	 *
-	 * Used for getChildRules() where the container node type is in the "from" position and
-	 * for getParentRules() where the containee type is in the "to" position.
-	 *
-	 * @return List<Criteria> covering property permutations defined with either notation or explicit direction
-	 */
-	private List<Criteria> getSameDirectionContainmentCriteria() {
-		List<Criteria> crits = new ArrayList<>();
+    /**
+     * Builds the sub-Criteria for a containment edge rule query where the direction
+     * and containment fields must match.
+     *
+     * Used for getChildRules() where the container node type is in the "from" position and
+     * for getParentRules() where the containee type is in the "to" position.
+     *
+     * @return List<Criteria> covering property permutations defined with either notation or
+     *         explicit direction
+     */
+    private List<Criteria> getSameDirectionContainmentCriteria() {
+        List<Criteria> crits = new ArrayList<>();
 
-		crits.add(where(EdgeField.CONTAINS.toString()).is(DirectionNotation.DIRECTION.toString()));
+        crits.add(where(EdgeField.CONTAINS.toString()).is(DirectionNotation.DIRECTION.toString()));
 
-		crits.add(where(EdgeField.DIRECTION.toString()).is(Direction.OUT.toString())
-				.and(EdgeField.CONTAINS.toString()).is(Direction.OUT.toString()));
+        crits.add(where(EdgeField.DIRECTION.toString()).is(Direction.OUT.toString())
+            .and(EdgeField.CONTAINS.toString()).is(Direction.OUT.toString()));
 
-		crits.add(where(EdgeField.DIRECTION.toString()).is(Direction.IN.toString())
-				.and(EdgeField.CONTAINS.toString()).is(Direction.IN.toString()));
+        crits.add(where(EdgeField.DIRECTION.toString()).is(Direction.IN.toString())
+            .and(EdgeField.CONTAINS.toString()).is(Direction.IN.toString()));
 
-		return crits;
-	}
+        return crits;
+    }
 
-	/**
-	 * Builds the sub-Criteria for a containment edge rule query where the direction
-	 * and containment fields must not match.
-	 *
-	 * Used for getChildRules() where the container node type is in the "to" position and
-	 * for getParentRules() where the containee type is in the "from" position.
-	 *
-	 * @return List<Criteria> covering property permutations defined with either notation or explicit direction
-	 */
-	private List<Criteria> getOppositeDirectionContainmentCriteria() {
-		List<Criteria> crits = new ArrayList<>();
+    /**
+     * Builds the sub-Criteria for a containment edge rule query where the direction
+     * and containment fields must not match.
+     *
+     * Used for getChildRules() where the container node type is in the "to" position and
+     * for getParentRules() where the containee type is in the "from" position.
+     *
+     * @return List<Criteria> covering property permutations defined with either notation or
+     *         explicit direction
+     */
+    private List<Criteria> getOppositeDirectionContainmentCriteria() {
+        List<Criteria> crits = new ArrayList<>();
 
-		crits.add(where(EdgeField.CONTAINS.toString()).is(DirectionNotation.OPPOSITE.toString()));
+        crits.add(where(EdgeField.CONTAINS.toString()).is(DirectionNotation.OPPOSITE.toString()));
 
-		crits.add(where(EdgeField.DIRECTION.toString()).is(Direction.OUT.toString())
-				.and(EdgeField.CONTAINS.toString()).is(Direction.IN.toString()));
+        crits.add(where(EdgeField.DIRECTION.toString()).is(Direction.OUT.toString())
+            .and(EdgeField.CONTAINS.toString()).is(Direction.IN.toString()));
 
-		crits.add(where(EdgeField.DIRECTION.toString()).is(Direction.IN.toString())
-				.and(EdgeField.CONTAINS.toString()).is(Direction.OUT.toString()));
+        crits.add(where(EdgeField.DIRECTION.toString()).is(Direction.IN.toString())
+            .and(EdgeField.CONTAINS.toString()).is(Direction.OUT.toString()));
 
-		return crits;
-	}
+        return crits;
+    }
 
-	//-----rule packaging helpers-----//
-	/**
-	 * Converts the raw output from reading the json file to the Multimap<String key, EdgeRule> format
-	 *
-	 * @param allFound - raw edge rule output read from json file(s)
-	 * 			(could be empty if none found)
-	 * @return Multimap<String, EdgeRule> of node names keys to the EdgeRules where the key takes the form of
-	 * 			{alphabetically first nodetype}|{alphabetically second nodetype}. Will be empty if input
-	 * 			was empty.
-	 * 		ex: buildAlphabetizedKey("l-interface", "logical-link") -> "l-interface|logical-link"
-	 * 			buildAlphabetizedKey("logical-link", "l-interface") -> "l-interface|logical-link"
-	 *
-	 * 	This is alphabetical order to normalize the keys, as sometimes there will be multiple
-	 * 	rules for a pair of node types but the from/to value in the json is flipped for some of them.
-	 */
-	private Multimap<String, EdgeRule> convertToEdgeRules(List<Map<String, String>> allFound) {
-		Multimap<String, EdgeRule> rules = ArrayListMultimap.create();
+    // -----rule packaging helpers-----//
+    /**
+     * Converts the raw output from reading the json file to the Multimap<String key, EdgeRule>
+     * format
+     *
+     * @param allFound - raw edge rule output read from json file(s)
+     *        (could be empty if none found)
+     * @return Multimap<String, EdgeRule> of node names keys to the EdgeRules where the key takes
+     *         the form of
+     *         {alphabetically first nodetype}|{alphabetically second nodetype}. Will be empty if
+     *         input
+     *         was empty.
+     *         ex: buildAlphabetizedKey("l-interface", "logical-link") -> "l-interface|logical-link"
+     *         buildAlphabetizedKey("logical-link", "l-interface") -> "l-interface|logical-link"
+     *
+     *         This is alphabetical order to normalize the keys, as sometimes there will be multiple
+     *         rules for a pair of node types but the from/to value in the json is flipped for some
+     *         of them.
+     */
+    private Multimap<String, EdgeRule> convertToEdgeRules(List<Map<String, String>> allFound) {
+        Multimap<String, EdgeRule> rules = ArrayListMultimap.create();
 
-		TypeAlphabetizer alpher = new TypeAlphabetizer();
+        TypeAlphabetizer alpher = new TypeAlphabetizer();
 
-		for (Map<String, String> raw : allFound) {
-			EdgeRule converted = new EdgeRule(raw);
-			if (converted.getFrom().equals(converted.getTo())) {
-				/* the way the code worked in the past was with outs and
-				 * when we switched it to in the same-node-type to
-				 * same-node-type parent child edges were failing because all
-				 * of the calling code would pass the parent as the left argument,
-				 * so it was either in that method swap the parent/child,
-				 * flip the edge rule or make all callers swap. the last seemed
-				 * like a bad idea. and felt like the edge flip was the better
-				 * of the remaining 2 */
-				converted.flipDirection();
-			}
-			String alphabetizedKey = alpher.buildAlphabetizedKey(raw.get(EdgeField.FROM.toString()), raw.get(EdgeField.TO.toString()));
-			rules.put(alphabetizedKey, converted);
-		}
+        for (Map<String, String> raw : allFound) {
+            EdgeRule converted = new EdgeRule(raw);
+            if (converted.getFrom().equals(converted.getTo())) {
+                /*
+                 * the way the code worked in the past was with outs and
+                 * when we switched it to in the same-node-type to
+                 * same-node-type parent child edges were failing because all
+                 * of the calling code would pass the parent as the left argument,
+                 * so it was either in that method swap the parent/child,
+                 * flip the edge rule or make all callers swap. the last seemed
+                 * like a bad idea. and felt like the edge flip was the better
+                 * of the remaining 2
+                 */
+                converted.flipDirection();
+            }
+            String alphabetizedKey = alpher.buildAlphabetizedKey(raw.get(EdgeField.FROM.toString()),
+                raw.get(EdgeField.TO.toString()));
+            rules.put(alphabetizedKey, converted);
+        }
 
-		return rules;
-	}
+        return rules;
+    }
 
 }

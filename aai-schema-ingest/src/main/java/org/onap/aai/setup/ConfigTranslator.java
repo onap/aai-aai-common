@@ -1,4 +1,4 @@
-/** 
+/**
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,9 +22,6 @@ package org.onap.aai.setup;
 
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
-import org.apache.commons.io.IOUtils;
-import org.onap.aai.edges.JsonIngestor;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -32,40 +29,44 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
+import org.onap.aai.edges.JsonIngestor;
+import org.springframework.beans.factory.annotation.Autowired;
+
 /**
  * Converts the contents of the schema config file
  * (which lists which schema files to be loaded) to
  * the format the Ingestors can work with.
  * 
  */
-public abstract class ConfigTranslator extends Translator{
-	private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(ConfigTranslator.class);
-    
-	protected SchemaLocationsBean bean;
+public abstract class ConfigTranslator extends Translator {
+    private static final EELFLogger LOGGER =
+        EELFManager.getInstance().getLogger(ConfigTranslator.class);
 
-	
-	@Autowired
-	public ConfigTranslator(SchemaLocationsBean schemaLocationbean, SchemaVersions schemaVersions) {
-	    super(schemaVersions);
-		this.bean = schemaLocationbean;
+    protected SchemaLocationsBean bean;
 
-	}
-	
-	/**
-	 * Translates the contents of the schema config file
-	 * into the input for the NodeIngestor
-	 * 
-	 * @return Map of Version to the list of (string) filenames to be 
-	 * ingested for that version
-	 */
-	public abstract Map<SchemaVersion, List<String>> getNodeFiles();
+    @Autowired
+    public ConfigTranslator(SchemaLocationsBean schemaLocationbean, SchemaVersions schemaVersions) {
+        super(schemaVersions);
+        this.bean = schemaLocationbean;
+
+    }
+
+    /**
+     * Translates the contents of the schema config file
+     * into the input for the NodeIngestor
+     * 
+     * @return Map of Version to the list of (string) filenames to be
+     *         ingested for that version
+     */
+    public abstract Map<SchemaVersion, List<String>> getNodeFiles();
 
     public List<InputStream> getVersionNodeStream(SchemaVersion version) {
 
         Map<SchemaVersion, List<String>> filesToIngest = getNodeFiles();
         List<InputStream> streams = new ArrayList<>();
 
-        if(!filesToIngest.containsKey(version)) {
+        if (!filesToIngest.containsKey(version)) {
             return streams;
         }
         List<String> versionFiles = filesToIngest.get(version);
@@ -74,13 +75,13 @@ public abstract class ConfigTranslator extends Translator{
             try {
                 InputStream stream = new FileInputStream(new File(name));
                 String value = IOUtils.toString(stream, Charset.defaultCharset());
-                InputStream bis =(IOUtils.toInputStream(value, Charset.defaultCharset()));
+                InputStream bis = (IOUtils.toInputStream(value, Charset.defaultCharset()));
                 streams.add(bis);
             } catch (FileNotFoundException e) {
-            	//TODO This may have to be cascaded
-                LOGGER.warn("File Not Found"+e.getMessage());
+                // TODO This may have to be cascaded
+                LOGGER.warn("File Not Found" + e.getMessage());
             } catch (IOException e) {
-            	 LOGGER.warn("IOException while reading files"+e.getMessage());
+                LOGGER.warn("IOException while reading files" + e.getMessage());
             }
         }
         return streams;
@@ -90,7 +91,7 @@ public abstract class ConfigTranslator extends Translator{
     public List<String> getJsonPayload(SchemaVersion version) {
         Map<SchemaVersion, List<String>> filesToIngest = getEdgeFiles();
         List<String> jsonPayloads = new ArrayList<>();
-        if(!filesToIngest.containsKey(version)) {
+        if (!filesToIngest.containsKey(version)) {
             return jsonPayloads;
         }
         List<String> versionFiles = filesToIngest.get(version);
@@ -102,14 +103,14 @@ public abstract class ConfigTranslator extends Translator{
 
         return jsonPayloads;
     }
-	
-	/**
-	 * Translates the contents of the schema config file
-	 * into the input for the EdgeIngestor
-	 * 
-	 * @return Map of Version to the List of (String) filenames to be 
-	 * ingested for that version
-	 */
-	public abstract Map<SchemaVersion, List<String>> getEdgeFiles();
+
+    /**
+     * Translates the contents of the schema config file
+     * into the input for the EdgeIngestor
+     * 
+     * @return Map of Version to the List of (String) filenames to be
+     *         ingested for that version
+     */
+    public abstract Map<SchemaVersion, List<String>> getEdgeFiles();
 
 }
