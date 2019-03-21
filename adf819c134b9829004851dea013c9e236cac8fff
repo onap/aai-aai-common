@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8c80086b_d3238130",
+        "filename": "aai-core/src/test/java/org/onap/aai/domain/model/AAIResourcesTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2019-03-21T11:54:54Z",
+      "side": 1,
+      "message": "this test looks minimal. How much extra code coverage does it bring?",
+      "range": {
+        "startLine": 47,
+        "startChar": 0,
+        "endLine": 48,
+        "endChar": 36
+      },
+      "revId": "adf819c134b9829004851dea013c9e236cac8fff",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
