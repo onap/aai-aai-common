@@ -10,7 +10,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,13 +19,14 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aaiutils.oxm;
 
 import com.att.eelf.i18n.EELFResourceManager;
+
 import org.onap.aai.cl.eelf.LogMessageEnum;
 
 public enum OxmModelLoaderMsgs implements LogMessageEnum {
-
 
     /**
      * Invalid Model File
@@ -34,13 +35,13 @@ public enum OxmModelLoaderMsgs implements LogMessageEnum {
      * {1} = error
      */
 
-    INVALID_OXM_FILE,
-    INVALID_OXM_DIR,
+    INVALID_OXM_FILE, INVALID_OXM_DIR,
 
     /**
      * Unable to load OXM schema: {0}
      *
-     * <p>Arguments:
+     * <p>
+     * Arguments:
      * {0} = error
      */
     OXM_LOAD_ERROR,
@@ -48,7 +49,8 @@ public enum OxmModelLoaderMsgs implements LogMessageEnum {
     /**
      * Successfully loaded schema: {0}
      *
-     * <p>Arguments:
+     * <p>
+     * Arguments:
      * {0} = oxm filename
      */
     LOADED_OXM_FILE;

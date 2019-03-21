@@ -17,9 +17,11 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aaiutils.oxm;
 
 import java.util.regex.Pattern;
+
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -45,7 +47,8 @@ public class OxmModelLoaderTest {
         thrown.expect(Exception.class);
         thrown.expectMessage("Failed to load schema");
 
-        OxmModelLoader.loadModels("classpath*:non_existing_aai_oxm*.xml", Pattern.compile("non_existing_aai_oxm_(.*).xml"));
+        OxmModelLoader.loadModels("classpath*:non_existing_aai_oxm*.xml",
+                Pattern.compile("non_existing_aai_oxm_(.*).xml"));
     }
 
 }

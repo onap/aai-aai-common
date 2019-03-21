@@ -10,7 +10,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,6 +19,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aaiutils.oxm;
 
 import java.io.File;
@@ -32,7 +33,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import javax.xml.bind.JAXBException;
+
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
@@ -42,13 +45,11 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 
-
 public class OxmModelLoader {
 
     private static final Pattern AAI_OXM_FILE_PATTERN = Pattern.compile("aai_oxm_(.*).xml");
     private static Map<String, DynamicJAXBContext> versionContextMap = new ConcurrentHashMap<>();
-    private static final Logger LOGGER = LoggerFactory.getInstance()
-        .getLogger(OxmModelLoader.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getInstance().getLogger(OxmModelLoader.class.getName());
 
     public synchronized static void loadModels() throws Exception {
         OxmModelLoader.loadModels("classpath*:/oxm/aai_oxm*.xml", AAI_OXM_FILE_PATTERN);
@@ -64,8 +65,8 @@ public class OxmModelLoader {
                 try {
                     OxmModelLoader.loadModel(matcher.group(1), resource);
                 } catch (Exception e) {
-                    LOGGER.error(OxmModelLoaderMsgs.OXM_LOAD_ERROR, "Failed to load " + resource.getFilename()
-                        + ": " + e.getMessage());
+                    LOGGER.error(OxmModelLoaderMsgs.OXM_LOAD_ERROR,
+                            "Failed to load " + resource.getFilename() + ": " + e.getMessage());
                     throw new Exception("Failed to load schema");
                 }
             }
@@ -82,7 +83,6 @@ public class OxmModelLoader {
             throw new Exception("Failed to load schema");
         }
         return resources;
-
 
     }
 
@@ -114,20 +114,19 @@ public class OxmModelLoader {
         loadModel(version, file.getName(), inputStream);
     }
 
-    private synchronized static void loadModel(String version, Resource resource)
-        throws JAXBException, IOException {
+    private synchronized static void loadModel(String version, Resource resource) throws JAXBException, IOException {
         InputStream inputStream = resource.getInputStream();
         loadModel(version, resource.getFilename(), inputStream);
     }
 
     private synchronized static void loadModel(String version, String resourceName, InputStream inputStream)
-        throws JAXBException, IOException {
+            throws JAXBException, IOException {
 
         Map<String, Object> properties = new HashMap<>();
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, inputStream);
 
         final DynamicJAXBContext jaxbContext = DynamicJAXBContextFactory
-            .createContextFromOXM(Thread.currentThread().getContextClassLoader(), properties);
+                .createContextFromOXM(Thread.currentThread().getContextClassLoader(), properties);
 
         versionContextMap.put(version, jaxbContext);
 
