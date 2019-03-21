@@ -9,7 +9,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,17 +18,19 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aaiauth.auth;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.onap.aaiauth.util.AuthConstants;
 
+import org.onap.aaiauth.util.AuthConstants;
 
 public class AuthCore {
 
@@ -53,8 +55,9 @@ public class AuthCore {
 
     /**
      * Loads the auth file and caches a list of authorized users.
+     * 
      * @param authFilename
-     *        -  Absolute path of the file where authorized users are listed.
+     *        - Absolute path of the file where authorized users are listed.
      */
     public synchronized void loadUsers(String authFilename) throws Exception {
         users = new HashMap<>();
@@ -142,6 +145,7 @@ public class AuthCore {
 
         /**
          * Returns true if the user has permissions for the function, otherwise returns false.
+         * 
          * @param checkFunc
          *        - String value of the function.
          */
@@ -176,6 +180,7 @@ public class AuthCore {
 
         /**
          * Remove the function from the user's list of allowed functions.
+         * 
          * @param delFunc
          *        - String value of the function.
          */
@@ -187,6 +192,7 @@ public class AuthCore {
 
         /**
          * Returns true if the user has permissions to use the function, otherwise returns false.
+         * 
          * @param afunc
          *        - String value of the function.
          */
@@ -207,6 +213,7 @@ public class AuthCore {
 
     /**
      * Returns true if the user is allowed to access a function.
+     * 
      * @param username
      *        - String value of user
      * @param authFunction
