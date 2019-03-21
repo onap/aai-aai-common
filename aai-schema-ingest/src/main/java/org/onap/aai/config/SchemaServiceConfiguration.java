@@ -19,6 +19,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.config;
 
 import org.onap.aai.setup.*;

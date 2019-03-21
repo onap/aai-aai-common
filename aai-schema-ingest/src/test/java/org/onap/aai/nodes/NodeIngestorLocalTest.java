@@ -20,14 +20,26 @@
 
 package org.onap.aai.nodes;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.*;
+
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+import javax.xml.bind.SchemaOutputResolver;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.onap.aai.restclient.MockProvider;
 import org.onap.aai.config.NodesConfiguration;
+import org.onap.aai.restclient.MockProvider;
 import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.testutils.TestUtilConfigTranslator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,19 +51,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.w3c.dom.Document;
 
-import javax.xml.bind.SchemaOutputResolver;
-import javax.xml.transform.*;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
-
 @RunWith(SpringRunner.class)
-@TestPropertySource(properties = { "schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-wiring-test-local-node.properties" })
+@TestPropertySource(
+        properties = {
+                "schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-wiring-test-local-node.properties"})
 @ContextConfiguration(classes = {TestUtilConfigTranslator.class, NodesConfiguration.class})
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
@@ -59,8 +62,8 @@ import static org.junit.Assert.*;
 @SpringBootTest
 public class NodeIngestorLocalTest {
 
-    //set thrown.expect to whatever a specific test needs
-    //this establishes a default of expecting no exceptions to be thrown
+    // set thrown.expect to whatever a specific test needs
+    // this establishes a default of expecting no exceptions to be thrown
     @Rule
     public ExpectedException thrown = ExpectedException.none();
     @Autowired
@@ -75,21 +78,20 @@ public class NodeIngestorLocalTest {
         transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
         transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
 
-        transformer.transform(new DOMSource(doc),
-            new StreamResult(new OutputStreamWriter(out, "UTF-8")));
+        transformer.transform(new DOMSource(doc), new StreamResult(new OutputStreamWriter(out, "UTF-8")));
     }
 
     @Test
     public void testGetContextForVersion11() {
         DynamicJAXBContext ctx10 = nodeIngestor.getContextForVersion(new SchemaVersion("v10"));
 
-        //should work bc Foo is valid in test_network_v10 schema
+        // should work bc Foo is valid in test_network_v10 schema
         DynamicEntity foo10 = ctx10.newDynamicEntity("Foo");
 
         foo10.set("fooId", "bar");
         assertTrue("bar".equals(foo10.get("fooId")));
 
-        //should work bc Bar is valid in test_business_v10 schema
+        // should work bc Bar is valid in test_business_v10 schema
         DynamicEntity bar10 = ctx10.newDynamicEntity("Bar");
         bar10.set("barId", "bar2");
         assertTrue("bar2".equals(bar10.get("barId")));
@@ -98,7 +100,7 @@ public class NodeIngestorLocalTest {
 
         DynamicJAXBContext ctx11 = nodeIngestor.getContextForVersion(new SchemaVersion("v11"));
 
-        //should work bc Foo.quantity is valid in test_network_v11 schema
+        // should work bc Foo.quantity is valid in test_network_v11 schema
         DynamicEntity foo11 = ctx11.newDynamicEntity("Foo");
         foo11.set("quantity", "12");
         assertTrue("12".equals(foo11.get("quantity")));
@@ -109,9 +111,8 @@ public class NodeIngestorLocalTest {
         XSDOutputResolver outputResolver11 = new XSDOutputResolver();
         ctx11.generateSchema(outputResolver11);
 
-
         thrown.expect(IllegalArgumentException.class);
-        //should fail bc Quux not in v10 test schema
+        // should fail bc Quux not in v10 test schema
         ctx10.newDynamicEntity("Quux");
     }
 
@@ -157,8 +158,7 @@ public class NodeIngestorLocalTest {
     private class XSDOutputResolver extends SchemaOutputResolver {
 
         @Override
-        public Result createOutput(String namespaceUri, String suggestedFileName)
-            throws IOException {
+        public Result createOutput(String namespaceUri, String suggestedFileName) throws IOException {
 
             // create new file
             // create stream result

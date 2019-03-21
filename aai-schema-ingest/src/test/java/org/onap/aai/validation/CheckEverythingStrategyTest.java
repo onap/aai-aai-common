@@ -30,17 +30,17 @@ public class CheckEverythingStrategyTest {
     @Test
     public void test() {
         CheckEverythingStrategy strat = new CheckEverythingStrategy();
-        //no issues so nothing notified, should be fine
+        // no issues so nothing notified, should be fine
         assertTrue(strat.isOK());
         assertTrue("No errors found.".equals(strat.getErrorMsg()));
-        
-        //simulate post one error
+
+        // simulate post one error
         String testError1 = "oh noes a problem with the gooble-gobble edge rule!";
         strat.notifyOnError(testError1);
         assertFalse(strat.isOK());
         assertTrue(testError1.equals(strat.getErrorMsg()));
-        
-        //simulate multiple found
+
+        // simulate multiple found
         String testError2 = "error 2";
         String testError3 = "duplicate labels not everything is a fork";
         strat.notifyOnError(testError2);

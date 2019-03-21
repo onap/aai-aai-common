@@ -19,6 +19,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.config;
 
 import org.onap.aai.setup.*;
@@ -29,7 +30,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConditionalOnProperty(prefix = "schema.translator.list", value = "config", matchIfMissing = true)
 public class TranslatorConfiguration {
-    //TODO check if you can put dependsOn to reduce number of config files
+    // TODO check if you can put dependsOn to reduce number of config files
     @Autowired(required = false)
     ConfigTranslator configTranslator;
 

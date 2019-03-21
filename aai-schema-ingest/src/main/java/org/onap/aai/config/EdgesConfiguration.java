@@ -19,7 +19,13 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.config;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.onap.aai.edges.EdgeIngestor;
 import org.onap.aai.setup.Translator;
@@ -30,11 +36,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
-
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 @Import({SchemaServiceConfiguration.class, ConfigConfiguration.class, TranslatorConfiguration.class})
 @PropertySource(value = "classpath:schema-ingest.properties", ignoreResourceNotFound = true)

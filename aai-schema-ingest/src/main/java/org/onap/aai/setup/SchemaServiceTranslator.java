@@ -17,10 +17,17 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.setup;
 
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
+
+import java.io.*;
+import java.util.*;
+
+import javax.ws.rs.HttpMethod;
+
 import org.onap.aai.restclient.RestClient;
 import org.onap.aai.restclient.RestClientFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,10 +38,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
-import javax.ws.rs.HttpMethod;
-import java.io.*;
-import java.util.*;
-
 /**
  * <b>AAIConfigTranslator</b> is responsible for looking at the schema files and
  * edge files based on the available versions Also has the ability to exclude
@@ -42,68 +45,66 @@ import java.util.*;
  */
 public class SchemaServiceTranslator extends Translator {
 
-	private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(SchemaServiceTranslator.class);
+    private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(SchemaServiceTranslator.class);
 
-	private static final String SchemaServiceClientType = "schema.service";
+    private static final String SchemaServiceClientType = "schema.service";
 
-	@Value("${schema.service.nodes.endpoint}")
-	private String nodeSchemaUri;
+    @Value("${schema.service.nodes.endpoint}")
+    private String nodeSchemaUri;
 
-	@Value("${schema.service.edges.endpoint}")
-	private String edgeSchemaUri;
+    @Value("${schema.service.edges.endpoint}")
+    private String edgeSchemaUri;
 
-	@Autowired
-	private RestClientFactory restClientFactory;
+    @Autowired
+    private RestClientFactory restClientFactory;
 
-	public SchemaServiceTranslator(SchemaVersions schemaVersions) {
-		super(schemaVersions);
-	}
+    public SchemaServiceTranslator(SchemaVersions schemaVersions) {
+        super(schemaVersions);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.onap.aai.setup.ConfigTranslator#getNodeFiles()
-	 */
-
-	@Override
-	public List<InputStream> getVersionNodeStream(SchemaVersion version) throws IOException {
-
-		List<InputStream> inputStreams = new ArrayList<>();
-		String content = "";
-		String uri = nodeSchemaUri + version.toString();
-		Map<String, String> headersMap = new HashMap<>();
-
-		headersMap.put(HttpHeaders.ACCEPT, MediaType.APPLICATION_XML.toString());
-        headersMap.put(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_XML.toString());
- 		RestClient restClient = restClientFactory.getRestClient(SchemaServiceClientType);
- 		ResponseEntity<Resource> schemaResponse = restClient.getGetResource(content, uri,
-				headersMap);
-        verifySchemaServiceResponse(schemaResponse.getStatusCode());
-        LOGGER.debug("SchemaResponse Status code" + schemaResponse.getStatusCode());
-		inputStreams.add(schemaResponse.getBody().getInputStream());
-		return inputStreams;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.onap.aai.setup.ConfigTranslator#getNodeFiles()
+     */
 
     @Override
-	public List<String> getJsonPayload(SchemaVersion version) throws IOException {
-		/*
-		 * Call Schema MS to get versions using RestTemplate
-		 */
-		List<String> inputStreams = new ArrayList<>();
-		String content = "";
-		String uri = edgeSchemaUri + version.toString();
-		Map<String, String> headersMap = new HashMap<>();
+    public List<InputStream> getVersionNodeStream(SchemaVersion version) throws IOException {
 
-		RestClient restClient = restClientFactory.getRestClient(SchemaServiceClientType);
+        List<InputStream> inputStreams = new ArrayList<>();
+        String content = "";
+        String uri = nodeSchemaUri + version.toString();
+        Map<String, String> headersMap = new HashMap<>();
 
-        ResponseEntity<String> schemaResponse = restClient.getGetRequest(content, uri,
-				headersMap);
+        headersMap.put(HttpHeaders.ACCEPT, MediaType.APPLICATION_XML.toString());
+        headersMap.put(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_XML.toString());
+        RestClient restClient = restClientFactory.getRestClient(SchemaServiceClientType);
+        ResponseEntity<Resource> schemaResponse = restClient.getGetResource(content, uri, headersMap);
         verifySchemaServiceResponse(schemaResponse.getStatusCode());
         LOGGER.debug("SchemaResponse Status code" + schemaResponse.getStatusCode());
-		inputStreams.add(schemaResponse.getBody());
-		return inputStreams;
+        inputStreams.add(schemaResponse.getBody().getInputStream());
+        return inputStreams;
+    }
 
-	}
+    @Override
+    public List<String> getJsonPayload(SchemaVersion version) throws IOException {
+        /*
+         * Call Schema MS to get versions using RestTemplate
+         */
+        List<String> inputStreams = new ArrayList<>();
+        String content = "";
+        String uri = edgeSchemaUri + version.toString();
+        Map<String, String> headersMap = new HashMap<>();
+
+        RestClient restClient = restClientFactory.getRestClient(SchemaServiceClientType);
+
+        ResponseEntity<String> schemaResponse = restClient.getGetRequest(content, uri, headersMap);
+        verifySchemaServiceResponse(schemaResponse.getStatusCode());
+        LOGGER.debug("SchemaResponse Status code" + schemaResponse.getStatusCode());
+        inputStreams.add(schemaResponse.getBody());
+        return inputStreams;
+
+    }
 
     private void verifySchemaServiceResponse(HttpStatus statusCode) throws IOException {
         if (statusCode != HttpStatus.OK) {

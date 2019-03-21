@@ -25,7 +25,7 @@ public class EdgeIngestorException extends Exception {
         super(msg);
     }
 
-    public EdgeIngestorException(Throwable throwable){
+    public EdgeIngestorException(Throwable throwable) {
         super(throwable);
     }
 }

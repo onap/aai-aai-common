@@ -17,44 +17,45 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.edges.enums;
 
 import org.apache.tinkerpop.gremlin.structure.Direction;
 
 public enum AAIDirection {
-	IN, OUT, BOTH, NONE;
+    IN, OUT, BOTH, NONE;
 
-	public AAIDirection opposite() {
-		if (this.equals(OUT)) {
-			return IN;
-		} else if (this.equals(IN)) {
-			return OUT;
-		} else {
-			return BOTH;
-		}
-	}
-	
-	public static AAIDirection getValue(String aaidir) {
-		if (OUT.toString().equals(aaidir)) {
-			return OUT;
-		} else if (IN.toString().equals(aaidir)) {
-			return IN;
-		} else if (NONE.toString().equals(aaidir)) {
-			return NONE;
-		} else { //should be BOTH
-			return BOTH;
-		}
-	}
-	
-	public static AAIDirection getValue(Direction dir) {
-		if (dir == Direction.OUT) {
-			return OUT;
-		} else if (dir == Direction.IN) {
-			return IN;
-		} else if (dir == Direction.BOTH) {
-			return BOTH;
-		} else {
-			return NONE;
-		}
-	}
+    public AAIDirection opposite() {
+        if (this.equals(OUT)) {
+            return IN;
+        } else if (this.equals(IN)) {
+            return OUT;
+        } else {
+            return BOTH;
+        }
+    }
+
+    public static AAIDirection getValue(String aaidir) {
+        if (OUT.toString().equals(aaidir)) {
+            return OUT;
+        } else if (IN.toString().equals(aaidir)) {
+            return IN;
+        } else if (NONE.toString().equals(aaidir)) {
+            return NONE;
+        } else { // should be BOTH
+            return BOTH;
+        }
+    }
+
+    public static AAIDirection getValue(Direction dir) {
+        if (dir == Direction.OUT) {
+            return OUT;
+        } else if (dir == Direction.IN) {
+            return IN;
+        } else if (dir == Direction.BOTH) {
+            return BOTH;
+        } else {
+            return NONE;
+        }
+    }
 }

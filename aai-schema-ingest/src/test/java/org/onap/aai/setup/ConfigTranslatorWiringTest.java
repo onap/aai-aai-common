@@ -20,6 +20,12 @@
 
 package org.onap.aai.setup;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.List;
+import java.util.Map;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.onap.aai.testutils.ConfigTranslatorForWiringTest;
@@ -29,20 +35,17 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {SchemaLocationsBean.class, SchemaConfigVersions.class, ConfigTranslatorForWiringTest.class})
-@TestPropertySource(properties = {"schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-wiring-test-local.properties"})
+@ContextConfiguration(
+        classes = {SchemaLocationsBean.class, SchemaConfigVersions.class, ConfigTranslatorForWiringTest.class})
+@TestPropertySource(
+        properties = {
+                "schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-wiring-test-local.properties"})
 @SpringBootTest
 public class ConfigTranslatorWiringTest {
     @Autowired
     ConfigTranslator ct;
-    
+
     @Test
     public void test() {
         assertNotNull(ct);
@@ -50,7 +53,7 @@ public class ConfigTranslatorWiringTest {
         assertTrue(nodes.containsKey(new SchemaVersion("v10")));
         assertTrue(1 == nodes.get(new SchemaVersion("v10")).size());
         assertTrue("src/test/resources/oxm/test_business_v10.xml".equals(nodes.get(new SchemaVersion("v10")).get(0)));
-        
+
         Map<SchemaVersion, List<String>> edges = ct.getEdgeFiles();
         assertTrue(edges.containsKey(new SchemaVersion("v10")));
         assertTrue(1 == edges.get(new SchemaVersion("v10")).size());

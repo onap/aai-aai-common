@@ -17,7 +17,14 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.setup;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.io.IOException;
+import java.util.List;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,20 +37,15 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.io.IOException;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 @RunWith(SpringJUnit4ClassRunner.class)
-@TestPropertySource(properties = { "schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-ss-wiring-test.properties" })
+@TestPropertySource(
+        properties = {"schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-ss-wiring-test.properties"})
 @ContextConfiguration(classes = {MockProvider.class, SchemaVersionsBean.class})
 @SpringBootTest
 public class SchemaVersionsBeanTest {
 
-    //set thrown.expect to whatever a specific test needs
-    //this establishes a default of expecting no exceptions to be thrown
+    // set thrown.expect to whatever a specific test needs
+    // this establishes a default of expecting no exceptions to be thrown
     @Rule
     public ExpectedException thrown = ExpectedException.none();
     @Autowired
@@ -69,12 +71,14 @@ public class SchemaVersionsBeanTest {
         List<SchemaVersion> versionsList = SchemaVersionsBean.getVersions();
         assertNotNull(versionsList);
         SchemaVersions versions = SchemaVersionsBean.getSchemaVersions();
-        /*//assertEquals(versions.getAppRootVersion(), new SchemaVersion("v15"));
-        assertEquals(versions.getAppRootVersion(), new SchemaVersion("v11"));
-        assertEquals(versions.getDepthVersion(), new SchemaVersion("v10"));
-        assertEquals(versions.getEdgeLabelVersion(), new SchemaVersion("v12"));
-        assertEquals(versions.getNamespaceChangeVersion(), new SchemaVersion("v11"));
-        assertEquals(versions.getRelatedLinkVersion(), new SchemaVersion("v10"));*/
+        /*
+         * //assertEquals(versions.getAppRootVersion(), new SchemaVersion("v15"));
+         * assertEquals(versions.getAppRootVersion(), new SchemaVersion("v11"));
+         * assertEquals(versions.getDepthVersion(), new SchemaVersion("v10"));
+         * assertEquals(versions.getEdgeLabelVersion(), new SchemaVersion("v12"));
+         * assertEquals(versions.getNamespaceChangeVersion(), new SchemaVersion("v11"));
+         * assertEquals(versions.getRelatedLinkVersion(), new SchemaVersion("v10"));
+         */
 
         assertEquals(versions.getAppRootVersion(), new SchemaVersion("v15"));
         assertEquals(versions.getDepthVersion(), new SchemaVersion("v15"));

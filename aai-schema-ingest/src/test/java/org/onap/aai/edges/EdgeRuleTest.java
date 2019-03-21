@@ -17,6 +17,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.edges;
 
 import static org.junit.Assert.*;
@@ -44,12 +45,12 @@ public class EdgeRuleTest {
         rule.put("private", "true");
 
         EdgeRule r = new EdgeRule(rule);
-        
+
         r.flipDirection();
         assertTrue(Direction.IN.equals(r.getDirection()));
         r.flipDirection();
         assertTrue(Direction.OUT.equals(r.getDirection()));
-        
+
         rule.put("direction", "BOTH");
         EdgeRule r2 = new EdgeRule(rule);
         r2.flipDirection();

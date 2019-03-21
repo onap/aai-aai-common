@@ -25,6 +25,20 @@ package org.onap.aai.nodes;
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 import com.google.common.base.CaseFormat;
+
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.annotation.PostConstruct;
+import javax.xml.XMLConstants;
+import javax.xml.bind.JAXBException;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
@@ -40,24 +54,12 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import javax.annotation.PostConstruct;
-import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBException;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 @Component
 /*
-  NodeIngestor - ingests A&AI OXM files per given config, serves DynamicJAXBContext per version
+ * NodeIngestor - ingests A&AI OXM files per given config, serves DynamicJAXBContext per version
  */
-@PropertySource(value = "classpath:schema-ingest.properties", ignoreResourceNotFound=true)
-@PropertySource(value = "file:${schema.ingest.file}", ignoreResourceNotFound=true)
+@PropertySource(value = "classpath:schema-ingest.properties", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${schema.ingest.file}", ignoreResourceNotFound = true)
 public class NodeIngestor {
 
     private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(NodeIngestor.class);
@@ -70,14 +72,15 @@ public class NodeIngestor {
     private Set<Translator> translators;
 
     private CaseFormatStore caseFormatStore;
-    //TODO : See if you can get rid of InputStream resets
+    // TODO : See if you can get rid of InputStream resets
 
     /**
      * Instantiates the NodeIngestor bean.
+     * 
      * @param translatorSet
      */
 
-     @Autowired
+    @Autowired
     public NodeIngestor(Set<Translator> translatorSet) {
         this.translators = translatorSet;
         this.caseFormatStore = new CaseFormatStore();
@@ -106,7 +109,7 @@ public class NodeIngestor {
             this.localSchema = "true";
         }
 
-	    Boolean retrieveLocalSchema = Boolean.parseBoolean(this.localSchema);
+        Boolean retrieveLocalSchema = Boolean.parseBoolean(this.localSchema);
         /*
          * Set this to default schemaVersion
          */
@@ -119,8 +122,8 @@ public class NodeIngestor {
                 List<InputStream> inputStreams = retrieveOXM(version, translator);
                 LOGGER.debug("Retrieved OXMs from SchemaService");
                 /*
-                IOUtils.copy and copy the inputstream
-                */
+                 * IOUtils.copy and copy the inputstream
+                 */
                 if (inputStreams.isEmpty()) {
                     continue;
                 }
@@ -151,14 +154,15 @@ public class NodeIngestor {
         return DynamicJAXBContextFactory.createContextFromOXM(this.getClass().getClassLoader(), properties);
     }
 
-    private void setAllTypesAndProperties(SchemaVersion version, List<InputStream> inputStreams) throws ParserConfigurationException, IOException, SAXException {
+    private void setAllTypesAndProperties(SchemaVersion version, List<InputStream> inputStreams)
+            throws ParserConfigurationException, IOException, SAXException {
         Set<String> types = new HashSet<>();
         final DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         docFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
         final DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 
         for (InputStream inputStream : inputStreams) {
-            //TODO Change this
+            // TODO Change this
             inputStream.reset();
             final Document doc = docBuilder.parse(inputStream);
             final NodeList list = doc.getElementsByTagName("java-type");
@@ -170,7 +174,7 @@ public class NodeIngestor {
         typesPerVersion.put(version, types);
     }
 
-    private void getAllNodeTypes(NodeList list, Set<String> types){
+    private void getAllNodeTypes(NodeList list, Set<String> types) {
 
         for (int i = 0; i < list.getLength(); i++) {
             String type = list.item(i).getAttributes().getNamedItem("name").getNodeValue();
@@ -178,7 +182,8 @@ public class NodeIngestor {
         }
     }
 
-    private Document createCombinedSchema(List<InputStream> inputStreams, SchemaVersion version, boolean localSchema) throws ParserConfigurationException, SAXException, IOException {
+    private Document createCombinedSchema(List<InputStream> inputStreams, SchemaVersion version, boolean localSchema)
+            throws ParserConfigurationException, SAXException, IOException {
         if (localSchema) {
             return createCombinedSchema(inputStreams, version);
         }
@@ -191,7 +196,8 @@ public class NodeIngestor {
         return masterDocBuilder.parse(inputStream);
     }
 
-    private Document createCombinedSchema(List<InputStream> inputStreams, SchemaVersion version) throws ParserConfigurationException, SAXException, IOException {
+    private Document createCombinedSchema(List<InputStream> inputStreams, SchemaVersion version)
+            throws ParserConfigurationException, SAXException, IOException {
         final DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         docFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
         final DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -247,7 +253,6 @@ public class NodeIngestor {
         return schemaPerVersion.get(v);
     }
 
-
     public SchemaVersion getVersionFromClassName(String classname) {
         Matcher m = classNamePattern.matcher(classname);
         if (m.find()) {
@@ -259,26 +264,24 @@ public class NodeIngestor {
     }
 
     private List<InputStream> retrieveOXM(SchemaVersion version, Translator translator) throws IOException {
-	    /*
-	    Call Schema MS to get versions using RestTemplate or Local
-	     */
+        /*
+         * Call Schema MS to get versions using RestTemplate or Local
+         */
         return translator.getVersionNodeStream(version);
 
     }
 
     private InputStream getShell(SchemaVersion v) {
-        String source = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-            "<xml-bindings xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence/oxm\" package-name=\"inventory.aai.onap.org." + v.toString().toLowerCase() + "\" xml-mapping-metadata-complete=\"true\">\n" +
-            "	<xml-schema element-form-default=\"QUALIFIED\">\n" +
-            "		<xml-ns namespace-uri=\"http://org.onap.aai.inventory/" + v.toString().toLowerCase() + "\" />\n" +
-            "	</xml-schema>\n" +
-            "	<java-types>\n" +
-            "	</java-types>\n" +
-            "</xml-bindings>";
+        String source = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<xml-bindings xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence/oxm\" package-name=\"inventory.aai.onap.org."
+                + v.toString().toLowerCase() + "\" xml-mapping-metadata-complete=\"true\">\n"
+                + "	<xml-schema element-form-default=\"QUALIFIED\">\n"
+                + "		<xml-ns namespace-uri=\"http://org.onap.aai.inventory/" + v.toString().toLowerCase() + "\" />\n"
+                + "	</xml-schema>\n" + "	<java-types>\n" + "	</java-types>\n" + "</xml-bindings>";
         return new ByteArrayInputStream(source.getBytes(StandardCharsets.UTF_8));
     }
 
-    public CaseFormatStore getCaseFormatStore(){
+    public CaseFormatStore getCaseFormatStore() {
         return caseFormatStore;
     }
 }

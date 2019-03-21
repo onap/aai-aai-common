@@ -17,16 +17,18 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.setup;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Component("schemaConfigVersions")
 @ConditionalOnExpression("'${schema.translator.list:config}'.contains('config') || '${schema.service.versions.override:false}'.equals('true')")

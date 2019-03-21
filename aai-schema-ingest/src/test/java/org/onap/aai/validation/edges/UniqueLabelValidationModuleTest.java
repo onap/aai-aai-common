@@ -22,14 +22,14 @@ package org.onap.aai.validation.edges;
 
 import static org.junit.Assert.*;
 
+import com.jayway.jsonpath.DocumentContext;
+
 import java.util.*;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onap.aai.edges.JsonIngestor;
 import org.onap.aai.setup.SchemaVersion;
-
-import com.jayway.jsonpath.DocumentContext;
 
 public class UniqueLabelValidationModuleTest {
     private static List<DocumentContext> ctxs;
@@ -43,7 +43,7 @@ public class UniqueLabelValidationModuleTest {
         testFiles.add("src/test/resources/edgeRules/labelValidationTest1.json");
         testFiles.add("src/test/resources/edgeRules/labelValidationTest2.json");
         testRules.put(LATEST, testFiles);
-        
+
         JsonIngestor ji = new JsonIngestor();
         ctxs = ji.ingest(testRules).get(LATEST);
         validator = new UniqueLabelValidationModule();
@@ -54,13 +54,13 @@ public class UniqueLabelValidationModuleTest {
         assertTrue("".equals(validator.validate("human|monster", ctxs)));
         assertTrue("".equals(validator.validate("monster|human", ctxs)));
     }
-    
+
     @Test
     public void testValidDupLabelButDiffPairs() {
         assertTrue("".equals(validator.validate("human|strange-and-interesting-plant", ctxs)));
         assertTrue("".equals(validator.validate("strange-and-interesting-plant|human", ctxs)));
     }
-    
+
     @Test
     public void testValidAcrossFiles() {
         assertTrue("".equals(validator.validate("human|toaster", ctxs)));
@@ -72,19 +72,19 @@ public class UniqueLabelValidationModuleTest {
         assertTrue(validator.validate("sphinx|monster", ctxs).contains("has multiple rules using the same label"));
         assertTrue(validator.validate("monster|sphinx", ctxs).contains("has multiple rules using the same label"));
     }
-    
+
     @Test
     public void testInvalidSetOneFileJustCousins() {
         assertTrue(validator.validate("griffin|hippogriff", ctxs).contains("has multiple rules using the same label"));
         assertTrue(validator.validate("hippogriff|griffin", ctxs).contains("has multiple rules using the same label"));
     }
-    
+
     @Test
     public void testInvalidSetMultipleFiles() {
         assertTrue(validator.validate("lava|floor", ctxs).contains("has multiple rules using the same label"));
         assertTrue(validator.validate("floor|lava", ctxs).contains("has multiple rules using the same label"));
     }
-    
+
     @Test
     public void testInvalidCopyInOtherFile() {
         assertTrue(validator.validate("badger|mushroom", ctxs).contains("has multiple rules using the same label"));

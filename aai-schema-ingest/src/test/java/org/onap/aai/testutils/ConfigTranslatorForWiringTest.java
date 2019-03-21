@@ -20,14 +20,15 @@
 
 package org.onap.aai.testutils;
 
-import org.onap.aai.setup.ConfigTranslator;
-import org.onap.aai.setup.SchemaLocationsBean;
-import org.onap.aai.setup.SchemaVersion;
-import org.onap.aai.setup.SchemaConfigVersions;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+
+import org.onap.aai.setup.ConfigTranslator;
+import org.onap.aai.setup.SchemaConfigVersions;
+import org.onap.aai.setup.SchemaLocationsBean;
+import org.onap.aai.setup.SchemaVersion;
 
 public class ConfigTranslatorForWiringTest extends ConfigTranslator {
 

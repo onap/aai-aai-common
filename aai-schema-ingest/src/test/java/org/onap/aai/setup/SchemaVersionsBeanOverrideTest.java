@@ -17,7 +17,14 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.setup;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.io.IOException;
+import java.util.List;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,20 +37,16 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.io.IOException;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 @RunWith(SpringJUnit4ClassRunner.class)
-@TestPropertySource(properties = { "schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-ss-wiring-override-test.properties" })
+@TestPropertySource(
+        properties = {
+                "schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-ss-wiring-override-test.properties"})
 @ContextConfiguration(classes = {MockProvider.class, SchemaVersionsBean.class, SchemaConfigVersions.class})
 @SpringBootTest
 public class SchemaVersionsBeanOverrideTest {
 
-    //set thrown.expect to whatever a specific test needs
-    //this establishes a default of expecting no exceptions to be thrown
+    // set thrown.expect to whatever a specific test needs
+    // this establishes a default of expecting no exceptions to be thrown
     @Rule
     public ExpectedException thrown = ExpectedException.none();
     @Autowired

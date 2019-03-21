@@ -17,10 +17,9 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.edges.enums;
 
 public enum EdgeType {
-	COUSIN,
-	TREE,
-	ALL;
+    COUSIN, TREE, ALL;
 }

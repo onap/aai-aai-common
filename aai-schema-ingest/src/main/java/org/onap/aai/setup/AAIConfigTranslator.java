@@ -17,6 +17,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.setup;
 
 import java.io.File;
@@ -35,79 +36,67 @@ import java.util.stream.Stream;
  */
 public class AAIConfigTranslator extends ConfigTranslator {
 
-    private static final String FILESEP = (System.getProperty("file.separator") == null) ? "/" : System.getProperty("file.separator");
+    private static final String FILESEP =
+            (System.getProperty("file.separator") == null) ? "/" : System.getProperty("file.separator");
 
     public AAIConfigTranslator(SchemaLocationsBean bean, SchemaConfigVersions schemaVersions) {
-		super(bean, schemaVersions);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.onap.aai.setup.ConfigTranslator#getNodeFiles()
-	 */
-	@Override
-	public Map<SchemaVersion, List<String>> getNodeFiles() {
+        super(bean, schemaVersions);
+    }
 
-		Map<SchemaVersion, List<String>> files = new TreeMap<>();
-		for (SchemaVersion v : schemaVersions.getVersions()) {
-			List<String> container = getVersionNodeFiles(v);
-			files.put(v, container);
-		}
-		
-		return files;
-	}
-	
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.onap.aai.setup.ConfigTranslator#getNodeFiles()
+     */
+    @Override
+    public Map<SchemaVersion, List<String>> getNodeFiles() {
 
-	private List<String> getVersionNodeFiles(SchemaVersion v) {
-	    return getVersionFiles(
-	    	bean.getNodeDirectory(),
-			v,
-			() -> bean.getNodesInclusionPattern().stream(),
-			() -> bean.getNodesExclusionPattern().stream()
-		);
-	}
-	
+        Map<SchemaVersion, List<String>> files = new TreeMap<>();
+        for (SchemaVersion v : schemaVersions.getVersions()) {
+            List<String> container = getVersionNodeFiles(v);
+            files.put(v, container);
+        }
 
-	/* (non-Javadoc)
-	 * @see org.onap.aai.setup.ConfigTranslator#getEdgeFiles()
-	 */
-	@Override
-	public Map<SchemaVersion, List<String>> getEdgeFiles() {
+        return files;
+    }
 
-		Map<SchemaVersion, List<String>> files = new TreeMap<>();
-		for (SchemaVersion v : schemaVersions.getVersions()) {
-			List<String> container = getVersionEdgeFiles(v);
-			files.put(v, container);
-		}
+    private List<String> getVersionNodeFiles(SchemaVersion v) {
+        return getVersionFiles(bean.getNodeDirectory(), v, () -> bean.getNodesInclusionPattern().stream(),
+                () -> bean.getNodesExclusionPattern().stream());
+    }
 
-		return files;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.onap.aai.setup.ConfigTranslator#getEdgeFiles()
+     */
+    @Override
+    public Map<SchemaVersion, List<String>> getEdgeFiles() {
 
-	private List<String> getVersionEdgeFiles(SchemaVersion v) {
+        Map<SchemaVersion, List<String>> files = new TreeMap<>();
+        for (SchemaVersion v : schemaVersions.getVersions()) {
+            List<String> container = getVersionEdgeFiles(v);
+            files.put(v, container);
+        }
 
-		return getVersionFiles(
-				bean.getEdgeDirectory(),
-				v,
-				() -> bean.getEdgesInclusionPattern().stream(),
-				() -> bean.getEdgesExclusionPattern().stream()
-		);
-	}
+        return files;
+    }
 
-	private List<String> getVersionFiles(
-			String startDirectory,
-			SchemaVersion schemaVersion,
-			Supplier<Stream<String>> inclusionPattern,
-			Supplier<Stream<String>> exclusionPattern
-	){
+    private List<String> getVersionEdgeFiles(SchemaVersion v) {
 
-		List<String> container;
-		final String directoryName = startDirectory + FILESEP + schemaVersion.toString() + FILESEP;
-		container = Arrays.stream(new File(directoryName).listFiles())
-				.map(File::getName)
-				.filter(name -> inclusionPattern.get().anyMatch(name::matches))
-				.map(name -> directoryName + name)
-				.filter(name -> exclusionPattern.get().noneMatch(name::matches))
-				.collect(Collectors.toList());
+        return getVersionFiles(bean.getEdgeDirectory(), v, () -> bean.getEdgesInclusionPattern().stream(),
+                () -> bean.getEdgesExclusionPattern().stream());
+    }
 
-		return container;
-	}
+    private List<String> getVersionFiles(String startDirectory, SchemaVersion schemaVersion,
+            Supplier<Stream<String>> inclusionPattern, Supplier<Stream<String>> exclusionPattern) {
+
+        List<String> container;
+        final String directoryName = startDirectory + FILESEP + schemaVersion.toString() + FILESEP;
+        container = Arrays.stream(new File(directoryName).listFiles()).map(File::getName)
+                .filter(name -> inclusionPattern.get().anyMatch(name::matches)).map(name -> directoryName + name)
+                .filter(name -> exclusionPattern.get().noneMatch(name::matches)).collect(Collectors.toList());
+
+        return container;
+    }
 }

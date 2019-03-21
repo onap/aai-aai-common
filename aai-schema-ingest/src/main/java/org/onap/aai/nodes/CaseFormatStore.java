@@ -17,15 +17,17 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.nodes;
 
 import com.google.common.base.CaseFormat;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 
 /**
  * CaseFormatStore stores the converted strings from
@@ -40,15 +42,16 @@ public class CaseFormatStore {
     private final Map<String, String> lowerCamelToLowerHyphen = new HashMap<>();
     private final Map<String, String> upperCamelToLowerHyphen = new HashMap<>();
 
-    CaseFormatStore(){}
+    CaseFormatStore() {
+    }
 
     /**
      * Parses the document and creates a lower camel case string
      * upper camel string, lower hyphen and lower camel case
      *
-     * @param doc   Takes an xml document and adds it to the hash maps as appropriate
+     * @param doc Takes an xml document and adds it to the hash maps as appropriate
      */
-    void parse(Document doc){
+    void parse(Document doc) {
 
         // Get the xml-root-element and add those nodes
         // with the attribute name and it to the hashmaps
@@ -86,19 +89,19 @@ public class CaseFormatStore {
         }
     }
 
-    public Optional<String> fromLowerHyphenToLowerCamel(String value){
+    public Optional<String> fromLowerHyphenToLowerCamel(String value) {
         return Optional.ofNullable(lowerHyphenToLowerCamel.get(value));
     }
 
-    public Optional<String> fromLowerHyphenToUpperCamel(String value){
+    public Optional<String> fromLowerHyphenToUpperCamel(String value) {
         return Optional.ofNullable(lowerHyphenToUpperCamel.get(value));
     }
 
-    public Optional<String> fromUpperCamelToLowerHyphen(String value){
+    public Optional<String> fromUpperCamelToLowerHyphen(String value) {
         return Optional.ofNullable(upperCamelToLowerHyphen.get(value));
     }
 
-    public Optional<String> fromLowerCamelToLowerHyphen(String value){
+    public Optional<String> fromLowerCamelToLowerHyphen(String value) {
         return Optional.ofNullable(lowerCamelToLowerHyphen.get(value));
     }
 

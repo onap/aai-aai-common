@@ -20,6 +20,9 @@
 
 package org.onap.aai.validation.nodes;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,9 +39,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
-
 /**
  * Default duplicate rules for A&AI -
  * node types may never have a duplicate definition
@@ -49,56 +49,59 @@ import com.google.common.collect.Multimap;
  */
 public class DefaultDuplicateNodeDefinitionValidationModule implements DuplicateNodeDefinitionValidationModule {
 
-	/* (non-Javadoc)
-	 * @see org.onap.aai.nodes.validation.DuplicateNodeDefinitionValidationModule#findDuplicates(java.util.List)
-	 */
-	@Override
-	public String findDuplicates(List<String> files, SchemaVersion v) {
-		try {
-			final DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-			docFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-			final DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-				
-			Multimap<String, String> types = ArrayListMultimap.create();
-			boolean foundDups = false;
-			for (String file : files) {
-				InputStream inputStream = new FileInputStream(file);
-				final Document doc = docBuilder.parse(inputStream);
-				final NodeList list = doc.getElementsByTagName("java-type");
-	
-				for (int i = 0; i < list.getLength(); i++) {
-					String type = list.item(i).getAttributes().getNamedItem("name").getNodeValue();
-					if (types.containsKey(type)) {
-						foundDups = true;
-					}
-					types.put(type, file);
-				}
-			}
-			
-			if (foundDups) {
-				return buildErrorMsg(types, v);
-			} else {
-				return "";
-			}
-		} catch (ParserConfigurationException | SAXException | IOException e) {
-			// TODO something useful with this information
-			return e.getMessage();
-		}
-	}
-	
-	private String buildErrorMsg(Multimap<String, String> types, SchemaVersion v) {
-		StringBuilder errorMsg = new StringBuilder().append("Duplicates found in version ").append(v.toString()).append(". ");
-		for (String nodeType : types.keySet()) {
-			Collection<String> files = types.get(nodeType);
-			if (files.size() == 1) {
-				continue; //only record the duplicated ones
-			}
-			errorMsg.append(nodeType).append(" has definitions in ");
-			for (String file : files) {
-				errorMsg.append(file).append(" ");
-			}
-		}
-		return errorMsg.toString();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.onap.aai.nodes.validation.DuplicateNodeDefinitionValidationModule#findDuplicates(java.util.List)
+     */
+    @Override
+    public String findDuplicates(List<String> files, SchemaVersion v) {
+        try {
+            final DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+            docFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+            final DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+
+            Multimap<String, String> types = ArrayListMultimap.create();
+            boolean foundDups = false;
+            for (String file : files) {
+                InputStream inputStream = new FileInputStream(file);
+                final Document doc = docBuilder.parse(inputStream);
+                final NodeList list = doc.getElementsByTagName("java-type");
+
+                for (int i = 0; i < list.getLength(); i++) {
+                    String type = list.item(i).getAttributes().getNamedItem("name").getNodeValue();
+                    if (types.containsKey(type)) {
+                        foundDups = true;
+                    }
+                    types.put(type, file);
+                }
+            }
+
+            if (foundDups) {
+                return buildErrorMsg(types, v);
+            } else {
+                return "";
+            }
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+            // TODO something useful with this information
+            return e.getMessage();
+        }
+    }
+
+    private String buildErrorMsg(Multimap<String, String> types, SchemaVersion v) {
+        StringBuilder errorMsg =
+                new StringBuilder().append("Duplicates found in version ").append(v.toString()).append(". ");
+        for (String nodeType : types.keySet()) {
+            Collection<String> files = types.get(nodeType);
+            if (files.size() == 1) {
+                continue; // only record the duplicated ones
+            }
+            errorMsg.append(nodeType).append(" has definitions in ");
+            for (String file : files) {
+                errorMsg.append(file).append(" ");
+            }
+        }
+        return errorMsg.toString();
+    }
 
 }

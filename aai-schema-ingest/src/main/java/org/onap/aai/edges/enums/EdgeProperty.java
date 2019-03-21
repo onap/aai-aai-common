@@ -25,17 +25,15 @@ package org.onap.aai.edges.enums;
  * (ie which have a directional value)
  */
 public enum EdgeProperty {
-	CONTAINS("contains-other-v"),
-	DELETE_OTHER_V("delete-other-v"),
-	PREVENT_DELETE("prevent-delete");
-	private final String name;
+    CONTAINS("contains-other-v"), DELETE_OTHER_V("delete-other-v"), PREVENT_DELETE("prevent-delete");
+    private final String name;
 
-	private EdgeProperty(String name) {
-		this.name = name;
-	}
+    private EdgeProperty(String name) {
+        this.name = name;
+    }
 
-	@Override
-	public String toString() {
-		return name;
-	}
+    @Override
+    public String toString() {
+        return name;
+    }
 }

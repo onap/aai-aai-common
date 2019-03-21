@@ -21,6 +21,7 @@
 /**
  * 
  */
+
 package org.onap.aai.validation;
 
 /**
@@ -29,33 +30,39 @@ package org.onap.aai.validation;
  * process to abort.
  */
 public class FailFastStrategy implements SchemaErrorStrategy {
-	private boolean isOK = true;
-	private String errorMsg = "No errors found.";
+    private boolean isOK = true;
+    private String errorMsg = "No errors found.";
 
-	/* (non-Javadoc)
-	 * @see org.onap.aai.edges.validation.SchemaErrorStrategy#isOK()
-	 */
-	@Override
-	public boolean isOK() {
-		return isOK;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.onap.aai.edges.validation.SchemaErrorStrategy#isOK()
+     */
+    @Override
+    public boolean isOK() {
+        return isOK;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.onap.aai.edges.validation.SchemaErrorStrategy#getErrorMsg()
-	 */
-	@Override
-	public String getErrorMsg() {
-		return errorMsg;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.onap.aai.edges.validation.SchemaErrorStrategy#getErrorMsg()
+     */
+    @Override
+    public String getErrorMsg() {
+        return errorMsg;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.onap.aai.edges.validation.SchemaErrorStrategy#notifyOnError(java.lang.String)
-	 */
-	@Override
-	public void notifyOnError(String errorMsg) {
-		isOK = false;
-		this.errorMsg = errorMsg;
-		throw new AAISchemaValidationException(errorMsg);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.onap.aai.edges.validation.SchemaErrorStrategy#notifyOnError(java.lang.String)
+     */
+    @Override
+    public void notifyOnError(String errorMsg) {
+        isOK = false;
+        this.errorMsg = errorMsg;
+        throw new AAISchemaValidationException(errorMsg);
+    }
 
 }

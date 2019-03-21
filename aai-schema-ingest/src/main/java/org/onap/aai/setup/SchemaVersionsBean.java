@@ -17,20 +17,24 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.setup;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+
 import org.onap.aai.restclient.RestClient;
 import org.onap.aai.restclient.RestClientFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import javax.annotation.PostConstruct;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class SchemaVersionsBean {
 
@@ -51,43 +55,37 @@ public class SchemaVersionsBean {
 
     @PostConstruct
     public void initialize() {
-        //Call SchemaService to get versions
+        // Call SchemaService to get versions
         retrieveAllSchemaVersions();
     }
 
-    public void retrieveAllSchemaVersions() throws ExceptionInInitializerError{
-	    /*
-	    Call Schema MS to get versions using RestTemplate
-	     */
+    public void retrieveAllSchemaVersions() throws ExceptionInInitializerError {
+        /*
+         * Call Schema MS to get versions using RestTemplate
+         */
         String content = "";
         Map<String, String> headersMap = new HashMap<>();
-        RestClient restClient = restClientFactory
-            .getRestClient(SCHEMA_SERVICE);
+        RestClient restClient = restClientFactory.getRestClient(SCHEMA_SERVICE);
 
-        ResponseEntity<String> schemaResponse = restClient.getGetRequest( content, versionsUri, headersMap);
-        Gson gson = new GsonBuilder()
-            .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_DASHES)
-            .create();
+        ResponseEntity<String> schemaResponse = restClient.getGetRequest(content, versionsUri, headersMap);
+        Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_DASHES).create();
         schemaVersions = gson.fromJson(schemaResponse.getBody(), SchemaServiceVersions.class);
-       if(!validateOverrides(schemaVersions)){
-           throw new ExceptionInInitializerError("The versions requested is not supported by SchemaService");
-       }
-       if("true".equals(overrideSchemaService)){
-           schemaVersions.initializeFromSchemaConfig(schemaConfigVersions);
-       }
-       else{
-           schemaVersions.initializeFromSchemaService();
-       }
+        if (!validateOverrides(schemaVersions)) {
+            throw new ExceptionInInitializerError("The versions requested is not supported by SchemaService");
+        }
+        if ("true".equals(overrideSchemaService)) {
+            schemaVersions.initializeFromSchemaConfig(schemaConfigVersions);
+        } else {
+            schemaVersions.initializeFromSchemaService();
+        }
 
     }
 
-    public boolean validateOverrides(SchemaServiceVersions schemaVersions1){
+    public boolean validateOverrides(SchemaServiceVersions schemaVersions1) {
         boolean versionsAvailable = true;
-        if("true".equals(overrideSchemaService)){
-            versionsAvailable = schemaConfigVersions.getApiVersions().stream().
-                allMatch(
-                    (s) -> schemaVersions1.getVersionsAll().contains(s)
-                );
+        if ("true".equals(overrideSchemaService)) {
+            versionsAvailable = schemaConfigVersions.getApiVersions().stream()
+                    .allMatch((s) -> schemaVersions1.getVersionsAll().contains(s));
 
         }
         return versionsAvailable;

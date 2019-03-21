@@ -21,6 +21,7 @@
 /**
  * 
  */
+
 package org.onap.aai.validation;
 
 import java.util.List;
@@ -41,15 +42,17 @@ public class DefaultVersionValidationModule implements VersionValidationModule {
 
     private ConfigTranslator config;
 
-	@Autowired
-	public DefaultVersionValidationModule(ConfigTranslator config) {
+    @Autowired
+    public DefaultVersionValidationModule(ConfigTranslator config) {
 
-	    this.config = config;
-	}
+        this.config = config;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.onap.aai.validation.VersionValidationModule#validate(org.onap.aai.setup.ConfigTranslator)
-	 */
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.onap.aai.validation.VersionValidationModule#validate(org.onap.aai.setup.ConfigTranslator)
+     */
     @Override
     public String validate() {
         Map<SchemaVersion, List<String>> nodeConfig = config.getNodeFiles();

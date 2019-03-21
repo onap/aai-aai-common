@@ -17,17 +17,18 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.setup;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.annotation.PostConstruct;
 
 import org.onap.aai.validation.AAISchemaValidationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
-import java.util.List;
-import java.util.stream.Collectors;
-
 
 @PropertySource(value = "classpath:schema-ingest.properties", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${schema.ingest.file}", ignoreResourceNotFound = true)
@@ -42,9 +43,9 @@ public class SchemaVersions {
     protected SchemaVersion namespaceChangeVersionValue;
 
     protected void validate() {
-    	String errorMessage = "Invalid, edge label version is not in the api versions list"
-                    + ", please check schema.version.list and ensure that the"
-                    + " schema.version.edge.label.start is in that list";
+        String errorMessage = "Invalid, edge label version is not in the api versions list"
+                + ", please check schema.version.list and ensure that the"
+                + " schema.version.edge.label.start is in that list";
         if (!versionsValue.contains(edgeLabelVersionValue)) {
             throw new AAISchemaValidationException(errorMessage);
         }
@@ -69,7 +70,7 @@ public class SchemaVersions {
             throw new AAISchemaValidationException(errorMessage);
         }
     }
-    
+
     public List<SchemaVersion> getVersions() {
         return versionsValue;
     }

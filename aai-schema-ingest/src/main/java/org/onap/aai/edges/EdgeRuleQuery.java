@@ -22,24 +22,23 @@
 
 package org.onap.aai.edges;
 
-import org.apache.commons.lang.StringUtils;
-import org.onap.aai.edges.enums.AAIDirection;
-import org.onap.aai.edges.enums.EdgeField;
-import org.onap.aai.edges.enums.EdgeProperty;
-import org.onap.aai.edges.enums.EdgeType;
-import org.onap.aai.setup.SchemaVersion;
+import static com.jayway.jsonpath.Criteria.where;
+import static com.jayway.jsonpath.Filter.filter;
 
 import com.jayway.jsonpath.Filter;
 import com.jayway.jsonpath.Predicate;
-
-import static com.jayway.jsonpath.Filter.filter;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static com.jayway.jsonpath.Criteria.where;
+import org.apache.commons.lang.StringUtils;
+import org.onap.aai.edges.enums.AAIDirection;
+import org.onap.aai.edges.enums.EdgeField;
+import org.onap.aai.edges.enums.EdgeProperty;
+import org.onap.aai.edges.enums.EdgeType;
+import org.onap.aai.setup.SchemaVersion;
 
 /**
  * For querying the edge rules schema (not the database)
@@ -60,10 +59,10 @@ public class EdgeRuleQuery {
 
         private static final String FROM_ONLY = "FromOnly";
 
-        //required
+        // required
         private String nodeA;
 
-        //optional - null will translate to any value of the param
+        // optional - null will translate to any value of the param
         private String nodeB = null;
         private String label = null;
         private EdgeType type = null;
@@ -83,6 +82,7 @@ public class EdgeRuleQuery {
         private String getFirstNodeType() {
             return nodeA;
         }
+
         public Builder fromOnly() {
             this.nodeB = FROM_ONLY;
             return this;
@@ -92,15 +92,15 @@ public class EdgeRuleQuery {
             return nodeB;
         }
 
-        public Builder to(String nodeB){
+        public Builder to(String nodeB) {
             this.nodeB = nodeB;
             return this;
         }
 
         public Builder toOnly() {
-            //Allows this to be used with single parameter constructor Builder(String nodeA)
-            if(StringUtils.isEmpty(this.nodeB) && StringUtils.isNotEmpty(this.nodeA) ) {
-                this.nodeB=this.nodeA;
+            // Allows this to be used with single parameter constructor Builder(String nodeA)
+            if (StringUtils.isEmpty(this.nodeB) && StringUtils.isNotEmpty(this.nodeA)) {
+                this.nodeB = this.nodeA;
             }
             this.nodeA = TO_ONLY;
             return this;
@@ -124,7 +124,6 @@ public class EdgeRuleQuery {
             return type;
         }
 
-
         public Builder direction(AAIDirection direction) {
             this.direction = direction;
             return this;
@@ -139,12 +138,12 @@ public class EdgeRuleQuery {
             return this;
         }
 
-        public Builder setPrivate(boolean isPrivate){
+        public Builder setPrivate(boolean isPrivate) {
             this.isPrivate = isPrivate;
             return this;
         }
 
-        public boolean isPrivate(){
+        public boolean isPrivate() {
             return isPrivate;
         }
 
@@ -166,18 +165,18 @@ public class EdgeRuleQuery {
         this.direction = builder.getDirection();
         this.isPrivate = builder.isPrivate();
 
-        //will cover from A to B case
+        // will cover from A to B case
         List<Predicate> criteriaFromTo = new ArrayList<>();
-        //Special logic to allow for A to B case only
-        if(("FromOnly").equals(builder.getSecondNodeType())) {
+        // Special logic to allow for A to B case only
+        if (("FromOnly").equals(builder.getSecondNodeType())) {
             criteriaFromTo.add(buildToFromPart(builder.getFirstNodeType(), null));
         } else {
             criteriaFromTo.add(buildToFromPart(builder.getFirstNodeType(), builder.getSecondNodeType()));
         }
-        //will cover from B to A case - must be separate bc jsonpath won't let me OR predicates >:C
+        // will cover from B to A case - must be separate bc jsonpath won't let me OR predicates >:C
         List<Predicate> criteriaToFrom = new ArrayList<>();
-        //Special logic to allow for B to A case only
-        if(("ToOnly").equals(builder.getFirstNodeType())) {
+        // Special logic to allow for B to A case only
+        if (("ToOnly").equals(builder.getFirstNodeType())) {
             criteriaToFrom.add(buildToFromPart(null, builder.getSecondNodeType()));
         } else {
             criteriaToFrom.add(buildToFromPart(builder.getSecondNodeType(), builder.getFirstNodeType()));
@@ -195,7 +194,7 @@ public class EdgeRuleQuery {
         }
         Predicate privatePredicate = where("private").is(String.valueOf(isPrivate));
 
-        if(isPrivate){
+        if (isPrivate) {
             criteriaFromTo.add(privatePredicate);
             criteriaToFrom.add(privatePredicate);
         }
@@ -205,9 +204,9 @@ public class EdgeRuleQuery {
             criteriaFromTo.add(directionPred);
             criteriaToFrom.add(directionPred);
         }
-        if(("ToOnly").equals(builder.getFirstNodeType())) {
+        if (("ToOnly").equals(builder.getFirstNodeType())) {
             this.filter = filter(criteriaToFrom);
-        } else if(("FromOnly").equals(builder.getSecondNodeType())) {
+        } else if (("FromOnly").equals(builder.getSecondNodeType())) {
             this.filter = filter(criteriaFromTo);
         } else {
             this.filter = filter(criteriaFromTo).or(filter(criteriaToFrom));
@@ -215,7 +214,7 @@ public class EdgeRuleQuery {
     }
 
     private Predicate buildToFromPart(String from, String to) {
-        if (from == null && to == null) { //shouldn't ever happen though
+        if (from == null && to == null) { // shouldn't ever happen though
             throw new IllegalStateException("must have at least one node defined");
         }
 
@@ -239,7 +238,7 @@ public class EdgeRuleQuery {
     private Predicate addType(EdgeType type) {
         if (type == EdgeType.COUSIN) {
             return where(EdgeProperty.CONTAINS.toString()).is(AAIDirection.NONE.toString());
-        } else { //equals TREE
+        } else { // equals TREE
             return where(EdgeProperty.CONTAINS.toString()).ne(AAIDirection.NONE.toString());
         }
     }
@@ -259,6 +258,7 @@ public class EdgeRuleQuery {
 
     /**
      * Provides the JsonPath filter for actually querying the edge rule schema files
+     * 
      * @return Filter
      */
     public Filter getFilter() {
@@ -284,6 +284,7 @@ public class EdgeRuleQuery {
 
     /**
      * So the Ingestor knows which version of the rules to search
+     * 
      * @return the Version
      */
     public Optional<SchemaVersion> getVersion() {
@@ -314,7 +315,7 @@ public class EdgeRuleQuery {
         sb.append(", isPrivate: ");
         sb.append(isPrivate);
 
-        if(v.isPresent()){
+        if (v.isPresent()) {
             sb.append(", for version: ").append(v.get().toString()).append(".");
         }
         return sb.toString();
@@ -322,21 +323,19 @@ public class EdgeRuleQuery {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         EdgeRuleQuery ruleQuery = (EdgeRuleQuery) o;
-        return isPrivate == ruleQuery.isPrivate &&
-            Objects.equals(v, ruleQuery.v) &&
-            Objects.equals(nodeA, ruleQuery.nodeA) &&
-            Objects.equals(nodeB, ruleQuery.nodeB) &&
-            Objects.equals(label, ruleQuery.label) &&
-            direction == ruleQuery.direction &&
-            type == ruleQuery.type;
+        return isPrivate == ruleQuery.isPrivate && Objects.equals(v, ruleQuery.v)
+                && Objects.equals(nodeA, ruleQuery.nodeA) && Objects.equals(nodeB, ruleQuery.nodeB)
+                && Objects.equals(label, ruleQuery.label) && direction == ruleQuery.direction && type == ruleQuery.type;
     }
 
     @Override
     public int hashCode() {
-        if(v.isPresent()){
+        if (v.isPresent()) {
             return Objects.hash(v.get(), nodeA, nodeB, label, direction, type, isPrivate);
         } else {
             return Objects.hash(nodeA, nodeB, label, direction, type, isPrivate);
@@ -344,4 +343,3 @@ public class EdgeRuleQuery {
     }
 
 }
-

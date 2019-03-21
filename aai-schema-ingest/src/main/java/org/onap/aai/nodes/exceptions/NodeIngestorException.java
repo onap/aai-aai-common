@@ -25,7 +25,7 @@ public class NodeIngestorException extends Exception {
         super(msg);
     }
 
-    public NodeIngestorException(Throwable throwable){
+    public NodeIngestorException(Throwable throwable) {
         super(throwable);
     }
 }

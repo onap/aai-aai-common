@@ -19,19 +19,21 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.restclient;
 
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
+
+import java.util.Collections;
+import java.util.Map;
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
-
-import java.util.Collections;
-import java.util.Map;
-import java.util.UUID;
 
 @Component(value = "schema-service-rest-client")
 public class SchemaServiceRestClient extends TwoWaySSLRestClient {
@@ -54,7 +56,7 @@ public class SchemaServiceRestClient extends TwoWaySSLRestClient {
 
     @Override
     public String getBaseUrl() {
-       return baseUrl;
+        return baseUrl;
     }
 
     @Override
@@ -82,7 +84,8 @@ public class SchemaServiceRestClient extends TwoWaySSLRestClient {
         HttpHeaders httpHeaders = new HttpHeaders();
 
         String defaultAccept = headers.getOrDefault(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON.toString());
-        String defaultContentType = headers.getOrDefault(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON.toString());
+        String defaultContentType =
+                headers.getOrDefault(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON.toString());
 
         if (headers.isEmpty()) {
             httpHeaders.setAccept(Collections.singletonList(MediaType.parseMediaType(defaultAccept)));

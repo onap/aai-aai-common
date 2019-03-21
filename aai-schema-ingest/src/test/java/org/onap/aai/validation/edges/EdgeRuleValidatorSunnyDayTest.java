@@ -27,7 +27,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.onap.aai.config.NodesConfiguration;
 import org.onap.aai.nodes.NodeIngestor;
-
 import org.onap.aai.setup.SchemaVersionsBean;
 import org.onap.aai.testutils.GoodConfigForValidationTest;
 import org.onap.aai.validation.CheckEverythingStrategy;
@@ -38,11 +37,14 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {NodesConfiguration.class, GoodConfigForValidationTest.class,
-        CheckEverythingStrategy.class, DefaultEdgeFieldsValidationModule.class, UniqueLabelValidationModule.class,
-        SingleContainmentValidationModule.class, CousinDefaultingValidationModule.class, NodeTypesValidationModule.class,
-        EdgeRuleValidator.class})
-@TestPropertySource(properties = { "schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-wiring-test-local.properties" })
+@ContextConfiguration(
+        classes = {NodesConfiguration.class, GoodConfigForValidationTest.class, CheckEverythingStrategy.class,
+                DefaultEdgeFieldsValidationModule.class, UniqueLabelValidationModule.class,
+                SingleContainmentValidationModule.class, CousinDefaultingValidationModule.class,
+                NodeTypesValidationModule.class, EdgeRuleValidator.class})
+@TestPropertySource(
+        properties = {
+                "schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-wiring-test-local.properties"})
 @SpringBootTest
 public class EdgeRuleValidatorSunnyDayTest {
     @Autowired
@@ -50,7 +52,7 @@ public class EdgeRuleValidatorSunnyDayTest {
 
     @Test
     public void test() {
-        assertNotNull(validator); //verify spring wiring OK
+        assertNotNull(validator); // verify spring wiring OK
         assertTrue(validator.validate());
         assertTrue("No errors found.".equals(validator.getErrorMsg()));
     }

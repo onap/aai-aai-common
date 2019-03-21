@@ -17,14 +17,17 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.setup;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.annotation.PostConstruct;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
-import javax.annotation.PostConstruct;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Component("schemaServiceVersions")
 @ConditionalOnExpression("'${schema.translator.list}'.contains('schema-service')")
@@ -48,7 +51,7 @@ public class SchemaServiceVersions extends SchemaVersions {
     }
 
     @PostConstruct
-    public void initializeFromSchemaService() throws ExceptionInInitializerError{
+    public void initializeFromSchemaService() throws ExceptionInInitializerError {
 
         versionsValue = versions.stream().map(SchemaVersion::new).collect(Collectors.toList());
         edgeLabelVersionValue = new SchemaVersion(edgeVersion);
@@ -64,7 +67,8 @@ public class SchemaServiceVersions extends SchemaVersions {
     /*
      * TODO Change Method names
      */
-    public void initializeFromSchemaConfig(SchemaConfigVersions schemaConfigVersion) throws ExceptionInInitializerError{
+    public void initializeFromSchemaConfig(SchemaConfigVersions schemaConfigVersion)
+            throws ExceptionInInitializerError {
 
         versions = schemaConfigVersion.getApiVersions();
         appRootVersion = schemaConfigVersion.getAppRootStartVersion();

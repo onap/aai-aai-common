@@ -17,25 +17,28 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.restclient;
 
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
+
+import java.util.Collections;
+import java.util.Map;
+import java.util.UUID;
+
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
 
-import javax.annotation.PostConstruct;
-import java.util.Collections;
-import java.util.Map;
-import java.util.UUID;
+@Component(value = "schema-service-one-way-rest-client")
+public class SchemaServiceOneWayClient extends OneWaySSLRestClient {
 
-@Component(value="schema-service-one-way-rest-client")
-public class SchemaServiceOneWayClient extends OneWaySSLRestClient{
-
-	private static EELFLogger logger = EELFManager.getInstance().getLogger(SchemaServiceOneWayClient.class);
+    private static EELFLogger logger = EELFManager.getInstance().getLogger(SchemaServiceOneWayClient.class);
 
     @Value("${schema.service.base.url}")
     private String baseUrl;
@@ -62,22 +65,23 @@ public class SchemaServiceOneWayClient extends OneWaySSLRestClient{
     }
 
     @Override
-	public MultiValueMap<String, String> getHeaders(Map<String, String> headers) {
-		HttpHeaders httpHeaders = new HttpHeaders();
+    public MultiValueMap<String, String> getHeaders(Map<String, String> headers) {
+        HttpHeaders httpHeaders = new HttpHeaders();
 
         String defaultAccept = headers.getOrDefault(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON.toString());
-        String defaultContentType = headers.getOrDefault(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON.toString());
+        String defaultContentType =
+                headers.getOrDefault(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON.toString());
 
-        if(headers.isEmpty()){
+        if (headers.isEmpty()) {
             httpHeaders.setAccept(Collections.singletonList(MediaType.parseMediaType(defaultAccept)));
             httpHeaders.setContentType(MediaType.parseMediaType(defaultContentType));
         }
 
-		httpHeaders.add("X-FromAppId", appName);
-		httpHeaders.add("X-TransactionId", UUID.randomUUID().toString());
+        httpHeaders.add("X-FromAppId", appName);
+        httpHeaders.add("X-TransactionId", UUID.randomUUID().toString());
         httpHeaders.add("X-TransactionId", appName);
-		headers.forEach(httpHeaders::add);
-		return httpHeaders;
-	}
+        headers.forEach(httpHeaders::add);
+        return httpHeaders;
+    }
 
 }

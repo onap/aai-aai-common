@@ -17,12 +17,14 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.edges;
 
 import com.jayway.jsonpath.Filter;
-import org.onap.aai.setup.SchemaVersion;
 
 import java.util.Objects;
+
+import org.onap.aai.setup.SchemaVersion;
 
 public class SchemaFilter {
 
@@ -30,8 +32,8 @@ public class SchemaFilter {
 
     private SchemaVersion schemaVersion;
 
-    public SchemaFilter(Filter filter, SchemaVersion schemaVersion){
-        if(filter != null){
+    public SchemaFilter(Filter filter, SchemaVersion schemaVersion) {
+        if (filter != null) {
             this.filter = filter.toString();
         }
         this.schemaVersion = schemaVersion;
@@ -47,11 +49,12 @@ public class SchemaFilter {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         SchemaFilter that = (SchemaFilter) o;
-        return Objects.equals(filter, that.filter) &&
-            Objects.equals(schemaVersion, that.schemaVersion);
+        return Objects.equals(filter, that.filter) && Objects.equals(schemaVersion, that.schemaVersion);
     }
 
     @Override
@@ -61,9 +64,6 @@ public class SchemaFilter {
 
     @Override
     public String toString() {
-        return "SchemaFilter{" +
-            "filter='" + filter + '\'' +
-            ", schemaVersion=" + schemaVersion +
-            '}';
+        return "SchemaFilter{" + "filter='" + filter + '\'' + ", schemaVersion=" + schemaVersion + '}';
     }
 }

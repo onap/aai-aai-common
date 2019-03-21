@@ -20,11 +20,12 @@
 
 package org.onap.aai.testutils;
 
+import java.util.*;
+
 import org.onap.aai.setup.ConfigTranslator;
+import org.onap.aai.setup.SchemaConfigVersions;
 import org.onap.aai.setup.SchemaLocationsBean;
 import org.onap.aai.setup.SchemaVersion;
-import org.onap.aai.setup.SchemaConfigVersions;
-import java.util.*;
 
 /**
  * Good oxm, bad edge rules for rainy day edge rule validation testing
