@@ -17,6 +17,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.restclient;
 
 /**
@@ -27,7 +28,7 @@ public interface RestClientFactory {
     /**
      *
      * @param clientType
-     * 		type of client to return
+     *        type of client to return
      * @return
      */
     RestClient getRestClient(String clientType);

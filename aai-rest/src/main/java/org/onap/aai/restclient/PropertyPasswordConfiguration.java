@@ -17,7 +17,13 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.restclient;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -25,11 +31,6 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class PropertyPasswordConfiguration implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
@@ -44,7 +45,8 @@ public class PropertyPasswordConfiguration implements ApplicationContextInitiali
             Map<String, Object> propertyOverrides = new LinkedHashMap<>();
             decodePasswords(propertySource, propertyOverrides);
             if (!propertyOverrides.isEmpty()) {
-                PropertySource<?> decodedProperties = new MapPropertySource("decoded " + propertySource.getName(), propertyOverrides);
+                PropertySource<?> decodedProperties =
+                        new MapPropertySource("decoded " + propertySource.getName(), propertyOverrides);
                 environment.getPropertySources().addBefore(propertySource.getName(), decodedProperties);
             }
         }
@@ -64,7 +66,8 @@ public class PropertyPasswordConfiguration implements ApplicationContextInitiali
     }
 
     private String decodePasswordsInString(String input) {
-        if (input == null) return null;
+        if (input == null)
+            return null;
         StringBuffer output = new StringBuffer();
         Matcher matcher = decodePasswordPattern.matcher(input);
         while (matcher.find()) {

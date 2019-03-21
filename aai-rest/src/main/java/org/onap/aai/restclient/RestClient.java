@@ -19,10 +19,16 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.restclient;
 
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
@@ -32,19 +38,15 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Map;
-
 public abstract class RestClient {
 
     private static EELFLogger log = EELFManager.getInstance().getLogger(RestClient.class);
     @Value("${spring.application.name}")
     protected String appName;
 
-
     /**
      * Execute the given http method against the uri with passed headers
+     * 
      * @param uri properly encoded, can include query params also properly encoded
      * @param method http method of the request
      * @param headers headers for the request
@@ -52,10 +54,11 @@ public abstract class RestClient {
      * @return response of request
      * @throws RestClientException on internal rest template exception or invalid url
      */
-    public ResponseEntity execute(String uri, HttpMethod method, Map<String,String> headers, String body) throws RestClientException {
+    public ResponseEntity execute(String uri, HttpMethod method, Map<String, String> headers, String body)
+            throws RestClientException {
 
         HttpEntity<String> httpEntity;
-        log.debug ("Headers: {}", headers);
+        log.debug("Headers: {}", headers);
         if (body == null) {
             httpEntity = new HttpEntity<>(getHeaders(headers));
         } else {
@@ -85,6 +88,7 @@ public abstract class RestClient {
 
     /**
      * Execute the given http method against the uri with passed headers
+     * 
      * @param uri properly encoded, can include query params also properly encoded
      * @param method http method of the request
      * @param headers headers for the request
@@ -92,35 +96,40 @@ public abstract class RestClient {
      * @return response of request
      * @throws RestClientException on internal rest template exception or invalid url
      */
-    public ResponseEntity execute(String uri, String method, Map<String,String> headers, String body) throws RestClientException{
+    public ResponseEntity execute(String uri, String method, Map<String, String> headers, String body)
+            throws RestClientException {
         return execute(uri, HttpMethod.valueOf(method), headers, body);
     }
 
     /**
      * Execute the given http method against the uri with passed headers
+     * 
      * @param uri properly encoded, can include query params also properly encoded
      * @param method http method of the request
      * @param headers headers for the request
      * @return response of request
      * @throws RestClientException on internal rest template exception or invalid url
      */
-    public ResponseEntity execute(String uri, HttpMethod method, Map<String,String> headers) throws RestClientException{
+    public ResponseEntity execute(String uri, HttpMethod method, Map<String, String> headers)
+            throws RestClientException {
         return execute(uri, method, headers, null);
     }
 
     /**
      * Execute the given http method against the uri with passed headers
+     * 
      * @param uri properly encoded, can include query params also properly encoded
      * @param method http method of the request
      * @param headers headers for the request
      * @return response of request
      * @throws RestClientException on internal rest template exception or invalid url
      */
-    public ResponseEntity execute(String uri, String method, Map<String,String> headers) throws RestClientException{
+    public ResponseEntity execute(String uri, String method, Map<String, String> headers) throws RestClientException {
         return execute(uri, HttpMethod.valueOf(method), headers, null);
     }
 
-    public ResponseEntity executeResource(String uri, HttpMethod method, Map<String, String> headers, String body) throws RestClientException {
+    public ResponseEntity executeResource(String uri, HttpMethod method, Map<String, String> headers, String body)
+            throws RestClientException {
 
         HttpEntity httpEntity;
         log.debug("Headers: " + headers.toString());
@@ -134,20 +143,12 @@ public abstract class RestClient {
     }
 
     public ResponseEntity getGetRequest(String content, String uri, Map<String, String> headersMap) {
-        return this.execute(
-            uri,
-            HttpMethod.GET,
-            headersMap,
-            content);
+        return this.execute(uri, HttpMethod.GET, headersMap, content);
 
     }
 
     public ResponseEntity getGetResource(String content, String uri, Map<String, String> headersMap) {
-        return this.executeResource(
-            uri,
-            HttpMethod.GET,
-            headersMap,
-            content);
+        return this.executeResource(uri, HttpMethod.GET, headersMap, content);
 
     }
 

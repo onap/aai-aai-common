@@ -17,37 +17,38 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.restclient;
 
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
+
+import javax.annotation.PostConstruct;
+
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
-import javax.annotation.PostConstruct;
+public abstract class NoAuthRestClient extends RestClient {
 
-public abstract class NoAuthRestClient extends RestClient{
+    private static EELFLogger logger = EELFManager.getInstance().getLogger(NoAuthRestClient.class);
 
-	private static EELFLogger logger = EELFManager.getInstance().getLogger(NoAuthRestClient.class);
+    protected RestTemplate restTemplate;
 
-	protected RestTemplate restTemplate;
+    @PostConstruct
+    public void init() throws Exception {
+        HttpClient client = HttpClients.createDefault();
+        restTemplate =
+                new RestTemplateBuilder().requestFactory(new HttpComponentsClientHttpRequestFactory(client)).build();
 
-	@PostConstruct
-	public void init () throws Exception {
-		HttpClient client = HttpClients.createDefault();
-		restTemplate = new RestTemplateBuilder()
-				.requestFactory(new HttpComponentsClientHttpRequestFactory(client))
-				.build();
+        restTemplate.setErrorHandler(new RestClientResponseErrorHandler());
+    }
 
-		restTemplate.setErrorHandler(new RestClientResponseErrorHandler());
-	}
-
-	@Override
-	public RestTemplate getRestTemplate() {
-		return restTemplate;
-	}
+    @Override
+    public RestTemplate getRestTemplate() {
+        return restTemplate;
+    }
 
 }

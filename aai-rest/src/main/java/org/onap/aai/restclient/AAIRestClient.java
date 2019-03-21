@@ -17,72 +17,74 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.restclient;
 
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
+
+import java.util.Collections;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
 
-import java.util.Collections;
-import java.util.Map;
+@Component(value = ClientType.AAI)
+public class AAIRestClient extends TwoWaySSLRestClient {
 
-@Component(value=ClientType.AAI)
-public class AAIRestClient extends TwoWaySSLRestClient{
+    private static EELFLogger logger = EELFManager.getInstance().getLogger(AAIRestClient.class);
 
-	private static EELFLogger logger = EELFManager.getInstance().getLogger(AAIRestClient.class);
+    @Value("${aai.base.url}")
+    private String baseUrl;
 
-	@Value("${aai.base.url}")
-	private String baseUrl;
+    @Value("${aai.ssl.key-store}")
+    private String keystorePath;
 
-	@Value("${aai.ssl.key-store}")
-	private String keystorePath;
+    @Value("${aai.ssl.trust-store}")
+    private String truststorePath;
 
-	@Value("${aai.ssl.trust-store}")
-	private String truststorePath;
+    @Value("${aai.ssl.key-store-password}")
+    private String keystorePassword;
 
-	@Value("${aai.ssl.key-store-password}")
-	private String keystorePassword;
+    @Value("${aai.ssl.trust-store-password}")
+    private String truststorePassword;
 
-	@Value("${aai.ssl.trust-store-password}")
-	private String truststorePassword;
+    @Override
+    public String getBaseUrl() {
+        return baseUrl;
+    }
 
-	@Override
-	public String getBaseUrl() {
-		return baseUrl;
-	}
+    @Override
+    protected String getKeystorePath() {
+        return keystorePath;
+    }
 
-	@Override
-	protected String getKeystorePath() {
-		return keystorePath;
-	}
+    @Override
+    protected String getTruststorePath() {
+        return truststorePath;
+    }
 
-	@Override
-	protected String getTruststorePath() {
-		return truststorePath;
-	}
+    @Override
+    protected char[] getKeystorePassword() {
+        return keystorePassword.toCharArray();
+    }
 
-	@Override
-	protected char[] getKeystorePassword() {
-		return keystorePassword.toCharArray();
-	}
+    @Override
+    protected char[] getTruststorePassword() {
+        return truststorePassword.toCharArray();
+    }
 
-	@Override
-	protected char[] getTruststorePassword() {
-		return truststorePassword.toCharArray();
-	}
-
-	@Override
-	public MultiValueMap<String, String> getHeaders(Map<String, String> headers) {
-		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-		httpHeaders.add("Real-Time", "true");
-		headers.forEach(httpHeaders::add);
-		return httpHeaders;
-	}
+    @Override
+    public MultiValueMap<String, String> getHeaders(Map<String, String> headers) {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        httpHeaders.add("Real-Time", "true");
+        headers.forEach(httpHeaders::add);
+        return httpHeaders;
+    }
 
 }
