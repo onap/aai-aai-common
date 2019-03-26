@@ -33,7 +33,7 @@
     <packaging>jar</packaging>
 
     <properties>
-        <eelf.core.version>1.0.0</eelf.core.version>
+        <eelf.core.version>1.0.1-oss</eelf.core.version>
         <httpclient.version>4.5.5</httpclient.version>
     </properties>
     <build>
@@ -113,7 +113,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-            <version>1.5.18.RELEASE</version>
+            <version>1.5.19.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
@@ -128,7 +128,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-test</artifactId>
-            <version>1.5.18.RELEASE</version>
+            <version>1.5.19.RELEASE</version>
             <scope>test</scope>
         </dependency>
         <dependency>
