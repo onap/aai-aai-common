@@ -37,7 +37,7 @@ public abstract class QueryEngine {
 	/**
 	 * Instantiates a new query engine.
 	 *
-	 * @param graphEngine the graph engine
+     * @param g     graph traversal source to traverse the graph
 	 */
 	public QueryEngine (GraphTraversalSource g) {
 		this.g = g;
@@ -99,6 +99,15 @@ public abstract class QueryEngine {
 	 * @return the list of vertices to be deleted when start is deleted
 	 */
 	public abstract List<Vertex> findDeletable(Vertex start);
+
+    /**
+     * Find all vertices that should be deleted in a cascade from a delete of start vertexes
+     *
+     * @param   startVertexes   Specifies the list of start vertexes
+     *
+     * @return  the list of vertices to be deleted when start list of vertexes is deleted
+     */
+    public abstract List<Vertex> findDeletable(List<Vertex> startVertexes);
 
 	/**
 	 * Finds the subgraph under start, including cousins as well as start's children/grandchildren/etc.

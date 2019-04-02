@@ -69,6 +69,15 @@ public final class AAIConstants {
 
     public static final String AAI_NODENAME = "aai.config.nodename";
 
+    /*
+     * Logs the objects being deleted when an client deletes objects via implied delete during PUT operation
+     */
+    public static final String AAI_IMPLIED_DELETE_LOG_ENABLED = "aai.implied.delete.log.enabled";
+    /*
+     * Specifies how many objects maximum to log
+     */
+    public static final String AAI_IMPLIED_DELETE_LOG_LIMIT = "aai.implied.delete.log.limit";
+
     public static final String AAI_BULKCONSUMER_LIMIT = "aai.bulkconsumer.payloadlimit";
     public static final String AAI_BULKCONSUMER_OVERRIDE_LIMIT = "aai.bulkconsumer.payloadoverride";
 

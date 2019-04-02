@@ -23,12 +23,13 @@ package org.onap.aai.serialization.db;
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 import com.google.common.base.CaseFormat;
-import com.google.common.collect.Multimap;
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
-import org.apache.tinkerpop.gremlin.process.traversal.step.util.Tree;
-import org.apache.tinkerpop.gremlin.structure.*;
+import org.apache.tinkerpop.gremlin.structure.Direction;
+import org.apache.tinkerpop.gremlin.structure.Edge;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 import org.janusgraph.core.SchemaViolationException;
 import org.javatuples.Triplet;
 import org.onap.aai.concurrent.AaiCallable;
@@ -62,7 +63,6 @@ import org.onap.aai.serialization.db.exceptions.MultipleEdgeRuleFoundException;
 import org.onap.aai.serialization.db.exceptions.NoEdgeRuleFoundException;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 import org.onap.aai.serialization.engines.query.QueryEngine;
-import org.onap.aai.serialization.tinkerpop.TreeBackedVertex;
 import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.setup.SchemaVersions;
 import org.onap.aai.util.AAIConfig;
@@ -81,14 +81,14 @@ import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class DBSerializer {
 
     private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(DBSerializer.class);
+
+    private static final String IMPLICIT_DELETE = "Implicit DELETE";
 
     private static final String MISSING_REQUIRED_NODE_PROPERTY = "Vertex missing required aai-node-type property";
 
@@ -417,7 +417,57 @@ public class DBSerializer {
         for (Vertex toBeRemoved : processedVertexes) {
             dependentVertexes.remove(toBeRemoved);
         }
-        this.deleteItemsWithTraversal(dependentVertexes);
+
+        // If the dependent vertices are not empty, then with
+        // the current behaviour, it should remove the vertices implicitly
+        // We are updating the code to properly log which call
+        // is doing this so the SE can work with the clients making the call to
+        // tell them not to call this API and can hopefully deprecate this
+        // functionality in the future releases
+        if(!dependentVertexes.isEmpty()){
+
+            LoggingContext.responseDescription(IMPLICIT_DELETE);
+
+            // Find all the deletable vertices from the dependent vertices that should be deleted
+            // So for each of the following dependent vertices,
+            // we will use the edge properties and do the cascade delete
+            List<Vertex> impliedDeleteVertices = this.engine.getQueryEngine().findDeletable(dependentVertexes);
+            int impliedDeleteCount = impliedDeleteVertices.size();
+
+            LOGGER.warn(
+                "For the vertex with id {}, doing an implicit delete on update will delete total of {} vertexes",
+                v.id(),
+                impliedDeleteCount
+            );
+
+            String impliedDeleteLogEnabled = AAIConfig.get(AAIConstants.AAI_IMPLIED_DELETE_LOG_ENABLED, "true");
+
+            int impliedDeleteLogLimit = AAIConfig.getInt(AAIConstants.AAI_IMPLIED_DELETE_LOG_LIMIT, "-1");
+
+            if(impliedDeleteLogLimit == -1){
+                impliedDeleteLogLimit = Integer.MAX_VALUE;
+            }
+
+            // If the logging is enabled for implied delete
+            // then log the payload in the latest format
+            if("true".equals(impliedDeleteLogEnabled) &&
+                impliedDeleteCount <= impliedDeleteLogLimit){
+                for(Vertex vertex : impliedDeleteVertices){
+                    Introspector introspector = null;
+                    try {
+                        introspector = getLatestVersionView(vertex);
+                        if(LOGGER.isInfoEnabled()){
+                            LOGGER.info("Implied delete object in json format {}", introspector.marshal(false));
+                        }
+                    } catch(Exception ex){
+                        LOGGER.warn("Encountered an exception during retrieval of vertex properties with vertex-id {} -> {}", v.id(), LogFormatTools.getStackTop(ex));
+                    }
+                }
+            }
+
+            // After all the appropriate logging, calling the delete to delete the affected vertices
+            this.delete(impliedDeleteVertices);
+        }
 
         this.executePostSideEffects(obj, v);
         return processedVertexes;
@@ -910,9 +960,7 @@ public class DBSerializer {
         String cleanUp = "false";
         boolean nodeOnly = false;
         StopWatch.conditionalStart();
-        Tree<Element> tree = this.engine.getQueryEngine().findSubGraph(v, depth, nodeOnly);
-        TreeBackedVertex treeVertex = new TreeBackedVertex(v, tree);
-        this.dbToObject(obj, treeVertex, seen, depth, nodeOnly, cleanUp);
+        this.dbToObject(obj, v, seen, depth, nodeOnly, cleanUp);
         dbTimeMsecs += StopWatch.stopIfStarted();
         return obj;
     }
@@ -1608,7 +1656,6 @@ public class DBSerializer {
     public void deleteItemsWithTraversal(List<Vertex> vertexes) throws IllegalStateException {
 
         for (Vertex v : vertexes) {
-            LOGGER.debug("About to delete the vertex with id: " + v.id());
             deleteWithTraversal(v);
         }
 
@@ -1624,10 +1671,39 @@ public class DBSerializer {
         List<Vertex> results = this.engine.getQueryEngine().findDeletable(startVertex);
 
         for (Vertex v : results) {
-            LOGGER.warn("Removing vertex " + v.id().toString());
-
+            LOGGER.debug("Removing vertex {} with label {}", v.id(), v.label());
             v.remove();
         }
+        dbTimeMsecs += StopWatch.stopIfStarted();
+    }
+
+    /**
+     * Removes the list of vertexes from the graph
+     * <p>
+     * Current the vertex label will just be vertex but
+     * in the future the aai-node-type property will be replaced
+     * by using the vertex label as when retrieving an vertex
+     * and retrieving an single property on an vertex will pre-fetch
+     * all the properties of that vertex and this is due to the following property
+     * <p>
+     * <code>
+     * query.fast-property=true
+     * </code>
+     * <p>
+     * JanusGraph doesn't provide the capability to override that
+     * at a transaction level and there is a plan to move to vertex label
+     * so it is best to utilize this for now and when the change is applied
+     *
+     * @param vertices - list of vertices to delete from the graph
+     */
+    void delete(List<Vertex> vertices){
+        StopWatch.conditionalStart();
+
+        for (Vertex v : vertices) {
+            LOGGER.debug("Removing vertex {} with label {}", v.id(), v.label());
+            v.remove();
+        }
+
         dbTimeMsecs += StopWatch.stopIfStarted();
     }
 

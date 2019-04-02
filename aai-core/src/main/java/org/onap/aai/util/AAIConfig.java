@@ -24,10 +24,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Properties;
-import java.util.Timer;
 import org.onap.aai.logging.LoggingContext;
 import org.onap.aai.logging.LoggingContext.StatusCode;
 
@@ -47,7 +44,7 @@ public class AAIConfig {
 	private static final String GLOBAL_PROP_FILE_NAME = AAIConstants.AAI_CONFIG_FILENAME;
 	private static Properties serverProps;
     private static boolean propsInitialized = false;
-    
+
     /**
      * Instantiates a new AAI config.
      */
@@ -71,11 +68,11 @@ public class AAIConfig {
 		LoggingContext.statusCode(StatusCode.COMPLETE);
 
 		LOGGER.info("Initializing AAIConfig");
-		
+
         AAIConfig.getConfigFile();
         AAIConfig.reloadConfig();
-        
-        if (AAIConstants.AAI_NODENAME == null || AAIConstants.AAI_NODENAME == "") {      
+
+        if (AAIConstants.AAI_NODENAME == null || AAIConstants.AAI_NODENAME == "") {
             ErrorLogHelper.logError("AAI_4005", " AAI_NODENAME is not defined");
         } else {
             LOGGER.info("A&AI Server Node Name = " + AAIConstants.AAI_NODENAME);
@@ -99,9 +96,9 @@ public class AAIConfig {
 
         String propFileName = GLOBAL_PROP_FILE_NAME;
         Properties newServerProps = null;
-        
+
         LOGGER.debug("Reloading config from " + propFileName);
-        
+
         try(InputStream is = new FileInputStream(propFileName)) {
             newServerProps = new Properties();
             newServerProps.load(is);
@@ -113,7 +110,7 @@ public class AAIConfig {
         	ErrorLogHelper.logError("AAI_4002", " " + propFileName + ". IOException: "+e.getMessage());
         }
     }
-    
+
     /**
      * Gets the.
      *
@@ -142,7 +139,7 @@ public class AAIConfig {
      */
     public static String get(String key) throws AAIException {
     	String response = null;
-    	
+
     	if (key.equals(AAIConstants.AAI_NODENAME)) {
     		// Get this from InetAddress rather than the properties file
     		String nodeName = getNodeName();
@@ -151,16 +148,16 @@ public class AAIConfig {
     		}
     		// else get from property file
     	}
-    	
+
     	if (!propsInitialized || (serverProps == null)) {
     		reloadConfig();
     	}
-    	
+
     	if ((key.endsWith("password") || key.endsWith("passwd") || key.endsWith("apisecret")) && serverProps.containsKey(key+".x")) {
     		String valx = serverProps.getProperty(key+".x");
     		return Password.deobfuscate(valx);
     	}
-    	
+
     	if (!serverProps.containsKey(key)) {
     		throw new AAIException("AAI_4005", "Property key "+key+" cannot be found");
     	} else {
@@ -180,8 +177,18 @@ public class AAIConfig {
      * @throws AAIException the AAI exception
      */
     public static int getInt(String key) throws AAIException{
-    	return Integer.valueOf(AAIConfig.get(key));
+    	return Integer.parseInt(AAIConfig.get(key));
 	}
+
+    /**
+     * Gets the int.
+     *
+     * @param key the key
+     * @return the int
+     */
+    public static int getInt(String key, String value) {
+        return Integer.parseInt(AAIConfig.get(key, value));
+    }
 
 	/**
 	 * Gets the server props.
@@ -191,7 +198,7 @@ public class AAIConfig {
 	public static Properties getServerProps() {
 		return serverProps;
 	}
-	
+
 	/**
 	 * Gets the node name.
 	 *
@@ -211,8 +218,8 @@ public class AAIConfig {
 		}
 		return null;
 	}
-	
-	
+
+
 	/**
 	 * Check if a null or an Empty string is passed in.
 	 *

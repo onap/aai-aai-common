@@ -58,7 +58,7 @@ public class GraphTraversalQueryEngine extends QueryEngine {
 	/**
 	 * Instantiates a new graph traversal query engine.
 	 *
-	 * @param graphEngine the graph engine
+	 * @param g     graph traversal source to traverse the graph
 	 */
 	public GraphTraversalQueryEngine(GraphTraversalSource g) {
 		super(g);
@@ -146,17 +146,46 @@ public class GraphTraversalQueryEngine extends QueryEngine {
 	 */
 	@Override
 	public List<Vertex> findDeletable(Vertex start) {
-		@SuppressWarnings("unchecked")
-		GraphTraversal<Vertex, Vertex> pipe = this.g
-				.V(start).emit(v -> true).repeat(
-					__.union(
-						__.outE().has(DELETE_OTHER_V.toString(), OUT.toString()).inV(),
-						__.inE().has(DELETE_OTHER_V.toString(), IN.toString()).outV()
-					)
-				).dedup();
+        try {
+            StopWatch.conditionalStart();
+            @SuppressWarnings("unchecked")
+            GraphTraversal<Vertex, Vertex> pipe = this.g
+                    .V(start).emit(v -> true).repeat(
+                        __.union(
+                            __.outE().has(DELETE_OTHER_V.toString(), OUT.toString()).inV(),
+                            __.inE().has(DELETE_OTHER_V.toString(), IN.toString()).outV()
+                        )
+                    ).dedup();
 
-		return pipe.toList();
+            return pipe.toList();
+        } finally {
+            dbTimeMsecs += StopWatch.stopIfStarted();
+        }
 	}
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Vertex> findDeletable(List<Vertex> startVertexes) {
+        try {
+            StopWatch.conditionalStart();
+            Vertex[] vertices = new Vertex[startVertexes.size()];
+            vertices = startVertexes.toArray(vertices);
+            GraphTraversal<Vertex, Vertex> pipe = this.g
+                .V(vertices).emit(v -> true).repeat(
+                    __.union(
+                        __.outE().has(DELETE_OTHER_V.toString(), OUT.toString()).inV(),
+                        __.inE().has(DELETE_OTHER_V.toString(), IN.toString()).outV()
+                    )
+                ).dedup();
+
+            return pipe.toList();
+        }
+        finally {
+            dbTimeMsecs += StopWatch.stopIfStarted();
+        }
+    }
 
 	/**
 	 * {@inheritDoc}
