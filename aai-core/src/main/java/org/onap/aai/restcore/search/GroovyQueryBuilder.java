@@ -51,7 +51,7 @@ public class GroovyQueryBuilder extends AAIAbstractGroovyShell {
 	@Override
 	public String executeTraversal (TransactionalGraphEngine engine, String traversal, Map<String, Object> params) {
 		QueryBuilder<Vertex> builder = engine.getQueryBuilder(QueryStyle.GREMLIN_TRAVERSAL);
-		SchemaVersions schemaVersions = SpringContextAware.getBean(SchemaVersions.class);
+		SchemaVersions schemaVersions = (SchemaVersions) SpringContextAware.getBean("schemaVersions");
 		Loader loader = SpringContextAware.getBean(LoaderFactory.class).createLoaderForVersion(ModelType.MOXY,  schemaVersions.getDefaultVersion());
 
 		builder.changeLoader(loader);

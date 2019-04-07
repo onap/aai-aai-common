@@ -29,6 +29,7 @@ import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.janusgraph.core.JanusGraphFactory;
 import org.junit.*;
 import org.junit.runner.RunWith;
+import org.onap.aai.config.ConfigConfiguration;
 import org.onap.aai.config.IntrospectionConfig;
 import org.onap.aai.config.SpringContextAware;
 import org.onap.aai.exceptions.AAIException;
@@ -63,8 +64,7 @@ import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
-        SchemaLocationsBean.class,
-        SchemaVersions.class,
+        ConfigConfiguration.class,
         QueryTestsConfigTranslator.class,
         NodeIngestor.class,
         EdgeIngestor.class,
@@ -88,10 +88,11 @@ public abstract class QueryBuilderTestAbstraction {
     protected EdgeSerializer testEdgeSer;
 
     @Autowired
-    protected LoaderFactory loaderFactory;
+    protected SchemaVersions schemaVersions;
 
     @Autowired
-    protected SchemaVersions schemaVersions;
+    protected LoaderFactory loaderFactory;
+
 
     @BeforeClass
     public static void setup() throws Exception {

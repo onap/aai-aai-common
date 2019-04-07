@@ -25,6 +25,7 @@ import org.junit.BeforeClass;
 
 import org.junit.ClassRule;
 import org.junit.Rule;
+import org.onap.aai.config.ConfigConfiguration;
 import org.onap.aai.config.SpringContextAware;
 import org.onap.aai.edges.EdgeIngestor;
 import org.onap.aai.config.IntrospectionConfig;
@@ -34,11 +35,10 @@ import org.onap.aai.nodes.NodeIngestor;
 import org.onap.aai.config.RestBeanConfig;
 import org.onap.aai.rest.db.HttpEntry;
 import org.onap.aai.setup.AAIConfigTranslator;
-import org.onap.aai.serialization.db.EdgeSerializer;
-import org.onap.aai.serialization.queryformats.QueryFormatTestHelper;
-import org.onap.aai.setup.SchemaLocationsBean;
 import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.setup.SchemaVersions;
+import org.onap.aai.serialization.db.EdgeSerializer;
+import org.onap.aai.serialization.queryformats.QueryFormatTestHelper;
 import org.onap.aai.util.AAIConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -49,8 +49,7 @@ import org.springframework.test.context.junit4.rules.SpringMethodRule;
 
 
 @ContextConfiguration(classes = {
-        SchemaLocationsBean.class,
-        SchemaVersions.class,
+        ConfigConfiguration.class,
         AAIConfigTranslator.class,
         EdgeIngestor.class,
         EdgeSerializer.class,

@@ -80,8 +80,4 @@ public class SchemaServiceOneWayClient extends OneWaySSLRestClient{
 		return httpHeaders;
 	}
 
-	@Override
-	public EELFLogger getLogger() {
-		return logger;
-	}
 }

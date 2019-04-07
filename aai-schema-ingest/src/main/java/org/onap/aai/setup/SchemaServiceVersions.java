@@ -19,10 +19,17 @@
  */
 package org.onap.aai.setup;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Component("schemaServiceVersions")
+@ConditionalOnExpression("'${schema.translator.list}'.contains('schema-service')")
+@PropertySource(value = "classpath:schema-ingest.properties", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${schema.ingest.file}", ignoreResourceNotFound = true)
 public class SchemaServiceVersions extends SchemaVersions {
     private List<String> versions;
     private String edgeVersion;
@@ -32,9 +39,17 @@ public class SchemaServiceVersions extends SchemaVersions {
     private String relatedLinkVersion;
     private String namespaceChangeVersion;
 
+    public List<String> getVersionsAll() {
+        return versions;
+    }
+
+    public void setVersions(List<String> versions) {
+        this.versions = versions;
+    }
 
     @PostConstruct
-    public void initializeFromSchemaService() {
+    public void initializeFromSchemaService() throws ExceptionInInitializerError{
+
         versionsValue = versions.stream().map(SchemaVersion::new).collect(Collectors.toList());
         edgeLabelVersionValue = new SchemaVersion(edgeVersion);
         defaultVersionValue = new SchemaVersion(defaultVersion);
@@ -42,7 +57,23 @@ public class SchemaServiceVersions extends SchemaVersions {
         appRootVersionValue = new SchemaVersion(appRootVersion);
         relatedLinkVersionValue = new SchemaVersion(relatedLinkVersion);
         namespaceChangeVersionValue = new SchemaVersion(namespaceChangeVersion);
+
         this.validate();
+    }
+
+    /*
+     * TODO Change Method names
+     */
+    public void initializeFromSchemaConfig(SchemaConfigVersions schemaConfigVersion) throws ExceptionInInitializerError{
+
+        versions = schemaConfigVersion.getApiVersions();
+        appRootVersion = schemaConfigVersion.getAppRootStartVersion();
+        defaultVersion = schemaConfigVersion.getDefaultApiVersion();
+        depthVersion = schemaConfigVersion.getDepthStartVersion();
+        edgeVersion = schemaConfigVersion.getEdgeLabelStartVersion();
+        namespaceChangeVersion = schemaConfigVersion.getNamespaceChangeStartVersion();
+        relatedLinkVersion = schemaConfigVersion.getRelatedLinkStartVersion();
+        this.initializeFromSchemaService();
     }
 
 }

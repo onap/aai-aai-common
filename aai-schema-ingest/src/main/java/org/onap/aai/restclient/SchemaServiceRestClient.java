@@ -95,8 +95,4 @@ public class SchemaServiceRestClient extends TwoWaySSLRestClient {
         return httpHeaders;
     }
 
-    @Override
-    public EELFLogger getLogger() {
-        return logger;
-    }
 }

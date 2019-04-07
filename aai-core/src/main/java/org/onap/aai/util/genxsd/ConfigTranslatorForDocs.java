@@ -23,22 +23,18 @@ package org.onap.aai.util.genxsd;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-
 import org.onap.aai.setup.ConfigTranslator;
 import org.onap.aai.setup.SchemaLocationsBean;
 import org.onap.aai.setup.SchemaVersion;
-import org.onap.aai.setup.SchemaVersions;
-import org.springframework.context.annotation.Configuration;
+import org.onap.aai.setup.SchemaConfigVersions;
 
 public class ConfigTranslatorForDocs extends ConfigTranslator {
 
-	public ConfigTranslatorForDocs(SchemaLocationsBean bean, SchemaVersions schemaVersions) {
+	public ConfigTranslatorForDocs(SchemaLocationsBean bean, SchemaConfigVersions schemaVersions) {
 		super(bean, schemaVersions);
 	}
 

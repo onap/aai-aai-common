@@ -71,16 +71,14 @@ public class NodeIngestor {
     private Set<Translator> translators;
     
     //TODO : See if you can get rid of InputStream resets
-     /**
+
+    /**
      * Instantiates the NodeIngestor bean.
-     *
-     * @param  - ConfigTranslator autowired in by Spring framework which
-     * contains the configuration information needed to ingest the desired files.
+     * @param translatorSet
      */
 
      @Autowired
     public NodeIngestor(Set<Translator> translatorSet) {
-        LOGGER.debug("Local Schema files will be fetched");
         this.translators = translatorSet;
     }
 
@@ -93,8 +91,8 @@ public class NodeIngestor {
                 translateAll(translator);
 
             } catch (Exception e) {
-                LOGGER.info("Error while Processing the translator" + e.getMessage());
-                continue;
+                LOGGER.error("Error while Processing the translator" + e.getMessage());
+                throw new ExceptionInInitializerError("NodeIngestor could not ingest schema");
             }
         }
         if (versionContextMap.isEmpty() || schemaPerVersion.isEmpty() || typesPerVersion.isEmpty()) {

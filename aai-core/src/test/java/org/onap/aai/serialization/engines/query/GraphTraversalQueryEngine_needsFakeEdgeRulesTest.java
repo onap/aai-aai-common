@@ -32,6 +32,7 @@ import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.onap.aai.config.ConfigConfiguration;
 import org.onap.aai.edges.EdgeIngestor;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.serialization.db.AAICoreFakeEdgesConfigTranslator;
@@ -45,8 +46,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
-		SchemaLocationsBean.class,
-		SchemaVersions.class,
+		ConfigConfiguration.class,
 		AAICoreFakeEdgesConfigTranslator.class,
 		EdgeIngestor.class,
 		EdgeSerializer.class

@@ -34,7 +34,7 @@ import org.onap.aai.util.AAIConstants;
  */
 public abstract class AbstractConfigTranslator extends ConfigTranslator {
 
-    public AbstractConfigTranslator(SchemaLocationsBean bean, SchemaVersions schemaVersions) {
+    public AbstractConfigTranslator(SchemaLocationsBean bean, SchemaConfigVersions schemaVersions) {
         super(bean, schemaVersions);
     }
 

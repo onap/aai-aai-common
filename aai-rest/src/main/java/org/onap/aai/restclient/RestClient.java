@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
- * Copyright © 2017-2018 AT&T Intellectual Property. All rights reserved.
+ * Copyright © 2017-2019 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Modifications Copyright © 2018 IBM.
  * ================================================================================
@@ -32,6 +32,8 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Map;
 
 public abstract class RestClient {
@@ -40,17 +42,82 @@ public abstract class RestClient {
     @Value("${spring.application.name}")
     protected String appName;
 
-    public ResponseEntity execute(String uri, HttpMethod method, Map<String, String> headers, String body) throws RestClientException {
 
-        HttpEntity httpEntity;
-        log.debug("Headers: " + headers.toString());
+    /**
+     * Execute the given http method against the uri with passed headers
+     * @param uri properly encoded, can include query params also properly encoded
+     * @param method http method of the request
+     * @param headers headers for the request
+     * @param body body of the request
+     * @return response of request
+     * @throws RestClientException on internal rest template exception or invalid url
+     */
+    public ResponseEntity execute(String uri, HttpMethod method, Map<String,String> headers, String body) throws RestClientException {
+
+        HttpEntity<String> httpEntity;
+        log.debug ("Headers: {}", headers);
         if (body == null) {
-            httpEntity = new HttpEntity(getHeaders(headers));
+            httpEntity = new HttpEntity<>(getHeaders(headers));
         } else {
-            httpEntity = new HttpEntity(body, getHeaders(headers));
+            httpEntity = new HttpEntity<>(body, getHeaders(headers));
         }
-        String url = getBaseUrl() + uri;
-        return getRestTemplate().exchange(url, method, httpEntity, String.class);
+
+        // verify that either the base url ends with '/' or uri starts with '/', adjust uri accordingly.
+        if (getBaseUrl().endsWith("/") && uri.startsWith("/")) {
+            uri = uri.replaceFirst("/", "");
+        } else if (!getBaseUrl().endsWith("/") && !uri.startsWith("/")) {
+            uri = "/" + uri;
+        }
+
+        URI url;
+        try {
+            url = new URI(getBaseUrl() + uri);
+        } catch (URISyntaxException e) {
+            log.error("URL syntax error with url {}{}", getBaseUrl(), uri);
+            throw new RestClientException(e.getMessage());
+        }
+        log.debug("METHOD={},URL={},http={}" + method, url, httpEntity);
+
+        ResponseEntity responseEntity = getRestTemplate().exchange(url, method, httpEntity, String.class);
+        log.debug("RESPONSE={}", responseEntity);
+        return responseEntity;
+    }
+
+    /**
+     * Execute the given http method against the uri with passed headers
+     * @param uri properly encoded, can include query params also properly encoded
+     * @param method http method of the request
+     * @param headers headers for the request
+     * @param body body of the request
+     * @return response of request
+     * @throws RestClientException on internal rest template exception or invalid url
+     */
+    public ResponseEntity execute(String uri, String method, Map<String,String> headers, String body) throws RestClientException{
+        return execute(uri, HttpMethod.valueOf(method), headers, body);
+    }
+
+    /**
+     * Execute the given http method against the uri with passed headers
+     * @param uri properly encoded, can include query params also properly encoded
+     * @param method http method of the request
+     * @param headers headers for the request
+     * @return response of request
+     * @throws RestClientException on internal rest template exception or invalid url
+     */
+    public ResponseEntity execute(String uri, HttpMethod method, Map<String,String> headers) throws RestClientException{
+        return execute(uri, method, headers, null);
+    }
+
+    /**
+     * Execute the given http method against the uri with passed headers
+     * @param uri properly encoded, can include query params also properly encoded
+     * @param method http method of the request
+     * @param headers headers for the request
+     * @return response of request
+     * @throws RestClientException on internal rest template exception or invalid url
+     */
+    public ResponseEntity execute(String uri, String method, Map<String,String> headers) throws RestClientException{
+        return execute(uri, HttpMethod.valueOf(method), headers, null);
     }
 
     public ResponseEntity executeResource(String uri, HttpMethod method, Map<String, String> headers, String body) throws RestClientException {
@@ -64,10 +131,6 @@ public abstract class RestClient {
         }
         String url = getBaseUrl() + uri;
         return getRestTemplate().exchange(url, method, httpEntity, Resource.class);
-    }
-
-    public ResponseEntity execute(String uri, String method, Map<String, String> headers) throws RestClientException {
-        return execute(uri, HttpMethod.valueOf(method), headers, null);
     }
 
     public ResponseEntity getGetRequest(String content, String uri, Map<String, String> headersMap) {
@@ -93,7 +156,5 @@ public abstract class RestClient {
     public abstract String getBaseUrl();
 
     protected abstract MultiValueMap<String, String> getHeaders(Map<String, String> headers);
-
-    protected abstract EELFLogger getLogger();
 
 }

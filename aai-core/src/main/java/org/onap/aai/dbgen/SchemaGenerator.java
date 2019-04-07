@@ -30,10 +30,7 @@ import org.onap.aai.config.SpringContextAware;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.edges.EdgeIngestor;
 import org.onap.aai.edges.exceptions.EdgeRuleNotFoundException;
-import org.onap.aai.introspection.Introspector;
-import org.onap.aai.introspection.Loader;
-import org.onap.aai.introspection.LoaderFactory;
-import org.onap.aai.introspection.ModelType;
+import org.onap.aai.introspection.*;
 import org.onap.aai.logging.LogFormatTools;
 import org.onap.aai.schema.enums.PropertyMetadata;
 import org.onap.aai.edges.EdgeRule;
@@ -111,16 +108,8 @@ public class SchemaGenerator {
 			}
 		}
 
-		// ApplicationContext ctx = SpringContextAware.getApplicationContext();
-		// Loader loader =
-		// ctx.getBean(LoaderFactory.class).createLoaderForVersion(ModelType.MOXY,
-		// AAIProperties.LATEST);
-		LoaderFactory loaderFactory   = SpringContextAware.getBean(LoaderFactory.class);
-		SchemaVersions schemaVersions = SpringContextAware.getBean(SchemaVersions.class);
+		Loader loader = LoaderUtil.getLatestVersion();
 
-		Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
-		// Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY,
-		// AAIProperties.LATEST);
 		Map<String, Introspector> objs = loader.getAllObjects();
 		Map<String, PropertyKey> seenProps = new HashMap<>();
 
