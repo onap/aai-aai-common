@@ -36,6 +36,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.onap.aai.config.ConfigConfiguration;
 import org.onap.aai.edges.EdgeIngestor;
 import org.onap.aai.edges.EdgeRule;
 import org.onap.aai.edges.exceptions.EdgeRuleNotFoundException;
@@ -52,7 +53,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.google.common.collect.Multimap;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {SchemaVersions.class, SchemaLocationsBean.class,  TestUtilConfigTranslatorforEdges.class, EdgeIngestor.class})
+@ContextConfiguration(classes = {ConfigConfiguration.class,  TestUtilConfigTranslatorforEdges.class, EdgeIngestor.class})
 @TestPropertySource(properties = {"schemaIngestPropLoc = src/test/resources/schemaIngest/schemaIngestTest.properties"})
 
 

@@ -22,6 +22,7 @@ package org.onap.aai.serialization.db;
 import java.util.*;
 
 import org.onap.aai.AbstractConfigTranslator;
+import org.onap.aai.setup.SchemaConfigVersions;
 import org.onap.aai.setup.SchemaLocationsBean;
 import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.setup.SchemaVersions;
@@ -32,7 +33,7 @@ import org.onap.aai.setup.SchemaVersions;
  */
 public class AAICoreFakeEdgesConfigTranslator extends AbstractConfigTranslator {
 
-	public AAICoreFakeEdgesConfigTranslator(SchemaLocationsBean bean, SchemaVersions schemaVersions) {
+	public AAICoreFakeEdgesConfigTranslator(SchemaLocationsBean bean, SchemaConfigVersions schemaVersions) {
 		super(bean, schemaVersions);
 	}
 

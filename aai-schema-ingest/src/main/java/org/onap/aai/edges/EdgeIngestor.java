@@ -76,7 +76,6 @@ public class EdgeIngestor {
 
     @Autowired
     public EdgeIngestor(Set<Translator> translatorSet) {
-        LOGGER.debug("Local Schema files will be fetched");
         this.translators = translatorSet;
     }
 
@@ -89,8 +88,8 @@ public class EdgeIngestor {
                 translateAll(translator);
 
             } catch (Exception e) {
-                LOGGER.debug("Error while Processing the translator" + e.getMessage());
-                continue;
+                LOGGER.error("Error while Processing the translator" + e.getMessage());
+                throw new ExceptionInInitializerError("EdgeIngestor could not ingest schema");
             }
         }
         if (versionJsonFilesMap.isEmpty() || schemaVersions==null ) {
@@ -98,7 +97,7 @@ public class EdgeIngestor {
         }
     }
 
-    public void translateAll(Translator translator) {
+    public void translateAll(Translator translator) throws ExceptionInInitializerError{
         /*
         Use SchemaVersions from the Translator
          */
@@ -115,7 +114,8 @@ public class EdgeIngestor {
             try {
                 jsonPayloads = translator.getJsonPayload(version);     // need to change this - need to receive the json files.
             } catch (IOException e) {
-                LOGGER.info("Exception in retrieving the JSON Payload"+e.getMessage());
+                LOGGER.error("Error in retrieving the JSON Payload" + e.getMessage());
+                throw new ExceptionInInitializerError("EdgeIngestor could not ingest schema");
             }
             if (jsonPayloads == null || jsonPayloads.isEmpty()) {
                 continue;

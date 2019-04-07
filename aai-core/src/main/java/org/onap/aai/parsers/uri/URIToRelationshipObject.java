@@ -131,7 +131,7 @@ public class URIToRelationshipObject implements Parsable {
 		URI originalUri = parser.getOriginalURI();
 		
 		URI relatedLink = new URI(this.baseURL + this.originalVersion + "/" + originalUri);
-		SchemaVersions schemaVersions = SpringContextAware.getBean(SchemaVersions.class);
+		SchemaVersions schemaVersions = (SchemaVersions)SpringContextAware.getBean("schemaVersions");
 		if (this.originalVersion.compareTo(schemaVersions.getRelatedLinkVersion()) >= 0) {
 			//only return the path section of the URI past v10
 			relatedLink = new URI(relatedLink.getRawPath());

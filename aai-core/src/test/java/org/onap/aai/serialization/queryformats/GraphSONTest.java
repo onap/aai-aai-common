@@ -31,6 +31,7 @@ import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.onap.aai.config.ConfigConfiguration;
 import org.onap.aai.config.SpringContextAware;
 import org.onap.aai.edges.EdgeIngestor;
 import org.onap.aai.edges.exceptions.AmbiguousRuleChoiceException;
@@ -55,8 +56,7 @@ import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
-		SchemaLocationsBean.class,
-		SchemaVersions.class,
+		ConfigConfiguration.class,
 		AAICorePrivateEdgeTestConfigTranslator.class,
 		EdgeIngestor.class,
 		EdgeSerializer.class,

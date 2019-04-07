@@ -25,7 +25,6 @@ import com.att.eelf.configuration.EELFManager;
 import org.apache.commons.io.IOUtils;
 import org.onap.aai.edges.JsonIngestor;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import java.io.*;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -45,7 +44,7 @@ public abstract class ConfigTranslator extends Translator{
 
 	
 	@Autowired
-	public ConfigTranslator(SchemaLocationsBean schemaLocationbean, SchemaVersions schemaVersions) {
+    public ConfigTranslator(SchemaLocationsBean schemaLocationbean, SchemaConfigVersions schemaVersions) {
 	    super(schemaVersions);
 		this.bean = schemaLocationbean;
 

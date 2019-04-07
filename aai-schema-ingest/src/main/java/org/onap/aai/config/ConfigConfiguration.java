@@ -21,6 +21,7 @@
  */
 package org.onap.aai.config;
 
+import org.onap.aai.setup.SchemaConfigVersions;
 import org.onap.aai.setup.SchemaLocationsBean;
 import org.onap.aai.setup.SchemaVersions;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -34,9 +35,14 @@ import org.springframework.context.annotation.PropertySource;
 @PropertySource(value = "file:${schema.ingest.file}", ignoreResourceNotFound = true)
 public class ConfigConfiguration {
 
+    @Bean(name = "schemaConfigVersions")
+    public SchemaConfigVersions schemaConfigVersions() {
+        return new SchemaConfigVersions();
+    }
+
     @Bean(name = "schemaVersions")
     public SchemaVersions schemaVersions() {
-        return new SchemaVersions();
+        return schemaConfigVersions();
     }
 
     @Bean(name = "schemaLocationsBean")

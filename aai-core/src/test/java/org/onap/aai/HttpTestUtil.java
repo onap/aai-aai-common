@@ -138,7 +138,7 @@ public class HttpTestUtil extends RESTAPI {
                 }
             }
 
-            SchemaVersions schemaVersions = SpringContextAware.getBean(SchemaVersions.class);
+            SchemaVersions schemaVersions = (SchemaVersions) SpringContextAware.getBean("schemaVersions");
             if(version == null){
                 version = schemaVersions.getDefaultVersion();
             }
@@ -235,7 +235,7 @@ public class HttpTestUtil extends RESTAPI {
                 }
             }
 
-            SchemaVersions schemaVersions = SpringContextAware.getBean(SchemaVersions.class);
+            SchemaVersions schemaVersions = (SchemaVersions) SpringContextAware.getBean("schemaVersions");
             if(version == null){
                 version = schemaVersions.getDefaultVersion();
             }
@@ -331,7 +331,7 @@ public class HttpTestUtil extends RESTAPI {
                 }
             }
 
-            SchemaVersions schemaVersions = SpringContextAware.getBean(SchemaVersions.class);
+            SchemaVersions schemaVersions = (SchemaVersions) SpringContextAware.getBean("schemaVersions");
             if(version == null){
                 version = schemaVersions.getDefaultVersion();
             }

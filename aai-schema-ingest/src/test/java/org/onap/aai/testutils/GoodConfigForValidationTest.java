@@ -23,8 +23,8 @@ package org.onap.aai.testutils;
 import org.onap.aai.setup.ConfigTranslator;
 import org.onap.aai.setup.SchemaLocationsBean;
 import org.onap.aai.setup.SchemaVersion;
+import org.onap.aai.setup.SchemaConfigVersions;
 import org.onap.aai.setup.SchemaVersions;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +37,7 @@ public class GoodConfigForValidationTest extends ConfigTranslator {
 
     private SchemaVersions schemaVersions;
 
-    public GoodConfigForValidationTest(SchemaLocationsBean bean, SchemaVersions schemaVersions) {
+    public GoodConfigForValidationTest(SchemaLocationsBean bean, SchemaConfigVersions schemaVersions) {
         super(bean, schemaVersions);
         this.schemaVersions = schemaVersions;
     }

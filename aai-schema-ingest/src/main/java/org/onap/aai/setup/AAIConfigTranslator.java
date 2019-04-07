@@ -37,7 +37,7 @@ public class AAIConfigTranslator extends ConfigTranslator {
 
     private static final String FILESEP = (System.getProperty("file.separator") == null) ? "/" : System.getProperty("file.separator");
 
-    public AAIConfigTranslator(SchemaLocationsBean bean, SchemaVersions schemaVersions) {
+    public AAIConfigTranslator(SchemaLocationsBean bean, SchemaConfigVersions schemaVersions) {
 		super(bean, schemaVersions);
 	}
 	

@@ -104,7 +104,7 @@ public class GenerateXsd {
 			return true;
 		}
 
-		SchemaVersions schemaVersions = SpringContextAware.getBean(SchemaVersions.class);
+		SchemaVersions schemaVersions = (SchemaVersions) SpringContextAware.getBean("schemaVersions");
 		for (SchemaVersion v : schemaVersions.getVersions()) {
 	        if (v.equals(versionToGen)) {
 	            return true;

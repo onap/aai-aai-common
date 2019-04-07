@@ -64,7 +64,7 @@ public abstract class SideEffect {
 		this.serializer = serializer;
 		this.self = self;
 		LoaderFactory loaderFactory = SpringContextAware.getBean(LoaderFactory.class);
-		SchemaVersions schemaVersions = SpringContextAware.getBean(SchemaVersions.class);
+		SchemaVersions schemaVersions = (SchemaVersions) SpringContextAware.getBean("schemaVersions");
 		this.latestLoader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion()) ;
 	}
 

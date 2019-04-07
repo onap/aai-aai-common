@@ -29,6 +29,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.onap.aai.config.ConfigConfiguration;
 import org.onap.aai.config.SwaggerGenerationConfiguration;
 import org.onap.aai.edges.EdgeIngestor;
 import org.onap.aai.nodes.NodeIngestor;
@@ -53,12 +54,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
-        SchemaLocationsBean.class,
+        ConfigConfiguration.class,
         TestUtilConfigTranslatorforBusiness.class,
         EdgeIngestor.class,
         NodeIngestor.class,
-		SwaggerGenerationConfiguration.class,
-		SchemaVersions.class
+		SwaggerGenerationConfiguration.class
 })
 @TestPropertySource(properties = {
 		"schema.uri.base.path = /aai"

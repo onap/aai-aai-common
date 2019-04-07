@@ -27,7 +27,6 @@ import org.onap.aai.restclient.RestClientFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-
 import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.List;
@@ -41,8 +40,14 @@ public class SchemaVersionsBean {
     @Value("${schema.service.versions.endpoint}")
     private String versionsUri;
 
+    @Value("${schema.service.versions.override:false}")
+    private String overrideSchemaService;
+
     @Autowired
     private RestClientFactory restClientFactory;
+
+    @Autowired(required = false)
+    private SchemaConfigVersions schemaConfigVersions;
 
     @PostConstruct
     public void initialize() {
@@ -50,7 +55,7 @@ public class SchemaVersionsBean {
         retrieveAllSchemaVersions();
     }
 
-    public void retrieveAllSchemaVersions() {
+    public void retrieveAllSchemaVersions() throws ExceptionInInitializerError{
 	    /*
 	    Call Schema MS to get versions using RestTemplate
 	     */
@@ -64,8 +69,28 @@ public class SchemaVersionsBean {
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_DASHES)
             .create();
         schemaVersions = gson.fromJson(schemaResponse.getBody(), SchemaServiceVersions.class);
-        schemaVersions.initializeFromSchemaService();
+       if(!validateOverrides(schemaVersions)){
+           throw new ExceptionInInitializerError("The versions requested is not supported by SchemaService");
+       }
+       if("true".equals(overrideSchemaService)){
+           schemaVersions.initializeFromSchemaConfig(schemaConfigVersions);
+       }
+       else{
+           schemaVersions.initializeFromSchemaService();
+       }
 
+    }
+
+    public boolean validateOverrides(SchemaServiceVersions schemaVersions1){
+        boolean versionsAvailable = true;
+        if("true".equals(overrideSchemaService)){
+            versionsAvailable = schemaConfigVersions.getApiVersions().stream().
+                allMatch(
+                    (s) -> schemaVersions1.getVersionsAll().contains(s)
+                );
+
+        }
+        return versionsAvailable;
     }
 
     public SchemaServiceVersions getSchemaVersions() {

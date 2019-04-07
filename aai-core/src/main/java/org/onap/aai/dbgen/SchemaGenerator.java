@@ -116,7 +116,7 @@ public class SchemaGenerator {
 		// ctx.getBean(LoaderFactory.class).createLoaderForVersion(ModelType.MOXY,
 		// AAIProperties.LATEST);
 		LoaderFactory loaderFactory   = SpringContextAware.getBean(LoaderFactory.class);
-		SchemaVersions schemaVersions = SpringContextAware.getBean(SchemaVersions.class);
+		SchemaVersions schemaVersions = (SchemaVersions) SpringContextAware.getBean("schemaVersions");
 
 		Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
 		// Loader loader = LoaderFactory.createLoaderForVersion(ModelType.MOXY,
