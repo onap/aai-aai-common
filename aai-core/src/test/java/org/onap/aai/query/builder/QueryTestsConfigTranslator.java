@@ -22,6 +22,7 @@ package org.onap.aai.query.builder;
 import java.util.*;
 
 import org.onap.aai.AbstractConfigTranslator;
+import org.onap.aai.setup.SchemaConfigVersions;
 import org.onap.aai.setup.SchemaLocationsBean;
 import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.setup.SchemaVersions;
@@ -33,7 +34,7 @@ import org.onap.aai.setup.SchemaVersions;
  */
 public class QueryTestsConfigTranslator extends AbstractConfigTranslator {
 
-    public QueryTestsConfigTranslator(SchemaLocationsBean bean, SchemaVersions schemaVersions) {
+    public QueryTestsConfigTranslator(SchemaLocationsBean bean, SchemaConfigVersions schemaVersions) {
         super(bean, schemaVersions);
     }
     

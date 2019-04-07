@@ -33,7 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.onap.aai.introspection.LoaderFactory;
 import org.onap.aai.introspection.MoxyLoader;
 import org.springframework.context.annotation.Import;
-@Import({NodesConfiguration.class, EdgesConfiguration.class})
+@Import({ConfigConfiguration.class, SchemaServiceConfiguration.class, NodesConfiguration.class, EdgesConfiguration.class})
 @Configuration
 
 public class IntrospectionConfig {

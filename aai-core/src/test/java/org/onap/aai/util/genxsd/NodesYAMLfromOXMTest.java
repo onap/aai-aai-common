@@ -37,6 +37,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onap.aai.AAISetup;
+import org.onap.aai.config.ConfigConfiguration;
 import org.onap.aai.config.SwaggerGenerationConfiguration;
 import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.setup.SchemaVersions;
@@ -56,8 +57,7 @@ import org.w3c.dom.Element;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
-		SchemaVersions.class,
-        SchemaLocationsBean.class,
+		ConfigConfiguration.class,
         TestUtilConfigTranslatorforEdges.class,
         EdgeIngestor.class,
         NodeIngestor.class,

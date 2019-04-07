@@ -22,6 +22,7 @@ package org.onap.aai;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
+import org.onap.aai.config.ConfigConfiguration;
 import org.onap.aai.config.IntrospectionConfig;
 import org.onap.aai.config.RestBeanConfig;
 import org.onap.aai.config.SpringContextAware;
@@ -50,8 +51,7 @@ import java.util.Map;
 
 
 @ContextConfiguration(classes = {
-        SchemaLocationsBean.class,
-        SchemaVersions.class,
+        ConfigConfiguration.class,
 		TestUtilConfigTranslatorforDataLink.class,
         EdgeIngestor.class,
         EdgeSerializer.class,

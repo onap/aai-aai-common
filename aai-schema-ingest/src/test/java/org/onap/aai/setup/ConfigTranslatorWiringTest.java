@@ -36,7 +36,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {SchemaLocationsBean.class, SchemaVersions.class, ConfigTranslatorForWiringTest.class})
+@ContextConfiguration(classes = {SchemaLocationsBean.class, SchemaConfigVersions.class, ConfigTranslatorForWiringTest.class})
 @TestPropertySource(properties = {"schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-wiring-test-local.properties"})
 @SpringBootTest
 public class ConfigTranslatorWiringTest {
