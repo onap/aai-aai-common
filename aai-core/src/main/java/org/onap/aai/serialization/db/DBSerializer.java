@@ -50,6 +50,7 @@ import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.onap.aai.introspection.sideeffect.*;
 import org.onap.aai.logging.ErrorLogHelper;
 import org.onap.aai.logging.LogFormatTools;
+import org.onap.aai.logging.LoggingContext;
 import org.onap.aai.logging.StopWatch;
 import org.onap.aai.parsers.query.QueryParser;
 import org.onap.aai.parsers.uri.URIParser;
@@ -88,6 +89,8 @@ import java.util.stream.Collectors;
 public class DBSerializer {
 
     private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(DBSerializer.class);
+
+    private static final String MISSING_REQUIRED_NODE_PROPERTY = "Vertex missing required aai-node-type property";
 
     private final TransactionalGraphEngine engine;
     private final String sourceOfTruth;
@@ -1033,7 +1036,16 @@ public class DBSerializer {
         }
 
         List<Object> relationshipObjList = obj.getValue("relationship");
-        String aNodeType = v.property("aai-node-type").value().toString();
+        VertexProperty nodeTypeProperty = v.property(AAIProperties.NODE_TYPE);
+
+        if(!nodeTypeProperty.isPresent()){
+            LoggingContext.responseDescription(MISSING_REQUIRED_NODE_PROPERTY);
+            LOGGER.warn("Not processing the vertex {} because its missing required property aai-node-type", v.id());
+            LoggingContext.remove(LoggingContext.LoggingField.RESPONSE_DESCRIPTION.toString());
+            return null;
+        }
+
+        String aNodeType = nodeTypeProperty.value().toString();
 
         TypeAlphabetizer alphabetizer = new TypeAlphabetizer();
 
@@ -1053,19 +1065,21 @@ public class DBSerializer {
         // from using the edge rules json and get the edge rule out of it
         EdgeRuleQuery.Builder queryBuilder = new EdgeRuleQuery.Builder(aNodeType);
         for (Vertex cousin : cousins) {
-            VertexProperty vertexProperty = cousin.property("aai-node-type");
+            VertexProperty vertexProperty = cousin.property(AAIProperties.NODE_TYPE);
             String bNodeType = null;
             if(vertexProperty.isPresent()){
-                bNodeType = cousin.property("aai-node-type").value().toString();
+                bNodeType = cousin.property(AAIProperties.NODE_TYPE).value().toString();
             } else {
                 // If the vertex is missing the aai-node-type
                 // Then its either a bad vertex or its in the process
                 // of getting deleted so we should ignore these vertexes
+                LoggingContext.responseDescription(MISSING_REQUIRED_NODE_PROPERTY);
                 if(LOGGER.isDebugEnabled()){
                     LOGGER.debug("For the vertex {}, unable to retrieve the aai-node-type", v.id().toString());
                 } else {
                     LOGGER.info("Unable to retrieve the aai-node-type for vertex, for more info enable debug log");
                 }
+                LoggingContext.remove(LoggingContext.LoggingField.RESPONSE_DESCRIPTION.toString());
                 continue;
             }
             if (obj.getVersion().compareTo(schemaVersions.getEdgeLabelVersion()) >= 0) {
