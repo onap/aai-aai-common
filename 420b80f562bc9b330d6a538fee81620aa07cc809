@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "bb983196_fd83d7de",
+        "filename": "aai-core/src/main/java/org/onap/aai/dbgen/SchemaGenerator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 75
+      },
+      "writtenOn": "2019-04-08T15:02:36Z",
+      "side": 1,
+      "message": "Since we used Spring beans to create those classes when we want to invoke this from shell scripts we need to use SpringContextAware to get those beans that way. \n\nI agree we can move the functionality of this out so I will create a LoaderUtil and move it there.",
+      "parentUuid": "91b59ff8_25e15b2f",
+      "range": {
+        "startLine": 119,
+        "startChar": 34,
+        "endLine": 119,
+        "endChar": 95
+      },
+      "revId": "420b80f562bc9b330d6a538fee81620aa07cc809",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "eefb04e1_068b1ee8",
         "filename": "aai-core/src/main/java/org/onap/aai/introspection/sideeffect/SideEffect.java",
         "patchSetId": 1
