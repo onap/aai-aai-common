@@ -44,6 +44,8 @@ public class RestController implements RestControllerInterface {
 	
 	private String restSrvrBaseURL;
 	
+	private String overrideLocalHost = null;
+	
 	//To do - Come up with helper function that will automatically
 	//generate the REST API path based on path parameter(s) and query parameter(s)!
 	public static final String REST_APIPATH_COMPLEXES = "cloud-infrastructure/complexes";
@@ -160,10 +162,18 @@ public class RestController implements RestControllerInterface {
 	
 		restObject.set(t);
 		
-		if (oldserver)
+		if (oldserver) {
 			url = AAIConfig.get(AAIConstants.AAI_OLDSERVER_URL) + path;
-		else
-			url = String.format(AAIConstants.AAI_LOCAL_REST, port, AAIConfig.get(AAIConstants.AAI_DEFAULT_API_VERSION_PROP)) + path;
+		} else {
+			if ( overrideLocalHost == null ) {
+				overrideLocalHost = AAIConfig.get(AAIConstants.AAI_LOCAL_OVERRIDE, AAIConstants.AAI_LOCAL_OVERRIDE_DEFAULT);
+			}
+			if ( AAIConstants.AAI_LOCAL_OVERRIDE_DEFAULT.equals(overrideLocalHost )) {
+				url = String.format(AAIConstants.AAI_LOCAL_REST, port, AAIConfig.get(AAIConstants.AAI_DEFAULT_API_VERSION_PROP)) + path;
+			} else {
+				url = String.format(AAIConstants.AAI_LOCAL_REST_OVERRIDE, overrideLocalHost, AAIConfig.get(AAIConstants.AAI_DEFAULT_API_VERSION_PROP)) + path;
+			}
+		}
 		initRestClient();
 		LOGGER.debug(url + " for the get REST API");
 		ClientResponse cres = client.resource(url)
@@ -325,10 +335,18 @@ public class RestController implements RestControllerInterface {
 
 		initRestClient();
 		
-		if (oldserver)
+		if (oldserver) {
 			url = AAIConfig.get(AAIConstants.AAI_OLDSERVER_URL) + path;
-		else
-			url = String.format(AAIConstants.AAI_LOCAL_REST, port, AAIConfig.get(AAIConstants.AAI_DEFAULT_API_VERSION_PROP)) + path;
+		} else {
+			if ( overrideLocalHost == null ) {
+				overrideLocalHost = AAIConfig.get(AAIConstants.AAI_LOCAL_OVERRIDE, AAIConstants.AAI_LOCAL_OVERRIDE_DEFAULT);
+			}
+			if ( AAIConstants.AAI_LOCAL_OVERRIDE_DEFAULT.equals(overrideLocalHost )) {
+				url = String.format(AAIConstants.AAI_LOCAL_REST, port, AAIConfig.get(AAIConstants.AAI_DEFAULT_API_VERSION_PROP)) + path;
+			} else {
+				url = String.format(AAIConstants.AAI_LOCAL_REST_OVERRIDE, overrideLocalHost, AAIConfig.get(AAIConstants.AAI_DEFAULT_API_VERSION_PROP)) + path;
+			}
+		}
 		
 		ClientResponse cres = client.resource(url)
 	         .accept("application/json")
@@ -378,7 +396,14 @@ public class RestController implements RestControllerInterface {
 		
 		initRestClient();
 		String request = "{}";
-		url = String.format(AAIConstants.AAI_LOCAL_REST, port, AAIConfig.get(AAIConstants.AAI_DEFAULT_API_VERSION_PROP)) + path;
+		if ( overrideLocalHost == null ) {
+			overrideLocalHost = AAIConfig.get(AAIConstants.AAI_LOCAL_OVERRIDE, AAIConstants.AAI_LOCAL_OVERRIDE_DEFAULT);
+		}
+		if ( AAIConstants.AAI_LOCAL_OVERRIDE_DEFAULT.equals(overrideLocalHost )) {
+			url = String.format(AAIConstants.AAI_LOCAL_REST, port, AAIConfig.get(AAIConstants.AAI_DEFAULT_API_VERSION_PROP)) + path;
+		} else {
+			url = String.format(AAIConstants.AAI_LOCAL_REST_OVERRIDE, overrideLocalHost, AAIConfig.get(AAIConstants.AAI_DEFAULT_API_VERSION_PROP)) + path;
+		}
 		ClientResponse cres = client.resource(url)
 		         .accept("application/json")
 		         .header("X-TransactionId", transId)
@@ -561,7 +586,14 @@ public class RestController implements RestControllerInterface {
 			int statusCode = -1;
 
 			try {
-				url = String.format(AAIConstants.AAI_LOCAL_REST, AAIConstants.AAI_RESOURCES_PORT, AAIConfig.get(AAIConstants.AAI_DEFAULT_API_VERSION_PROP)) + path;
+				if ( overrideLocalHost == null ) {
+					overrideLocalHost = AAIConfig.get(AAIConstants.AAI_LOCAL_OVERRIDE, AAIConstants.AAI_LOCAL_OVERRIDE_DEFAULT);
+				}
+				if ( AAIConstants.AAI_LOCAL_OVERRIDE_DEFAULT.equals(overrideLocalHost )) {
+					url = String.format(AAIConstants.AAI_LOCAL_REST, AAIConstants.AAI_RESOURCES_PORT, AAIConfig.get(AAIConstants.AAI_DEFAULT_API_VERSION_PROP)) + path;
+				} else {
+					url = String.format(AAIConstants.AAI_LOCAL_REST_OVERRIDE, overrideLocalHost, AAIConfig.get(AAIConstants.AAI_DEFAULT_API_VERSION_PROP)) + path;
+				}
 			    
 	            initRestClient();    
 				do {

@@ -231,6 +231,10 @@ public final class AAIAuthCore {
 			authPolicyFunctionName = "search";
         } else if (uri.startsWith(basePath + "/recents")) {
             authPolicyFunctionName = "recents";
+        }else if (uri.startsWith(basePath + "/cq2gremlin")) {
+            authPolicyFunctionName = "cq2gremlin";
+        }else if (uri.startsWith(basePath + "/cq2gremlintest")) {
+            authPolicyFunctionName = "cq2gremlintest";
         }else if (uri.startsWith(basePath + "/util/echo")) {
 			authPolicyFunctionName = "util";
 		} else if (uri.startsWith(basePath + "/tools")) {
