@@ -24,6 +24,7 @@ package org.onap.aai.dmaap;
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 import java.util.Objects;
+import java.util.UUID;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
@@ -72,7 +73,8 @@ public class AAIDmaapEventJMSConsumer implements MessageListener {
         String jsmMessageTxt = "";
         String aaiEvent = "";
         String eventName = "";
-
+        LoggingContext.save();
+        LoggingContext.init();
         if (message instanceof TextMessage) {
             try {
                 jsmMessageTxt = ((TextMessage) message).getText();
@@ -84,24 +86,28 @@ public class AAIDmaapEventJMSConsumer implements MessageListener {
                     return;
                 }
                 if (jo.getString("transId") != null) {
-                    MDC.put("requestId", jo.getString("transId"));
+                    LoggingContext.requestId(jo.getString("transId"));
+                } else {
+                    final UUID generatedRequestUuid = UUID.randomUUID();
+                    LoggingContext.requestId(generatedRequestUuid.toString());
                 }
                 if (jo.getString("fromAppId") != null) {
-                    MDC.put("partnerName", jo.getString("fromAppId"));
+                    LoggingContext.partnerName(jo.getString("fromAppId"));
                 }
                 if (jo.getString(EVENT_TOPIC) != null) {
                     eventName = jo.getString(EVENT_TOPIC);
                 }
 
-                MDC.put ("targetEntity", "DMAAP");
+                LoggingContext.targetEntity ("DMAAP");
                 if (jo.getString(EVENT_TOPIC) != null) {
                     eventName = jo.getString(EVENT_TOPIC);
-                    MDC.put ("targetServiceName", eventName);
+                    LoggingContext.targetServiceName(eventName);
                 }
-                MDC.put ("serviceName", "AAI");
-                MDC.put(LoggingField.STATUS_CODE.toString(), StatusCode.COMPLETE.toString());
-                MDC.put(LoggingField.RESPONSE_CODE.toString(), "0");
+                LoggingContext.serviceName("AAI");
+                LoggingContext.statusCode(StatusCode.COMPLETE);
+                LoggingContext.responseCode(LoggingContext.SUCCESS);
                 LOGGER.info(eventName + "|" + aaiEvent);
+                
                 HttpEntity httpEntity = new HttpEntity(aaiEvent, httpHeaders);
 
                 String transportType = environment.getProperty("dmaap.ribbon.transportType", "http");
@@ -115,12 +121,12 @@ public class AAIDmaapEventJMSConsumer implements MessageListener {
                     LOGGER.error(eventName + "|Event Topic invalid.");
                 }
             } catch (JMSException | JSONException e) {
-                MDC.put(LoggingField.STATUS_CODE.toString(), StatusCode.ERROR.toString());
-                MDC.put(LoggingField.RESPONSE_CODE.toString(), "200");
+                LoggingContext.statusCode(StatusCode.ERROR);
+                LoggingContext.responseCode(LoggingContext.DATA_ERROR);
                 LOGGER.error("AAI_7350 Error parsing aaievent jsm message for sending to dmaap. {} {}", jsmMessageTxt, LogFormatTools.getStackTop(e));
             } catch (Exception e) {
-                MDC.put(LoggingField.STATUS_CODE.toString(), StatusCode.ERROR.toString());
-                MDC.put(LoggingField.RESPONSE_CODE.toString(), "200");
+                LoggingContext.statusCode(StatusCode.ERROR);
+                LoggingContext.responseCode(LoggingContext.AVAILABILITY_TIMEOUT_ERROR);
                 LOGGER.error("AAI_7350 Error sending message to dmaap. {} {}" , jsmMessageTxt, LogFormatTools.getStackTop(e));
             }
         }
