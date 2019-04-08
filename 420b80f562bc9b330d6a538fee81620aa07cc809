@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "91b59ff8_25e15b2f",
+        "filename": "aai-core/src/main/java/org/onap/aai/dbgen/SchemaGenerator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2019-04-08T06:34:00Z",
+      "side": 1,
+      "message": "should all of these classes be so tightly coupled to SpringContextAware.getBean() implementation details?\nCould this be done once in an AAI common function, rather than re-implemented everywhere?",
+      "range": {
+        "startLine": 119,
+        "startChar": 34,
+        "endLine": 119,
+        "endChar": 95
+      },
+      "revId": "420b80f562bc9b330d6a538fee81620aa07cc809",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "eefb04e1_068b1ee8",
+        "filename": "aai-core/src/main/java/org/onap/aai/introspection/sideeffect/SideEffect.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2019-04-08T06:34:00Z",
+      "side": 1,
+      "message": "should all of these classes be so tightly coupled to SpringContextAware.getBean() implementation details?\nCould this be done once in an AAI common function, rather than re-implemented everywhere?",
+      "range": {
+        "startLine": 67,
+        "startChar": 34,
+        "endLine": 67,
+        "endChar": 96
+      },
+      "revId": "420b80f562bc9b330d6a538fee81620aa07cc809",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fb7e6d95_78979e4f",
+        "filename": "aai-core/src/main/java/org/onap/aai/parsers/query/QueryParser.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2019-04-08T06:34:00Z",
+      "side": 1,
+      "message": "should all of these classes be so tightly coupled to SpringContextAware.getBean() implementation details?\nCould this be done once in an AAI common function, rather than re-implemented everywhere?",
+      "range": {
+        "startLine": 62,
+        "startChar": 26,
+        "endLine": 62,
+        "endChar": 87
+      },
+      "revId": "420b80f562bc9b330d6a538fee81620aa07cc809",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
