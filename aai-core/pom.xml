@@ -50,6 +50,7 @@
         <gremlin.version>3.2.2</gremlin.version>
         <groovy.version>2.4.15</groovy.version>
         <jetty.version>9.4.11.v20180605</jetty.version>
+        <aaf.version>2.1.10</aaf.version>
 
         <!-- Start of Default ONAP Schema Properties -->
         <aai.wiki.link>https://wiki.onap.org/</aai.wiki.link>
@@ -255,6 +256,12 @@
             <groupId>org.powermock</groupId>
             <artifactId>powermock-api-mockito</artifactId>
             <version>1.6.2</version>
+            <scope>test</scope>
+        </dependency>
+	<dependency>
+	    <groupId>org.easymock</groupId>
+            <artifactId>easymock</artifactId>
+            <version>4.0.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -507,6 +514,11 @@
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>1.2.17</version>
+        </dependency>
+        <dependency>
+            <groupId>org.onap.aaf.authz</groupId>
+            <artifactId>aaf-cadi-aaf</artifactId>
+            <version>${aaf.version}</version>
         </dependency>
     </dependencies>
 
