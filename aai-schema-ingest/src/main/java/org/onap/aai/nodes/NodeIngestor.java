@@ -62,14 +62,14 @@ public class NodeIngestor {
 
     private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(NodeIngestor.class);
     private static final Pattern classNamePattern = Pattern.compile("\\.(v\\d+)\\.");
-    Map<SchemaVersion, List<String>> filesToIngest;
-    private Map<SchemaVersion, DynamicJAXBContext> versionContextMap = new TreeMap<>();
-    private Map<SchemaVersion, Set<String>> typesPerVersion = new TreeMap<>();
-    private Map<SchemaVersion, Document> schemaPerVersion = new TreeMap<>();
+    private Map<SchemaVersion, DynamicJAXBContext> versionContextMap = new HashMap<>();
+    private Map<SchemaVersion, Set<String>> typesPerVersion = new HashMap<>();
+    private Map<SchemaVersion, Document> schemaPerVersion = new HashMap<>();
     private String localSchema;
     private SchemaVersions schemaVersions;
     private Set<Translator> translators;
-    
+
+    private CaseFormatStore caseFormatStore;
     //TODO : See if you can get rid of InputStream resets
      /**
      * Instantiates the NodeIngestor bean.
@@ -82,6 +82,7 @@ public class NodeIngestor {
     public NodeIngestor(Set<Translator> translatorSet) {
         LOGGER.debug("Local Schema files will be fetched");
         this.translators = translatorSet;
+        this.caseFormatStore = new CaseFormatStore();
     }
 
     @PostConstruct
@@ -128,7 +129,7 @@ public class NodeIngestor {
 
                 final DynamicJAXBContext ctx = ingest(inputStreams);
                 versionContextMap.put(version, ctx);
-                typesPerVersion.put(version, getAllNodeTypes(inputStreams));
+                setAllTypesAndProperties(version, inputStreams);
                 schemaPerVersion.put(version, createCombinedSchema(inputStreams, version, retrieveLocalSchema));
             }
         } catch (JAXBException | ParserConfigurationException | SAXException | IOException e) {
@@ -152,8 +153,7 @@ public class NodeIngestor {
         return DynamicJAXBContextFactory.createContextFromOXM(this.getClass().getClassLoader(), properties);
     }
 
-    private Set<String> getAllNodeTypes(List<InputStream> inputStreams) throws ParserConfigurationException, SAXException, IOException {
-        //Reset the InputStream to reset the offset to inital position
+    private void setAllTypesAndProperties(SchemaVersion version, List<InputStream> inputStreams) throws ParserConfigurationException, IOException, SAXException {
         Set<String> types = new HashSet<>();
         final DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         docFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
@@ -164,15 +164,20 @@ public class NodeIngestor {
             inputStream.reset();
             final Document doc = docBuilder.parse(inputStream);
             final NodeList list = doc.getElementsByTagName("java-type");
-
-            for (int i = 0; i < list.getLength(); i++) {
-                String type = list.item(i).getAttributes().getNamedItem("name").getNodeValue();
-                types.add(CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, type));
-            }
+            getAllNodeTypes(list, types);
+            caseFormatStore.parse(doc);
         }
 
-        LOGGER.debug("Types size" + types.size());
-        return types;
+        LOGGER.debug("Types size {}", types.size());
+        typesPerVersion.put(version, types);
+    }
+
+    private void getAllNodeTypes(NodeList list, Set<String> types){
+
+        for (int i = 0; i < list.getLength(); i++) {
+            String type = list.item(i).getAttributes().getNamedItem("name").getNodeValue();
+            types.add(CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, type));
+        }
     }
 
     private Document createCombinedSchema(List<InputStream> inputStreams, SchemaVersion version, boolean localSchema) throws ParserConfigurationException, SAXException, IOException {
@@ -273,5 +278,9 @@ public class NodeIngestor {
             "	</java-types>\n" +
             "</xml-bindings>";
         return new ByteArrayInputStream(source.getBytes(StandardCharsets.UTF_8));
+    }
+
+    public CaseFormatStore getCaseFormatStore(){
+        return caseFormatStore;
     }
 }

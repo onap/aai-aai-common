@@ -23,35 +23,31 @@ import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 import com.google.common.base.CaseFormat;
 import com.google.common.base.Joiner;
-
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.dynamic.DynamicType;
 import org.eclipse.persistence.exceptions.DynamicException;
-import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
 import org.onap.aai.config.SpringContextAware;
+import org.onap.aai.logging.LogFormatTools;
+import org.onap.aai.nodes.CaseFormatStore;
 import org.onap.aai.nodes.NodeIngestor;
 import org.onap.aai.restcore.MediaType;
 import org.onap.aai.schema.enums.ObjectMetadata;
 import org.onap.aai.schema.enums.PropertyMetadata;
 import org.onap.aai.setup.SchemaVersion;
 import org.springframework.web.util.UriUtils;
+
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.stream.StreamSource;
-import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 public class MoxyStrategy extends Introspector {
 
@@ -60,8 +56,6 @@ public class MoxyStrategy extends Introspector {
 	private DynamicType internalType = null;
 	private DynamicJAXBContext jaxbContext = null;
 	private ClassDescriptor cd = null;
-	private Marshaller marshaller = null;
-	private Unmarshaller unmarshaller = null;
 	private SchemaVersion version = null;
 	private Set<String> properties = null;
 	private Set<String> keys = null;
@@ -69,14 +63,11 @@ public class MoxyStrategy extends Introspector {
 
 	private boolean isInitialized = false;
 
-	private NodeIngestor nodeIngestor;
-
 	protected MoxyStrategy(Object obj) {
 		super(obj);
 		/* must look up the correct jaxbcontext for this object */
 		className = MoxyStrategy.class.getSimpleName();
 		internalObject = (DynamicEntity)obj;
-		nodeIngestor = SpringContextAware.getBean(NodeIngestor.class);
 		version = nodeIngestor.getVersionFromClassName(internalObject.getClass().getName());
 		super.loader = SpringContextAware.getBean(LoaderFactory.class).createLoaderForVersion(getModelType(), version);
 		jaxbContext = nodeIngestor.getContextForVersion(version);
@@ -84,15 +75,6 @@ public class MoxyStrategy extends Introspector {
 		internalType = jaxbContext.getDynamicType(simpleName);
 
 		cd = internalType.getDescriptor();
-		try {
-			marshaller = jaxbContext.createMarshaller();
-
-			unmarshaller = jaxbContext.createUnmarshaller();
-
-		} catch (JAXBException e) {
-
-		}
-
 	}
 
 	private void init() {
@@ -100,21 +82,26 @@ public class MoxyStrategy extends Introspector {
 
 		Set<String> props = new LinkedHashSet<>();
 		for (String s : internalType.getPropertiesNames()) {
-			props.add(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_HYPHEN, s));
+		    String value = caseFormatStore
+                .fromLowerCamelToLowerHyphen(s)
+                .orElseGet(
+                    () -> {
+                        LOGGER.debug("Unable to find {} in the store from lower camel to lower hyphen", s);
+                        return CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_HYPHEN, s);
+                    }
+                );
+			props.add(value);
 
 		}
 		props = Collections.unmodifiableSet(props);
 		this.properties = props;
 
 		Set<String> requiredProps = new LinkedHashSet<>();
-		requiredProps = new LinkedHashSet<>();
 		for (DatabaseMapping dm : cd.getMappings()) {
 			if (dm.getField() instanceof XMLField) {
 				XMLField x = (XMLField)dm.getField();
-				if (x != null) {
-					if (x.isRequired()) {
-						requiredProps.add(this.removeXPathDescriptor(x.getName()));
-					}
+				if (x != null && x.isRequired()) {
+					requiredProps.add(this.removeXPathDescriptor(x.getName()));
 				}
 			}
 		}
@@ -145,7 +132,7 @@ public class MoxyStrategy extends Introspector {
 	}
 
 	@Override
-	public void set(String name, Object obj) throws IllegalArgumentException {
+	public void set(String name, Object obj){
 
 		internalObject.set(name, obj);
 	}
@@ -257,10 +244,26 @@ public class MoxyStrategy extends Introspector {
 	public String getChildName() {
 
 		String className = internalObject.getClass().getSimpleName();
-		String lowerHyphen = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, className);
+		String lowerHyphen = caseFormatStore
+            .fromUpperCamelToLowerHyphen(className)
+            .orElseGet(
+                () -> {
+                    LOGGER.debug("Unable to find {} in the store for upper camel to lower hyphen", className);
+                    return CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, className);
+                }
+            );
 
 		if (this.isContainer()) {
-			lowerHyphen = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN,this.getGenericTypeClass(this.getProperties().iterator().next()).getSimpleName());
+		    String upperCamel = this.getGenericTypeClass(this.getProperties().iterator().next()).getSimpleName();
+
+			lowerHyphen = caseFormatStore
+                .fromUpperCamelToLowerHyphen(upperCamel)
+                .orElseGet(
+                    () -> {
+                        LOGGER.debug("Unable to find {} in the store for upper camel to lower hyphen", upperCamel);
+                        return CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, upperCamel);
+                    }
+                );
 		}
 
 		return lowerHyphen;
@@ -269,14 +272,12 @@ public class MoxyStrategy extends Introspector {
 	@Override
 	public String getName() {
 		String className = internalObject.getClass().getSimpleName();
-		String lowerHyphen = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, className);
-		/*
-		if (this.isContainer()) {
-			lowerHyphen = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN,this.getGenericTypeClass(this.getProperties().get(0)).getSimpleName());
-		}*/
-
-
-		return lowerHyphen;
+		return caseFormatStore
+            .fromUpperCamelToLowerHyphen(className)
+            .orElseGet(() -> {
+                LOGGER.debug("Unable to find {} in the store for upper camel to lower hyphen", className);
+                return CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, className);
+            });
 	}
 
 	@Override
@@ -313,7 +314,6 @@ public class MoxyStrategy extends Introspector {
 	@Override
 	public String preProcessKey (String key) {
 		String result = "";
-		//String trimmedRestURI = restURI.replaceAll("/[\\w\\-]+?/[\\w\\-]+?$", "");
 		String[] split = key.split("/");
 		int i = 0;
 		for (i = split.length-1; i >= 0; i--) {
@@ -334,6 +334,7 @@ public class MoxyStrategy extends Introspector {
 	public String marshal(MarshallerProperties properties) {
 		StringWriter result = new StringWriter();
         try {
+            Marshaller marshaller = jaxbContext.createMarshaller();
         	if (properties.getMediaType().equals(MediaType.APPLICATION_JSON_TYPE)) {
 				marshaller.setProperty(org.eclipse.persistence.jaxb.MarshallerProperties.MEDIA_TYPE, "application/json");
 		        marshaller.setProperty(org.eclipse.persistence.jaxb.MarshallerProperties.JSON_INCLUDE_ROOT, properties.getIncludeRoot());
@@ -344,30 +345,12 @@ public class MoxyStrategy extends Introspector {
  	        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, properties.getFormatted());
 	        marshaller.marshal(this.internalObject, result);
 		} catch (JAXBException e) {
-			//e.printStackTrace();
+            LOGGER.warn("Encountered an jaxb exception during marshalling ", LogFormatTools.getStackTop(e));
 		}
 
         return result.toString();
 	}
 
-	@Override
-	public Object clone() {
-		Object result = null;
-		 try {
-				unmarshaller = jaxbContext.createUnmarshaller();
-
-		        unmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/json");
-		        unmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
-				unmarshaller.setProperty(UnmarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME, true);
-
-				result = unmarshaller.unmarshal(new StreamSource(new StringReader(this.marshal(true))), this.internalObject.getClass()).getValue();
-			 } catch (JAXBException e) {
-					// TODO Auto-generated catch block
-					//e.printStackTrace();
-			}
-		 result = IntrospectorFactory.newInstance(getModelType(), result);
-		 return result;
-	}
 	@Override
 	public ModelType getModelType() {
 		return ModelType.MOXY;
