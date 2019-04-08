@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b300b439_dd830ef1",
+        "filename": "onap-java-formatter.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2019-04-08T13:39:43Z",
+      "side": 1,
+      "message": "does this change the way that the checkstyle audit reports indentation warnings? there were no warnings given with the previous value.",
+      "range": {
+        "startLine": 75,
+        "startChar": 44,
+        "endLine": 75,
+        "endChar": 79
+      },
+      "revId": "1c8902b52c02dd8d516ef3a8751544f71e6cce4b",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
