@@ -58,6 +58,9 @@ public final class AAIConstants {
     public static final String AAI_SERVER_URL = "aai.server.url";
     public static final String AAI_OLDSERVER_URL = "aai.oldserver.url";
     public static final String AAI_LOCAL_REST = "https://localhost:%d/aai/%s/";
+    public static final String AAI_LOCAL_OVERRIDE = "aai.server.localhost.override.url";
+    public static final String AAI_LOCAL_OVERRIDE_DEFAULT = "NA";
+    public static final String AAI_LOCAL_REST_OVERRIDE = "%s/aai/%s/";
 
     public static final int AAI_RESOURCES_PORT = 8447;
     public static final int AAI_QUERY_PORT = 8446;

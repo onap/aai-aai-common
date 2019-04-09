@@ -328,7 +328,7 @@ public class DBSerializer {
         boolean isComplexType = false;
         boolean isListType = false;
         if (!obj.isContainer()) {
-            this.touchStandardVertexProperties(obj.getDbName(), v, false);
+            this.touchStandardVertexProperties(v, false);
         }
         this.executePreSideEffects(obj, v);
         for (String property : properties) {

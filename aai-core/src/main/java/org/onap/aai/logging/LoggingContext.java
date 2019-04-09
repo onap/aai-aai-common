@@ -51,7 +51,7 @@ public class LoggingContext {
 	public static final String SUCCESS = "0";
 	public static final String PERMISSION_ERROR = "100";
 	public static final String AVAILABILITY_TIMEOUT_ERROR = "200";
-	public static final String DATA_ERROR = "200";
+	public static final String DATA_ERROR = "300";
 	public static final String SCHEMA_ERROR = "400";
 	public static final String BUSINESS_PROCESS_ERROR = "500";
 	public static final String UNKNOWN_ERROR = "900";
