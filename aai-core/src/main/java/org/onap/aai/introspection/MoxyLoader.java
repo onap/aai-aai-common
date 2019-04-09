@@ -32,12 +32,12 @@ import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.onap.aai.introspection.exceptions.AAIUnmarshallingException;
 import org.onap.aai.logging.ErrorLogHelper;
 import org.onap.aai.logging.LogFormatTools;
+import org.onap.aai.nodes.CaseFormatStore;
 import org.onap.aai.nodes.NodeIngestor;
 import org.onap.aai.restcore.MediaType;
 import org.onap.aai.schema.enums.ObjectMetadata;
 import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.workarounds.NamingExceptions;
-import org.springframework.stereotype.Component;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
@@ -49,19 +49,22 @@ import java.util.stream.Collectors;
 
 public class MoxyLoader extends Loader {
 
+    private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(MoxyLoader.class);
+
 	private DynamicJAXBContext jaxbContext = null;
-	private EELFLogger LOGGER = EELFManager.getInstance().getLogger(MoxyLoader.class);
 	private Map<String, Introspector> allObjs = null;
 
 	private Map<SchemaVersion, MoxyLoader> moxyLoaderFactory;
 
 	private NodeIngestor nodeIngestor;
+	private CaseFormatStore caseFormatStore;
 
 	private Set<String> namedProps;
 
 	public MoxyLoader(SchemaVersion version, NodeIngestor nodeIngestor) {
 		super(version, ModelType.MOXY);
 		this.nodeIngestor = nodeIngestor;
+		this.caseFormatStore = nodeIngestor.getCaseFormatStore();
 		process(version);
 	}
 
@@ -79,6 +82,16 @@ public class MoxyLoader extends Loader {
 		return IntrospectorFactory.newInstance(ModelType.MOXY, objectFromName(name));
 	}
 
+	private boolean containsUpperCase(String str){
+
+	    for(int i = 0; i < str.length(); i++){
+	        if(Character.isUpperCase(str.charAt(i))){
+	            return true;
+            }
+        }
+
+        return false;
+    }
 	/**
 	 * {@inheritDoc}
 	 */
@@ -92,10 +105,17 @@ public class MoxyLoader extends Loader {
 		final String upperCamel;
 
 		//Contains any uppercase, then assume it's upper camel
-		if (name.matches(".*[A-Z].*")) {
+		if (containsUpperCase(name)) {
 			upperCamel = sanitizedName;
 		} else {
-			upperCamel = CaseFormat.LOWER_HYPHEN.to(CaseFormat.UPPER_CAMEL, sanitizedName);
+			upperCamel = caseFormatStore
+                .fromLowerHyphenToUpperCamel(sanitizedName)
+                .orElseGet(
+                    () -> {
+                        LOGGER.debug("Unable to find {} in the store for lower hyphen to upper camel", sanitizedName);
+                        return CaseFormat.LOWER_HYPHEN.to(CaseFormat.UPPER_CAMEL, sanitizedName);
+                    }
+                );
 		}
 
 		try {
@@ -153,7 +173,7 @@ public class MoxyLoader extends Loader {
 		if (this.allObjs != null) {
 			return allObjs;
 		} else {
-			ImmutableMap.Builder<String, Introspector> map = new ImmutableMap.Builder<String, Introspector>();
+			ImmutableMap.Builder<String, Introspector> map = new ImmutableMap.Builder<>();
 			Set<String> objs = objectsInVersion();
 			for (String objName : objs) {
 				try {
@@ -178,7 +198,6 @@ public class MoxyLoader extends Loader {
 			LOGGER.warn("Exception while enumerating objects for API version " + getVersion() + " (returning partial results) " + LogFormatTools.getStackTop(e));
 		}
 
-		//result.remove("EdgePropNames");
 		return result;
 	}
 
@@ -199,20 +218,4 @@ public class MoxyLoader extends Loader {
 	public DynamicJAXBContext getJAXBContext() {
 		return this.jaxbContext;
 	}
-
-	/*
-	 * Im keeping this for now - Just in case
-	 */
-	/*private static class Helper {
-		private static final Map<SchemaVersion, MoxyLoader> INSTANCEMAP = new ConcurrentHashMap<>();
-
-		private Helper() {}
-
-		private static MoxyLoader getLoaderBySchemaVersion(SchemaVersion v) {
-			if (!INSTANCEMAP.containsKey(v)) {
-				INSTANCEMAP.put(v, new MoxyLoader(v, nodeIngestor));
-			}
-			return INSTANCEMAP.get(v);
-		}
-	}*/
 }

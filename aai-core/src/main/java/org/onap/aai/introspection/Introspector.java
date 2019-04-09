@@ -24,9 +24,12 @@ import com.att.eelf.configuration.EELFManager;
 import com.google.common.base.CaseFormat;
 import org.apache.commons.lang.ClassUtils;
 import org.eclipse.persistence.exceptions.DynamicException;
+import org.onap.aai.config.SpringContextAware;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.onap.aai.logging.ErrorLogHelper;
 import org.onap.aai.logging.LogFormatTools;
+import org.onap.aai.nodes.CaseFormatStore;
+import org.onap.aai.nodes.NodeIngestor;
 import org.onap.aai.restcore.MediaType;
 import org.onap.aai.schema.enums.ObjectMetadata;
 import org.onap.aai.schema.enums.PropertyMetadata;
@@ -50,13 +53,26 @@ public abstract class Introspector implements Cloneable {
 	private Set<String> uniqueProperties = null;
 	private Set<String> indexedProperties = null;
 	private Set<String> allKeys = null;
+
+    protected CaseFormatStore caseFormatStore = null;
+    protected NodeIngestor nodeIngestor;
+
 	protected Introspector(Object obj) {
+        this.nodeIngestor    = SpringContextAware.getBean(NodeIngestor.class);
+        this.caseFormatStore = nodeIngestor.getCaseFormatStore();
 	}
 
 	public abstract boolean hasProperty(String name);
 
 	protected String convertPropertyName (String name) {
-		return CaseFormat.LOWER_HYPHEN.to(CaseFormat.LOWER_CAMEL, name);
+	    return caseFormatStore
+            .fromLowerHyphenToLowerCamel(name)
+            .orElseGet(
+                () -> {
+                    LOGGER.debug("Unable to find {} in the store from lower hyphen to lower camel", name);
+                    return CaseFormat.LOWER_HYPHEN.to(CaseFormat.LOWER_CAMEL, name);
+                }
+            );
 	}
 
 	protected abstract Object get(String name);
@@ -198,7 +214,7 @@ public abstract class Introspector implements Cloneable {
 	 * @param obj the value to be set
 	 * @return
 	 */
-	public void setValue(String name, Object obj) throws IllegalArgumentException {
+	public void setValue(String name, Object obj) {
 		Object box = this.castValueAccordingToSchema(name, obj);
 
 		name = convertPropertyName(name);
@@ -557,8 +573,6 @@ public abstract class Introspector implements Cloneable {
 	protected abstract String findKey() throws UnsupportedEncodingException;
 
 	public abstract String marshal(MarshallerProperties properties);
-
-	public abstract Object clone();
 
 	public abstract Object getUnderlyingObject();
 
