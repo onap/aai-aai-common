@@ -1,0 +1,8 @@
+Verified+1: ONAP Jobbuilder <onap-jobbuilder@jenkins.onap.org>
+Code-Review+1: SoumyaNaik <sn207c@att.com>
+Code-Review+2: James Forsyth <jf2512@att.com>
+Submitted-by: James Forsyth <jf2512@att.com>
+Submitted-at: Tue, 09 Apr 2019 15:21:50 +0000
+Reviewed-on: https://gerrit.onap.org/r/84451
+Project: aai/aai-common
+Branch: refs/heads/master
