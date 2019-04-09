@@ -152,8 +152,8 @@ public class SchemaGenerator {
 							String dmsg = " Index  [" + dbPropName + "] already existed in the DB. ";
 							LOGGER.debug(dmsg);
 						} else {
-							if (obj.getIndexedProperties().contains(dbPropName)) {
-								if (obj.getUniqueProperties().contains(dbPropName)) {
+							if (obj.getIndexedProperties().contains(propName)) {
+								if (obj.getUniqueProperties().contains(propName)) {
 									imsg = "Add Unique index for PropertyKey: [" + dbPropName + "]";
 									LOGGER.info(imsg);
 									graphMgmt.buildIndex(dbPropName, Vertex.class).addKey(propK).unique()
