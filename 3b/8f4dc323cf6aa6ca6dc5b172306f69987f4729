@@ -1,0 +1,8 @@
+Verified+1: ONAP Jobbuilder <onap-jobbuilder@jenkins.onap.org>
+Code-Review+1: Henrik Andersson <henrik.b.andersson@est.tech>
+Code-Review+2: Tian Lee <TianL@amdocs.com>
+Submitted-by: Tian Lee <TianL@amdocs.com>
+Submitted-at: Tue, 09 Apr 2019 15:05:14 +0000
+Reviewed-on: https://gerrit.onap.org/r/84516
+Project: aai/aai-common
+Branch: refs/heads/master
