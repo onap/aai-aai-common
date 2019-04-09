@@ -6,6 +6,16 @@
 AAI Release Notes
 ==================
 
+Version: 1.3.2
+--------------
+
+:Release Date: 2019-03-31
+
+**Updates**
+
+AAI demo certificates were going to expire before Dublin release, so they've been refreshed to last until 2020.
+
+- `AAI-2282 <https://jira.onap.org/browse/AAI-2282>`_ Update certifcate for Casablanca 3.0.2
 
 Version: 1.3.1
 --------------
