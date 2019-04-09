@@ -24,10 +24,10 @@ package org.onap.aai.config;
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 import org.onap.aai.nodes.NodeIngestor;
-import org.onap.aai.setup.SchemaVersions;
 import org.onap.aai.setup.Translator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -38,9 +38,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+
 @Import({SchemaServiceConfiguration.class, ConfigConfiguration.class, TranslatorConfiguration.class})
 @PropertySource(value = "classpath:schema-ingest.properties", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${schema.ingest.file}", ignoreResourceNotFound = true)
+
 @Configuration
 public class NodesConfiguration {
 
@@ -75,6 +77,7 @@ public class NodesConfiguration {
     }
 
     @Bean(name = "nodeIngestor")
+    @ConditionalOnExpression("'${schema.translators.needed:all}'.contains('nodes') || '${schema.translators.needed:all}'.contains('all')")
     public NodeIngestor nodeIngestor() {
         return new NodeIngestor(translators());
     }

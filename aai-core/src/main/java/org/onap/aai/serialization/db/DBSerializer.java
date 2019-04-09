@@ -119,7 +119,7 @@ public class DBSerializer {
         this.engine = engine;
         this.sourceOfTruth = sourceOfTruth;
         this.introspectionType = introspectionType;
-        this.schemaVersions = SpringContextAware.getBean(SchemaVersions.class);
+        this.schemaVersions = (SchemaVersions) SpringContextAware.getBean("schemaVersions");
         SchemaVersion LATEST = schemaVersions.getDefaultVersion();
         this.latestLoader = SpringContextAware.getBean(LoaderFactory.class).createLoaderForVersion(introspectionType, LATEST);
         this.version = version;

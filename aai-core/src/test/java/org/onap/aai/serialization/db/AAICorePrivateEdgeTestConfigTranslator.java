@@ -20,6 +20,7 @@
 package org.onap.aai.serialization.db;
 
 import org.onap.aai.AbstractConfigTranslator;
+import org.onap.aai.setup.SchemaConfigVersions;
 import org.onap.aai.setup.SchemaLocationsBean;
 import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.setup.SchemaVersions;
@@ -32,7 +33,7 @@ import java.util.*;
  */
 public class AAICorePrivateEdgeTestConfigTranslator extends AbstractConfigTranslator {
 
-	public AAICorePrivateEdgeTestConfigTranslator(SchemaLocationsBean bean, SchemaVersions schemaVersions) {
+	public AAICorePrivateEdgeTestConfigTranslator(SchemaLocationsBean bean, SchemaConfigVersions schemaVersions) {
 		super(bean, schemaVersions);
 	}
 

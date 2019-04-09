@@ -226,16 +226,18 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
 	@Override
 	public QueryBuilder<Vertex> getVerticesByBooleanProperty(String key, Object value) {
 
-		boolean bValue = false;
-
-	    if(value instanceof String){
-	    	bValue = Boolean.valueOf(value.toString());
-		} else if(value instanceof Boolean){
-	    	bValue = (Boolean) value;
+		if(value!=null && !"".equals(value)) {
+			boolean bValue = false;
+	
+		    if(value instanceof String){//"true"
+		    	bValue = Boolean.valueOf(value.toString());
+			} else if(value instanceof Boolean){//true
+		    	bValue = (Boolean) value;
+			}
+	
+			traversal.has(key, bValue);
+			stepIndex++;
 		}
-
-		traversal.has(key, bValue);
-		stepIndex++;
 		return (QueryBuilder<Vertex>) this;
 	}
 

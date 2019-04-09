@@ -22,10 +22,10 @@
 package org.onap.aai.config;
 
 import org.onap.aai.edges.EdgeIngestor;
-import org.onap.aai.setup.SchemaVersions;
 import org.onap.aai.setup.Translator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -39,6 +39,7 @@ import java.util.Set;
 @Import({SchemaServiceConfiguration.class, ConfigConfiguration.class, TranslatorConfiguration.class})
 @PropertySource(value = "classpath:schema-ingest.properties", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${schema.ingest.file}", ignoreResourceNotFound = true)
+
 @Configuration
 public class EdgesConfiguration {
 
@@ -70,6 +71,7 @@ public class EdgesConfiguration {
     }
 
     @Bean(name = "edgeIngestor")
+    @ConditionalOnExpression("'${schema.translators.needed:all}'.contains('edges') || '${schema.translators.needed:all}'.contains('all')")
     public EdgeIngestor edgeIngestor() {
         return new EdgeIngestor(translators());
     }

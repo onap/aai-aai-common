@@ -21,10 +21,7 @@
  */
 package org.onap.aai.config;
 
-import org.onap.aai.setup.SchemaServiceTranslator;
-import org.onap.aai.setup.SchemaVersions;
-import org.onap.aai.setup.SchemaVersionsBean;
-import org.onap.aai.setup.Translator;
+import org.onap.aai.setup.*;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,14 +38,19 @@ public class SchemaServiceConfiguration {
         return new SchemaVersionsBean();
     }
 
+    @Bean(name = "schemaServiceVersions")
+    public SchemaServiceVersions schemaServiceVersions() {
+        return schemaVersionsBean().getSchemaVersions();
+    }
+
     @Bean(name = "schemaVersions")
     public SchemaVersions schemaVersions() {
-        return schemaVersionsBean().getSchemaVersions();
+        return schemaServiceVersions();
     }
 
     @Bean(name = "schemaServiceTranslator")
     public Translator schemaServiceTranslator() {
-        return new SchemaServiceTranslator(schemaVersions());
+        return new SchemaServiceTranslator(schemaServiceVersions());
     }
 
 }

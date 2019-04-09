@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
- * Copyright Â© 2017-2018 AT&T Intellectual Property. All rights reserved.
+ * Copyright © 2017-2019 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@
  */
 package org.onap.aai.restclient;
 
+import com.att.eelf.configuration.EELFLogger;
+import com.att.eelf.configuration.EELFManager;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContextBuilder;
@@ -35,6 +37,8 @@ import java.io.InputStream;
 import java.security.KeyStore;
 
 public abstract class OneWaySSLRestClient extends RestClient {
+
+    private static EELFLogger logger = EELFManager.getInstance().getLogger(OneWaySSLRestClient.class);
 
     private RestTemplate restTemplate;
 
@@ -59,7 +63,7 @@ public abstract class OneWaySSLRestClient extends RestClient {
             .requestFactory(new HttpComponentsClientHttpRequestFactory(client))
             .build();
 
-        restTemplate.setErrorHandler(new RestClientResponseErrorHandler(getLogger()));
+        restTemplate.setErrorHandler(new RestClientResponseErrorHandler());
 
     }
 

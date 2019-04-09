@@ -2,13 +2,13 @@
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
- * Copyright © 2018-19 AT&T Intellectual Property. All rights reserved.
+ * Copyright © 2017-2019 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,44 +27,61 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
 
-import javax.annotation.PostConstruct;
 import java.util.Collections;
 import java.util.Map;
-import java.util.UUID;
 
-@Component(value="no-auth-service-rest-client")
-public class SchemaServiceNoAuthClient extends NoAuthRestClient{
+@Component(value=ClientType.AAI)
+public class AAIRestClient extends TwoWaySSLRestClient{
 
-	private static EELFLogger logger = EELFManager.getInstance().getLogger(SchemaServiceNoAuthClient.class);
+	private static EELFLogger logger = EELFManager.getInstance().getLogger(AAIRestClient.class);
 
-	@Value("${schema.service.base.url}")
+	@Value("${aai.base.url}")
 	private String baseUrl;
 
-    @PostConstruct
-    public void init () throws Exception {
-        super.init();
-    }
+	@Value("${aai.ssl.key-store}")
+	private String keystorePath;
+
+	@Value("${aai.ssl.trust-store}")
+	private String truststorePath;
+
+	@Value("${aai.ssl.key-store-password}")
+	private String keystorePassword;
+
+	@Value("${aai.ssl.trust-store-password}")
+	private String truststorePassword;
 
 	@Override
 	public String getBaseUrl() {
-       return baseUrl;
+		return baseUrl;
 	}
 
-    @Override
+	@Override
+	protected String getKeystorePath() {
+		return keystorePath;
+	}
+
+	@Override
+	protected String getTruststorePath() {
+		return truststorePath;
+	}
+
+	@Override
+	protected char[] getKeystorePassword() {
+		return keystorePassword.toCharArray();
+	}
+
+	@Override
+	protected char[] getTruststorePassword() {
+		return truststorePassword.toCharArray();
+	}
+
+	@Override
 	public MultiValueMap<String, String> getHeaders(Map<String, String> headers) {
 		HttpHeaders httpHeaders = new HttpHeaders();
-
-        String defaultAccept = headers.getOrDefault(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON.toString());
-        String defaultContentType = headers.getOrDefault(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON.toString());
-
-        if(headers.isEmpty()){
-            httpHeaders.setAccept(Collections.singletonList(MediaType.parseMediaType(defaultAccept)));
-            httpHeaders.setContentType(MediaType.parseMediaType(defaultContentType));
-        }
-
-		httpHeaders.add("X-FromAppId", appName);
-		httpHeaders.add("X-TransactionId", UUID.randomUUID().toString());
-        headers.forEach(httpHeaders::add);
+		httpHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		httpHeaders.add("Real-Time", "true");
+		headers.forEach(httpHeaders::add);
 		return httpHeaders;
 	}
 

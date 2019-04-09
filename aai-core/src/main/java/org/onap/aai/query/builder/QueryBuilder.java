@@ -256,6 +256,10 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
 	public abstract QueryBuilder<Vertex> createEdgeTraversal(EdgeType type, Introspector parent, Introspector child) throws AAIException;
 
 	public abstract QueryBuilder<Vertex> getVerticesByBooleanProperty(String key, Object value);
+	
+	public QueryBuilder<Vertex> getVerticesByBooleanProperty(String key, MissingOptionalParameter value) {
+		return (QueryBuilder<Vertex>) this;
+		}
 	/**
 	 * Creates the private edge traversal.
 	 *

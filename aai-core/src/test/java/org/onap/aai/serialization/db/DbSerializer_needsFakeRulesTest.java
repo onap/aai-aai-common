@@ -19,6 +19,7 @@
  */
 package org.onap.aai.serialization.db;
 
+import org.onap.aai.config.ConfigConfiguration;
 import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.setup.SchemaVersions;
 import org.onap.aai.util.AAIConstants;
@@ -59,8 +60,7 @@ import static org.mockito.Mockito.when;
 //@RunWith(value = Parameterized.class) TODO replace this functionality
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
-		SchemaLocationsBean.class,
-        SchemaVersions.class,
+		ConfigConfiguration.class,
 		AAICoreFakeEdgesConfigTranslator.class,
 		NodeIngestor.class,
 		EdgeIngestor.class,

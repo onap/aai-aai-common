@@ -90,7 +90,7 @@ public class RelationshipToURI {
 		//TODO proper spring wiring, but that requires a lot of refactoring so for now we have this
 		ApplicationContext ctx = SpringContextAware.getApplicationContext();
 		edgeRules = ctx.getBean(EdgeIngestor.class);
-		schemaVersions = ctx.getBean(SchemaVersions.class);
+		schemaVersions = (SchemaVersions) ctx.getBean("schemaVersions");
 	}
 
 	/**

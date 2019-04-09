@@ -27,10 +27,7 @@ import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.edges.exceptions.AmbiguousRuleChoiceException;
 import org.onap.aai.edges.exceptions.EdgeRuleNotFoundException;
 import org.onap.aai.exceptions.AAIException;
-import org.onap.aai.introspection.Introspector;
-import org.onap.aai.introspection.Loader;
-import org.onap.aai.introspection.LoaderFactory;
-import org.onap.aai.introspection.ModelType;
+import org.onap.aai.introspection.*;
 import org.onap.aai.introspection.sideeffect.exceptions.AAIMissingRequiredPropertyException;
 import org.onap.aai.schema.enums.PropertyMetadata;
 import org.onap.aai.serialization.db.DBSerializer;
@@ -63,9 +60,7 @@ public abstract class SideEffect {
 		this.dbEngine = dbEngine;
 		this.serializer = serializer;
 		this.self = self;
-		LoaderFactory loaderFactory = SpringContextAware.getBean(LoaderFactory.class);
-		SchemaVersions schemaVersions = SpringContextAware.getBean(SchemaVersions.class);
-		this.latestLoader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion()) ;
+		this.latestLoader = LoaderUtil.getLatestVersion();
 	}
 
 	protected void execute() throws UnsupportedEncodingException, URISyntaxException, AAIException {
@@ -91,9 +86,9 @@ public abstract class SideEffect {
 		}
 		return result;
 	}
-	
+
 	protected Map<String, String> findProperties(Introspector obj, String uriString) throws AAIMissingRequiredPropertyException {
-		
+
 		final Map<String, String> result = new HashMap<>();
 		final Set<String> missing = new LinkedHashSet<>();
 		Matcher m = template.matcher(uriString);
@@ -111,13 +106,13 @@ public abstract class SideEffect {
 				missing.add(propName);
 			}
 		}
-		
+
 		if (!missing.isEmpty() && (properties != missing.size())) {
 			throw new AAIMissingRequiredPropertyException("Cannot complete " + this.getPropertyMetadata().toString() + " uri. Missing properties " + missing);
 		}
 		return result;
 	}
-	
+
 	protected Optional<String> replaceTemplates(Introspector obj, String uriString) throws AAIMissingRequiredPropertyException {
 		String result = uriString;
 		final Map<String, String> propMap = this.findProperties(obj, uriString);
@@ -132,7 +127,7 @@ public abstract class SideEffect {
 		result = result.replaceFirst("/[^/]+?(?:/\\*)+", "");
 		return Optional.of(result);
 	}
-	
+
 	private Optional<String> resolveRelativePath(Optional<String> populatedUri) throws UnsupportedEncodingException {
 		if (!populatedUri.isPresent()) {
 			return Optional.empty();
@@ -140,7 +135,7 @@ public abstract class SideEffect {
 			return Optional.of(populatedUri.get().replaceFirst("\\./", this.serializer.getURIForVertex(self) + "/"));
 		}
 	}
-	
+
 	protected abstract boolean replaceWithWildcard();
 	protected abstract PropertyMetadata getPropertyMetadata();
 	protected abstract void processURI(Optional<String> completeUri, Entry<String, String> entry) throws URISyntaxException, UnsupportedEncodingException, AAIException, EdgeRuleNotFoundException, AmbiguousRuleChoiceException;

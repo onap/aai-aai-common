@@ -24,10 +24,10 @@ package org.onap.aai.config;
 import org.onap.aai.edges.EdgeIngestor;
 import org.onap.aai.nodes.NodeIngestor;
 import org.onap.aai.setup.AAIConfigTranslator;
-import org.onap.aai.serialization.db.EdgeSerializer;
 import org.onap.aai.setup.ConfigTranslator;
 import org.onap.aai.setup.SchemaLocationsBean;
-import org.onap.aai.setup.SchemaVersions;
+import org.onap.aai.setup.SchemaConfigVersions;
+import org.onap.aai.serialization.db.EdgeSerializer;
 import org.onap.aai.validation.CheckEverythingStrategy;
 import org.onap.aai.validation.SchemaErrorStrategy;
 import org.onap.aai.validation.nodes.DefaultDuplicateNodeDefinitionValidationModule;
@@ -42,6 +42,7 @@ import org.springframework.context.annotation.*;
 @PropertySource(value = "file:${schema.ingest.file}", ignoreResourceNotFound = true)
 public class SchemaConfiguration {
 
+    //TODO : Inject this directly into nodeIngestor
     @Autowired(required = false)
     NodesConfiguration nodesConfiguration;
 
@@ -66,7 +67,7 @@ public class SchemaConfiguration {
 
     @Bean(name = "configTranslator")
     @ConditionalOnProperty(name = "schema.translator.list", havingValue = "config", matchIfMissing = true)
-    public ConfigTranslator configTranslator(SchemaLocationsBean schemaLocationsBean, SchemaVersions schemaVersions) {
+    public ConfigTranslator configTranslator(SchemaLocationsBean schemaLocationsBean, SchemaConfigVersions schemaVersions) {
         return new AAIConfigTranslator(schemaLocationsBean, schemaVersions);
     }
 

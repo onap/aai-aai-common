@@ -29,11 +29,11 @@ import java.util.TreeMap;
 import org.onap.aai.setup.ConfigTranslator;
 import org.onap.aai.setup.SchemaLocationsBean;
 import org.onap.aai.setup.SchemaVersion;
-import org.onap.aai.setup.SchemaVersions;
+import org.onap.aai.setup.SchemaConfigVersions;
 
 public class TestUtilConfigTranslatorforBusiness extends ConfigTranslator {
 	
-	public TestUtilConfigTranslatorforBusiness(SchemaLocationsBean bean, SchemaVersions schemaVersions) {
+	public TestUtilConfigTranslatorforBusiness(SchemaLocationsBean bean, SchemaConfigVersions schemaVersions) {
 		super(bean, schemaVersions);
 	}
 

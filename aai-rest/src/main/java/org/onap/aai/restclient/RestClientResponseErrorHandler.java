@@ -20,6 +20,7 @@
 package org.onap.aai.restclient;
 
 import com.att.eelf.configuration.EELFLogger;
+import com.att.eelf.configuration.EELFManager;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.ResponseErrorHandler;
@@ -28,11 +29,7 @@ import java.io.IOException;
 
 public class RestClientResponseErrorHandler implements ResponseErrorHandler {
 
-    private EELFLogger logger;
-
-    public RestClientResponseErrorHandler(EELFLogger logger) {
-        this.logger = logger;
-    }
+    private static EELFLogger logger = EELFManager.getInstance().getLogger(RestClientResponseErrorHandler.class);
 
     @Override
     public boolean hasError(ClientHttpResponse clientHttpResponse) throws IOException {

@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
@@ -77,12 +78,13 @@ public class SchemaServiceTranslator extends Translator {
  		RestClient restClient = restClientFactory.getRestClient(SchemaServiceClientType);
  		ResponseEntity<Resource> schemaResponse = restClient.getGetResource(content, uri,
 				headersMap);
-		LOGGER.debug("SchemaResponse Status code" + schemaResponse.getStatusCode());
+        verifySchemaServiceResponse(schemaResponse.getStatusCode());
+        LOGGER.debug("SchemaResponse Status code" + schemaResponse.getStatusCode());
 		inputStreams.add(schemaResponse.getBody().getInputStream());
 		return inputStreams;
 	}
 
-	@Override
+    @Override
 	public List<String> getJsonPayload(SchemaVersion version) throws IOException {
 		/*
 		 * Call Schema MS to get versions using RestTemplate
@@ -96,10 +98,18 @@ public class SchemaServiceTranslator extends Translator {
 
         ResponseEntity<String> schemaResponse = restClient.getGetRequest(content, uri,
 				headersMap);
-		LOGGER.debug("SchemaResponse Status code" + schemaResponse.getStatusCode());
+        verifySchemaServiceResponse(schemaResponse.getStatusCode());
+        LOGGER.debug("SchemaResponse Status code" + schemaResponse.getStatusCode());
 		inputStreams.add(schemaResponse.getBody());
 		return inputStreams;
 
 	}
+
+    private void verifySchemaServiceResponse(HttpStatus statusCode) throws IOException {
+        if (statusCode != HttpStatus.OK) {
+            LOGGER.error("Please check the Schema Service. It returned with the status code {}", statusCode);
+            throw new IOException("SchemaService is not available");
+        }
+    }
 
 }

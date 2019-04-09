@@ -23,8 +23,7 @@ package org.onap.aai.testutils;
 import org.onap.aai.setup.ConfigTranslator;
 import org.onap.aai.setup.SchemaLocationsBean;
 import org.onap.aai.setup.SchemaVersion;
-import org.onap.aai.setup.SchemaVersions;
-
+import org.onap.aai.setup.SchemaConfigVersions;
 import java.util.*;
 
 /**
@@ -34,7 +33,7 @@ public class BadEdgeConfigForValidationTest extends ConfigTranslator {
 
     public static final SchemaVersion LATEST = new SchemaVersion("v14");
 
-    public BadEdgeConfigForValidationTest(SchemaLocationsBean bean, SchemaVersions schemaVersions) {
+    public BadEdgeConfigForValidationTest(SchemaLocationsBean bean, SchemaConfigVersions schemaVersions) {
         super(bean, schemaVersions);
     }
 

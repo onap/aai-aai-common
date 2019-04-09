@@ -28,26 +28,11 @@ import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Component
+
 @PropertySource(value = "classpath:schema-ingest.properties", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${schema.ingest.file}", ignoreResourceNotFound = true)
 public class SchemaVersions {
 
-    @Value("#{'${schema.version.list}'.split(',')}")
-    private List<String> apiVersions;
-    @Value("${schema.version.api.default}")
-    private String defaultApiVersion;
-    @Value("${schema.version.edge.label.start}")
-    private String edgeLabelStartVersion;
-    @Value("${schema.version.depth.start}")
-    private String depthStartVersion;
-    @Value("${schema.version.app.root.start}")
-    private String appRootStartVersion;
-    @Value("${schema.version.related.link.start}")
-    private String relatedLinkStartVersion;
-    @Value("${schema.version.namespace.change.start}")
-
-    protected String namespaceChangeStartVersion;
     protected List<SchemaVersion> versionsValue;
     protected SchemaVersion edgeLabelVersionValue;
     protected SchemaVersion defaultVersionValue;
@@ -55,19 +40,6 @@ public class SchemaVersions {
     protected SchemaVersion appRootVersionValue;
     protected SchemaVersion relatedLinkVersionValue;
     protected SchemaVersion namespaceChangeVersionValue;
-
-    @PostConstruct
-    public void initialize() {
-        versionsValue = apiVersions.stream().map(SchemaVersion::new).collect(Collectors.toList());
-        edgeLabelVersionValue = new SchemaVersion(edgeLabelStartVersion);
-        defaultVersionValue = new SchemaVersion(defaultApiVersion);
-        depthVersionValue = new SchemaVersion(depthStartVersion);
-        appRootVersionValue = new SchemaVersion(appRootStartVersion);
-        relatedLinkVersionValue = new SchemaVersion(relatedLinkStartVersion);
-        namespaceChangeVersionValue = new SchemaVersion(namespaceChangeStartVersion);
-        this.validate();
-    }
-
 
     protected void validate() {
     	String errorMessage = "Invalid, edge label version is not in the api versions list"

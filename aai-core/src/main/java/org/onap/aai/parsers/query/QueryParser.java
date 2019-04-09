@@ -21,13 +21,12 @@ package org.onap.aai.parsers.query;
 
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.onap.aai.config.SpringContextAware;
-import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.introspection.LoaderFactory;
+import org.onap.aai.introspection.LoaderUtil;
 import org.onap.aai.query.builder.QueryBuilder;
 import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.setup.SchemaVersions;
-
 import java.net.URI;
 
 /**
@@ -38,17 +37,17 @@ public abstract class QueryParser {
 	protected Loader loader = null;
 	protected Loader latestLoader = null;
 	protected QueryBuilder<Vertex> queryBuilder = null;
-	
+
 	protected QueryBuilder<Vertex> parentQueryBuilder = null;
-	
+
 	protected URI uri = null;
-	
+
 	protected String resultResource = "";
-	
+
 	protected String parentResourceType = "";
-	
+
 	protected String containerResource = "";
-		
+
 	/**
 	 * Instantiates a new query parser.
 	 *
@@ -61,10 +60,11 @@ public abstract class QueryParser {
 		this.queryBuilder = queryBuilder;
 		this.loader = loader;
 		LoaderFactory loaderFactory = SpringContextAware.getBean(LoaderFactory.class);
-		SchemaVersion latest = SpringContextAware.getBean(SchemaVersions.class).getDefaultVersion();
+		SchemaVersion latest = ((SchemaVersions) SpringContextAware.getBean("schemaVersions")).getDefaultVersion();
+
 		this.latestLoader = loaderFactory.createLoaderForVersion(loader.getModelType(), latest);
 	}
-	
+
 	/**
 	 * Instantiates a new query parser.
 	 *
@@ -74,21 +74,19 @@ public abstract class QueryParser {
 	protected QueryParser(Loader loader, QueryBuilder<Vertex> queryBuilder) {
 		this.queryBuilder = queryBuilder;
 		this.loader = loader;
-		LoaderFactory loaderFactory = SpringContextAware.getBean(LoaderFactory.class);
-		SchemaVersion latest = SpringContextAware.getBean(SchemaVersions.class).getDefaultVersion();
-		this.latestLoader = loaderFactory.createLoaderForVersion(loader.getModelType(), latest);
+		this.latestLoader = LoaderUtil.getLatestVersion();
 	}
-	
+
 	/**
 	 * Gets the container type.
 	 *
 	 * @return the container type
 	 */
 	public String getContainerType() {
-		
+
 		return this.containerResource;
 	}
-	
+
 	/**
 	 * Gets the parent result type.
 	 *
@@ -97,7 +95,7 @@ public abstract class QueryParser {
 	public String getParentResultType() {
 		return this.parentResourceType;
 	}
-	
+
 	/**
 	 * Gets the result type.
 	 *
@@ -106,7 +104,7 @@ public abstract class QueryParser {
 	public String getResultType() {
 		return this.resultResource;
 	}
-	
+
 	/**
 	 * Gets the query builder.
 	 *
@@ -115,7 +113,7 @@ public abstract class QueryParser {
 	public QueryBuilder<Vertex> getQueryBuilder() {
 		return this.queryBuilder;
 	}
-	
+
 	/**
 	 * Gets the uri.
 	 *
@@ -124,7 +122,7 @@ public abstract class QueryParser {
 	public URI getUri() {
 		return this.uri;
 	}
-	
+
 	/**
 	 * Gets the parent query builder.
 	 *
@@ -137,7 +135,7 @@ public abstract class QueryParser {
 			return this.queryBuilder;
 		}
 	}
-	
+
 	/**
 	 * Checks if is dependent.
 	 *
