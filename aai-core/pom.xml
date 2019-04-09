@@ -452,7 +452,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-test</artifactId>
-            <version>1.5.19.RELEASE</version>
+            <version>1.5.20.RELEASE</version>
             <scope>test</scope>
         </dependency>
         <dependency>
