@@ -30,7 +30,7 @@
 
     <groupId>org.onap.aai.aai-common</groupId>
     <artifactId>aai-common</artifactId>
-    <version>1.4.2-SNAPSHOT</version>
+    <version>1.4.3-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>aai-aai-common</name>
     <description>Contains all of the common code for resources and traversal repos</description>
