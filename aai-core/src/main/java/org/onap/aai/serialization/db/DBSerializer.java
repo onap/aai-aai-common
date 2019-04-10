@@ -1302,7 +1302,18 @@ public class DBSerializer {
     }
 
     public void addRelatedToProperty(Introspector relationship, Vertex cousinVertex, String cousinType) throws AAIUnknownObjectException {
-        Introspector obj = this.latestLoader.introspectorFromName(cousinType);
+
+        Introspector obj = null;
+
+        try {
+            obj = this.loader.introspectorFromName(cousinType);
+        } catch(AAIUnknownObjectException ex){
+            if(LOGGER.isTraceEnabled()){
+                LOGGER.trace("Encountered unknown object exception when trying to load nodetype of {} for vertex id {}", cousinType, cousinVertex.id());
+            }
+            return;
+        }
+
         String nameProps = obj.getMetadata(ObjectMetadata.NAME_PROPS);
         List<Introspector> relatedToProperties = new ArrayList<>();
 
