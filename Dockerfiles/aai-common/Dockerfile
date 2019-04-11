@@ -1,0 +1,35 @@
+FROM ubuntu:16.04
+
+# Set the version of the gosu command and if needs to be, it can be modified at runtime
+ENV GOSU_VERSION 1.10
+
+# For building the image in a proxy environment if necessary
+ARG HTTP_PROXY
+ARG HTTPS_PROXY
+ARG no_proxy
+
+ENV HTTP_PROXY   ${HTTP_PROXY}
+ENV HTTPS_PROXY  ${HTTPS_PROXY}
+ENV http_proxy   ${HTTP_PROXY}
+ENV https_proxy  ${HTTPS_PROXY}
+ENV no_proxy  127.0.0.1,localhost,${no_proxy}
+
+RUN \
+    # Creates the group and user with the name aaiadmin for aai
+    #groupadd -r aaiadmin && useradd -r -g aaiadmin aaiadmin && \
+    # Put all the dependencies into this variable to easily install everything
+    DEPS="wget ca-certificates curl ksh git openjdk-8-jre-headless jq vim netcat uuid-runtime" &&  \
+    # Run the update before for the package manager to properly fetch install packages
+    apt-get update && \
+    # Install the recommended dependencies
+    apt-get install -y --no-install-recommends $DEPS && \
+    # Remove all the cache for the apt package manager
+    rm -rf /var/lib/apt/lists/* && \
+    # Get the dpkg to properly download and install that version compatible to install GOSU on the image
+    dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" && \
+    \
+    # Downloads the gosu command based on the dpkg version and gosu version supplied
+    wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch"; \
+    \
+    # Use GPG to install the gosu application locally
+    chmod +x /usr/local/bin/gosu
