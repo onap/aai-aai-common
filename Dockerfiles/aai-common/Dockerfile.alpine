@@ -1,0 +1,37 @@
+FROM openjdk:8-jre-alpine3.9
+
+# Set the version of the gosu command and if needs to be, it can be modified at runtime
+ENV GOSU_VERSION 1.10
+
+# For building the image in a proxy environment if necessary
+ARG HTTP_PROXY
+ARG HTTPS_PROXY
+ARG no_proxy
+
+ENV HTTP_PROXY   ${HTTP_PROXY}
+ENV HTTPS_PROXY  ${HTTPS_PROXY}
+ENV http_proxy   ${HTTP_PROXY}
+ENV https_proxy  ${HTTPS_PROXY}
+ENV no_proxy  127.0.0.1,localhost,${no_proxy}
+
+RUN \
+    # Put all the dependencies into this variable to easily install everything
+    DEPS="ca-certificates \
+            curl \
+            dpkg \
+            jq \
+            loksh \
+            bash \
+            netcat-openbsd \
+            openssl \
+            shadow \
+            util-linux \
+            vim \
+            wget" \
+        && apk add --no-cache ${DEPS} \
+        # Get the dpkg to properly download and install that version compatible to install GOSU on the image    
+        && dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
+        # Downloads the gosu command based on the dpkg version and gosu version supplied
+        && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch" \
+        # Use GPG to install the gosu application locally
+        && chmod +x /usr/local/bin/gosu
