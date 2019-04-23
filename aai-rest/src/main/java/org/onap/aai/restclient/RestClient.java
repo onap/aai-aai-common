@@ -79,7 +79,7 @@ public abstract class RestClient {
             log.error("URL syntax error with url {}{}", getBaseUrl(), uri);
             throw new RestClientException(e.getMessage());
         }
-        log.debug("METHOD={},URL={},http={}" + method, url, httpEntity);
+        log.debug("METHOD={},URL={},HEADERS={}", method, url, httpEntity);
 
         ResponseEntity responseEntity = getRestTemplate().exchange(url, method, httpEntity, String.class);
         log.debug("RESPONSE={}", responseEntity);
