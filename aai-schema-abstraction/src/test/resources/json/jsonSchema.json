@@ -1,0 +1,860 @@
+{
+  "relationship_types": [
+    {
+      "from": "tosca.nodes.SoftwareComponent",
+      "to": "tosca.nodes.Compute",
+      "label": "tosca.relationships.HostedOn",
+      "annotations": {
+        "contains-other-v": "NONE",
+        "delete-other-v": "NONE",
+        "prevent-delete": "NONE"
+      }
+    },
+    {
+      "from": "tosca.nodes.LoadBalancer",
+      "to": "tosca.nodes.ObjectStorage",
+      "label": "tosca.relationships.RoutesTo",
+      "annotations": {
+        "contains-other-v": "NONE",
+        "delete-other-v": "NONE",
+        "prevent-delete": "NONE"
+      }
+    },
+    {
+      "from": "tosca.nodes.LoadBalancer",
+      "to": "onap.nodes.sdwan.ManagementDomain",
+      "label": "tosca.relationships.RoutesTo",
+      "annotations": {
+        "contains-other-v": "NONE",
+        "delete-other-v": "NONE",
+        "prevent-delete": "NONE"
+      }
+    },
+    {
+      "from": "tosca.nodes.LoadBalancer",
+      "to": "tosca.nodes.LoadBalancer",
+      "label": "tosca.relationships.RoutesTo",
+      "annotations": {
+        "contains-other-v": "NONE",
+        "delete-other-v": "NONE",
+        "prevent-delete": "NONE"
+      }
+    },
+    {
+      "from": "tosca.nodes.LoadBalancer",
+      "to": "tosca.nodes.Database",
+      "label": "tosca.relationships.RoutesTo",
+      "annotations": {
+        "contains-other-v": "NONE",
+        "delete-other-v": "NONE",
+        "prevent-delete": "NONE"
+      }
+    },
+    {
+      "from": "tosca.nodes.LoadBalancer",
+      "to": "tosca.nodes.Compute",
+      "label": "tosca.relationships.RoutesTo",
+      "annotations": {
+        "contains-other-v": "NONE",
+        "delete-other-v": "NONE",
+        "prevent-delete": "NONE"
+      }
+    },
+    {
+      "from": "tosca.nodes.LoadBalancer",
+      "to": "tosca.nodes.Database",
+      "label": "tosca.relationships.Uses",
+      "annotations": {
+        "contains-other-v": "NONE",
+        "delete-other-v": "NONE",
+        "prevent-delete": "NONE"
+      }
+    },    
+    {
+      "from": "tosca.nodes.LoadBalancer",
+      "to": "tosca.nodes.WebApplication",
+      "label": "tosca.relationships.RoutesTo",
+      "annotations": {
+        "contains-other-v": "NONE",
+        "delete-other-v": "NONE",
+        "prevent-delete": "NONE"
+      }
+    },
+    {
+      "from": "tosca.nodes.LoadBalancer",
+      "to": "tosca.nodes.WebServer",
+      "label": "tosca.relationships.RoutesTo",
+      "annotations": {
+        "contains-other-v": "NONE",
+        "delete-other-v": "NONE",
+        "prevent-delete": "NONE"
+      }
+    },
+    {
+      "from": "nodes.ics.Port",
+      "to": "tosca.nodes.Compute",
+      "label": "tosca.relationships.network.BindsTo",
+      "annotations": {
+        "contains-other-v": "NONE",
+        "delete-other-v": "NONE",
+        "prevent-delete": "NONE"
+      }
+    },
+    {
+      "from": "tosca.nodes.network.Port",
+      "to": "tosca.nodes.Compute",
+      "label": "tosca.relationships.network.BindsTo",
+      "annotations": {
+        "contains-other-v": "NONE",
+        "delete-other-v": "NONE",
+        "prevent-delete": "NONE"
+      }
+    },
+    {
+      "from": "tosca.nodes.Compute",
+      "to": "tosca.nodes.BlockStorage",
+      "label": "tosca.relationships.AttachesTo",
+      "annotations": {
+        "contains-other-v": "NONE",
+        "delete-other-v": "NONE",
+        "prevent-delete": "NONE"
+      }
+    },
+    {
+      "from": "onap.nodes.sdwan.RoutingInstance",
+      "to": "onap.nodes.sdwan.service.SubscriberService",
+      "label": "onap.relationships.sdwan.BelongsTo",
+      "annotations": {
+        "contains-other-v": "NONE",
+        "delete-other-v": "NONE",
+        "prevent-delete": "NONE"
+      }
+    },
+    {
+      "from": "onap.nodes.sdwan.RoutingInstance",
+      "to": "onap.nodes.sdwan.ManagementDomain",
+      "label": "onap.relationships.ManagedBy",
+      "annotations": {
+        "contains-other-v": "NONE",
+        "delete-other-v": "NONE",
+        "prevent-delete": "NONE"
+      }
+    },
+    {
+      "from": "tosca.nodes.Database",
+      "to": "tosca.nodes.DBMS",
+      "label": "tosca.relationships.HostedOn",
+      "annotations": {
+        "contains-other-v": "NONE",
+        "delete-other-v": "NONE",
+        "prevent-delete": "NONE"
+      }
+    },
+    {
+      "from": "onap.nodes.sdwan.uCPE",
+      "to": "onap.nodes.sdwan.service.SubscriberService",
+      "label": "onap.relationships.sdwan.BelongsTo",
+      "annotations": {
+        "contains-other-v": "NONE",
+        "delete-other-v": "NONE",
+        "prevent-delete": "NONE"
+      }
+    },
+    {
+      "from": "onap.nodes.sdwan.uCPE",
+      "to": "onap.nodes.sdwan.ManagementDomain",
+      "label": "onap.relationships.ManagedBy",
+      "annotations": {
+        "contains-other-v": "NONE",
+        "delete-other-v": "NONE",
+        "prevent-delete": "NONE"
+      }
+    },
+    {
+      "from": "onap.nodes.sdwan.VPN",
+      "to": "onap.nodes.sdwan.service.SubscriberService",
+      "label": "onap.relationships.sdwan.BelongsTo",
+      "annotations": {
+        "contains-other-v": "NONE",
+        "delete-other-v": "NONE",
+        "prevent-delete": "NONE"
+      }
+    },
+    {
+      "from": "onap.nodes.sdwan.Account",
+      "to": "onap.nodes.sdwan.ManagementDomain",
+      "label": "onap.relationships.ManagedBy",
+      "annotations": {
+        "contains-other-v": "NONE",
+        "delete-other-v": "NONE",
+        "prevent-delete": "NONE"
+      }
+    }
+  ],
+  "data_types": [
+    {
+      "name": "org.onap.datatypes.network.VlanRequirements",
+      "description": "",
+      "properties": [
+        {
+          "name": "vlan_range_plan",
+          "required": false,
+          "type": "string",
+          "description": "",
+          "default": "",
+          "constraint": ""
+        },
+        {
+          "name": "vlan_type",
+          "required": false,
+          "type": "string",
+          "description": "",
+          "default": "",
+          "constraint": "Valid_values: [c-tag, s-tag],"
+        },
+        {
+          "name": "vlan_count",
+          "required": false,
+          "type": "integer",
+          "description": "",
+          "default": "",
+          "constraint": ""
+        },
+        {
+          "name": "supplemental_data",
+          "required": false,
+          "type": "string",
+          "description": "",
+          "default": "",
+          "constraint": ""
+        }
+      ]
+    },
+    {
+      "name": "org.onap.datatypes.RuleList",
+      "description": "",
+      "properties": [
+        {
+          "name": "network_policy_entries_policy_rule",
+          "required": false,
+          "type": "list:string",
+          "description": "",
+          "default": "",
+          "constraint": ""
+        }
+      ]
+    },
+    {
+      "name": "org.onap.datatypes.network.MacRequirements",
+      "description": "",
+      "properties": [
+        {
+          "name": "mac_range_plan",
+          "required": false,
+          "type": "string",
+          "description": "",
+          "default": "",
+          "constraint": ""
+        },
+        {
+          "name": "mac_count",
+          "required": false,
+          "type": "integer",
+          "description": "",
+          "default": "",
+          "constraint": ""
+        },
+        {
+          "name": "mac_count_required",
+          "required": false,
+          "type": "org.onap.datatypes.AssignmentRequirements",
+          "description": "",
+          "default": "",
+          "constraint": ""
+        },
+        {
+          "name": "supplemental_data",
+          "required": false,
+          "type": "string",
+          "description": "",
+          "default": "",
+          "constraint": ""
+        }
+      ]
+    },
+    {
+      "name": "org.onap.datatypes.AssignmentRequirements",
+      "description": "",
+      "properties": [
+        {
+          "name": "is_required",
+          "required": false,
+          "type": "boolean",
+          "description": "",
+          "default": "",
+          "constraint": ""
+        },
+        {
+          "name": "count",
+          "required": false,
+          "type": "integer",
+          "description": "",
+          "default": "",
+          "constraint": ""
+        },
+        {
+          "name": "supplemental_data",
+          "required": false,
+          "type": "string",
+          "description": "",
+          "default": "",
+          "constraint": ""
+        }
+      ]
+    },
+    {
+      "name": "org.onap.datatypes.Naming",
+      "description": "",
+      "properties": [
+        {
+          "name": "generated_naming",
+          "required": false,
+          "type": "boolean",
+          "description": "",
+          "default": "",
+          "constraint": ""
+        },
+        {
+          "name": "naming_policy",
+          "required": false,
+          "type": "string",
+          "description": "",
+          "default": "",
+          "constraint": ""
+        },
+        {
+          "name": "instance_name",
+          "required": false,
+          "type": "string",
+          "description": "",
+          "default": "",
+          "constraint": ""
+        },
+        {
+          "name": "supplemental_data",
+          "required": false,
+          "type": "string",
+          "description": "",
+          "default": "",
+          "constraint": ""
+        }
+      ]
+    }
+  ],
+  "node_types": [
+    {
+      "name": "tosca.nodes.ObjectStorage",
+      "description": "",
+      "uriTemplate": "",
+      "properties": [
+        {
+          "name": "name",
+          "required": true,
+          "unique": false,
+          "type": "string",
+          "description": "",
+          "default": "",
+          "annotations": {
+            "indexed": true,
+            "searchable": true,
+            "source_of_truth_type": "AAI",
+            "constraint": ""
+          }
+        },
+        {
+          "name": "size",
+          "required": true,
+          "unique": false,
+          "type": "integer",
+          "description": "",
+          "default": "50",
+          "annotations": {
+            "indexed": false,
+            "searchable": true,
+            "source_of_truth_type": "AAI",
+            "constraint": "Greater_or_equal: 0 GB,"
+          }
+        },
+        {
+          "name": "maxsize",
+          "required": true,
+          "unique": false,
+          "type": "string",
+          "description": "",
+          "default": "",
+          "annotations": {
+            "indexed": false,
+            "searchable": false,
+            "source_of_truth_type": "AAI",
+            "constraint": "Greater_or_equal: 0 GB,"
+          }
+        }
+      ]
+    },
+    {
+      "name": "org.onap.resource.NetworkRules",
+      "description": "",
+      "uriTemplate": "",
+      "properties": [
+        {
+          "name": "name",
+          "required": false,
+          "unique": false,
+          "type": "string",
+          "description": "",
+          "default": "",
+          "annotations": {
+            "indexed": false,
+            "searchable": false,
+            "source_of_truth_type": "AAI",
+            "constraint": ""
+          }
+        },
+        {
+          "name": "network_policy_entries",
+          "required": false,
+          "unique": false,
+          "type": "org.onap.datatypes.RuleList",
+          "description": "",
+          "default": "",
+          "annotations": {
+            "indexed": false,
+            "searchable": false,
+            "source_of_truth_type": "AAI",
+            "constraint": ""
+          }
+        }
+      ]
+    },
+    {
+      "name": "onap.nodes.sdwan.ManagementDomain",
+      "description": "",
+      "uriTemplate": "",
+      "properties": [
+        {
+          "name": "mdName",
+          "required": true,
+          "unique": false,
+          "type": "string",
+          "description": "",
+          "default": "",
+          "annotations": {
+            "indexed": false,
+            "searchable": false,
+            "source_of_truth_type": "AAI",
+            "constraint": ""
+          }
+        },
+        {
+          "name": "controllers",
+          "required": true,
+          "unique": false,
+          "type": "list:string",
+          "description": "",
+          "default": "",
+          "annotations": {
+            "indexed": false,
+            "searchable": false,
+            "source_of_truth_type": "AAI",
+            "constraint": ""
+          }
+        },
+        {
+          "name": "stagingControllers",
+          "required": true,
+          "unique": false,
+          "type": "list:string",
+          "description": "",
+          "default": "",
+          "annotations": {
+            "indexed": false,
+            "searchable": false,
+            "source_of_truth_type": "AAI",
+            "constraint": ""
+          }
+        },
+        {
+          "name": "mdDirectorUrl",
+          "required": true,
+          "unique": false,
+          "type": "string",
+          "description": "",
+          "default": "",
+          "annotations": {
+            "indexed": false,
+            "searchable": false,
+            "source_of_truth_type": "AAI",
+            "constraint": ""
+          }
+        },
+        {
+          "name": "mdDirectorCredentialName",
+          "required": true,
+          "unique": false,
+          "type": "string",
+          "description": "",
+          "default": "",
+          "annotations": {
+            "indexed": false,
+            "searchable": false,
+            "source_of_truth_type": "AAI",
+            "constraint": ""
+          }
+        },
+        {
+          "name": "encryptionType",
+          "required": false,
+          "unique": false,
+          "type": "string",
+          "description": "",
+          "default": "",
+          "annotations": {
+            "indexed": false,
+            "searchable": false,
+            "source_of_truth_type": "AAI",
+            "constraint": ""
+          }
+        },
+        {
+          "name": "analyticClusters",
+          "required": false,
+          "unique": false,
+          "type": "list:string",
+          "description": "",
+          "default": "",
+          "annotations": {
+            "indexed": false,
+            "searchable": false,
+            "source_of_truth_type": "AAI",
+            "constraint": ""
+          }
+        },
+        {
+          "name": "cliUsers",
+          "required": false,
+          "unique": false,
+          "type": "string",
+          "description": "",
+          "default": "",
+          "annotations": {
+            "indexed": false,
+            "searchable": false,
+            "source_of_truth_type": "AAI",
+            "constraint": ""
+          }
+        },
+        {
+          "name": "devicesSet",
+          "required": false,
+          "unique": false,
+          "type": "string",
+          "description": "",
+          "default": "",
+          "annotations": {
+            "indexed": false,
+            "searchable": false,
+            "source_of_truth_type": "AAI",
+            "constraint": ""
+          }
+        }
+      ]
+    },
+    {
+      "name": "org.onap.resource.extContrailCP",
+      "description": "",
+      "uriTemplate": "",
+      "properties": [
+        {
+          "name": "static_routes",
+          "required": false,
+          "unique": false,
+          "type": "list:string",
+          "description": "",
+          "default": "",
+          "annotations": {
+            "indexed": false,
+            "searchable": false,
+            "source_of_truth_type": "AAI",
+            "constraint": ""
+          }
+        },
+        {
+          "name": "virtual_network",
+          "required": true,
+          "unique": false,
+          "type": "string",
+          "description": "",
+          "default": "",
+          "annotations": {
+            "indexed": false,
+            "searchable": false,
+            "source_of_truth_type": "AAI",
+            "constraint": ""
+          }
+        },
+        {
+          "name": "static_route",
+          "required": false,
+          "unique": false,
+          "type": "boolean",
+          "description": "",
+          "default": "",
+          "annotations": {
+            "indexed": false,
+            "searchable": false,
+            "source_of_truth_type": "AAI",
+            "constraint": ""
+          }
+        },
+        {
+          "name": "allowed_address_pairs",
+          "required": false,
+          "unique": false,
+          "type": "list:string",
+          "description": "",
+          "default": "",
+          "annotations": {
+            "indexed": false,
+            "searchable": false,
+            "source_of_truth_type": "AAI",
+            "constraint": ""
+          }
+        },
+        {
+          "name": "shared_ip",
+          "required": false,
+          "unique": false,
+          "type": "boolean",
+          "description": "",
+          "default": "",
+          "annotations": {
+            "indexed": false,
+            "searchable": false,
+            "source_of_truth_type": "AAI",
+            "constraint": ""
+          }
+        },
+        {
+          "name": "interface_type",
+          "required": true,
+          "unique": false,
+          "type": "string",
+          "description": "",
+          "default": "",
+          "annotations": {
+            "indexed": false,
+            "searchable": false,
+            "source_of_truth_type": "AAI",
+            "constraint": "Valid_values: [management, left, right, other],"
+          }
+        },
+        {
+          "name": "network_role",
+          "required": true,
+          "unique": false,
+          "type": "string",
+          "description": "",
+          "default": "",
+          "annotations": {
+            "indexed": false,
+            "searchable": false,
+            "source_of_truth_type": "AAI",
+            "constraint": ""
+          }
+        },
+        {
+          "name": "network_role_tag",
+          "required": true,
+          "unique": false,
+          "type": "string",
+          "description": "",
+          "default": "",
+          "annotations": {
+            "indexed": false,
+            "searchable": false,
+            "source_of_truth_type": "AAI",
+            "constraint": ""
+          }
+        },
+        {
+          "name": "mac_requirements",
+          "required": false,
+          "unique": false,
+          "type": "org.onap.datatypes.network.MacRequirements",
+          "description": "",
+          "default": "",
+          "annotations": {
+            "indexed": false,
+            "searchable": false,
+            "source_of_truth_type": "AAI",
+            "constraint": ""
+          }
+        },
+        {
+          "name": "vlan_requirements",
+          "required": false,
+          "unique": false,
+          "type": "list:string",
+          "description": "",
+          "default": "",
+          "annotations": {
+            "indexed": false,
+            "searchable": false,
+            "source_of_truth_type": "AAI",
+            "constraint": ""
+          }
+        },
+        {
+          "name": "ip_requirements",
+          "required": true,
+          "unique": false,
+          "type": "list:string",
+          "description": "",
+          "default": "",
+          "annotations": {
+            "indexed": false,
+            "searchable": false,
+            "source_of_truth_type": "AAI",
+            "constraint": ""
+          }
+        },
+        {
+          "name": "exCP_naming",
+          "required": true,
+          "unique": false,
+          "type": "org.onap.datatypes.Naming",
+          "description": "",
+          "default": "",
+          "annotations": {
+            "indexed": false,
+            "searchable": false,
+            "source_of_truth_type": "AAI",
+            "constraint": ""
+          }
+        },
+        {
+          "name": "subnetpoolid",
+          "required": true,
+          "unique": false,
+          "type": "string",
+          "description": "",
+          "default": "",
+          "annotations": {
+            "indexed": false,
+            "searchable": false,
+            "source_of_truth_type": "AAI",
+            "constraint": ""
+          }
+        },
+        {
+          "name": "subinterface_indicator",
+          "required": false,
+          "unique": false,
+          "type": "boolean",
+          "description": "",
+          "default": "",
+          "annotations": {
+            "indexed": false,
+            "searchable": false,
+            "source_of_truth_type": "AAI",
+            "constraint": ""
+          }
+        },
+        {
+          "name": "related_networks",
+          "required": false,
+          "unique": false,
+          "type": "list:string",
+          "description": "",
+          "default": "",
+          "annotations": {
+            "indexed": false,
+            "searchable": false,
+            "source_of_truth_type": "AAI",
+            "constraint": ""
+          }
+        },
+        {
+          "name": "ip_address",
+          "required": false,
+          "unique": false,
+          "type": "string",
+          "description": "",
+          "default": "",
+          "annotations": {
+            "indexed": false,
+            "searchable": false,
+            "source_of_truth_type": "AAI",
+            "constraint": ""
+          }
+        },
+        {
+          "name": "order",
+          "required": true,
+          "unique": false,
+          "type": "integer",
+          "description": "",
+          "default": "",
+          "annotations": {
+            "indexed": false,
+            "searchable": false,
+            "source_of_truth_type": "AAI",
+            "constraint": "Greater_or_equal: 0,"
+          }
+        },
+        {
+          "name": "is_default",
+          "required": false,
+          "unique": false,
+          "type": "boolean",
+          "description": "",
+          "default": "",
+          "annotations": {
+            "indexed": false,
+            "searchable": false,
+            "source_of_truth_type": "AAI",
+            "constraint": ""
+          }
+        },
+        {
+          "name": "ip_range_start",
+          "required": false,
+          "unique": false,
+          "type": "string",
+          "description": "",
+          "default": "",
+          "annotations": {
+            "indexed": false,
+            "searchable": false,
+            "source_of_truth_type": "AAI",
+            "constraint": ""
+          }
+        },
+        {
+          "name": "ip_range_end",
+          "required": false,
+          "unique": false,
+          "type": "string",
+          "description": "",
+          "default": "",
+          "annotations": {
+            "indexed": false,
+            "searchable": false,
+            "source_of_truth_type": "AAI",
+            "constraint": ""
+          }
+        }
+      ]
+    }
+  ]
+}
