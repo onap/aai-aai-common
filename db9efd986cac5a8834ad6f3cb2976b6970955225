@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "054e7ab0_a1b59914",
+        "filename": "Dockerfiles/aai-common/Dockerfile",
+        "patchSetId": 2
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 75
+      },
+      "writtenOn": "2019-04-26T15:25:50Z",
+      "side": 1,
+      "message": "We don\u0027t need the git package anymore so you can remove this dependency",
+      "revId": "db9efd986cac5a8834ad6f3cb2976b6970955225",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
