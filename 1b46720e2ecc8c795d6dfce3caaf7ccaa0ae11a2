@@ -1,0 +1,395 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d270b436_c426bb16",
+        "filename": "aai-schema-abstraction/src/main/java/org/onap/aai/schemaif/SchemaProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2019-04-26T06:56:03Z",
+      "side": 1,
+      "message": "I think there needs to be a third-option for a \"programmatic API\" schema provider, not just OXM/JSON. This would suite the Validation code and also dynamic schema loading/testing.",
+      "range": {
+        "startLine": 29,
+        "startChar": 0,
+        "endLine": 29,
+        "endChar": 31
+      },
+      "revId": "1b46720e2ecc8c795d6dfce3caaf7ccaa0ae11a2",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "bb8aab59_03fd6c66",
+        "filename": "aai-schema-abstraction/src/main/java/org/onap/aai/schemaif/definitions/EdgeSchema.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2019-04-26T06:56:03Z",
+      "side": 1,
+      "message": "should there be an equivalence operator in the EdgeSchema?\ni.e. source/target classes could be swapped but still represent the same edge relationship?\nOr is this implicitly uni-directional rather than bi-directional?",
+      "range": {
+        "startLine": 26,
+        "startChar": 0,
+        "endLine": 26,
+        "endChar": 23
+      },
+      "revId": "1b46720e2ecc8c795d6dfce3caaf7ccaa0ae11a2",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c1fa8c2d_f9b6d18e",
+        "filename": "aai-schema-abstraction/src/main/java/org/onap/aai/schemaif/definitions/EdgeSchema.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2019-04-26T06:56:03Z",
+      "side": 1,
+      "message": "is this name synonymous with edge-label?",
+      "range": {
+        "startLine": 27,
+        "startChar": 4,
+        "endLine": 27,
+        "endChar": 25
+      },
+      "revId": "1b46720e2ecc8c795d6dfce3caaf7ccaa0ae11a2",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b03996c1_5f38e819",
+        "filename": "aai-schema-abstraction/src/main/java/org/onap/aai/schemaif/definitions/PropertySchema.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2019-04-26T06:56:03Z",
+      "side": 1,
+      "message": "given the discussion in https://lists.onap.org/g/onap-discuss/topic/31317665 and https://wiki.onap.org/display/DW/2019-04-25+AAI+Developers+Meeting\nhow will this handle the multi-part key scenarios that exist in 4 schema elements already?",
+      "range": {
+        "startLine": 34,
+        "startChar": 0,
+        "endLine": 34,
+        "endChar": 28
+      },
+      "revId": "1b46720e2ecc8c795d6dfce3caaf7ccaa0ae11a2",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "520aa8a6_6d349e42",
+        "filename": "aai-schema-abstraction/src/main/java/org/onap/aai/schemaif/definitions/VertexSchema.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2019-04-26T06:56:03Z",
+      "side": 1,
+      "message": "it may be better to move the \"isKey\" attribute from the PropertySchema into VertexSchema, e.g. as \"keyProperties\" relationship.\nThis would handle the multi-part key better for the known cases that already exist.",
+      "range": {
+        "startLine": 26,
+        "startChar": 0,
+        "endLine": 26,
+        "endChar": 25
+      },
+      "revId": "1b46720e2ecc8c795d6dfce3caaf7ccaa0ae11a2",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1ebc0ede_5f9df8b6",
+        "filename": "aai-schema-abstraction/src/main/java/org/onap/aai/schemaif/definitions/types/BooleanDataType.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2019-04-26T06:56:03Z",
+      "side": 1,
+      "message": "class should include a \"getValue\" as well, since there are specific strings which are validated/converted.",
+      "range": {
+        "startLine": 30,
+        "startChar": 4,
+        "endLine": 30,
+        "endChar": 46
+      },
+      "revId": "1b46720e2ecc8c795d6dfce3caaf7ccaa0ae11a2",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "88bd6261_8d739c14",
+        "filename": "aai-schema-abstraction/src/main/java/org/onap/aai/schemaif/definitions/types/BooleanDataType.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2019-04-26T06:56:03Z",
+      "side": 1,
+      "message": "I prefer the behaviour of Apache Commons BooleanUtils\n\nhttps://commons.apache.org/proper/commons-lang/javadocs/api-2.6/org/apache/commons/lang/BooleanUtils.html#toBoolean(java.lang.String)",
+      "range": {
+        "startLine": 31,
+        "startChar": 8,
+        "endLine": 31,
+        "endChar": 77
+      },
+      "revId": "1b46720e2ecc8c795d6dfce3caaf7ccaa0ae11a2",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "23cc140c_0842c26b",
+        "filename": "aai-schema-abstraction/src/main/java/org/onap/aai/schemaif/definitions/types/ComplexDataType.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2019-04-26T06:56:03Z",
+      "side": 1,
+      "message": "is this intended for metadata like min/max restrictions on values?\nOr is for composite values like structs/unions?",
+      "range": {
+        "startLine": 28,
+        "startChar": 0,
+        "endLine": 28,
+        "endChar": 45
+      },
+      "revId": "1b46720e2ecc8c795d6dfce3caaf7ccaa0ae11a2",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "47187eeb_10e7e327",
+        "filename": "aai-schema-abstraction/src/main/java/org/onap/aai/schemaif/definitions/types/FloatDataType.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2019-04-26T06:56:03Z",
+      "side": 1,
+      "message": "There are two possible exceptions shown in\n\nhttps://docs.oracle.com/javase/7/docs/api/java/lang/Float.html#parseFloat(java.lang.String)\n\nbut it may be better to use isNan instead of exceptions anyway:\n\nhttps://docs.oracle.com/javase/7/docs/api/java/lang/Float.html#isNaN()",
+      "range": {
+        "startLine": 36,
+        "startChar": 1,
+        "endLine": 36,
+        "endChar": 41
+      },
+      "revId": "1b46720e2ecc8c795d6dfce3caaf7ccaa0ae11a2",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1f5e10ae_f6e5534d",
+        "filename": "aai-schema-abstraction/src/main/java/org/onap/aai/schemaif/json/FromJsonEdgeSchema.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2019-04-26T06:56:03Z",
+      "side": 1,
+      "message": "not sure why we need to have differences in the internal/external names of these attributes?",
+      "range": {
+        "startLine": 34,
+        "startChar": 8,
+        "endLine": 36,
+        "endChar": 33
+      },
+      "revId": "1b46720e2ecc8c795d6dfce3caaf7ccaa0ae11a2",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "61253378_a513a169",
+        "filename": "aai-schema-abstraction/src/main/java/org/onap/aai/schemaif/json/FromJsonVertexSchema.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2019-04-26T06:56:03Z",
+      "side": 1,
+      "message": "should reuse the code from the BooleanValue",
+      "range": {
+        "startLine": 63,
+        "startChar": 24,
+        "endLine": 63,
+        "endChar": 89
+      },
+      "revId": "1b46720e2ecc8c795d6dfce3caaf7ccaa0ae11a2",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1aeea9f3_20c5b538",
+        "filename": "aai-schema-abstraction/src/main/java/org/onap/aai/schemaif/json/FromJsonVertexSchema.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2019-04-26T06:56:03Z",
+      "side": 1,
+      "message": "should reuse the code from the BooleanValue",
+      "range": {
+        "startLine": 70,
+        "startChar": 24,
+        "endLine": 70,
+        "endChar": 86
+      },
+      "revId": "1b46720e2ecc8c795d6dfce3caaf7ccaa0ae11a2",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "93999b60_47eb404f",
+        "filename": "aai-schema-abstraction/src/main/java/org/onap/aai/schemaif/json/SchemaInstance.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2019-04-26T06:56:03Z",
+      "side": 1,
+      "message": "should EdgeKeys be normalised in cases where the source/target might be swapped?",
+      "range": {
+        "startLine": 93,
+        "startChar": 4,
+        "endLine": 94,
+        "endChar": 49
+      },
+      "revId": "1b46720e2ecc8c795d6dfce3caaf7ccaa0ae11a2",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "aa18c0e0_ed8edad4",
+        "filename": "aai-schema-abstraction/src/main/java/org/onap/aai/schemaif/json/definitions/DataTypeDefinition.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2019-04-26T06:56:03Z",
+      "side": 1,
+      "message": "there should be a separate relationship for \"keyProperties\", i.e. the properties that form the unique-key.",
+      "range": {
+        "startLine": 51,
+        "startChar": 4,
+        "endLine": 51,
+        "endChar": 53
+      },
+      "revId": "1b46720e2ecc8c795d6dfce3caaf7ccaa0ae11a2",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ca597166_9570932b",
+        "filename": "aai-schema-abstraction/src/main/java/org/onap/aai/schemaif/oxm/OxmEdgeRulesLoader.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2019-04-26T06:56:03Z",
+      "side": 1,
+      "message": "API version pattern should be using a + instead of * since it is at least one digit, but it should also exclude v0",
+      "range": {
+        "startLine": 57,
+        "startChar": 4,
+        "endLine": 57,
+        "endChar": 71
+      },
+      "revId": "1b46720e2ecc8c795d6dfce3caaf7ccaa0ae11a2",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b9712f03_a478c652",
+        "filename": "aai-schema-abstraction/src/main/java/org/onap/aai/schemaif/oxm/OxmSchemaLoader.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2019-04-26T06:56:03Z",
+      "side": 1,
+      "message": "same as above regarding version pattern",
+      "range": {
+        "startLine": 56,
+        "startChar": 4,
+        "endLine": 56,
+        "endChar": 71
+      },
+      "revId": "1b46720e2ecc8c795d6dfce3caaf7ccaa0ae11a2",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "17557ec4_a19d0bb8",
+        "filename": "aai-schema-abstraction/src/test/resources/json/jsonSchema.json",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2019-04-26T06:56:03Z",
+      "side": 1,
+      "message": "would relationships be better as sub-part of the data-type definition? e.g. the \"from\" would not need to be repeated again.\n\nAlso, how are sub-object relationships distinguished from cousin-edge relationships? the \"contains-other-v\" could be redundant as well, if it\u0027s a sub-part of the data-type definition.",
+      "range": {
+        "startLine": 4,
+        "startChar": 0,
+        "endLine": 5,
+        "endChar": 34
+      },
+      "revId": "1b46720e2ecc8c795d6dfce3caaf7ccaa0ae11a2",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
