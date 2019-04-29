@@ -16,6 +16,47 @@
       "revId": "db9efd986cac5a8834ad6f3cb2976b6970955225",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ef9a2d37_fef60f90",
+        "filename": "Dockerfiles/aai-common/Dockerfile",
+        "patchSetId": 2
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 5040
+      },
+      "writtenOn": "2019-04-29T10:27:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "054e7ab0_a1b59914",
+      "revId": "db9efd986cac5a8834ad6f3cb2976b6970955225",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5de48b53_fbbe76cc",
+        "filename": "Dockerfiles/aai-common/Dockerfile",
+        "patchSetId": 2
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 5040
+      },
+      "writtenOn": "2019-04-29T10:27:05Z",
+      "side": 1,
+      "message": "Also nss issue was fixed by Alpine team, no need to install it explicitly.",
+      "range": {
+        "startLine": 27,
+        "startChar": 12,
+        "endLine": 27,
+        "endChar": 15
+      },
+      "revId": "db9efd986cac5a8834ad6f3cb2976b6970955225",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
