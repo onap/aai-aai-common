@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9983dc72_bdd89cf6",
+        "filename": "Dockerfiles/aai-common/Dockerfile.alpine",
+        "patchSetId": 4
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 75
+      },
+      "writtenOn": "2019-05-12T18:34:10Z",
+      "side": 1,
+      "message": "In the recent onap discuss, they mentioned the security vulnerability to using the shadow package.\n\nhttps://alpinelinux.org/posts/Docker-image-vulnerability-CVE-2019-5021.html\n\nIt seems that adding the following should address that concern from the article. \n\n# make sure root login is disabled\nsed -i -e \u0027s/^root::/root:!:/\u0027 /etc/shadow",
+      "revId": "63d46864968def5d71070cd3bf7a4c7c1b0b6bd1",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "29182d80_4a49db82",
+        "filename": "Dockerfiles/aai-common/Dockerfile.alpine",
+        "patchSetId": 4
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 75
+      },
+      "writtenOn": "2019-05-12T18:34:10Z",
+      "side": 1,
+      "message": "I don\u0027t think we need the util-linux and vim packages. Its not necessary as basic vi comes with the docker image. It shaves off another 30 MB of the common image.",
+      "revId": "63d46864968def5d71070cd3bf7a4c7c1b0b6bd1",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
