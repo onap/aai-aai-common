@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "a4b4a2b3_21461db9",
+        "filename": "Dockerfiles/aai-common/Dockerfile.alpine",
+        "patchSetId": 4
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 5040
+      },
+      "writtenOn": "2019-05-13T09:48:44Z",
+      "side": 1,
+      "message": "According to the article mentioned:\n\"... The issue was fixed in the following Docker image releases (7 March 2019):\nv3.9.2 ...\"\n\nVersion of Alpine used in aai-common:\n# cat /etc/os-release \n...\nVERSION_ID\u003d3.9.3\n...\n\nalso checking of /etc/shadow shows that:\n# cat /etc/shadow\nroot:!::0:::::\n\nI believe we\u0027re safe here.",
+      "parentUuid": "9983dc72_bdd89cf6",
+      "revId": "63d46864968def5d71070cd3bf7a4c7c1b0b6bd1",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "29182d80_4a49db82",
         "filename": "Dockerfiles/aai-common/Dockerfile.alpine",
         "patchSetId": 4
@@ -30,6 +48,24 @@
       "writtenOn": "2019-05-12T18:34:10Z",
       "side": 1,
       "message": "I don\u0027t think we need the util-linux and vim packages. Its not necessary as basic vi comes with the docker image. It shaves off another 30 MB of the common image.",
+      "revId": "63d46864968def5d71070cd3bf7a4c7c1b0b6bd1",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9475deeb_6c03791f",
+        "filename": "Dockerfiles/aai-common/Dockerfile.alpine",
+        "patchSetId": 4
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 5040
+      },
+      "writtenOn": "2019-05-13T09:48:44Z",
+      "side": 1,
+      "message": "Package util-linux provides uuidgen binary which is used in shell scripts.(aai-resources, aai-traversal, aai-schema-service). vim was kept as it was in original image. Will remove it if you think vi is enough.",
+      "parentUuid": "29182d80_4a49db82",
       "revId": "63d46864968def5d71070cd3bf7a4c7c1b0b6bd1",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
