@@ -69,6 +69,24 @@
       "revId": "63d46864968def5d71070cd3bf7a4c7c1b0b6bd1",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4f513fbf_45232cc6",
+        "filename": "Dockerfiles/aai-common/Dockerfile.alpine",
+        "patchSetId": 4
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 75
+      },
+      "writtenOn": "2019-05-13T14:28:48Z",
+      "side": 1,
+      "message": "In that case, we need the util-linux package and you can go ahead and remove the vim package.",
+      "parentUuid": "9475deeb_6c03791f",
+      "revId": "63d46864968def5d71070cd3bf7a4c7c1b0b6bd1",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
