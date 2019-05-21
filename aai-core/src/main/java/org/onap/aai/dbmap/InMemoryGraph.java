@@ -22,13 +22,10 @@ package org.onap.aai.dbmap;
 
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
-
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.tinkerpop.gremlin.structure.io.IoCore;
 import org.janusgraph.core.JanusGraph;
 import org.janusgraph.core.JanusGraphFactory;
@@ -36,56 +33,52 @@ import org.janusgraph.core.JanusGraphTransaction;
 import org.janusgraph.core.schema.JanusGraphManagement;
 import org.onap.aai.dbgen.GraphSONPartialIO;
 import org.onap.aai.dbgen.SchemaGenerator;
-import org.onap.aai.logging.LogFormatTools;
 
 public class InMemoryGraph {
 
     private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(InMemoryGraph.class);
     private JanusGraph graph = null;
 
-    public InMemoryGraph(Builder builder) throws IOException {
+    public InMemoryGraph(final Builder builder) throws IOException {
         /*
          * Create a In-memory graph
          */
-        InputStream is = new FileInputStream(builder.propertyFile);
-        try {
+        try (final InputStream is = new FileInputStream(builder.propertyFile);) {
             graph = JanusGraphFactory.open(builder.propertyFile);
 
-            Properties graphProps = new Properties();
+            final Properties graphProps = new Properties();
             graphProps.load(is);
-            JanusGraphManagement graphMgt = graph.openManagement();
+            final JanusGraphManagement graphMgt = graph.openManagement();
             if (builder.isSchemaEnabled) {
                 LOGGER.info("Schema Enabled");
                 SchemaGenerator.loadSchemaIntoJanusGraph(graph, graphMgt, graphProps.getProperty("storage.backend"));
             }
-            JanusGraphTransaction transaction = graph.newTransaction();
-            LOGGER.info("Loading snapshot");
-            if (builder.isPartialGraph) {
-                if ((builder.graphsonLocation != null) && (builder.graphsonLocation.length() > 0)) {
-                    transaction.io(GraphSONPartialIO.build()).readGraph(builder.graphsonLocation);
-                } else {
-                    transaction.io(GraphSONPartialIO.build()).reader().create().readGraph(builder.seqInputStream,
+            try (final JanusGraphTransaction transaction = graph.newTransaction();) {
+                LOGGER.info("Loading snapshot");
+                if (builder.isPartialGraph) {
+                    if ((builder.graphsonLocation != null) && (builder.graphsonLocation.length() > 0)) {
+                        transaction.io(GraphSONPartialIO.build()).readGraph(builder.graphsonLocation);
+                    } else {
+                        transaction.io(GraphSONPartialIO.build()).reader().create().readGraph(builder.seqInputStream,
                             graph);
-                }
-            } else {
-                if ((builder.graphsonLocation != null) && (builder.graphsonLocation.length() > 0)) {
-                    transaction.io(IoCore.graphson()).readGraph(builder.graphsonLocation);
+                    }
                 } else {
-                    transaction.io(IoCore.graphson()).reader().create().readGraph(builder.seqInputStream, graph);
+                    if ((builder.graphsonLocation != null) && (builder.graphsonLocation.length() > 0)) {
+                        transaction.io(IoCore.graphson()).readGraph(builder.graphsonLocation);
+                    } else {
+                        transaction.io(IoCore.graphson()).reader().create().readGraph(builder.seqInputStream, graph);
+                    }
                 }
+                transaction.commit();
+            } catch (final IOException e) {
+                LOGGER.error("ERROR: Could not load datasnapshot to in memory graph. \n", e);
+                throw new IllegalStateException("Could not load datasnapshot to in memory graph");
             }
-            transaction.commit();
 
-        } catch (Exception e) {
-            // TODO : Changesysout to logger
-            e.printStackTrace();
-            LOGGER.error("ERROR: Could not load datasnapshot to in memory graph. \n" + LogFormatTools.getStackTop(e));
+        } catch (final IOException e) {
+            LOGGER.error("ERROR: Could not load datasnapshot to in memory graph. \n", e);
             throw new IllegalStateException("Could not load datasnapshot to in memory graph");
-
-        } finally {
-            is.close();
         }
-
     }
 
     public static class Builder {
