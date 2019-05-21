@@ -24,15 +24,11 @@ package org.onap.aai.dbmap;
 
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
-
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.tinkerpop.gremlin.structure.Graph;
@@ -107,17 +103,18 @@ public class AAIGraph {
         return isInit;
     }
 
-    private void loadGraph(String name, String configPath, String serviceName) throws Exception {
+    private void loadGraph(final String name, final String configPath, final String serviceName)
+        throws AAIException, ConfigurationException {
         // Graph being opened by JanusGraphFactory is being placed in hashmap to be used later
         // These graphs shouldn't be closed until the application shutdown
         try {
-            PropertiesConfiguration propertiesConfiguration = new AAIGraphConfig.Builder(configPath)
-                    .forService(serviceName).withGraphType(name).buildConfiguration();
-            JanusGraph graph = JanusGraphFactory.open(propertiesConfiguration);
+            final PropertiesConfiguration propertiesConfiguration =
+                new AAIGraphConfig.Builder(configPath).forService(serviceName).withGraphType(name).buildConfiguration();
+            final JanusGraph graph = JanusGraphFactory.open(propertiesConfiguration);
 
-            Properties graphProps = new Properties();
+            final Properties graphProps = new Properties();
             propertiesConfiguration.getKeys()
-                    .forEachRemaining(k -> graphProps.setProperty(k, propertiesConfiguration.getString(k)));
+                .forEachRemaining(k -> graphProps.setProperty(k, propertiesConfiguration.getString(k)));
 
             if ("inmemory".equals(graphProps.get("storage.backend"))) {
                 // Load the propertyKeys, indexes and edge-Labels into the DB
@@ -130,14 +127,12 @@ public class AAIGraph {
             }
 
             graphs.put(name, graph);
-        } catch (FileNotFoundException fnfe) {
+        } catch (final FileNotFoundException fnfe) {
             throw new AAIException("AAI_4001");
-        } catch (IOException e) {
-            throw new AAIException("AAI_4002");
         }
     }
 
-    private void loadSnapShotToInMemoryGraph(JanusGraph graph, Properties graphProps) {
+    private void loadSnapShotToInMemoryGraph(final JanusGraph graph, final Properties graphProps) {
         if (logger.isDebugEnabled()) {
             logger.debug("Load Snapshot to InMemory Graph");
         }
@@ -159,7 +154,7 @@ public class AAIGraph {
         }
     }
 
-    private void loadSchema(JanusGraph graph) {
+    private void loadSchema(final JanusGraph graph) {
         // Load the propertyKeys, indexes and edge-Labels into the DB
         JanusGraphManagement graphMgt = graph.openManagement();
 
@@ -183,16 +178,16 @@ public class AAIGraph {
         return graphs.get(REALTIME_DB);
     }
 
-    public void graphShutdown(DBConnectionType connectionType) {
+    public void graphShutdown(final DBConnectionType connectionType) {
 
         graphs.get(this.getGraphName(connectionType)).close();
     }
 
-    public JanusGraph getGraph(DBConnectionType connectionType) {
+    public JanusGraph getGraph(final DBConnectionType connectionType) {
         return graphs.get(this.getGraphName(connectionType));
     }
 
-    private String getGraphName(DBConnectionType connectionType) {
+    private String getGraphName(final DBConnectionType connectionType) {
         String graphName = "";
         if (DBConnectionType.CACHED.equals(connectionType)) {
             graphName = this.CACHED_DB;
@@ -203,7 +198,7 @@ public class AAIGraph {
         return graphName;
     }
 
-    private void logAndPrint(EELFLogger logger, String msg) {
+    private void logAndPrint(final EELFLogger logger, final String msg) {
         System.out.println(msg);
         logger.info(msg);
     }
