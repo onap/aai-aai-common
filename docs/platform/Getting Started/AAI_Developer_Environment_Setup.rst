@@ -7,296 +7,338 @@
 AAI Developer Environment Setup
 ================================
 
-This guide will illustrate setting up an A&AI development environment in
-Ubuntu 16.04.  
+For this exercise, I set up a new instance of Ubuntu in Virtualbox and gave it 16G RAM, 200GB dynamically allocated storage, and 3 processors.
 
-For this exercise, I set up a new instance of Ubuntu in Virtualbox and
-gave it 16G RAM, 200GB dynamically allocated storage, and 3 processors.
+1. Install openjdk 8
+--------------------
+ .. code-block:: bash
 
-Install openjdk 8
------------------
+   1. $ sudo apt install openjdk-8-jdk
 
-   .. code:: bash
+2. Install single node hadoop/janusgraph
+----------------------------------------
+ .. code-block:: bash
 
-      sudo apt install openjdk-8-jdk
+   1. $ wget http://github.com/JanusGraph/janusgraph/releases/download/v0.2.0/janusgraph-0.2.0-hadoop2.zip
+   2. $ unzip janusgraph-0.2.0-hadoop2.zip
+   3. $ cd janusgraph-0.2.0-hadoop2/
+   4. $ ./bin/janusgraph.sh start
 
-Install single node hadoop/titan
---------------------------------
+ Ensure you are not a root user as elasticsearch cannot be run as root.
+ Response looks like:
 
-   .. code-block:: bash
+ .. code-block:: bash
 
-     wget http://s3.thinkaurelius.com/downloads/titan/titan-1.0.0-hadoop1.zip
+   Forking Cassandra...
+   Running `nodetool statusthrift`... OK (returned exit status 0 and printed string "running").
+   Forking Elasticsearch...
+   Connecting to Elasticsearch (127.0.0.1:9200)...... OK (connected to 127.0.0.1:9200).
+   Forking Gremlin-Server... 
+   Connecting to Gremlin-Server (127.0.0.1:8182).... OK (connected to 127.0.0.1:8182).
+   Run gremlin.sh to connect.
 
-     unzip titan-1.0.0-hadoop1.zip
+ You can verify whether everything is running by executing
 
-     cd titan-1.0.0-hadoop1
-     
-     sudo ./bin/titan.sh start
+ .. code-block:: bash
 
-Install haproxy
+   ./bin/janusgraph.sh status
+
+ And the output looks like:
+
+ .. code-block:: bash
+
+   Gremlin-Server (org.apache.tinkerpop.gremlin.server.GremlinServer) is running with pid 9835
+   Elasticsearch (org.elasticsearch.bootstrap.Elasticsearch) is running with pid 9567
+   Cassandra (org.apache.cassandra.service.CassandraDaemon) is running with pid 9207
+
+3. Install haproxy
+------------------
+
+ .. code-block:: bash
+
+    1. $ sudo apt-get -y install haproxy
+    2. $ <path-to-haproxy>/haproxy -v
+
+ Response should be:       
+
+ .. code-block:: bash
+
+   HA-Proxy version 1.6.3 2015/12/25
+   Copyright 2000-2015 Willy Tarreau <willy@haproxy.org>
+
+ Install the attached :download:`haproxy.cfg <media/haproxy.cfg>` in /etc/haproxy
+
+ .. code-block:: bash
+
+   $ sudo cp haproxy.cfg /etc/haproxy
+   $ sudo mkdir /usr/local/etc/haproxy
+
+ Install the attached :download:`aai.pem <media/aai.pem>` file in /etc/ssl/private
+
+ .. code-block:: bash
+
+   $ sudo cp aai.pem /etc/ssl/private/aai.pem
+   $ sudo chmod 640 /etc/ssl/private/aai.pem
+   $ sudo chown root:ssl-cert /etc/ssl/private/aai.pem 
+
+ Add these hostnames to the loopback interface in /etc/hosts: 
+
+ 127.0.0.1 localhost aai-traversal.api.simpledemo.openecomp.org aai-resources.api.simpledemo.openecomp.org aai-traversal.api.simpledemo.onap.org aai-resources.api.simpledemo.onap.org
+
+ .. code-block:: bash
+
+   $ sudo service haproxy restart
+
+4. Follow the initial setup instructions in `Setting Up Your Development Environment <https://wiki.onap.org/display/DW/Setting+Up+Your+Development+Environment>`__ e.g.
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ .. code-block:: bash
+
+   $ sudo apt-get install git
+   $ sudo apt-get install npm
+   $ sudo apt-get install maven
+   $ sudo apt-get install docker.io
+   $ wget https://git.onap.org/oparent/plain/settings.xml
+   $ mkdir ~/.m2
+   $ cp settings.xml ~/.m2
+
+ If you get an error on some of the repos saying that oparent is
+ unresolvable, using the example settings.xml file should solve this
+ problem: `Setting Up Your Development
+ Environment#MavenExamplesettings.xml
+ <https://wiki.onap.org/display/DW/Setting+Up+Your+Development+Environment#SettingUpYourDevelopmentEnvironment-MavenExamplesettings.xml>`__
+
+5. Set Up Repos
 ---------------
 
-   .. code-block:: bash
+ .. code-block:: bash
 
-     sudo apt-get -y install haproxy
+   $ mkdir -p ~/src/aai
+   $ cd ~/src/aai ; for f in aai-common schema-service resources traversal graphadmin logging-service ; do git clone ssh://<username>@gerrit.onap.org:29418/aai/$f; done
 
-     haproxy -v
-       HA-Proxy version 1.6.3 2015/12/25
-       Copyright 2000-2015 Willy Tarreau
-        willy@haproxy.org http://haproxy.org/
+6. Checkout the 'dublin' branch
+-------------------------------
 
-- Install this haproxy.cfg file in /etc/haproxy
+ .. code-block:: bash
 
-    `haproxy.cfg <https://wiki.onap.org/download/attachments/10782088/haproxy.cfg?version=2&modificationDate=1501018863000&api=v2>`__
+    $ cd ~/src/aai ; for f in aai-common schema-service resources traversal graphadmin logging-service ; do (cd $f ; git checkout dublin) done | tee checkoutlog.txt
 
-  .. code-block:: bash
+7. Janus Setup (part 1)
+-----------------------
 
-    sudo cp aai.pem /etc/ssl/private/aai.pem
+ Modify both janus-cached.properties and janus-realtime.properties to the following (for all MS’s that will connect to the local Cassandra backend)
 
-    sudo chmod 640 /etc/ssl/private/aai.pem
-
-    sudo chown root:ssl-cert /etc/ssl/private/aai.pem
-
-  `aai.pem <https://wiki.onap.org/download/attachments/10782088/aai.pem?version=1&modificationDate=1501019585000&api=v2>`__
-
-  .. code-block:: bash
-
-    sudo mkdir /usr/local/etc/haproxy
-
-- Add these hostnames to the loopback interface in /etc/hosts
-
-   .. code-block:: bash
-
-     127.0.0.1 localhost aai-traversal.api.simpledemo.openecomp.org aai-resouces.api.simpledemo.openecomp.org
-
-- Restart haproxy
-
-   .. code-block:: bash
-
-     sudo service haproxy restart
-
-Set up repos
-------------
-
-- First, follow the initial setup instructions in 
-  `Setting Up Your Development Environment <https://wiki.onap.org/display/DW/Setting+Up+Your+Development+Environment>`__
-
-  .. code-block:: bash
-
-    mkdir -p ~/LF/AAI
-
-    cd ~/LF/AAI
-
-    git clone ssh://<username>@gerrit.onap.org:29418/aai/aai-common
-
-    git clone ssh://<username>@gerrit.onap.org:29418/aai/traversal
-
-    git clone ssh://<username>@gerrit.onap.org:29418/aai/resources
-
-    git clone ssh://<username>@gerrit.onap.org:29418/aai/logging-service
-
-- If you did not originally create a settings.xml file when setting
-  up the dev environment, you may get an error on some of the repos
-  saying that oparent is unresolvable.  Using the example
-  settings.xml file should solve this problem:
-  `Setting Up Your Development Environment#MavenExamplesettings.xml <https://wiki.onap.org/display/DW/Setting+Up+Your+Development+Environment#SettingUpYourDevelopmentEnvironment-MavenExamplesettings.xml>`__
-
-Build aai-common, traversal, and resources
-------------------------------------------
-
-   .. code-block:: bash
-     
-     cd ~/LF/AAI/aai-common
-
-     mvn clean install # Should result in BUILD SUCCESS
-
-     cd ~/LF/AAI/resources
-
-     mvn clean install # Should result in BUILD SUCCESS
-
-     cd ~/LF/AAI/logging-service
-
-     mvn clean install # Should result in BUILD SUCCESS
-
-     cd ~/LF/AAI/traversal
-
-You might need to add the following to traversal/pom.xml to get traversal to build: 
-
-       .. code-block:: xml
-
-        <repositories><repository><id>maven-restlet</id><name>Restlet repository</name><url>https://maven.restlet.com</url></repository></repositories>
-
-   .. code-block:: bash
-
-     mvn clean install # Should result in BUILD SUCCESS
-
-Titan setup
------------
-
-   1. Modify both titan-cached.properties and
-        titan-realtime.properties to the following (for all MS’s that
-        will connect to the local Cassandra backend)
-      
-	.. code-block:: bash
-
-	  storage.backend=\ *cassandra*
-	  storage.hostname=\ *localhost*
-
-   2. update
-      ~/LF/AAI/resources/aai-resources/bundleconfig-local/etc/appprops/titan-cached.properties
-
-   3. update
-      ~/LF/AAI/resources/aai-resources/bundleconfig-local/etc/appprops/titan-realtime.properties
-
-   4. update
-      ~/LF/AAI/traversal/aai-traversal/bundleconfig-local/etc/appprops/titan-cached.properties
-
-   5. update
-      ~/LF/AAI/traversal/aai-traversal/bundleconfig-local/etc/appprops/titan-realtime.properties
-
-   6. The following property can be added to specify the keyspace
-        name, each time you do this step (g) should be done. If not
-        specified Titan will try to create/use a defaulted keyspace
-        named titan.
-
-	.. code-block:: bash
-
-	  storage.cassandra.keyspace=<keyspace name>
-
-   7. From the resources MS run the create db schema standalone program.
-
-   8. ***NOTE***: The first thing that would need to be done is adding
-      the schema to the local instance. (this will need to be done
-      whenever using a new keyspace or after wiping the data).
-
-    Runnable class org.onap.aai.dbgen.GenTester with the following vm
-    args.
-
-    .. code-block:: bash
-
-      -DAJSC_HOME=~/LF/AAI/resources -DBUNDLECONFIG\_DIR="bundleconfig-local"
-
-   9. Here's the command I used, and it worked:
-
-      .. code-block:: bash
-
-        cd ~/LF/AAI; java -DAJSC_HOME=/home/jimmy/LF/AAI/resources/aai-resources
-        -DBUNDLECONFIG_DIR="bundleconfig-local" -cp
-        aai-common/aai-core/target/aai-core-1.1.0-SNAPSHOT.jar:resources/aai-resources/target/aai-resources.jar:resources/aai-resources/target/userjars/\*
-        org.onap.aai.dbgen.GenTester
-
-Start the "resources" microservice
-----------------------------------
-
-   1. Resources runs on port 8446.  Go to the resources directory
+ .. code:: 
    
-      .. code-block:: bash
+   storage.backend=cassandra
+   storage.hostname=localhost
+   storage.cassandra.keyspace=onap # or different keyspace name of your choosing
 
-       $ cd ~/LF/AAI/resources
+ Edit the following files:
 
-   2. Set the debug port to 9446
+ .. code::
 
-      .. code-block:: bash
+   ~/src/aai/resources/aai-resources/src/main/resources/etc/appprops/janusgraph-cached.properties
+   ~/src/aai/resources/aai-resources/src/main/resources/etc/appprops/janusgraph-realtime.properties
+   ~/src/aai/traversal/aai-traversal/src/main/resources/etc/appprops/janusgraph-cached.properties
+   ~/src/aai/traversal/aai-traversal/src/main/resources/etc/appprops/janusgraph-realtime.properties
+   ~/src/aai/graphadmin/src/main/resources/etc/appprops/janusgraph-cached.properties
+   ~/src/aai/graphadmin/src/main/resources/etc/appprops/janusgraph-realtime.properties
 
-          export MAVEN_OPTS="-Xms1024m -Xmx5120m -XX:PermSize=2024m
-          -Xdebug -Xnoagent -Djava.compiler=NONE
-          -Xrunjdwp:transport=dt_socket,address=9446,server=y,suspend=n"
+8. Build all the modules
+------------------------
 
-   3. Start the microservice
+ .. code-block:: bash
 
-      .. code-block::bash
+   $ cd ~/src/aai ; for f in aai-common schema-service resources traversal graphadmin logging-service ; do (cd $f ; mvn versions:set -DnewVersion=0.0.1-TEST-SNAPSHOT && mvn -DskipTests clean install -Daai.schema.version=0.0.1-TEST-SNAPSHOT) done | tee log.txt 2>&1
 
-        $ mvn -P runAjsc
+   $ grep -e "SUCCESS" -e "FAILURE" log.txt
 
-Verify the resources microservice (this example uses Postman utility for Google Chrome)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ And you should see:
 
-   1.  Use basic auth, user = AAI, pw = AAI
+ .. code::
 
-   2.  Set the X-TransactionId header (in the example below, the value is
-       9999)
+   [INFO] aai-schema ......................................... SUCCESS [ 32.504 s]
+   [INFO] aai-queries ........................................ SUCCESS [ 6.461 s]
+   [INFO] aai-schema-service ................................. SUCCESS [02:17 min]
+   [INFO] BUILD SUCCESS
+   [INFO] aai-resources ...................................... SUCCESS [ 1.190 s]
+   [INFO] BUILD SUCCESS
+   [INFO] aai-resources ...................................... SUCCESS [ 3.210 s]
+   [INFO] aai-resources ...................................... SUCCESS [ 41.213 s]
+   [INFO] BUILD SUCCESS
+   [INFO] aai-traversal ...................................... SUCCESS [ 1.090 s]
+   [INFO] BUILD SUCCESS
+   [INFO] aai-traversal ...................................... SUCCESS [ 3.181 s]
+   [INFO] aai-traversal ...................................... SUCCESS [ 58.001 s]
+   [INFO] BUILD SUCCESS
+   [INFO] BUILD SUCCESS
+   [INFO] BUILD SUCCESS
+   [INFO] aai-logging-service ................................ SUCCESS [ 1.101 s]
+   [INFO] BUILD SUCCESS
+   [INFO] aai-logging-service ................................ SUCCESS [ 5.230 s]
+   [INFO] Common Logging API ................................. SUCCESS [ 1.995 s]
+   [INFO] EELF Logging Implementation ........................ SUCCESS [ 4.235 s]
+   [INFO] Common Logging Distribution ........................ SUCCESS [ 0.530 s]
+   [INFO] BUILD SUCCESS
 
-   3.  Set the X-FromAppId header (in the example below, the value is
-       jimmy-postman)
+9. Janus setup (part 2)
+-----------------------
+   
+ Run this on the local instance on your first time running AAI and whenever using new keyspace or after wiping the data.
 
-   4.  Perform a GET of https://127.0.0.1:8443/aai/v11/network/vces
+ Install the schema
 
-   5.  You should see an error as below, 404 Not Found, ERR.5.4.6114. 
-       This indicates that the service is functioning normally:
+ .. code-block:: bash
 
-+------------------------------------------+
-| |image1|                                 |
-+------------------------------------------+
+    $ (cd ~/src/aai/graphadmin/ && mvn -PrunAjsc -Dstart-class=org.onap.aai.schema.GenTester -Daai.schema.version=0.0.1-TEST-SNAPSHOT -Daai.schema.ingest.version=0.0.1-TEST-SNAPSHOT -DskipTests -Dcheckstyle.skip=true -DAJSC_HOME=$HOME/src/aai/graphadmin -DBUNDLECONFIG_DIR=src/main/resources)
 
-Start the "traversal" microservice
-----------------------------------
+ You should see:
 
-   1. Traversal runs on port 8447.  Go to the traversal directory:
+ .. code:: 
 
-      .. code-block:: bash
+   ---- NOTE --- about to open graph (takes a little while)--------;
+   -- Loading new schema elements into JanusGraph --
+   -- graph commit
+   -- graph shutdown
 
-       $ cd ~/LF/AAI/traversal
-      
-   2.  Set the debug port to 9447
+10. Start the "resources" microservice
+--------------------------------------
 
-       $ export MAVEN_OPTS="-Xms1024m -Xmx5120m -XX:PermSize=2024m
-        -Xdebug -Xnoagent -Djava.compiler=NONE
-        -Xrunjdwp:transport=dt_socket,address=9447,server=y,suspend=n"
+ Resources runs on port 8447.  Go to the resources directory
 
-   3.  Start the microservice
+ .. code-block:: bash
 
-      .. code-block:: bash
+    $ cd ~/src/aai/resources
 
-       $ mvn -P runAjsc
+ Set the debug port to 9447
 
-      You should see something like this:
+  .. code-block:: bash
 
-      .. code-block:: bash
+     $ export MAVEN_OPTS="-Xms1024m -Xmx5120m -XX:PermSize=2024m -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,address=9447,server=y,suspend=n"
 
-       2017-07-26
-       12:46:35.524:INFO:oejs.Server:com.att.ajsc.runner.Runner.main():
-       Started @25827ms
+ Start the microservice - adjust your build version accordingly
 
-Verify the traversal microservice
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ .. code-block::
 
-   1.  Set up the widget models
-       This will set up the postman to add widget models: `Add Widget Models.postman_collection.json <https://wiki.onap.org/download/attachments/10782088/Add%20Widget%20Models.postman_collection.json?version=2&modificationDate=1501102559000&api=v2>`__ `NamedQuery.postman_collection.json <https://wiki.onap.org/download/attachments/10782088/NamedQuery.postman_collection.json?version=2&modificationDate=1501102582000&api=v2>`__
+     $ mvn -pl aai-resources -PrunAjsc -Daai.schema.version=0.0.1-TEST-SNAPSHOT -Daai.schema.ingest.version=0.0.1-TEST-SNAPSHOT -DskipTests -Dcheckstyle.skip=true
 
-   2.  Create a runner using this file:
-       `models.csv <https://wiki.onap.org/download/attachments/10782088/models.csv?version=1&modificationDate=1501100140000&api=v2>`__
+ Should see something like this: Resources Microservice Started
 
-   3.  Run the test runner
-       |image2|
 
-   4.  Add a named query called "getComponentList" (this named query is used by VID):
+11. Verify the resources microservice
+-------------------------------------
 
-       `NamedQuery.postman_collection.json <ificationDate=1501102582000&api=v2>`__
-       
-       |image3|
+ This example uses curl from commandline
 
-   5.  Add objects:
+ .. code-block:: 
 
-       `Add Instances for Named Query.postman_collection.json <https://wiki.onap.org/download/attachments/10782088/Add%20Instances%20for%20Named%20Query.postman_collection.json?version=1&modificationDate=1501102617000&api=v2>`__ 
+   $ sudo apt-get install jq  # for pretty output
 
-   6.  Execute named-query:
-       `Execute Named Query.postman_collection.json <https://wiki.onap.org/download/attachments/10782088/Execute%20Named%20Query.postman_collection.json?version=1&modificationDate=1501102658000&api=v2>`__
-       You should see something like the following:
-       |image4|
+ Download :download:`script - test-complex <media/test-complex>`
+ Download :download:`data - data-complex.json <media/data-complex.json>`
 
-- Your A&AI instance is now running, both the resources and traversal microservices are working properly with a local titan graph.
+ .. code-block:: 
 
-- Next: `Tutorial: Making and Testing a Schema Change in A&AI <https://wiki.onap.org/pages/viewpage.action?pageId=10783023>`__
+   $ sh ./test-complex 2>&1 | tee log.txt
 
-.. |image1| image:: media/image1.png
-   :width: 4.87500in
-   :height: 2.87500in
-.. |image2| image:: media/image2.png
-   :width: 4.87500in
-   :height: 3.75000in
-.. |image3| image:: media/image3.png
-   :width: 4.87500in
-   :height: 4.15000in
-.. |image4| image:: media/image4.png
-   :width: 4.87500in
-   :height: 4.15000in
+ Confirm log.txt contains:
+
+ .. code-block:: 
+
+    > GET /aai/v16/cloud-infrastructure/complexes HTTP/1.1
+
+ .. code-block:: json
+
+    {
+     "requestError": {
+       "serviceException": {
+         "messageId": "SVC3001",
+         "text": "Resource not found for %1 using id %2 (msg=%3) (ec=%4)",
+         "variables": [
+           "GET",
+           "cloud-infrastructure/complexes",
+           "Node Not Found:No Node of type complex found at: cloud-infrastructure/complexes",
+           "ERR.5.4.6114"
+         ]
+       }
+     }
+    }
+
+ Then followed by:
+
+ .. code-block::
+
+    > PUT /aai/v16/cloud-infrastructure/complexes/complex/clli2 HTTP/1.1
+    > GET /aai/v16/cloud-infrastructure/complexes/complex/clli2 HTTP/1.1
+
+ With payload: 
+
+ .. code-block:: json
+  
+   {
+     "physical-location-id": "clli2",
+     "data-center-code": "example-data-center-code-val-6667",
+     "complex-name": "clli2",
+     "identity-url": "example-identity-url-val-28399",
+     "resource-version": "1543408364646",
+     "physical-location-type": "example-physical-location-type-val-28399",
+     "street1": "example-street1-val-28399",
+     "street2": "example-street2-val-28399",
+     "city": "example-city-val-28399",
+     "state": "example-state-val-28399",
+     "postal-code": "example-postal-code-val-28399",
+     "country": "example-country-val-28399",
+     "region": "example-region-val-28399",
+     "latitude": "1111",
+     "longitude": "2222",
+     "elevation": "example-elevation-val-28399",
+     "lata": "example-lata-val-28399"
+   }
+   
+ And finishes with:
+
+ .. code-block::
+
+    > DELETE /aai/v16/cloud-infrastructure/complexes/complex/clli2?resource-version=1543408364646 HTTP/1.1
+    > GET /aai/v16/cloud-infrastructure/complexes HTTP/1.1
+
+ With the following:
+  
+ .. code-block:: json
+
+     {
+     "requestError": {
+       "serviceException": {
+         "messageId": "SVC3001",
+         "text": "Resource not found for %1 using id %2 (msg=%3) (ec=%4)",
+         "variables": [
+           "GET",
+           "cloud-infrastructure/complexes",
+           "Node Not Found:No Node of type complex found at: cloud-infrastructure/complexes",
+           "ERR.5.4.6114"
+         ]
+       }
+     }
+   }	  
+
+12. Start the "traversal" microservice
+--------------------------------------    
+
+ Traversal runs on port 8446.  Go to the traversal directory
+
+ .. code-block:: bash
+
+    $ cd ~/src/aai/traversal
+
+ Set the debug port to 9446
+ 
+    $ export MAVEN_OPTS="-Xms1024m -Xmx5120m -XX:PermSize=2024m -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,address=9446,server=y,suspend=n"
+
+  Start the microservice - adjust your build version accordingly
+
+  .. code-block:: bash
+
+     $ mvn -pl aai-traversal -PrunAjsc -Daai.schema.version=0.0.1-TEST-SNAPSHOT -Daai.schema.ingest.version=0.0.1-TEST-SNAPSHOT -DskipTests -Dcheckstyle.skip=true
+
+  Should see something like this: Traversal Microservice Started
+

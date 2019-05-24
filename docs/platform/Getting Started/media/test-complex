@@ -1,0 +1,21 @@
+set -x
+
+PROTO=https://
+AAIINST1=127.0.0.1:8443/aai/v14
+CURLOPTS="--verbose --silent --insecure --user AAI:AAI"
+CURLHDR='--header "Accept: application/json" --header "X-TransactionId: testaai" --header "Content-Type: application/json" --header "X-FromAppId: AAI"'
+
+date
+
+eval curl $CURLOPTS $CURLHDR $PROTO$AAIINST1/cloud-infrastructure/complexes | jq '.'
+eval curl $CURLOPTS $CURLHDR --upload-file data-complex.json $PROTO$AAIINST1/cloud-infrastructure/complexes/complex/clli2 | jq '.'
+eval curl $CURLOPTS $CURLHDR $PROTO$AAIINST1/cloud-infrastructure/complexes/complex/clli2 | jq '.'
+eval curl $CURLOPTS $CURLHDR $PROTO$AAIINST1/cloud-infrastructure/complexes | jq '.'
+
+
+RESVER1=`eval curl $CURLOPTS $CURLHDR $PROTO$AAIINST1/cloud-infrastructure/complexes | jq '.["complex"] | .[] | select(.["physical-location-id"] == "clli2") | .["resource-version"] '`
+eval curl $CURLOPTS $CURLHDR --request DELETE $PROTO$AAIINST1/cloud-infrastructure/complexes/complex/clli2?resource-version=$RESVER1 | jq '.'
+eval curl $CURLOPTS $CURLHDR $PROTO$AAIINST1/cloud-infrastructure/complexes | jq '.'
+
+echo end test-complex
+
