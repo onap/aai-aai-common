@@ -7,88 +7,118 @@
 Nodes Query
 ===========
 
-In working with AAI's standard REST API, you may have noticed that
-certain API paths have a hierarchy to them and require a client to
-know multiple object keys to preform GETs. For example: the vserver
-object is under tenant, which is itself under cloud-region. If you
-wanted to look up a vserver by name, you would still need to know the
-tenant-id and cloud-region-id (and cloud-owner) in order to
-successfully perform that GET. The nodes API allows for more freedom
-in querying AAI, allowing clients to circumvent the need to know
-every key in the hierarchy. Using the previous example, the below is
-how the API called would change for looking up a vserver by name:
+A&AI Nodes Query Implementation Notes:	
+
+Overview
+--------
+
+AAI continues to support this API, but clients may find that `Custom
+Queries <customQueries.html>`_ meet the needs more most queries.
+
+The Nodes Query mechanism is mostly being implemented in support of
+searching the pservers which do not have the ipv4-oam-ipaddress
+set. It will allow nodes to be searched based on certain properties of
+the nodes. It will allow search based on properties being set, not set
+or set to specific values.
+
+The Nodes Query API is implemented using the GET method with the following URL:
 
 .. code::
 
-  GET /aai/v$/cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}/tenants/tenant/{tenant-id}/vservers?vserver-name={vserver-name}
-  becomes
-  GET /aai/v$/nodes/vservers?vserver-name={vserver-name}
+   /aai/<version>/search/nodes-query
 
-A side effect of this is that if the same vserver name was reused between
-multiple cloud-regions or tenants the client will receive multiple
-vservers in the response. Vserver ID and vserver name are
-intentionally non-unique outside of their cloud-region/tenant
-hierarchy, as are many other keys for nested objects.
+   ex. /aai/v16/search/nodes-query
 
-API URI
-~~~~~~~
+New version numbers will be supported and older versions eventually
+retired. Please look for other AAI documentation for what version to
+use in which environment/release.
 
-.. code::
+The URL expects the following URL parameters:
 
-   GET /aai/v$/nodes/{plural}?{property}={value}
-   OR
-   GET /aai/v$/nodes/{plural}/{singular}/{key}
+**search-node-type** - node type of the node to be searched. 
 
-Optional Query Parameters
-~~~~~~~~~~~~~~~~~~~~~~~~~
-The Nodes API can make use of all the optional query
-parameters available on the standard REST API.
-
-Depth
-~~~~~
-
-You can pass a depth query parameter to indicate what level of child objects you want
-returned. By default the output will be depth = 0 (no "children", only
-"cousin" relationships). When using depth in conjunction with the
-format query parameter, it will only apply to the on the resource or
-resource_and_url formats.
+**filter** – list of properties that specify the search
+criterion. Format will be
 
 .. code::
 
-   GET /aai/v$/nodes/{plural}/{singular}/{key}?depth={integer}
+ filter=<property-name>:<EQUALS|DOES-NOT-EQUAL|EXISTS|DOES-NOT-EXIST>:<property-value>
+ 
+ such as
 
-Nodes Only
-~~~~~~~~~~
+ filter=ipv4-oam-address:DOES-NOT-EXIST:
 
-You can pass a nodes only query parameter to have the output only contain
-the object properties with no relationships.
+For EXISTS and DOES-NOT-EXIST the property value is not specified
+(second colon is included). Multiple filter criteria may be specified.
+
+The queries return a search-results object back which includes a list
+of result-data which contains the node-type and a link for each
+resource that was found. 
+
+
+Requirements
+------------
+
+* If the search-node-type is not supported by the application, a HTTP
+  response code of 400 and Parameter passed error is returned
+
+* If no nodes can be found that meet the search criteria a HTTP
+  response code of 200 with an empty list is returned
+
+* The search results can be asked to be returned in json or xml based
+  on the ACCEPT header.
+  
+* If no filter params are specified, it would return all nodes of that node type.
+
+Design
+------
+
+* REST GET api and dbmap classes added to process the search payload via a GET
+
+* New method searchForNodes() created in dbgen:DbSearch that does the
+  search based on the node type and the filter list and returns the
+  SearchResults object
+
+  - The search does not require the properties used in the search to
+    be indexed
+
+  - The filterParams will just be properties of the node itself.  A
+    future version could have another parameter with some more
+    interesting search stuff – we’ll see what other queries are being
+    asked for and what makes sense to treat like this.
+
+  - As other requests come in, this query mechanism may be re-used if
+    the requirements are able to fit this.
+
+Supported queries
+-----------------
+
+* Search pserver nodes for which ipv4-oam-address DOES-NOT-EXIST 
 
 .. code::
 
-   GET /aai/v$/nodes/{plural}/{singular}/{key}?nodes-only
-   OR
-   GET /aai/v$/nodes/{plural}/{singular}/{key}?format={format}&nodesOnly=true
-
-Format
-~~~~~~
-
-You can optionally request an output format different from the default
-REST API output. You can reference the list of formats on the `Custom
-Query <customQueries.html>`_ wiki page for the full list of available
-formats and examples.
+ URL:
+ /aai/v4/search/nodes-query?search-node-type=pserver&filter=ipv4-oam-address:DOES-NOT-EXIST:
+ 
+Search result
 
 .. code::
 
-   GET /aai/v$/nodes/{plural}/{singular}/{key}?format={format}
-
-Usage with Custom Query
-~~~~~~~~~~~~~~~~~~~~~~~
-
-The Nodes API can be called directly or as the start node for Custom
-Queries. Please reference the Custom Queries wiki page for full
-documentation on how to use that interface.
-
-.. code::
-
-   PUT /aai/v$/query?format={format} with payload like..
-   { "start": ["nodes/{plural}/{singular}/{key}"], "query": "query/{query-name}" }
+ <search-results xmlns="http://org.onap.aai.inventory/v16">
+   <result-data>
+      <resource-type>pserver</resource-type>
+      <resource-link>https://aai.onap:8443/aai/v4/cloud-infrastructure/pservers/pserver/mygreatpserver</resource-link>
+   </result-data>
+   <result-data>
+      <resource-type>pserver</resource-type>
+      <resource-link>https://aai.onap:8443/aai/v4/cloud-infrastructure/pservers/pserver/myothergreatpserver/</resource-link>
+   </result-data>
+   <result-data>
+      <resource-type>pserver</resource-type>
+      <resource-link>https://aai.onap:8443/aai/v4/cloud-infrastructure/pservers/pserver/stillanothergreatpserver</resource-link>
+   </result-data>
+   <result-data>
+      <resource-type>pserver</resource-type>
+      <resource-link>https://aai.onap:8443/aai/v4/cloud-infrastructure/pservers/pserver/testbestestpserver</resource-link>
+   </result-data>
+ </search-results>
