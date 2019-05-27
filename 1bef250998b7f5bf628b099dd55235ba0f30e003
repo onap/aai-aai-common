@@ -1,0 +1,297 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "27afdf0b_9f2bed2e",
+        "filename": "docs/AAI REST API Documentation/AAIRESTAPI_DUBLIN.rst",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2019-05-27T04:21:18Z",
+      "side": 1,
+      "message": "should the file name include the ONAP release name?\nthe file is already versioned and branched in the repo and overall readthedocs site.",
+      "revId": "1bef250998b7f5bf628b099dd55235ba0f30e003",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "023e4dbc_e6908a7f",
+        "filename": "docs/AAI REST API Documentation/AAIRESTAPI_DUBLIN.rst",
+        "patchSetId": 1
+      },
+      "lineNbr": 614,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2019-05-27T04:21:18Z",
+      "side": 1,
+      "message": "v10 not officially in ONAP, should be updated\nseveral instances below too",
+      "range": {
+        "startLine": 614,
+        "startChar": 20,
+        "endLine": 614,
+        "endChar": 29
+      },
+      "revId": "1bef250998b7f5bf628b099dd55235ba0f30e003",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "37cfdf37_3ae9703e",
+        "filename": "docs/AAI REST API Documentation/AAIRESTAPI_DUBLIN.rst",
+        "patchSetId": 1
+      },
+      "lineNbr": 804,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2019-05-27T04:21:18Z",
+      "side": 1,
+      "message": "typo, missing path separator",
+      "range": {
+        "startLine": 804,
+        "startChar": 24,
+        "endLine": 804,
+        "endChar": 39
+      },
+      "revId": "1bef250998b7f5bf628b099dd55235ba0f30e003",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "743a7573_2020bbf1",
+        "filename": "docs/AAI REST API Documentation/AAIRESTAPI_DUBLIN.rst",
+        "patchSetId": 1
+      },
+      "lineNbr": 1441,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2019-05-27T04:21:18Z",
+      "side": 1,
+      "message": "typo in version number",
+      "range": {
+        "startLine": 1441,
+        "startChar": 15,
+        "endLine": 1441,
+        "endChar": 25
+      },
+      "revId": "1bef250998b7f5bf628b099dd55235ba0f30e003",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d847a7d2_4fc443de",
+        "filename": "docs/AAI REST API Documentation/AAIRESTAPI_DUBLIN.rst",
+        "patchSetId": 1
+      },
+      "lineNbr": 1707,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2019-05-27T04:21:18Z",
+      "side": 1,
+      "message": "typo? missing parameter name inside brackets?",
+      "range": {
+        "startLine": 1707,
+        "startChar": 20,
+        "endLine": 1707,
+        "endChar": 30
+      },
+      "revId": "1bef250998b7f5bf628b099dd55235ba0f30e003",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "58ec975f_101b6e80",
+        "filename": "docs/AAI REST API Documentation/genericQueries.rst",
+        "patchSetId": 1
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2019-05-27T04:21:18Z",
+      "side": 1,
+      "message": "should be http://org.onap.aai.inventory/v16 for consistency with other examples on this page",
+      "range": {
+        "startLine": 93,
+        "startChar": 24,
+        "endLine": 93,
+        "endChar": 56
+      },
+      "revId": "1bef250998b7f5bf628b099dd55235ba0f30e003",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2457b595_1822fccd",
+        "filename": "docs/AAI REST API Documentation/genericQueries.rst",
+        "patchSetId": 1
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2019-05-27T04:21:18Z",
+      "side": 1,
+      "message": "should be https://aai.onap/ for consistency with other examples on this page\nseveral instances below too",
+      "range": {
+        "startLine": 96,
+        "startChar": 21,
+        "endLine": 96,
+        "endChar": 58
+      },
+      "revId": "1bef250998b7f5bf628b099dd55235ba0f30e003",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "acafd713_3d85363c",
+        "filename": "docs/AAI REST API Documentation/nodesApi.rst",
+        "patchSetId": 1
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2019-05-27T04:21:18Z",
+      "side": 1,
+      "message": "for the api version placeholder, would prefer the style in genericQueries document, i.e.\n\nGET /aai/\u003cversion\u003e/...\n\t\n\t\nEx. GET /aai/v16/...\n\nSimilarly multiple instances below too.",
+      "range": {
+        "startLine": 23,
+        "startChar": 2,
+        "endLine": 23,
+        "endChar": 14
+      },
+      "revId": "1bef250998b7f5bf628b099dd55235ba0f30e003",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7b7d694c_5430f90a",
+        "filename": "docs/AAI REST API Documentation/nodesQuery.rst",
+        "patchSetId": 1
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2019-05-27T04:21:18Z",
+      "side": 1,
+      "message": "typo in api version number, search-replace error?\nseveral instances below too",
+      "range": {
+        "startLine": 101,
+        "startChar": 1,
+        "endLine": 101,
+        "endChar": 9
+      },
+      "revId": "1bef250998b7f5bf628b099dd55235ba0f30e003",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "eb274cf8_313b590a",
+        "filename": "docs/AAI REST API Documentation/recentsApi.rst",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2019-05-27T04:21:18Z",
+      "side": 1,
+      "message": "is the range of api versions different than for the rest of AAI?\nIs it /v1/ only or /v16/ for Dublin?\n\nwould prefer the style used in genercQueries document, i.e.\n\nGET /narad/recents/\u003cversion\u003e/...\n\t\nEx. GET /narad/recents/v16/...",
+      "range": {
+        "startLine": 29,
+        "startChar": 3,
+        "endLine": 29,
+        "endChar": 24
+      },
+      "revId": "1bef250998b7f5bf628b099dd55235ba0f30e003",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "67a1060e_3491ea94",
+        "filename": "docs/AAI REST API Documentation/recentsApi.rst",
+        "patchSetId": 1
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2019-05-27T04:21:18Z",
+      "side": 1,
+      "message": "typo in URL path?\nshould it be /narad/recents/\u003cversion\u003e/... as per example below?",
+      "range": {
+        "startLine": 35,
+        "startChar": 0,
+        "endLine": 35,
+        "endChar": 17
+      },
+      "revId": "1bef250998b7f5bf628b099dd55235ba0f30e003",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d9158e54_8397e2a3",
+        "filename": "docs/AAI REST API Documentation/recentsApi.rst",
+        "patchSetId": 1
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2019-05-27T04:21:18Z",
+      "side": 1,
+      "message": "are these URL paths correct?\nnot /narad/recents/v1/ ?",
+      "range": {
+        "startLine": 54,
+        "startChar": 25,
+        "endLine": 54,
+        "endChar": 35
+      },
+      "revId": "1bef250998b7f5bf628b099dd55235ba0f30e003",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "603f990f_eea7754c",
+        "filename": "docs/index.rst",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 4341
+      },
+      "writtenOn": "2019-05-27T04:21:18Z",
+      "side": 1,
+      "message": "There is at least one other reference to an old page, e.g.\non\nhttps://onap.readthedocs.io/en/casablanca/guides/onap-developer/apiref/index.html\n\nit links to:\n\nhttps://onap.readthedocs.io/en/casablanca/submodules/aai/aai-common.git/docs/AAI%20REST%20API%20Documentation/AAIRESTAPI_AMSTERDAM.html\n\nwhich means that no-one has been seeing the latest \"casablanca\" documentation at all!",
+      "range": {
+        "startLine": 18,
+        "startChar": 3,
+        "endLine": 18,
+        "endChar": 51
+      },
+      "revId": "1bef250998b7f5bf628b099dd55235ba0f30e003",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
