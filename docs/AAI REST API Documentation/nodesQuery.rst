@@ -98,7 +98,7 @@ Supported queries
 .. code::
 
  URL:
- /aai/v4/search/nodes-query?search-node-type=pserver&filter=ipv4-oam-address:DOES-NOT-EXIST:
+ /aai/v16/search/nodes-query?search-node-type=pserver&filter=ipv4-oam-address:DOES-NOT-EXIST:
  
 Search result
 
@@ -107,18 +107,18 @@ Search result
  <search-results xmlns="http://org.onap.aai.inventory/v16">
    <result-data>
       <resource-type>pserver</resource-type>
-      <resource-link>https://aai.onap:8443/aai/v4/cloud-infrastructure/pservers/pserver/mygreatpserver</resource-link>
+      <resource-link>https://aai.onap:8443/aai/v16/cloud-infrastructure/pservers/pserver/mygreatpserver</resource-link>
    </result-data>
    <result-data>
       <resource-type>pserver</resource-type>
-      <resource-link>https://aai.onap:8443/aai/v4/cloud-infrastructure/pservers/pserver/myothergreatpserver/</resource-link>
+      <resource-link>https://aai.onap:8443/aai/v16/cloud-infrastructure/pservers/pserver/myothergreatpserver/</resource-link>
    </result-data>
    <result-data>
       <resource-type>pserver</resource-type>
-      <resource-link>https://aai.onap:8443/aai/v4/cloud-infrastructure/pservers/pserver/stillanothergreatpserver</resource-link>
+      <resource-link>https://aai.onap:8443/aai/v16/cloud-infrastructure/pservers/pserver/stillanothergreatpserver</resource-link>
    </result-data>
    <result-data>
       <resource-type>pserver</resource-type>
-      <resource-link>https://aai.onap:8443/aai/v4/cloud-infrastructure/pservers/pserver/testbestestpserver</resource-link>
+      <resource-link>https://aai.onap:8443/aai/v16/cloud-infrastructure/pservers/pserver/testbestestpserver</resource-link>
    </result-data>
  </search-results>

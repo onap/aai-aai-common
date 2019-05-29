@@ -93,15 +93,15 @@ Search result:
  <search-results xmlns="http://com.att.aai.inventory/v16">
    <result-data>
       <resource-type>customer</resource-type>
-      <resource-link>https://mtinjvmsdn30.cip.att.com:8443/aai/v16/business/customers/customer/globalspanos/</resource-link>
+      <resource-link>https://aai.onap:8443/aai/v16/business/customers/customer/globalexample/</resource-link>
    </result-data>
    <result-data>
       <resource-type>service-subscription</resource-type>
-      <resource-link>https://mtinjvmsdn30.cip.att.com:8443/aai/v16/business/customers/customer/globalspanos/service-subscriptions/service-subscription/ptplgamma/</resource-link>
+      <resource-link>https://aai.onap:8443/aai/v16/business/customers/customer/globalexample/service-subscriptions/service-subscription/ptplgamma/</resource-link>
    </result-data>
    <result-data>
       <resource-type>service-instance</resource-type>
-      <resource-link>https://mtinjvmsdn30.cip.att.com:8443/aai/v16/business/customers/customer/globalspanos/service-subscriptions/service-subscription/ptplgamma/service-instances/service-instance/arnoldave/</resource-link>
+      <resource-link>https://aai.onap:8443/aai/v16/business/customers/customer/globalexample/service-subscriptions/service-subscription/ptplgamma/service-instances/service-instance/arnoldave/</resource-link>
    </result-data>
  </search-results>
 
@@ -118,31 +118,31 @@ Search result:
  <search-results xmlns="http://org.onap.aai.inventory/v16">
    <result-data>
       <resource-type>cvlan-tag</resource-type>
-      <resource-link>https://aai.onap:8443/aai/v16/network/vces/vce/spanosvce/port-groups/port-group/spanosifc2/cvlan-tags/cvlan-tag/333/</resource-link>
+      <resource-link>https://aai.onap:8443/aai/v16/network/vces/vce/examplevce/port-groups/port-group/exampleifc2/cvlan-tags/cvlan-tag/333/</resource-link>
    </result-data>
    <result-data>
       <resource-type>cvlan-tag</resource-type>
-      <resource-link>https://aai.onap:8443/aai/v16/network/vces/vce/spanosvce/port-groups/port-group/spanosifc1/cvlan-tags/cvlan-tag/333/</resource-link>
+      <resource-link>https://aai.onap:8443/aai/v16/network/vces/vce/examplevce/port-groups/port-group/exampleifc1/cvlan-tags/cvlan-tag/333/</resource-link>
    </result-data>
    <result-data>
       <resource-type>cvlan-tag</resource-type>
-      <resource-link>https://aai.onap:8443/aai/v16/network/vces/vce/spanosvce/port-groups/port-group/spanosifc1/cvlan-tags/cvlan-tag/111/</resource-link>
+      <resource-link>https://aai.onap:8443/aai/v16/network/vces/vce/examplevce/port-groups/port-group/exampleifc1/cvlan-tags/cvlan-tag/111/</resource-link>
    </result-data>
    <result-data>
       <resource-type>port-group</resource-type>
-      <resource-link>https://aai.onap:8443/aai/v16/network/vces/vce/spanosvce/port-groups/port-group/spanosifc1/</resource-link>
+      <resource-link>https://aai.onap:8443/aai/v16/network/vces/vce/examplevce/port-groups/port-group/exampleifc1/</resource-link>
    </result-data>
    <result-data>
       <resource-type>vce</resource-type>
-      <resource-link>https://aai.onap:8443/aai/v16/network/vces/vce/spanosvce/</resource-link>
+      <resource-link>https://aai.onap:8443/aai/v16/network/vces/vce/examplevce/</resource-link>
    </result-data>
    <result-data>
       <resource-type>cvlan-tag</resource-type>
-      <resource-link>https://aai.onap:8443/aai/v16/network/vces/vce/spanosvce/port-groups/port-group/spanosifc2/cvlan-tags/cvlan-tag/222/</resource-link>
+      <resource-link>https://aai.onap:8443/aai/v16/network/vces/vce/examplevce/port-groups/port-group/exampleifc2/cvlan-tags/cvlan-tag/222/</resource-link>
    </result-data>
    <result-data>
       <resource-type>port-group</resource-type>
-      <resource-link>https://aai.onap:8443/aai/v16/network/vces/vce/spanosvce/port-groups/port-group/spanosifc2/</resource-link>
+      <resource-link>https://aai.onap:8443/aai/v16/network/vces/vce/examplevce/port-groups/port-group/exampleifc2/</resource-link>
    </result-data>
  </search-results>
 
@@ -152,7 +152,7 @@ Customer GET based on tenant id
 
    URL:
 
-   /aai/v16/search/generic-query?key=tenant.tenant-id:spanospizzatenant&start-node-type=tenant&include=tenant&include=customer&include=service-subscription&depth=2
+   /aai/v16/search/generic-query?key=tenant.tenant-id:examplepizzatenant&start-node-type=tenant&include=tenant&include=customer&include=service-subscription&depth=2
 
 Search Result:
 
@@ -192,7 +192,7 @@ Search Result:
    </result-data>
    <result-data>
       <resource-type>tenant</resource-type>
-      <resource-link>https://aai.onap:8443/aai/v16/cloud-infrastructure/tenants/tenant/spanospizzatenant/</resource-link>
+      <resource-link>https://aai.onap:8443/aai/v16/cloud-infrastructure/tenants/tenant/examplepizzatenant/</resource-link>
    </result-data>
  </search-results>
 
@@ -208,7 +208,7 @@ Search Result:
 
 .. code-block:: xml
 
- <search-results xmlns="http://org.onap.aai.inventory/v4">
+ <search-results xmlns="http://org.onap.aai.inventory/v6">
    <result-data>
       <resource-type>service-instance</resource-type>
       <resource-link>https://aai.onap:8443/aai/v16/business/customers/customer/examplecustomer/service-subscriptions/service-subscription/ptplgamma/service-instances/service-instance/arnoldave/</resource-link>
@@ -220,7 +220,7 @@ Get service-instance and service-subscription from vce
 .. code-block:: 
 
    URL:
-   /aai/v16/search/generic-query?key=vce.vnf-id:spanosvce&start-node-type=vce&include=service-instance&include=service-subscription&depth=2
+   /aai/v16/search/generic-query?key=vce.vnf-id:examplevce&start-node-type=vce&include=service-instance&include=service-subscription&depth=2
 
 Search Result:
 
@@ -312,7 +312,7 @@ Search Result:
    </result-data>
    <result-data>
       <resource-type>image</resource-type>
-      <resource-link>https://aai.onap:8443/aai/v1/cloud-infrastructure/images/image/valueOfImageId/</resource-link>
+      <resource-link>https://aai.onap:8443/aai/v16/cloud-infrastructure/images/image/valueOfImageId/</resource-link>
    </result-data>
    <result-data>
       <resource-type>cvlan-tag</resource-type>

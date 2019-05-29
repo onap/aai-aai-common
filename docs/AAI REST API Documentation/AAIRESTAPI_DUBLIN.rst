@@ -611,7 +611,7 @@ XML
 .. code-block:: xml
 
    <relationship xmlns="http://org.onap.aai.inventory/vX">
-     <related-link>*/aai/v10/network/logical-links/logical-link/logical-link-123456789-01*</related-link>
+     <related-link>*/aai/v16/network/logical-links/logical-link/logical-link-123456789-01*</related-link>
      <related-to>logical-link</related-to>
      <relationship-data>
        <relationship-key>logical-link.link-name</relationship-key>
@@ -624,7 +624,7 @@ JSON
 .. code-block:: json
 
    {
-       "related-link": " /aai/v10/network/logical-links/logical-link/logical-link-123456789-01",
+       "related-link": " /aai/v16/network/logical-links/logical-link/logical-link-123456789-01",
        "related-to": "logical-link",
        "relationship-data": [
 	   {
@@ -801,7 +801,7 @@ Imagine this is the existing resource:
        "relationship-list": {
 	   "relationship": [
 	       {
-		   "related-link": " /aai/v16network/generic-vnfs/generic-vnf/generic-vnf-20160902a",
+		   "related-link": " /aai/v16/network/generic-vnfs/generic-vnf/generic-vnf-20160902a",
 		   "related-to": "generic-vnf",
 		   "relationship-data": [
 		       {
@@ -1438,7 +1438,7 @@ Example Response
 		  "street1": "100 Main St",
 		  "street2": "C3-3W03"
 	      },
-	      "url": "/aai/v161/cloud-infrastructure/complexes/complex/complextest1"
+	      "url": "/aai/v16/cloud-infrastructure/complexes/complex/complextest1"
 	  }
       ]
   }
@@ -1704,7 +1704,7 @@ children/grandchildren to return. The default depth is 1.
 
 .. code::
   
-   PUT /aai/v$/query?format={}&depth=0
+   PUT /aai/v$/query?format={format}&depth=0
 
 nodesOnly
 ^^^^^^^^^

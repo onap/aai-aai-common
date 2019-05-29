@@ -12,7 +12,7 @@ Recents API Overview
 
 The Recents API will allow a client to get the list of objects that
 has been created or updated recently, up to a maximum of 1 week back.
-This API is accessed through the NARAD Rest Interface, utilizing the
+This API is accessed through the AAI Rest Interface, utilizing the
 same certificates and headers.
 
 Request
@@ -26,16 +26,16 @@ Querying with number of hours
 
 .. code::
 
-   GET /narad/recents/v$/{node-type}?hours={hours}
+   GET /aai/recents/v$/{node-type}?hours={hours}
 
 Querying with an epoch timestamp
 
 .. code::
 
-   GET /narad/v$/{node-type}?date-time={timestamp}
+   GET /aai/recents/v$/{node-type}?date-time={timestamp}
 
    Example:
-   GET /narad/recents/v1/pnf?date-time=1531413113815
+   GET /aai/recents/v$/pnf?date-time=1531413113815
 
 Response
 --------
@@ -51,12 +51,12 @@ Sample response:
    "results": [
      {
        "resource-type": "pnf",
-       "resource-link": "/narad/v1/network/pnfs/pnf/lab20105v"
+       "resource-link": "/aai/v16/network/pnfs/pnf/lab20105v"
        "resource-version": "1531413113815"
      },
      {
        "resource-type": "pnf",
-       "resource-link": "/narad/v1/network/pnfs/pnf/ro-stack01"
+       "resource-link": "/aai/v16/network/pnfs/pnf/stack01"
        "resource-version": "1531413113612"
      },...]
   
