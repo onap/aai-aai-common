@@ -55,13 +55,139 @@ Install haproxy
 
     sudo chmod 640 /etc/ssl/private/aai.pem
 
+<<<<<<< HEAD   (485c90 Fix typos and clean up docs)
     sudo chown root:ssl-cert /etc/ssl/private/aai.pem
+=======
+ .. code-block:: bash
+>>>>>>> CHANGE (bbc512 Fix errors on dev env guide)
 
+<<<<<<< HEAD   (485c90 Fix typos and clean up docs)
   `aai.pem <https://wiki.onap.org/download/attachments/10782088/aai.pem?version=1&modificationDate=1501019585000&api=v2>`__
+=======
+     $ mvn -pl aai-resources -PrunAjsc -Daai.schema.version=0.0.1-TEST-SNAPSHOT -Daai.schema.ingest.version=0.0.1-TEST-SNAPSHOT -DskipTests -Dcheckstyle.skip=true
+
+ Should see something like this: Resources Microservice Started
+
+
+11. Verify the resources microservice
+-------------------------------------
+
+ This example uses curl from commandline
+
+ .. code-block:: bash
+
+    $ sudo apt-get install jq  # for pretty output
+
+ Download :download:`script - test-complex <media/test-complex>`
+ Download :download:`data - data-complex.json <media/data-complex.json>`
+
+ .. code-block:: bash
+
+   $ sh ./test-complex 2>&1 | tee log.txt
+
+ Confirm log.txt contains:
+
+ .. code-block:: bash
+
+    > GET /aai/v16/cloud-infrastructure/complexes HTTP/1.1
+
+ .. code-block:: json
+
+    {
+     "requestError": {
+       "serviceException": {
+         "messageId": "SVC3001",
+         "text": "Resource not found for %1 using id %2 (msg=%3) (ec=%4)",
+         "variables": [
+           "GET",
+           "cloud-infrastructure/complexes",
+           "Node Not Found:No Node of type complex found at: cloud-infrastructure/complexes",
+           "ERR.5.4.6114"
+         ]
+       }
+     }
+    }
+
+ Then followed by:
+
+ .. code-block:: bash
+
+    > PUT /aai/v16/cloud-infrastructure/complexes/complex/clli2 HTTP/1.1
+    > GET /aai/v16/cloud-infrastructure/complexes/complex/clli2 HTTP/1.1
+
+ With payload: 
+
+ .. code-block:: json
+  
+   {
+     "physical-location-id": "clli2",
+     "data-center-code": "example-data-center-code-val-6667",
+     "complex-name": "clli2",
+     "identity-url": "example-identity-url-val-28399",
+     "resource-version": "1543408364646",
+     "physical-location-type": "example-physical-location-type-val-28399",
+     "street1": "example-street1-val-28399",
+     "street2": "example-street2-val-28399",
+     "city": "example-city-val-28399",
+     "state": "example-state-val-28399",
+     "postal-code": "example-postal-code-val-28399",
+     "country": "example-country-val-28399",
+     "region": "example-region-val-28399",
+     "latitude": "1111",
+     "longitude": "2222",
+     "elevation": "example-elevation-val-28399",
+     "lata": "example-lata-val-28399"
+   }
+   
+ And finishes with:
+
+ .. code-block:: bash
+
+    > DELETE /aai/v16/cloud-infrastructure/complexes/complex/clli2?resource-version=1543408364646 HTTP/1.1
+    > GET /aai/v16/cloud-infrastructure/complexes HTTP/1.1
+
+ With the following:
+  
+ .. code-block:: json
+
+     {
+     "requestError": {
+       "serviceException": {
+         "messageId": "SVC3001",
+         "text": "Resource not found for %1 using id %2 (msg=%3) (ec=%4)",
+         "variables": [
+           "GET",
+           "cloud-infrastructure/complexes",
+           "Node Not Found:No Node of type complex found at: cloud-infrastructure/complexes",
+           "ERR.5.4.6114"
+         ]
+       }
+     }
+   }	  
+
+12. Start the "traversal" microservice
+--------------------------------------    
+
+ Traversal runs on port 8446.  Go to the traversal directory
+
+ .. code-block:: bash
+
+    $ cd ~/src/aai/traversal
+
+ Set the debug port to 9446
+ 
+    $ export MAVEN_OPTS="-Xms1024m -Xmx5120m -XX:PermSize=2024m -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,address=9446,server=y,suspend=n"
+
+  Start the microservice - adjust your build version accordingly
+>>>>>>> CHANGE (bbc512 Fix errors on dev env guide)
 
   .. code-block:: bash
 
+<<<<<<< HEAD   (485c90 Fix typos and clean up docs)
     sudo mkdir /usr/local/etc/haproxy
+=======
+      $ mvn -pl aai-traversal -PrunAjsc -Daai.schema.version=0.0.1-TEST-SNAPSHOT -Daai.schema.ingest.version=0.0.1-TEST-SNAPSHOT -DskipTests -Dcheckstyle.skip=true
+>>>>>>> CHANGE (bbc512 Fix errors on dev env guide)
 
 - Add these hostnames to the loopback interface in /etc/hosts
 
