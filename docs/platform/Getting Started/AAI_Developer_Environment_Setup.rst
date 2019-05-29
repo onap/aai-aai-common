@@ -218,7 +218,7 @@ For this exercise, I set up a new instance of Ubuntu in Virtualbox and gave it 1
 
  Start the microservice - adjust your build version accordingly
 
- .. code-block::
+ .. code-block:: bash
 
      $ mvn -pl aai-resources -PrunAjsc -Daai.schema.version=0.0.1-TEST-SNAPSHOT -Daai.schema.ingest.version=0.0.1-TEST-SNAPSHOT -DskipTests -Dcheckstyle.skip=true
 
@@ -230,20 +230,20 @@ For this exercise, I set up a new instance of Ubuntu in Virtualbox and gave it 1
 
  This example uses curl from commandline
 
- .. code-block:: 
+ .. code-block:: bash
 
-   $ sudo apt-get install jq  # for pretty output
+    $ sudo apt-get install jq  # for pretty output
 
  Download :download:`script - test-complex <media/test-complex>`
  Download :download:`data - data-complex.json <media/data-complex.json>`
 
- .. code-block:: 
+ .. code-block:: bash
 
    $ sh ./test-complex 2>&1 | tee log.txt
 
  Confirm log.txt contains:
 
- .. code-block:: 
+ .. code-block:: bash
 
     > GET /aai/v16/cloud-infrastructure/complexes HTTP/1.1
 
@@ -266,7 +266,7 @@ For this exercise, I set up a new instance of Ubuntu in Virtualbox and gave it 1
 
  Then followed by:
 
- .. code-block::
+ .. code-block:: bash
 
     > PUT /aai/v16/cloud-infrastructure/complexes/complex/clli2 HTTP/1.1
     > GET /aai/v16/cloud-infrastructure/complexes/complex/clli2 HTTP/1.1
@@ -297,7 +297,7 @@ For this exercise, I set up a new instance of Ubuntu in Virtualbox and gave it 1
    
  And finishes with:
 
- .. code-block::
+ .. code-block:: bash
 
     > DELETE /aai/v16/cloud-infrastructure/complexes/complex/clli2?resource-version=1543408364646 HTTP/1.1
     > GET /aai/v16/cloud-infrastructure/complexes HTTP/1.1
@@ -338,7 +338,7 @@ For this exercise, I set up a new instance of Ubuntu in Virtualbox and gave it 1
 
   .. code-block:: bash
 
-     $ mvn -pl aai-traversal -PrunAjsc -Daai.schema.version=0.0.1-TEST-SNAPSHOT -Daai.schema.ingest.version=0.0.1-TEST-SNAPSHOT -DskipTests -Dcheckstyle.skip=true
+      $ mvn -pl aai-traversal -PrunAjsc -Daai.schema.version=0.0.1-TEST-SNAPSHOT -Daai.schema.ingest.version=0.0.1-TEST-SNAPSHOT -DskipTests -Dcheckstyle.skip=true
 
   Should see something like this: Traversal Microservice Started
 
