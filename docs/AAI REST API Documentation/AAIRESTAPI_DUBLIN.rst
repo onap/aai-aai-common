@@ -1070,8 +1070,8 @@ and its related vertexes.  The following capabilities are available to
 meet more advanced search needs.  Please contact the AAI team if you
 need another search.
 
-Node Queries
-------------
+Nodes Query
+-----------
 
 The Nodes Query mechanism was implemented in support of searching the
 pservers which do not have the ipv4-oam-ipaddress set.  It will allow
@@ -1079,7 +1079,7 @@ nodes to be searched based on certain properties of the nodes. It will
 allow search based on properties being set, not set or set to specific
 values.
 
-Please reference `Node Queries <nodeQueries.html>`_ for details on the
+Please reference `Nodes Query <nodesQuery.html>`_ for details on the
 API and test queries.
 
 Nodes API
@@ -1773,4 +1773,4 @@ The Recents API allows a client to get the list of objects that has
 been created or updated recently, up to a maximum of 1 week
 back.
 
-`Recents API <recentApi.html>`_ 
+`Recents API <recentsApi.html>`_ 
