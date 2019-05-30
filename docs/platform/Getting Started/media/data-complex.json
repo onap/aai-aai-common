@@ -1,0 +1,19 @@
+{
+	"physical-location-id": "clli2",
+	"data-center-code": "example-data-center-code-val-6667",
+	"complex-name": "clli2",
+	"identity-url": "example-identity-url-val-28399",
+	"physical-location-type": "example-physical-location-type-val-28399",
+	"street1": "example-street1-val-28399",
+	"street2": "example-street2-val-28399",
+	"city": "example-city-val-28399",
+	"state": "example-state-val-28399",
+	"postal-code": "example-postal-code-val-28399",
+	"country": "example-country-val-28399",
+	"region": "example-region-val-28399",
+	"latitude": "1111",
+	"longitude": "2222",
+	"elevation": "example-elevation-val-28399",
+	"lata": "example-lata-val-28399"
+}
+
