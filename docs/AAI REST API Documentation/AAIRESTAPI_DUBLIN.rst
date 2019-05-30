@@ -1095,7 +1095,7 @@ successfully perform that GET. The nodes API allows for more freedom
 in querying A&AI, allowing clients to circumvent the need to know
 every key in the hierarchy.
 
-See `Nodes Query <nodesQuery.html>`_ for more information.
+See `Nodes API <nodesApi.html>`_ for more information.
 
 Generic Queries
 ---------------
