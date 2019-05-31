@@ -6,6 +6,53 @@
 AAI Release Notes
 ==================
 
+Version: 1.4.0
+
+:Release Data: 2019-06-08
+
+**New Features**
+
+The R4 Dublin release of ONAP is a balanced release, focusing on
+platform maturity and deployablity while also bringing in significant
+new features and use cases . AAI continued to leverage oom and
+kubernetes, and added new data types in support of multiple R4 use
+cases.  AAI added a new schema service which moves AAI closer to being
+more model-driven and flexible.
+
+AAI is more model driven in Casablanca, which means it dynamically
+operationalize new and updated models at run-time, with minimal
+downtime and coding, so that the latest service and resource models
+can be delivered quickly. To do this, AAI must update its internal
+model, external API and behavior to respond to change to service and
+resource models, including schema changes. The schema service provides
+ONAP users the ability to quickly change the AAI data model without
+re-building key microservices.
+
+AAI delivered 55%+ test coverage on all Java-based repos.
+
+See `AAI-1779 <https://jira.onap.org/browse/AAI-1779>`__ for details
+on the schema updates in R4.
+
+Some AAI services can be configured to leverage the ONAP Pluggable
+Security Sidecar proof of concept (disabled by default, see the charts
+under aai/oom for more details).
+
+AAI now manages its own helm charts. See `aai/oom <https://gerrit.onap.org/r/admin/repos/aai/oom>`__ 
+
+
+**Security Notes**
+
+AAI code has been formally scanned during build time using NexusIQ and all Critical vulnerabilities have been addressed, items that remain open have been assessed for risk and determined to be false positive. The AAI open Critical security vulnerabilities and their risk assessment have been documented as part of the `R4 project wiki <https://wiki.onap.org/pages/viewpage.action?pageId=64003431>`_.
+
+Quick Links:
+
+- `AAI project page <https://wiki.onap.org/display/DW/Active+and+Available+Inventory+Project>`_
+- `Passing Badge information for AAI <https://bestpractices.coreinfrastructure.org/en/projects/1591>`_
+- `Project Vulnerability Review Table for AAI <https://wiki.onap.org/pages/viewpage.action?pageId=64003431>`_
+
+
+
+
 Version: 1.3.2
 --------------
 
@@ -100,8 +147,8 @@ resource models, including schema changes. There are changes required
 to align on implementation across different ONAP components to provide
 a more strategic model-driven A&AI implementation. For this release
 decomposing AAI model/schema artifacts (OXM/XSD) into a more granular
-approach better enables extensibility and support logical
-subdivision of models.
+approach better enables extensibility and support logical subdivision
+of models.
 
 AAI added support fo the Cross Domain and Carrier Layer VPN use case
 by adding new object types, models, and edge rules.
@@ -110,15 +157,14 @@ AAI delivered 50%+ test coverage on all Java-based repos.
 
 Added support Support for SR-IOV.
 
-Authentication and Authorization is performed using AAF with the
-CADI framework. We use basic authentication with RBAC (Role Based
-Access Control) to secure the AAI REST APIs.
+Authentication and Authorization is performed using AAF with the CADI
+framework. We use basic authentication with RBAC (Role Based Access
+Control) to secure the AAI REST APIs.
 
 AAI added automation support for orchestrating SR-IOV Provider
-Networks that are compatible with the Network Cloud 1.0
-infrastructure solution based on standard SR-IOV. Allow for standard
-SR-IOV Provider Networks to be defined with a set of one or more
-VLAN associations.
+Networks that are compatible with the Network Cloud 1.0 infrastructure
+solution based on standard SR-IOV. Allow for standard SR-IOV Provider
+Networks to be defined with a set of one or more VLAN associations.
 
 AAI added suport to allow clients to specify the format on GET
 operations in the resources micoservices to output like the custom
