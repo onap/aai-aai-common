@@ -37,10 +37,16 @@ Some AAI services can be configured to leverage the ONAP Pluggable
 Security Sidecar proof of concept (disabled by default, see the charts
 under aai/oom for more details).
 
-AAI now manages its own helm charts. See `aai/oom <https://gerrit.onap.org/r/admin/repos/aai/oom>`__ 
+AAI now manages its own helm charts. See `aai/oom <https://gerrit.onap.org/r/admin/repos/aai/oom>`__
 
 
 **Security Notes**
+
+*Fixed Security Issues*
+
+*Known Security Issues*
+
+*Known Vulnerabilities in Used Modules*
 
 AAI code has been formally scanned during build time using NexusIQ and all Critical vulnerabilities have been addressed, items that remain open have been assessed for risk and determined to be false positive. The AAI open Critical security vulnerabilities and their risk assessment have been documented as part of the `R4 project wiki <https://wiki.onap.org/pages/viewpage.action?pageId=64003431>`_.
 
@@ -223,7 +229,7 @@ ONAP AAI R2 includes the following components:
 - Applications
 - Sparky (AAI User Interface)
 
-Source code of AAI is released under the following repositories at https://gerrit.onap.org 
+Source code of AAI is released under the following repositories at https://gerrit.onap.org
 
 - aai/aai-common
 - aai/event-client
@@ -250,7 +256,7 @@ Source code of AAI is released under the following repositories at https://gerri
 
 - `AAI-17 <https://jira.onap.org/browse/AAI-17>`_ Seed code stabilization
 
-- `AAI-21 <https://jira.onap.org/browse/AAI-21>`_ Gizmo 
+- `AAI-21 <https://jira.onap.org/browse/AAI-21>`_ Gizmo
 
 - `AAI-24 <https://jira.onap.org/browse/AAI-24>`_ Move to Active Open Source Graph Database
 
@@ -500,7 +506,7 @@ Version: 1.1.1
 - `AAI-566 <https://jira.onap.org/browse/AAI-566>`_ AAI Eclipse build failure - aai-traversal pom as hardcoded 1.8.0_101 jdk.tools version
 
 - `AAI-621 <https://jira.onap.org/browse/AAI-621>`_ Update the snapshot in test-config for v1.1.1-SNAPSHOT
-	       
+
 Version: 1.1.0
 --------------
 
@@ -508,7 +514,7 @@ Version: 1.1.0
 
 **New Features**
 
-Initial release of Active and Available Inventory (AAI) for Open Network Automation Platform (ONAP).  AAI provides ONAP with its logically centralized view of inventory data, taking in updates from orchestrators, controllers, and assurance systems.  AAI provides core REST services. 
+Initial release of Active and Available Inventory (AAI) for Open Network Automation Platform (ONAP).  AAI provides ONAP with its logically centralized view of inventory data, taking in updates from orchestrators, controllers, and assurance systems.  AAI provides core REST services.
 
 ONAP AAI R1 includes the following components:
 
@@ -660,7 +666,7 @@ Source code of AAI is released under the following repositories at https://gerri
 **Known Issues**
 
 - `AAI-61 <https://jira.onap.org/browse/AAI-61>`_ AAI cleaned up references to OpenECOMP but in order to keep the release stable for R1, the XML namespace still contains openecomp.
-	  
+
 Client systems should use http://org.openecomp.aai.inventory/v11 as the XML namespace for ONAP AAI R1.
 
 **Security Issues**
