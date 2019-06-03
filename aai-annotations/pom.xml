@@ -27,12 +27,12 @@
     <parent>
         <groupId>org.onap.aai.aai-common</groupId>
         <artifactId>aai-common</artifactId>
-        <version>1.5.0-SNAPSHOT</version>
+        <version>1.5.1-SNAPSHOT</version>
     </parent>
     <artifactId>aai-annotations</artifactId>
     <name>aai-annotations</name>
     <packaging>jar</packaging>
-    <version>1.5.0-SNAPSHOT</version>
+    <version>1.5.1-SNAPSHOT</version>
     <properties>
         <onap.nexus.url>https://nexus.onap.org</onap.nexus.url>
     </properties>
