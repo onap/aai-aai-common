@@ -42,6 +42,17 @@ AAI now manages its own helm charts. See `aai/oom <https://gerrit.onap.org/r/adm
 
 **Security Notes**
 
+<<<<<<< HEAD   (097d46 Updating rest API filename and rel notes)
+=======
+*Fixed Security Issues*
+
+- `OJSI-114 <https://jira.onap.org/browse/OJSI-114>`_ In default deployment AAI (aai) exposes HTTP port 30232 outside of cluster.
+
+*Known Security Issues*
+
+*Known Vulnerabilities in Used Modules*
+
+>>>>>>> CHANGE (c21c6a Document fixed OJSI-114 vulnerability)
 AAI code has been formally scanned during build time using NexusIQ and all Critical vulnerabilities have been addressed, items that remain open have been assessed for risk and determined to be false positive. The AAI open Critical security vulnerabilities and their risk assessment have been documented as part of the `R4 project wiki <https://wiki.onap.org/pages/viewpage.action?pageId=64003431>`_.
 
 Quick Links:
