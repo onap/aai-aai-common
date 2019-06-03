@@ -44,6 +44,8 @@ AAI now manages its own helm charts. See `aai/oom <https://gerrit.onap.org/r/adm
 
 *Fixed Security Issues*
 
+- `OJSI-114 <https://jira.onap.org/browse/OJSI-114>`_ In default deployment AAI (aai) exposes HTTP port 30232 outside of cluster.
+
 *Known Security Issues*
 
 *Known Vulnerabilities in Used Modules*
