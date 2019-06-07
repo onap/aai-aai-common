@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "afbf65c2_6414eea7",
+        "filename": "docs/release-notes.rst",
+        "patchSetId": 3
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 29
+      },
+      "writtenOn": "2019-06-07T16:10:14Z",
+      "side": 1,
+      "message": "wouldnt this be aaf-xx.onap:8100 inside the environment or a node port for an independent ONAP install like SB04 ?",
+      "range": {
+        "startLine": 54,
+        "startChar": 9,
+        "endLine": 54,
+        "endChar": 40
+      },
+      "revId": "ce41dabb34ca1ad4b3812307c3df676d15386cbf",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
