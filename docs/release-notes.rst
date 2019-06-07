@@ -39,6 +39,28 @@ under aai/oom for more details).
 
 AAI now manages its own helm charts. See `aai/oom <https://gerrit.onap.org/r/admin/repos/aai/oom>`__
 
+**Known Issues**
+
+The AAI UI is now integrated with Portal and AAF.  However, the AAF
+default boostrap does not include a role that is necessary the demo
+user to access the AAI UI.
+
+Run the following as a workaround, adjust the URL and credentials
+according to your environment. The user in CRED must be able to update
+the org.onap.aai namespace.
+
+ .. code-block:: bash
+
+    URL='https://aaf-onap-test.osaaf.org:8100'
+    CRED='aai@aai.onap.org:demo123456!'
+
+    curl -v -k -u "$CRED" -H "Content-Type: application/RoleRequest+json" $URL/authz/role -d '{"name":"org.onap.aai.aaiui"}'
+
+    curl -v -k -u "$CRED" -H "Content-Type: application/UserRoleRequest+json" $URL/authz/userRole -d '{ "user":"demo@people.osaaf.org", "role":"org.onap.aai.aaiui" }'
+
+Future releases will include the role and role assignment in the
+default bootstrap data (being tracked under `AAI-2475 <https://jira.onap.org/browse/AAI-2475>`__)
+
 
 **Security Notes**
 
@@ -56,7 +78,7 @@ Quick Links:
 
 - `AAI project page <https://wiki.onap.org/display/DW/Active+and+Available+Inventory+Project>`_
 - `Passing Badge information for AAI <https://bestpractices.coreinfrastructure.org/en/projects/1591>`_
-- `Project Vulnerability Review Table for AAI <https://wiki.onap.org/pages/viewpage.action?pageId=64003431>`_
+- `R4 Project Vulnerability Review Table for AAI <https://wiki.onap.org/pages/viewpage.action?pageId=64003431>`_
 
 
 
@@ -192,7 +214,7 @@ Quick Links:
 
 - `AAI project page <https://wiki.onap.org/display/DW/Active+and+Available+Inventory+Project>`_
 - `Passing Badge information for AAI <https://bestpractices.coreinfrastructure.org/en/projects/1591>`_
-- `Project Vulnerability Review Table for AAI <https://wiki.onap.org/pages/viewpage.action?pageId=45307817>`_
+- `R3 Project Vulnerability Review Table for AAI <https://wiki.onap.org/pages/viewpage.action?pageId=45307817>`_
 
 
 Version: 1.2.0
