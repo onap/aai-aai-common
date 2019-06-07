@@ -1062,6 +1062,21 @@ The Bulk API allows clients to make multiple requests in a single
 transaction. Please look for additional details on the following wiki
 page: `Bulk API <bulkApi.html>`_
 
+Nodes API
+---------
+
+In working with A&AI's standard REST API, you may have noticed that
+certain API paths have a hierarchy to them and require a client to
+know multiple object keys to preform GETs. For example: the vserver
+object is under tenant, which is itself under cloud-region. If you
+wanted to look up a vserver by name, you would still need to know the
+tenant-id and cloud-region-id (and cloud-owner) in order to
+successfully perform that GET. The nodes API allows for more freedom
+in querying A&AI, allowing clients to circumvent the need to know
+every key in the hierarchy.
+
+See `Nodes API <nodesApi.html>`_ for more information.
+
 AAI Traversal APIs
 ==================
 
@@ -1082,20 +1097,6 @@ values.
 Please reference `Nodes Query <nodesQuery.html>`_ for details on the
 API and test queries.
 
-Nodes API
----------
-
-In working with A&AI's standard REST API, you may have noticed that
-certain API paths have a hierarchy to them and require a client to
-know multiple object keys to preform GETs. For example: the vserver
-object is under tenant, which is itself under cloud-region. If you
-wanted to look up a vserver by name, you would still need to know the
-tenant-id and cloud-region-id (and cloud-owner) in order to
-successfully perform that GET. The nodes API allows for more freedom
-in querying A&AI, allowing clients to circumvent the need to know
-every key in the hierarchy.
-
-See `Nodes API <nodesApi.html>`_ for more information.
 
 Generic Queries
 ---------------
