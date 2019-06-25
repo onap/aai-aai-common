@@ -26,11 +26,11 @@
     <parent>
         <groupId>org.onap.aai.aai-common</groupId>
         <artifactId>aai-common</artifactId>
-        <version>1.5.1-SNAPSHOT</version>
+        <version>1.5.2-SNAPSHOT</version>
     </parent>
     <artifactId>aai-auth</artifactId>
     <name>aai-auth</name>
-    <version>1.5.1-SNAPSHOT</version>
+    <version>1.5.2-SNAPSHOT</version>
 
     <properties>
         <onap.nexus.url>https://nexus.onap.org</onap.nexus.url>
