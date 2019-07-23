@@ -18,7 +18,7 @@ RUN \
     # Creates the group and user with the name aaiadmin for aai
     #groupadd -r aaiadmin && useradd -r -g aaiadmin aaiadmin && \
     # Put all the dependencies into this variable to easily install everything
-    DEPS="ca-certificates curl git jq ksh libcurl3 netcat openjdk-8-jre-headless vim uuid-runtime wget" &&  \
+    DEPS="ca-certificates curl git fastjar jq ksh libcurl3 netcat openjdk-8-jre-headless vim uuid-runtime wget" &&  \
     # Run the update before for the package manager to properly fetch install packages
     apt-get update && \
     # Install the recommended dependencies

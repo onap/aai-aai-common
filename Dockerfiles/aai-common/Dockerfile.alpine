@@ -19,6 +19,7 @@ RUN \
     DEPS="ca-certificates \
             curl \
             dpkg \
+            fastjar \
             jq \
             loksh \
             bash \
@@ -28,6 +29,8 @@ RUN \
             util-linux \
             wget" \
         && apk add --no-cache ${DEPS} \
+        # need fastjar for some projects to update app's jar on container restart
+        && ln -snf /usr/bin/fastjar $JAVA_HOME/bin/jar \
         # Get the dpkg to properly download and install that version compatible to install GOSU on the image
         && dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
         # Downloads the gosu command based on the dpkg version and gosu version supplied
