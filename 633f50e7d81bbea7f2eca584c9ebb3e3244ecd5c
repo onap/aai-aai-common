@@ -16,6 +16,24 @@
       "revId": "633f50e7d81bbea7f2eca584c9ebb3e3244ecd5c",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7d4eef67_2f46973e",
+        "filename": "Dockerfiles/aai-common/Dockerfile.alpine",
+        "patchSetId": 1
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 5040
+      },
+      "writtenOn": "2019-07-24T07:31:56Z",
+      "side": 1,
+      "message": "It\u0027s data-router and sparky-be.\n\ndata-router/src/main/bin/start.sh:\njar uf0 $MICRO_HOME/data-router.jar BOOT-INF/lib/* \n\nsparky-be/sparkybe-onap-application/src/main/scripts/start.sh:\njar ufv ${APP_HOME}/lib/sparkybe-onap-application*.jar -C ${CONFIG_HOME}/portal/ BOOT-INF/classes/portal.properties -C {CONFIG_HOME}/portal/ BOOT-INF/classes/key.properties\n\nIs it still required?\n\nAnd second point is that all packages are installed in common image in order to keep child images unaware of base - whether it alpine, ubuntu or anything else.",
+      "parentUuid": "fa7dab3e_7a7991af",
+      "revId": "633f50e7d81bbea7f2eca584c9ebb3e3244ecd5c",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
     }
   ]
 }
