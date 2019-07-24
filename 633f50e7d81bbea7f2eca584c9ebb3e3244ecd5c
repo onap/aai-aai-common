@@ -34,6 +34,24 @@
       "revId": "633f50e7d81bbea7f2eca584c9ebb3e3244ecd5c",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6b87564d_daff6619",
+        "filename": "Dockerfiles/aai-common/Dockerfile.alpine",
+        "patchSetId": 1
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 75
+      },
+      "writtenOn": "2019-07-24T14:59:38Z",
+      "side": 1,
+      "message": "ok got it. In that case, I am ok with using this. I was just trying to see which microservices are using it. Thanks.",
+      "parentUuid": "7d4eef67_2f46973e",
+      "revId": "633f50e7d81bbea7f2eca584c9ebb3e3244ecd5c",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
     }
   ]
 }
