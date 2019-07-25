@@ -3,6 +3,7 @@
  * org.onap.aai
  * ================================================================================
  * Copyright © 2017-2018 AT&T Intellectual Property. All rights reserved.
+ * Modification Copyright © 2019 IBM
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,18 +29,13 @@ import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
 
-import org.onap.aai.config.SpringContextAware;
 import org.onap.aai.edges.enums.EdgeType;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
-import org.onap.aai.introspection.LoaderFactory;
-import org.onap.aai.logging.ErrorLogHelper;
 import org.onap.aai.parsers.exceptions.DoesNotStartWithValidNamespaceException;
 import org.onap.aai.rest.RestTokens;
 import org.onap.aai.schema.enums.ObjectMetadata;
-import org.onap.aai.setup.SchemaVersion;
-import org.onap.aai.util.AAIConfig;
 import org.springframework.web.util.UriUtils;
 
 /**
@@ -56,6 +52,8 @@ public class URIParser {
     private URI originalURI = null;
 
     private MultivaluedMap<String, String> queryParams = null;
+  
+    private static String aaiExceptionCode = "AAI_3001"
 
     /**
      * Instantiates a new URI parser.
@@ -135,7 +133,7 @@ public class URIParser {
                     }
                     introspector = loader.introspectorFromName(parts[i + 1]);
                     if (null == previousObj) {
-                        throw new AAIException("AAI_3001");
+                        throw new AAIException(aaiExceptionCode);
                     }
                     if (previousObj.isContainer() && introspector.isContainer()) {
                         throw new AAIException("AAI_3000", uri + " not a valid path. Cannot chain plurals together");
@@ -167,7 +165,7 @@ public class URIParser {
                     // previous has current as property
                     if (previousObj != null && !previousObj.hasChild(introspector)
                             && !previousObj.getDbName().equals("nodes")) {
-                        throw new AAIException("AAI_3001", uri + " not a valid path. " + part + " not valid");
+                        throw new AAIException(aaiExceptionCode, uri + " not a valid path. " + part + " not valid");
                     } else if (previousObj == null) {
                         String abstractType = introspector.getMetadata(ObjectMetadata.ABSTRACT);
                         if (abstractType == null) {
@@ -225,13 +223,13 @@ public class URIParser {
                 } else {
                     // invalid item found should log
                     // original said bad path
-                    throw new AAIException("AAI_3001", "invalid item found in path: " + part);
+                    throw new AAIException(aaiExceptionCode, "invalid item found in path: " + part);
                 }
             }
         } catch (AAIException e) {
             throw e;
         } catch (Exception e) {
-            throw new AAIException("AAI_3001", e);
+            throw new AAIException(aaiExceptionCode, e);
         }
     }
 
