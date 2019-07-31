@@ -1769,7 +1769,7 @@ public class DBSerializer {
      * @throws InterruptedException the interrupted exception
      */
     public void delete(Vertex v, String resourceVersion, boolean enableResourceVersion)
-            throws IllegalArgumentException, AAIException {
+            throws AAIException {
 
         boolean result = verifyDeleteSemantics(v, resourceVersion, enableResourceVersion);
 
