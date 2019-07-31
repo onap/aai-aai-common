@@ -1097,8 +1097,7 @@ public class HttpEntry {
      * @throws URISyntaxException
      */
     private HashMap<String, Introspector> getRelatedObjects(DBSerializer serializer, QueryEngine queryEngine, Vertex v,
-            Introspector obj, Loader loader) throws IllegalAccessException, IllegalArgumentException,
-            InvocationTargetException, SecurityException, InstantiationException, NoSuchMethodException,
+            Introspector obj, Loader loader) throws IllegalAccessException,InvocationTargetException, SecurityException, InstantiationException, NoSuchMethodException,
             UnsupportedEncodingException, AAIException, URISyntaxException {
 
         HashMap<String, Introspector> relatedVertices = new HashMap<>();
