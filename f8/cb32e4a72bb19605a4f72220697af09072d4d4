@@ -1,0 +1,9 @@
+Verified+1: ONAP Jobbuilder <onap-jobbuilder@jenkins.onap.org>
+Code-Review+1: Frank Sandoval <frank.sandoval@oamtechnologies.com>
+Code-Review+1: Paul-Ionut Vaduva <paul.vaduva@enea.com>
+Code-Review+2: James Forsyth <jf2512@att.com>
+Submitted-by: James Forsyth <jf2512@att.com>
+Submitted-at: Mon, 05 Aug 2019 13:24:19 +0000
+Reviewed-on: https://gerrit.onap.org/r/c/aai/aai-common/+/85331
+Project: aai/aai-common
+Branch: refs/heads/master
