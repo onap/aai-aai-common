@@ -22,7 +22,7 @@ package org.onap.aai;
 
 import java.util.Map;
 
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.onap.aai.config.ConfigConfiguration;
@@ -88,8 +88,8 @@ public abstract class AAISetup {
 
     protected static final String SERVICE_NAME = "JUNIT";
 
-    @BeforeClass
-    public static void setupBundleconfig() throws Exception {
+    @Before
+    public void setupBundleconfig() throws Exception {
         System.setProperty("AJSC_HOME", ".");
         System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
         System.setProperty("aai.service.name", SERVICE_NAME);
