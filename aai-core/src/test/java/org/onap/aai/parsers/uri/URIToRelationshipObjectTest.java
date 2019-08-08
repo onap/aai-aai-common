@@ -41,7 +41,7 @@ import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.*;
 import org.onap.aai.setup.SchemaVersion;
 
-public class URIToRelationshipObjectTest extends AAISetup {
+@Ignore public class URIToRelationshipObjectTest extends AAISetup {
 
     private SchemaVersion latest;
     private Loader loader;
