@@ -327,361 +327,352 @@ public class HttpEntry {
             Status status = Status.NOT_FOUND;
             method = request.getMethod();
             try {
-                for (retry = 0; retry < maxRetries; ++retry) {
-                    try {
+                try {
 
-                        LoggingContext.targetEntity(TARGET_ENTITY);
-                        LoggingContext.targetServiceName(methodName + " " + method);
+                    LoggingContext.targetEntity(TARGET_ENTITY);
+                    LoggingContext.targetServiceName(methodName + " " + method);
 
-                        obj = request.getIntrospector();
-                        query = request.getParser();
-                        transactionId = request.getTransactionId();
-                        uriTemp = request.getUri().getRawPath().replaceFirst("^v\\d+/", "");
-                        uri = UriBuilder.fromPath(uriTemp).build();
-                        LoggingContext.startTime();
-                        List<Vertex> vertTemp;
-                        List<Vertex> vertices;
-                        if (this.isPaginated()) {
-                            vertTemp = query.getQueryBuilder().toList();
-                            this.setTotalsForPaging(vertTemp.size(), this.paginationBucket);
-                            vertices = vertTemp.subList(((this.paginationIndex - 1) * this.paginationBucket),
-                                    Math.min((this.paginationBucket * this.paginationIndex), vertTemp.size()));
+                    obj = request.getIntrospector();
+                    query = request.getParser();
+                    transactionId = request.getTransactionId();
+                    uriTemp = request.getUri().getRawPath().replaceFirst("^v\\d+/", "");
+                    uri = UriBuilder.fromPath(uriTemp).build();
+                    LoggingContext.startTime();
+                    List<Vertex> vertTemp;
+                    List<Vertex> vertices;
+                    if (this.isPaginated()) {
+                        vertTemp = query.getQueryBuilder().toList();
+                        this.setTotalsForPaging(vertTemp.size(), this.paginationBucket);
+                        vertices = vertTemp.subList(((this.paginationIndex - 1) * this.paginationBucket),
+                                Math.min((this.paginationBucket * this.paginationIndex), vertTemp.size()));
+                    } else {
+                        vertices = query.getQueryBuilder().toList();
+                    }
+                    boolean isNewVertex = false;
+                    String outputMediaType = getMediaType(request.getHeaders().getAcceptableMediaTypes());
+                    String result = null;
+                    params = request.getInfo().getQueryParameters(false);
+                    depth = setDepth(obj, params.getFirst("depth"));
+                    if (params.containsKey("format")) {
+                        format = Format.getFormat(params.getFirst("format"));
+                    }
+                    String cleanUp = params.getFirst("cleanup");
+                    String requestContext = "";
+                    List<String> requestContextList = request.getHeaders().getRequestHeader("aai-request-context");
+                    if (requestContextList != null) {
+                        requestContext = requestContextList.get(0);
+                    }
+
+                    if (cleanUp == null) {
+                        cleanUp = "false";
+                    }
+                    if (vertices.size() > 1 && processSingle
+                            && !(method.equals(HttpMethod.GET) || method.equals(HttpMethod.GET_RELATIONSHIP))) {
+                        if (method.equals(HttpMethod.DELETE)) {
+                            LoggingContext.restoreIfPossible();
+                            throw new AAIException("AAI_6138");
                         } else {
-                            vertices = query.getQueryBuilder().toList();
+                            LoggingContext.restoreIfPossible();
+                            throw new AAIException("AAI_6137");
                         }
-                        boolean isNewVertex = false;
-                        String outputMediaType = getMediaType(request.getHeaders().getAcceptableMediaTypes());
-                        String result = null;
-                        params = request.getInfo().getQueryParameters(false);
-                        depth = setDepth(obj, params.getFirst("depth"));
-                        if (params.containsKey("format")) {
-                            format = Format.getFormat(params.getFirst("format"));
-                        }
-                        String cleanUp = params.getFirst("cleanup");
-                        String requestContext = "";
-                        List<String> requestContextList = request.getHeaders().getRequestHeader("aai-request-context");
-                        if (requestContextList != null) {
-                            requestContext = requestContextList.get(0);
-                        }
-
-                        if (cleanUp == null) {
-                            cleanUp = "false";
-                        }
-                        if (vertices.size() > 1 && processSingle
-                                && !(method.equals(HttpMethod.GET) || method.equals(HttpMethod.GET_RELATIONSHIP))) {
-                            if (method.equals(HttpMethod.DELETE)) {
-                                LoggingContext.restoreIfPossible();
-                                throw new AAIException("AAI_6138");
-                            } else {
-                                LoggingContext.restoreIfPossible();
-                                throw new AAIException("AAI_6137");
+                    }
+                    if (method.equals(HttpMethod.PUT)) {
+                        String resourceVersion = (String) obj.getValue("resource-version");
+                        if (vertices.isEmpty()) {
+                            if (enableResourceVersion) {
+                                serializer.verifyResourceVersion("create", query.getResultType(), "",
+                                        resourceVersion, obj.getURI());
                             }
-                        }
-                        if (method.equals(HttpMethod.PUT)) {
-                            String resourceVersion = (String) obj.getValue("resource-version");
-                            if (vertices.isEmpty()) {
-                                if (enableResourceVersion) {
-                                    serializer.verifyResourceVersion("create", query.getResultType(), "",
-                                            resourceVersion, obj.getURI());
-                                }
-                                isNewVertex = true;
-                            } else {
-                                if (enableResourceVersion) {
-                                    serializer.verifyResourceVersion("update", query.getResultType(),
-                                            vertices.get(0).<String>property("resource-version").orElse(null),
-                                            resourceVersion, obj.getURI());
-                                }
-                                isNewVertex = false;
-                            }
+                            isNewVertex = true;
                         } else {
-                            if (vertices.isEmpty()) {
-                                String msg = createNotFoundMessage(query.getResultType(), request.getUri());
-                                throw new AAIException("AAI_6114", msg);
-                            } else {
-                                isNewVertex = false;
+                            if (enableResourceVersion) {
+                                serializer.verifyResourceVersion("update", query.getResultType(),
+                                        vertices.get(0).<String>property("resource-version").orElse(null),
+                                        resourceVersion, obj.getURI());
                             }
+                            isNewVertex = false;
                         }
-                        Vertex v = null;
-                        if (!isNewVertex) {
-                            v = vertices.get(0);
+                    } else {
+                        if (vertices.isEmpty()) {
+                            String msg = createNotFoundMessage(query.getResultType(), request.getUri());
+                            throw new AAIException("AAI_6114", msg);
+                        } else {
+                            isNewVertex = false;
                         }
-                        HashMap<String, Introspector> relatedObjects = new HashMap<>();
-                        String nodeOnly = params.getFirst("nodes-only");
-                        boolean isNodeOnly = nodeOnly != null;
-                        switch (method) {
-                            case GET:
+                    }
+                    Vertex v = null;
+                    if (!isNewVertex) {
+                        v = vertices.get(0);
+                    }
+                    HashMap<String, Introspector> relatedObjects = new HashMap<>();
+                    String nodeOnly = params.getFirst("nodes-only");
+                    boolean isNodeOnly = nodeOnly != null;
+                    switch (method) {
+                        case GET:
 
-                                if (format == null) {
-                                    obj = this.getObjectFromDb(vertices, serializer, query, obj, request.getUri(),
-                                            depth, isNodeOnly, cleanUp);
+                            if (format == null) {
+                                obj = this.getObjectFromDb(vertices, serializer, query, obj, request.getUri(),
+                                        depth, isNodeOnly, cleanUp);
 
-                                    LoggingContext.elapsedTime((long) serializer.getDBTimeMsecs(),
-                                            TimeUnit.MILLISECONDS);
-                                    LOGGER.info("Completed");
-                                    LoggingContext.restoreIfPossible();
+                                LoggingContext.elapsedTime((long) serializer.getDBTimeMsecs(),
+                                        TimeUnit.MILLISECONDS);
+                                LOGGER.info("Completed");
+                                LoggingContext.restoreIfPossible();
 
-                                    if (obj != null) {
-                                        status = Status.OK;
-                                        MarshallerProperties properties;
-                                        if (!request.getMarshallerProperties().isPresent()) {
-                                            properties = new MarshallerProperties.Builder(
-                                                    org.onap.aai.restcore.MediaType.getEnum(outputMediaType)).build();
-                                        } else {
-                                            properties = request.getMarshallerProperties().get();
-                                        }
-                                        result = obj.marshal(properties);
-                                    }
-                                } else {
-                                    FormatFactory ff =
-                                            new FormatFactory(loader, serializer, schemaVersions, basePath + "/");
-                                    Formatter formatter = ff.get(format, params);
-                                    result = formatter.output(vertices.stream().map(vertex -> (Object) vertex)
-                                            .collect(Collectors.toList())).toString();
+                                if (obj != null) {
                                     status = Status.OK;
-                                }
-
-                                break;
-                            case GET_RELATIONSHIP:
-                                if (format == null) {
-                                    obj = this.getRelationshipObjectFromDb(vertices, serializer, query,
-                                            request.getInfo().getRequestUri());
-
-                                    LoggingContext.elapsedTime((long) serializer.getDBTimeMsecs(),
-                                            TimeUnit.MILLISECONDS);
-                                    LOGGER.info("Completed");
-                                    LoggingContext.restoreIfPossible();
-
-                                    if (obj != null) {
-                                        status = Status.OK;
-                                        MarshallerProperties properties;
-                                        if (!request.getMarshallerProperties().isPresent()) {
-                                            properties = new MarshallerProperties.Builder(
-                                                    org.onap.aai.restcore.MediaType.getEnum(outputMediaType)).build();
-                                        } else {
-                                            properties = request.getMarshallerProperties().get();
-                                        }
-                                        result = obj.marshal(properties);
+                                    MarshallerProperties properties;
+                                    if (!request.getMarshallerProperties().isPresent()) {
+                                        properties = new MarshallerProperties.Builder(
+                                                org.onap.aai.restcore.MediaType.getEnum(outputMediaType)).build();
                                     } else {
-                                        String msg = createRelationshipNotFoundMessage(query.getResultType(),
-                                                request.getUri());
-                                        throw new AAIException("AAI_6149", msg);
+                                        properties = request.getMarshallerProperties().get();
                                     }
-                                } else {
-                                    FormatFactory ff =
-                                            new FormatFactory(loader, serializer, schemaVersions, basePath + "/");
-                                    Formatter formatter = ff.get(format, params);
-                                    result = formatter.output(vertices.stream().map(vertex -> (Object) vertex)
-                                            .collect(Collectors.toList())).toString();
-                                    status = Status.OK;
+                                    result = obj.marshal(properties);
                                 }
-                                break;
-                            case PUT:
-                                response = this.invokeExtension(dbEngine, this.dbEngine.tx(), method, request,
-                                        sourceOfTruth, version, loader, obj, uri, true);
-                                if (isNewVertex) {
-                                    v = serializer.createNewVertex(obj);
-                                }
-                                serializer.serializeToDb(obj, v, query, uri.getRawPath(), requestContext);
-                                this.invokeExtension(dbEngine, this.dbEngine.tx(), HttpMethod.PUT, request,
-                                        sourceOfTruth, version, loader, obj, uri, false);
-                                status = Status.OK;
-                                if (isNewVertex) {
-                                    status = Status.CREATED;
-                                }
-                                obj = serializer.getLatestVersionView(v);
-                                if (query.isDependent()) {
-                                    relatedObjects =
-                                            this.getRelatedObjects(serializer, queryEngine, v, obj, this.loader);
-                                }
-                                LoggingContext.elapsedTime(
-                                        (long) serializer.getDBTimeMsecs() + (long) queryEngine.getDBTimeMsecs(),
-                                        TimeUnit.MILLISECONDS);
-                                LOGGER.info("Completed ");
-                                LoggingContext.restoreIfPossible();
-                                notification.createNotificationEvent(transactionId, sourceOfTruth, status, uri, obj,
-                                        relatedObjects, basePath);
-
-                                break;
-                            case PUT_EDGE:
-                                serializer.touchStandardVertexProperties(v, false);
-                                this.invokeExtension(dbEngine, this.dbEngine.tx(), method, request, sourceOfTruth,
-                                        version, loader, obj, uri, true);
-                                serializer.createEdge(obj, v);
-
-                                LoggingContext.elapsedTime((long) serializer.getDBTimeMsecs(), TimeUnit.MILLISECONDS);
-                                LOGGER.info("Completed");
-                                LoggingContext.restoreIfPossible();
-                                status = Status.OK;
-                                notification.createNotificationEvent(transactionId, sourceOfTruth, status,
-                                        new URI(uri.toString().replace("/relationship-list/relationship", "")),
-                                        serializer.getLatestVersionView(v), relatedObjects, basePath);
-                                break;
-                            case MERGE_PATCH:
-                                Introspector existingObj = loader.introspectorFromName(obj.getDbName());
-                                existingObj = this.getObjectFromDb(vertices, serializer, query, existingObj,
-                                        request.getUri(), 0, false, cleanUp);
-                                String existingJson = existingObj.marshal(false);
-                                String newJson;
-
-                                if (request.getRawRequestContent().isPresent()) {
-                                    newJson = request.getRawRequestContent().get();
-                                } else {
-                                    newJson = "";
-                                }
-                                Object relationshipList = request.getIntrospector().getValue("relationship-list");
-                                ObjectMapper mapper = new ObjectMapper();
-                                try {
-                                    JsonNode existingNode = mapper.readTree(existingJson);
-                                    JsonNode newNode = mapper.readTree(newJson);
-                                    JsonMergePatch patch = JsonMergePatch.fromJson(newNode);
-                                    JsonNode completed = patch.apply(existingNode);
-                                    String patched = mapper.writeValueAsString(completed);
-                                    Introspector patchedObj = loader.unmarshal(existingObj.getName(), patched);
-                                    if (relationshipList == null) {
-                                        // if the caller didn't touch the relationship-list, we shouldn't either
-                                        patchedObj.setValue("relationship-list", null);
-                                    }
-                                    serializer.serializeToDb(patchedObj, v, query, uri.getRawPath(), requestContext);
-                                    status = Status.OK;
-                                    patchedObj = serializer.getLatestVersionView(v);
-                                    if (query.isDependent()) {
-                                        relatedObjects = this.getRelatedObjects(serializer, queryEngine, v, patchedObj,
-                                                this.loader);
-                                    }
-                                    LoggingContext.elapsedTime(
-                                            (long) serializer.getDBTimeMsecs() + (long) queryEngine.getDBTimeMsecs(),
-                                            TimeUnit.MILLISECONDS);
-                                    LOGGER.info("Completed");
-                                    LoggingContext.restoreIfPossible();
-                                    notification.createNotificationEvent(transactionId, sourceOfTruth, status, uri,
-                                            patchedObj, relatedObjects, basePath);
-                                } catch (IOException | JsonPatchException e) {
-
-                                    LOGGER.info("Caught exception: " + e.getMessage());
-                                    LoggingContext.restoreIfPossible();
-                                    throw new AAIException("AAI_3000", "could not perform patch operation");
-                                }
-                                break;
-                            case DELETE:
-                                String resourceVersion = params.getFirst("resource-version");
-                                obj = serializer.getLatestVersionView(v);
-                                if (query.isDependent()) {
-                                    relatedObjects =
-                                            this.getRelatedObjects(serializer, queryEngine, v, obj, this.loader);
-                                }
-                                /*
-                                 * Find all Delete-other-vertex vertices and create structure for notify
-                                 * findDeleatble also returns the startVertex v and we dont want to create
-                                 * duplicate notification events for the same
-                                 * So remove the startvertex first
-                                 */
-
-                                List<Vertex> deletableVertices = dbEngine.getQueryEngine().findDeletable(v);
-                                Long vId = (Long) v.id();
-
-                                /*
-                                 * I am assuming vertexId cant be null
-                                 */
-                                deletableVertices.removeIf(s -> vId.equals(s.id()));
-                                boolean isDelVerticesPresent = !deletableVertices.isEmpty();
-                                Map<Vertex, Introspector> deleteObjects = new HashMap<>();
-                                Map<String, URI> uriMap = new HashMap<>();
-                                Map<String, HashMap<String, Introspector>> deleteRelatedObjects = new HashMap<>();
-
-                                if (isDelVerticesPresent) {
-                                    deleteObjects = this.buildIntrospectorObjects(serializer, deletableVertices);
-
-                                    uriMap = this.buildURIMap(serializer, deleteObjects);
-                                    deleteRelatedObjects =
-                                            this.buildRelatedObjects(serializer, queryEngine, deleteObjects);
-                                }
-
-                                this.invokeExtension(dbEngine, this.dbEngine.tx(), method, request, sourceOfTruth,
-                                        version, loader, obj, uri, true);
-                                serializer.delete(v, deletableVertices, resourceVersion, enableResourceVersion);
-                                this.invokeExtension(dbEngine, this.dbEngine.tx(), method, request, sourceOfTruth,
-                                        version, loader, obj, uri, false);
-
-                                LoggingContext.elapsedTime(
-                                        (long) serializer.getDBTimeMsecs() + (long) queryEngine.getDBTimeMsecs(),
-                                        TimeUnit.MILLISECONDS);
-                                LOGGER.info("Completed");
-                                LoggingContext.restoreIfPossible();
-                                status = Status.NO_CONTENT;
-                                notification.createNotificationEvent(transactionId, sourceOfTruth, status, uri, obj,
-                                        relatedObjects, basePath);
-
-                                /*
-                                 * Notify delete-other-v candidates
-                                 */
-
-                                if (isDelVerticesPresent) {
-                                    this.buildNotificationEvent(sourceOfTruth, status, transactionId, notification,
-                                            deleteObjects, uriMap, deleteRelatedObjects, basePath);
-                                }
-
-                                break;
-                            case DELETE_EDGE:
-                                serializer.touchStandardVertexProperties(v, false);
-                                serializer.deleteEdge(obj, v);
-
-                                LoggingContext.elapsedTime((long) serializer.getDBTimeMsecs(), TimeUnit.MILLISECONDS);
-                                LOGGER.info("Completed");
-                                LoggingContext.restoreIfPossible();
-                                status = Status.NO_CONTENT;
-                                notification.createNotificationEvent(transactionId, sourceOfTruth, Status.OK,
-                                        new URI(uri.toString().replace("/relationship-list/relationship", "")),
-                                        serializer.getLatestVersionView(v), relatedObjects, basePath);
-                                break;
-                            default:
-                                break;
-                        }
-
-                        /*
-                         * temporarily adding vertex id to the headers
-                         * to be able to use for testing the vertex id endpoint functionality
-                         * since we presently have no other way of generating those id urls
-                         */
-                        if (response == null && v != null
-                                && (method.equals(HttpMethod.PUT) || method.equals(HttpMethod.GET)
-                                        || method.equals(HttpMethod.MERGE_PATCH)
-                                        || method.equals(HttpMethod.GET_RELATIONSHIP))
-
-                        ) {
-                            String myvertid = v.id().toString();
-                            if (this.isPaginated()) {
-                                response = Response.status(status).header("vertex-id", myvertid)
-                                        .header("total-results", this.getTotalVertices())
-                                        .header("total-pages", this.getTotalPaginationBuckets()).entity(result)
-                                        .type(outputMediaType).build();
                             } else {
-                                response = Response.status(status).header("vertex-id", myvertid).entity(result)
-                                        .type(outputMediaType).build();
+                                FormatFactory ff =
+                                        new FormatFactory(loader, serializer, schemaVersions, basePath + "/");
+                                Formatter formatter = ff.get(format, params);
+                                result = formatter.output(vertices.stream().map(vertex -> (Object) vertex)
+                                        .collect(Collectors.toList())).toString();
+                                status = Status.OK;
                             }
-                        } else if (response == null) {
-                            response = Response.status(status).type(outputMediaType).build();
-                        } else {
-                            // response already set to something
-                        }
-                        Pair<URI, Response> pairedResp = Pair.with(request.getUri(), response);
-                        responses.add(pairedResp);
-                        // break out of retry loop
-                        break;
-                    } catch (JanusGraphException e) {
-                        this.dbEngine.rollback();
 
-                        LOGGER.info("Caught exception: " + e.getMessage());
-                        LoggingContext.restoreIfPossible();
-                        AAIException ex = new AAIException("AAI_6142", e);
-                        ErrorLogHelper.logException(ex);
-                        Thread.sleep((retry + 1) * 20L);
-                        this.dbEngine.startTransaction();
-                        queryEngine = dbEngine.getQueryEngine();
-                        serializer = new DBSerializer(version, dbEngine, introspectorFactoryType, sourceOfTruth);
+                            break;
+                        case GET_RELATIONSHIP:
+                            if (format == null) {
+                                obj = this.getRelationshipObjectFromDb(vertices, serializer, query,
+                                        request.getInfo().getRequestUri());
+
+                                LoggingContext.elapsedTime((long) serializer.getDBTimeMsecs(),
+                                        TimeUnit.MILLISECONDS);
+                                LOGGER.info("Completed");
+                                LoggingContext.restoreIfPossible();
+
+                                if (obj != null) {
+                                    status = Status.OK;
+                                    MarshallerProperties properties;
+                                    if (!request.getMarshallerProperties().isPresent()) {
+                                        properties = new MarshallerProperties.Builder(
+                                                org.onap.aai.restcore.MediaType.getEnum(outputMediaType)).build();
+                                    } else {
+                                        properties = request.getMarshallerProperties().get();
+                                    }
+                                    result = obj.marshal(properties);
+                                } else {
+                                    String msg = createRelationshipNotFoundMessage(query.getResultType(),
+                                            request.getUri());
+                                    throw new AAIException("AAI_6149", msg);
+                                }
+                            } else {
+                                FormatFactory ff =
+                                        new FormatFactory(loader, serializer, schemaVersions, basePath + "/");
+                                Formatter formatter = ff.get(format, params);
+                                result = formatter.output(vertices.stream().map(vertex -> (Object) vertex)
+                                        .collect(Collectors.toList())).toString();
+                                status = Status.OK;
+                            }
+                            break;
+                        case PUT:
+                            response = this.invokeExtension(dbEngine, this.dbEngine.tx(), method, request,
+                                    sourceOfTruth, version, loader, obj, uri, true);
+                            if (isNewVertex) {
+                                v = serializer.createNewVertex(obj);
+                            }
+                            serializer.serializeToDb(obj, v, query, uri.getRawPath(), requestContext);
+                            this.invokeExtension(dbEngine, this.dbEngine.tx(), HttpMethod.PUT, request,
+                                    sourceOfTruth, version, loader, obj, uri, false);
+                            status = Status.OK;
+                            if (isNewVertex) {
+                                status = Status.CREATED;
+                            }
+                            obj = serializer.getLatestVersionView(v);
+                            if (query.isDependent()) {
+                                relatedObjects =
+                                        this.getRelatedObjects(serializer, queryEngine, v, obj, this.loader);
+                            }
+                            LoggingContext.elapsedTime(
+                                    (long) serializer.getDBTimeMsecs() + (long) queryEngine.getDBTimeMsecs(),
+                                    TimeUnit.MILLISECONDS);
+                            LOGGER.info("Completed ");
+                            LoggingContext.restoreIfPossible();
+                            notification.createNotificationEvent(transactionId, sourceOfTruth, status, uri, obj,
+                                    relatedObjects, basePath);
+
+                            break;
+                        case PUT_EDGE:
+                            serializer.touchStandardVertexProperties(v, false);
+                            this.invokeExtension(dbEngine, this.dbEngine.tx(), method, request, sourceOfTruth,
+                                    version, loader, obj, uri, true);
+                            serializer.createEdge(obj, v);
+
+                            LoggingContext.elapsedTime((long) serializer.getDBTimeMsecs(), TimeUnit.MILLISECONDS);
+                            LOGGER.info("Completed");
+                            LoggingContext.restoreIfPossible();
+                            status = Status.OK;
+                            notification.createNotificationEvent(transactionId, sourceOfTruth, status,
+                                    new URI(uri.toString().replace("/relationship-list/relationship", "")),
+                                    serializer.getLatestVersionView(v), relatedObjects, basePath);
+                            break;
+                        case MERGE_PATCH:
+                            Introspector existingObj = loader.introspectorFromName(obj.getDbName());
+                            existingObj = this.getObjectFromDb(vertices, serializer, query, existingObj,
+                                    request.getUri(), 0, false, cleanUp);
+                            String existingJson = existingObj.marshal(false);
+                            String newJson;
+
+                            if (request.getRawRequestContent().isPresent()) {
+                                newJson = request.getRawRequestContent().get();
+                            } else {
+                                newJson = "";
+                            }
+                            Object relationshipList = request.getIntrospector().getValue("relationship-list");
+                            ObjectMapper mapper = new ObjectMapper();
+                            try {
+                                JsonNode existingNode = mapper.readTree(existingJson);
+                                JsonNode newNode = mapper.readTree(newJson);
+                                JsonMergePatch patch = JsonMergePatch.fromJson(newNode);
+                                JsonNode completed = patch.apply(existingNode);
+                                String patched = mapper.writeValueAsString(completed);
+                                Introspector patchedObj = loader.unmarshal(existingObj.getName(), patched);
+                                if (relationshipList == null) {
+                                    // if the caller didn't touch the relationship-list, we shouldn't either
+                                    patchedObj.setValue("relationship-list", null);
+                                }
+                                serializer.serializeToDb(patchedObj, v, query, uri.getRawPath(), requestContext);
+                                status = Status.OK;
+                                patchedObj = serializer.getLatestVersionView(v);
+                                if (query.isDependent()) {
+                                    relatedObjects = this.getRelatedObjects(serializer, queryEngine, v, patchedObj,
+                                            this.loader);
+                                }
+                                LoggingContext.elapsedTime(
+                                        (long) serializer.getDBTimeMsecs() + (long) queryEngine.getDBTimeMsecs(),
+                                        TimeUnit.MILLISECONDS);
+                                LOGGER.info("Completed");
+                                LoggingContext.restoreIfPossible();
+                                notification.createNotificationEvent(transactionId, sourceOfTruth, status, uri,
+                                        patchedObj, relatedObjects, basePath);
+                            } catch (IOException | JsonPatchException e) {
+
+                                LOGGER.info("Caught exception: " + e.getMessage());
+                                LoggingContext.restoreIfPossible();
+                                throw new AAIException("AAI_3000", "could not perform patch operation");
+                            }
+                            break;
+                        case DELETE:
+                            String resourceVersion = params.getFirst("resource-version");
+                            obj = serializer.getLatestVersionView(v);
+                            if (query.isDependent()) {
+                                relatedObjects =
+                                        this.getRelatedObjects(serializer, queryEngine, v, obj, this.loader);
+                            }
+                            /*
+                             * Find all Delete-other-vertex vertices and create structure for notify
+                             * findDeleatble also returns the startVertex v and we dont want to create
+                             * duplicate notification events for the same
+                             * So remove the startvertex first
+                             */
+
+                            List<Vertex> deletableVertices = dbEngine.getQueryEngine().findDeletable(v);
+                            Long vId = (Long) v.id();
+
+                            /*
+                             * I am assuming vertexId cant be null
+                             */
+                            deletableVertices.removeIf(s -> vId.equals(s.id()));
+                            boolean isDelVerticesPresent = !deletableVertices.isEmpty();
+                            Map<Vertex, Introspector> deleteObjects = new HashMap<>();
+                            Map<String, URI> uriMap = new HashMap<>();
+                            Map<String, HashMap<String, Introspector>> deleteRelatedObjects = new HashMap<>();
+
+                            if (isDelVerticesPresent) {
+                                deleteObjects = this.buildIntrospectorObjects(serializer, deletableVertices);
+
+                                uriMap = this.buildURIMap(serializer, deleteObjects);
+                                deleteRelatedObjects =
+                                        this.buildRelatedObjects(serializer, queryEngine, deleteObjects);
+                            }
+
+                            this.invokeExtension(dbEngine, this.dbEngine.tx(), method, request, sourceOfTruth,
+                                    version, loader, obj, uri, true);
+                            serializer.delete(v, deletableVertices, resourceVersion, enableResourceVersion);
+                            this.invokeExtension(dbEngine, this.dbEngine.tx(), method, request, sourceOfTruth,
+                                    version, loader, obj, uri, false);
+
+                            LoggingContext.elapsedTime(
+                                    (long) serializer.getDBTimeMsecs() + (long) queryEngine.getDBTimeMsecs(),
+                                    TimeUnit.MILLISECONDS);
+                            LOGGER.info("Completed");
+                            LoggingContext.restoreIfPossible();
+                            status = Status.NO_CONTENT;
+                            notification.createNotificationEvent(transactionId, sourceOfTruth, status, uri, obj,
+                                    relatedObjects, basePath);
+
+                            /*
+                             * Notify delete-other-v candidates
+                             */
+
+                            if (isDelVerticesPresent) {
+                                this.buildNotificationEvent(sourceOfTruth, status, transactionId, notification,
+                                        deleteObjects, uriMap, deleteRelatedObjects, basePath);
+                            }
+
+                            break;
+                        case DELETE_EDGE:
+                            serializer.touchStandardVertexProperties(v, false);
+                            serializer.deleteEdge(obj, v);
+
+                            LoggingContext.elapsedTime((long) serializer.getDBTimeMsecs(), TimeUnit.MILLISECONDS);
+                            LOGGER.info("Completed");
+                            LoggingContext.restoreIfPossible();
+                            status = Status.NO_CONTENT;
+                            notification.createNotificationEvent(transactionId, sourceOfTruth, Status.OK,
+                                    new URI(uri.toString().replace("/relationship-list/relationship", "")),
+                                    serializer.getLatestVersionView(v), relatedObjects, basePath);
+                            break;
+                        default:
+                            break;
                     }
-                    if (retry == maxRetries) {
-                        throw new AAIException("AAI_6134");
+
+                    /*
+                     * temporarily adding vertex id to the headers
+                     * to be able to use for testing the vertex id endpoint functionality
+                     * since we presently have no other way of generating those id urls
+                     */
+                    if (response == null && v != null
+                            && (method.equals(HttpMethod.PUT) || method.equals(HttpMethod.GET)
+                                    || method.equals(HttpMethod.MERGE_PATCH)
+                                    || method.equals(HttpMethod.GET_RELATIONSHIP))
+
+                    ) {
+                        String myvertid = v.id().toString();
+                        if (this.isPaginated()) {
+                            response = Response.status(status).header("vertex-id", myvertid)
+                                    .header("total-results", this.getTotalVertices())
+                                    .header("total-pages", this.getTotalPaginationBuckets()).entity(result)
+                                    .type(outputMediaType).build();
+                        } else {
+                            response = Response.status(status).header("vertex-id", myvertid).entity(result)
+                                    .type(outputMediaType).build();
+                        }
+                    } else if (response == null) {
+                        response = Response.status(status).type(outputMediaType).build();
+                    } else {
+                        // response already set to something
                     }
+                    Pair<URI, Response> pairedResp = Pair.with(request.getUri(), response);
+                    responses.add(pairedResp);
+                } catch (JanusGraphException e) {
+                    this.dbEngine.rollback();
+
+                    LOGGER.info("Caught exception: " + e.getMessage());
+                    LoggingContext.restoreIfPossible();
+                    throw new AAIException("AAI_6134", e);
+                }
+                if (retry == maxRetries) {
+                    throw new AAIException("AAI_6134");
                 }
             } catch (AAIException e) {
                 success = false;
