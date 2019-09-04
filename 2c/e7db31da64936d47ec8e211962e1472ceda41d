@@ -1,0 +1,8 @@
+Verified+1: ONAP Jobbuilder <onap-jobbuilder@jenkins.onap.org>
+Code-Review+1: Pavel Paroulek <pavel.paroulek@orange.com>
+Code-Review+2: James Forsyth <jf2512@att.com>
+Submitted-by: James Forsyth <jf2512@att.com>
+Submitted-at: Wed, 04 Sep 2019 14:23:11 +0000
+Reviewed-on: https://gerrit.onap.org/r/c/aai/aai-common/+/94936
+Project: aai/aai-common
+Branch: refs/heads/master
