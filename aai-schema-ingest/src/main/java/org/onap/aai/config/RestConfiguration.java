@@ -41,7 +41,7 @@ public class RestConfiguration {
     private static final String ONE_WAY_SSL = "one-way-ssl";
     private static final String NO_AUTH = "no-auth";
 
-    @Value("${schema.service.client:two-way-ssl}")
+    @Value("${schema.service.client:one-way-ssl}")
     private String schemaServiceClient;
 
     @Autowired
