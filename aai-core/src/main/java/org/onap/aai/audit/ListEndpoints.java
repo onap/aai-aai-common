@@ -68,7 +68,7 @@ public class ListEndpoints {
      */
     public static void main(String[] args) {
 
-        @SuppressWarnings("resource")
+        
 		AnnotationConfigApplicationContext context =
                 new AnnotationConfigApplicationContext("org.onap.aai.config", "org.onap.aai.setup");
 
