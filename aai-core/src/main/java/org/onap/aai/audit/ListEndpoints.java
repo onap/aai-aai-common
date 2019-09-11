@@ -38,7 +38,6 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.onap.aai.config.SpringContextAware;
-import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.introspection.LoaderFactory;
@@ -69,7 +68,8 @@ public class ListEndpoints {
      */
     public static void main(String[] args) {
 
-        AnnotationConfigApplicationContext context =
+        @SuppressWarnings("resource")
+		AnnotationConfigApplicationContext context =
                 new AnnotationConfigApplicationContext("org.onap.aai.config", "org.onap.aai.setup");
 
         String schemaUriBasePath = context.getEnvironment().getProperty("schema.uri.base.path");
