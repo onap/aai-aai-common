@@ -24,29 +24,27 @@ import static org.janusgraph.graphdb.configuration.GraphDatabaseConfiguration.*;
 
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
-import com.google.common.base.Preconditions;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterators;
+
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.lang.management.ManagementFactory;
-import java.util.Iterator;
+
 import java.util.Objects;
-import java.util.regex.Pattern;
+
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.lang.StringUtils;
 import org.janusgraph.diskstorage.configuration.ConfigElement;
-import org.janusgraph.diskstorage.configuration.backend.CommonsConfiguration;
+
 
 /**
  * For building a config that JanusGraphFactory.open can use with an identifiable graph.unique-instance-id
  */
 public class AAIGraphConfig {
 
-    private static final EELFLogger logger = EELFManager.getInstance().getLogger(AAIGraphConfig.class);
+    private static final EELFLogger Logger= EELFManager.getInstance().getLogger(AAIGraphConfig.class);
 
     private AAIGraphConfig() {
     };

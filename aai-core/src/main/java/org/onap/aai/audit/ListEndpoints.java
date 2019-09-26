@@ -56,11 +56,11 @@ public class ListEndpoints {
 
     private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(ListEndpoints.class);
 
-    private final String start = "inventory";
-    private final String[] blacklist = {"search", "aai-internal"};
+    private static final String start = "inventory";
+    private static final String[] blacklist = {"search", "aai-internal"};
 
     private List<String> endpoints = new ArrayList<>();
-    private Map<String, String> endpointToLogicalName = new HashMap<String, String>();
+    private Map<String, String> endpointToLogicalName = new HashMap<>();
 
     /**
      * The main method.
@@ -92,7 +92,7 @@ public class ListEndpoints {
      *
      * @param version the version
      */
-    public ListEndpoints(String basePath, SchemaVersion version) {
+    public   ListEndpoints(String basePath, SchemaVersion version) {
 
         Loader loader = SpringContextAware.getBean(LoaderFactory.class).createLoaderForVersion(ModelType.MOXY, version);
 

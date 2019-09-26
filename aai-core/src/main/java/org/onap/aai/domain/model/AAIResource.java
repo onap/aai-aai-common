@@ -23,6 +23,7 @@ package org.onap.aai.domain.model;
 import com.google.common.collect.Multimap;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class AAIResource {
@@ -37,7 +38,7 @@ public class AAIResource {
     private String resourceClassName;
     private String simpleName; // Vce
     private String fullName; // /Network/Vces/Vce/PortGroups/PortGroup/CvlanTags/CvlanTag
-    private String uri; // /network/vces/vce/{vnf-id}/port-groups/port-group/{interface-name}/cvlan-tags/cvlan-tag/{cvlan-tag}
+    private String uri; 
     private String apiVersion;
     private String relationshipListClass;
     private String relationshipUtils;
@@ -52,19 +53,19 @@ public class AAIResource {
     private Multimap<String, String> NodeUniqueProps;
 
     // if new dataTypes are added - make sure to update getAllFields() method below
-    private ArrayList<String> stringFields;
-    private ArrayList<String> stringListFields;
-    private ArrayList<String> longFields;
-    private ArrayList<String> intFields;
-    private ArrayList<String> shortFields;
-    private ArrayList<String> booleanFields;
+    private List<String> stringFields;
+    private List<String> stringListFields;
+    private List<String> longFields;
+    private List<String> intFields;
+    private List<String> shortFields;
+    private List<String> booleanFields;
 
-    private ArrayList<String> requiredFields;
-    private ArrayList<String> orderedFields;
+    private List<String> requiredFields;
+    private List<String> orderedFields;
     private AAIResource recurseToResource;
     private boolean allowDirectWrite;
     private boolean allowDirectRead;
-    private ArrayList<String> autoGenUuidFields;
+    private List<String> autoGenUuidFields;
 
     /**
      * Gets the parent.
@@ -384,9 +385,9 @@ public class AAIResource {
      *
      * @return the string fields
      */
-    public ArrayList<String> getStringFields() {
+    public List<String> getStringFields() {
         if (this.stringFields == null) {
-            this.stringFields = new ArrayList<String>();
+            this.stringFields = new ArrayList<>();
         }
         return this.stringFields;
     }
@@ -396,7 +397,7 @@ public class AAIResource {
      *
      * @param stringFields the new string fields
      */
-    public void setStringFields(ArrayList<String> stringFields) {
+    public void setStringFields(List<String> stringFields) {
         this.stringFields = stringFields;
     }
 
@@ -405,9 +406,9 @@ public class AAIResource {
      *
      * @return the string list fields
      */
-    public ArrayList<String> getStringListFields() {
+    public List<String> getStringListFields() {
         if (this.stringListFields == null) {
-            this.stringListFields = new ArrayList<String>();
+            this.stringListFields = new ArrayList<>();
         }
         return this.stringListFields;
     }
@@ -417,7 +418,7 @@ public class AAIResource {
      *
      * @param stringListFields the new string list fields
      */
-    public void setStringListFields(ArrayList<String> stringListFields) {
+    public void setStringListFields(List<String> stringListFields) {
         this.stringListFields = stringListFields;
     }
 
@@ -426,9 +427,9 @@ public class AAIResource {
      *
      * @return the long fields
      */
-    public ArrayList<String> getLongFields() {
+    public List<String> getLongFields() {
         if (this.longFields == null) {
-            this.longFields = new ArrayList<String>();
+            this.longFields = new ArrayList<>();
         }
         return longFields;
     }
@@ -438,7 +439,7 @@ public class AAIResource {
      *
      * @param longFields the new long fields
      */
-    public void setLongFields(ArrayList<String> longFields) {
+    public void setLongFields(List<String> longFields) {
         this.longFields = longFields;
     }
 
@@ -447,9 +448,9 @@ public class AAIResource {
      *
      * @return the int fields
      */
-    public ArrayList<String> getIntFields() {
+    public List<String> getIntFields() {
         if (this.intFields == null) {
-            this.intFields = new ArrayList<String>();
+            this.intFields = new ArrayList<>();
         }
         return intFields;
     }
@@ -459,7 +460,7 @@ public class AAIResource {
      *
      * @param intFields the new int fields
      */
-    public void setIntFields(ArrayList<String> intFields) {
+    public void setIntFields(List<String> intFields) {
         this.intFields = intFields;
     }
 
@@ -468,9 +469,9 @@ public class AAIResource {
      *
      * @return the short fields
      */
-    public ArrayList<String> getShortFields() {
+    public List<String> getShortFields() {
         if (this.shortFields == null) {
-            this.shortFields = new ArrayList<String>();
+            this.shortFields = new ArrayList<>();
         }
         return shortFields;
     }
@@ -480,7 +481,7 @@ public class AAIResource {
      *
      * @param shortFields the new short fields
      */
-    public void setShortFields(ArrayList<String> shortFields) {
+    public void setShortFields(List<String> shortFields) {
         this.shortFields = shortFields;
     }
 
@@ -489,9 +490,9 @@ public class AAIResource {
      *
      * @return the boolean fields
      */
-    public ArrayList<String> getBooleanFields() {
+    public List<String> getBooleanFields() {
         if (this.booleanFields == null) {
-            this.booleanFields = new ArrayList<String>();
+            this.booleanFields = new ArrayList<>();
         }
         return booleanFields;
     }
@@ -501,7 +502,7 @@ public class AAIResource {
      *
      * @param booleanFields the new boolean fields
      */
-    public void setBooleanFields(ArrayList<String> booleanFields) {
+    public void setBooleanFields(List<String> booleanFields) {
         this.booleanFields = booleanFields;
     }
 
@@ -510,9 +511,9 @@ public class AAIResource {
      *
      * @return the required fields
      */
-    public ArrayList<String> getRequiredFields() {
+    public List<String> getRequiredFields() {
         if (this.requiredFields == null) {
-            this.requiredFields = new ArrayList<String>();
+            this.requiredFields = new ArrayList<>();
         }
         return requiredFields;
     }
@@ -531,9 +532,9 @@ public class AAIResource {
      *
      * @return the ordered fields
      */
-    public ArrayList<String> getOrderedFields() {
+    public List<String> getOrderedFields() {
         if (this.orderedFields == null) {
-            this.orderedFields = new ArrayList<String>();
+            this.orderedFields = new ArrayList<>();
         }
         return this.orderedFields;
     }
@@ -543,9 +544,9 @@ public class AAIResource {
      *
      * @return the all fields
      */
-    public ArrayList<String> getAllFields() {
+    public List<String> getAllFields() {
 
-        ArrayList<String> allFields = new ArrayList<String>();
+        ArrayList<String> allFields = new ArrayList<>();
         allFields.addAll(getBooleanFields());
         allFields.addAll(getStringListFields());
         allFields.addAll(getStringFields());
@@ -665,9 +666,9 @@ public class AAIResource {
      *
      * @return the auto gen uuid fields
      */
-    public ArrayList<String> getAutoGenUuidFields() {
+    public List<String> getAutoGenUuidFields() {
         if (this.autoGenUuidFields == null) {
-            this.autoGenUuidFields = new ArrayList<String>();
+            this.autoGenUuidFields = new ArrayList<>();
         }
         return this.autoGenUuidFields;
     }

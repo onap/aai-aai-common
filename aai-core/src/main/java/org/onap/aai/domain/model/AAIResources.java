@@ -20,7 +20,9 @@
 
 package org.onap.aai.domain.model;
 
+
 import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
 
@@ -28,17 +30,17 @@ public class AAIResources {
 
     private DynamicJAXBContext jaxbContext;
 
-    private HashMap<String, AAIResource> aaiResources;
-    private HashMap<String, AAIResource> resourceLookup;
+    private Map<String, AAIResource> aaiResources;
+    private Map<String, AAIResource> resourceLookup;
 
     /**
      * Gets the aai resources.
      *
      * @return the aai resources
      */
-    public HashMap<String, AAIResource> getAaiResources() {
+    public Map<String, AAIResource> getAaiResources() {
         if (aaiResources == null) {
-            aaiResources = new HashMap<String, AAIResource>();
+            aaiResources = new HashMap<>();
         }
         return aaiResources;
     }
@@ -66,9 +68,9 @@ public class AAIResources {
      *
      * @return the resource lookup
      */
-    public HashMap<String, AAIResource> getResourceLookup() {
+    public Map<String, AAIResource> getResourceLookup() {
         if (resourceLookup == null) {
-            resourceLookup = new HashMap<String, AAIResource>();
+            resourceLookup = new HashMap<>();
         }
         return resourceLookup;
     }
@@ -78,7 +80,7 @@ public class AAIResources {
      *
      * @param resourceLookup the resource lookup
      */
-    public void setResourceLookup(HashMap<String, AAIResource> resourceLookup) {
+    public void setResourceLookup(Map<String, AAIResource> resourceLookup) {
         this.resourceLookup = resourceLookup;
     }
 
