@@ -23,6 +23,8 @@ package org.onap.aai.extensions;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.HttpHeaders;
@@ -133,8 +135,8 @@ public class AAIExtensionMap {
      *
      * @param _templateVars the new template vars
      */
-    public void setTemplateVars(ArrayList<String> _templateVars) {
-        this.templateVars = _templateVars;
+    public void setTemplateVars(List<String> _templateVars) {
+        this.templateVars = (ArrayList<String>) _templateVars;
     }
 
     /**
@@ -261,9 +263,9 @@ public class AAIExtensionMap {
      *
      * @return the template vars
      */
-    public ArrayList<String> getTemplateVars() {
+    public List<String> getTemplateVars() {
         if (this.templateVars == null) {
-            this.templateVars = new ArrayList<String>();
+            this.templateVars = new ArrayList<>();
         }
         return this.templateVars;
     }
@@ -483,8 +485,8 @@ public class AAIExtensionMap {
      *
      * @param lookupHashMap the lookup hash map
      */
-    public void setLookupHashMap(HashMap<String, Object> lookupHashMap) {
-        this.lookupHashMap = lookupHashMap;
+    public void setLookupHashMap(Map<String, Object> lookupHashMap) {
+        this.lookupHashMap = (HashMap<String, Object>) lookupHashMap;
     }
 
     /**

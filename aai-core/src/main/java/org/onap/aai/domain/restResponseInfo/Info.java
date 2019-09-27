@@ -193,7 +193,7 @@ public class Info {
          */
         public List<ResponseMessage> getResponseMessage() {
             if (responseMessage == null) {
-                responseMessage = new ArrayList<ResponseMessage>();
+                responseMessage = new ArrayList<>();
             }
             return this.responseMessage;
         }
@@ -366,7 +366,7 @@ public class Info {
                  */
                 public List<String> getVariable() {
                     if (variable == null) {
-                        variable = new ArrayList<String>();
+                        variable = new ArrayList<>();
                     }
                     return this.variable;
                 }
