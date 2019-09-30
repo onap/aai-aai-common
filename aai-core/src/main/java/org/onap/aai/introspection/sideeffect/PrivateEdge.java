@@ -113,7 +113,7 @@ public class PrivateEdge extends SideEffect {
 
                     for (Entry<String, EdgeRule> edgeEntry : edgeRulesMap.entries()) {
                         EdgeRule edgeRule = edgeIngestor.getRule(edgeQuery);
-                        Iterator<Edge> edges = self.edges(edgeRule.getDirection(), edgeRule.getLabel().toString());
+                        Iterator<Edge> edges = self.edges(edgeRule.getDirection(), edgeRule.getLabel());
                         if (edges.hasNext()) {
                             Edge edge = edges.next();
                             EdgeStatus status = checkStatus(obj, self);
