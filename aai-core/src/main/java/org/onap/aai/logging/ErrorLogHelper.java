@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
@@ -45,7 +44,7 @@ import org.onap.aai.logging.LoggingContext.StatusCode;
 import org.onap.aai.util.AAIConfig;
 import org.onap.aai.util.AAIConstants;
 import org.onap.aai.util.MapperUtil;
-import org.slf4j.MDC;
+
 
 /**
  * 
@@ -57,7 +56,7 @@ import org.slf4j.MDC;
 public class ErrorLogHelper {
 
     private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(ErrorLogHelper.class);
-    private static final HashMap<String, ErrorObject> ERROR_OBJECTS = new HashMap<String, ErrorObject>();
+    private static final HashMap<String, ErrorObject> ERROR_OBJECTS = new HashMap<>();
 
     static {
         try {
@@ -148,11 +147,11 @@ public class ErrorLogHelper {
      * @throws IOException
      * @deprecated
      */
-    public static String getRESTAPIErrorResponse(AAIException are, ArrayList<String> variables) {
-        List<MediaType> acceptHeaders = new ArrayList<MediaType>();
+    public static String getRESTAPIErrorResponse(AAIException are, List<String> variables) {
+        List<MediaType> acceptHeaders = new ArrayList<>();
         acceptHeaders.add(MediaType.APPLICATION_JSON_TYPE);
 
-        return getRESTAPIErrorResponse(acceptHeaders, are, variables);
+        return getRESTAPIErrorResponse(are, variables);
     }
 
     /**
@@ -171,12 +170,12 @@ public class ErrorLogHelper {
      * @throws IOException
      */
     public static String getRESTAPIErrorResponse(List<MediaType> acceptHeadersOrig, AAIException are,
-            ArrayList<String> variables) {
+            List<String> variables) {
 
         StringBuilder text = new StringBuilder();
         String response = null;
 
-        List<MediaType> acceptHeaders = new ArrayList<MediaType>();
+        List<MediaType> acceptHeaders = new ArrayList<>();
         // we might have an exception but no accept header, so we'll set default to JSON
         boolean foundValidAcceptHeader = false;
         for (MediaType mt : acceptHeadersOrig) {
@@ -214,7 +213,7 @@ public class ErrorLogHelper {
         text.append(" (msg=%").append(localDataIndex + 1).append(") (ec=%").append(localDataIndex + 2).append(")");
 
         if (variables == null) {
-            variables = new ArrayList<String>();
+            variables = new ArrayList<>();
         }
 
         if (variables.size() < localDataIndex) {
