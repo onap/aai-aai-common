@@ -172,13 +172,13 @@ public class PrivateEdge extends SideEffect {
             }
 
             if (currentObjValue == null) {
-                if (oldVertexValue != null) {
+                if (!oldVertexValue .equals(currentObjValue)){
                     return EdgeStatus.REMOVED;
                 }
             }
 
             if (oldVertexValue == null) {
-                if (currentObjValue != null) {
+                if (!currentObjValue.equals(oldVertexValue)){
                     return EdgeStatus.CREATED;
                 }
             }

@@ -44,8 +44,6 @@ import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
 import org.onap.aai.config.SpringContextAware;
 import org.onap.aai.logging.LogFormatTools;
-import org.onap.aai.nodes.CaseFormatStore;
-import org.onap.aai.nodes.NodeIngestor;
 import org.onap.aai.restcore.MediaType;
 import org.onap.aai.schema.enums.ObjectMetadata;
 import org.onap.aai.schema.enums.PropertyMetadata;
@@ -61,7 +59,7 @@ public class MoxyStrategy extends Introspector {
     private ClassDescriptor cd = null;
     private SchemaVersion version = null;
     private Set<String> properties = null;
-    private Set<String> keys = null;
+    private Set<String> key = null;
     private Set<String> requiredProperties = null;
 
     private boolean isInitialized = false;
@@ -107,13 +105,13 @@ public class MoxyStrategy extends Introspector {
         requiredProps = Collections.unmodifiableSet(requiredProps);
         this.requiredProperties = requiredProps;
 
-        Set<String> keys = new LinkedHashSet<>();
+        Set<String> key = new LinkedHashSet<>();
 
         for (String name : internalType.getDescriptor().getPrimaryKeyFieldNames()) {
-            keys.add(this.removeXPathDescriptor(name));
+            key.add(this.removeXPathDescriptor(name));
         }
-        keys = Collections.unmodifiableSet(keys);
-        this.keys = keys;
+        key = Collections.unmodifiableSet(key);
+        this.key = key;
 
     }
 
@@ -163,7 +161,7 @@ public class MoxyStrategy extends Introspector {
             init();
         }
 
-        return this.keys;
+        return this.key;
     }
 
     @Override

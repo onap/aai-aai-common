@@ -22,5 +22,5 @@ package org.onap.aai.introspection;
 
 public enum Visibility {
 
-    internal, external, deployment, all
+    Internal, External, Deployment, All
 }

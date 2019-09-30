@@ -35,13 +35,12 @@ public final class PropertyPredicates {
         return (obj, prop) -> {
             final Map<PropertyMetadata, String> map = obj.getPropertyMetadata(prop);
             if (map.containsKey(PropertyMetadata.VISIBILITY)) {
-                return !(Visibility.internal.equals(Visibility.valueOf(map.get(PropertyMetadata.VISIBILITY)))
-                        || Visibility.deployment.equals(Visibility.valueOf(map.get(PropertyMetadata.VISIBILITY))));
+                return !(Visibility.Internal.equals(Visibility.valueOf(map.get(PropertyMetadata.VISIBILITY)))
+                        || Visibility.Deployment.equals(Visibility.valueOf(map.get(PropertyMetadata.VISIBILITY))));
             }
-            if (map.containsKey("dataLocation")) {
-                return false;
-            }
-            return true;
+
+			return map.containsKey("datalocation");
+          
         };
     }
 
@@ -49,7 +48,7 @@ public final class PropertyPredicates {
         return (obj, prop) -> {
             final Map<PropertyMetadata, String> map = obj.getPropertyMetadata(prop);
             if (map.containsKey(PropertyMetadata.VISIBILITY)) {
-                return !Visibility.internal.equals(Visibility.valueOf(map.get(PropertyMetadata.VISIBILITY)));
+                return !Visibility.Internal.equals(Visibility.valueOf(map.get(PropertyMetadata.VISIBILITY)));
             }
             return true;
         };
@@ -59,12 +58,10 @@ public final class PropertyPredicates {
         return (obj, prop) -> {
             final Map<PropertyMetadata, String> map = obj.getPropertyMetadata(prop);
             if (map.containsKey(PropertyMetadata.VISIBILITY)) {
-                return !Visibility.internal.equals(Visibility.valueOf(map.get(PropertyMetadata.VISIBILITY)));
+                return !Visibility.Internal.equals(Visibility.valueOf(map.get(PropertyMetadata.VISIBILITY)));
             }
-            if (map.containsKey("dataLocation")) {
-                return false;
-            }
-            return true;
+            return map.containsKey("datalocation");
+         
         };
     }
 

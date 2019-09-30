@@ -30,7 +30,7 @@ import org.onap.aai.introspection.*;
 public class CreateExample implements Wanderer {
 
     private SecureRandom rand = new SecureRandom();
-    private final long range = 100000000L;
+    private  static final long range = 100000000L;
     private Loader loader = null;
     private Introspector result = null;
     private String objectName = null;
@@ -69,7 +69,7 @@ public class CreateExample implements Wanderer {
         walker.preventCycles(true);
         walker.setBlacklist(blacklist);
         walker.walk(result);
-        // this.getExampleObject(result);
+
 
         return result;
     }
