@@ -255,7 +255,7 @@ public class IntrospectorValidator implements Wanderer {
          * @param llBuilder the ll builder
          */
         public Builder() {
-            issueResolvers = new ArrayList<IssueResolver>();
+            issueResolvers = new ArrayList<>();
         }
 
         /**
