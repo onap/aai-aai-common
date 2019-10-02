@@ -6,6 +6,101 @@
 AAI Release Notes
 ==================
 
+Version: 1.5.1
+
+:Release Data: 2019-10-03
+
+**New Features**
+
+The R5 El Alto release of ONAP is a maintenance release, focusing on
+deployability, technical debt, and footprint opimization.
+
+AAI focused on converting all of our microservices to Alpine, created
+common images for users to select either Alpine or Ubuntu, and reduced
+the number of microservices that is started by default for the
+demo. We updated to newer versions of spring boot - we are in the
+process of moving to spring-boot 2, but many of the microservices are
+still running 1.5.21.  We updated to JanusGraph 0.2.3, which is a
+seamless upgrade from 0.2.0 which was used in Dublin.
+
+Users who would like to further reduce the AAI footprint can update the
+aai/oom helm charts.
+
+To re-enable the services that have been disabled by default, update 
+to "enabled: true" in aai/oom/values.yaml:
+
+ .. code-block:: bash
+
+    aai-champ:
+	enabled: true
+    aai-gizmo:
+	enabled: true
+    aai-spike:
+	enabled: true
+
+To disable other components that are not critical to the Integration
+use cases (vFw, vLB, vDNS, etc), add "enabled: false" in
+aai/oom/values.yaml for each of the following services:
+
+ .. code-block:: bash
+
+    aai-data-router:
+        enabled: false
+    aai-search-data:
+        enabled: false
+    aai-elasticsearch: 
+        enabled: false
+    aai-sparky-fe: 
+        enabled: false
+
+*Known Vulnerabilities in Used Modules*
+
+AAI code has been formally scanned during build time using NexusIQ and
+all Critical vulnerabilities have been addressed, items that remain
+open have been assessed for risk and determined to be false
+positive. The AAI open Critical security vulnerabilities and their
+risk assessment have been documented as part of the linkTBD
+
+**Known Issues**
+
+The AAI UI is now integrated with Portal and AAF.  However, the AAF
+default boostrap does not include a role that is necessary the demo
+user to access the AAI UI.
+
+Run the following as a workaround, adjust the URL and credentials
+according to your environment. The user in CRED must be able to update
+the org.onap.aai namespace.  The following example has been tested from
+inside the AAI resources pod.
+
+ .. code-block:: bash
+
+    URL='https://aaf-service.onap:8100'
+    CRED='aai@aai.onap.org:demo123456!'
+
+    curl -v -k -u "$CRED" -H "Content-Type: application/RoleRequest+json" $URL/authz/role -d '{"name":"org.onap.aai.aaiui"}'
+
+    curl -v -k -u "$CRED" -H "Content-Type: application/UserRoleRequest+json" $URL/authz/userRole -d '{ "user":"demo@people.osaaf.org", "role":"org.onap.aai.aaiui" }'
+
+Frankfurt will include the role and role assignment in the
+default bootstrap data (being tracked under `AAI-2475 <https://jira.onap.org/browse/AAI-2475>`__)
+
+- `AAI-2606 <https://jira.onap.org/browse/AAI-2606>`_ Schema-service entity description is not available
+
+- `AAI-2457 <https://jira.onap.org/browse/AAI-2457>`_ Inconsistent error messages when getting AAI resources
+
+- `AAI-2457 <https://jira.onap.org/browse/AAI-2457>`_ Inconsistent error messages when getting AAI resources
+
+- `AAI-2092 <https://jira.onap.org/browse/AAI-2092>`_ aai-resources does excessive amounts of logging
+
+- `AAI-2082 <https://jira.onap.org/browse/AAI-2082>`_ aai-resources gives incorrect output when aai-cassandra has shutdown with failure
+
+Quick Links:
+
+- `Active and Available Inventory project page <https://wiki.onap.org/display/DW/Active+and+Available+Inventory+Project>`_
+- `R5 Passing Badge information for AAI <https://bestpractices.coreinfrastructure.org/en/projects/1591>`_
+- `R5 Project Vulnerability Review Table for AAI <https://wiki.onap.org/pages/viewpage.action?pageId=64003431>`_
+
+
 Version: 1.4.0
 
 :Release Data: 2019-06-08
