@@ -6,7 +6,7 @@
 AAI Release Notes
 ==================
 
-Version: 5.0.1
+Version: 5.0.2
 
 :Release Data: 2019-10-03
 
