@@ -41,7 +41,8 @@
         <module>aai-annotations</module>
         <module>aai-core</module>
         <module>aai-auth</module>
-        <module>aai-utils</module>
+	<module>aai-utils</module>
+        <module>aai-schema-abstraction</module>
     </modules>
 
     <profiles>

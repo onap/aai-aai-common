@@ -1,0 +1,100 @@
+{
+  "schema-version": "v1",
+  "schema-type": "json",
+  "schema-content": {
+    "relationship_types": [
+      {
+        "from": "tosca.nodes.SoftwareComponent",
+        "label": "tosca.relationships.HostedOn",
+        "annotations": {
+          "contains-other-v": "NONE",
+          "delete-other-v": "NONE",
+          "prevent-delete": "NONE"
+        }
+      }
+    ],
+    "data_types": [
+      {
+        "name": "org.onap.datatypes.network.MacAssignments",
+        "description": "",
+        "properties": [
+          {
+            "name": "mac_range_plan",
+            "required": false,
+            "type": "string",
+            "description": "",
+            "default": "",
+            "constraint": ""
+          },
+          {
+            "name": "mac_count",
+            "required": false,
+            "type": "integer",
+            "description": "",
+            "default": "",
+            "constraint": ""
+          },
+          {
+            "name": "supplemental_data",
+            "required": false,
+            "type": "string",
+            "description": "",
+            "default": "",
+            "constraint": ""
+          }
+        ]
+      }
+    ],
+    "node_types": [
+      {
+        "name": "tosca.nodes.ObjectStorage",
+        "description": "",
+        "uriTemplate": "",
+        "properties": [
+          {
+            "name": "name",
+            "required": true,
+            "unique": false,
+            "type": "string",
+            "description": "",
+            "default": "",
+            "annotations": {
+              "indexed": true,
+              "searchable": true,
+              "source_of_truth_type": "AAI",
+              "constraint": ""
+            }
+          },
+          {
+            "name": "size",
+            "required": true,
+            "unique": false,
+            "type": "integer",
+            "description": "",
+            "default": "50",
+            "annotations": {
+              "indexed": false,
+              "searchable": true,
+              "source_of_truth_type": "AAI",
+              "constraint": "Greater_or_equal: 0 GB,"
+            }
+          },
+          {
+            "name": "maxsize",
+            "required": true,
+            "unique": false,
+            "type": "string",
+            "description": "",
+            "default": "",
+            "annotations": {
+              "indexed": false,
+              "searchable": false,
+              "source_of_truth_type": "AAI",
+              "constraint": "Greater_or_equal: 0 GB,"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
