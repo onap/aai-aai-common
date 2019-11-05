@@ -25,7 +25,7 @@
     <parent>
         <groupId>org.onap.oparent</groupId>
         <artifactId>oparent</artifactId>
-        <version>2.0.0</version>
+        <version>2.1.0</version>
     </parent>
 
     <groupId>org.onap.aai.aai-common</groupId>
@@ -36,13 +36,14 @@
     <description>Contains all of the common code for resources and traversal repos</description>
 
     <modules>
-        <module>aai-rest</module>
-        <module>aai-schema-ingest</module>
-        <module>aai-annotations</module>
-        <module>aai-core</module>
-        <module>aai-auth</module>
-	<module>aai-utils</module>
-        <module>aai-schema-abstraction</module>
+    	<module>aai-parent</module>
+		<module>aai-rest</module>
+		<module>aai-schema-ingest</module>
+		<module>aai-annotations</module>
+		<module>aai-core</module>
+		<module>aai-auth</module>
+		<module>aai-utils</module>
+		<module>aai-schema-abstraction</module>
     </modules>
 
     <profiles>
