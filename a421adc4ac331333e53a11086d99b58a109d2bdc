@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4438065c_06d856ba",
+        "filename": "aai-parent/pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2019-11-06T18:20:50Z",
+      "side": 1,
+      "message": "@Harish, do you think this is a good solution, where we release the artifact as org.onap.aai.aai-parent:aai-parent instead of org.onap.aai.aai-common:aai-parent?",
+      "revId": "a421adc4ac331333e53a11086d99b58a109d2bdc",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
