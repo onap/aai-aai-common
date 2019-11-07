@@ -16,6 +16,24 @@
       "revId": "a421adc4ac331333e53a11086d99b58a109d2bdc",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "03c56f9d_35d2064a",
+        "filename": "aai-parent/pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 75
+      },
+      "writtenOn": "2019-11-07T14:20:57Z",
+      "side": 1,
+      "message": "@Jimmy, I don\u0027t think nexus allows us to do that.\nWe have to make sure the group id for any artifact released by this repository is org.onap.aai.aai-common or it won\u0027t publish as when we were originally trying to publish with groupId org.onap.aai it failed.",
+      "parentUuid": "4438065c_06d856ba",
+      "revId": "a421adc4ac331333e53a11086d99b58a109d2bdc",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
     }
   ]
 }
