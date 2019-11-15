@@ -47,7 +47,6 @@
 		<eelf.core.version>1.0.1-oss</eelf.core.version>
 		<logback.version>1.2.3</logback.version>
 		<freemarker.version>2.3.21</freemarker.version>
-		<activemq.version>5.15.6</activemq.version>
 		<jacoco.line.coverage.limit>0.50</jacoco.line.coverage.limit>
 		<gremlin.version>3.2.2</gremlin.version>
 		<groovy.version>2.4.15</groovy.version>
@@ -371,6 +370,10 @@
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-broker</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>activemq-openwire-legacy</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.opencsv</groupId>
