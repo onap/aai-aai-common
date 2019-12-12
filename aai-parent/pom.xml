@@ -50,6 +50,7 @@
 		<codehaus.jackson.version>1.9.13</codehaus.jackson.version>
 		<commons.beanutils.version>1.9.4</commons.beanutils.version>
 		<commons.cli.version>1.4</commons.cli.version>
+		<commons.compress.version>1.19</commons.compress.version>
 		<commons.configuration.version>1.10</commons.configuration.version>
 		<commons.io.version>2.6</commons.io.version>
 		<commons.lang.version>2.6</commons.lang.version>
@@ -597,6 +598,12 @@
 			  <artifactId>snakeyaml</artifactId>
 			  <version>${snakeyaml.version}</version>
 			</dependency>
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-compress</artifactId>
+			<version>${commons.compress.version}</version>
+		</dependency>
 
 		</dependencies>
 
