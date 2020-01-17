@@ -39,7 +39,7 @@
 
 	<properties>
 		<!--  update this just prior to release or figure out something with version.properties -->
-		<aai.release.version>1.6.1-SNAPSHOT</aai.release.version>
+		<aai.release.version>${project.version}</aai.release.version>
 		<aai.common.logging.version>1.5.1</aai.common.logging.version>
 		<aai.rest.client.version>1.5.1</aai.rest.client.version>
 		<aai.schema.service.version>1.6.0</aai.schema.service.version>
