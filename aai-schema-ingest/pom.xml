@@ -15,7 +15,7 @@
 	<parent>
 		<groupId>org.onap.aai.aai-common</groupId>
 		<artifactId>aai-parent</artifactId>
-		<version>1.6.1-SNAPSHOT</version>
+		<version>1.6.2-SNAPSHOT</version>
 		<relativePath>../aai-parent/pom.xml</relativePath>
 	</parent>
 	<artifactId>aai-schema-ingest</artifactId>
