@@ -1,0 +1,4 @@
+distribution_type: maven
+log_dir: aai-aai-common-maven-stage-master/223/
+project: aai-common
+version: 1.6.2
