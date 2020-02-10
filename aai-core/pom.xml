@@ -28,7 +28,7 @@
 	<parent>
 		<groupId>org.onap.aai.aai-common</groupId>
 		<artifactId>aai-parent</artifactId>
-		<version>1.6.3-SNAPSHOT</version>
+		<version>1.6.4-SNAPSHOT</version>
 		<relativePath>../aai-parent/pom.xml</relativePath>
 	</parent>
 	<artifactId>aai-core</artifactId>
@@ -39,7 +39,7 @@
 		<sonar.language>java</sonar.language>
 		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
 		<sonar.surefire.reportsPath>${project.build.directory}/surefire-reports</sonar.surefire.reportsPath>
-		<sonar.jacoco.reportPath>${project.build.directory}/coverage-reports/jacoco.exec</sonar.jacoco.reportPath>
+		<sonar.jacoco.xmlReportPaths>${project.build.directory}/coverage-reports/jacoco.xml</sonar.jacoco.xmlReportPaths>
 		<sonar.jacoco.reportMissing.force.zero>false</sonar.jacoco.reportMissing.force.zero>
 		<sonar.projectVersion>${project.version}</sonar.projectVersion>
 		<httpclient.version>4.5.5</httpclient.version>
@@ -130,7 +130,7 @@
 							<goal>prepare-agent</goal>
 						</goals>
 						<configuration>
-							<destFile>${project.build.directory}/coverage-reports/jacoco.exec</destFile>
+							<destFile>${project.build.directory}/coverage-reports/jacoco.xml</destFile>
 							<!-- <append>true</append> -->
 						</configuration>
 					</execution>
@@ -142,7 +142,7 @@
 						</goals>
 						<configuration>
 							<!-- Sets the path to the file which contains the execution data. -->
-							<dataFile>${project.build.directory}/coverage-reports/jacoco.exec</dataFile>
+							<dataFile>${project.build.directory}/coverage-reports/jacoco.xml</dataFile>
 							<!-- Sets the output directory for the code coverage report. -->
 							<outputDirectory>${project.reporting.outputDirectory}/jacoco</outputDirectory>
 						</configuration>
@@ -153,7 +153,7 @@
 							<goal>check</goal>
 						</goals>
 						<configuration>
-							<dataFile>${project.build.directory}/coverage-reports/jacoco.exec</dataFile>
+							<dataFile>${project.build.directory}/coverage-reports/jacoco.xml</dataFile>
 							<rules>
 								<rule implementation="org.jacoco.maven.RuleConfiguration">
 									<element>BUNDLE</element>
