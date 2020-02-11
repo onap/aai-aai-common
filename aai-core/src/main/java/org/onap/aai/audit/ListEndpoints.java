@@ -38,7 +38,6 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.onap.aai.config.SpringContextAware;
-import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.introspection.LoaderFactory;
@@ -56,11 +55,11 @@ public class ListEndpoints {
 
     private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(ListEndpoints.class);
 
-    private final String start = "inventory";
-    private final String[] blacklist = {"search", "aai-internal"};
+    private static final String START = "inventory";
+    private static final String[] blacklist = {"search", "aai-internal"};
 
     private List<String> endpoints = new ArrayList<>();
-    private Map<String, String> endpointToLogicalName = new HashMap<String, String>();
+    private Map<String, String> endpointToLogicalName = new HashMap<>();
 
     /**
      * The main method.
@@ -97,11 +96,11 @@ public class ListEndpoints {
         Loader loader = SpringContextAware.getBean(LoaderFactory.class).createLoaderForVersion(ModelType.MOXY, version);
 
         try {
-            final Introspector start = loader.introspectorFromName(this.start);
+            final Introspector start = loader.introspectorFromName(this.START);
             Set<String> startMap = new HashSet<>();
             beginAudit(start, basePath + "/" + version, startMap);
         } catch (AAIUnknownObjectException e) {
-            throw new RuntimeException("Failed to find object " + this.start + ", cannot run ListEndpoints audit");
+            throw new RuntimeException("Failed to find object " + this.START + ", cannot run ListEndpoints audit");
         }
     }
 
