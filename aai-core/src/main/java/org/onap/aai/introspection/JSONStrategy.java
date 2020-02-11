@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.onap.aai.schema.enums.ObjectMetadata;
 import org.onap.aai.schema.enums.PropertyMetadata;
@@ -149,7 +150,7 @@ public class JSONStrategy extends Introspector {
         Object resultObject = null;
         Class<?> resultClass = null;
         resultObject = this.getValue(name);
-        if (resultObject.getClass().getName().equals("org.json.simple.JSONArray")) {
+        if (resultObject instanceof JSONArray) {
             resultClass = ((List) resultObject).get(0).getClass();
         }
 
@@ -273,10 +274,10 @@ public class JSONStrategy extends Introspector {
     /*
      * @Override
      * public String findEdgeName(String parent, String child) {
-     * 
+     *
      * // Always has for now
      * return "has";
-     * 
+     *
      * }
      */
 
