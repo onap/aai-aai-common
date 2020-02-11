@@ -177,7 +177,7 @@ public abstract class Introspector implements Cloneable {
         if (obj != null) {
 
             try {
-                if (!obj.getClass().getName().equals(nameClass.getName())) {
+                if (!nameClass.isAssignableFrom(obj.getClass())) {
                     if (nameClass.isPrimitive()) {
                         nameClass = ClassUtils.primitiveToWrapper(nameClass);
                         result = nameClass.getConstructor(String.class).newInstance(obj.toString());
@@ -349,7 +349,7 @@ public abstract class Introspector implements Cloneable {
     /**
      * This will returned the generic parameterized type of the underlying
      * object if it exists
-     * 
+     *
      * @param name
      * @return the generic type of the java class of the underlying object
      */
@@ -414,7 +414,7 @@ public abstract class Introspector implements Cloneable {
 
     /**
      * Is this type not a Java String or primitive
-     * 
+     *
      * @param name
      * @return
      */
