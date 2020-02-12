@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "750c3336_a7a5b560",
+        "filename": "aai-core/src/main/java/org/onap/aai/logging/EcompResponseDescription.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2020-02-12T18:47:27Z",
+      "side": 1,
+      "message": "Do we need this import twice?",
+      "revId": "12446d171313fb8557696e929d4c1f61fc8c4f02",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0ab447e9_2549eda4",
+        "filename": "aai-core/src/main/java/org/onap/aai/serialization/tinkerpop/TreeBackedVertex.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2020-02-12T18:47:27Z",
+      "side": 1,
+      "message": "@Harish can you look at this change?",
+      "revId": "12446d171313fb8557696e929d4c1f61fc8c4f02",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
