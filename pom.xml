@@ -30,22 +30,22 @@
 
     <groupId>org.onap.aai.aai-common</groupId>
     <artifactId>aai-common</artifactId>
-    <version>1.6.4-SNAPSHOT</version>
+    <version>1.6.5-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>aai-aai-common</name>
     <description>Contains all of the common code for resources and traversal repos</description>
 
     <modules>
-    	<module>aai-parent</module>
-		<module>aai-rest</module>
-		<module>aai-schema-ingest</module>
-		<module>aai-annotations</module>
-		<module>aai-core</module>
-		<module>aai-auth</module>
-		<module>aai-utils</module>
-		<module>aai-schema-abstraction</module>
+      <module>aai-parent</module>
+      <module>aai-rest</module>
+      <module>aai-schema-ingest</module>
+      <module>aai-annotations</module>
+      <module>aai-core</module>
+      <module>aai-auth</module>
+      <module>aai-utils</module>
+      <module>aai-schema-abstraction</module>
     </modules>
-
+    
     <profiles>
         <profile>
             <id>docker</id>

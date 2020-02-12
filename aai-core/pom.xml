@@ -28,7 +28,7 @@
 	<parent>
 		<groupId>org.onap.aai.aai-common</groupId>
 		<artifactId>aai-parent</artifactId>
-		<version>1.6.4-SNAPSHOT</version>
+		<version>1.6.5-SNAPSHOT</version>
 		<relativePath>../aai-parent/pom.xml</relativePath>
 	</parent>
 	<artifactId>aai-core</artifactId>
@@ -36,12 +36,7 @@
 	<packaging>jar</packaging>
 	<properties>
 		<springframework.version>4.3.24.RELEASE</springframework.version>
-		<sonar.language>java</sonar.language>
-		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
-		<sonar.surefire.reportsPath>${project.build.directory}/surefire-reports</sonar.surefire.reportsPath>
-		<sonar.jacoco.xmlReportPaths>${project.build.directory}/coverage-reports/jacoco.xml</sonar.jacoco.xmlReportPaths>
-		<sonar.jacoco.reportMissing.force.zero>false</sonar.jacoco.reportMissing.force.zero>
-		<sonar.projectVersion>${project.version}</sonar.projectVersion>
+
 		<httpclient.version>4.5.5</httpclient.version>
 		<jackson.version>2.2.3</jackson.version>
 		<eelf.core.version>1.0.1-oss</eelf.core.version>
@@ -111,64 +106,52 @@
 				<artifactId>maven-dependency-plugin</artifactId>
 				<version>2.8</version>
 			</plugin>
+
 			<plugin>
 			  <groupId>org.sonarsource.scanner.maven</groupId>
 			  <artifactId>sonar-maven-plugin</artifactId>
-			  <version>3.6.1.1688</version>
 			</plugin>
 			<plugin>
-				<groupId>org.jacoco</groupId>
-				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.8.5</version>
-				<configuration>
-					<dumpOnExit>true</dumpOnExit>
-				</configuration>
-				<executions>
-					<execution>
-						<id>jacoco-initialize-unit-tests</id>
-						<goals>
-							<goal>prepare-agent</goal>
-						</goals>
-						<configuration>
-							<destFile>${project.build.directory}/coverage-reports/jacoco.xml</destFile>
-							<!-- <append>true</append> -->
-						</configuration>
-					</execution>
-					<execution>
-						<id>post-unit-test</id>
-						<phase>test</phase>
-						<goals>
-							<goal>report</goal>
-						</goals>
-						<configuration>
-							<!-- Sets the path to the file which contains the execution data. -->
-							<dataFile>${project.build.directory}/coverage-reports/jacoco.xml</dataFile>
-							<!-- Sets the output directory for the code coverage report. -->
-							<outputDirectory>${project.reporting.outputDirectory}/jacoco</outputDirectory>
-						</configuration>
-					</execution>
-					<execution>
-						<id>default-check</id>
-						<goals>
-							<goal>check</goal>
-						</goals>
-						<configuration>
-							<dataFile>${project.build.directory}/coverage-reports/jacoco.xml</dataFile>
-							<rules>
-								<rule implementation="org.jacoco.maven.RuleConfiguration">
-									<element>BUNDLE</element>
-									<limits>
-										<limit implementation="org.jacoco.report.check.Limit">
-											<counter>LINE</counter>
-											<value>COVEREDRATIO</value>
-											<minimum>${jacoco.line.coverage.limit}</minimum>
-										</limit>
-									</limits>
-								</rule>
-							</rules>
-						</configuration>
-					</execution>
-				</executions>
+			  <groupId>org.jacoco</groupId>
+			  <artifactId>jacoco-maven-plugin</artifactId>
+			  <configuration>
+			    <dumpOnExit>true</dumpOnExit>
+			  </configuration>
+			  <executions>
+			    <execution>
+			      <id>default-prepare-agent</id>
+			      <goals>
+				<goal>prepare-agent</goal>
+			      </goals>
+			    </execution>
+			    <execution>
+			      <id>default-report</id>
+			      <goals>
+				<goal>report</goal>
+			      </goals>
+			    </execution>
+			    <execution>
+			      <id>default-check</id>
+			      <goals>
+				<goal>check</goal>
+			      </goals>
+			      <configuration>
+				<dataFile>${project.build.directory}/coverage-reports/jacoco.exec</dataFile>
+				<rules>
+				  <rule implementation="org.jacoco.maven.RuleConfiguration">
+				    <element>BUNDLE</element>
+				    <limits>
+				      <limit implementation="org.jacoco.report.check.Limit">
+					<counter>LINE</counter>
+					<value>COVEREDRATIO</value>
+					<minimum>${jacoco.line.coverage.limit}</minimum>
+				      </limit>
+				    </limits>
+				  </rule>
+				</rules>
+			      </configuration>
+			    </execution>
+			  </executions>
 			</plugin>
 			<plugin>
 				<!-- explicitly define maven-deploy-plugin after other to force exec 
