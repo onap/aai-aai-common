@@ -45,7 +45,7 @@ public class SecureClientHttpRequestFactory extends SimpleClientHttpRequestFacto
     private static final String KEYSTORE_ALGORITHM = "SunX509";
     private static final String KEYSTORE_TYPE = "PKCS12";
     private JsonSchemaProviderConfig config;
-   
+
 
     public SecureClientHttpRequestFactory(JsonSchemaProviderConfig  config) {
         super();
@@ -100,18 +100,13 @@ public class SecureClientHttpRequestFactory extends SimpleClientHttpRequestFacto
             }
 
             if (config.getSchemaServiceCertFile() != null) {
-                FileInputStream fin =null;
-                try {
-                    fin = new FileInputStream(config.getSchemaServiceCertFile());
-    
+                try (FileInputStream fin = new FileInputStream(config.getSchemaServiceCertFile())) {
                     // Load the keystore and initialize the key manager factory.
                     ks.load(fin, pwd);
                     kmf.init(ks, pwd);
-    
+
                     ctx.init(kmf.getKeyManagers(), trustAllCerts, null);
-                }finally {
-                        fin.close();
-                    }
+                }
             } else {
                 ctx.init(null, trustAllCerts, null);
             }

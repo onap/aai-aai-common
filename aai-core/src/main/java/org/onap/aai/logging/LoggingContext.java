@@ -34,7 +34,6 @@ import java.util.concurrent.TimeUnit;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.onap.aai.exceptions.AAIException;
 import org.slf4j.MDC;
 
 public class LoggingContext {
@@ -56,7 +55,7 @@ public class LoggingContext {
     public static final String BUSINESS_PROCESS_ERROR = "500";
     public static final String UNKNOWN_ERROR = "900";
 
-    public static final Map<String, String> responseMap = new HashMap();
+    protected static final Map<String, String> responseMap = new HashMap();
 
     static {
         responseMap.put(SUCCESS, "Success");
@@ -64,7 +63,7 @@ public class LoggingContext {
     }
 
     // Specific Log Event Fields
-    public static enum LoggingField {
+    public enum LoggingField {
         START_TIME("startTime"), REQUEST_ID("requestId"), SERVICE_INSTANCE_ID("serviceInstanceId"), SERVER_NAME(
                 "serverName"), SERVICE_NAME("serviceName"), PARTNER_NAME("partnerName"), STATUS_CODE(
                         "statusCode"), RESPONSE_CODE("responseCode"), RESPONSE_DESCRIPTION(
@@ -89,6 +88,7 @@ public class LoggingContext {
             this.text = text;
         }
 
+        @Override
         public String toString() {
             return text;
         }
@@ -162,7 +162,7 @@ public class LoggingContext {
     }
 
     public static String responseCode() {
-        return (String) MDC.get(LoggingField.RESPONSE_CODE.toString());
+        return MDC.get(LoggingField.RESPONSE_CODE.toString());
     }
 
     public static void responseCode(String responseCode) {
@@ -268,10 +268,7 @@ public class LoggingContext {
 
     public static boolean isStopWatchStarted() {
         final String rawStopWatchStart = MDC.get(LoggingField.STOP_WATCH_START.toString());
-        if (rawStopWatchStart == null) {
-            return false;
-        }
-        return true;
+        return rawStopWatchStart != null;
     }
 
     public static void stopWatchStart() {
@@ -406,7 +403,7 @@ public class LoggingContext {
     }
 
     public static Map<String, String> getCopy() {
-        final Map<String, String> copy = new HashMap<String, String>();
+        final Map<String, String> copy = new HashMap<>();
 
         for (LoggingField field : LoggingField.values()) {
             final String value = MDC.get(field.toString());

@@ -55,7 +55,7 @@ public class HbaseSaltPrefixer {
      * @return the string
      */
     public String prependSalt(String key) {
-        int salt = Math.abs(key.hashCode()) % NUM_REGION_BUCKETS;
+        int salt = key.hashCode() % NUM_REGION_BUCKETS;
         return salt + "-" + key;
     }
 }

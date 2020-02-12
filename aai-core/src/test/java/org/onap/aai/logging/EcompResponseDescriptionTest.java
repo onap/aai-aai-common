@@ -44,7 +44,7 @@ public class EcompResponseDescriptionTest {
 
     @Test
     public void getDefaultDesc() {
-        assertEquals(_ecompResponseDescription.convert(mockEvent), _ecompResponseDescription.DefaultDescription);
+        assertEquals(_ecompResponseDescription.convert(mockEvent), _ecompResponseDescription.DEFAULT_DESCRIPTION);
     }
 
 }
