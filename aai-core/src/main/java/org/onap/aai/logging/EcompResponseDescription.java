@@ -25,22 +25,26 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 
 import org.onap.aai.logging.LoggingContext.LoggingField;
 
+import org.onap.aai.logging.LoggingContext.LoggingField;
+
 public class EcompResponseDescription extends ClassicConverter {
-    public final static String DefaultDescription = "Unknown response/error description";
+    public static final String DEFAULT_DESCRIPTION = "Unknown response/error description";
 
     @Override
     public String convert(ILoggingEvent event) {
 
         if (!event.getMDCPropertyMap().containsKey(LoggingField.RESPONSE_DESCRIPTION.toString())) {
-            return (DefaultDescription);
+            return (DEFAULT_DESCRIPTION);
         }
         // Replace pipes and new lines
         String currentDesc = event.getMDCPropertyMap().get(LoggingField.RESPONSE_DESCRIPTION.toString());
         if ((currentDesc == null) || (currentDesc.length() == 0)) {
-            return (DefaultDescription);
+            return (DEFAULT_DESCRIPTION);
         }
-        currentDesc = currentDesc.replaceAll("|", "!");
+        currentDesc = currentDesc.replaceAll("\\|", "!");
         currentDesc = currentDesc.replaceAll("[\\r\\n]+", "^");
-        return event.getMDCPropertyMap().get(LoggingField.RESPONSE_DESCRIPTION.toString());
+        return event.getMDCPropertyMap().get(currentDesc);
     }
 }
+
+

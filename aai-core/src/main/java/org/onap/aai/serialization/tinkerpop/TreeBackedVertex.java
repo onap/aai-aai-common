@@ -39,8 +39,8 @@ import org.apache.tinkerpop.gremlin.structure.util.detached.DetachedVertex;
 public class TreeBackedVertex extends DetachedVertex implements Vertex {
 
     private static final long serialVersionUID = -976854460992756953L;
-    private final Tree<Element> tree;
-    private final Vertex self;
+    private final transient Tree<Element> tree;
+    private final transient Vertex self;
 
     public TreeBackedVertex(Vertex v, Tree<Element> tree) {
         super(v, true);
