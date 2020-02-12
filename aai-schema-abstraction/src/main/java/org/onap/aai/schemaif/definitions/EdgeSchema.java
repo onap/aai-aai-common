@@ -27,25 +27,25 @@ public class EdgeSchema {
     protected String name;
     protected String source;
     protected String target;
-    protected Multiplicity multiplicity; 
+    protected Multiplicity multiplicity;
     protected Map<String,String> annotations;
     protected Map<String,PropertySchema> properties;
-    
+
     public enum Multiplicity {
-        MANY_2_MANY, 
+        MANY_2_MANY,
         MANY_2_ONE,
         ONE_2_MANY,
         ONE_2_ONE
     }
-    
+
     public String getName() {
         return name;
     }
-    
+
     public String getSource() {
         return source;
     }
-    
+
     public String getTarget() {
         return target;
     }
@@ -61,55 +61,53 @@ public class EdgeSchema {
     public Map<String,PropertySchema> getPropertySchemaList() {
         return properties;
     }
-    
+
     public String getAnnotationValue(String annotation) {
         return annotations.get(annotation.toLowerCase());
     }
-    
+
     public Map<String,String> getAnnotations() {
         return annotations;
     }
-    
+
     @Override
     public int hashCode() {
         String key = source + target + name;
         return key.hashCode();
     }
-    
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
         }
-        
-        if (getClass() != obj.getClass()) {
+
+        if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        
+
         EdgeSchema other = (EdgeSchema) obj;
-        
-        if ( (!source.equals(other.getSource())) || (!target.equals(other.getTarget())) || (!name.equals(other.getName())) ) {
-            return false;
-        }
-        
-        return true;
+
+        return (source.equals(other.getSource()))
+            && (target.equals(other.getTarget()))
+            && (name.equals(other.getName()));
     }
-    
+
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("edge: " + getSource() + " -> " + getTarget() + "\n");
         sb.append("  type: " + getName() + "\n");
         sb.append("  multiplicity: " + getMultiplicity() + "\n");
-        
+
         sb.append("  annotations: " + "\n");
-        for (String annotation : annotations.keySet()) {
-            sb.append("    " + annotation + ": " + annotations.get(annotation) + "\n");
+        for (Map.Entry<String, String> entry : annotations.entrySet()) {
+            sb.append("    " + entry.getKey() + ": " + entry.getValue() + "\n");
         }
         sb.append("  properties: " + "\n");
         for (PropertySchema attrSchema : getPropertySchemaList().values()) {
             sb.append(attrSchema.toString());
         }
-        
+
         return sb.toString();
     }
 

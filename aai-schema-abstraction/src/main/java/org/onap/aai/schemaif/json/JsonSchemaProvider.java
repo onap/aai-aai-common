@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.zip.ZipEntry; 
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.onap.aai.cl.api.Logger;
@@ -53,25 +53,25 @@ import org.springframework.web.client.RestTemplate;
 
 public class JsonSchemaProvider implements SchemaProvider {
     Logger logger = LoggerFactory.getInstance().getLogger(JsonSchemaProvider.class.getName());
-    
+
     private JsonSchemaProviderConfig config;
     private Map<String,SchemaInstance> schemaCache = new ConcurrentHashMap<>();
     private RestTemplate restTemplate = null;
-            
+
     public JsonSchemaProvider(JsonSchemaProviderConfig config) {
         this.config = config;
 
-        SecureClientHttpRequestFactory fac = new SecureClientHttpRequestFactory(config); 
+        SecureClientHttpRequestFactory fac = new SecureClientHttpRequestFactory(config);
         fac.setBufferRequestBody(false);
         this.restTemplate = new RestTemplate(fac);
     }
-    
+
     @Override
     public void loadSchema() throws SchemaProviderException {
         // Load the latest schema version
         fetchSchemaVersion(getLatestSchemaVersion());
     }
-        
+
     @Override
     public String getLatestSchemaVersion() throws SchemaProviderException {
         return "v0";
@@ -79,7 +79,7 @@ public class JsonSchemaProvider implements SchemaProvider {
 
     @Override
     public VertexSchema getVertexSchema(String vertexName, String schemaVersion) throws SchemaProviderException {
-        SchemaInstance inst = getSchemaVersion(schemaVersion);  
+        SchemaInstance inst = getSchemaVersion(schemaVersion);
         return inst.getVertexSchema(vertexName);
     }
 
@@ -89,16 +89,16 @@ public class JsonSchemaProvider implements SchemaProvider {
         SchemaInstance inst = getSchemaVersion(version);
         return inst.getEdgeSchema(sourceVertex, targetVertex, edgeType);
     }
-    
+
     @Override
     public Set<EdgeSchema> getAdjacentEdgeSchema(String vertexType, String version) throws SchemaProviderException {
         SchemaInstance inst = getSchemaVersion(version);
-        
+
         Set<EdgeSchema> edgeList = inst.getEdgeSchema(vertexType);
         if (edgeList == null) {
-            edgeList = new HashSet<EdgeSchema>();
+            edgeList = new HashSet<>();
         }
-        
+
         return edgeList;
     }
 
@@ -107,55 +107,51 @@ public class JsonSchemaProvider implements SchemaProvider {
             throws SchemaProviderException {
         SchemaInstance inst = getSchemaVersion(version);
 
-        if (inst == null) {
-            throw new SchemaProviderException("Unable to find schema version " + version);
-        }
-        
         Set<EdgeSchema> edgeList = inst.getEdgeSchemas(sourceType, targetType);
         if (edgeList == null) {
-            edgeList = new HashSet<EdgeSchema>();
+            edgeList = new HashSet<>();
         }
-        
+
         return edgeList;
     }
-    
+
     public void loadSchema(String payload, String version) throws SchemaProviderException {
         JsonSchema jsonSchema = JsonSchema.fromJson(payload);
         SchemaInstance schemaInst = new SchemaInstance();
-        
+
         for (JsonVertexSchema jsonVertex : jsonSchema.getNodeTypes()) {
             FromJsonVertexSchema vSchema = new FromJsonVertexSchema();
             vSchema.fromJson(jsonVertex, jsonSchema.getDataTypes(), jsonSchema.getCommonProperties());
             schemaInst.addVertex(vSchema);
         }
-        
+
         for (JsonEdgeSchema jsonEdge : jsonSchema.getRelationshipTypes()) {
             FromJsonEdgeSchema eSchema = new FromJsonEdgeSchema();
             eSchema.fromJson(jsonEdge);
             schemaInst.addEdge(eSchema);
         }
-        
+
         schemaCache.put(version, schemaInst);
     }
-    
+
     private synchronized void fetchSchemaVersion(String version) throws SchemaProviderException {
         if (schemaCache.get(version) != null) {
             return;
         }
-        
+
 
         String url = config.getSchemaServiceBaseUrl() + "/" + version;
-        
+
         HttpHeaders headers = new HttpHeaders();
         headers.put("X-FromAppId", Arrays.asList(config.getServiceName()));
         headers.put("X-TransactionId", Arrays.asList(java.util.UUID.randomUUID().toString()));
         headers.setAccept(Arrays.asList(org.springframework.http.MediaType.APPLICATION_OCTET_STREAM));
-        
-        HttpEntity <String> entity = new HttpEntity<String>(headers);
-        
+
+        HttpEntity <String> entity = new HttpEntity<>(headers);
+
         ResponseEntity<byte[]> response = restTemplate.exchange(url, HttpMethod.GET, entity, byte[].class);
-        
-        
+
+
         if (response.getStatusCodeValue() == HttpStatus.NOT_FOUND.value()) {
             logger.warn(SchemaProviderMsgs.SCHEMA_LOAD_ERROR, "version " + version + " not found");
             throw new SchemaProviderException("Schema version " + version + " not found");
@@ -173,7 +169,7 @@ public class JsonSchemaProvider implements SchemaProvider {
             StringWriter writer = new StringWriter();
             PrintWriter printWriter = new PrintWriter(writer);
             ex.printStackTrace(printWriter);
-            logger.error(SchemaProviderMsgs.SCHEMA_LOAD_ERROR, "failed to load version " + version + ": " 
+            logger.error(SchemaProviderMsgs.SCHEMA_LOAD_ERROR, "failed to load version " + version + ": "
                     + response.getBody() + "\n" + writer.toString());
             throw new SchemaProviderException("Error loading schema version " + version + ":" + ex.getMessage());
 
@@ -181,7 +177,7 @@ public class JsonSchemaProvider implements SchemaProvider {
 
         logger.info(SchemaProviderMsgs.LOADED_SCHEMA_FILE, version);
     }
-    
+
     private String unzipAndGetJSONString(ResponseEntity<byte[]> response) throws IOException {
         StringBuffer sb = new StringBuffer("");
 
@@ -199,8 +195,10 @@ public class JsonSchemaProvider implements SchemaProvider {
             }
         } finally {
             try {
-                zipStream.closeEntry();
-                zipStream.close();
+                if (zipStream != null) {
+                    zipStream.closeEntry();
+                    zipStream.close();
+                }
             } catch (Exception e) {
                 logger.warn(SchemaProviderMsgs.SCHEMA_LOAD_ERROR, e.toString());
 
@@ -223,7 +221,7 @@ public class JsonSchemaProvider implements SchemaProvider {
                 throw new SchemaProviderException("Unable to find schema version " + versionToLoad);
             }
         }
-        
+
         return inst;
     }
 
@@ -231,5 +229,5 @@ public class JsonSchemaProvider implements SchemaProvider {
     public Map<String, VertexSchema> getVertexMap(String schemaVersion) throws SchemaProviderException {
       return getSchemaVersion(schemaVersion).getVertexMap();
     }
-    
+
 }
