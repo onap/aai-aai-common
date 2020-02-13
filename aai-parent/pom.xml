@@ -46,7 +46,7 @@
 
 		<aaf.version>2.1.15</aaf.version>
 		<antlr.version>4.7.2</antlr.version>
-		<activemq.version>5.15.10</activemq.version>
+		<activemq.version>5.15.11</activemq.version>
 		<codehaus.jackson.version>1.9.13</codehaus.jackson.version>
 		<commons.beanutils.version>1.9.4</commons.beanutils.version>
 		<commons.cli.version>1.4</commons.cli.version>
