@@ -1,25 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-
-============LICENSE_START======================================================
-    org.onap.aai
-===============================================================================
-    Copyright © 2019 AT&T Intellectual Property. All rights reserved.
-===============================================================================
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
-===========LICENSE_END=========================================================
-
--->
+<!-- ============LICENSE_START====================================================== 
+	org.onap.aai =============================================================================== 
+	Copyright © 2019 AT&T Intellectual Property. All rights reserved. =============================================================================== 
+	Licensed under the Apache License, Version 2.0 (the "License"); you may not 
+	use this file except in compliance with the License. You may obtain a copy 
+	of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required 
+	by applicable law or agreed to in writing, software distributed under the 
+	License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS 
+	OF ANY KIND, either express or implied. See the License for the specific 
+	language governing permissions and limitations under the License. ===========LICENSE_END========================================================= -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
@@ -38,7 +27,7 @@
 	</modules>
 
 	<properties>
-		<!--  update this just prior to release or figure out something with version.properties -->
+		<!-- update this just prior to release or figure out something with version.properties -->
 		<aai.release.version>${project.version}</aai.release.version>
 		<aai.common.logging.version>1.5.1</aai.common.logging.version>
 		<aai.rest.client.version>1.5.1</aai.rest.client.version>
@@ -78,7 +67,7 @@
 		<jnr.ffi.version>2.1.11</jnr.ffi.version>
 		<jolt.version>0.0.24</jolt.version>
 		<jopt.simple.version>5.0.4</jopt.simple.version>
-		<jsonassert.version>1.5.0</jsonassert.version> 
+		<jsonassert.version>1.5.0</jsonassert.version>
 		<json.patch.version>1.9</json.patch.version>
 		<json.path.version>2.4.0</json.path.version>
 		<json.version>20190722</json.version>
@@ -97,14 +86,21 @@
 		<reflections.version>0.9.10</reflections.version>
 		<snakeyaml.version>1.25</snakeyaml.version>
 		<spring.boot.version>1.5.22.RELEASE</spring.boot.version>
+
+		<sonar.jacoco.reportPath />
+		<sonar.jacoco.itReportPath />
+		<sonar.jacoco.reportMissing.force.zero />
+		
+		<!-- we let things pass by default, set custom level for each child project -->
+		<jacoco.line.coverage.limit>0.00</jacoco.line.coverage.limit>
 		<jacoco.version>0.8.5</jacoco.version>
 		<sonar-jacoco-listeners.version>3.2</sonar-jacoco-listeners.version>
 		<sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
 		<sonar.coverage.jacoco.xmlReportPaths>${project.reporting.outputDirectory}/jacoco-ut/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
 		<sonar.exclusions>**/gen/**,**/generated-sources/**,**/yang-gen**,**/pax/**</sonar.exclusions>
-		
+
 		<sonar.scanner.version>3.7.0.1746</sonar.scanner.version>
-		
+
 		<spring.web.version>4.3.25.RELEASE</spring.web.version>
 		<spring.jms.version>4.3.25.RELEASE</spring.jms.version>
 		<spring.test.version>4.3.25.RELEASE</spring.test.version>
@@ -147,17 +143,17 @@
 			</dependency>
 
 			<dependency>
-			  <groupId>org.springframework.boot</groupId>
-			  <artifactId>spring-boot-starter-web</artifactId>
-			  <version>${spring.boot.version}</version>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-web</artifactId>
+				<version>${spring.boot.version}</version>
 			</dependency>
 
 			<dependency>
-			  <groupId>org.springframework.boot</groupId>
-			  <artifactId>spring-boot-starter-parent</artifactId>
-			  <version>${spring.boot.version}</version>
-			  <type>pom</type>
-			  <scope>import</scope>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-parent</artifactId>
+				<version>${spring.boot.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
 			</dependency>
 
 			<dependency>
@@ -176,9 +172,9 @@
 			</dependency>
 
 			<dependency>
-			  <groupId>org.springframework</groupId>
-			  <artifactId>spring-test</artifactId>
-			  <version>${spring.test.version}</version>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-test</artifactId>
+				<version>${spring.test.version}</version>
 			</dependency>
 
 			<dependency>
@@ -344,20 +340,20 @@
 			</dependency>
 
 			<dependency>
-			  <groupId>org.antlr</groupId>
-			  <artifactId>antlr4-runtime</artifactId>
-			  <version>${antlr.version}</version>
+				<groupId>org.antlr</groupId>
+				<artifactId>antlr4-runtime</artifactId>
+				<version>${antlr.version}</version>
 			</dependency>
 			<dependency>
-			  <groupId>org.antlr</groupId>
-			  <artifactId>antlr4-maven-plugin</artifactId>
-			  <version>${antlr.version}</version>
+				<groupId>org.antlr</groupId>
+				<artifactId>antlr4-maven-plugin</artifactId>
+				<version>${antlr.version}</version>
 			</dependency>
-			
+
 			<dependency>
-			  <groupId>org.json</groupId>
-			  <artifactId>json</artifactId>
-			  <version>${json.version}</version>
+				<groupId>org.json</groupId>
+				<artifactId>json</artifactId>
+				<version>${json.version}</version>
 			</dependency>
 
 			<dependency>
@@ -421,9 +417,9 @@
 			</dependency>
 
 			<dependency>
-			  <groupId>com.jayway.jsonpath</groupId>
-			  <artifactId>json-path</artifactId>
-			  <version>${json.path.version}</version>
+				<groupId>com.jayway.jsonpath</groupId>
+				<artifactId>json-path</artifactId>
+				<version>${json.path.version}</version>
 			</dependency>
 
 			<dependency>
@@ -438,7 +434,7 @@
 				<version>${gson.version}</version>
 			</dependency>
 
-			
+
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-text</artifactId>
@@ -456,13 +452,13 @@
 				<artifactId>jersey-core</artifactId>
 				<version>${jersey.version}</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>com.sun.jersey</groupId>
 				<artifactId>jersey-client</artifactId>
 				<version>${jersey.version}</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>com.sun.jersey</groupId>
 				<artifactId>jersey-json</artifactId>
@@ -498,7 +494,7 @@
 				<artifactId>log4j</artifactId>
 				<version>${log4j.version}</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>log4j</groupId>
 				<artifactId>apache-log4j-extras</artifactId>
@@ -519,9 +515,9 @@
 			</dependency>
 
 			<dependency>
-			  <groupId>org.springframework</groupId>
-			  <artifactId>spring-jms</artifactId>
-			  <version>${spring.jms.version}</version>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-jms</artifactId>
+				<version>${spring.jms.version}</version>
 			</dependency>
 
 			<dependency>
@@ -585,53 +581,53 @@
 			</dependency>
 
 			<dependency>
-			  <groupId>org.onap.aai.schema-service</groupId>
-                          <artifactId>aai-schema</artifactId>
-			  <version>${aai.schema.service.version}</version>
+				<groupId>org.onap.aai.schema-service</groupId>
+				<artifactId>aai-schema</artifactId>
+				<version>${aai.schema.service.version}</version>
 			</dependency>
 
 			<dependency>
-			  <groupId>org.apache.httpcomponents</groupId>
-			  <artifactId>httpclient</artifactId>
-			  <version>${httpclient.version}</version>
+				<groupId>org.apache.httpcomponents</groupId>
+				<artifactId>httpclient</artifactId>
+				<version>${httpclient.version}</version>
 			</dependency>
 
 			<dependency>
-			  <groupId>org.skyscreamer</groupId>
-			  <artifactId>jsonassert</artifactId>
-			  <version>${jsonassert.version}</version>
-			  <scope>test</scope>
+				<groupId>org.skyscreamer</groupId>
+				<artifactId>jsonassert</artifactId>
+				<version>${jsonassert.version}</version>
+				<scope>test</scope>
 			</dependency>
 
 			<dependency>
-			  <groupId>org.codehaus.plexus</groupId>
-			  <artifactId>plexus-utils</artifactId>
-			  <version>${plexus.utils.version}</version>
+				<groupId>org.codehaus.plexus</groupId>
+				<artifactId>plexus-utils</artifactId>
+				<version>${plexus.utils.version}</version>
 			</dependency>
 
 			<dependency>
-			  <groupId>org.yaml</groupId>
-			  <artifactId>snakeyaml</artifactId>
-			  <version>${snakeyaml.version}</version>
+				<groupId>org.yaml</groupId>
+				<artifactId>snakeyaml</artifactId>
+				<version>${snakeyaml.version}</version>
 			</dependency>
 
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-compress</artifactId>
-			<version>${commons.compress.version}</version>
-		</dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-compress</artifactId>
+				<version>${commons.compress.version}</version>
+			</dependency>
 
-		<dependency>
-			<groupId>org.reflections</groupId>
-			<artifactId>reflections</artifactId>
-			<version>${reflections.version}</version>
-		</dependency>
+			<dependency>
+				<groupId>org.reflections</groupId>
+				<artifactId>reflections</artifactId>
+				<version>${reflections.version}</version>
+			</dependency>
 
-		<dependency>
-			<groupId>commons-net</groupId>
-			<artifactId>commons-net</artifactId>
-			<version>${commons.net.version}</version>
-		</dependency>
+			<dependency>
+				<groupId>commons-net</groupId>
+				<artifactId>commons-net</artifactId>
+				<version>${commons.net.version}</version>
+			</dependency>
 
 		</dependencies>
 
@@ -650,105 +646,164 @@
 					<artifactId>docker-maven-plugin</artifactId>
 					<version>${docker.fabric.version}</version>
 				</plugin>
-				
+
 				<plugin>
-				  <groupId>org.sonarsource.scanner.maven</groupId>
-				  <artifactId>sonar-maven-plugin</artifactId>
-				  <version>${sonar.scanner.version}</version>
+					<groupId>org.jacoco</groupId>
+					<artifactId>jacoco-maven-plugin</artifactId>
+					<version>${jacoco.version}</version>
+					<configuration>
+						<!-- Note: This exclusion list should match <sonar.exclusions> property 
+							above -->
+						<excludes>
+							<exclude>**/gen/**</exclude>
+							<exclude>**/generated-sources/**</exclude>
+							<exclude>**/yang-gen/**</exclude>
+							<exclude>**/pax/**</exclude>
+						</excludes>
+					</configuration>
+					<executions>
+						<!-- Prepares the property pointing to the JaCoCo runtime agent which 
+							is passed as VM argument when Maven the Surefire plugin is executed. -->
+						<execution>
+							<id>pre-unit-test</id>
+							<goals>
+								<goal>prepare-agent</goal>
+							</goals>
+							<configuration>
+								<!-- Sets the path to the file which contains the execution data 
+									. -->
+								<destFile>${project.build.directory}/code-coverage/jacoco-ut.exec</destFile>
+								<!-- Sets the name of the property containing the settings for JaCoCo 
+									runtime agent. -->
+								<propertyName>surefireArgLine</propertyName>
+							</configuration>
+						</execution>
+						<!-- Ensures that the code coverage report for unit tests is created 
+							after unit tests have been run. -->
+						<execution>
+							<id>post-unit-test</id>
+							<phase>test</phase>
+							<goals>
+								<goal>report</goal>
+							</goals>
+							<configuration>
+								<!-- Sets the path to the file which contains the execution data 
+									. -->
+								<dataFile>${project.build.directory}/code-coverage/jacoco-ut.exec</dataFile>
+								<!-- Sets the output directory for the code coverage report. -->
+								<outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
+							</configuration>
+						</execution>
+						<execution>
+							<id>pre-integration-test</id>
+							<phase>pre-integration-test</phase>
+							<goals>
+								<goal>prepare-agent</goal>
+							</goals>
+							<configuration>
+								<!-- Sets the path to the file which contains the execution data 
+									. -->
+								<destFile>${project.build.directory}/code-coverage/jacoco-it.exec</destFile>
+								<!-- Sets the name of the property containing the settings for JaCoCo 
+									runtime agent. -->
+								<propertyName>failsafeArgLine</propertyName>
+							</configuration>
+						</execution>
+						<!-- Ensures that the code coverage report for integration tests after 
+							integration tests have been run. -->
+						<execution>
+							<id>post-integration-test</id>
+							<phase>post-integration-test</phase>
+							<goals>
+								<goal>report</goal>
+							</goals>
+							<configuration>
+								<!-- Sets the path to the file which contains the execution data 
+									. -->
+								<dataFile>${project.build.directory}/code-coverage/jacoco-it.exec</dataFile>
+								<!-- Sets the output directory for the code coverage report. -->
+								<outputDirectory>${project.reporting.outputDirectory}/jacoco-it</outputDirectory>
+							</configuration>
+						</execution>
+						<execution>
+							<id>default-check</id>
+							<goals>
+								<goal>check</goal>
+							</goals>
+							<configuration>
+								<dataFile>${project.build.directory}/code-coverage/jacoco-ut.exec</dataFile>
+								<rules>
+									<rule implementation="org.jacoco.maven.RuleConfiguration">
+										<element>BUNDLE</element>
+										<limits>
+											<limit implementation="org.jacoco.report.check.Limit">
+												<counter>LINE</counter>
+												<value>COVEREDRATIO</value>
+												<minimum>${jacoco.line.coverage.limit}</minimum>
+											</limit>
+										</limits>
+									</rule>
+								</rules>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>3.0.0-M4</version>
+					<configuration>
+						<!-- Sets the VM argument line used when unit tests are run. -->
+						<argLine>${surefireArgLine}</argLine>
+						<!-- Excludes integration tests when unit tests are run. -->
+						<excludes>
+							<exclude>**/IT*.java</exclude>
+						</excludes>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-failsafe-plugin</artifactId>
+					<version>3.0.0-M4</version>
+					<executions>
+						<!-- Ensures that both integration-test and verify goals of the Failsafe 
+							Maven plugin are executed. -->
+						<execution>
+							<id>integration-tests</id>
+							<goals>
+								<goal>integration-test</goal>
+								<goal>verify</goal>
+							</goals>
+							<configuration>
+								<!-- Sets the VM argument line used when integration tests are run. -->
+								<argLine>${failsafeArgLine}</argLine>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.sonarsource.scanner.maven</groupId>
+					<artifactId>sonar-maven-plugin</artifactId>
+					<version>${sonar.scanner.version}</version>
 				</plugin>
 
-				<plugin>
-				  <groupId>org.jacoco</groupId>
-				  <artifactId>jacoco-maven-plugin</artifactId>
-				  <version>${jacoco.version}</version>
-				  <configuration>
-				    <!-- Note: This exclusion list should match <sonar.exclusions>
-					 property above -->
-				    <excludes>
-				      <exclude>**/gen/**</exclude>
-				      <exclude>**/generated-sources/**</exclude>
-				      <exclude>**/yang-gen/**</exclude>
-				      <exclude>**/pax/**</exclude>
-				    </excludes>
-				  </configuration>
-				  <executions>
-				    <!--
-					Prepares the property pointing to the JaCoCo runtime agent which
-					is passed as VM argument when Maven the Surefire plugin is executed.
-				    -->
-				    <execution>
-				      <id>pre-unit-test</id>
-				      <goals>
-					<goal>prepare-agent</goal>
-				      </goals>
-				      <configuration>
-					<!-- Sets the path to the file which contains the execution data
-					     . -->
-					<destFile>${project.build.directory}/code-coverage/jacoco-ut.exec</destFile>
-					<!--
-					    Sets the name of the property containing the settings
-					    for JaCoCo runtime agent.
-					-->
-					<propertyName>surefireArgLine</propertyName>
-				      </configuration>
-				    </execution>
-				    <!--
-					Ensures that the code coverage report for unit tests is created after
-					unit tests have been run.
-				    -->
-				    <execution>
-				      <id>post-unit-test</id>
-				      <phase>test</phase>
-				      <goals>
-					<goal>report</goal>
-				      </goals>
-				      <configuration>
-					<!-- Sets the path to the file which contains the execution data
-					     . -->
-					<dataFile>${project.build.directory}/code-coverage/jacoco-ut.exec</dataFile>
-					<!-- Sets the output directory for the code coverage report. -->
-					<outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
-				      </configuration>
-				    </execution>
-				    <execution>
-				      <id>pre-integration-test</id>
-				      <phase>pre-integration-test</phase>
-				      <goals>
-					<goal>prepare-agent</goal>
-				      </goals>
-				      <configuration>
-					<!-- Sets the path to the file which contains the execution data
-					     . -->
-					<destFile>${project.build.directory}/code-coverage/jacoco-it.exec</destFile>
-					<!--
-					    Sets the name of the property containing the settings
-					    for JaCoCo runtime agent.
-					-->
-					<propertyName>failsafeArgLine</propertyName>
-				      </configuration>
-				    </execution>
-				    <!--
-					Ensures that the code coverage report for integration tests after
-					integration tests have been run.
-				    -->
-				    <execution>
-				      <id>post-integration-test</id>
-				      <phase>post-integration-test</phase>
-				      <goals>
-					<goal>report</goal>
-				      </goals>
-				      <configuration>
-					<!-- Sets the path to the file which contains the execution data
-					     . -->
-					<dataFile>${project.build.directory}/code-coverage/jacoco-it.exec</dataFile>
-					<!-- Sets the output directory for the code coverage report. -->
-					<outputDirectory>${project.reporting.outputDirectory}/jacoco-it</outputDirectory>
-				      </configuration>
-				    </execution>
-			    </executions>
-			  </plugin>
 			</plugins>
 		</pluginManagement>
-	</build>
 
+		<plugins>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+			</plugin>
+		</plugins>
+
+	</build>
 </project>
