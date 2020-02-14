@@ -70,8 +70,10 @@ public class FileWatcherTest {
     public void testOnChange() throws Exception {
         FileWatcher fileWatcher = Mockito.mock(FileWatcher.class, Mockito.CALLS_REAL_METHODS);
 
-        fileWatcher.onChange(Mockito.any(File.class));
+        File file=Mockito.mock(File.class);
+        fileWatcher.onChange(file);
 
-        Mockito.verify(fileWatcher).onChange(Mockito.any(File.class));
+        Mockito.verify(fileWatcher).onChange(file);
+
     }
 }

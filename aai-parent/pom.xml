@@ -27,7 +27,7 @@ limitations under the License.
 	<parent>
 		<groupId>org.onap.aai.aai-common</groupId>
 		<artifactId>aai-common</artifactId>
-		<version>1.6.5-SNAPSHOT</version>
+		<version>1.6.6-SNAPSHOT</version>
 	</parent>
 	<artifactId>aai-parent</artifactId>
 	<name>aai-parent</name>
@@ -96,6 +96,7 @@ limitations under the License.
 		<plexus.utils.version>3.1.1</plexus.utils.version>
 		<reflections.version>0.9.10</reflections.version>
 		<snakeyaml.version>1.25</snakeyaml.version>
+
 		<spring.boot.version>1.5.22.RELEASE</spring.boot.version>
 
 		<sonar.jacoco.reportPath />
@@ -104,6 +105,7 @@ limitations under the License.
 		
 		<!-- we let things pass by default, set custom level for each child project -->
 		<jacoco.line.coverage.limit>0.00</jacoco.line.coverage.limit>
+
 		<jacoco.version>0.8.5</jacoco.version>
 		<sonar-jacoco-listeners.version>3.2</sonar-jacoco-listeners.version>
 		<sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
@@ -116,10 +118,28 @@ limitations under the License.
 		<spring.jms.version>4.3.25.RELEASE</spring.jms.version>
 		<spring.test.version>4.3.25.RELEASE</spring.test.version>
 		<spring.security.rsa.version>1.0.8.RELEASE</spring.security.rsa.version>
+		<json.simple.version>1.1.1</json.simple.version>
+		<powermock.api.mockito2.version>2.0.4</powermock.api.mockito2.version>
 
 	</properties>
+
+	<profiles>
+	  <profile>
+	    <id>spring-boot-2-1</id>
+	    <properties>
+	      <spring.boot.version>2.1.6.RELEASE</spring.boot.version>
+	    </properties>
+	  </profile>
+	</profiles>
+
 	<dependencyManagement>
 		<dependencies>
+
+			<dependency>
+                		<groupId>com.googlecode.json-simple</groupId>
+                		<artifactId>json-simple</artifactId>
+                		<version>${json.simple.version}</version>
+			</dependency>
 
 			<dependency>
 				<groupId>org.onap.aai.aai-common</groupId>
@@ -336,8 +356,13 @@ limitations under the License.
 
 			<dependency>
 				<groupId>org.powermock</groupId>
-				<artifactId>powermock-api-mockito</artifactId>
-				<version>${powermock.version}</version>
+				<artifactId>powermock-api-mockito2</artifactId>
+				<version>${powermock.api.mockito2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.powermock</groupId>
+				<artifactId>powermock-core</artifactId>
+				<version>${powermock.api.mockito2.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.powermock</groupId>

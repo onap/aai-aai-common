@@ -59,7 +59,7 @@ public abstract class OneWaySSLRestClient extends RestClient {
                 HttpClients.custom().setSSLContext(sslContext).setSSLHostnameVerifier((s, sslSession) -> true).build();
 
         restTemplate =
-                new RestTemplateBuilder().requestFactory(new HttpComponentsClientHttpRequestFactory(client)).build();
+            new RestTemplateBuilder().requestFactory(() -> new HttpComponentsClientHttpRequestFactory(client)).build();
 
         restTemplate.setErrorHandler(new RestClientResponseErrorHandler());
 
