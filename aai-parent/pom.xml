@@ -27,7 +27,7 @@ limitations under the License.
 	<parent>
 		<groupId>org.onap.aai.aai-common</groupId>
 		<artifactId>aai-common</artifactId>
-		<version>1.6.5-SNAPSHOT</version>
+		<version>1.6.5</version>
 	</parent>
 	<artifactId>aai-parent</artifactId>
 	<name>aai-parent</name>
