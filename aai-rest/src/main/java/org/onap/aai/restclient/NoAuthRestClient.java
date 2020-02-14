@@ -41,7 +41,7 @@ public abstract class NoAuthRestClient extends RestClient {
     public void init() throws Exception {
         HttpClient client = HttpClients.createDefault();
         restTemplate =
-                new RestTemplateBuilder().requestFactory(new HttpComponentsClientHttpRequestFactory(client)).build();
+            new RestTemplateBuilder().requestFactory(() -> new HttpComponentsClientHttpRequestFactory(client)).build();
 
         restTemplate.setErrorHandler(new RestClientResponseErrorHandler());
     }
