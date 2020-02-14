@@ -96,7 +96,7 @@
 		<plexus.utils.version>3.1.1</plexus.utils.version>
 		<reflections.version>0.9.10</reflections.version>
 		<snakeyaml.version>1.25</snakeyaml.version>
-		<spring.boot.version>1.5.22.RELEASE</spring.boot.version>
+		<spring.boot.version>2.1.6.RELEASE</spring.boot.version>
 		<jacoco.version>0.8.5</jacoco.version>
 		<sonar-jacoco-listeners.version>3.2</sonar-jacoco-listeners.version>
 		<sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
@@ -109,10 +109,18 @@
 		<spring.jms.version>4.3.25.RELEASE</spring.jms.version>
 		<spring.test.version>4.3.25.RELEASE</spring.test.version>
 		<spring.security.rsa.version>1.0.8.RELEASE</spring.security.rsa.version>
+		<json.simple.version>1.1.1</json.simple.version>
+		<powermock.api.mockito2>2.0.4</powermock.api.mockito2>
 
 	</properties>
 	<dependencyManagement>
 		<dependencies>
+
+			<dependency>
+                		<groupId>com.googlecode.json-simple</groupId>
+                		<artifactId>json-simple</artifactId>
+                		<version>${json.simple.version}</version>
+            </dependency>
 
 			<dependency>
 				<groupId>org.onap.aai.aai-common</groupId>
@@ -329,8 +337,8 @@
 
 			<dependency>
 				<groupId>org.powermock</groupId>
-				<artifactId>powermock-api-mockito</artifactId>
-				<version>${powermock.version}</version>
+				<artifactId>powermock-api-mockito2</artifactId>
+				<version>${powermock.api.mockito2}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.powermock</groupId>

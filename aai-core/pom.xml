@@ -47,6 +47,7 @@
 		<gremlin.version>3.2.2</gremlin.version>
 		<groovy.version>2.4.15</groovy.version>
 		<jetty.version>9.4.11.v20180605</jetty.version>
+		<powermock.core>2.0.4</powermock.core>
 
 		<!-- Start of Default ONAP Schema Properties -->
 		<aai.wiki.link>https://wiki.onap.org/</aai.wiki.link>
@@ -187,6 +188,12 @@
 		<dependency>
 			<groupId>com.att.eelf</groupId>
 			<artifactId>eelf-core</artifactId>
+			<exclusions><!-- excluding transitive dependency coming from this artifact, as we would need powermock-api-mockito2-->
+                		<exclusion>
+                    			<groupId>org.powermock</groupId>
+                    			<artifactId>powermock-api-mockito</artifactId>
+                		</exclusion>
+            </exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
@@ -223,9 +230,15 @@
 		</dependency>
 		<dependency>
 			<groupId>org.powermock</groupId>
-			<artifactId>powermock-api-mockito</artifactId>
+			<artifactId>powermock-api-mockito2</artifactId>
 			<scope>test</scope>
 		</dependency>
+			<dependency>
+            		<groupId>org.powermock</groupId>
+            		<artifactId>powermock-core</artifactId>
+            		<version>${powermock.core}</version>
+            		<scope>test</scope>
+        	</dependency>
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
