@@ -145,7 +145,6 @@ public class TraversalURIOptimizedQuery<E> extends TraversalQuery {
         }
 
         return shouldOptimize;
-
     }
 
     private Optional<String> getStepUriFromIntrospector(Introspector obj) {
@@ -166,7 +165,7 @@ public class TraversalURIOptimizedQuery<E> extends TraversalQuery {
         return Optional.of(uri);
     }
 
-    private int getLastURIStepKey() {
+    protected int getLastURIStepKey() {
         return stepToAaiUri.keySet().stream().mapToInt(Integer::intValue).max().getAsInt();
     }
 

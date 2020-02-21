@@ -23,6 +23,7 @@ package org.onap.aai.serialization.queryformats;
 import com.google.gson.JsonObject;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -37,8 +38,7 @@ import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexExcepti
 public class Count implements FormatMapper {
 
     @Override
-    public Optional<JsonObject> formatObject(Object o)
-            throws AAIFormatVertexException, AAIFormatQueryResultFormatNotSupported {
+    public Optional<JsonObject> formatObject(Object o) {
         @SuppressWarnings("unchecked")
         List<Object> list = (List<Object>) o;
 
@@ -46,9 +46,14 @@ public class Count implements FormatMapper {
 
         list.stream().map(this::getCount).filter(Optional::isPresent).map(Optional::get)
                 .collect(Collectors.toConcurrentMap(Pair::getValue0, Pair::getValue1, Long::sum))
-                .forEach((k, v) -> countResult.addProperty(k, v));
+                .forEach(countResult::addProperty);
 
         return Optional.of(countResult);
+    }
+
+    @Override
+    public Optional<JsonObject> formatObject(Object o, Map<String, List<String>> properties) throws AAIFormatVertexException, AAIFormatQueryResultFormatNotSupported {
+        return Optional.empty();
     }
 
     @Override
@@ -72,10 +77,10 @@ public class Count implements FormatMapper {
         }
 
         if (pair == null) {
-            return Optional.<Pair<String, Long>>empty();
+            return Optional.empty();
         }
 
-        return Optional.<Pair<String, Long>>of(pair);
+        return Optional.of(pair);
     }
 
 }

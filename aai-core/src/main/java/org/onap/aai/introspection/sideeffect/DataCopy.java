@@ -20,17 +20,6 @@
 
 package org.onap.aai.introspection.sideeffect;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Optional;
-
-import javax.ws.rs.core.MultivaluedMap;
-
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
@@ -41,6 +30,16 @@ import org.onap.aai.restcore.util.URITools;
 import org.onap.aai.schema.enums.PropertyMetadata;
 import org.onap.aai.serialization.db.DBSerializer;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
+
+import javax.ws.rs.core.MultivaluedMap;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Optional;
 
 public class DataCopy extends SideEffect {
 
@@ -69,14 +68,12 @@ public class DataCopy extends SideEffect {
             } else {
                 if (results.isEmpty()) {
                     throw new AAIException("AAI_6114", "object located at " + uri + " not found");
-                } else if (results.size() > 1) {
+                } else {
                     throw new AAIMultiplePropertiesException(
                             "multiple values of " + entry.getKey() + " found when searching " + uri);
                 }
             }
-        } else {
-            // skip processing because no required properties were specified
-        }
+        } //else skip processing because no required properties were specified
     }
 
     @Override

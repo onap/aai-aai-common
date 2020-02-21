@@ -26,6 +26,8 @@ import groovy.lang.Script;
 import java.util.Map;
 
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 
 /**
@@ -55,6 +57,11 @@ public class GremlinGroovyShell extends AAIAbstractGroovyShell {
      */
     @Override
     public String executeTraversal(TransactionalGraphEngine engine, String traversal, Map<String, Object> params) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String executeTraversal(TransactionalGraphEngine engine, String traversal, Map<String, Object> params, QueryStyle style, GraphTraversalSource source) {
         throw new UnsupportedOperationException();
     }
 }

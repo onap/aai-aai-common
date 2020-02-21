@@ -1,0 +1,17 @@
+{
+    "vnf-id": "test-vnf11",
+    "vnf-name": "example-vnf-name-val-37069",
+    "vnf-name2": "example-vnf-name2-val-58382",
+    "vnf-type": "example-vnf-type-val-95069",
+    "in-maint": true,
+    "is-closed-loop-disabled": true,
+    "vf-modules": {
+        "vf-module": [
+            {
+                "vf-module-id": "vf-module-test11",
+                "is-base-vf-module": true,
+                "automated-assignment": true
+            }
+        ]
+    }
+}

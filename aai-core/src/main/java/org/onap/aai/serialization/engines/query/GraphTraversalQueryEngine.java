@@ -20,18 +20,9 @@
 
 package org.onap.aai.serialization.engines.query;
 
-import static org.onap.aai.edges.enums.AAIDirection.IN;
-import static org.onap.aai.edges.enums.AAIDirection.NONE;
-import static org.onap.aai.edges.enums.AAIDirection.OUT;
-import static org.onap.aai.edges.enums.EdgeField.PRIVATE;
-import static org.onap.aai.edges.enums.EdgeProperty.CONTAINS;
-import static org.onap.aai.edges.enums.EdgeProperty.DELETE_OTHER_V;
-
-import java.util.List;
-import java.util.Set;
-
 import org.apache.tinkerpop.gremlin.process.traversal.Order;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
+import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
@@ -41,8 +32,18 @@ import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.onap.aai.db.props.AAIProperties;
+import org.onap.aai.edges.enums.EdgeField;
+import org.onap.aai.edges.enums.EdgeProperty;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.logging.StopWatch;
+
+import java.util.List;
+import java.util.Set;
+
+import static org.onap.aai.edges.enums.AAIDirection.*;
+import static org.onap.aai.edges.enums.EdgeField.PRIVATE;
+import static org.onap.aai.edges.enums.EdgeProperty.CONTAINS;
+import static org.onap.aai.edges.enums.EdgeProperty.DELETE_OTHER_V;
 
 /*
  * This class needs some big explanation despite its compact size.
@@ -254,6 +255,15 @@ public class GraphTraversalQueryEngine extends QueryEngine {
                 .not(__.has(PRIVATE.toString(), true)).otherV().dedup();
 
         return pipeline.toList();
+    }
+
+    public List<Path> findCousinsAsPath(Vertex start){
+        return this.g.V(start).bothE().where(
+            __.and(
+                __.has(EdgeProperty.CONTAINS.toString(), NONE.toString()),
+                __.not(__.has(EdgeField.PRIVATE.toString(), true))
+            )
+        ).otherV().path().toList();
     }
 
     public double getDBTimeMsecs() {

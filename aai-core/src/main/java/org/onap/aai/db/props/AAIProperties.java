@@ -32,9 +32,15 @@ public class AAIProperties {
     public static final String RESOURCE_VERSION = "resource-version";
     public static final String AAI_URI = "aai-uri";
     public static final Integer MAXIMUM_DEPTH = 10000;
+    public static final Integer MINIMUM_DEPTH = 0;
     public static final String LINKED = "linked";
     public static final String DB_ALIAS_SUFFIX = "-local";
     public static final String AAI_UUID = "aai-uuid";
+    public static final String START_TS = "start-ts";
+    public static final String END_TS = "end-ts";
+    public static final String END_SOT = "end-source-of-truth";
+    public static final String START_TX_ID = "start-tx-id";
+    public static final String END_TX_ID = "end-tx-id";
 
     private AAIProperties() {
 

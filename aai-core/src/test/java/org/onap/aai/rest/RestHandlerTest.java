@@ -35,7 +35,7 @@ public class RestHandlerTest {
         RestHandlerService secondInstance = RestHandlerService.getInstance();
         assertNotNull(firstInstance);
         assertNotNull(secondInstance);
-        assertTrue(firstInstance == secondInstance);
+        assertSame(firstInstance, secondInstance);
 
     }
 }

@@ -23,6 +23,8 @@ package org.onap.aai.serialization.queryformats;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.apache.tinkerpop.gremlin.structure.Vertex;
@@ -30,10 +32,13 @@ import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.serialization.db.DBSerializer;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
+import org.onap.aai.serialization.queryformats.params.AsTree;
 import org.onap.aai.serialization.queryformats.params.Depth;
 import org.onap.aai.serialization.queryformats.params.NodesOnly;
 import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
 import org.onap.aai.util.AAIConfig;
+
+import java.util.Optional;
 
 public class ResourceWithSoT extends MultiFormatMapper {
     protected JsonParser parser = new JsonParser();
@@ -49,6 +54,7 @@ public class ResourceWithSoT extends MultiFormatMapper {
         this.serializer = builder.getSerializer();
         this.depth = builder.getDepth();
         this.nodesOnly = builder.isNodesOnly();
+        this.isTree = builder.isTree();
     }
 
     @Override
@@ -56,7 +62,7 @@ public class ResourceWithSoT extends MultiFormatMapper {
         return 100;
     }
 
-    public static class Builder implements NodesOnly<Builder>, Depth<Builder> {
+    public static class Builder implements NodesOnly<Builder>, Depth<Builder>, AsTree<Builder> {
 
         protected final Loader loader;
         protected final DBSerializer serializer;
@@ -65,6 +71,7 @@ public class ResourceWithSoT extends MultiFormatMapper {
         protected boolean nodesOnly = false;
         protected int depth = 1;
         protected boolean modelDriven = false;
+        protected boolean tree = false;
 
         public Builder(Loader loader, DBSerializer serializer, UrlBuilder urlBuilder) {
             this.loader = loader;
@@ -86,6 +93,13 @@ public class ResourceWithSoT extends MultiFormatMapper {
 
         public Builder includeUrl() {
             this.includeUrl = true;
+            return this;
+        }
+
+        protected boolean isTree() { return this.tree; }
+
+        public Builder isTree(Boolean tree) {
+            this.tree = tree;
             return this;
         }
 
@@ -139,8 +153,9 @@ public class ResourceWithSoT extends MultiFormatMapper {
     @Override
     protected Optional<JsonObject> getJsonFromVertex(Vertex v) throws AAIFormatVertexException {
         // Null check
-        if (v == null)
+        if (v == null) {
             return null;
+        }
 
         JsonObject json = new JsonObject();
 
@@ -148,9 +163,9 @@ public class ResourceWithSoT extends MultiFormatMapper {
         Object lastModifiedTimestampObj = v.property(AAIProperties.LAST_MOD_TS).value();
         Object sotObj = v.property(AAIProperties.SOURCE_OF_TRUTH).value();
         Object lastModSotObj = v.property(AAIProperties.LAST_MOD_SOURCE_OF_TRUTH).value();
-        long createdTimestamp = Long.valueOf(createdTimestampObj.toString());
-        long lastModifiedTimestamp = Long.valueOf(lastModifiedTimestampObj.toString());
-        long threshold = Long.valueOf(AAIConfig.get("aai.resource.format.threshold", "10"));
+        long createdTimestamp = Long.parseLong(createdTimestampObj.toString());
+        long lastModifiedTimestamp = Long.parseLong(lastModifiedTimestampObj.toString());
+        long threshold = Long.parseLong(AAIConfig.get("aai.resource.format.threshold", "10"));
 
         // Add to the property field of the JSON payload
         json.addProperty("aai-created-ts", createdTimestampObj.toString());
@@ -171,5 +186,10 @@ public class ResourceWithSoT extends MultiFormatMapper {
             json.addProperty("last-action-performed", "Modified");
 
         return Optional.of(json);
+    }
+
+    @Override
+    protected Optional<JsonObject> getJsonFromVertex(Vertex input, Map<String, List<String>> properties) throws AAIFormatVertexException {
+        return Optional.empty();
     }
 }

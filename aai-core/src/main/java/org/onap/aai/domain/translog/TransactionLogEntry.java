@@ -20,13 +20,9 @@
 
 package org.onap.aai.domain.translog;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-
 import org.eclipse.persistence.oxm.annotations.XmlCDATA;
+
+import javax.xml.bind.annotation.*;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -70,11 +66,11 @@ public class TransactionLogEntry {
 
     /**
      * Gets the value of the transcationLogEntryId property.
-     * 
+     *
      * @return
      *         possible object is
      *         {@link String }
-     * 
+     *
      */
     public String getTransactionLogEntryId() {
         return transactionLogEntryId;
@@ -82,11 +78,11 @@ public class TransactionLogEntry {
 
     /**
      * Sets the value of the transactionLogEntryId property.
-     * 
+     *
      * @param value
      *        allowed object is
      *        {@link String }
-     * 
+     *
      */
     public void setTransactionLogEntryId(String value) {
         this.transactionLogEntryId = value;
@@ -94,11 +90,11 @@ public class TransactionLogEntry {
 
     /**
      * Gets the value of the status property.
-     * 
+     *
      * @return
      *         possible object is
      *         {@link String }
-     * 
+     *
      */
     public String getStatus() {
         return status;
@@ -106,11 +102,11 @@ public class TransactionLogEntry {
 
     /**
      * Sets the value of the status property.
-     * 
+     *
      * @param value
      *        allowed object is
      *        {@link String }
-     * 
+     *
      */
     public void setStatus(String value) {
         this.status = value;
@@ -118,11 +114,11 @@ public class TransactionLogEntry {
 
     /**
      * Gets the value of the rqstDate property.
-     * 
+     *
      * @return
      *         possible object is
      *         {@link String }
-     * 
+     *
      */
 
     public String getRqstDate() {
@@ -131,11 +127,11 @@ public class TransactionLogEntry {
 
     /**
      * Sets the value of the rqstDate property.
-     * 
+     *
      * @param value
      *        allowed object is
      *        {@link String }
-     * 
+     *
      */
     public void setRqstDate(String value) {
         this.rqstDate = value;
@@ -143,11 +139,11 @@ public class TransactionLogEntry {
 
     /**
      * Gets the value of the respDate property.
-     * 
+     *
      * @return
      *         possible object is
      *         {@link String }
-     * 
+     *
      */
 
     public String getRespDate() {
@@ -156,11 +152,11 @@ public class TransactionLogEntry {
 
     /**
      * Sets the value of the respDate property.
-     * 
+     *
      * @param value
      *        allowed object is
      *        {@link String }
-     * 
+     *
      */
     public void setRespDate(String value) {
         this.respDate = value;
@@ -168,11 +164,11 @@ public class TransactionLogEntry {
 
     /**
      * Gets the value of the sourceId property.
-     * 
+     *
      * @return
      *         possible object is
      *         {@link String }
-     * 
+     *
      */
     public String getSourceId() {
         return sourceId;
@@ -180,11 +176,11 @@ public class TransactionLogEntry {
 
     /**
      * Sets the value of the sourceId property.
-     * 
+     *
      * @param value
      *        allowed object is
      *        {@link String }
-     * 
+     *
      */
     public void setSourceId(String value) {
         this.sourceId = value;
@@ -192,11 +188,11 @@ public class TransactionLogEntry {
 
     /**
      * Gets the value of the resourceId property.
-     * 
+     *
      * @return
      *         possible object is
      *         {@link String }
-     * 
+     *
      */
     public String getResourceId() {
         return resourceId;
@@ -204,11 +200,11 @@ public class TransactionLogEntry {
 
     /**
      * Sets the value of the resourceId property.
-     * 
+     *
      * @param value
      *        allowed object is
      *        {@link String }
-     * 
+     *
      */
     public void setResourceId(String value) {
         this.resourceId = value;
@@ -216,11 +212,11 @@ public class TransactionLogEntry {
 
     /**
      * Gets the value of the resourceType property.
-     * 
+     *
      * @return
      *         possible object is
      *         {@link String }
-     * 
+     *
      */
     public String getResourceType() {
         return resourceType;
@@ -228,11 +224,11 @@ public class TransactionLogEntry {
 
     /**
      * Sets the value of the resourceType property.
-     * 
+     *
      * @param value
      *        allowed object is
      *        {@link String }
-     * 
+     *
      */
     public void setResourceType(String value) {
         this.resourceType = value;
@@ -240,11 +236,11 @@ public class TransactionLogEntry {
 
     /**
      * Gets the value of the rqstBuf property.
-     * 
+     *
      * @return
      *         possible object is
      *         {@link String }
-     * 
+     *
      */
     public String getRqstBuf() {
         return rqstBuf;
@@ -252,11 +248,11 @@ public class TransactionLogEntry {
 
     /**
      * Sets the value of the rqstBuf property.
-     * 
+     *
      * @param value
      *        allowed object is
      *        {@link String }
-     * 
+     *
      */
     @XmlCDATA
     public void setRqstBuf(String value) {
@@ -265,11 +261,11 @@ public class TransactionLogEntry {
 
     /**
      * Gets the value of the respBuf property.
-     * 
+     *
      * @return
      *         possible object is
      *         {@link String }
-     * 
+     *
      */
     public String getrespBuf() {
         return respBuf;
@@ -277,11 +273,11 @@ public class TransactionLogEntry {
 
     /**
      * Sets the value of the respBuf property.
-     * 
+     *
      * @param value
      *        allowed object is
      *        {@link String }
-     * 
+     *
      */
     @XmlCDATA
     public void setrespBuf(String value) {
@@ -290,11 +286,11 @@ public class TransactionLogEntry {
 
     /**
      * Gets the value of the notificationPayload property.
-     * 
+     *
      * @return
      *         possible object is
      *         {@link String }
-     * 
+     *
      */
     public String getNotificationPayload() {
         return notificationPayload;
@@ -302,11 +298,11 @@ public class TransactionLogEntry {
 
     /**
      * Sets the value of the notificationPayload property.
-     * 
+     *
      * @param value
      *        allowed object is
      *        {@link String }
-     * 
+     *
      */
     @XmlCDATA
     public void setNotificationPayload(String value) {
@@ -315,11 +311,11 @@ public class TransactionLogEntry {
 
     /**
      * Gets the value of the notificationId property.
-     * 
+     *
      * @return
      *         possible object is
      *         {@link String }
-     * 
+     *
      */
     public String getNotificationId() {
         return notificationId;
@@ -327,11 +323,11 @@ public class TransactionLogEntry {
 
     /**
      * Sets the value of the notificationId property.
-     * 
+     *
      * @param value
      *        allowed object is
      *        {@link String }
-     * 
+     *
      */
     public void setNotificationId(String value) {
         this.notificationId = value;
@@ -339,11 +335,11 @@ public class TransactionLogEntry {
 
     /**
      * Gets the value of the notificationId property.
-     * 
+     *
      * @return
      *         possible object is
      *         {@link String }
-     * 
+     *
      */
     public String getNotificationStatus() {
         return notificationStatus;
@@ -351,11 +347,11 @@ public class TransactionLogEntry {
 
     /**
      * Sets the value of the notificationId property.
-     * 
+     *
      * @param value
      *        allowed object is
      *        {@link String }
-     * 
+     *
      */
     public void setNotificationStatus(String value) {
         this.notificationStatus = value;
@@ -363,11 +359,11 @@ public class TransactionLogEntry {
 
     /**
      * Gets the value of the notificationTopic property.
-     * 
+     *
      * @return
      *         possible object is
      *         {@link String }
-     * 
+     *
      */
     public String getNotificationTopic() {
         return notificationTopic;
@@ -384,11 +380,11 @@ public class TransactionLogEntry {
 
     /**
      * Gets the value of the notificationEntityLink property.
-     * 
+     *
      * @return
      *         possible object is
      *         {@link String }
-     * 
+     *
      */
     public String getNotificationEntityLink() {
         return notificationEntityLink;

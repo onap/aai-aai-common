@@ -26,6 +26,7 @@ import java.util.Optional;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.UriInfo;
 
+import org.onap.aai.aailog.logs.DBRequestWrapper;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.MarshallerProperties;
 import org.onap.aai.parsers.query.QueryParser;
@@ -34,7 +35,7 @@ import org.onap.aai.restcore.HttpMethod;
 /**
  * The Class DBRequest.
  */
-public class DBRequest {
+public class DBRequest implements DBRequestWrapper {
 
     private final QueryParser parser;
 

@@ -20,43 +20,28 @@
 
 package org.onap.aai.restcore;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
-import com.google.common.base.Joiner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.onap.aai.db.props.AAIProperties;
+import org.onap.aai.exceptions.AAIException;
+import org.onap.aai.introspection.Introspector;
+import org.onap.aai.introspection.Loader;
+import org.onap.aai.introspection.tools.*;
+import org.onap.aai.logging.ErrorLogHelper;
+import org.onap.aai.util.AAIConfig;
+import org.onap.aai.util.FormatDate;
 
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-
-import org.onap.aai.db.props.AAIProperties;
-import org.onap.aai.dbmap.DBConnectionType;
-import org.onap.aai.exceptions.AAIException;
-import org.onap.aai.introspection.Introspector;
-import org.onap.aai.introspection.Loader;
-import org.onap.aai.introspection.tools.CreateUUID;
-import org.onap.aai.introspection.tools.DefaultFields;
-import org.onap.aai.introspection.tools.InjectKeysFromURI;
-import org.onap.aai.introspection.tools.IntrospectorValidator;
-import org.onap.aai.introspection.tools.Issue;
-import org.onap.aai.introspection.tools.RemoveNonVisibleProperty;
-import org.onap.aai.logging.ErrorLogHelper;
-import org.onap.aai.logging.LoggingContext;
-import org.onap.aai.util.AAIConfig;
-import org.onap.aai.util.FormatDate;
+import java.util.concurrent.*;
 
 /**
  * Base class for AAI REST API classes.
@@ -64,20 +49,18 @@ import org.onap.aai.util.FormatDate;
  * TODO should authenticate caller and authorize them for the API they are calling
  * TODO should store the transaction
  *
- * 
+ *
  */
 public class RESTAPI {
 
-    private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(RESTAPI.class);
-
-    protected final String COMPONENT = "aairest";
+    private static final Logger LOGGER = LoggerFactory.getLogger(RESTAPI.class);
 
     /**
      * The Enum Action.
      */
     public enum Action {
         GET, PUT, POST, DELETE
-    };
+    }
 
     /**
      * Gets the from app id.
@@ -100,8 +83,6 @@ public class RESTAPI {
         if (fromAppId == null) {
             throw new AAIException("AAI_4009");
         }
-
-        LoggingContext.partnerName(fromAppId);
 
         return fromAppId;
     }
@@ -127,8 +108,6 @@ public class RESTAPI {
         if (transId == null) {
             throw new AAIException("AAI_4010");
         }
-
-        LoggingContext.requestId(transId);
 
         return transId;
     }
@@ -173,7 +152,7 @@ public class RESTAPI {
         int depth = AAIProperties.MAXIMUM_DEPTH; // default
         if (depthParam != null && depthParam.length() > 0 && !depthParam.equals("all")) {
             try {
-                depth = Integer.valueOf(depthParam);
+                depth = Integer.parseInt(depthParam);
             } catch (Exception e) {
                 throw new AAIException("AAI_4016");
             }
@@ -192,9 +171,9 @@ public class RESTAPI {
      */
     protected Response consumerExceptionResponseGenerator(HttpHeaders headers, UriInfo info, HttpMethod templateAction,
             AAIException e) {
-        ArrayList<String> templateVars = new ArrayList<String>();
+        ArrayList<String> templateVars = new ArrayList<>();
         templateVars.add(templateAction.toString()); // GET, PUT, etc
-        templateVars.add(info.getPath().toString());
+        templateVars.add(info.getPath());
         templateVars.addAll(e.getTemplateVars());
 
         ErrorLogHelper.logException(e);
@@ -236,7 +215,7 @@ public class RESTAPI {
                     messages.add(issue.getDetail());
                 }
             }
-            String errors = Joiner.on(",").join(messages);
+            String errors = String.join(",", messages);
             throw new AAIException("AAI_3000", errors);
         }
         // check that key in payload and key in request uri are the same
@@ -249,22 +228,6 @@ public class RESTAPI {
         }
     }
 
-    protected DBConnectionType determineConnectionType(String fromAppId, String realTime) throws AAIException {
-        if (fromAppId == null) {
-            throw new AAIException("AAI_4009", "X-FromAppId is not set");
-        }
-
-        DBConnectionType type = DBConnectionType.REALTIME;
-        boolean isRealTimeClient = AAIConfig.get("aai.realtime.clients", "").contains(fromAppId);
-        if (isRealTimeClient || realTime != null) {
-            type = DBConnectionType.REALTIME;
-        } else {
-            type = DBConnectionType.CACHED;
-        }
-
-        return type;
-    }
-
     /**
      * Gets the input media type.
      *
@@ -272,10 +235,7 @@ public class RESTAPI {
      * @return the input media type
      */
     protected String getInputMediaType(MediaType mediaType) {
-        String result = mediaType.getType() + "/" + mediaType.getSubtype();
-
-        return result;
-
+        return mediaType.getType() + "/" + mediaType.getSubtype();
     }
 
     /**
@@ -288,25 +248,23 @@ public class RESTAPI {
      * @throws AAIException
      */
 
-    public int getTimeoutLimit(String sot, String appTimeouts, String defaultTimeout) throws AAIException {
+    public int getTimeoutLimit(String sot, String appTimeouts, String defaultTimeout) {
         String[] ignoreAppIds = (appTimeouts).split("\\|");
         int appLimit = Integer.parseInt(defaultTimeout);
-        final Map<String, Integer> m = new HashMap<String, Integer>();
-        if (ignoreAppIds != null) {
-            for (int i = 0; i < ignoreAppIds.length; i++) {
-                String[] vals = ignoreAppIds[i].split(",");
-                m.put(vals[0], Integer.parseInt(vals[1]));
-            }
-            if (m.get(sot) != null) {
-                appLimit = m.get(sot);
-            }
+        final Map<String, Integer> m = new HashMap<>();
+        for (int i = 0; i < ignoreAppIds.length; i++) {
+            String[] vals = ignoreAppIds[i].split(",");
+            m.put(vals[0], Integer.parseInt(vals[1]));
+        }
+        if (m.get(sot) != null) {
+            appLimit = m.get(sot);
         }
         return appLimit;
     }
 
     /**
      * Returns whether time out is enabled
-     * 
+     *
      * @param sot
      * @param isEnabled
      * @param appTimeouts
@@ -314,9 +272,8 @@ public class RESTAPI {
      * @return boolean of whether the timeout is enabled
      * @throws AAIException
      */
-    public boolean isTimeoutEnabled(String sot, String isEnabled, String appTimeouts, String defaultTimeout)
-            throws AAIException {
-        Boolean isTimeoutEnabled = Boolean.parseBoolean(isEnabled);
+    public boolean isTimeoutEnabled(String sot, String isEnabled, String appTimeouts, String defaultTimeout) {
+        boolean isTimeoutEnabled = Boolean.parseBoolean(isEnabled);
         int ata = -1;
         if (isTimeoutEnabled) {
             ata = getTimeoutLimit(sot, appTimeouts, defaultTimeout);
@@ -326,7 +283,7 @@ public class RESTAPI {
 
     /**
      * Executes the process thread and watches the future for the timeout
-     * 
+     *
      * @param handler
      * @param sourceOfTruth
      * @param appTimeoutLimit
@@ -358,7 +315,7 @@ public class RESTAPI {
 
     /**
      * runner sets up the timer logic and invokes it
-     * 
+     *
      * @param toe
      * @param tba
      * @param tdl

@@ -23,7 +23,7 @@ package org.onap.aai.serialization.queryformats;
 import org.onap.aai.exceptions.AAIException;
 
 public enum Format {
-    graphson, pathed, pathed_resourceversion, id, resource, simple, resource_and_url, console, raw, count, resource_with_sot;
+    graphson, pathed, pathed_resourceversion, id, resource, simple, resource_and_url, console, raw, count, resource_with_sot, state, lifecycle, changes, aggregate;
 
     public static Format getFormat(String format) throws AAIException {
         try {

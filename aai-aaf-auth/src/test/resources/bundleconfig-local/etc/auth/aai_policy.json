@@ -1,0 +1,73 @@
+{
+  "roles": [
+    {
+      "name": "testRole",
+      "functions": [
+        {
+          "name": "testFunction",
+          "methods": [
+            {
+              "name": "GET"
+            },
+            {
+              "name": "DELETE"
+            },
+            {
+              "name": "PUT"
+            }
+          ]
+        }
+      ],
+      "users": [
+        {
+          "username": "testUser"
+        },
+        {
+          "username": "testWildcardId",
+          "is-wildcard-id": true
+        }
+      ]
+    },
+    {
+      "name": "HAProxy",
+      "functions": [
+        {
+          "name": "util",
+          "methods": [
+            {
+              "name": "GET"
+            }
+          ]
+        }
+      ],
+      "users": [
+        {
+          "username": "ha-proxy-user"
+        },
+        {
+          "username": "ha-proxy-wildcard-id",
+          "is-wildcard-id": true
+        }
+      ]
+    },
+    {
+      "name": "testBasicAuth",
+      "functions": [
+        {
+          "name": "testBasicAuthFunction",
+          "methods": [
+            {
+              "name": "GET"
+            }
+          ]
+        }
+      ],
+      "users": [
+        {
+          "user": "testBasicAuthUser",
+          "pass": "OBF:1ytc1vu91v2p1rxf1mqh1v8s1z0d1msn1san1mqf1z0h1v9u1msl1rvf1v1p1vv11yta"
+        }
+      ]
+    }
+  ]
+}

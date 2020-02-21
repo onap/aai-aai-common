@@ -20,8 +20,8 @@
 
 package org.onap.aai.parsers.query;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
 
@@ -41,7 +41,7 @@ import org.springframework.context.ApplicationContext;
  */
 public class RelationshipQueryParser extends LegacyQueryParser {
 
-    private static final EELFLogger logger = EELFManager.getInstance().getLogger(RelationshipQueryParser.class);
+    private static final Logger logger = LoggerFactory.getLogger(RelationshipQueryParser.class);
 
     private Introspector relationship = null;
 

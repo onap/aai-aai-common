@@ -20,8 +20,8 @@
 
 package org.onap.aai.dbgen;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -77,7 +77,7 @@ public final class GraphSONPartialReader implements GraphReader {
     private boolean unwrapAdjacencyList = false;
     private final GraphSONReader reader;
 
-    private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(InMemoryGraph.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(InMemoryGraph.class);
 
     final TypeReference<Map<String, Object>> mapTypeReference = new TypeReference<Map<String, Object>>() {};
 

@@ -20,8 +20,8 @@
 
 package org.onap.aai.service;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 
@@ -37,7 +37,7 @@ import org.springframework.stereotype.Service;
 @PropertySource(value = "file:${schema.ingest.file}", ignoreResourceNotFound = true)
 public class NodeValidationService {
 
-    private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(NodeValidationService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(NodeValidationService.class);
 
     @Autowired(required = false)
     private NodeValidator nodeValidator;

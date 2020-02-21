@@ -1,0 +1,23 @@
+{
+    "hostname": "test-pserver-implied-delete",
+    "p-interfaces": {
+        "p-interface": [
+            {
+                "interface-name": "test-p-interface-implied-delete-1",
+                "selflink": "somelink"
+            },
+            {
+                "interface-name": "test-p-interface-implied-delete-2",
+                "selflink": "somelink"
+            },
+            {
+                "interface-name": "test-p-interface-implied-delete-3",
+                "selflink": "somelink"
+            },
+            {
+                "interface-name": "test-p-interface-implied-delete-4",
+                "selflink": "somelink"
+            }
+        ]
+    }
+}

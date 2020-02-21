@@ -20,14 +20,6 @@
 
 package org.onap.aai.query.builder;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import javax.ws.rs.core.MultivaluedMap;
-
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.Tree;
@@ -42,10 +34,16 @@ import org.onap.aai.edges.enums.EdgeType;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
-import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.onap.aai.parsers.query.QueryParser;
 import org.onap.aai.parsers.query.QueryParserStrategy;
 import org.springframework.context.ApplicationContext;
+
+import javax.ws.rs.core.MultivaluedMap;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * The Class QueryBuilder.
@@ -113,9 +111,21 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
      */
     public abstract QueryBuilder<Vertex> getVerticesByProperty(String key, Object value);
 
+
+    /**
+     * Gets the edges by property.
+     *
+     * @param key the key
+     * @param value the value
+     * @return the vertices by property
+     */
+    public QueryBuilder<Edge> getEdgesByProperty(String key, Object value) {
+        return this.has(key, value.toString());
+    }
+
     /**
      * filters by all the values for this property
-     * 
+     *
      * @param key
      * @param values
      * @return vertices that match these values
@@ -126,7 +136,7 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
 
     /**
      * filters by all the values for this property
-     * 
+     *
      * @param key
      * @param values
      * @return vertices that match these values
@@ -134,10 +144,18 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
     public abstract QueryBuilder<Vertex> getVerticesByProperty(String key, List<?> values);
 
     /**
+     * filters by all the values for this property
+     *
+     * @param key
+     * @param value in comma delimited string format
+     * @return vertices that match these values
+     */
+    public abstract QueryBuilder<Vertex> getVerticesByCommaSeperatedValue(String key, String value);
+
+    /**
      * Gets the vertices that have this property key.
      *
      * @param key the key
-     * @param value the value
      * @return the vertices by property
      */
     public abstract QueryBuilder<Vertex> getVerticesByProperty(String key);
@@ -146,14 +164,13 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
      * Gets the vertices that do not have this property key.
      *
      * @param key the key
-     * @param value the value
      * @return the vertices by property
      */
     public abstract QueryBuilder<Vertex> getVerticesExcludeByProperty(String key);
 
     /**
      * filters by elements that start with the value for this property
-     * 
+     *
      * @param key
      * @param value
      * @return vertices that match these values
@@ -171,7 +188,7 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
 
     /**
      * filters by all the values for this property and excludes the vertices
-     * 
+     *
      * @param key
      * @param values
      * @return vertices that match these values
@@ -182,7 +199,7 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
 
     /**
      * filters by all the values for this property and excludes the vertices
-     * 
+     *
      * @param key
      * @param values
      * @return vertices that match these values
@@ -191,18 +208,18 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
 
     /**
      * filters by all the values greater than for this property
-     * 
+     *
      * @param key
-     * @param values
+     * @param value
      * @return vertices that match these values
      */
     public abstract QueryBuilder<Vertex> getVerticesGreaterThanProperty(String key, Object value);
 
     /**
      * filters by all the values less than for this property
-     * 
+     *
      * @param key
-     * @param values
+     * @param value
      * @return vertices that match these values
      */
 
@@ -334,7 +351,7 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
 
     /**
      *
-     * @param MissingOptionalParameter
+     * @param edgeType
      * @param outNodeType
      * @param inNodeType
      * @return
@@ -346,6 +363,22 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
          * When no optional parameter edgetype is sent get all edges between the 2 nodetypes
          */
         return this.createEdgeTraversal(outNodeType, inNodeType);
+    }
+
+    /**
+     *
+     * @param edgeType
+     * @param outNodeType
+     * @param inNodeType
+     * @return
+     * @throws AAIException
+     */
+    public QueryBuilder<Vertex> createEdgeTraversalWithLabels(MissingOptionalParameter edgeType, String outNodeType,
+                                                    String inNodeType, List<String> labels) throws AAIException {
+        /*
+         * When no optional parameter edgetype is sent get all edges between the 2 nodetypes
+         */
+        return this.createEdgeTraversalWithLabels(outNodeType, inNodeType, labels);
     }
 
     public QueryBuilder<Vertex> createEdgeTraversal(String outNodeType, String inNodeType) throws AAIException {
@@ -374,6 +407,38 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
             }
         } else {
             treeBuilder = this.newInstance().createEdgeTraversal(EdgeType.TREE, out, in);
+            queryBuilder = this.union(new QueryBuilder[] {treeBuilder});
+        }
+
+        return queryBuilder;
+    }
+
+    public QueryBuilder<Vertex> createEdgeTraversalWithLabels(String outNodeType, String inNodeType, List<String> labels) throws AAIException {
+
+        Introspector out = loader.introspectorFromName(outNodeType);
+        Introspector in = loader.introspectorFromName(inNodeType);
+
+        QueryBuilder<Vertex> cousinBuilder = null;
+        QueryBuilder<Vertex> treeBuilder = null;
+        QueryBuilder<Vertex> queryBuilder = null;
+
+        try {
+            cousinBuilder = this.newInstance().createEdgeTraversalWithLabels(EdgeType.COUSIN, out, in, labels);
+        } catch (AAIException e) {
+        }
+
+        if (cousinBuilder != null) {
+            try {
+                treeBuilder = this.newInstance().createEdgeTraversalWithLabels(EdgeType.TREE, out, in, labels);
+            } catch (AAIException e) {
+            }
+            if (treeBuilder != null) {
+                queryBuilder = this.union(new QueryBuilder[] {cousinBuilder, treeBuilder});
+            } else {
+                queryBuilder = this.union(new QueryBuilder[] {cousinBuilder});
+            }
+        } else {
+            treeBuilder = this.newInstance().createEdgeTraversalWithLabels(EdgeType.TREE, out, in, labels);
             queryBuilder = this.union(new QueryBuilder[] {treeBuilder});
         }
 
@@ -414,6 +479,43 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
      */
     public abstract QueryBuilder<Vertex> createEdgeTraversalWithLabels(EdgeType type, Introspector out, Introspector in,
             List<String> labels) throws AAIException;
+
+
+    /**
+     * This method and it's overloaded counterpart are conditional statements.
+     * This method creates an edge traversal step if an optional property is present
+     * This is necessary in cases such as "if the Optional Property 1 is sent,
+     * find all Nodes of type A with edges to Nodes of type B with property 1,
+     * otherwise, simply find all nodes of type A".
+     * @param type
+     * @param outNodeType
+     * @param inNodeType
+     * @param value
+     * @return
+     * @throws AAIException
+     */
+    public QueryBuilder<Vertex> createEdgeTraversalIfParameterIsPresent(EdgeType type, String outNodeType, String inNodeType,
+    		Object value) throws AAIException {
+    	return this.createEdgeTraversal(type, outNodeType, inNodeType);
+    }
+
+    /**
+     * This method and it's overloaded counterpart are conditional statements.
+     * This method skips an edge traversal step if there is an optional property missing.
+     * This is necessary in cases such as "if the Optional Property 1 is sent,
+     * find all Nodes of type A with edges to Nodes of type B with property 1,
+     * otherwise, simply find all nodes of type A".
+     * @param type
+     * @param outNodeType
+     * @param inNodeType
+     * @param value
+     * @return
+     * @throws AAIException
+     */
+    public QueryBuilder<Vertex> createEdgeTraversalIfParameterIsPresent(EdgeType type, String outNodeType, String inNodeType,
+    		MissingOptionalParameter value) throws AAIException {
+    	return (QueryBuilder<Vertex>) this;
+    }
 
     /**
      *
@@ -467,7 +569,7 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
 
     /**
      * Creates a queryparser from a given object name.
-     * 
+     *
      * @param objName - name of the object type as it appears in the database
      * @return
      */
@@ -538,7 +640,7 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
 
     /**
      * uses all fields in the introspector to create a query
-     * 
+     *
      * @param obj
      * @return
      */
@@ -547,7 +649,7 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
     /**
      * lets you join any number of QueryBuilders
      * <b>be careful about starting with a union it will not use indexes</b>
-     * 
+     *
      * @param builder
      * @return
      */
@@ -562,6 +664,10 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
     public abstract QueryBuilder<E> cap(String name);
 
     public abstract QueryBuilder<E> unfold();
+
+    public abstract QueryBuilder<E> fold();
+
+    public abstract QueryBuilder<E> id();
 
     public abstract QueryBuilder<E> dedup();
 
@@ -591,6 +697,10 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
 
     public abstract QueryBuilder<E> by(String name);
 
+    public abstract QueryBuilder<E> valueMap();
+
+    public abstract QueryBuilder<E> valueMap(String... names);
+
     public abstract QueryBuilder<E> both();
 
     public abstract QueryBuilder<Tree> tree();
@@ -598,7 +708,7 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
     /**
      * Used to prevent the traversal from repeating its path through the graph.
      * See http://tinkerpop.apache.org/docs/3.0.1-incubating/#simplepath-step for more info.
-     * 
+     *
      * @return a QueryBuilder with the simplePath step appended to its traversal
      */
     public abstract QueryBuilder<E> simplePath();
@@ -617,7 +727,7 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
 
     /**
      * Used to skip step if there is an optional property missing.
-     * 
+     *
      * @param key
      * @param value
      * @return
@@ -629,7 +739,7 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
     /**
      * TODO the edge direction is hardcoded here, make it more generic
      * Returns the parent edge of the vertex
-     * 
+     *
      * @return
      */
     public QueryBuilder<Edge> getParentEdge() {
@@ -640,7 +750,7 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
     /**
      * TODO the edge direction is hardcoded here, make it more generic
      * Returns the parent vertex of the vertex
-     * 
+     *
      * @return
      */
     public QueryBuilder<Vertex> getParentVertex() {
@@ -672,4 +782,13 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
     public QueryBuilder<Vertex> getVerticesByNumberProperty(String key, MissingOptionalParameter value) {
         return getVerticesByProperty(key, value);
     }
+
+    protected abstract void vertexHas(String key, Object value) ;
+
+    protected abstract void vertexHasNot(String key);
+
+    protected abstract void vertexHas(String key);
+
+   //TODO: This probably is not required but need to test
+    // protected abstract void vertexHas(final String key, final P<?> predicate);
 }

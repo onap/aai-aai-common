@@ -20,12 +20,12 @@
 
 package org.onap.aai.logging;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
 
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.junit.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class ErrorObjectTest {
 
@@ -98,7 +98,7 @@ public class ErrorObjectTest {
     }
 
     @Test
-    public void SetErrorCodeTest() {
+    public void setErrorCodeTest() {
         newErrorObject.setErrorCode("newErrorCode");
         assertEquals(newErrorObject.getErrorCode(), "newErrorCode");
     }

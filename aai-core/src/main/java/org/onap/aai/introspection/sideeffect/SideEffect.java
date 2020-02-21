@@ -20,8 +20,8 @@
 
 package org.onap.aai.introspection.sideeffect;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
@@ -46,7 +46,7 @@ import org.onap.aai.setup.SchemaVersions;
 public abstract class SideEffect {
 
     protected static final Pattern template = Pattern.compile("\\{(.*?)\\}");
-    private static final EELFLogger logger = EELFManager.getInstance().getLogger(SideEffect.class);
+    private static final Logger logger = LoggerFactory.getLogger(SideEffect.class);
 
     protected final Introspector obj;
     protected final TransactionalGraphEngine dbEngine;

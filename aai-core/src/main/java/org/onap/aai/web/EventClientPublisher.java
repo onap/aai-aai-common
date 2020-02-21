@@ -20,8 +20,8 @@
 
 package org.onap.aai.web;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Base64;
@@ -37,7 +37,7 @@ import org.springframework.web.client.RestTemplate;
 @Configuration
 public class EventClientPublisher {
 
-    private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(EventClientPublisher.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(EventClientPublisher.class);
 
     @Value("${dmaap.ribbon.listOfServers:}")
     private String hosts;

@@ -21,15 +21,6 @@
 package org.onap.aai.introspection.sideeffect;
 
 import com.google.common.collect.Multimap;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.*;
-import java.util.Map.Entry;
-
-import javax.ws.rs.core.MultivaluedMap;
-
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
@@ -42,7 +33,10 @@ import org.onap.aai.edges.enums.EdgeType;
 import org.onap.aai.edges.exceptions.AmbiguousRuleChoiceException;
 import org.onap.aai.edges.exceptions.EdgeRuleNotFoundException;
 import org.onap.aai.exceptions.AAIException;
-import org.onap.aai.introspection.*;
+import org.onap.aai.introspection.Introspector;
+import org.onap.aai.introspection.Loader;
+import org.onap.aai.introspection.LoaderFactory;
+import org.onap.aai.introspection.ModelType;
 import org.onap.aai.introspection.sideeffect.exceptions.AAIMultiplePropertiesException;
 import org.onap.aai.parsers.query.QueryParser;
 import org.onap.aai.restcore.util.URITools;
@@ -51,6 +45,13 @@ import org.onap.aai.serialization.db.DBSerializer;
 import org.onap.aai.serialization.db.EdgeSerializer;
 import org.onap.aai.serialization.db.exceptions.EdgeMultiplicityException;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
+
+import javax.ws.rs.core.MultivaluedMap;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.*;
+import java.util.Map.Entry;
 
 public class PrivateEdge extends SideEffect {
 
@@ -111,40 +112,38 @@ public class PrivateEdge extends SideEffect {
                         throw new EdgeMultiplicityException(message);
                     }
 
-                    for (Entry<String, EdgeRule> edgeEntry : edgeRulesMap.entries()) {
-                        EdgeRule edgeRule = edgeIngestor.getRule(edgeQuery);
-                        Iterator<Edge> edges = self.edges(edgeRule.getDirection(), edgeRule.getLabel().toString());
-                        if (edges.hasNext()) {
-                            Edge edge = edges.next();
-                            EdgeStatus status = checkStatus(obj, self);
-                            switch (status) {
-                                case CREATED:
-                                    edgeSerializer.addPrivateEdge(this.dbEngine.asAdmin().getTraversalSource(), self,
-                                            otherVertex, edgeRule.getLabel());
-                                    break;
-                                case MODIFIED:
-                                    edge.remove();
-                                    edgeSerializer.addPrivateEdge(this.dbEngine.asAdmin().getTraversalSource(), self,
-                                            otherVertex, edgeRule.getLabel());
-                                    break;
-                                case REMOVED:
-                                    edge.remove();
-                                    break;
-                                case UNCHANGED:
-                                    break;
-                            }
-                        } else {
-                            edgeSerializer.addPrivateEdge(this.dbEngine.asAdmin().getTraversalSource(), self,
-                                    otherVertex, edgeRule.getLabel());
+                    EdgeRule edgeRule = edgeIngestor.getRule(edgeQuery);
+                    Iterator<Edge> edges = self.edges(edgeRule.getDirection(), edgeRule.getLabel());
+                    if (edges.hasNext()) {
+                        Edge edge = edges.next();
+                        EdgeStatus status = checkStatus(obj, self);
+                        switch (status) {
+                            case CREATED:
+                                edgeSerializer.addPrivateEdge(this.dbEngine.asAdmin().getTraversalSource(), self,
+                                        otherVertex, edgeRule.getLabel());
+                                break;
+                            case MODIFIED:
+                                edge.remove();
+                                edgeSerializer.addPrivateEdge(this.dbEngine.asAdmin().getTraversalSource(), self,
+                                        otherVertex, edgeRule.getLabel());
+                                break;
+                            case REMOVED:
+                                edge.remove();
+                                break;
+                            case UNCHANGED:
+                                break;
                         }
+                    } else {
+                        edgeSerializer.addPrivateEdge(this.dbEngine.asAdmin().getTraversalSource(), self,
+                                otherVertex, edgeRule.getLabel());
                     }
                 }
             } else {
                 if (results.isEmpty()) {
                     throw new AAIException("AAI_6114", "object located at " + uri + " not found");
-                } else if (results.size() > 1) {
+                } else {
                     throw new AAIMultiplePropertiesException(
-                            "multiple values of " + entry.getKey() + " found when searching " + uri);
+                        "multiple values of " + entry.getKey() + " found when searching " + uri);
                 }
             }
         }
@@ -159,7 +158,7 @@ public class PrivateEdge extends SideEffect {
         for (String key : templateKeys) {
             String currentObjValue = obj.getValue(key);
             Map<PropertyMetadata, String> map = obj.getPropertyMetadata(key);
-            String oldVertexValue = null;
+            String oldVertexValue;
 
             if (map.containsKey(PropertyMetadata.DB_ALIAS)) {
                 oldVertexValue = self.<String>property(key + AAIProperties.DB_ALIAS_SUFFIX).orElse(null);

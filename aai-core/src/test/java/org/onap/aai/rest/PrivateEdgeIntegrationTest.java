@@ -29,8 +29,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.jayway.jsonpath.JsonPath;
 
 import java.util.*;
@@ -55,7 +55,7 @@ import org.onap.aai.setup.SchemaVersion;
 @RunWith(value = Parameterized.class)
 public class PrivateEdgeIntegrationTest extends AAISetup {
 
-    private static EELFLogger logger = EELFManager.getInstance().getLogger(PserverTest.class);
+    private static Logger logger = LoggerFactory.getLogger(PserverTest.class);
     private HttpTestUtil httpTestUtil;
     private Map<String, String> relationshipMap;
 

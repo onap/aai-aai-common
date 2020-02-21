@@ -20,25 +20,23 @@
 
 package org.onap.aai.serialization.queryformats.utils;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Set;
+import org.onap.aai.serialization.queryformats.exceptions.QueryParamInjectionException;
+import org.onap.aai.serialization.queryformats.params.*;
 
 import javax.ws.rs.core.MultivaluedMap;
-
-import org.onap.aai.serialization.queryformats.exceptions.QueryParamInjectionException;
-import org.onap.aai.serialization.queryformats.params.Inject;
-import org.onap.aai.serialization.queryformats.params.Setter;
-import org.reflections.Reflections;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 public class QueryParamInjector {
 
-    private final Set<Class<?>> results;
-
-    private QueryParamInjector() {
-        Reflections reflections = new Reflections("org.onap.aai.serialization.queryformats.params");
-        results = reflections.getTypesAnnotatedWith(Inject.class);
-    }
+    //TODO reimplement this using reflections.
+    private static final Class<?>[] PARAM_CLASSES = new Class[] {
+        AsTree.class,
+        Depth.class,
+        EndTs.class,
+        NodesOnly.class,
+        StartTs.class
+    };
 
     private static class Helper {
         private static final QueryParamInjector INSTANCE = new QueryParamInjector();
@@ -50,7 +48,7 @@ public class QueryParamInjector {
 
     public <T> T injectParams(T obj, MultivaluedMap<String, String> params) throws QueryParamInjectionException {
         try {
-            for (Class<?> item : results) {
+            for (Class<?> item : PARAM_CLASSES) {
                 if (item.isAssignableFrom(obj.getClass())) {
                     String name = item.getAnnotation(Inject.class).name();
 

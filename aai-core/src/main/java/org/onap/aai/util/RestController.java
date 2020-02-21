@@ -20,26 +20,30 @@
 
 package org.onap.aai.util;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.jersey.api.client.ClientResponse;
 
+import java.io.IOException;
 import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import org.onap.aai.exceptions.AAIException;
-import org.onap.aai.logging.LoggingContext;
 
 public class RestController implements RestControllerInterface {
 
     private static final String TARGET_NAME = "AAI";
-    private static EELFLogger LOGGER = EELFManager.getInstance().getLogger(RestController.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(RestController.class);
 
     private static Client client = null;
 
@@ -85,6 +89,9 @@ public class RestController implements RestControllerInterface {
         this.initRestClient();
     }
 
+    public RestController(String truststorePath, String truststorePassword, String keystorePath, String keystorePassword) throws AAIException {
+        this.initRestClient(truststorePath, truststorePassword, keystorePath, keystorePassword);
+    }
     /**
      * Inits the rest client.
      *
@@ -101,11 +108,29 @@ public class RestController implements RestControllerInterface {
             }
         }
     }
-
-    public Client getHttpsAuthClient() throws KeyManagementException {
-        return HttpsAuthClient.getClient();
+    /**
+     * Inits the rest client.
+     *
+     * @throws AAIException the AAI exception
+     */
+    public void initRestClient(String truststorePath, String truststorePassword, String keystorePath, String keystorePassword) throws AAIException {
+        if (client == null) {
+            try {
+                client = getHttpsAuthClient(truststorePath, truststorePassword, keystorePath, keystorePassword);
+            } catch (KeyManagementException e) {
+                throw new AAIException("AAI_7117", "KeyManagementException in REST call to DB: " + e.toString());
+            } catch (Exception e) {
+                throw new AAIException("AAI_7117", " Exception in REST call to DB: " + e.toString());
+            }
+        }
+    }
+    public Client getHttpsAuthClient(String truststorePath, String truststorePassword, String keystorePath, String keystorePassword) throws KeyManagementException, UnrecoverableKeyException, CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
+        return HttpsAuthClient.getClient(truststorePath, truststorePassword, keystorePath, keystorePassword);
     }
 
+    public Client getHttpsAuthClient() throws KeyManagementException, UnrecoverableKeyException, CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, AAIException {
+        return HttpsAuthClient.getClient();
+    }
     /**
      * Sets the rest srvr base URL.
      *
@@ -151,13 +176,6 @@ public class RestController implements RestControllerInterface {
         String url = "";
         transId += ":" + UUID.randomUUID().toString();
 
-        LoggingContext.save();
-        LoggingContext.partnerName(sourceID);
-        LoggingContext.targetEntity(TARGET_NAME);
-        LoggingContext.requestId(transId);
-        LoggingContext.serviceName(methodName);
-        LoggingContext.targetServiceName(methodName);
-
         LOGGER.debug(methodName + " start");
 
         restObject.set(t);
@@ -177,7 +195,6 @@ public class RestController implements RestControllerInterface {
                         AAIConfig.get(AAIConstants.AAI_DEFAULT_API_VERSION_PROP)) + path;
             }
         }
-        initRestClient();
         LOGGER.debug(url + " for the get REST API");
         ClientResponse cres = client.resource(url).accept("application/json").header("X-TransactionId", transId)
                 .header("X-FromAppId", sourceID).header("Real-Time", "true").type("application/json")
@@ -192,12 +209,9 @@ public class RestController implements RestControllerInterface {
             restObject.set(t);
             LOGGER.debug(methodName + "REST api GET was successfull!");
         } else {
-            LoggingContext.restore();
             // System.out.println(methodName + ": url=" + url + " failed with status=" + cres.getStatus());
             throw new AAIException("AAI_7116", methodName + " with status=" + cres.getStatus() + ", url=" + url);
         }
-
-        LoggingContext.restore();
     }
 
     /**
@@ -219,20 +233,12 @@ public class RestController implements RestControllerInterface {
         String url = "";
         transId += ":" + UUID.randomUUID().toString();
 
-        LoggingContext.save();
-        LoggingContext.partnerName(sourceID);
-        LoggingContext.targetEntity(TARGET_NAME);
-        LoggingContext.requestId(transId);
-        LoggingContext.serviceName(methodName);
-        LoggingContext.targetServiceName(methodName);
-
         LOGGER.debug(methodName + " start");
 
         restObject.set(t);
 
         url = AAIConfig.get(AAIConstants.AAI_SERVER_URL_BASE) + apiVersion + "/" + path;
 
-        initRestClient();
         LOGGER.debug(url + " for the get REST API");
         ClientResponse cres = client.resource(url).accept("application/json").header("X-TransactionId", transId)
                 .header("X-FromAppId", sourceID).header("Real-Time", "true").type("application/json")
@@ -247,12 +253,9 @@ public class RestController implements RestControllerInterface {
             restObject.set(t);
             LOGGER.debug(methodName + "REST api GET was successfull!");
         } else {
-            LoggingContext.restore();
             // System.out.println(methodName + ": url=" + url + " failed with status=" + cres.getStatus());
             throw new AAIException("AAI_7116", methodName + " with status=" + cres.getStatus() + ", url=" + url);
         }
-
-        LoggingContext.restore();
     }
 
     /**
@@ -320,16 +323,7 @@ public class RestController implements RestControllerInterface {
         String url = "";
         transId += ":" + UUID.randomUUID().toString();
 
-        LoggingContext.save();
-        LoggingContext.partnerName(sourceID);
-        LoggingContext.targetEntity(TARGET_NAME);
-        LoggingContext.requestId(transId);
-        LoggingContext.serviceName(methodName);
-        LoggingContext.targetServiceName(methodName);
-
         LOGGER.debug(methodName + " start");
-
-        initRestClient();
 
         if (oldserver) {
             url = AAIConfig.get(AAIConstants.AAI_OLDSERVER_URL) + path;
@@ -356,9 +350,7 @@ public class RestController implements RestControllerInterface {
         int statuscode = cres.getStatus();
         if (statuscode >= 200 && statuscode <= 299) {
             LOGGER.debug(methodName + ": url=" + url + ", request=" + path);
-            LoggingContext.restore();
         } else {
-            LoggingContext.restore();
             throw new AAIException("AAI_7116", methodName + " with status=" + statuscode + ", url=" + url + ", msg="
                     + cres.getEntity(String.class));
         }
@@ -381,16 +373,8 @@ public class RestController implements RestControllerInterface {
         String url = "";
         transId += ":" + UUID.randomUUID().toString();
 
-        LoggingContext.save();
-        LoggingContext.partnerName(sourceID);
-        LoggingContext.targetEntity(TARGET_NAME);
-        LoggingContext.requestId(transId);
-        LoggingContext.serviceName(methodName);
-        LoggingContext.targetServiceName(methodName);
-
         LOGGER.debug(methodName + " start");
 
-        initRestClient();
         String request = "{}";
         if (overrideLocalHost == null) {
             overrideLocalHost = AAIConfig.get(AAIConstants.AAI_LOCAL_OVERRIDE, AAIConstants.AAI_LOCAL_OVERRIDE_DEFAULT);
@@ -408,13 +392,10 @@ public class RestController implements RestControllerInterface {
 
         if (cres.getStatus() == 404) { // resource not found
             LOGGER.info("Resource does not exist...: " + cres.getStatus() + ":" + cres.getEntity(String.class));
-            LoggingContext.restore();
         } else if (cres.getStatus() == 200 || cres.getStatus() == 204) {
             LOGGER.info("Resource " + url + " deleted");
-            LoggingContext.restore();
         } else {
             LOGGER.error("Deleting Resource failed: " + cres.getStatus() + ":" + cres.getEntity(String.class));
-            LoggingContext.restore();
             throw new AAIException("AAI_7116", "Error during DELETE");
         }
     }
@@ -440,18 +421,10 @@ public class RestController implements RestControllerInterface {
         String url = "";
         transId += ":" + UUID.randomUUID().toString();
 
-        LoggingContext.save();
-        LoggingContext.partnerName(sourceID);
-        LoggingContext.targetEntity(TARGET_NAME);
-        LoggingContext.requestId(transId);
-        LoggingContext.serviceName(methodName);
-        LoggingContext.targetServiceName(methodName);
-
         LOGGER.debug(methodName + " start");
 
         try {
 
-            initRestClient();
             url = AAIConfig.get(AAIConstants.AAI_SERVER_URL_BASE) + apiVersion + "/" + path;
 
             ClientResponse cres = client.resource(url).accept("application/json").header("X-TransactionId", transId)
@@ -473,7 +446,6 @@ public class RestController implements RestControllerInterface {
             throw new AAIException("AAI_7116", methodName + " with url=" + url + ", Exception: " + e.toString());
 
         } finally {
-            LoggingContext.restore();
         }
     }
 
@@ -558,13 +530,6 @@ public class RestController implements RestControllerInterface {
         String url = "";
         transId += ":" + UUID.randomUUID().toString();
 
-        LoggingContext.save();
-        LoggingContext.partnerName(sourceID);
-        LoggingContext.targetEntity(TARGET_NAME);
-        LoggingContext.requestId(transId);
-        LoggingContext.serviceName(methodName);
-        LoggingContext.targetServiceName(methodName);
-
         int numRetries = 5;
         ClientResponse cres = null;
         int statusCode = -1;
@@ -582,7 +547,6 @@ public class RestController implements RestControllerInterface {
                         AAIConfig.get(AAIConstants.AAI_DEFAULT_API_VERSION_PROP)) + path;
             }
 
-            initRestClient();
             do {
 
                 cres = client.resource(url).accept("application/json").header("X-TransactionId", transId)
@@ -613,7 +577,6 @@ public class RestController implements RestControllerInterface {
             throw new AAIException("AAI_7116", methodName + " with url=" + url + ", Exception: " + e.toString());
 
         } finally {
-            LoggingContext.restore();
         }
 
     }

@@ -22,8 +22,11 @@ package org.onap.aai.serialization.queryformats;
 
 import com.google.gson.JsonObject;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
+import org.onap.aai.serialization.queryformats.exceptions.AAIFormatQueryResultFormatNotSupported;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
 
 public class Console implements FormatMapper {
@@ -34,6 +37,13 @@ public class Console implements FormatMapper {
         JsonObject json = new JsonObject();
         json.addProperty("result", v.toString());
 
+        return Optional.of(json);
+    }
+
+    @Override
+    public Optional<JsonObject> formatObject(Object o, Map<String, List<String>> properties) throws AAIFormatVertexException, AAIFormatQueryResultFormatNotSupported {
+        JsonObject json = new JsonObject();
+        json.addProperty("result", o.toString());
         return Optional.of(json);
     }
 

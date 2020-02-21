@@ -1,0 +1,6 @@
+{
+    "vnf-id": "generic-vnf-notification",
+    "vnf-type": "sometype",
+    "in-maint": true,
+    "is-closed-loop-disabled": true
+}

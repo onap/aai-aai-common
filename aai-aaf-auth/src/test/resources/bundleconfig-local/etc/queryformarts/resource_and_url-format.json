@@ -1,0 +1,16 @@
+{
+  "results": [
+    {
+      "url" : "/cloud-infrastructure/cloud-regions/cloud-region/cloud-owner-987654321-9922-as988q/cloud-region-id-987654321-9922-as988q/tenants/tenant/tenant-987654321-9999-as988q/vservers/vserver/vserver-987654321-9999-as988q",
+      "vserver": {
+       
+      }
+    },
+    {
+      "url" : "/vservers/vserver/test1",
+      "vserver": {
+        
+      }
+    }
+  ]
+}

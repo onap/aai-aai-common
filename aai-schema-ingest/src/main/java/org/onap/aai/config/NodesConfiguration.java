@@ -22,8 +22,8 @@
 
 package org.onap.aai.config;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -49,7 +49,7 @@ public class NodesConfiguration {
 
     private static final String CONFIG_TRANSLATOR = "config";
     private static final String SCHEMA_SERVICE_TRANSLATOR = "schema-service";
-    private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(NodesConfiguration.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(NodesConfiguration.class);
 
     @Autowired(required = false)
     SchemaServiceConfiguration schemaConfiguration;

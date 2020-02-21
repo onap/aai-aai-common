@@ -20,17 +20,6 @@
 
 package org.onap.aai.dbmap;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.matchesPattern;
-import static org.junit.Assert.*;
-
-import java.io.FileNotFoundException;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-
 import org.janusgraph.core.JanusGraph;
 import org.janusgraph.core.JanusGraphFactory;
 import org.janusgraph.core.schema.JanusGraphIndex;
@@ -47,6 +36,17 @@ import org.onap.aai.introspection.ModelType;
 import org.onap.aai.schema.enums.PropertyMetadata;
 import org.onap.aai.setup.SchemaVersions;
 import org.onap.aai.util.AAIConstants;
+
+import java.io.FileNotFoundException;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.matchesPattern;
+import static org.junit.Assert.*;
 
 public class AAIGraphTest extends AAISetup {
     @Before
@@ -67,21 +67,9 @@ public class AAIGraphTest extends AAISetup {
         graphMgt.rollback();
     }
 
-    @Test
-    public void getCachedInstanceConnectionName() throws Exception {
-
-        JanusGraphManagement graphMgt = AAIGraph.getInstance().getGraph(DBConnectionType.CACHED).openManagement();
-        String connectionInstanceName =
-                graphMgt.getOpenInstances().stream().filter(c -> c.contains("current")).findFirst().get();
-        assertThat(connectionInstanceName, containsString(SERVICE_NAME));
-        assertThat(connectionInstanceName, containsString("cached"));
-        assertThat(connectionInstanceName,
-                matchesPattern("^\\d+_[\\w\\-\\d]+_" + SERVICE_NAME + "_cached_\\d+\\(current\\)$"));
-        graphMgt.rollback();
-    }
 
     @Test
-    public void JanusGraphOpenNameTest() throws Exception {
+    public void janusGraphOpenNameTest() throws Exception {
         JanusGraph graph = JanusGraphFactory.open(new AAIGraphConfig.Builder(AAIConstants.REALTIME_DB_CONFIG)
                 .forService(SERVICE_NAME).withGraphType("graphType").buildConfiguration());
         JanusGraphManagement graphMgt = graph.openManagement();
@@ -94,7 +82,7 @@ public class AAIGraphTest extends AAISetup {
     }
 
     @Test(expected = FileNotFoundException.class)
-    public void JanusGraphOpenNameWithInvalidFilePathTest() throws Exception {
+    public void janusGraphOpenNameWithInvalidFilePathTest() throws Exception {
         JanusGraph graph = JanusGraphFactory.open(new AAIGraphConfig.Builder("invalid").forService(SERVICE_NAME)
                 .withGraphType("graphType").buildConfiguration());
         JanusGraphManagement graphMgt = graph.openManagement();

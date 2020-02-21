@@ -20,9 +20,6 @@
 
 package org.onap.aai.serialization.queryformats;
 
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
-
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.serialization.db.DBSerializer;
@@ -30,6 +27,9 @@ import org.onap.aai.serialization.queryformats.exceptions.QueryParamInjectionExc
 import org.onap.aai.serialization.queryformats.utils.QueryParamInjector;
 import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
 import org.onap.aai.setup.SchemaVersions;
+
+import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.MultivaluedMap;
 
 public class FormatFactory {
 
@@ -47,7 +47,7 @@ public class FormatFactory {
     }
 
     public Formatter get(Format format) throws AAIException {
-        return get(format, new MultivaluedHashMap<String, String>());
+        return get(format, new MultivaluedHashMap<>());
     }
 
     public Formatter get(Format format, MultivaluedMap<String, String> params) throws AAIException {
@@ -59,29 +59,34 @@ public class FormatFactory {
                 formatter = new Formatter(inject(new GraphSON(), params));
                 break;
             case pathed:
-                formatter = new Formatter(inject(new PathedURL(loader, urlBuilder), params));
+                formatter = new Formatter(inject(new PathedURL.Builder(loader, serializer, urlBuilder), params).build(), params);
                 break;
             case pathed_resourceversion:
-                formatter = new Formatter(inject(new PathedURL(loader, urlBuilder).includeUrl(), params));
+                formatter = new Formatter(inject(new PathedURL.Builder(loader, serializer, urlBuilder).includeUrl(), params).build(), params);
                 break;
             case id:
-                formatter = new Formatter(inject(new IdURL(loader, urlBuilder), params));
+                formatter = new Formatter(inject(new IdURL.Builder(loader, serializer, urlBuilder), params).build(), params);
                 break;
             case resource:
-                formatter = new Formatter(inject(new Resource.Builder(loader, serializer, urlBuilder), params).build());
+                formatter = new Formatter(inject(new Resource.Builder(loader, serializer, urlBuilder, params), params).build(), params);
                 break;
             case resource_and_url:
                 formatter = new Formatter(
-                        inject(new Resource.Builder(loader, serializer, urlBuilder).includeUrl(), params).build());
+                        inject(new Resource.Builder(loader, serializer, urlBuilder, params).includeUrl(), params).build(), params);
                 break;
             case raw:
                 formatter =
-                        new Formatter(inject(new RawFormat.Builder(loader, serializer, urlBuilder), params).build());
+                        new Formatter(inject(new RawFormat.Builder(loader, serializer, urlBuilder), params).build(), params);
                 break;
             case simple:
                 formatter = new Formatter(
                         inject(new RawFormat.Builder(loader, serializer, urlBuilder).depth(0).modelDriven(), params)
-                                .build());
+                                .build(), params);
+                break;
+            case aggregate:
+                formatter = new Formatter(
+                    inject(new Aggregate.Builder(loader, serializer, urlBuilder).depth(0).modelDriven(), params)
+                        .build(), params);
                 break;
             case console:
                 formatter = new Formatter(inject(new Console(), params));
@@ -91,7 +96,19 @@ public class FormatFactory {
                 break;
             case resource_with_sot:
                 formatter = new Formatter(
-                        inject(new ResourceWithSoT.Builder(loader, serializer, urlBuilder), params).build());
+                        inject(new ResourceWithSoT.Builder(loader, serializer, urlBuilder), params).build(), params);
+                break;
+            case changes:
+                formatter =
+                    new Formatter(inject(new ChangesFormat(), params));
+                break;
+            case state:
+                formatter =
+                    new Formatter(inject(new StateFormat.Builder(loader, serializer, urlBuilder), params).build(format));
+                break;
+            case lifecycle:
+                formatter =
+                    new Formatter(inject(new LifecycleFormat.Builder(loader, serializer, urlBuilder), params).build(format));
                 break;
             default:
                 break;

@@ -20,19 +20,6 @@
 
 package org.onap.aai.introspection.sideeffect;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.util.Arrays;
-import java.util.Collection;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Graph;
@@ -48,10 +35,11 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.onap.aai.AAISetup;
 import org.onap.aai.db.props.AAIProperties;
-import org.onap.aai.dbmap.DBConnectionType;
 import org.onap.aai.edges.enums.EdgeProperty;
 import org.onap.aai.exceptions.AAIException;
-import org.onap.aai.introspection.*;
+import org.onap.aai.introspection.Introspector;
+import org.onap.aai.introspection.Loader;
+import org.onap.aai.introspection.ModelType;
 import org.onap.aai.introspection.sideeffect.exceptions.AAIMissingRequiredPropertyException;
 import org.onap.aai.parsers.query.QueryParser;
 import org.onap.aai.serialization.db.DBSerializer;
@@ -59,13 +47,24 @@ import org.onap.aai.serialization.engines.JanusGraphDBEngine;
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Collection;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
+
 @RunWith(value = Parameterized.class)
 
 public class DataCopyTest extends AAISetup {
 
     private static JanusGraph graph;
     private final static ModelType introspectorFactoryType = ModelType.MOXY;
-    private final static DBConnectionType type = DBConnectionType.REALTIME;
     private static Loader loader;
     private static TransactionalGraphEngine dbEngine;
     @Mock
@@ -77,7 +76,7 @@ public class DataCopyTest extends AAISetup {
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
-    @Parameterized.Parameter(value = 0)
+    @Parameterized.Parameter
     public QueryStyle queryStyle;
 
     @Parameterized.Parameters(name = "QueryStyle.{0}")
@@ -86,27 +85,40 @@ public class DataCopyTest extends AAISetup {
     }
 
     @BeforeClass
-    public static void setup() throws NoSuchFieldException, SecurityException, Exception {
+    public static void setup() {
         graph = JanusGraphFactory.build().set("storage.backend", "inmemory").open();
         System.setProperty("AJSC_HOME", ".");
         System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
 
         graph.traversal()
-                .addV("aai-node-type", "model", "model-invariant-id", "key1", AAIProperties.AAI_URI,
-                        "/service-design-and-creation/models/model/key1")
-                .as("v1")
-                .addV("aai-node-type", "model-ver", "model-ver", "myValue", "model-version-id", "key2", "model-version",
-                        "testValue", AAIProperties.AAI_URI,
-                        "/service-design-and-creation/models/model/key1/model-vers/model-ver/key2")
-                .addOutE("org.onap.relationships.inventory.BelongsTo", "v1", EdgeProperty.CONTAINS.toString(), true)
-                .addV("aai-node-type", "model", "model-invariant-id", "key3", AAIProperties.AAI_URI,
-                        "/service-design-and-creation/models/model/key3")
-                .as("v2")
-                .addV("aai-node-type", "model-ver", "model-ver", "myValue", "model-version-id", "key4",
-                        AAIProperties.AAI_URI,
-                        "/service-design-and-creation/models/model/key3/model-vers/model-ver/key4")
-                .addOutE("org.onap.relationships.inventory.BelongsTo", "v2", EdgeProperty.CONTAINS.toString(), true)
-                .next();
+            .addV("model")
+            .property("aai-node-type", "model")
+            .property("model-invariant-id", "key1")
+            .property(AAIProperties.AAI_URI,"/service-design-and-creation/models/model/key1")
+            .as("v1")
+            .addV("model-ver")
+            .property("aai-node-type", "model-ver")
+            .property("model-ver", "myValue")
+            .property("model-version-id", "key2")
+            .property("model-version", "testValue")
+            .property(AAIProperties.AAI_URI, "/service-design-and-creation/models/model/key1/model-vers/model-ver/key2")
+            .as("v2")
+            .addE("org.onap.relationships.inventory.BelongsTo").to("v1").from("v2")
+            .property(EdgeProperty.CONTAINS.toString(), true)
+            .addV("model")
+            .property("aai-node-type", "model")
+            .property("model-invariant-id", "key3")
+            .property(AAIProperties.AAI_URI, "/service-design-and-creation/models/model/key3")
+            .as("v3")
+            .addV()
+            .property("aai-node-type", "model-ver")
+            .property("model-ver", "myValue")
+            .property("model-version-id", "key4")
+            .property(AAIProperties.AAI_URI, "/service-design-and-creation/models/model/key3/model-vers/model-ver/key4")
+            .as("v4")
+            .addE("org.onap.relationships.inventory.BelongsTo").to("v3").from("v4")
+            .property(EdgeProperty.CONTAINS.toString(), true)
+            .next();
         graph.tx().commit();
     }
 
@@ -120,13 +132,12 @@ public class DataCopyTest extends AAISetup {
     public void initMock() {
         loader = loaderFactory.createLoaderForVersion(introspectorFactoryType, schemaVersions.getDefaultVersion());
         MockitoAnnotations.initMocks(this);
-        dbEngine = new JanusGraphDBEngine(queryStyle, type, loader);
+        dbEngine = new JanusGraphDBEngine(queryStyle, loader);
     }
 
     @Test
-    public void runPopulatePersonaModelVer() throws URISyntaxException, AAIException, UnsupportedEncodingException,
-            IllegalAccessException, IllegalArgumentException, InvocationTargetException, SecurityException,
-            InstantiationException, NoSuchMethodException, MalformedURLException {
+    public void runPopulatePersonaModelVer() throws AAIException, UnsupportedEncodingException,
+            IllegalArgumentException, SecurityException {
 
         final Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
         final Introspector obj = loader.introspectorFromName("generic-vnf");
@@ -154,13 +165,10 @@ public class DataCopyTest extends AAISetup {
     }
 
     @Test
-    public void verifyNestedSideEffect()
-            throws URISyntaxException, AAIException, IllegalAccessException, IllegalArgumentException,
-            InvocationTargetException, SecurityException, InstantiationException, NoSuchMethodException, IOException {
+    public void verifyNestedSideEffect() throws AAIException, IllegalArgumentException, SecurityException, IOException {
 
         final Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
         final Introspector obj = loader.unmarshal("customer", this.getJsonString("nested-case.json"));
-        // System.out.println(obj.marshal(true));
         TransactionalGraphEngine spy = spy(dbEngine);
         TransactionalGraphEngine.Admin adminSpy = spy(dbEngine.asAdmin());
         Graph g = graph.newTransaction();
@@ -251,15 +259,15 @@ public class DataCopyTest extends AAISetup {
 
         runner.execute(obj, self);
 
-        assertEquals("no model-version-id", true, obj.getValue("model-version-id") == null);
-        assertEquals("no model-invariant-id", true, obj.getValue("model-invariant-id") == null);
+        assertNull("no model-version-id", obj.getValue("model-version-id"));
+        assertNull("no model-invariant-id", obj.getValue("model-invariant-id"));
 
     }
 
     private String getJsonString(String filename) throws IOException {
 
         FileInputStream is = new FileInputStream("src/test/resources/oxm/sideeffect/" + filename);
-        String s = IOUtils.toString(is, "UTF-8");
+        String s = IOUtils.toString(is, StandardCharsets.UTF_8);
         IOUtils.closeQuietly(is);
 
         return s;

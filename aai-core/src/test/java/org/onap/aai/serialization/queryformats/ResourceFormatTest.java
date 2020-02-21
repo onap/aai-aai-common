@@ -20,18 +20,7 @@
 
 package org.onap.aai.serialization.queryformats;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
-
 import com.google.gson.JsonObject;
-
-import java.util.Arrays;
-
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
-
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.strategy.verification.ReadOnlyStrategy;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.T;
@@ -42,7 +31,6 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.onap.aai.AAISetup;
-import org.onap.aai.dbmap.DBConnectionType;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.introspection.ModelType;
@@ -53,6 +41,14 @@ import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
 import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
 import org.springframework.test.annotation.DirtiesContext;
+
+import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.MultivaluedMap;
+import java.util.Arrays;
+
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class ResourceFormatTest extends AAISetup {
@@ -144,7 +140,7 @@ public class ResourceFormatTest extends AAISetup {
 
         if (loader == null) {
             loader = loaderFactory.createLoaderForVersion(factoryType, schemaVersions.getAppRootVersion());
-            dbEngine = spy(new JanusGraphDBEngine(QueryStyle.TRAVERSAL, DBConnectionType.CACHED, loader));
+            dbEngine = spy(new JanusGraphDBEngine(QueryStyle.TRAVERSAL, loader));
 
             TransactionalGraphEngine.Admin spyAdmin = spy(dbEngine.asAdmin());
 
@@ -152,7 +148,7 @@ public class ResourceFormatTest extends AAISetup {
             when(dbEngine.asAdmin()).thenReturn(spyAdmin);
 
             when(spyAdmin.getReadOnlyTraversalSource())
-                    .thenReturn(graph.traversal(GraphTraversalSource.build().with(ReadOnlyStrategy.instance())));
+                    .thenReturn(graph.traversal().withStrategies(ReadOnlyStrategy.instance()));
             when(spyAdmin.getTraversalSource()).thenReturn(graph.traversal());
         }
     }

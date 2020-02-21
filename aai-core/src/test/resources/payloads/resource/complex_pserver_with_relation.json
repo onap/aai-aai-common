@@ -1,0 +1,29 @@
+{
+    "complex": {
+        "physical-location-id": "complex-1",
+        "data-center-code": "MiddletownNJ",
+        "complex-name": "complex-L-lisleil",
+        "physical-location-type": "uCPE Complex",
+        "street1": "4513 Western Ave",
+        "street2": "CU-L",
+        "city": "Middletown",
+        "state": "NJ",
+        "postal-code": "07748",
+        "country": "USA",
+        "region": "NA"
+    },
+    "pserver": {
+        "hostname": "pserver-1",
+        "ptnii-equip-name": "ptnii",
+        "number-of-cpus": 280,
+        "relationship-list": {
+            "relationship": [
+                {
+                    "related-to": "complex",
+                    "relationship-label": "org.onap.relationships.inventory.LocatedIn",
+                    "related-link": "/aai/v14/cloud-infrastructure/complexes/complex/complex-1"
+                }
+            ]
+        }
+    }
+}

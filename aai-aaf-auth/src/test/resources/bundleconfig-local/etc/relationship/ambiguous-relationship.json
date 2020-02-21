@@ -1,0 +1,10 @@
+{
+	"related-to": "generic-vnf",
+	"relationship-data" : [{
+		"relationship-key" : "generic-vnf.vnf-id",
+		"relationship-value":"key1"
+	},{
+		"relationship-key" : "generic-vnf.vnf-id",
+		"relationship-value":"key2"
+	}]
+}

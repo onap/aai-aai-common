@@ -20,16 +20,8 @@
 
 package org.onap.aai.query.builder;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
-import static org.junit.Assert.*;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.BulkSet;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.Tree;
@@ -42,6 +34,7 @@ import org.junit.runner.RunWith;
 import org.onap.aai.config.ConfigConfiguration;
 import org.onap.aai.config.IntrospectionConfig;
 import org.onap.aai.config.SpringContextAware;
+import org.onap.aai.config.XmlFormatTransformerConfiguration;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.edges.EdgeIngestor;
 import org.onap.aai.edges.enums.EdgeType;
@@ -53,7 +46,6 @@ import org.onap.aai.nodes.NodeIngestor;
 import org.onap.aai.serialization.db.EdgeSerializer;
 import org.onap.aai.serialization.db.exceptions.NoEdgeRuleFoundException;
 import org.onap.aai.serialization.queryformats.QueryFormatTestHelper;
-import org.onap.aai.setup.SchemaLocationsBean;
 import org.onap.aai.setup.SchemaVersions;
 import org.onap.aai.util.AAIConstants;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,10 +54,19 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
+import static org.junit.Assert.*;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(
         classes = {ConfigConfiguration.class, QueryTestsConfigTranslator.class, NodeIngestor.class, EdgeIngestor.class,
-                EdgeSerializer.class, SpringContextAware.class, IntrospectionConfig.class})
+                EdgeSerializer.class, SpringContextAware.class, IntrospectionConfig.class, XmlFormatTransformerConfiguration.class})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @TestPropertySource(
         properties = {"schema.translator.list = config", "schema.nodes.location=src/test/resources/onap/oxm",
@@ -95,14 +96,14 @@ public abstract class QueryBuilderTestAbstraction {
     }
 
     @Before
-    public void configure() throws Exception {
+    public void configure() {
         loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
 
         g = graph.traversal();
     }
 
     @After
-    public void deConfigure() throws Exception {
+    public void deConfigure() {
         g.tx().rollback();
     }
 
@@ -111,11 +112,30 @@ public abstract class QueryBuilderTestAbstraction {
         graph.close();
     }
 
+    /*
+     * This helper method was designed to minimize the changes needed due to the eventual
+     * removal of the addV(String...) method.
+     * Correct vertex creation addV(label).property(k,v).property(k,v)...
+     */
+    @Deprecated
+    protected GraphTraversal<Vertex, Vertex> addVHelper(GraphTraversalSource gts, String label, Object... props) {
+        for (int i = 0; i < props.length; i++) {
+            if (props[i].equals(AAIProperties.NODE_TYPE)) {
+                label = props[i+1].toString();
+            }
+        }
+        GraphTraversal<Vertex, Vertex> v = gts.addV(label);
+        for (int i = 0; i < props.length; i+=2) {
+            v.property(props[i], props[i+1]);
+        }
+        return v;
+    }
+
     @Test
     public void createEdgeGVnfToVnfcTraversal() throws AAIException {
 
-        Vertex gvnf = g.addV("aai-node-type", "generic-vnf", "vnf-id", "myvnf").next();
-        Vertex vnfc = g.addV("aai-node-type", "vnfc", "vnfc-name", "a-name").next();
+        Vertex gvnf = this.addVHelper(g, "vertex", "aai-node-type", "generic-vnf", "vnf-id", "myvnf").next();
+        Vertex vnfc = this.addVHelper(g, "vertex", "aai-node-type", "vnfc", "vnfc-name", "a-name").next();
         testEdgeSer.addEdge(g, gvnf, vnfc, "uses");
 
         QueryBuilder<Vertex> tQ = getNewVertexTraversalWithTestEdgeRules(gvnf);
@@ -128,8 +148,8 @@ public abstract class QueryBuilderTestAbstraction {
     @Test
     public void createEdgeLinterfaceToLogicalLinkTraversal() throws AAIException {
 
-        Vertex lInterface = g.addV("aai-node-type", "l-interface", "interface-name", "l-interface-a").next();
-        Vertex logicalLink = g.addV("aai-node-type", "logical-link", "link-name", "logical-link-a").next();
+        Vertex lInterface = this.addVHelper(g, "vertex", "aai-node-type", "l-interface", "interface-name", "l-interface-a").next();
+        Vertex logicalLink = this.addVHelper(g, "vertex", "aai-node-type", "logical-link", "link-name", "logical-link-a").next();
         testEdgeSer.addEdge(g, lInterface, logicalLink, "sourceLInterface");
 
         QueryBuilder<Vertex> tQ = getNewVertexTraversalWithTestEdgeRules(lInterface);
@@ -144,8 +164,8 @@ public abstract class QueryBuilderTestAbstraction {
     @SuppressWarnings("rawtypes")
     @Test
     public void createEdgeLinterfaceToLogicalLinkTraversal_tree() throws AAIException {
-        Vertex lInterface = g.addV("aai-node-type", "l-interface", "interface-name", "l-interface-a").next();
-        Vertex logicalLink = g.addV("aai-node-type", "logical-link", "link-name", "logical-link-a").next();
+        Vertex lInterface = this.addVHelper(g, "vertex", "aai-node-type", "l-interface", "interface-name", "l-interface-a").next();
+        Vertex logicalLink = this.addVHelper(g, "vertex", "aai-node-type", "logical-link", "link-name", "logical-link-a").next();
         testEdgeSer.addEdge(g, lInterface, logicalLink, "sourceLInterface");
 
         QueryBuilder<Tree> tQ = getNewTreeTraversalWithTestEdgeRules(lInterface).createEdgeTraversal(EdgeType.COUSIN,
@@ -163,9 +183,9 @@ public abstract class QueryBuilderTestAbstraction {
     @SuppressWarnings("rawtypes")
     @Test
     public void createEdgeLinterfaceToLogicalLinkTraversal_Path() throws AAIException {
-        Vertex pInterface = g.addV("aai-node-type", "p-interface", "interface-name", "p-interface-a").next();
-        Vertex lInterface = g.addV("aai-node-type", "l-interface", "interface-name", "l-interface-a").next();
-        Vertex logicalLink = g.addV("aai-node-type", "logical-link", "link-name", "logical-link-a").next();
+        Vertex pInterface = this.addVHelper(g, "vertex", "aai-node-type", "p-interface", "interface-name", "p-interface-a").next();
+        Vertex lInterface = this.addVHelper(g, "vertex", "aai-node-type", "l-interface", "interface-name", "l-interface-a").next();
+        Vertex logicalLink = this.addVHelper(g, "vertex", "aai-node-type", "logical-link", "link-name", "logical-link-a").next();
         testEdgeSer.addEdge(g, lInterface, logicalLink);
         testEdgeSer.addTreeEdge(g, pInterface, lInterface);
 
@@ -183,8 +203,8 @@ public abstract class QueryBuilderTestAbstraction {
     @SuppressWarnings("rawtypes")
     @Test
     public void parentVertexTest() throws AAIException {
-        Vertex pInterface = g.addV("aai-node-type", "p-interface", "interface-name", "p-interface-a").next();
-        Vertex lInterface = g.addV("aai-node-type", "l-interface", "interface-name", "l-interface-a").next();
+        Vertex pInterface = this.addVHelper(g, "vertex", "aai-node-type", "p-interface", "interface-name", "p-interface-a").next();
+        Vertex lInterface = this.addVHelper(g, "vertex", "aai-node-type", "l-interface", "interface-name", "l-interface-a").next();
 
         testEdgeSer.addTreeEdge(g, pInterface, lInterface);
 
@@ -197,8 +217,8 @@ public abstract class QueryBuilderTestAbstraction {
     @Test
     public void createEdgeLinterfaceToLogicalLinkIntrospectorTraversal() throws AAIException {
 
-        Vertex lInterface = g.addV("aai-node-type", "l-interface", "interface-name", "l-interface-a").next();
-        Vertex logicalLink = g.addV("aai-node-type", "logical-link", "link-name", "logical-link-a").next();
+        Vertex lInterface = this.addVHelper(g, "vertex", "aai-node-type", "l-interface", "interface-name", "l-interface-a").next();
+        Vertex logicalLink = this.addVHelper(g, "vertex", "aai-node-type", "logical-link", "link-name", "logical-link-a").next();
         testEdgeSer.addEdge(g, lInterface, logicalLink, "sourceLInterface");
 
         QueryBuilder<Vertex> tQ = getNewVertexTraversalWithTestEdgeRules(lInterface);
@@ -214,8 +234,8 @@ public abstract class QueryBuilderTestAbstraction {
     @Test
     public void createEdgeLinterfaceToLogicalLinkVertexToIntrospectorTraversal() throws AAIException {
 
-        Vertex lInterface = g.addV("aai-node-type", "l-interface", "interface-name", "l-interface-a").next();
-        Vertex logicalLink = g.addV("aai-node-type", "logical-link", "link-name", "logical-link-a").next();
+        Vertex lInterface = this.addVHelper(g, "vertex", "aai-node-type", "l-interface", "interface-name", "l-interface-a").next();
+        Vertex logicalLink = this.addVHelper(g, "vertex", "aai-node-type", "logical-link", "link-name", "logical-link-a").next();
         testEdgeSer.addEdge(g, lInterface, logicalLink, "sourceLInterface");
 
         QueryBuilder<Vertex> tQ = getNewVertexTraversalWithTestEdgeRules(lInterface);
@@ -230,8 +250,8 @@ public abstract class QueryBuilderTestAbstraction {
     @Test
     public void edgeToVertexTraversalTest() throws AAIException {
 
-        Vertex gvnf = g.addV("aai-node-type", "generic-vnf", "vnf-id", "gvnf").next();
-        Vertex vnfc1 = g.addV("aai-node-type", "vnfc", "vnfc-name", "a-name").next();
+        Vertex gvnf = this.addVHelper(g, "vertex", "aai-node-type", "generic-vnf", "vnf-id", "gvnf").next();
+        Vertex vnfc1 = this.addVHelper(g, "vertex", "aai-node-type", "vnfc", "vnfc-name", "a-name").next();
 
         testEdgeSer.addEdge(g, gvnf, vnfc1);
 
@@ -248,8 +268,8 @@ public abstract class QueryBuilderTestAbstraction {
     @Test
     public void edgeToVertexTraversalSingleOutRuleTest() throws AAIException {
 
-        Vertex vce = g.addV("aai-node-type", "vce", "vnf-id", "vce").next();
-        Vertex vnfc1 = g.addV("aai-node-type", "vnfc", "vnfc-name", "a-name").next();
+        Vertex vce = this.addVHelper(g, "vertex", "aai-node-type", "vce", "vnf-id", "vce").next();
+        Vertex vnfc1 = this.addVHelper(g, "vertex", "aai-node-type", "vnfc", "vnfc-name", "a-name").next();
 
         testEdgeSer.addEdge(g, vce, vnfc1);
 
@@ -272,8 +292,8 @@ public abstract class QueryBuilderTestAbstraction {
     @Test
     public void edgeToVertexTraversalSingleInRuleTest() throws AAIException {
 
-        Vertex vce = g.addV("aai-node-type", "vce", "vnf-id", "vce").next();
-        Vertex pserver = g.addV("aai-node-type", "pserver", "hostname", "a-name").next();
+        Vertex vce = this.addVHelper(g, "vertex", "aai-node-type", "vce", "vnf-id", "vce").next();
+        Vertex pserver = this.addVHelper(g, "vertex", "aai-node-type", "pserver", "hostname", "a-name").next();
 
         testEdgeSer.addEdge(g, vce, pserver);
 
@@ -290,9 +310,9 @@ public abstract class QueryBuilderTestAbstraction {
     @Test
     public void edgeToVertexMultiRuleTraversalTest() throws AAIException {
 
-        Vertex gvnf = g.addV("aai-node-type", "generic-vnf", "vnf-id", "gvnf").next();
-        Vertex vnfc1 = g.addV("aai-node-type", "vnfc", "vnfc-name", "a-name").next();
-        Vertex vnfc2 = g.addV("aai-node-type", "vnfc", "vnfc-name", "b-name").next();
+        Vertex gvnf = this.addVHelper(g, "vertex", "aai-node-type", "generic-vnf", "vnf-id", "gvnf").next();
+        Vertex vnfc1 = this.addVHelper(g, "vertex", "aai-node-type", "vnfc", "vnfc-name", "a-name").next();
+        Vertex vnfc2 = this.addVHelper(g, "vertex", "aai-node-type", "vnfc", "vnfc-name", "b-name").next();
 
         testEdgeSer.addEdge(g, gvnf, vnfc1);
         testEdgeSer.addEdge(g, gvnf, vnfc2, "re-uses");
@@ -311,9 +331,9 @@ public abstract class QueryBuilderTestAbstraction {
     @Test
     public void edgeToVertexMultiLabelTest() throws AAIException {
 
-        Vertex gvnf = g.addV("aai-node-type", "generic-vnf", "vnf-id", "gvnf").next();
-        Vertex pserver = g.addV("aai-node-type", "pserver", "hostname", "a-name").next();
-        Vertex vnfc1 = g.addV("aai-node-type", "vnfc", "vnfc-name", "a-name").next();
+        Vertex gvnf = this.addVHelper(g, "vertex", "aai-node-type", "generic-vnf", "vnf-id", "gvnf").next();
+        Vertex pserver = this.addVHelper(g, "vertex", "aai-node-type", "pserver", "hostname", "a-name").next();
+        Vertex vnfc1 = this.addVHelper(g, "vertex", "aai-node-type", "vnfc", "vnfc-name", "a-name").next();
 
         testEdgeSer.addEdge(g, gvnf, vnfc1);
         testEdgeSer.addEdge(g, pserver, vnfc1);
@@ -329,10 +349,10 @@ public abstract class QueryBuilderTestAbstraction {
     }
 
     @Test
-    public void limitTraversalTest() throws AAIException {
+    public void limitTraversalTest() {
 
-        g.addV("aai-node-type", "vnfc", "vnfc-name", "a-name").next();
-        g.addV("aai-node-type", "vnfc", "vnfc-name", "b-name").next();
+        this.addVHelper(g, "vertex", "aai-node-type", "vnfc", "vnfc-name", "a-name").next();
+        this.addVHelper(g, "vertex", "aai-node-type", "vnfc", "vnfc-name", "b-name").next();
 
         QueryBuilder<Vertex> tQ = new GremlinTraversal<>(loader, g);
         tQ.getVerticesByProperty("aai-node-type", "vnfc").limit(1);
@@ -344,10 +364,10 @@ public abstract class QueryBuilderTestAbstraction {
     }
 
     @Test
-    public void getVertexesByPropertiesTraversalTest() throws AAIException {
+    public void getVertexesByPropertiesTraversalTest() {
 
-        g.addV("aai-node-type", "vnfc", "vnfc-name", "a-name").next();
-        g.addV("aai-node-type", "vnfc", "vnfc-name", "b-name").next();
+        this.addVHelper(g, "vertex", "aai-node-type", "vnfc", "vnfc-name", "a-name").next();
+        this.addVHelper(g, "vertex", "aai-node-type", "vnfc", "vnfc-name", "b-name").next();
 
         QueryBuilder<Vertex> tQ = new GremlinTraversal<>(loader, g);
         tQ.getVerticesByProperty("vnfc-name", Arrays.asList("a-name", "b-name"));
@@ -359,10 +379,24 @@ public abstract class QueryBuilderTestAbstraction {
     }
 
     @Test
-    public void getVertexesByIndexedPropertyTraversalTest() throws AAIException {
+    public void getVerticesByCommaSeperatedValueTraversalTest() {
 
-        g.addV("aai-node-type", "vnfc", "vnfc-name", "a-name").next();
-        g.addV("aai-node-type", "vnfc", "vnfc-name", "b-name").next();
+        this.addVHelper(g, "vertex", "aai-node-type", "vnfc", "vnfc-name", "a-name").next();
+        this.addVHelper(g, "vertex", "aai-node-type", "vnfc", "vnfc-name", "b-name").next();
+
+        QueryBuilder<Vertex> tQ = new GremlinTraversal<>(loader, g);
+        tQ.getVerticesByCommaSeperatedValue("vnfc-name","a-name, b-name");
+
+        List<Vertex> list = tQ.toList();
+
+        assertEquals("Has 2 vertexes ", 2, list.size());
+    }
+
+    @Test
+    public void getVertexesByIndexedPropertyTraversalTest() {
+
+        this.addVHelper(g, "vertex", "aai-node-type", "vnfc", "vnfc-name", "a-name").next();
+        this.addVHelper(g, "vertex", "aai-node-type", "vnfc", "vnfc-name", "b-name").next();
 
         QueryBuilder<Vertex> tQ = new GremlinTraversal<>(loader, g);
         tQ.getVerticesByIndexedProperty("aai-node-type", "vnfc");
@@ -370,14 +404,13 @@ public abstract class QueryBuilderTestAbstraction {
         List<Vertex> list = tQ.toList();
 
         assertEquals("Has 2 vertexes ", 2, list.size());
-
     }
 
     @Test
     public void dedupTraversalTest() throws AAIException {
 
-        Vertex gvnf = g.addV("aai-node-type", "generic-vnf", "vnf-id", "gvnf").next();
-        Vertex pserver = g.addV("aai-node-type", "pserver", "hostname", "a-name").next();
+        Vertex gvnf = this.addVHelper(g, "vertex", "aai-node-type", "generic-vnf", "vnf-id", "gvnf").next();
+        Vertex pserver = this.addVHelper(g, "vertex", "aai-node-type", "pserver", "hostname", "a-name").next();
 
         testEdgeSer.addEdge(g, gvnf, pserver);
         testEdgeSer.addEdge(g, gvnf, pserver, "generic-vnf-pserver-B");
@@ -395,8 +428,8 @@ public abstract class QueryBuilderTestAbstraction {
     @Test
     public void storeCapTraversalTest() throws AAIException {
 
-        Vertex gvnf = g.addV("aai-node-type", "generic-vnf", "vnf-id", "gvnf").next();
-        Vertex pserver = g.addV("aai-node-type", "pserver", "hostname", "a-name").next();
+        Vertex gvnf = this.addVHelper(g, "vertex", "aai-node-type", "generic-vnf", "vnf-id", "gvnf").next();
+        Vertex pserver = this.addVHelper(g, "vertex", "aai-node-type", "pserver", "hostname", "a-name").next();
 
         testEdgeSer.addEdge(g, gvnf, pserver);
         testEdgeSer.addEdge(g, gvnf, pserver, "generic-vnf-pserver-B");
@@ -414,8 +447,8 @@ public abstract class QueryBuilderTestAbstraction {
     @Test
     public void storeCapUnfoldTraversalTest() throws AAIException {
 
-        Vertex gvnf = g.addV("aai-node-type", "generic-vnf", "vnf-id", "gvnf").next();
-        Vertex pserver = g.addV("aai-node-type", "pserver", "hostname", "a-name").next();
+        Vertex gvnf = this.addVHelper(g, "vertex", "aai-node-type", "generic-vnf", "vnf-id", "gvnf").next();
+        Vertex pserver = this.addVHelper(g, "vertex", "aai-node-type", "pserver", "hostname", "a-name").next();
 
         testEdgeSer.addEdge(g, gvnf, pserver);
         testEdgeSer.addEdge(g, gvnf, pserver, "generic-vnf-pserver-B");
@@ -431,10 +464,10 @@ public abstract class QueryBuilderTestAbstraction {
     }
 
     @Test
-    public void nextAndHasNextTraversalTest() throws AAIException {
+    public void nextAndHasNextTraversalTest() {
 
-        Vertex v1 = g.addV("aai-node-type", "vnfc", "vnfc-name", "a-name").next();
-        Vertex v2 = g.addV("aai-node-type", "vnfc", "vnfc-name", "b-name").next();
+        Vertex v1 = this.addVHelper(g, "vertex", "aai-node-type", "vnfc", "vnfc-name", "a-name").next();
+        Vertex v2 = this.addVHelper(g, "vertex", "aai-node-type", "vnfc", "vnfc-name", "b-name").next();
 
         QueryBuilder<Vertex> tQ = new GremlinTraversal<>(loader, g);
         tQ.getVerticesByProperty("aai-node-type", "vnfc");
@@ -453,8 +486,8 @@ public abstract class QueryBuilderTestAbstraction {
     @Test
     public void edgeToVertexMultiRuleOutTraversalTest() throws AAIException {
 
-        Vertex gvnf = g.addV("aai-node-type", "generic-vnf", "vnf-id", "gvnf").next();
-        Vertex pserver = g.addV("aai-node-type", "pserver", "hostname", "a-name").next();
+        Vertex gvnf = this.addVHelper(g, "vertex", "aai-node-type", "generic-vnf", "vnf-id", "gvnf").next();
+        Vertex pserver = this.addVHelper(g, "vertex", "aai-node-type", "pserver", "hostname", "a-name").next();
 
         testEdgeSer.addEdge(g, gvnf, pserver);
         testEdgeSer.addEdge(g, gvnf, pserver, "generic-vnf-pserver-B");
@@ -472,8 +505,8 @@ public abstract class QueryBuilderTestAbstraction {
     @Test
     public void edgeToVertexMultiRuleInTraversalTest() throws AAIException {
 
-        Vertex gvnf = g.addV("aai-node-type", "generic-vnf", "vnf-id", "gvnf").next();
-        Vertex complex = g.addV("aai-node-type", "complex", "physical-location-id", "a-name").next();
+        Vertex gvnf = this.addVHelper(g, "vertex", "aai-node-type", "generic-vnf", "vnf-id", "gvnf").next();
+        Vertex complex = this.addVHelper(g, "vertex", "aai-node-type", "complex", "physical-location-id", "a-name").next();
 
         testEdgeSer.addEdge(g, gvnf, complex);
         testEdgeSer.addEdge(g, gvnf, complex, "complex-generic-vnf-B");
@@ -491,8 +524,8 @@ public abstract class QueryBuilderTestAbstraction {
     @Test
     public void edgeTraversalSingleInRuleTest() throws AAIException {
 
-        Vertex vce = g.addV("aai-node-type", "vce", "vnf-id", "vce").next();
-        Vertex pserver = g.addV("aai-node-type", "pserver", "hostname", "a-name").next();
+        Vertex vce = this.addVHelper(g, "vertex", "aai-node-type", "vce", "vnf-id", "vce").next();
+        Vertex pserver = this.addVHelper(g, "vertex", "aai-node-type", "pserver", "hostname", "a-name").next();
 
         Edge e = testEdgeSer.addEdge(g, vce, pserver);
 
@@ -509,8 +542,8 @@ public abstract class QueryBuilderTestAbstraction {
     @Test
     public void edgeTraversalSingleOutRuleTest() throws AAIException {
 
-        Vertex vce = g.addV("aai-node-type", "vce", "vnf-id", "vce").next();
-        Vertex vnfc1 = g.addV("aai-node-type", "vnfc", "vnfc-name", "a-name").next();
+        Vertex vce = this.addVHelper(g, "vertex", "aai-node-type", "vce", "vnf-id", "vce").next();
+        Vertex vnfc1 = this.addVHelper(g, "vertex", "aai-node-type", "vnfc", "vnfc-name", "a-name").next();
 
         Edge e = testEdgeSer.addEdge(g, vce, vnfc1);
 
@@ -527,8 +560,8 @@ public abstract class QueryBuilderTestAbstraction {
     @Test
     public void edgeTraversalMultiRuleOutTraversalTest() throws AAIException {
 
-        Vertex gvnf = g.addV("aai-node-type", "generic-vnf", "vnf-id", "gvnf").next();
-        Vertex pserver = g.addV("aai-node-type", "pserver", "hostname", "a-name").next();
+        Vertex gvnf = this.addVHelper(g, "vertex", "aai-node-type", "generic-vnf", "vnf-id", "gvnf").next();
+        Vertex pserver = this.addVHelper(g, "vertex", "aai-node-type", "pserver", "hostname", "a-name").next();
 
         Edge e1 = testEdgeSer.addEdge(g, gvnf, pserver);
         Edge e2 = testEdgeSer.addEdge(g, gvnf, pserver, "generic-vnf-pserver-B");
@@ -547,8 +580,8 @@ public abstract class QueryBuilderTestAbstraction {
     @Test
     public void edgeTraversalMultiRuleInTraversalTest() throws AAIException {
 
-        Vertex gvnf = g.addV("aai-node-type", "generic-vnf", "vnf-id", "gvnf").next();
-        Vertex complex = g.addV("aai-node-type", "complex", "physical-location-id", "a-name").next();
+        Vertex gvnf = this.addVHelper(g, "vertex", "aai-node-type", "generic-vnf", "vnf-id", "gvnf").next();
+        Vertex complex = this.addVHelper(g, "vertex", "aai-node-type", "complex", "physical-location-id", "a-name").next();
 
         Edge e1 = testEdgeSer.addEdge(g, gvnf, complex);
         Edge e2 = testEdgeSer.addEdge(g, gvnf, complex, "complex-generic-vnf-B");
@@ -567,9 +600,9 @@ public abstract class QueryBuilderTestAbstraction {
     @Test
     public void edgeTraversalMultiRuleTraversalTest() throws AAIException {
 
-        Vertex gvnf = g.addV("aai-node-type", "generic-vnf", "vnf-id", "gvnf").next();
-        Vertex vnfc1 = g.addV("aai-node-type", "vnfc", "vnfc-name", "a-name").next();
-        Vertex vnfc2 = g.addV("aai-node-type", "vnfc", "vnfc-name", "b-name").next();
+        Vertex gvnf = this.addVHelper(g, "vertex", "aai-node-type", "generic-vnf", "vnf-id", "gvnf").next();
+        Vertex vnfc1 = this.addVHelper(g, "vertex", "aai-node-type", "vnfc", "vnfc-name", "a-name").next();
+        Vertex vnfc2 = this.addVHelper(g, "vertex", "aai-node-type", "vnfc", "vnfc-name", "b-name").next();
 
         Edge e1 = testEdgeSer.addEdge(g, gvnf, vnfc1);
         Edge e2 = testEdgeSer.addEdge(g, gvnf, vnfc2, "re-uses");
@@ -589,8 +622,8 @@ public abstract class QueryBuilderTestAbstraction {
     @Test(expected = NoEdgeRuleFoundException.class)
     public void getEdgesBetweenWithLabelsEmptyListTest() throws AAIException {
 
-        Vertex gvnf = g.addV("aai-node-type", "generic-vnf", "vnf-id", "gvnf").next();
-        Vertex pserver = g.addV("aai-node-type", "pserver", "hostname", "a-name").next();
+        Vertex gvnf = this.addVHelper(g, "vertex", "aai-node-type", "generic-vnf", "vnf-id", "gvnf").next();
+        Vertex pserver = this.addVHelper(g, "vertex", "aai-node-type", "pserver", "hostname", "a-name").next();
 
         testEdgeSer.addEdge(g, gvnf, pserver);
         testEdgeSer.addEdge(g, gvnf, pserver, "generic-vnf-pserver-B");
@@ -603,8 +636,8 @@ public abstract class QueryBuilderTestAbstraction {
     @Test
     public void getEdgesBetweenWithLabelsSingleItemTest() throws AAIException {
 
-        Vertex gvnf = g.addV("aai-node-type", "generic-vnf", "vnf-id", "gvnf").next();
-        Vertex pserver = g.addV("aai-node-type", "pserver", "hostname", "a-name").next();
+        Vertex gvnf = this.addVHelper(g, "vertex", "aai-node-type", "generic-vnf", "vnf-id", "gvnf").next();
+        Vertex pserver = this.addVHelper(g, "vertex", "aai-node-type", "pserver", "hostname", "a-name").next();
 
         Edge e1 = testEdgeSer.addEdge(g, gvnf, pserver);
         Edge e2 = testEdgeSer.addEdge(g, gvnf, pserver, "generic-vnf-pserver-B");
@@ -624,8 +657,8 @@ public abstract class QueryBuilderTestAbstraction {
     @Test
     public void getEdgesBetweenWithLabelsMultipleItemTest() throws AAIException {
 
-        Vertex gvnf = g.addV("aai-node-type", "generic-vnf", "vnf-id", "gvnf").next();
-        Vertex pserver = g.addV("aai-node-type", "pserver", "hostname", "a-name").next();
+        Vertex gvnf = this.addVHelper(g, "vertex", "aai-node-type", "generic-vnf", "vnf-id", "gvnf").next();
+        Vertex pserver = this.addVHelper(g, "vertex", "aai-node-type", "pserver", "hostname", "a-name").next();
 
         Edge e1 = testEdgeSer.addEdge(g, gvnf, pserver);
         Edge e2 = testEdgeSer.addEdge(g, gvnf, pserver, "generic-vnf-pserver-B");
@@ -656,8 +689,8 @@ public abstract class QueryBuilderTestAbstraction {
     }
 
     private Vertex getVertex() throws AAIException {
-        Vertex gvnf = g.addV("aai-node-type", "generic-vnf", "vnf-id", "gvnf").next();
-        Vertex pserver = g.addV("aai-node-type", "pserver", "hostname", "a-name").next();
+        Vertex gvnf = this.addVHelper(g, "vertex", "aai-node-type", "generic-vnf", "vnf-id", "gvnf").next();
+        Vertex pserver = this.addVHelper(g, "vertex", "aai-node-type", "pserver", "hostname", "a-name").next();
 
         testEdgeSer.addEdge(g, gvnf, pserver);
         testEdgeSer.addEdge(g, gvnf, pserver, "generic-vnf-pserver-B");
@@ -667,8 +700,8 @@ public abstract class QueryBuilderTestAbstraction {
     @Test
     public void createEdgeTraversalWithLabelsSingleItemTest() throws AAIException {
 
-        Vertex gvnf = g.addV("aai-node-type", "generic-vnf", "vnf-id", "gvnf").next();
-        Vertex pserver = g.addV("aai-node-type", "pserver", "hostname", "a-name").next();
+        Vertex gvnf = this.addVHelper(g, "vertex", "aai-node-type", "generic-vnf", "vnf-id", "gvnf").next();
+        Vertex pserver = this.addVHelper(g, "vertex", "aai-node-type", "pserver", "hostname", "a-name").next();
 
         Edge e1 = testEdgeSer.addEdge(g, gvnf, pserver);
         Edge e2 = testEdgeSer.addEdge(g, gvnf, pserver, "generic-vnf-pserver-B");
@@ -688,8 +721,8 @@ public abstract class QueryBuilderTestAbstraction {
     @Test
     public void createEdgeTraversalWithLabelsMultipleItemTest() throws AAIException {
 
-        Vertex gvnf = g.addV("aai-node-type", "generic-vnf", "vnf-id", "gvnf").next();
-        Vertex pserver = g.addV("aai-node-type", "pserver", "hostname", "a-name").next();
+        Vertex gvnf = this.addVHelper(g, "vertex", "aai-node-type", "generic-vnf", "vnf-id", "gvnf").next();
+        Vertex pserver = this.addVHelper(g, "vertex", "aai-node-type", "pserver", "hostname", "a-name").next();
 
         Edge e1 = testEdgeSer.addEdge(g, gvnf, pserver);
         Edge e2 = testEdgeSer.addEdge(g, gvnf, pserver, "generic-vnf-pserver-B");
@@ -705,6 +738,50 @@ public abstract class QueryBuilderTestAbstraction {
         assertTrue("result has generic-vnf-pserver-B edge ", list.contains(e2));
 
     }
+
+    @Test
+    public void createEdgeTraversalIfParameterIsPresentParameterExistsTest() throws AAIException {
+
+        Vertex gvnf = this.addVHelper(g, "vertex", "aai-node-type", "generic-vnf", "vnf-id", "gvnf").next();
+        Vertex pserver1 = this.addVHelper(g, "vertex", "aai-node-type", "pserver", "hostname", "a-name").next();
+        Vertex pserver2 = this.addVHelper(g, "vertex", "aai-node-type", "pserver", "hostname", "b-name").next();
+        Vertex optionalVce = this.addVHelper(g, "vertex", "aai-node-type", "vce", "vnf-id", "optional").next();
+
+        testEdgeSer.addEdge(g, gvnf, pserver1);
+        testEdgeSer.addEdge(g, gvnf, pserver2);
+        testEdgeSer.addEdge(g, optionalVce, pserver1);
+
+        QueryBuilder<Edge> tQ = getNewEdgeTraversalWithTestEdgeRules(gvnf);
+        tQ.createEdgeTraversal(EdgeType.COUSIN, "generic-vnf", "pserver");
+
+        List<Vertex> list = tQ.createEdgeTraversalIfParameterIsPresent(EdgeType.COUSIN, "pserver", "vce", "optional").toList();
+        assertEquals("Has 1 vertex ", 1, list.size());
+        assertTrue("result has optional-vce vertex ", list.contains(optionalVce));
+    }
+
+    @Test
+    public void createEdgeTraversalIfParameterIsPresentParameterDoesNotExistTest() throws AAIException {
+
+        Vertex gvnf = this.addVHelper(g, "vertex", "aai-node-type", "generic-vnf", "vnf-id", "gvnf").next();
+        Vertex pserver1 = this.addVHelper(g, "vertex", "aai-node-type", "pserver", "hostname", "a-name").next();
+        Vertex pserver2 = this.addVHelper(g, "vertex", "aai-node-type", "pserver", "hostname", "b-name").next();
+        Vertex optionalVce = this.addVHelper(g, "vertex", "aai-node-type", "vce", "vnf-id", "optional").next();
+
+        testEdgeSer.addEdge(g, gvnf, pserver1);
+        testEdgeSer.addEdge(g, gvnf, pserver2);
+        testEdgeSer.addEdge(g, optionalVce, pserver1);
+
+        QueryBuilder<Edge> tQ = getNewEdgeTraversalWithTestEdgeRules(gvnf);
+        tQ.createEdgeTraversal(EdgeType.COUSIN, "generic-vnf", "pserver");
+        MissingOptionalParameter missingParameter = MissingOptionalParameter.getInstance();
+
+        List<Vertex> list = tQ.createEdgeTraversalIfParameterIsPresent(EdgeType.COUSIN, "pserver", "vce", missingParameter).toList();
+        assertEquals("Has 2 vertices ", 2, list.size());
+        assertTrue("result has pserver-1 vertex ", list.contains(pserver1));
+        assertTrue("result has pserver-2 vertex ", list.contains(pserver2));
+        assertTrue("result does not have optional-vce vertex ", !list.contains(optionalVce));
+    }
+
 
     protected abstract QueryBuilder<Edge> getNewEdgeTraversalWithTestEdgeRules(Vertex v);
 

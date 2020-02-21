@@ -22,22 +22,19 @@
 
 package org.onap.aai.restclient;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.util.MultiValueMap;
 
 import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
-import org.springframework.util.MultiValueMap;
-
-@Component(value = "schema-service-rest-client")
 public class SchemaServiceRestClient extends TwoWaySSLRestClient {
-    private static EELFLogger logger = EELFManager.getInstance().getLogger(SchemaServiceRestClient.class);
+    private static Logger logger = LoggerFactory.getLogger(SchemaServiceRestClient.class);
 
     @Value("${schema.service.base.url}")
     private String baseUrl;

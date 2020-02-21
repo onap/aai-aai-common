@@ -20,6 +20,7 @@
 
 package org.onap.aai.introspection;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.springframework.test.annotation.DirtiesContext;
@@ -41,6 +42,25 @@ public class MoxyEngineTest extends IntrospectorTestSpec {
 
         this.containerTestSet(obj);
 
+    }
+
+    @Test
+    public void testDslStartNodeProps() throws AAIUnknownObjectException {
+        Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDepthVersion());
+        Introspector obj = loader.introspectorFromName("pserver");
+        Assert.assertFalse(obj.getDslStartNodeProperties().contains("in-maint"));
+        Assert.assertTrue(obj.getDslStartNodeProperties().contains("pserver-name2"));
+
+    }
+
+    @Test
+    public void testDslStartNodePropsDefault() throws AAIUnknownObjectException {
+        /*
+         * Use indexedprops when there is no dslStartNodeProps
+         */
+        Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDepthVersion());
+        Introspector obj = loader.introspectorFromName("vserver");
+        Assert.assertTrue(obj.getDslStartNodeProperties().contains("in-maint"));
     }
 
 }

@@ -20,15 +20,7 @@
 
 package org.onap.aai.serialization.queryformats;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
-
 import com.google.gson.JsonObject;
-
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.strategy.verification.ReadOnlyStrategy;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
@@ -38,7 +30,6 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.onap.aai.AAISetup;
-import org.onap.aai.dbmap.DBConnectionType;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.introspection.ModelType;
@@ -49,6 +40,10 @@ import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
 import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
 import org.onap.aai.setup.SchemaVersion;
+
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 public class ResourceWithSoTTest extends AAISetup {
     @Mock
@@ -79,7 +74,7 @@ public class ResourceWithSoTTest extends AAISetup {
 
         graph = TinkerGraph.open();
 
-        Long currentTimeMs = System.currentTimeMillis();
+        long currentTimeMs = System.currentTimeMillis();
         String timeNowInMs = Long.toString(currentTimeMs);
 
         // PUT / CREATE
@@ -119,8 +114,7 @@ public class ResourceWithSoTTest extends AAISetup {
     // This test is to simulate a PUT request
     @Test
     public void testGetJsonFromVertexWithCreateVertex() throws AAIFormatVertexException, AAIException {
-        if (putVertex == null)
-            assertTrue("The vertex used for this test is null. Fail immediately.", false);
+        if (putVertex == null) fail("The vertex used for this test is null. Fail immediately.");
 
         JsonObject json = resourceWithSoT.getJsonFromVertex(putVertex).get();
         assertEquals(jsonPutObj, json);
@@ -129,10 +123,8 @@ public class ResourceWithSoTTest extends AAISetup {
     // This test is to simulate PATCH requests
     @Test
     public void testGetJsonFromVertexWithModifyVertex() throws AAIFormatVertexException, AAIException {
-        if (patchVertex1 == null)
-            assertTrue("The vertex 1 used for this test is null. Fail immediately.", false);
-        if (patchVertex2 == null)
-            assertTrue("The vertex 2 used for this test is null. Fail immediately.", false);
+        if (patchVertex1 == null) fail("The vertex 1 used for this test is null. Fail immediately.");
+        if (patchVertex2 == null) fail("The vertex 2 used for this test is null. Fail immediately.");
 
         // Differing Source of Truths will indicate that the action performed modified the vertex
         JsonObject json1 = resourceWithSoT.getJsonFromVertex(patchVertex1).get();
@@ -155,7 +147,7 @@ public class ResourceWithSoTTest extends AAISetup {
         if (loader == null) {
             loader = loaderFactory.createLoaderForVersion(factoryType, version);
             // loader = LoaderFactory.createLoaderForVersion(factoryType, version);
-            dbEngine = spy(new JanusGraphDBEngine(QueryStyle.TRAVERSAL, DBConnectionType.CACHED, loader));
+            dbEngine = spy(new JanusGraphDBEngine(QueryStyle.TRAVERSAL, loader));
             serializer = new DBSerializer(version, dbEngine, factoryType, "Junit");
             resourceWithSoT = new ResourceWithSoT.Builder(loader, serializer, urlBuilder).build();
 
@@ -165,7 +157,7 @@ public class ResourceWithSoTTest extends AAISetup {
             when(dbEngine.asAdmin()).thenReturn(spyAdmin);
 
             when(spyAdmin.getReadOnlyTraversalSource())
-                    .thenReturn(graph.traversal(GraphTraversalSource.build().with(ReadOnlyStrategy.instance())));
+                    .thenReturn(graph.traversal().withStrategies(ReadOnlyStrategy.instance()));
             when(spyAdmin.getTraversalSource()).thenReturn(graph.traversal());
         }
     }

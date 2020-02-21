@@ -22,8 +22,8 @@ package org.onap.aai.rest;
 
 import static org.junit.Assert.assertEquals;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.jayway.jsonpath.JsonPath;
 
 import java.util.*;
@@ -45,7 +45,7 @@ import org.skyscreamer.jsonassert.JSONAssert;
 @RunWith(AAIJunitRunner.class)
 public class HPACapabilityTest {
 
-    private static EELFLogger logger = EELFManager.getInstance().getLogger(HPACapabilityTest.class);
+    private static Logger logger = LoggerFactory.getLogger(HPACapabilityTest.class);
     private HttpTestUtil httpTestUtil;
     private Map<String, String> templateValuesMap;
 

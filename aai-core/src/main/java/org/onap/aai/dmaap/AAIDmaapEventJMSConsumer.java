@@ -22,43 +22,45 @@
 
 package org.onap.aai.dmaap;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
-
-import java.util.Objects;
-import java.util.UUID;
-
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageListener;
-import javax.jms.TextMessage;
-
-import org.apache.log4j.MDC;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.onap.aai.logging.LogFormatTools;
-import org.onap.aai.logging.LoggingContext;
-import org.onap.aai.logging.LoggingContext.LoggingField;
-import org.onap.aai.logging.LoggingContext.StatusCode;
+import org.onap.aai.aailog.logs.AaiDmaapMetricLog;
+import org.onap.aai.exceptions.AAIException;
+import org.onap.aai.logging.AaiElsErrorCode;
+import org.onap.aai.logging.ErrorLogHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.client.RestTemplate;
 
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageListener;
+import javax.jms.TextMessage;
+import java.util.Map;
+import java.util.Objects;
+
 public class AAIDmaapEventJMSConsumer implements MessageListener {
 
     private static final String EVENT_TOPIC = "event-topic";
 
-    private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(AAIDmaapEventJMSConsumer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AAIDmaapEventJMSConsumer.class);
 
     private RestTemplate restTemplate;
 
     private HttpHeaders httpHeaders;
 
     private Environment environment;
+    private Map<String, String> mdcCopy;
+
 
     public AAIDmaapEventJMSConsumer(Environment environment, RestTemplate restTemplate, HttpHeaders httpHeaders) {
+        super();
+        mdcCopy = MDC.getCopyOfContextMap();
         Objects.nonNull(environment);
         Objects.nonNull(restTemplate);
         Objects.nonNull(httpHeaders);
@@ -76,41 +78,47 @@ public class AAIDmaapEventJMSConsumer implements MessageListener {
 
         String jsmMessageTxt = "";
         String aaiEvent = "";
+        JSONObject aaiEventHeader;
+        JSONObject joPayload;
+        String transactionId = "";
+        String serviceName = "";
         String eventName = "";
-        LoggingContext.save();
-        LoggingContext.init();
+        String aaiElsErrorCode = AaiElsErrorCode.SUCCESS;
+        String errorDescription = "";
+
+        if ( mdcCopy != null ) {
+            MDC.setContextMap(mdcCopy);
+        }
+
         if (message instanceof TextMessage) {
+            AaiDmaapMetricLog metricLog = new AaiDmaapMetricLog();
             try {
                 jsmMessageTxt = ((TextMessage) message).getText();
                 JSONObject jo = new JSONObject(jsmMessageTxt);
-
                 if (jo.has("aaiEventPayload")) {
-                    aaiEvent = jo.getJSONObject("aaiEventPayload").toString();
+                    joPayload = jo.getJSONObject("aaiEventPayload");
+                    aaiEvent = joPayload.toString();
                 } else {
                     return;
                 }
-                if (jo.getString("transId") != null) {
-                    LoggingContext.requestId(jo.getString("transId"));
-                } else {
-                    final UUID generatedRequestUuid = UUID.randomUUID();
-                    LoggingContext.requestId(generatedRequestUuid.toString());
+                if (jo.getString("event-topic") != null) {
+                    eventName = jo.getString("event-topic");
                 }
-                if (jo.getString("fromAppId") != null) {
-                    LoggingContext.partnerName(jo.getString("fromAppId"));
+                if (joPayload.has("event-header")) {
+                    try {
+                        aaiEventHeader = joPayload.getJSONObject("event-header");
+                        if (aaiEventHeader.has("id")) {
+                            transactionId = aaiEventHeader.get("id").toString();
+                        }
+                        if (aaiEventHeader.has("entity-link")) {
+                            serviceName = aaiEventHeader.get("entity-link").toString();
+                        }
+                    }
+                    catch (JSONException jexc) {
+                        // ignore, this is just used for logging
+                    }
                 }
-                if (jo.getString(EVENT_TOPIC) != null) {
-                    eventName = jo.getString(EVENT_TOPIC);
-                }
-
-                LoggingContext.targetEntity("DMAAP");
-                if (jo.getString(EVENT_TOPIC) != null) {
-                    eventName = jo.getString(EVENT_TOPIC);
-                    LoggingContext.targetServiceName(eventName);
-                }
-                LoggingContext.serviceName("AAI");
-                LoggingContext.statusCode(StatusCode.COMPLETE);
-                LoggingContext.responseCode(LoggingContext.SUCCESS);
-                LOGGER.info(eventName + "|" + aaiEvent);
+                metricLog.pre(eventName, aaiEvent, transactionId, serviceName);
 
                 HttpEntity httpEntity = new HttpEntity(aaiEvent, httpHeaders);
 
@@ -121,21 +129,20 @@ public class AAIDmaapEventJMSConsumer implements MessageListener {
                 if ("AAI-EVENT".equals(eventName)) {
                     restTemplate.exchange(baseUrl + endpoint, HttpMethod.POST, httpEntity, String.class);
                 } else {
-                    LoggingContext.statusCode(StatusCode.ERROR);
                     LOGGER.error(eventName + "|Event Topic invalid.");
                 }
             } catch (JMSException | JSONException e) {
-                LoggingContext.statusCode(StatusCode.ERROR);
-                LoggingContext.responseCode(LoggingContext.DATA_ERROR);
-                LOGGER.error("AAI_7350 Error parsing aaievent jsm message for sending to dmaap. {} {}", jsmMessageTxt,
-                        LogFormatTools.getStackTop(e));
+                aaiElsErrorCode = AaiElsErrorCode.DATA_ERROR;
+                errorDescription = e.getMessage();
+                ErrorLogHelper.logException(new AAIException("AAI_7350"));
             } catch (Exception e) {
-                LoggingContext.statusCode(StatusCode.ERROR);
-                LoggingContext.responseCode(LoggingContext.AVAILABILITY_TIMEOUT_ERROR);
-                LOGGER.error("AAI_7350 Error sending message to dmaap. {} {}", jsmMessageTxt,
-                        LogFormatTools.getStackTop(e));
+                aaiElsErrorCode = AaiElsErrorCode.AVAILABILITY_TIMEOUT_ERROR;
+                errorDescription = e.getMessage();
+                ErrorLogHelper.logException(new AAIException("AAI_7304", jsmMessageTxt));
+            }
+            finally {
+                metricLog.post(aaiElsErrorCode, errorDescription);
             }
         }
-
     }
 }

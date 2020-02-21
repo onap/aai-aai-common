@@ -64,7 +64,6 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
      */
     public GraphTraversalBuilder(Loader loader, GraphTraversalSource source) {
         super(loader, source);
-
         traversal = (GraphTraversal<Vertex, E>) __.<E>start();
 
     }
@@ -73,7 +72,7 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
      * Instantiates a new graph traversal builder.
      *
      * @param loader the loader
-     * @param start the start
+     * @param start  the start
      */
     public GraphTraversalBuilder(Loader loader, GraphTraversalSource source, Vertex start) {
         super(loader, source, start);
@@ -89,11 +88,32 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
     public QueryBuilder<Vertex> getVerticesByProperty(String key, Object value) {
 
         // correct value call because the index is registered as an Integer
-        traversal.has(key, this.correctObjectType(value));
-
+        this.vertexHas(key, this.correctObjectType(value));
         stepIndex++;
         return (QueryBuilder<Vertex>) this;
     }
+
+    @Override
+    protected void vertexHas(String key, Object value) {
+        traversal.has(key, value);
+    }
+
+    @Override
+    protected void vertexHasNot(String key) {
+        traversal.hasNot(key);
+    }
+
+    @Override
+    protected void vertexHas(String key) {
+        traversal.has(key);
+    }
+
+    //TODO: Remove this once we test this - at this point i dont thib this is required
+    //because predicare is an object
+    /*@Override
+    protected void vertexHas(final String key, final P<?> predicate) {
+        traversal.has(key, predicate);
+    }*/
 
     /**
      * @{inheritDoc}
@@ -107,7 +127,21 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
             correctedValues.add(this.correctObjectType(item));
         }
 
-        traversal.has(key, P.within(correctedValues));
+        this.vertexHas(key, P.within(correctedValues));
+        stepIndex++;
+        return (QueryBuilder<Vertex>) this;
+    }
+
+    /**
+     * @{inheritDoc}
+     */
+    public QueryBuilder<Vertex> getVerticesByCommaSeperatedValue(String key, String value) {
+        ArrayList<String> values = new ArrayList<>(Arrays.asList(value.split(",")));
+        int size = values.size();
+        for (int i = 0; i < size; i++) {
+            values.set(i, values.get(i).trim());
+        }
+        this.vertexHas(key, P.within(values));
 
         stepIndex++;
         return (QueryBuilder<Vertex>) this;
@@ -120,7 +154,8 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
     public QueryBuilder<Vertex> getVerticesStartsWithProperty(String key, Object value) {
 
         // correct value call because the index is registered as an Integer
-        traversal.has(key, org.janusgraph.core.attribute.Text.textPrefix(value));
+        //TODO Check if this needs to be in QB and add these as internal
+        this.vertexHas(key, org.janusgraph.core.attribute.Text.textPrefix(value));
 
         stepIndex++;
         return (QueryBuilder<Vertex>) this;
@@ -131,8 +166,7 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
      */
     @Override
     public QueryBuilder<Vertex> getVerticesByProperty(String key) {
-
-        traversal.has(key);
+        this.vertexHas(key);
         stepIndex++;
         return (QueryBuilder<Vertex>) this;
     }
@@ -142,8 +176,7 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
      */
     @Override
     public QueryBuilder<Vertex> getVerticesExcludeByProperty(String key) {
-
-        traversal.hasNot(key);
+        this.vertexHasNot(key);
         stepIndex++;
         return (QueryBuilder<Vertex>) this;
     }
@@ -155,8 +188,7 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
     public QueryBuilder<Vertex> getVerticesExcludeByProperty(String key, Object value) {
 
         // correct value call because the index is registered as an Integer
-        traversal.has(key, P.neq(this.correctObjectType(value)));
-
+        this.vertexHas(key, P.neq(this.correctObjectType(value)));
         stepIndex++;
         return (QueryBuilder<Vertex>) this;
     }
@@ -173,16 +205,14 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
             correctedValues.add(this.correctObjectType(item));
         }
 
-        traversal.has(key, P.without(correctedValues));
-
+        this.vertexHas(key, P.without(correctedValues));
         stepIndex++;
         return (QueryBuilder<Vertex>) this;
     }
 
     @Override
     public QueryBuilder<Vertex> getVerticesGreaterThanProperty(final String key, Object value) {
-
-        traversal.has(key, P.gte(this.correctObjectType(value)));
+        this.vertexHas(key, P.gte(this.correctObjectType(value)));
 
         stepIndex++;
         return (QueryBuilder<Vertex>) this;
@@ -190,8 +220,7 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
 
     @Override
     public QueryBuilder<Vertex> getVerticesLessThanProperty(final String key, Object value) {
-
-        traversal.has(key, P.lte(this.correctObjectType(value)));
+        this.vertexHas(key, P.lte(this.correctObjectType(value)));
 
         stepIndex++;
         return (QueryBuilder<Vertex>) this;
@@ -214,7 +243,7 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
     public QueryBuilder<Vertex> getTypedVerticesByMap(String type, Map<String, String> map) {
 
         for (Map.Entry<String, String> es : map.entrySet()) {
-            traversal.has(es.getKey(), es.getValue());
+            this.vertexHas(es.getKey(), es.getValue());
             stepIndex++;
         }
         traversal.has(AAIProperties.NODE_TYPE, type);
@@ -234,7 +263,7 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
                 bValue = (Boolean) value;
             }
 
-            traversal.has(key, bValue);
+            this.vertexHas(key, bValue);
             stepIndex++;
         }
         return (QueryBuilder<Vertex>) this;
@@ -257,9 +286,9 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
             if (val != null) {
                 // this is because the index is registered as an Integer
                 if (val.getClass().equals(Long.class)) {
-                    traversal.has(key, new Integer(val.toString()));
+                    this.vertexHas(key, new Integer(val.toString()));
                 } else {
-                    traversal.has(key, val);
+                    this.vertexHas(key, val);
                 }
                 stepIndex++;
             }
@@ -290,9 +319,9 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
                     }
                     // this is because the index is registered as an Integer
                     if (val.getClass().equals(Long.class)) {
-                        traversal.has(prop, new Integer(val.toString()));
+                        this.vertexHas(prop, new Integer(val.toString()));
                     } else {
-                        traversal.has(prop, val);
+                        this.vertexHas(prop, val);
                     }
                     stepIndex++;
                 }
@@ -326,7 +355,7 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
      */
     @Override
     public QueryBuilder<Vertex> createEdgeTraversal(EdgeType type, Introspector parent, Introspector child)
-            throws AAIException {
+        throws AAIException {
         createTraversal(type, parent, child, false);
         return (QueryBuilder<Vertex>) this;
 
@@ -334,13 +363,13 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
 
     @Override
     public QueryBuilder<Vertex> createPrivateEdgeTraversal(EdgeType type, Introspector parent, Introspector child)
-            throws AAIException {
+        throws AAIException {
         this.createTraversal(type, parent, child, true);
         return (QueryBuilder<Vertex>) this;
     }
 
     private void createTraversal(EdgeType type, Introspector parent, Introspector child, boolean isPrivateEdge)
-            throws AAIException {
+        throws AAIException {
         String isAbstractType = parent.getMetadata(ObjectMetadata.ABSTRACT);
         if ("true".equals(isAbstractType)) {
             markParentBoundary();
@@ -352,18 +381,17 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
     }
 
     /**
-     *
      * @{inheritDoc}
      */
     @Override
     public QueryBuilder<Vertex> createEdgeTraversalWithLabels(EdgeType type, Introspector out, Introspector in,
-            List<String> labels) throws AAIException {
+                                                              List<String> labels) throws AAIException {
         this.edgeQueryToVertex(type, out, in, labels);
         return (QueryBuilder<Vertex>) this;
     }
 
     private Traversal<Vertex, Vertex>[] handleAbstractEdge(EdgeType type, Introspector abstractParent,
-            Introspector child, boolean isPrivateEdge) throws AAIException {
+                                                           Introspector child, boolean isPrivateEdge) throws AAIException {
         String childName = child.getDbName();
         String inheritorMetadata = abstractParent.getMetadata(ObjectMetadata.INHERITORS);
         String[] inheritors = inheritorMetadata.split(",");
@@ -399,7 +427,7 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
                     innerTraversal.in(inLabels.toArray(new String[inLabels.size()]));
                 } else {
                     innerTraversal.union(__.out(outLabels.toArray(new String[outLabels.size()])),
-                            __.in(inLabels.toArray(new String[inLabels.size()])));
+                        __.in(inLabels.toArray(new String[inLabels.size()])));
                 }
 
                 innerTraversal.has(AAIProperties.NODE_TYPE, childName);
@@ -411,7 +439,7 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
     }
 
     public QueryBuilder<Edge> getEdgesBetweenWithLabels(EdgeType type, String outNodeType, String inNodeType,
-            List<String> labels) throws AAIException {
+                                                        List<String> labels) throws AAIException {
         Introspector outObj = loader.introspectorFromName(outNodeType);
         Introspector inObj = loader.introspectorFromName(inNodeType);
         this.edgeQuery(type, outObj, inObj, labels);
@@ -556,6 +584,23 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
         return this;
     }
 
+    @Override
+    public QueryBuilder<E> valueMap() {
+        this.traversal.valueMap();
+        stepIndex++;
+
+        return this;
+    }
+
+    @Override
+    public QueryBuilder<E> valueMap(String... names) {
+        this.traversal.valueMap(names);
+        stepIndex++;
+
+        return this;
+    }
+
+
     /**
      * {@inheritDoc}
      */
@@ -649,12 +694,12 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
      * Edge query.
      *
      * @param outObj the out type
-     * @param inObj the in type
+     * @param inObj  the in type
      * @throws NoEdgeRuleFoundException
      * @throws AAIException
      */
     private void edgeQueryToVertex(EdgeType type, Introspector outObj, Introspector inObj, List<String> labels)
-            throws AAIException {
+        throws AAIException {
         String outType = outObj.getDbName();
         String inType = inObj.getDbName();
 
@@ -686,7 +731,7 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
             }
             if (rules.isEmpty()) {
                 throw new NoEdgeRuleFoundException(
-                        "No edge rules found for " + outType + " and " + inType + " of type " + type.toString());
+                    "No edge rules found for " + outType + " and " + inType + " of type " + type.toString());
             }
         }
 
@@ -711,7 +756,7 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
             traversal.in(inLabels.toArray(new String[inLabels.size()]));
         } else {
             traversal.union(__.out(outLabels.toArray(new String[outLabels.size()])),
-                    __.in(inLabels.toArray(new String[inLabels.size()])));
+                __.in(inLabels.toArray(new String[inLabels.size()])));
         }
 
         stepIndex++;
@@ -724,12 +769,12 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
      * Edge query.
      *
      * @param outObj the out type
-     * @param inObj the in type
+     * @param inObj  the in type
      * @throws NoEdgeRuleFoundException
      * @throws AAIException
      */
     private void edgeQuery(EdgeType type, Introspector outObj, Introspector inObj, List<String> labels)
-            throws AAIException {
+        throws AAIException {
         String outType = outObj.getDbName();
         String inType = inObj.getDbName();
 
@@ -777,7 +822,7 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
             traversal.inE(inLabels.toArray(new String[inLabels.size()]));
         } else {
             traversal.union(__.outE(outLabels.toArray(new String[outLabels.size()])),
-                    __.inE(inLabels.toArray(new String[inLabels.size()])));
+                __.inE(inLabels.toArray(new String[inLabels.size()])));
         }
     }
 
@@ -902,4 +947,5 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
 
         return (QueryBuilder<Edge>) this;
     }
+
 }

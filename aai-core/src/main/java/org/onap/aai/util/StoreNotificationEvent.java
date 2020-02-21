@@ -20,8 +20,8 @@
 
 package org.onap.aai.util;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.StringWriter;
 import java.util.Iterator;
@@ -45,7 +45,7 @@ import org.springframework.core.env.Environment;
 
 public class StoreNotificationEvent {
 
-    private static final EELFLogger logger = EELFManager.getInstance().getLogger(StoreNotificationEvent.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(StoreNotificationEvent.class);
 
     private MessageProducer messageProducer;
     private String fromAppId = "";
@@ -81,7 +81,7 @@ public class StoreNotificationEvent {
      * @throws AAIException
      *         the AAI exception
      */
-    public String storeEvent(NotificationEvent.EventHeader eh, Object obj) throws AAIException {
+    public String storeEventAndSendToJms(NotificationEvent.EventHeader eh, Object obj) throws AAIException {
 
         if (obj == null) {
             throw new AAIException("AAI_7350");
@@ -235,7 +235,94 @@ public class StoreNotificationEvent {
         }
     }
 
-    public String storeEvent(Loader loader, Introspector eventHeader, Introspector obj) throws AAIException {
+    public String storeEventOnly(Loader loader, Introspector eventHeader, Introspector obj) throws AAIException {
+        if (obj == null) {
+            throw new AAIException("AAI_7350");
+        }
+
+        try {
+            final Introspector notificationEvent = loader.introspectorFromName("notification-event");
+
+            if (eventHeader.getValue("id") == null) {
+                eventHeader.setValue("id", genDate2() + "-" + UUID.randomUUID().toString());
+            }
+
+            if (eventHeader.getValue("timestamp") == null) {
+                eventHeader.setValue("timestamp", genDate());
+            }
+
+            if (eventHeader.getValue("entity-link") == null) {
+                eventHeader.setValue("entity-link", "UNK");
+            }
+
+            if (eventHeader.getValue("action") == null) {
+                eventHeader.setValue("action", "UNK");
+            }
+
+            if (eventHeader.getValue("event-type") == null) {
+                eventHeader.setValue("event-type", AAIConfig.get("aai.notificationEvent.default.eventType", "UNK"));
+            }
+
+            if (eventHeader.getValue("domain") == null) {
+                eventHeader.setValue("domain", AAIConfig.get("aai.notificationEvent.default.domain", "UNK"));
+            }
+
+            if (eventHeader.getValue("source-name") == null) {
+                eventHeader.setValue("source-name", AAIConfig.get("aai.notificationEvent.default.sourceName", "UNK"));
+            }
+
+            if (eventHeader.getValue("sequence-number") == null) {
+                eventHeader.setValue("sequence-number",
+                    AAIConfig.get("aai.notificationEvent.default.sequenceNumber", "UNK"));
+            }
+
+            if (eventHeader.getValue("severity") == null) {
+                eventHeader.setValue("severity", AAIConfig.get("aai.notificationEvent.default.severity", "UNK"));
+            }
+
+            if (eventHeader.getValue("version") == null) {
+                eventHeader.setValue("version", AAIConfig.get("aai.notificationEvent.default.version", "UNK"));
+            }
+
+            if (notificationEvent.getValue("cambria-partition") == null) {
+                notificationEvent.setValue("cambria-partition",
+                    AAIConfig.get("aai.notificationEvent.default.partition", AAIConstants.UEB_PUB_PARTITION_AAI));
+            }
+
+            notificationEvent.setValue("event-header", eventHeader.getUnderlyingObject());
+            notificationEvent.setValue("entity", obj.getUnderlyingObject());
+
+            String entityJson = notificationEvent.marshal(false);
+            JSONObject entityJsonObject = new JSONObject(entityJson);
+
+            JSONObject entityJsonObjectUpdated = new JSONObject();
+
+            JSONObject entityHeader = entityJsonObject.getJSONObject("event-header");
+            String cambriaPartition = entityJsonObject.getString("cambria.partition");
+
+            entityJsonObject.remove("event-header");
+            entityJsonObject.remove("cambria.partition");
+
+            entityJsonObjectUpdated.put("event-header", entityHeader);
+            entityJsonObjectUpdated.put("cambria.partition", cambriaPartition);
+
+            Iterator<String> iter = entityJsonObject.keys();
+            JSONObject entity = new JSONObject();
+            if (iter.hasNext()) {
+                entity = entityJsonObject.getJSONObject(iter.next());
+            }
+
+            entityJsonObjectUpdated.put("entity", entity);
+
+            return entityJsonObjectUpdated.toString();
+        } catch (JSONException e) {
+            throw new AAIException("AAI_7350", e);
+        } catch (AAIUnknownObjectException e) {
+            throw new AAIException("AAI_7350", e);
+        }
+    }
+
+    public String storeEventAndSendToJms(Loader loader, Introspector eventHeader, Introspector obj) throws AAIException {
         if (obj == null) {
             throw new AAIException("AAI_7350");
         }

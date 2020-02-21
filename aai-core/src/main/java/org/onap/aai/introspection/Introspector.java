@@ -20,15 +20,9 @@
 
 package org.onap.aai.introspection;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.google.common.base.CaseFormat;
-
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.InvocationTargetException;
-import java.util.*;
-import java.util.stream.Collectors;
-
 import org.apache.commons.lang.ClassUtils;
 import org.eclipse.persistence.exceptions.DynamicException;
 import org.onap.aai.config.SpringContextAware;
@@ -43,9 +37,14 @@ import org.onap.aai.schema.enums.PropertyMetadata;
 import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.workarounds.NamingExceptions;
 
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
+import java.util.stream.Collectors;
+
 public abstract class Introspector implements Cloneable {
 
-    private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(Introspector.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Introspector.class);
 
     protected String className;
     protected String uriChain = "";
@@ -54,6 +53,7 @@ public abstract class Introspector implements Cloneable {
     private Set<String> uniqueProperties = null;
     private Set<String> indexedProperties = null;
     private Set<String> allKeys = null;
+    private Set<String> dslStartNodeProperties = null;
 
     protected CaseFormatStore caseFormatStore = null;
     protected NodeIngestor nodeIngestor;
@@ -177,7 +177,7 @@ public abstract class Introspector implements Cloneable {
         if (obj != null) {
 
             try {
-                if (!nameClass.isAssignableFrom(obj.getClass())) {
+                if (!obj.getClass().getName().equals(nameClass.getName())) {
                     if (nameClass.isPrimitive()) {
                         nameClass = ClassUtils.primitiveToWrapper(nameClass);
                         result = nameClass.getConstructor(String.class).newInstance(obj.toString());
@@ -229,15 +229,8 @@ public abstract class Introspector implements Cloneable {
 
     public Set<String> getProperties(PropertyPredicate<Introspector, String> p) {
         final Set<String> temp = new LinkedHashSet<>();
-        this.getProperties().stream().filter(item -> {
-            return p.test(this, item);
-        }).forEach(item -> {
-            temp.add(item);
-        });
-        final Set<String> result = Collections.unmodifiableSet(temp);
-
-        return result;
-
+        this.getProperties().stream().filter(item -> p.test(this, item)).forEach(temp::add);
+        return Collections.unmodifiableSet(temp);
     }
 
     public Set<String> getSimpleProperties(PropertyPredicate<Introspector, String> p) {
@@ -298,6 +291,31 @@ public abstract class Introspector implements Cloneable {
             this.indexedProperties = Collections.unmodifiableSet(result);
         }
         result = this.indexedProperties;
+        return result;
+    }
+
+    public Set<String> getDslStartNodeProperties() {
+        Set<String> result = null;
+
+        if (this.dslStartNodeProperties == null) {
+            /*
+             * The dslStartNodeProperties will have keys by default
+             * If dslStartNodeProps exist in the oxm use it
+             * if not use the indexedProps
+             */
+            result = new LinkedHashSet<>(this.getKeys());
+
+            String dslKeys = this.getMetadata(ObjectMetadata.DSL_START_NODE_PROPS);
+            String indexedKeys = this.getMetadata(ObjectMetadata.INDEXED_PROPS);
+            if (dslKeys != null) {
+                Arrays.stream(dslKeys.split(",")).forEach(result::add);
+            }
+            else if(indexedKeys != null){
+                Arrays.stream(indexedKeys.split(",")).forEach(result::add);
+            }
+            this.dslStartNodeProperties = Collections.unmodifiableSet(result);
+        }
+        result = this.dslStartNodeProperties;
         return result;
     }
 

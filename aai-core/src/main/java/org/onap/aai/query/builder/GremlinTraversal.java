@@ -61,6 +61,7 @@ public class GremlinTraversal<E> extends GremlinQueryBuilder<E> {
         this.factory = new TraversalStrategy(this.loader, this);
     }
 
+
     protected GremlinTraversal(List<String> traversal, Loader loader, GraphTraversalSource source,
             GremlinQueryBuilder<E> gtb) {
         super(loader, source);

@@ -20,15 +20,6 @@
 
 package org.onap.aai.parsers.query;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-
-import javax.ws.rs.core.UriBuilder;
-import javax.xml.bind.JAXBException;
-
-import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.onap.aai.AAISetup;
@@ -39,12 +30,18 @@ import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 import org.onap.aai.setup.SchemaVersion;
 
+import javax.ws.rs.core.UriBuilder;
+import javax.xml.bind.JAXBException;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+
+import static org.junit.Assert.assertEquals;
+
 @Ignore
 public class LegacyQueryTest extends AAISetup {
 
     private TransactionalGraphEngine dbEngine;
     private SchemaVersion version;
-    private DynamicJAXBContext context = nodeIngestor.getContextForVersion(version);
 
     public void setup() {
         version = new SchemaVersion("v10");
@@ -60,7 +57,7 @@ public class LegacyQueryTest extends AAISetup {
      * @throws AAIException the AAI exception
      */
     @Test
-    public void parentQuery() throws JAXBException, UnsupportedEncodingException, AAIException {
+    public void parentQuery() throws UnsupportedEncodingException, AAIException {
 
         URI uri = UriBuilder.fromPath("cloud-infrastructure/pservers/pserver/key1").build();
 
@@ -82,7 +79,7 @@ public class LegacyQueryTest extends AAISetup {
      * @throws AAIException the AAI exception
      */
     @Test
-    public void childQuery() throws JAXBException, UnsupportedEncodingException, AAIException {
+    public void childQuery() throws UnsupportedEncodingException, AAIException {
         URI uri = UriBuilder.fromPath("cloud-infrastructure/pservers/pserver/key1/lag-interfaces/lag-interface/key2")
                 .build();
         QueryParser query = dbEngine.getQueryBuilder().createQueryFromURI(uri);
@@ -104,7 +101,7 @@ public class LegacyQueryTest extends AAISetup {
      * @throws AAIException the AAI exception
      */
     @Test
-    public void namingExceptions() throws JAXBException, UnsupportedEncodingException, AAIException {
+    public void namingExceptions() throws UnsupportedEncodingException, AAIException {
         URI uri = UriBuilder.fromPath("network/vces/vce/key1/port-groups/port-group/key2/cvlan-tags/cvlan-tag/655")
                 .build();
 

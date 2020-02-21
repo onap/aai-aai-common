@@ -20,30 +20,40 @@
 
 package org.onap.aai.restclient;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
-
-import javax.annotation.PostConstruct;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.onap.aai.aailog.filter.RestClientLoggingInterceptor;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
+import javax.annotation.PostConstruct;
+
 public abstract class NoAuthRestClient extends RestClient {
 
-    private static EELFLogger logger = EELFManager.getInstance().getLogger(NoAuthRestClient.class);
+    private static Logger logger = LoggerFactory.getLogger(NoAuthRestClient.class);
 
     protected RestTemplate restTemplate;
 
     @PostConstruct
     public void init() throws Exception {
-        HttpClient client = HttpClients.createDefault();
         restTemplate =
-            new RestTemplateBuilder().requestFactory(() -> new HttpComponentsClientHttpRequestFactory(client)).build();
-
+            new RestTemplateBuilder().requestFactory(this.getHttpRequestFactory()).build();
         restTemplate.setErrorHandler(new RestClientResponseErrorHandler());
+        RestClientLoggingInterceptor loggingInterceptor = new RestClientLoggingInterceptor();
+        restTemplate.getInterceptors().add(loggingInterceptor);
+
+    }
+
+    protected HttpComponentsClientHttpRequestFactory getHttpRequestFactory() throws Exception {
+        return new HttpComponentsClientHttpRequestFactory(this.getClient());
+    }
+
+    protected HttpClient getClient() throws Exception {
+        HttpClient client = HttpClients.createDefault();
+        return client;
     }
 
     @Override

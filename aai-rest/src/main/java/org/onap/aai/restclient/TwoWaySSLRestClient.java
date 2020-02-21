@@ -20,8 +20,8 @@
 
 package org.onap.aai.restclient;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -38,15 +38,30 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.client.RestTemplate;
+import org.onap.aai.aailog.filter.RestClientLoggingInterceptor;
 
 public abstract class TwoWaySSLRestClient extends RestClient {
 
-    private static EELFLogger logger = EELFManager.getInstance().getLogger(TwoWaySSLRestClient.class);
+    private static Logger logger = LoggerFactory.getLogger(TwoWaySSLRestClient.class);
 
     private RestTemplate restTemplate;
 
     @PostConstruct
     public void init() throws Exception {
+        restTemplate =
+                new RestTemplateBuilder().requestFactory(this.getHttpRequestFactory()).build();
+
+        restTemplate.setErrorHandler(new RestClientResponseErrorHandler());
+        RestClientLoggingInterceptor loggingInterceptor = new RestClientLoggingInterceptor();
+        restTemplate.getInterceptors().add(loggingInterceptor);
+
+    }
+
+    protected HttpComponentsClientHttpRequestFactory getHttpRequestFactory() throws Exception {
+        return new HttpComponentsClientHttpRequestFactory(this.getClient());
+    }
+
+    protected HttpClient getClient() throws Exception {
 
         char[] keyStorePassword = getKeystorePassword();
         char[] trustStorePassword = getTruststorePassword();
@@ -55,17 +70,13 @@ public abstract class TwoWaySSLRestClient extends RestClient {
         String trustStore = getTruststorePath();
 
         SSLContext sslContext =
-                SSLContextBuilder.create().loadKeyMaterial(loadPfx(keyStore, keyStorePassword), keyStorePassword)
-                        .loadTrustMaterial(ResourceUtils.getFile(trustStore), trustStorePassword).build();
+            SSLContextBuilder.create().loadKeyMaterial(loadPfx(keyStore, keyStorePassword), keyStorePassword)
+                .loadTrustMaterial(ResourceUtils.getFile(trustStore), trustStorePassword).build();
 
         HttpClient client =
-                HttpClients.custom().setSSLContext(sslContext).setSSLHostnameVerifier((s, sslSession) -> true).build();
+            HttpClients.custom().setSSLContext(sslContext).setSSLHostnameVerifier((s, sslSession) -> true).build();
 
-        restTemplate =
-            new RestTemplateBuilder().requestFactory(() -> new HttpComponentsClientHttpRequestFactory(client)).build();
-
-        restTemplate.setErrorHandler(new RestClientResponseErrorHandler());
-
+        return client;
     }
 
     private KeyStore loadPfx(String file, char[] password) throws Exception {
