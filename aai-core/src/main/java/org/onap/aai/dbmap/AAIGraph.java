@@ -22,13 +22,8 @@
 
 package org.onap.aai.dbmap;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
-import java.io.FileNotFoundException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-import org.apache.commons.configuration.ConfigurationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.tinkerpop.gremlin.structure.Graph;
@@ -36,9 +31,14 @@ import org.apache.tinkerpop.gremlin.structure.io.IoCore;
 import org.janusgraph.core.JanusGraph;
 import org.janusgraph.core.JanusGraphFactory;
 import org.janusgraph.core.schema.JanusGraphManagement;
+import org.onap.aai.config.SpringContextAware;
 import org.onap.aai.dbgen.SchemaGenerator;
+import org.onap.aai.dbgen.SchemaGenerator4Hist;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.util.AAIConstants;
+
+import java.io.FileNotFoundException;
+import java.util.Properties;
 
 /**
  * Database Mapping class which acts as the middle man between the REST
@@ -48,16 +48,13 @@ import org.onap.aai.util.AAIConstants;
  * object to load, commit/rollback and shutdown for each request. The data model
  * rules such as keys/required properties are handled by calling DBMeth methods
  * which are driven by a specification file in json.
- * 
- * 
+ *
+ *
  */
 public class AAIGraph {
 
-    private static final EELFLogger logger = EELFManager.getInstance().getLogger(AAIGraph.class);
-    protected static final String COMPONENT = "aaidbmap";
-    protected Map<String, JanusGraph> graphs = new HashMap<>();
-    private static final String REALTIME_DB = "realtime";
-    private static final String CACHED_DB = "cached";
+    private static final Logger logger = LoggerFactory.getLogger(AAIGraph.class);
+    protected JanusGraph graph;
     private static boolean isInit = false;
 
     /**
@@ -67,15 +64,10 @@ public class AAIGraph {
         try {
             String serviceName = System.getProperty("aai.service.name", "NA");
             String rtConfig = System.getProperty("realtime.db.config");
-            String cachedConfig = System.getProperty("cached.db.config");
             if (rtConfig == null) {
                 rtConfig = AAIConstants.REALTIME_DB_CONFIG;
             }
-            if (cachedConfig == null) {
-                cachedConfig = AAIConstants.CACHED_DB_CONFIG;
-            }
-            this.loadGraph(REALTIME_DB, rtConfig, serviceName);
-            this.loadGraph(CACHED_DB, cachedConfig, serviceName);
+            this.loadGraph(rtConfig, serviceName);
         } catch (Exception e) {
             throw new RuntimeException("Failed to instantiate graphs", e);
         }
@@ -103,18 +95,17 @@ public class AAIGraph {
         return isInit;
     }
 
-    private void loadGraph(final String name, final String configPath, final String serviceName)
-        throws AAIException, ConfigurationException {
+    private void loadGraph(String configPath, String serviceName) throws Exception {
         // Graph being opened by JanusGraphFactory is being placed in hashmap to be used later
         // These graphs shouldn't be closed until the application shutdown
         try {
-            final PropertiesConfiguration propertiesConfiguration =
-                new AAIGraphConfig.Builder(configPath).forService(serviceName).withGraphType(name).buildConfiguration();
-            final JanusGraph graph = JanusGraphFactory.open(propertiesConfiguration);
+            PropertiesConfiguration propertiesConfiguration = new AAIGraphConfig.Builder(configPath)
+                    .forService(serviceName).withGraphType("realtime").buildConfiguration();
+            graph = JanusGraphFactory.open(propertiesConfiguration);
 
-            final Properties graphProps = new Properties();
+            Properties graphProps = new Properties();
             propertiesConfiguration.getKeys()
-                .forEachRemaining(k -> graphProps.setProperty(k, propertiesConfiguration.getString(k)));
+                    .forEachRemaining(k -> graphProps.setProperty(k, propertiesConfiguration.getString(k)));
 
             if ("inmemory".equals(graphProps.get("storage.backend"))) {
                 // Load the propertyKeys, indexes and edge-Labels into the DB
@@ -126,13 +117,12 @@ public class AAIGraph {
                 throw new AAIException("AAI_5102");
             }
 
-            graphs.put(name, graph);
-        } catch (final FileNotFoundException fnfe) {
-            throw new AAIException("AAI_4001");
+        } catch (FileNotFoundException e) {
+            throw new AAIException("AAI_4001", e);
         }
     }
 
-    private void loadSnapShotToInMemoryGraph(final JanusGraph graph, final Properties graphProps) {
+    private void loadSnapShotToInMemoryGraph(JanusGraph graph, Properties graphProps) {
         if (logger.isDebugEnabled()) {
             logger.debug("Load Snapshot to InMemory Graph");
         }
@@ -141,12 +131,12 @@ public class AAIGraph {
             if ("true".equals(value)) {
                 try (Graph transaction = graph.newTransaction()) {
                     String location = System.getProperty("snapshot.location");
-                    logAndPrint(logger, "Loading snapshot to inmemory graph.");
+                    logAndPrint("Loading snapshot to inmemory graph.");
                     transaction.io(IoCore.graphson()).readGraph(location);
                     transaction.tx().commit();
-                    logAndPrint(logger, "Snapshot loaded to inmemory graph.");
+                    logAndPrint("Snapshot loaded to inmemory graph.");
                 } catch (Exception e) {
-                    logAndPrint(logger, "ERROR: Could not load datasnapshot to in memory graph. \n"
+                    logAndPrint("ERROR: Could not load datasnapshot to in memory graph. \n"
                             + ExceptionUtils.getFullStackTrace(e));
                     throw new RuntimeException(e);
                 }
@@ -154,19 +144,25 @@ public class AAIGraph {
         }
     }
 
-    private void loadSchema(final JanusGraph graph) {
+    private void loadSchema(JanusGraph graph) {
         // Load the propertyKeys, indexes and edge-Labels into the DB
         JanusGraphManagement graphMgt = graph.openManagement();
 
         System.out.println("-- loading schema into JanusGraph");
-        SchemaGenerator.loadSchemaIntoJanusGraph(graph, graphMgt, "inmemory");
+        if ("true".equals(SpringContextAware.getApplicationContext().getEnvironment().getProperty("history.enabled", "false"))) {
+            SchemaGenerator4Hist.loadSchemaIntoJanusGraph(graph, graphMgt, "inmemory");
+        } else {
+            SchemaGenerator.loadSchemaIntoJanusGraph(graph, graphMgt, "inmemory");
+        }
     }
 
     /**
      * Close all of the graph connections made in the instance.
      */
     public void graphShutdown() {
-        graphs.values().stream().filter(JanusGraph::isOpen).forEach(JanusGraph::close);
+        if (graph != null && graph.isOpen()) {
+            graph.close();
+        }
     }
 
     /**
@@ -175,30 +171,10 @@ public class AAIGraph {
      * @return the graph
      */
     public JanusGraph getGraph() {
-        return graphs.get(REALTIME_DB);
+        return graph;
     }
 
-    public void graphShutdown(final DBConnectionType connectionType) {
-
-        graphs.get(this.getGraphName(connectionType)).close();
-    }
-
-    public JanusGraph getGraph(final DBConnectionType connectionType) {
-        return graphs.get(this.getGraphName(connectionType));
-    }
-
-    private String getGraphName(final DBConnectionType connectionType) {
-        String graphName = "";
-        if (DBConnectionType.CACHED.equals(connectionType)) {
-            graphName = this.CACHED_DB;
-        } else if (DBConnectionType.REALTIME.equals(connectionType)) {
-            graphName = this.REALTIME_DB;
-        }
-
-        return graphName;
-    }
-
-    private void logAndPrint(final EELFLogger logger, final String msg) {
+    private void logAndPrint(String msg) {
         System.out.println(msg);
         logger.info(msg);
     }

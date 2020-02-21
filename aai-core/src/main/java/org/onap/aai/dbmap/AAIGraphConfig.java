@@ -22,8 +22,8 @@ package org.onap.aai.dbmap;
 
 import static org.janusgraph.graphdb.configuration.GraphDatabaseConfiguration.*;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterators;
@@ -46,7 +46,7 @@ import org.janusgraph.diskstorage.configuration.backend.CommonsConfiguration;
  */
 public class AAIGraphConfig {
 
-    private static final EELFLogger logger = EELFManager.getInstance().getLogger(AAIGraphConfig.class);
+    private static final Logger logger = LoggerFactory.getLogger(AAIGraphConfig.class);
 
     private AAIGraphConfig() {
     };

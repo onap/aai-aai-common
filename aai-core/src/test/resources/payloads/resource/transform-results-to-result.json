@@ -1,0 +1,61 @@
+{
+    "results": [
+        {
+            "id": "286724136",
+            "node-type": "pserver",
+            "url": "/aai/v18/cloud-infrastructure/pservers/pserver/test-pserver1",
+            "properties": {
+                "equip-type": "SERVER",
+                "equip-vendor": "SomeVendor",
+                "equip-model": "SomeModel",
+                "in-maint": false,
+                "last-mod-source-of-truth": "AAIRctFeed",
+                "aai-node-type": "pserver",
+                "aai-created-ts": 1568997029298,
+                "aai-last-mod-ts": 1568997029298,
+                "source-of-truth": "AAI",
+                "aai-uri": "/cloud-infrastructure/pservers/pserver/test-pserver1",
+                "aai-uuid": "05fa7b64-59e4-44a1-8162-e32746659c77",
+                "ipv4-oam-address": "1.2.3.4",
+                "hostname": "test-pserver1",
+                "pserver-id": "6bf4944a-9f13-4bb8-8f49-b61060793510",
+                "purpose": "Standalone",
+                "fqdn": "a.b.c.d",
+                "ptnii-equip-name": "test-pserver1",
+                "resource-version": "1568997029298"
+            },
+            "related-to": [
+                {
+                    "id": "286724232",
+                    "relationship-label": "org.onap.relationships.inventory.LocatedIn",
+                    "node-type": "complex",
+                    "url": "/aai/v18/cloud-infrastructure/complexes/complex/testcomplex2"
+                },
+                {
+                    "id": "286724233",
+                    "relationship-label": "org.onap.relationships.inventory.LocatedIn",
+                    "node-type": "complex",
+                    "url": "/aai/v18/cloud-infrastructure/complexes/complex/testcomplex1"
+                }
+            ]
+        },
+        {
+            "id": "286724152",
+            "node-type": "pserver",
+            "url": "/aai/v18/cloud-infrastructure/pservers/pserver/test-pserver2",
+            "properties": {
+                "in-maint": false,
+                "last-mod-source-of-truth": "JUNITTESTAPP2",
+                "aai-node-type": "pserver",
+                "aai-created-ts": 1553805738492,
+                "aai-last-mod-ts": 1553805738492,
+                "source-of-truth": "JUNITTESTAPP2",
+                "aai-uri": "/cloud-infrastructure/pservers/pserver/test-pserver2",
+                "aai-uuid": "13a8440c-7fb4-4f41-a141-6e1d9e895b4a",
+                "hostname": "test-pserver2",
+                "resource-version": "1553805738492"
+            },
+            "related-to": []
+        }
+    ]
+}

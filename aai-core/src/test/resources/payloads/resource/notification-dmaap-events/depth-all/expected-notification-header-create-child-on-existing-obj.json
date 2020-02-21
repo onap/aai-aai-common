@@ -1,0 +1,9 @@
+{
+    "id": "JUNIT-TRANSACTION",
+    "source-name": "JUNIT",
+    "version": "v14",
+    "action": "UPDATE",
+    "entity-type": "pserver",
+    "top-entity-type": "pserver",
+    "entity-link": "/aai/v14/cloud-infrastructure/pservers/pserver/example-hostname-val-85598"
+}

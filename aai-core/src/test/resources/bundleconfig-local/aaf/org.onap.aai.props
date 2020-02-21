@@ -1,0 +1,4 @@
+cm_url=cm_url
+hostname=hostname
+aaf_env=IST
+cadi_x509_issuers=CN=AAF CADI Test Issuing CA 01, OU=CSO, O=CO, C=US:CN=AAF CADI Test Issuing CA 02, OU=CSO, O=CO, C=US

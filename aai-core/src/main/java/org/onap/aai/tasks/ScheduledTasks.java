@@ -20,32 +20,30 @@
 
 package org.onap.aai.tasks;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.comparator.LastModifiedFileComparator;
+import org.onap.aai.aailog.logs.AaiScheduledTaskAuditLog;
+import org.onap.aai.util.AAIConfig;
+import org.onap.aai.util.AAIConstants;
+import org.onap.logging.filter.base.ONAPComponents;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.UUID;
-
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.comparator.LastModifiedFileComparator;
-import org.onap.aai.logging.LoggingContext;
-import org.onap.aai.logging.LoggingContext.StatusCode;
-import org.onap.aai.util.AAIConfig;
-import org.onap.aai.util.AAIConstants;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 
 @Component
 public class ScheduledTasks {
 
-    private static EELFLogger LOGGER = EELFManager.getInstance().getLogger(ScheduledTasks.class);
+    @Autowired
+    private AaiScheduledTaskAuditLog auditLog;
 
-    private static final String COMPONENT = "Scheduler";
-    private static final String FROM_APP_ID = "CronApp";
+    private static Logger LOGGER = LoggerFactory.getLogger(ScheduledTasks.class);
     private static final long PROPERTY_READ_INTERVAL = 60000; // every minute
-
     private String GlobalPropFileName = AAIConstants.AAI_CONFIG_FILENAME;
 
     // for read and possibly reloading aaiconfig.properties and other
@@ -55,19 +53,7 @@ public class ScheduledTasks {
     // configuration properties files
     @Scheduled(fixedRate = PROPERTY_READ_INTERVAL)
     public void loadAAIProperties() {
-        final UUID transId = UUID.randomUUID();
-
-        // LoggingContext.init();
-        LoggingContext.save();
-        LoggingContext.requestId(transId);
-        LoggingContext.partnerName(FROM_APP_ID);
-        LoggingContext.component(COMPONENT);
-        LoggingContext.targetEntity("AAI");
-        LoggingContext.targetServiceName("loadAAIProperties");
-        LoggingContext.serviceName("AAI");
-        LoggingContext.statusCode(StatusCode.COMPLETE);
-        LoggingContext.responseCode(LoggingContext.SUCCESS);
-
+        auditLog.logBefore("LoadAaiPropertiesTask", ONAPComponents.AAI.toString() );
         String dir = FilenameUtils.getFullPathNoEndSeparator(GlobalPropFileName);
         if (dir == null || dir.length() < 3) {
             dir = "/opt/aai/etc";
@@ -94,6 +80,6 @@ public class ScheduledTasks {
                 break;
             }
         }
-        LoggingContext.restoreIfPossible();
+        auditLog.logAfter();
     }
 }

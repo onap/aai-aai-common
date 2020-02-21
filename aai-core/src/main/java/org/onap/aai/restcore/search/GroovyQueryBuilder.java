@@ -26,6 +26,7 @@ import groovy.lang.Script;
 import java.util.Map;
 
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.onap.aai.config.SpringContextAware;
 import org.onap.aai.introspection.Loader;
@@ -53,11 +54,8 @@ public class GroovyQueryBuilder extends AAIAbstractGroovyShell {
     @Override
     public String executeTraversal(TransactionalGraphEngine engine, String traversal, Map<String, Object> params) {
         QueryBuilder<Vertex> builder = engine.getQueryBuilder(QueryStyle.GREMLIN_TRAVERSAL);
-        SchemaVersions schemaVersions = (SchemaVersions) SpringContextAware.getBean("schemaVersions");
-        Loader loader = SpringContextAware.getBean(LoaderFactory.class).createLoaderForVersion(ModelType.MOXY,
-                schemaVersions.getDefaultVersion());
 
-        builder.changeLoader(loader);
+        builder.changeLoader(getLoader());
         Binding binding = new Binding(params);
         binding.setVariable("builder", builder);
         Script script = shell.parse(traversal);
@@ -73,5 +71,18 @@ public class GroovyQueryBuilder extends AAIAbstractGroovyShell {
     @Override
     public GraphTraversal<?, ?> executeTraversal(String traversal, Map<String, Object> params) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String executeTraversal(TransactionalGraphEngine engine, String traversal, Map<String, Object> params, QueryStyle style, GraphTraversalSource traversalSource) {
+        QueryBuilder<Vertex> builder = engine.getQueryBuilder(style, traversalSource);
+        builder.changeLoader(getLoader());
+        Binding binding = new Binding(params);
+        binding.setVariable("builder", builder);
+        Script script = shell.parse(traversal);
+        script.setBinding(binding);
+        script.run();
+
+        return builder.getQuery();
     }
 }

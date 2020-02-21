@@ -76,4 +76,6 @@ public @interface Metadata {
 
     String sourceOfTruthType() default "";
 
+    String dslStartNodeProps() default "";
+
 }

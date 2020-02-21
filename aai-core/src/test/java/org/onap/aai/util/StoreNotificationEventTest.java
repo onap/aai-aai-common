@@ -66,19 +66,19 @@ public class StoreNotificationEventTest extends AAISetup {
 
     @Test(expected = AAIException.class)
     public void testStoreEventNullObj() throws AAIException {
-        sne.storeEvent(new EventHeader(), null);
+        sne.storeEventAndSendToJms(new EventHeader(), null);
     }
 
     @Test(expected = AAIException.class)
     public void testStoreEventInvalidObjForPojoUtils() throws AAIException {
-        sne.storeEvent(new EventHeader(), new Object());
+        sne.storeEventAndSendToJms(new EventHeader(), new Object());
     }
 
     @Test
     public void testStoreEventEmptyEventHeader()
             throws AAIException, JsonGenerationException, JsonMappingException, IOException {
         JsonObject object = Json.createObjectBuilder().add("hello", "world").build();
-        String res = sne.storeEvent(new EventHeader(), object);
+        String res = sne.storeEventAndSendToJms(new EventHeader(), object);
 
         assertNotNull(res);
         assertTrue(res.contains("\"cambria.partition\" : \"" + AAIConstants.UEB_PUB_PARTITION_AAI + "\""));
@@ -118,7 +118,7 @@ public class StoreNotificationEventTest extends AAISetup {
         eh.setSeverity("ALERT");
         eh.setVersion("v12");
 
-        String res = sne.storeEvent(eh, object);
+        String res = sne.storeEventAndSendToJms(eh, object);
 
         assertNotNull(res);
         assertTrue(res.contains("\"cambria.partition\" : \"" + AAIConstants.UEB_PUB_PARTITION_AAI + "\""));
@@ -161,7 +161,7 @@ public class StoreNotificationEventTest extends AAISetup {
     @Test(expected = AAIException.class)
     public void testStoreEventIntrospectorNullObj() throws Exception {
         Loader loader = Mockito.mock(Loader.class);
-        sne.storeEvent(loader, null, null);
+        sne.storeEventAndSendToJms(loader, null, null);
     }
 
     @Ignore("Stopped working since the model driven story")
@@ -180,7 +180,7 @@ public class StoreNotificationEventTest extends AAISetup {
         eventHeader.setValue("severity", "ALERT");
         eventHeader.setValue("version", "v12");
         Introspector obj = loader.introspectorFromName("notification-event");
-        String res = sne.storeEvent(loader, eventHeader, obj);
+        String res = sne.storeEventAndSendToJms(loader, eventHeader, obj);
 
         assertNotNull(res);
         assertTrue(res.contains("\"cambria.partition\":\"" + AAIConstants.UEB_PUB_PARTITION_AAI + "\""));
@@ -205,7 +205,7 @@ public class StoreNotificationEventTest extends AAISetup {
         Introspector eventHeader = loader.introspectorFromName("notification-event-header");
         Introspector obj = loader.introspectorFromName("notification-event");
 
-        String res = sne.storeEvent(loader, eventHeader, obj);
+        String res = sne.storeEventAndSendToJms(loader, eventHeader, obj);
 
         assertNotNull(res);
         assertTrue(res.contains("\"cambria.partition\":\"" + AAIConstants.UEB_PUB_PARTITION_AAI + "\""));

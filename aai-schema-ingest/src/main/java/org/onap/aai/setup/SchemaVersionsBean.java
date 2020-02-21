@@ -31,8 +31,8 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 
 import org.onap.aai.restclient.RestClient;
-import org.onap.aai.restclient.RestClientFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 
@@ -47,11 +47,12 @@ public class SchemaVersionsBean {
     @Value("${schema.service.versions.override:false}")
     private String overrideSchemaService;
 
-    @Autowired
-    private RestClientFactory restClientFactory;
-
     @Autowired(required = false)
     private SchemaConfigVersions schemaConfigVersions;
+
+    @Qualifier("restClient")
+    @Autowired
+    private RestClient restClient;
 
     @PostConstruct
     public void initialize() {
@@ -65,7 +66,6 @@ public class SchemaVersionsBean {
          */
         String content = "";
         Map<String, String> headersMap = new HashMap<>();
-        RestClient restClient = restClientFactory.getRestClient(SCHEMA_SERVICE);
 
         ResponseEntity<String> schemaResponse = restClient.getGetRequest(content, versionsUri, headersMap);
         Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_DASHES).create();

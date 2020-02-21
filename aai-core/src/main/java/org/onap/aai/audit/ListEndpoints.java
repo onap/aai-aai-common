@@ -22,8 +22,8 @@
 
 package org.onap.aai.audit;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.google.common.base.CaseFormat;
 
 import java.util.ArrayList;
@@ -53,7 +53,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
  */
 public class ListEndpoints {
 
-    private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(ListEndpoints.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ListEndpoints.class);
 
     private static final String START = "inventory";
     private static final String[] blacklist = {"search", "aai-internal"};

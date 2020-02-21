@@ -1,0 +1,273 @@
+{
+    "hostname": "example-hostname-val-85598",
+    "ptnii-equip-name": "example-ptnii-equip-name-val-85834",
+    "number-of-cpus": 280,
+    "disk-in-gigabytes": 78521,
+    "ram-in-megabytes": 36975,
+    "equip-type": "example-equip-type-val-47930",
+    "equip-vendor": "example-equip-vendor-val-59512",
+    "equip-model": "example-equip-model-val-46076",
+    "fqdn": "example-fqdn-val-74486",
+    "pserver-selflink": "example-pserver-selflink-val-72481",
+    "ipv4-oam-address": "example-ipv4-oam-address-val-16616",
+    "serial-number": "example-serial-number-val-92800",
+    "ipaddress-v4-loopback-0": "example-ipaddress-v4-loopback0-val-61384",
+    "ipaddress-v6-loopback-0": "example-ipaddress-v6-loopback0-val-91056",
+    "ipaddress-v4-aim": "example-ipaddress-v4-aim-val-72233",
+    "ipaddress-v6-aim": "example-ipaddress-v6-aim-val-13572",
+    "ipaddress-v6-oam": "example-ipaddress-v6-oam-val-84518",
+    "inv-status": "example-inv-status-val-5042",
+    "pserver-id": "example-pserver-id-val-15622",
+    "internet-topology": "example-internet-topology-val-31234",
+    "in-maint": true,
+    "pserver-name2": "example-pserver-name2-val-93509",
+    "purpose": "example-purpose-val-52320",
+    "prov-status": "example-prov-status-val-47313",
+    "management-option": "example-management-option-val-72434",
+    "host-profile": "example-host-profile-val-84672",
+    "p-interfaces": {
+        "p-interface": [
+            {
+                "interface-name": "example-interface-name-val-46147",
+                "selflink": "example-selflink-val-81029",
+                "speed-value": "example-speed-value-val-47874",
+                "speed-units": "example-speed-units-val-10396",
+                "port-description": "example-port-description-val-53068",
+                "equipment-identifier": "example-equipment-identifier-val-63234",
+                "interface-role": "example-interface-role-val-49232",
+                "interface-type": "example-interface-type-val-21757",
+                "prov-status": "example-prov-status-val-19117",
+                "in-maint": true,
+                "inv-status": "example-inv-status-val-48715",
+                "l-interfaces": {
+                    "l-interface": [
+                        {
+                            "interface-name": "example-interface-name-val-13366",
+                            "interface-role": "example-interface-role-val-29488",
+                            "v6-wan-link-ip": "example-v6-wan-link-ip-val-78396",
+                            "selflink": "example-selflink-val-4757",
+                            "interface-id": "example-interface-id-val-79486",
+                            "macaddr": "example-macaddr-val-52194",
+                            "network-name": "example-network-name-val-80678",
+                            "management-option": "example-management-option-val-53535",
+                            "interface-description": "example-interface-description-val-299",
+                            "is-port-mirrored": true,
+                            "in-maint": true,
+                            "prov-status": "example-prov-status-val-9736",
+                            "is-ip-unnumbered": true,
+                            "allowed-address-pairs": "example-allowed-address-pairs-val-62271",
+                            "vlans": {
+                                "vlan": [
+                                    {
+                                        "vlan-interface": "example-vlan-interface-val-31470",
+                                        "vlan-id-inner": 61286171,
+                                        "vlan-id-outer": 64615174,
+                                        "speed-value": "example-speed-value-val-80457",
+                                        "speed-units": "example-speed-units-val-51587",
+                                        "vlan-description": "example-vlan-description-val-97575",
+                                        "backdoor-connection": "example-backdoor-connection-val-3179",
+                                        "vpn-key": "example-vpn-key-val-50069",
+                                        "orchestration-status": "example-orchestration-status-val-34071",
+                                        "in-maint": true,
+                                        "prov-status": "example-prov-status-val-62615",
+                                        "is-ip-unnumbered": true,
+                                        "is-private": true,
+                                        "l3-interface-ipv4-address-list": [
+                                            {
+                                                "l3-interface-ipv4-address": "example-l3-interface-ipv4-address-val-8171",
+                                                "l3-interface-ipv4-prefix-length": 39266592,
+                                                "vlan-id-inner": 91284707,
+                                                "vlan-id-outer": 80343467,
+                                                "is-floating": true,
+                                                "neutron-network-id": "example-neutron-network-id-val-52921",
+                                                "neutron-subnet-id": "example-neutron-subnet-id-val-88134"
+                                            }
+                                        ],
+                                        "l3-interface-ipv6-address-list": [
+                                            {
+                                                "l3-interface-ipv6-address": "example-l3-interface-ipv6-address-val-70726",
+                                                "l3-interface-ipv6-prefix-length": 81422758,
+                                                "vlan-id-inner": 15099560,
+                                                "vlan-id-outer": 46643832,
+                                                "is-floating": true,
+                                                "neutron-network-id": "example-neutron-network-id-val-97954",
+                                                "neutron-subnet-id": "example-neutron-subnet-id-val-23889"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            "l-interfaces": {
+                                "l-interface": [
+                                    {
+                                        "interface-name": "example-interface-name-val-62086",
+                                        "interface-role": "example-interface-role-val-13107",
+                                        "v6-wan-link-ip": "example-v6-wan-link-ip-val-32015",
+                                        "selflink": "example-selflink-val-31580",
+                                        "interface-id": "example-interface-id-val-57805",
+                                        "macaddr": "example-macaddr-val-54266",
+                                        "network-name": "example-network-name-val-38517",
+                                        "management-option": "example-management-option-val-8801",
+                                        "interface-description": "example-interface-description-val-88573",
+                                        "is-port-mirrored": true,
+                                        "in-maint": true,
+                                        "prov-status": "example-prov-status-val-99164",
+                                        "is-ip-unnumbered": true,
+                                        "allowed-address-pairs": "example-allowed-address-pairs-val-14581",
+                                        "admin-status": "example-admin-status-val-29720"
+                                    }
+                                ]
+                            },
+                            "l3-interface-ipv4-address-list": [
+                                {
+                                    "l3-interface-ipv4-address": "example-l3-interface-ipv4-address-val-31324",
+                                    "l3-interface-ipv4-prefix-length": 36060646,
+                                    "vlan-id-inner": 62164959,
+                                    "vlan-id-outer": 93058593,
+                                    "is-floating": true,
+                                    "neutron-network-id": "example-neutron-network-id-val-39206",
+                                    "neutron-subnet-id": "example-neutron-subnet-id-val-27746"
+                                }
+                            ],
+                            "l3-interface-ipv6-address-list": [
+                                {
+                                    "l3-interface-ipv6-address": "example-l3-interface-ipv6-address-val-72897",
+                                    "l3-interface-ipv6-prefix-length": 29592510,
+                                    "vlan-id-inner": 18402161,
+                                    "vlan-id-outer": 651158,
+                                    "is-floating": true,
+                                    "neutron-network-id": "example-neutron-network-id-val-6821",
+                                    "neutron-subnet-id": "example-neutron-subnet-id-val-11217"
+                                }
+                            ],
+                            "admin-status": "example-admin-status-val-81745"
+                        }
+                    ]
+                }
+            },
+            {
+                "interface-name": "p-interface-1",
+                "in-maint": false
+            }
+        ]
+    },
+    "lag-interfaces": {
+        "lag-interface": [
+            {
+                "interface-name": "example-interface-name-val-87366",
+                "interface-description": "example-interface-description-val-3722",
+                "speed-value": "example-speed-value-val-73546",
+                "speed-units": "example-speed-units-val-73658",
+                "interface-id": "example-interface-id-val-62385",
+                "interface-role": "example-interface-role-val-60746",
+                "prov-status": "example-prov-status-val-26239",
+                "in-maint": true,
+                "l-interfaces": {
+                    "l-interface": [
+                        {
+                            "interface-name": "example-interface-name-val-69579",
+                            "interface-role": "example-interface-role-val-64571",
+                            "v6-wan-link-ip": "example-v6-wan-link-ip-val-68385",
+                            "selflink": "example-selflink-val-29611",
+                            "interface-id": "example-interface-id-val-75464",
+                            "macaddr": "example-macaddr-val-7285",
+                            "network-name": "example-network-name-val-52284",
+                            "management-option": "example-management-option-val-26028",
+                            "interface-description": "example-interface-description-val-37641",
+                            "is-port-mirrored": true,
+                            "in-maint": true,
+                            "prov-status": "example-prov-status-val-56460",
+                            "is-ip-unnumbered": true,
+                            "allowed-address-pairs": "example-allowed-address-pairs-val-23301",
+                            "vlans": {
+                                "vlan": [
+                                    {
+                                        "vlan-interface": "example-vlan-interface-val-56661",
+                                        "vlan-id-inner": 33305644,
+                                        "vlan-id-outer": 30871600,
+                                        "speed-value": "example-speed-value-val-1929",
+                                        "speed-units": "example-speed-units-val-71630",
+                                        "vlan-description": "example-vlan-description-val-63003",
+                                        "backdoor-connection": "example-backdoor-connection-val-41834",
+                                        "vpn-key": "example-vpn-key-val-16552",
+                                        "orchestration-status": "example-orchestration-status-val-95322",
+                                        "in-maint": true,
+                                        "prov-status": "example-prov-status-val-89886",
+                                        "is-ip-unnumbered": true,
+                                        "is-private": true,
+                                        "l3-interface-ipv4-address-list": [
+                                            {
+                                                "l3-interface-ipv4-address": "example-l3-interface-ipv4-address-val-69142",
+                                                "l3-interface-ipv4-prefix-length": 11099430,
+                                                "vlan-id-inner": 88996967,
+                                                "vlan-id-outer": 23003182,
+                                                "is-floating": true,
+                                                "neutron-network-id": "example-neutron-network-id-val-53091",
+                                                "neutron-subnet-id": "example-neutron-subnet-id-val-41571"
+                                            }
+                                        ],
+                                        "l3-interface-ipv6-address-list": [
+                                            {
+                                                "l3-interface-ipv6-address": "example-l3-interface-ipv6-address-val-27490",
+                                                "l3-interface-ipv6-prefix-length": 20167688,
+                                                "vlan-id-inner": 40775405,
+                                                "vlan-id-outer": 75855907,
+                                                "is-floating": true,
+                                                "neutron-network-id": "example-neutron-network-id-val-9739",
+                                                "neutron-subnet-id": "example-neutron-subnet-id-val-806"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            "l-interfaces": {
+                                "l-interface": [
+                                    {
+                                        "interface-name": "example-interface-name-val-49266",
+                                        "interface-role": "example-interface-role-val-210",
+                                        "v6-wan-link-ip": "example-v6-wan-link-ip-val-81668",
+                                        "selflink": "example-selflink-val-6356",
+                                        "interface-id": "example-interface-id-val-99531",
+                                        "macaddr": "example-macaddr-val-25092",
+                                        "network-name": "example-network-name-val-3319",
+                                        "management-option": "example-management-option-val-79883",
+                                        "interface-description": "example-interface-description-val-54501",
+                                        "is-port-mirrored": true,
+                                        "in-maint": true,
+                                        "prov-status": "example-prov-status-val-48840",
+                                        "is-ip-unnumbered": true,
+                                        "allowed-address-pairs": "example-allowed-address-pairs-val-26846",
+                                        "admin-status": "example-admin-status-val-89244"
+                                    }
+                                ]
+                            },
+                            "l3-interface-ipv4-address-list": [
+                                {
+                                    "l3-interface-ipv4-address": "example-l3-interface-ipv4-address-val-61251",
+                                    "l3-interface-ipv4-prefix-length": 91875404,
+                                    "vlan-id-inner": 36470314,
+                                    "vlan-id-outer": 96344091,
+                                    "is-floating": true,
+                                    "neutron-network-id": "example-neutron-network-id-val-17339",
+                                    "neutron-subnet-id": "example-neutron-subnet-id-val-86128"
+                                }
+                            ],
+                            "l3-interface-ipv6-address-list": [
+                                {
+                                    "l3-interface-ipv6-address": "example-l3-interface-ipv6-address-val-31476",
+                                    "l3-interface-ipv6-prefix-length": 11663872,
+                                    "vlan-id-inner": 28459412,
+                                    "vlan-id-outer": 9852622,
+                                    "is-floating": true,
+                                    "neutron-network-id": "example-neutron-network-id-val-15120",
+                                    "neutron-subnet-id": "example-neutron-subnet-id-val-36088"
+                                }
+                            ],
+                            "admin-status": "example-admin-status-val-81055"
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}

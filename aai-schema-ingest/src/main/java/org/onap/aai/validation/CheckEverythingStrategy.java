@@ -59,7 +59,7 @@ public class CheckEverythingStrategy implements SchemaErrorStrategy {
         if (errorMsgs.isEmpty()) {
             return "No errors found.";
         } else {
-            return StringUtils.join(errorMsgs, "\n");
+            return StringUtils.join(errorMsgs.iterator(), "\n");
         }
     }
 

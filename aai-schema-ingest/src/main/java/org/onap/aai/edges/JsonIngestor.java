@@ -20,8 +20,8 @@
 
 package org.onap.aai.edges;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 
@@ -40,7 +40,7 @@ import org.onap.aai.setup.SchemaVersion;
  * JsonIngestor produces DocumentContexts from json files
  */
 public class JsonIngestor {
-    private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(JsonIngestor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JsonIngestor.class);
 
     /**
      * Reads in given json files to queryable DocumentContexts.

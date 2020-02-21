@@ -44,7 +44,9 @@ public abstract class AaiCallable<T> implements Callable<T> {
      * The call method
      */
     public T call() throws Exception {
-        MDC.setContextMap(mdcCopy);
+        if ( mdcCopy != null ) {
+            MDC.setContextMap(mdcCopy);
+        }
         return process();
     }
 

@@ -129,11 +129,7 @@ public class PojoUtils {
 
         mapper.registerModule(new JaxbAnnotationModule());
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-        mapper.writeValue(baos, clazz);
-
-        return baos.toString();
+        return mapper.writeValueAsString(clazz);
     }
 
     /**

@@ -22,6 +22,8 @@
 
 package org.onap.aai.query.builder;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
@@ -54,9 +56,13 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
 
     private static final String ARGUMENT2 = "#!#argument#!#";
     private static final String HAS = ".has('";
+    private static final String SINGLE_QUOTE = "'";
+    private static final String ESCAPE_SINGLE_QUOTE = "\\'";
     private GremlinGroovyShell gremlinGroovy = new GremlinGroovyShell();
     private GraphTraversal<?, ?> completeTraversal = null;
     protected List<String> list = null;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(QueryBuilder.class);
 
     /**
      * Instantiates a new gremlin query builder.
@@ -79,12 +85,29 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
         list = new ArrayList<>();
     }
 
+
     @Override
     public QueryBuilder<Vertex> exactMatchQuery(Introspector obj) {
         // TODO not implemented because this is implementation is no longer used
         this.createKeyQuery(obj);
         this.createContainerQuery(obj);
         return (QueryBuilder<Vertex>) this;
+    }
+
+    @Override
+    protected void vertexHas(String key, Object value) {
+        list.add(HAS + key + "', " + value + ")");
+    }
+
+    @Override
+    protected void vertexHasNot(String key) {
+        list.add(".hasNot('" + key + "')");
+
+    }
+
+    @Override
+    protected void vertexHas(String key) {
+        list.add(HAS + key + "')");
     }
 
     /**
@@ -95,11 +118,16 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
 
         String term = "";
         if (value != null && !(value instanceof String)) {
+            String valueString = value.toString();
+            if (valueString.indexOf('\'') != -1) {
+                value =  valueString.replace(SINGLE_QUOTE, ESCAPE_SINGLE_QUOTE);
+            }
+            LOGGER.trace("Inside getVerticesByProperty(): key = {}, value = {}", key, value);
             term = value.toString();
         } else {
             term = "'" + value + "'";
         }
-        list.add(HAS + key + "', " + term + ")");
+        this.vertexHas(key, term);
         stepIndex++;
         return (QueryBuilder<Vertex>) this;
     }
@@ -109,7 +137,7 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
      */
     @Override
     public QueryBuilder<Vertex> getVerticesByNumberProperty(String key, Object value) {
-        list.add(HAS + key + "', " + value + ")");
+        this.vertexHas(key, value);
         stepIndex++;
         return (QueryBuilder<Vertex>) this;
     }
@@ -125,7 +153,7 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
                 bValue = (Boolean) value;
             }
 
-            list.add(HAS + key + "', " + bValue + ")");
+            this.vertexHas(key, bValue);
             stepIndex++;
         }
         return (QueryBuilder<Vertex>) this;
@@ -148,7 +176,31 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
         }
         String argument = Joiner.on(",").join(arguments);
         predicate = predicate.replace(ARGUMENT2, argument);
-        list.add(HAS + key + "', " + predicate + ")");
+        this.vertexHas(key, predicate);
+        stepIndex++;
+        return (QueryBuilder<Vertex>) this;
+    }
+    
+    /**
+     * @{inheritDoc}
+     */
+    @Override
+    public QueryBuilder<Vertex> getVerticesByCommaSeperatedValue(String key, String value) {
+        ArrayList<String> arguments = new ArrayList<>(Arrays.asList(value.split(",")));
+        //add the single quotes
+        for (int i = 0; i < arguments.size(); i++) {
+           if(arguments.get(i) != null && !arguments.get(i).startsWith("'") 
+        		   && !arguments.get(i).endsWith("'")) {
+        	   arguments.set(i,"'" + arguments.get(i).trim() + "'");
+           }
+           else {
+        	   arguments.set(i, arguments.get(i).trim());
+           }
+        }
+        String predicate = "P.within(#!#argument#!#)";
+        String argument = Joiner.on(",").join(arguments);
+        predicate = predicate.replace(ARGUMENT2, argument);
+        this.vertexHas(key, predicate);
         stepIndex++;
         return (QueryBuilder<Vertex>) this;
     }
@@ -158,8 +210,7 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
      */
     @Override
     public QueryBuilder<Vertex> getVerticesByProperty(String key) {
-
-        list.add(HAS + key + "')");
+        this.vertexHas(key);
         stepIndex++;
         return (QueryBuilder<Vertex>) this;
     }
@@ -169,8 +220,7 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
      */
     @Override
     public QueryBuilder<Vertex> getVerticesExcludeByProperty(String key) {
-
-        list.add(".hasNot('" + key + "')");
+        this.vertexHasNot(key);
         stepIndex++;
         return (QueryBuilder<Vertex>) this;
     }
@@ -180,7 +230,6 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
      */
     @Override
     public QueryBuilder<Vertex> getVerticesStartsWithProperty(String key, Object value) {
-
         String term = "";
         String predicate = "org.janusgraph.core.attribute.Text.textPrefix(#!#argument#!#)";
         if (value != null && !(value instanceof String)) {
@@ -189,7 +238,7 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
             term = "'" + value + "'";
         }
         predicate = predicate.replace(ARGUMENT2, term);
-        list.add(HAS + key + "', " + predicate + ")");
+        this.vertexHas(key, predicate);
         stepIndex++;
         return (QueryBuilder<Vertex>) this;
     }
@@ -208,7 +257,7 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
             term = "'" + value + "'";
         }
         predicate = predicate.replace(ARGUMENT2, term);
-        list.add(HAS + key + "', " + predicate + ")");
+        this.vertexHas(key, predicate);
         stepIndex++;
         return (QueryBuilder<Vertex>) this;
     }
@@ -230,7 +279,7 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
         }
         String argument = Joiner.on(",").join(arguments);
         predicate = predicate.replace(ARGUMENT2, argument);
-        list.add(HAS + key + "', " + predicate + ")");
+        this.vertexHas(key, predicate);
         stepIndex++;
         return (QueryBuilder<Vertex>) this;
     }
@@ -245,7 +294,7 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
             term = "'" + value + "'";
         }
         predicate = predicate.replace("#!#argument1#!#", term);
-        list.add(HAS + key + "', " + predicate + ")");
+        this.vertexHas(key, predicate);
         stepIndex++;
         return (QueryBuilder<Vertex>) this;
     }
@@ -260,7 +309,7 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
             term = "'" + value + "'";
         }
         predicate = predicate.replace("#!#argument1#!#", term);
-        list.add(HAS + key + "', " + predicate + ")");
+        this.vertexHas(key, predicate);
         stepIndex++;
         return (QueryBuilder<Vertex>) this;
     }
@@ -281,6 +330,7 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
     public QueryBuilder<Vertex> getTypedVerticesByMap(String type, Map<String, String> map) {
 
         for (Map.Entry<String, String> es : map.entrySet()) {
+            //TODO what is this and where is it used - need to check
             list.add(HAS + es.getKey() + "', '" + es.getValue() + "')");
             stepIndex++;
         }
@@ -594,6 +644,20 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
     }
 
     @Override
+    public QueryBuilder<E> fold() {
+        this.list.add(".fold()");
+        stepIndex++;
+        return this;
+    }
+
+    @Override
+    public QueryBuilder<E> id() {
+        this.list.add(".id()");
+        stepIndex++;
+        return this;
+    }
+
+    @Override
     public QueryBuilder<E> dedup() {
         this.list.add(".dedup()");
         stepIndex++;
@@ -656,6 +720,31 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
 
         return this;
     }
+    
+    @Override
+    public QueryBuilder<E> valueMap() {
+        this.list.add(".valueMap()");
+        stepIndex++;
+
+        return this;
+    }
+    
+    @Override
+    public QueryBuilder<E> valueMap(String... names) {
+    	 String stepString = ".valueMap('";
+         for (int i = 0; i < names.length; i++) {
+             stepString = stepString + names[i] + "'";
+             if (i != (names.length - 1)) {
+                 stepString = stepString + ",'";
+             }
+         }
+         stepString = stepString + ")";
+         this.list.add(stepString);
+         stepIndex++;
+
+         return this;
+    }
+    
 
     /**
      * {@inheritDoc}
@@ -852,5 +941,10 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
 
         return (QueryBuilder<Edge>) this;
     }
+
+    /*
+     * This is required for the subgraphstrategies to work
+     */
+
 
 }

@@ -20,8 +20,8 @@
 
 package org.onap.aai.parsers.query;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -49,7 +49,7 @@ import org.onap.aai.schema.enums.PropertyMetadata;
  */
 public class LegacyQueryParser extends QueryParser implements Parsable {
 
-    private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(LegacyQueryParser.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LegacyQueryParser.class);
 
     private Introspector previous = null;
 

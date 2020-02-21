@@ -20,14 +20,6 @@
 
 package org.onap.aai.query.builder;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
@@ -39,6 +31,14 @@ import org.junit.Test;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.edges.enums.EdgeType;
 import org.onap.aai.exceptions.AAIException;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class TraversalQueryTest extends QueryBuilderTestAbstraction {
 
@@ -141,8 +141,8 @@ public class TraversalQueryTest extends QueryBuilderTestAbstraction {
     @Test
     public void abstractEdgeToVertexTraversalTest() throws AAIException {
 
-        Vertex gvnf = g.addV("aai-node-type", "generic-vnf", "vnf-id", "gvnf").next();
-        Vertex vnfc1 = g.addV("aai-node-type", "vnfc", "vnfc-name", "a-name").next();
+        Vertex gvnf = this.addVHelper(g, "vertex", "aai-node-type", "generic-vnf", "vnf-id", "gvnf").next();
+        Vertex vnfc1 = this.addVHelper(g, "vertex", "aai-node-type", "vnfc", "vnfc-name", "a-name").next();
 
         testEdgeSer.addEdge(g, gvnf, vnfc1);
 
@@ -159,8 +159,8 @@ public class TraversalQueryTest extends QueryBuilderTestAbstraction {
     @Test
     public void abstractEdgeToVertexTraversalSingleOutRuleTest() throws AAIException {
 
-        Vertex vce = g.addV("aai-node-type", "vce", "vnf-id", "vce").next();
-        Vertex vnfc1 = g.addV("aai-node-type", "vnfc", "vnfc-name", "a-name").next();
+        Vertex vce = this.addVHelper(g, "vertex", "aai-node-type", "vce", "vnf-id", "vce").next();
+        Vertex vnfc1 = this.addVHelper(g, "vertex", "aai-node-type", "vnfc", "vnfc-name", "a-name").next();
 
         testEdgeSer.addEdge(g, vce, vnfc1);
 
@@ -183,8 +183,8 @@ public class TraversalQueryTest extends QueryBuilderTestAbstraction {
     @Test
     public void abstractEdgeToVertexTraversalSingleInRuleTest() throws AAIException {
 
-        Vertex vce = g.addV("aai-node-type", "vce", "vnf-id", "vce").next();
-        Vertex pserver = g.addV("aai-node-type", "pserver", "hostname", "a-name").next();
+        Vertex vce = this.addVHelper(g, "vertex", "aai-node-type", "vce", "vnf-id", "vce").next();
+        Vertex pserver = this.addVHelper(g, "vertex", "aai-node-type", "pserver", "hostname", "a-name").next();
 
         testEdgeSer.addEdge(g, vce, pserver);
 
@@ -201,9 +201,9 @@ public class TraversalQueryTest extends QueryBuilderTestAbstraction {
     @Test
     public void abstractEdgeToVertexMultiRuleTraversalTest() throws AAIException {
 
-        Vertex gvnf = g.addV("aai-node-type", "generic-vnf", "vnf-id", "gvnf").next();
-        Vertex vnfc1 = g.addV("aai-node-type", "vnfc", "vnfc-name", "a-name").next();
-        Vertex vnfc2 = g.addV("aai-node-type", "vnfc", "vnfc-name", "b-name").next();
+        Vertex gvnf = this.addVHelper(g, "vertex", "aai-node-type", "generic-vnf", "vnf-id", "gvnf").next();
+        Vertex vnfc1 = this.addVHelper(g, "vertex", "aai-node-type", "vnfc", "vnfc-name", "a-name").next();
+        Vertex vnfc2 = this.addVHelper(g, "vertex", "aai-node-type", "vnfc", "vnfc-name", "b-name").next();
 
         testEdgeSer.addEdge(g, gvnf, vnfc1);
         testEdgeSer.addEdge(g, gvnf, vnfc2, "re-uses");
@@ -222,8 +222,8 @@ public class TraversalQueryTest extends QueryBuilderTestAbstraction {
     @Test
     public void abstractEdgeToVertexMultiRuleOutTraversalTest() throws AAIException {
 
-        Vertex gvnf = g.addV("aai-node-type", "generic-vnf", "vnf-id", "gvnf").next();
-        Vertex pserver = g.addV("aai-node-type", "pserver", "hostname", "a-name").next();
+        Vertex gvnf = this.addVHelper(g, "vertex", "aai-node-type", "generic-vnf", "vnf-id", "gvnf").next();
+        Vertex pserver = this.addVHelper(g, "vertex", "aai-node-type", "pserver", "hostname", "a-name").next();
 
         testEdgeSer.addEdge(g, gvnf, pserver);
         testEdgeSer.addEdge(g, gvnf, pserver, "generic-vnf-pserver-B");
@@ -241,8 +241,8 @@ public class TraversalQueryTest extends QueryBuilderTestAbstraction {
     @Test
     public void abstractEdgeToVertexMultiRuleInTraversalTest() throws AAIException {
 
-        Vertex gvnf = g.addV("aai-node-type", "generic-vnf", "vnf-id", "gvnf").next();
-        Vertex complex = g.addV("aai-node-type", "complex", "physical-location-id", "a-name").next();
+        Vertex gvnf = this.addVHelper(g, "vertex", "aai-node-type", "generic-vnf", "vnf-id", "gvnf").next();
+        Vertex complex = this.addVHelper(g, "vertex", "aai-node-type", "complex", "physical-location-id", "a-name").next();
 
         testEdgeSer.addEdge(g, gvnf, complex);
         testEdgeSer.addEdge(g, gvnf, complex, "complex-generic-vnf-B");

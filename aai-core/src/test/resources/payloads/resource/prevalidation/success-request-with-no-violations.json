@@ -1,0 +1,22 @@
+{
+    "cambria.partition": "AAI",
+    "event-header": {
+        "severity": "NORMAL",
+        "entity-type": "pserver",
+        "top-entity-type": "pserver",
+        "entity-link": "/aai/v19/cloud-infrastructure/pservers/pserver/test-pserver234",
+        "event-type": "AAI-EVENT",
+        "domain": "uINT6",
+        "action": "CREATE",
+        "sequence-number": "0",
+        "id": "70b33094-9d60-4e49-9a42-9f9b45ef1aa6",
+        "source-name": "JUNIT",
+        "version": "v19",
+        "timestamp": "20191202-01:26:24:749"
+    },
+    "entity": {
+        "hostname": "test-pserver234",
+        "in-maint": false,
+        "resource-version": "1575249983853"
+    }
+}

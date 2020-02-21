@@ -31,13 +31,12 @@
     <version>1.6.6-SNAPSHOT</version>
     <relativePath>../aai-parent/pom.xml</relativePath>
   </parent>
-  
+
   <artifactId>aai-schema-abstraction</artifactId>
   <name>aai-schema-abstraction</name>
 
   <properties>
     <onap.nexus.url>https://nexus.onap.org</onap.nexus.url>
-    <logback.version>1.2.3</logback.version>
   </properties>
 
   <dependencies>
@@ -102,7 +101,6 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
-      <version>${mockito.core.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

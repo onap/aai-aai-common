@@ -20,20 +20,12 @@
 
 package org.onap.aai.rest;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.jayway.jsonpath.JsonPath;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.ws.rs.core.Response;
-
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.janusgraph.core.JanusGraphTransaction;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,16 +33,31 @@ import org.junit.runners.Parameterized;
 import org.onap.aai.AAISetup;
 import org.onap.aai.HttpTestUtil;
 import org.onap.aai.PayloadUtil;
-import org.onap.aai.introspection.*;
+import org.onap.aai.dbmap.AAIGraph;
+import org.onap.aai.introspection.Introspector;
+import org.onap.aai.introspection.Loader;
+import org.onap.aai.introspection.ModelType;
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.test.annotation.DirtiesContext;
+
+import javax.ws.rs.core.Response;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
+import static junit.framework.TestCase.fail;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 @RunWith(value = Parameterized.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class PserverTest extends AAISetup {
 
-    private static EELFLogger logger = EELFManager.getInstance().getLogger(PserverTest.class);
+    private static Logger logger = LoggerFactory.getLogger(PserverTest.class);
     private HttpTestUtil httpTestUtil;
     private Map<String, String> relationshipMap;
 
@@ -66,6 +73,39 @@ public class PserverTest extends AAISetup {
     public void setUp() {
         httpTestUtil = new HttpTestUtil(queryStyle);
         relationshipMap = new HashMap<>();
+    }
+
+    @Test
+    public void testPutPserverCreateGetInXmlForFormats() throws Exception {
+        httpTestUtil = new HttpTestUtil(queryStyle, "application/xml");
+        String pserverUri = "/aai/v12/cloud-infrastructure/pservers/pserver/test-pserver-xml";
+        String cloudRegionUri = "/aai/v12/cloud-infrastructure/cloud-regions/cloud-region/cloud-region-random1/cloud-region-random1-region";
+
+        Response response = httpTestUtil.doGet(pserverUri);
+        assertNotNull("Expected the response to be not null", response);
+        assertEquals("Expecting the pserver to be not found", 404, response.getStatus());
+
+        response = httpTestUtil.doPut(pserverUri, "{}");
+        assertNotNull("Expected the response to be not null", response);
+        assertEquals("Expecting the pserver to be created", 201, response.getStatus());
+
+        response = httpTestUtil.doPut(cloudRegionUri, "{}");
+        assertNotNull("Expected the response to be not null", response);
+        assertEquals("Expecting the cloud-region to be created", 201, response.getStatus());
+
+        relationshipMap.put("related-to", "pserver");
+        relationshipMap.put("related-link", pserverUri);
+
+        String pserverRelationshipPayload = PayloadUtil.getTemplatePayload("relationship.json", relationshipMap);
+        // Creates the relationship between cloud region and pserver
+        response = httpTestUtil.doPut(cloudRegionUri + "/relationship-list/relationship", pserverRelationshipPayload);
+        assertNotNull("Expected the response to be not null", response);
+        assertEquals("Expecting the cloud-region to pserver relationship to be created", 200, response.getStatus());
+
+        response = httpTestUtil.doGet(pserverUri , "0", "raw");
+        assertNotNull("Expected the response to be not null", response);
+        assertEquals("Expecting the pserver to be created", 200, response.getStatus());
+        assertThat(response.getEntity().toString(), containsString("<related-to><node><relationship-label>org.onap.relationships.inventory.LocatedIn</relationship-label><node-type>cloud-region</node-type>"));
     }
 
     @Test
@@ -148,4 +188,29 @@ public class PserverTest extends AAISetup {
         logger.info("Ending the pserver testPutServerCreateGetAndDelete");
     }
 
+    @After
+    public void tearDown() {
+
+        JanusGraphTransaction transaction = AAIGraph.getInstance().getGraph().newTransaction();
+        boolean success = true;
+
+        try {
+
+            GraphTraversalSource g = transaction.traversal();
+
+            g.V().has("source-of-truth", "JUNIT").toList().forEach(v -> v.remove());
+
+        } catch (Exception ex) {
+            success = false;
+            logger.error("Unable to remove the vertexes", ex);
+        } finally {
+            if (success) {
+                transaction.commit();
+            } else {
+                transaction.rollback();
+                fail("Unable to teardown the graph");
+            }
+        }
+
+    }
 }

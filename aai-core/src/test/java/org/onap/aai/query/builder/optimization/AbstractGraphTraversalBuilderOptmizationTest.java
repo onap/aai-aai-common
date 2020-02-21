@@ -20,16 +20,7 @@
 
 package org.onap.aai.query.builder.optimization;
 
-import static org.junit.Assert.assertEquals;
-
 import com.google.common.base.CaseFormat;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
-
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
@@ -38,7 +29,6 @@ import org.junit.AfterClass;
 import org.onap.aai.AAISetup;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.dbmap.AAIGraph;
-import org.onap.aai.dbmap.DBConnectionType;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.introspection.ModelType;
@@ -49,6 +39,14 @@ import org.onap.aai.serialization.engines.JanusGraphDBEngine;
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
+
+import static org.junit.Assert.assertEquals;
 
 public abstract class AbstractGraphTraversalBuilderOptmizationTest extends AAISetup {
 
@@ -74,7 +72,6 @@ public abstract class AbstractGraphTraversalBuilderOptmizationTest extends AAISe
 
     private static final ModelType introspectorFactoryType = ModelType.MOXY;
     private static final QueryStyle queryStyle = QueryStyle.TRAVERSAL;
-    private static final DBConnectionType type = DBConnectionType.REALTIME;
     private static TransactionalGraphEngine dbEngine;
     private static DBSerializer dbser;
     protected static Loader loader;
@@ -89,7 +86,7 @@ public abstract class AbstractGraphTraversalBuilderOptmizationTest extends AAISe
         loader = loaderFactory.createLoaderForVersion(introspectorFactoryType, schemaVersions.getDefaultVersion());
         graph = AAIGraph.getInstance().getGraph();
 
-        dbEngine = new JanusGraphDBEngine(queryStyle, type, loader);
+        dbEngine = new JanusGraphDBEngine(queryStyle, loader);
         g = dbEngine.startTransaction().traversal();
         dbser = new DBSerializer(schemaVersions.getDefaultVersion(), dbEngine, introspectorFactoryType,
                 "AAI-TEST-" + prefix);
@@ -107,8 +104,12 @@ public abstract class AbstractGraphTraversalBuilderOptmizationTest extends AAISe
         for (int crCtr = 0; crCtr < 3; crCtr++) {
             crUri = String.format(crUriPattern, prefix + "cloud-owner-" + crCtr, prefix + "cloud-region-id-" + crCtr);
             // System.out.println(crUri);
-            cr = g.addV(AAIProperties.NODE_TYPE, CLOUD_REGION, CLOUD_REGION_ID, prefix + "cloud-region-id-" + crCtr,
-                    CLOUD_OWNER, prefix + "cloud-owner-" + crCtr, AAIProperties.AAI_URI, crUri).next();
+            cr = g.addV(CLOUD_REGION)
+                .property(AAIProperties.NODE_TYPE, CLOUD_REGION)
+                .property(CLOUD_REGION_ID, prefix + "cloud-region-id-" + crCtr)
+                .property(CLOUD_OWNER, prefix + "cloud-owner-" + crCtr)
+                .property(AAIProperties.AAI_URI, crUri)
+                .next();
             for (int i = 0; i < tenantNum; i++) {
                 Introspector intro = loader.introspectorFromName(TENANT);
                 tenant = dbser.createNewVertex(intro);

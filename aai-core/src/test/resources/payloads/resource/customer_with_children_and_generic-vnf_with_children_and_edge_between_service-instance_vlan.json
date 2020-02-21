@@ -1,0 +1,70 @@
+{
+    "generic-vnf": {
+        "vnf-id": "gvnf",
+        "vnf-name": "example-vnf-name-val-28303",
+        "vnf-name2": "example-vnf-name2-val-14743",
+        "vnf-type": "example-vnf-type-val-58866",
+        "service-id": "example-service-id-val-24831",
+        "regional-resource-zone": "example-regional-resource-zone-val-33255",
+        "prov-status": "example-prov-status-val-47870",
+        "operational-state": "example-operational-state-val-8419",
+        "equipment-role": "example-equipment-role-val-35736",
+        "orchestration-status": "example-orchestration-status-val-67542",
+        "l-interfaces": {
+            "l-interface": [
+                {
+                    "interface-name": "lint",
+                    "interface-role": "example-interface-role-val-61355",
+                    "v6-wan-link-ip": "example-v6-wan-link-ip-val-78314",
+                    "vlans": {
+                        "vlan": [
+                            {
+                                "vlan-interface": "vlan",
+                                "vlan-id-inner": 90845777,
+                                "vlan-id-outer": 23395650
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    },
+    "customer": {
+        "global-customer-id": "cust",
+        "subscriber-name": "subscriber-name-022",
+        "subscriber-type": "subscriber-type-022",
+        "service-subscriptions": {
+            "service-subscription": {
+                "service-type": "ss",
+                "service-instances": {
+                    "service-instance": [
+                        {
+                            "service-instance-id": "si",
+                            "relationship-list": {
+                                "relationship": [
+                                    {
+                                        "related-to": "vlan",
+                                        "relationship-data": [
+                                            {
+                                                "relationship-key": "vlan.vlan-interface",
+                                                "relationship-value": "vlan"
+                                            },
+                                            {
+                                                "relationship-key": "l-interface.interface-name",
+                                                "relationship-value": "lint"
+                                            },
+                                            {
+                                                "relationship-key": "generic-vnf.vnf-id",
+                                                "relationship-value": "gvnf"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,26 @@
+{
+  "vnf-id": "generic-vnf-implied-delete",
+  "vnf-type": "sometype",
+  "in-maint": true,
+  "is-closed-loop-disabled": true,
+  "vf-modules": {
+      "vf-module": [
+          {
+              "vf-module-id": "vf-mod-id1",
+              "is-base-vf-module": true
+          },
+          {
+              "vf-module-id": "vf-mod-id2",
+              "is-base-vf-module": true
+          },
+          {
+              "vf-module-id": "vf-mod-id3",
+              "is-base-vf-module": true
+          },
+          {
+              "vf-module-id": "vf-mod-id4",
+              "is-base-vf-module": true
+          }
+      ]
+  }
+}

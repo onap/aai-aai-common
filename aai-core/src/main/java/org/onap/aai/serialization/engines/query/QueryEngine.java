@@ -22,6 +22,7 @@ package org.onap.aai.serialization.engines.query;
 
 import java.util.List;
 
+import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.Tree;
 import org.apache.tinkerpop.gremlin.structure.Direction;
@@ -81,7 +82,7 @@ public abstract class QueryEngine {
 
     /**
      * Finds all immediate children of start (no grandchildren or so forth) of the given type
-     * 
+     *
      * @param start - the start vertex
      * @param type - the desired aai-node-type
      * @return the list of immediate child vertices of given type
@@ -90,7 +91,7 @@ public abstract class QueryEngine {
 
     /**
      * Finds all immediate children of start (no grandchildren or so forth)
-     * 
+     *
      * @param start - the start vertex
      * @return the list of immediate child vertices
      */
@@ -172,6 +173,8 @@ public abstract class QueryEngine {
      * @return list of start's cousin vertices
      */
     public abstract List<Vertex> findCousinVertices(Vertex start, String... labels);
+
+    public abstract List<Path> findCousinsAsPath(Vertex start);
 
     public abstract double getDBTimeMsecs();
 

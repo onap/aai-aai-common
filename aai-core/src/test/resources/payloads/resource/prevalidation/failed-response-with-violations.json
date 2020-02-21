@@ -1,0 +1,28 @@
+{
+    "validationId": "52245aa2-72a8-440d-87e2-570272aa4a83",
+    "validationTimestamp": "20191201T211503Z",
+    "entityId": {
+        "vnf-id": "vnf-jenkins-15903-3"
+    },
+    "entityName": "ormfl405me3",
+    "entityType": "generic-vnf",
+    "entityLink": "network/generic-vnfs/generic-vnf/vnf-jenkins-15903-3",
+    "resourceVersion": "1567815933280",
+    "requestor": "JUNIT",
+    "violations": [{
+        "violationId": "37d6a7ebc1fc244f9dd04b1518726a9b4cc2350e6ff478c69502e8aeb1508333",
+        "modelName": null,
+        "category": "INVALID_VALUE",
+        "severity": "MAJOR",
+        "violationType": "Dlp_rule",
+        "validationRule": "DLP validate generic-vnf nf-values",
+        "violationDetails": {
+            "nf-role": "vSAEGW",
+            "nf-naming-code": "foo",
+            "nf-type": "blah",
+            "nf-function": "blah"
+        },
+        "errorMessage": "Invalid nf values, check nf-type, nf-role, nf-function, and nf-naming-code"
+    }
+    ]
+}

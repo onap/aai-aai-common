@@ -20,22 +20,21 @@
 
 package org.onap.aai.serialization.engines;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.strategy.verification.ReadOnlyStrategy;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 import org.janusgraph.core.JanusGraph;
-import org.onap.aai.dbmap.DBConnectionType;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.query.builder.*;
 import org.onap.aai.serialization.db.InMemoryGraphSingleton;
 import org.onap.aai.serialization.engines.query.GraphTraversalQueryEngine;
 import org.onap.aai.serialization.engines.query.QueryEngine;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class InMemoryDBEngine extends TransactionalGraphEngine {
 
@@ -49,10 +48,8 @@ public class InMemoryDBEngine extends TransactionalGraphEngine {
      */
     private JanusGraph graph = null;
 
-    private static final TransactionalGraphEngine.Admin admin = null;
-
-    public InMemoryDBEngine(QueryStyle style, DBConnectionType connectionType, Loader loader, JanusGraph graph) {
-        super(style, loader, connectionType, InMemoryGraphSingleton.getInstance(graph));
+    public InMemoryDBEngine(QueryStyle style, Loader loader, JanusGraph graph) {
+        super(style, loader, InMemoryGraphSingleton.getInstance(graph));
         this.graph = graph;
     }
 
@@ -195,8 +192,7 @@ public class InMemoryDBEngine extends TransactionalGraphEngine {
         if (this.tx() == null) {
             this.currentTx = graph.newTransaction();
             this.currentTraversal = this.tx().traversal();
-            this.readOnlyTraversal =
-                    this.tx().traversal(GraphTraversalSource.build().with(ReadOnlyStrategy.instance()));
+            this.readOnlyTraversal = this.tx().traversal().withStrategies(ReadOnlyStrategy.instance());
         }
         return currentTx;
     }

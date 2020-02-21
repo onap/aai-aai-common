@@ -25,10 +25,7 @@ import java.util.Map;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
-import org.onap.aai.config.ConfigConfiguration;
-import org.onap.aai.config.IntrospectionConfig;
-import org.onap.aai.config.RestBeanConfig;
-import org.onap.aai.config.SpringContextAware;
+import org.onap.aai.config.*;
 import org.onap.aai.edges.EdgeIngestor;
 import org.onap.aai.introspection.LoaderFactory;
 import org.onap.aai.introspection.MoxyLoader;
@@ -53,7 +50,7 @@ import org.springframework.test.context.junit4.rules.SpringMethodRule;
 @ContextConfiguration(
         classes = {ConfigConfiguration.class, TestUtilConfigTranslatorforDataLink.class, EdgeIngestor.class,
                 EdgeSerializer.class, NodeIngestor.class, SpringContextAware.class, IntrospectionConfig.class,
-                RestBeanConfig.class})
+                RestBeanConfig.class, XmlFormatTransformerConfiguration.class})
 @TestPropertySource(
         properties = {"schema.uri.base.path = /aai", "schema.xsd.maxoccurs = 5000", "schema.version.api.default = v4",
                 "schema.version.edge.label.start = v4", "schema.version.depth.start = v3",

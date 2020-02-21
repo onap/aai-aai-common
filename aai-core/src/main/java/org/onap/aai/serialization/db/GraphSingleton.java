@@ -20,11 +20,10 @@
 
 package org.onap.aai.serialization.db;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.janusgraph.core.JanusGraph;
 import org.onap.aai.dbmap.AAIGraph;
-import org.onap.aai.dbmap.DBConnectionType;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 /* This class simply calls AAIGraph under the covers for now */
 public class GraphSingleton {
@@ -63,7 +62,4 @@ public class GraphSingleton {
         return AAIGraph.getInstance().getGraph();
     }
 
-    public JanusGraph getTxGraph(DBConnectionType connectionType) {
-        return AAIGraph.getInstance().getGraph(connectionType);
-    }
 }

@@ -1,0 +1,21 @@
+[
+  {
+    "operation": "shift",
+    "spec": {
+      "results": "result",
+      "*": "&"
+    }
+  },
+  {
+    "operation": "shift",
+    "spec": {
+      "result": {
+        "*": {
+          "related-to": "result.[&(1,0)].&(0,0).node",
+          "*": "result.[&(1,0)].&(0,0)"
+        }
+      },
+      "*": "&"
+    }
+  }
+]

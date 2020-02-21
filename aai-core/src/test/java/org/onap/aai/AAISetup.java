@@ -20,15 +20,10 @@
 
 package org.onap.aai;
 
-import java.util.Map;
-
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
-import org.onap.aai.config.ConfigConfiguration;
-import org.onap.aai.config.IntrospectionConfig;
-import org.onap.aai.config.RestBeanConfig;
-import org.onap.aai.config.SpringContextAware;
+import org.onap.aai.config.*;
 import org.onap.aai.edges.EdgeIngestor;
 import org.onap.aai.introspection.LoaderFactory;
 import org.onap.aai.introspection.MoxyLoader;
@@ -47,13 +42,30 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.rules.SpringClassRule;
 import org.springframework.test.context.junit4.rules.SpringMethodRule;
 
+import java.util.Map;
+
 @ContextConfiguration(
-        classes = {ConfigConfiguration.class, AAIConfigTranslator.class, EdgeIngestor.class, EdgeSerializer.class,
-                NodeIngestor.class, SpringContextAware.class, IntrospectionConfig.class, RestBeanConfig.class})
+    classes = {
+        ConfigConfiguration.class,
+        AAIConfigTranslator.class,
+        EdgeIngestor.class,
+        EdgeSerializer.class,
+        NodeIngestor.class,
+        SpringContextAware.class,
+        IntrospectionConfig.class,
+        RestBeanConfig.class,
+        XmlFormatTransformerConfiguration.class
+    }
+)
 @TestPropertySource(
-        properties = {"schema.uri.base.path = /aai", "schema.xsd.maxoccurs = 5000", "schema.translator.list=config",
-                "schema.nodes.location=src/test/resources/onap/oxm",
-                "schema.edges.location=src/test/resources/onap/dbedgerules"})
+    properties = {
+        "schema.uri.base.path = /aai",
+        "schema.xsd.maxoccurs = 5000",
+        "schema.translator.list=config",
+        "schema.nodes.location=src/test/resources/onap/oxm",
+        "schema.edges.location=src/test/resources/onap/dbedgerules"
+    }
+)
 public abstract class AAISetup {
 
     @ClassRule
@@ -88,8 +100,8 @@ public abstract class AAISetup {
 
     protected static final String SERVICE_NAME = "JUNIT";
 
-    @Before
-    public void setupBundleconfig() throws Exception {
+    @BeforeClass
+    public static void setupBundleconfig() throws Exception {
         System.setProperty("AJSC_HOME", ".");
         System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
         System.setProperty("aai.service.name", SERVICE_NAME);

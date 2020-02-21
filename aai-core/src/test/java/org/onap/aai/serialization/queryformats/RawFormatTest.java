@@ -20,10 +20,7 @@
 
 package org.onap.aai.serialization.queryformats;
 
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
-
+import com.google.gson.JsonObject;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.strategy.verification.ReadOnlyStrategy;
 import org.apache.tinkerpop.gremlin.structure.Graph;
@@ -35,7 +32,6 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.onap.aai.AAISetup;
-import org.onap.aai.dbmap.DBConnectionType;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.introspection.ModelType;
@@ -44,12 +40,17 @@ import org.onap.aai.serialization.db.EdgeSerializer;
 import org.onap.aai.serialization.engines.JanusGraphDBEngine;
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
-import org.onap.aai.serialization.queryformats.exceptions.AAIFormatQueryResultFormatNotSupported;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
 import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
 import org.onap.aai.setup.SchemaVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
+
+import java.util.*;
+
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class RawFormatTest extends AAISetup {
@@ -69,8 +70,6 @@ public class RawFormatTest extends AAISetup {
     private SchemaVersion version;
     private Vertex pserver;
     private Vertex complex;
-
-    private DBSerializer serializer;
 
     @Before
     public void setUp() throws Exception {
@@ -100,39 +99,34 @@ public class RawFormatTest extends AAISetup {
 
     @Test
     public void verifyPserverRelatedToHasEdgeLabel()
-            throws AAIFormatVertexException, AAIException, AAIFormatQueryResultFormatNotSupported {
-        assertTrue(rawFormat.createRelationshipObject(pserver).get(0).getAsJsonObject().get("relationship-label")
-                .getAsString().equals("org.onap.relationships.inventory.LocatedIn"));
+            throws AAIFormatVertexException {
+        assertEquals("org.onap.relationships.inventory.LocatedIn", rawFormat.createRelationshipObject(pserver).get(0).getAsJsonObject().get("relationship-label").getAsString());
     }
 
     @Test
     public void verifyPserverRelatedToComplexLabel()
-            throws AAIFormatVertexException, AAIException, AAIFormatQueryResultFormatNotSupported {
-        assertTrue(rawFormat.createRelationshipObject(pserver).get(0).getAsJsonObject().get("node-type").getAsString()
-                .equals("complex"));
+            throws AAIFormatVertexException {
+        assertEquals("complex", rawFormat.createRelationshipObject(pserver).get(0).getAsJsonObject().get("node-type").getAsString());
     }
 
     @Test
     public void verifyComplexRelatedToHasEdgeLabel()
-            throws AAIFormatVertexException, AAIException, AAIFormatQueryResultFormatNotSupported {
-        assertTrue(rawFormat.createRelationshipObject(complex).get(0).getAsJsonObject().get("relationship-label")
-                .getAsString().equals("org.onap.relationships.inventory.LocatedIn"));
+            throws AAIFormatVertexException {
+        assertEquals("org.onap.relationships.inventory.LocatedIn", rawFormat.createRelationshipObject(complex).get(0).getAsJsonObject().get("relationship-label").getAsString());
     }
 
     @Test
     public void verifyComplexRelatedToPserverLabel()
-            throws AAIFormatVertexException, AAIException, AAIFormatQueryResultFormatNotSupported {
-        assertTrue(rawFormat.createRelationshipObject(complex).get(0).getAsJsonObject().get("node-type").getAsString()
-                .equals("pserver"));
+            throws AAIFormatVertexException {
+        assertEquals("pserver", rawFormat.createRelationshipObject(complex).get(0).getAsJsonObject().get("node-type").getAsString());
     }
 
-    public void createLoaderEngineSetup() throws AAIException {
+    private void createLoaderEngineSetup() throws AAIException {
 
         if (loader == null) {
             loader = loaderFactory.createLoaderForVersion(factoryType, version);
-            // loader = LoaderFactory.createLoaderForVersion(factoryType, version);
-            dbEngine = spy(new JanusGraphDBEngine(QueryStyle.TRAVERSAL, DBConnectionType.CACHED, loader));
-            serializer = new DBSerializer(version, dbEngine, factoryType, "Junit");
+            dbEngine = spy(new JanusGraphDBEngine(QueryStyle.TRAVERSAL, loader));
+            DBSerializer serializer = new DBSerializer(version, dbEngine, factoryType, "Junit");
             rawFormat = new RawFormat.Builder(loader, serializer, urlBuilder).build();
 
             TransactionalGraphEngine.Admin spyAdmin = spy(dbEngine.asAdmin());
@@ -141,8 +135,27 @@ public class RawFormatTest extends AAISetup {
             when(dbEngine.asAdmin()).thenReturn(spyAdmin);
 
             when(spyAdmin.getReadOnlyTraversalSource())
-                    .thenReturn(graph.traversal(GraphTraversalSource.build().with(ReadOnlyStrategy.instance())));
+                    .thenReturn(graph.traversal().withStrategies(ReadOnlyStrategy.instance()));
             when(spyAdmin.getTraversalSource()).thenReturn(graph.traversal());
         }
     }
+
+    @Test
+    public void run() throws AAIFormatVertexException {
+        assertNotNull(dbEngine.tx());
+        System.out.println(dbEngine.tx());
+        assertNotNull(graph.traversal());
+        JsonObject json = rawFormat.createPropertiesObject(pserver).get();
+        json.entrySet().forEach((System.out::println));
+        assertTrue(json.has("hostname"));
+        Map<String, List<String>> propMap = new HashMap<>();
+        List<String> selectedProps = new ArrayList<String>( Arrays.asList("'physical-location-id'"));
+        propMap.put("complex",selectedProps);
+        JsonObject json1 = rawFormat.createSelectedPropertiesObject(complex, propMap).get();
+        json1.entrySet().forEach((System.out::println));
+        assertFalse(json1.has("aai-node-type"));
+        assertTrue(json1.has("physical-location-id"));
+    }
+
+
 }

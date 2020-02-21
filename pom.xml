@@ -40,8 +40,10 @@
 		<module>aai-rest</module>
 		<module>aai-schema-ingest</module>
 		<module>aai-annotations</module>
+        <module>aai-aaf-auth</module>
 		<module>aai-core</module>
 		<module>aai-auth</module>
+        <module>aai-els-onap-logging</module>
 		<module>aai-utils</module>
 		<module>aai-schema-abstraction</module>
     </modules>

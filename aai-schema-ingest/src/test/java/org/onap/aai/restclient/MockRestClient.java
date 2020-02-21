@@ -24,7 +24,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 
-import com.att.eelf.configuration.EELFLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -288,7 +289,7 @@ public class MockRestClient extends RestClient {
         return null;
     }
 
-    protected EELFLogger getLogger() {
+    protected Logger getLogger() {
         return null;
     }
 

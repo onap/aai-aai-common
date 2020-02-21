@@ -35,21 +35,6 @@ public class MockProvider {
     @Value("${mock.filename}")
     private String fileName;
 
-    @Autowired
-    private RestClient restClient;
-
-    @Bean
-    public RestClientFactory restClientFactory() {
-
-        return new RestClientFactory() {
-            @Override
-            public RestClient getRestClient(String clientType) {
-                return restClient;
-
-            }
-        };
-    }
-
     @Bean(name = "restClient")
     @ConditionalOnProperty(name = "schema.service.client", havingValue = "mock-no-auth")
     public RestClient getSchemaServiceNoAuthClient() {

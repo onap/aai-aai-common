@@ -20,17 +20,17 @@
 
 package org.onap.aai.introspection.generator;
 
+import org.onap.aai.exceptions.AAIException;
+import org.onap.aai.introspection.*;
+
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.onap.aai.exceptions.AAIException;
-import org.onap.aai.introspection.*;
-
 public class CreateExample implements Wanderer {
 
     private SecureRandom rand = new SecureRandom();
-    private final long range = 100000000L;
+    private static final long range = 100000000L;
     private Loader loader = null;
     private Introspector result = null;
     private String objectName = null;
