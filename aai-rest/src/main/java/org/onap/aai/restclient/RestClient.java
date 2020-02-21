@@ -22,8 +22,8 @@
 
 package org.onap.aai.restclient;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -40,13 +40,13 @@ import org.springframework.web.client.RestTemplate;
 
 public abstract class RestClient {
 
-    private static EELFLogger log = EELFManager.getInstance().getLogger(RestClient.class);
+    private static Logger log = LoggerFactory.getLogger(RestClient.class);
     @Value("${spring.application.name}")
     protected String appName;
 
     /**
      * Execute the given http method against the uri with passed headers
-     * 
+     *
      * @param uri properly encoded, can include query params also properly encoded
      * @param method http method of the request
      * @param headers headers for the request
@@ -58,7 +58,7 @@ public abstract class RestClient {
             throws RestClientException {
 
         HttpEntity<String> httpEntity;
-        log.debug("Headers: {}", headers);
+        log.debug("Request Headers: {}", headers);
         if (body == null) {
             httpEntity = new HttpEntity<>(getHeaders(headers));
         } else {
@@ -79,16 +79,15 @@ public abstract class RestClient {
             log.error("URL syntax error with url {}{}", getBaseUrl(), uri);
             throw new RestClientException(e.getMessage());
         }
-        log.debug("METHOD={},URL={},HEADERS={}", method, url, httpEntity);
-
+        log.debug("METHOD={}, URL={}, BODY={}", method, url, httpEntity.getBody());
         ResponseEntity responseEntity = getRestTemplate().exchange(url, method, httpEntity, String.class);
-        log.debug("RESPONSE={}", responseEntity);
+        log.trace("RESPONSE={}", responseEntity);
         return responseEntity;
     }
 
     /**
      * Execute the given http method against the uri with passed headers
-     * 
+     *
      * @param uri properly encoded, can include query params also properly encoded
      * @param method http method of the request
      * @param headers headers for the request
@@ -103,7 +102,7 @@ public abstract class RestClient {
 
     /**
      * Execute the given http method against the uri with passed headers
-     * 
+     *
      * @param uri properly encoded, can include query params also properly encoded
      * @param method http method of the request
      * @param headers headers for the request
@@ -117,7 +116,7 @@ public abstract class RestClient {
 
     /**
      * Execute the given http method against the uri with passed headers
-     * 
+     *
      * @param uri properly encoded, can include query params also properly encoded
      * @param method http method of the request
      * @param headers headers for the request

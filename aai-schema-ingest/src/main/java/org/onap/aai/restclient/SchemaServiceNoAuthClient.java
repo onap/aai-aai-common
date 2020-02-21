@@ -20,33 +20,23 @@
 
 package org.onap.aai.restclient;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.util.MultiValueMap;
 
 import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.annotation.PostConstruct;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
-import org.springframework.util.MultiValueMap;
-
-@Component(value = "no-auth-service-rest-client")
 public class SchemaServiceNoAuthClient extends NoAuthRestClient {
 
-    private static EELFLogger logger = EELFManager.getInstance().getLogger(SchemaServiceNoAuthClient.class);
+    private static Logger logger = LoggerFactory.getLogger(SchemaServiceNoAuthClient.class);
 
     @Value("${schema.service.base.url}")
     private String baseUrl;
-
-    @PostConstruct
-    public void init() throws Exception {
-        super.init();
-    }
 
     @Override
     public String getBaseUrl() {

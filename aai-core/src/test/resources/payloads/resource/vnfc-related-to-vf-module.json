@@ -1,0 +1,19 @@
+{
+    "vnfc-name": "test-vnfc11",
+    "nfc-naming-code": "testname",
+    "nfc-function": "test-value",
+    "relationship-list": {
+        "relationship": [{
+            "related-to": "vf-module",
+            "relationship-data": [{
+                "relationship-key": "vnf.vnf-id",
+                "relationship-value": "test-vnf11"
+            }, {
+                "relationship-key": "vf-module.vf-module-id",
+                "relationship-value": "vf-module-test11"
+            }
+            ]
+        }
+        ]
+    }
+}

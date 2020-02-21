@@ -30,7 +30,6 @@ import org.apache.tinkerpop.gremlin.process.traversal.Step;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.onap.aai.edges.enums.EdgeType;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
@@ -47,6 +46,7 @@ public class TraversalQuery<E> extends GraphTraversalBuilder<E> {
      *
      * @param loader the loader
      */
+
     public TraversalQuery(Loader loader, GraphTraversalSource source) {
         super(loader, source);
         this.factory = new TraversalStrategy(this.loader, this);
@@ -122,6 +122,16 @@ public class TraversalQuery<E> extends GraphTraversalBuilder<E> {
     @Override
     public QueryBuilder<E> newInstance() {
         return new TraversalQuery<>(loader, source);
+    }
+
+    @Override
+    public QueryBuilder<E> fold() {
+        return this;
+    }
+
+    @Override
+    public QueryBuilder<E> id() {
+        return this;
     }
 
     @Override

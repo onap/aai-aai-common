@@ -1,0 +1,12 @@
+{
+    "hostname": "example-hostname-val-85598",
+    "pserver-name2": "example-pserver-name2-val-93509",
+    "p-interfaces": {
+        "p-interface": [
+            {
+                "interface-name": "p-interface-1",
+                "in-maint": false
+            }
+        ]
+    }
+}

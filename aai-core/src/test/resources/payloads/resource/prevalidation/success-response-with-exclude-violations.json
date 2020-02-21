@@ -1,0 +1,12 @@
+{
+    "validationId": "52245aa2-72a8-440d-87e2-570272aa4a83b",
+    "validationTimestamp": "20191201T211503Z",
+    "entityId": {
+        "vnf-id": "vnf-jenkins-15903-3"
+    },
+    "entityName": "ormfl405me3",
+    "entityType": "generic-vnf",
+    "entityLink": "network/generic-vnfs/generic-vnf/vnf-jenkins-15903-3",
+    "resourceVersion": "1567815933280",
+    "requestor": "JUNIT"
+}

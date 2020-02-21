@@ -23,8 +23,8 @@ package org.onap.aai.edges;
 import static com.jayway.jsonpath.Criteria.where;
 import static com.jayway.jsonpath.Filter.filter;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -60,7 +60,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class EdgeIngestor {
-    private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(EdgeIngestor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(EdgeIngestor.class);
     private Map<SchemaVersion, List<DocumentContext>> versionJsonFilesMap = new TreeMap<>();
     private static final String READ_START = "$.rules.[?]";
     private static final String READ_ALL_START = "$.rules.*";

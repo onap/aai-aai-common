@@ -28,13 +28,20 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.codehaus.groovy.ast.ClassHelper;
 import org.codehaus.groovy.ast.expr.ClassExpression;
 import org.codehaus.groovy.ast.expr.PropertyExpression;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.customizers.ASTTransformationCustomizer;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
+import org.onap.aai.config.SpringContextAware;
+import org.onap.aai.introspection.Loader;
+import org.onap.aai.introspection.LoaderFactory;
+import org.onap.aai.introspection.ModelType;
+import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
+import org.onap.aai.setup.SchemaVersions;
 
 public abstract class AAIAbstractGroovyShell {
 
@@ -76,4 +83,20 @@ public abstract class AAIAbstractGroovyShell {
      * @return result of graph traversal
      */
     public abstract GraphTraversal<?, ?> executeTraversal(String traversal, Map<String, Object> params);
+
+    /**
+     *
+     * @param engine
+     * @param traversal
+     * @param params
+     * @return result of graph traversal
+     */
+    public abstract String executeTraversal(TransactionalGraphEngine engine, String traversal,
+                                            Map<String, Object> params, QueryStyle style, GraphTraversalSource source);
+
+    protected Loader getLoader(){
+        SchemaVersions schemaVersions = (SchemaVersions) SpringContextAware.getBean("schemaVersions");
+        return SpringContextAware.getBean(LoaderFactory.class).createLoaderForVersion(ModelType.MOXY,
+            schemaVersions.getDefaultVersion());
+    }
 }

@@ -44,7 +44,7 @@ public class SchemaServiceConfiguration {
         return schemaVersionsBean().getSchemaVersions();
     }
 
-    @Bean(name = "schemaVersions2")
+    @Bean(name = "schemaVersions")
     public SchemaVersions schemaVersions() {
         return schemaServiceVersions();
     }

@@ -20,8 +20,8 @@
 
 package org.onap.aai.parsers.relationship;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -57,7 +57,7 @@ import org.springframework.context.ApplicationContext;
  */
 public class RelationshipToURI {
 
-    private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(RelationshipToURI.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RelationshipToURI.class);
 
     private Introspector relationship = null;
 

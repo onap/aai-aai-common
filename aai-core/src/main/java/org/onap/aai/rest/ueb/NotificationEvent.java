@@ -63,10 +63,13 @@ public class NotificationEvent {
 
         StoreNotificationEvent sne = new StoreNotificationEvent(transactionId, sourceOfTruth);
 
-        sne.storeEvent(loader, eventHeader, obj);
+        sne.storeEventAndSendToJms(loader, eventHeader, obj);
 
     }
 
+    public String getNotificationEvent() throws AAIException {
+        return new StoreNotificationEvent(transactionId, sourceOfTruth).storeEventOnly(loader, eventHeader, obj);
+    }
     /**
      * Gets the notification version.
      *

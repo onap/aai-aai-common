@@ -20,8 +20,8 @@
 
 package org.onap.aai.setup;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -40,7 +40,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * 
  */
 public abstract class ConfigTranslator extends Translator {
-    private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(ConfigTranslator.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConfigTranslator.class);
 
     protected SchemaLocationsBean bean;
 

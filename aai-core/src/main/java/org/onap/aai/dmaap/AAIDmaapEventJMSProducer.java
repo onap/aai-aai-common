@@ -50,4 +50,12 @@ public class AAIDmaapEventJMSProducer implements MessageProducer {
             ccf.destroy();
         }
     }
+
+    public void sendMessageToDefaultDestination(String msg) {
+        if (jmsTemplate != null) {
+            jmsTemplate.convertAndSend(msg);
+            CachingConnectionFactory ccf = (CachingConnectionFactory) this.jmsTemplate.getConnectionFactory();
+            ccf.destroy();
+        }
+    }
 }

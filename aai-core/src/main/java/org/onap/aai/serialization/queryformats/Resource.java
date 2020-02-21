@@ -20,14 +20,17 @@
 
 package org.onap.aai.serialization.queryformats;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Stream;
 
+import org.apache.tinkerpop.gremlin.process.traversal.step.util.BulkSet;
+import org.apache.tinkerpop.gremlin.process.traversal.step.util.Tree;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.exceptions.AAIException;
@@ -37,8 +40,11 @@ import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.onap.aai.serialization.db.DBSerializer;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
 import org.onap.aai.serialization.queryformats.params.Depth;
+import org.onap.aai.serialization.queryformats.params.AsTree;
 import org.onap.aai.serialization.queryformats.params.NodesOnly;
 import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
+
+import javax.ws.rs.core.MultivaluedMap;
 
 public class Resource extends MultiFormatMapper {
 
@@ -49,8 +55,9 @@ public class Resource extends MultiFormatMapper {
     private final boolean includeUrl;
     private final boolean nodesOnly;
     private final int depth;
+    private final boolean isSkipRelatedTo;
 
-    private Resource(Builder builder) {
+    public Resource(Builder builder) {
         this.parser = new JsonParser();
         this.loader = builder.getLoader();
         this.serializer = builder.getSerializer();
@@ -58,6 +65,54 @@ public class Resource extends MultiFormatMapper {
         this.includeUrl = builder.isIncludeUrl();
         this.nodesOnly = builder.isNodesOnly();
         this.depth = builder.getDepth();
+        this.isSkipRelatedTo = builder.isSkipRelatedTo();
+        this.isTree = builder.isTree();
+    }
+
+    @Override
+    protected Optional<JsonObject> getRelatedNodesFromTree(Tree<?> tree) throws AAIFormatVertexException {
+        if (tree.isEmpty()) {
+            return Optional.of(new JsonObject());
+        }
+        JsonObject t = new JsonObject();
+        JsonArray ja = this.getRelatedNodesArray(tree, "related-nodes");
+        if (ja.size() > 0) {
+            t.add("results", ja);
+            return Optional.of(t);
+        }
+
+        return Optional.empty();
+    }
+
+    protected JsonArray getRelatedNodesArray(Tree<?> tree, String nodeIdentifier) throws AAIFormatVertexException {
+        JsonArray nodes = new JsonArray();
+        if (tree.isEmpty()) {
+            return nodes;
+        }
+        for (Map.Entry<?, ? extends Tree<?>> entry : tree.entrySet()) {
+            JsonObject me = new JsonObject();
+            if (entry.getKey() instanceof Vertex) {
+                Optional<JsonObject> obj = null;
+                if (entry.getKey() != null) {
+                    obj = this.getJsonFromVertex((Vertex) entry.getKey());
+                }
+                if (obj != null && obj.isPresent()) {
+                    me = obj.get();
+                } else {
+                    continue;
+                }
+            }
+            JsonArray ja = this.getRelatedNodesArray(entry.getValue(), nodeIdentifier);
+            if (ja.size() > 0) {
+                try {
+                    me.entrySet().stream().findFirst().get().getValue().getAsJsonObject().add(nodeIdentifier, ja);
+                } catch(Exception e) {
+                    throw new AAIFormatVertexException("Failed to add related-nodes array: " + e.getMessage(), e);
+                }
+            }
+            nodes.add(me);
+        }
+        return nodes;
     }
 
     @Override
@@ -77,7 +132,15 @@ public class Resource extends MultiFormatMapper {
         return Optional.of(json);
     }
 
+    @Override
+    protected Optional<JsonObject> getJsonFromVertex(Vertex input, Map<String, List<String>> properties) throws AAIFormatVertexException {
+        return Optional.empty();
+    }
+
     protected Optional<JsonObject> vertexToJsonObject(Vertex v) throws AAIFormatVertexException {
+        if (v == null) {
+            return Optional.empty();
+        }
         try {
             final Introspector obj =
                     getLoader().introspectorFromName(v.<String>property(AAIProperties.NODE_TYPE).orElse(null));
@@ -87,7 +150,7 @@ public class Resource extends MultiFormatMapper {
             wrapper.add(v);
 
             try {
-                getSerializer().dbToObject(wrapper, obj, this.depth, this.nodesOnly, "false");
+                getSerializer().dbToObject(wrapper, obj, this.depth, this.nodesOnly, "false", isSkipRelatedTo);
             } catch (AAIException | UnsupportedEncodingException e) {
                 throw new AAIFormatVertexException(
                         "Failed to format vertex - error while serializing: " + e.getMessage(), e);
@@ -118,7 +181,7 @@ public class Resource extends MultiFormatMapper {
         return parser;
     }
 
-    public static class Builder implements NodesOnly<Builder>, Depth<Builder> {
+    public static class Builder implements NodesOnly<Builder>, Depth<Builder>, AsTree<Builder> {
 
         private final Loader loader;
         private final DBSerializer serializer;
@@ -126,11 +189,20 @@ public class Resource extends MultiFormatMapper {
         private boolean includeUrl = false;
         private boolean nodesOnly = false;
         private int depth = 1;
+        private MultivaluedMap<String, String> params;
+        private boolean tree = false;
 
         public Builder(Loader loader, DBSerializer serializer, UrlBuilder urlBuilder) {
             this.loader = loader;
             this.serializer = serializer;
             this.urlBuilder = urlBuilder;
+        }
+
+        public Builder(Loader loader, DBSerializer serializer, UrlBuilder urlBuilder, MultivaluedMap<String, String> params) {
+            this.loader = loader;
+            this.serializer = serializer;
+            this.urlBuilder = urlBuilder;
+            this.params = params;
         }
 
         protected Loader getLoader() {
@@ -144,6 +216,31 @@ public class Resource extends MultiFormatMapper {
         protected UrlBuilder getUrlBuilder() {
             return this.urlBuilder;
         }
+
+        protected MultivaluedMap<String, String> getParams() { return this.params; }
+
+        public boolean isSkipRelatedTo() {
+            if (params != null) {
+                boolean isSkipRelatedTo = true;
+                if (params.containsKey("skip-related-to")) {
+                    String skipRelatedTo = params.getFirst("skip-related-to");
+                    isSkipRelatedTo = !(skipRelatedTo != null && skipRelatedTo.equals("false"));
+                } else {
+                    // if skip-related-to param is missing, then default it to false;
+                    isSkipRelatedTo = false;
+                }
+                return isSkipRelatedTo;
+            }
+            return true;
+        }
+
+        protected boolean isTree() { return this.tree; }
+
+        public Builder isTree(Boolean tree) {
+            this.tree = tree;
+            return this;
+        }
+
 
         public Builder includeUrl() {
             this.includeUrl = true;

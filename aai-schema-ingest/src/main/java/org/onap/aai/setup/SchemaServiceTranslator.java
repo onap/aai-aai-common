@@ -20,8 +20,8 @@
 
 package org.onap.aai.setup;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.*;
@@ -29,8 +29,8 @@ import java.util.*;
 import javax.ws.rs.HttpMethod;
 
 import org.onap.aai.restclient.RestClient;
-import org.onap.aai.restclient.RestClientFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -45,7 +45,7 @@ import org.springframework.http.ResponseEntity;
  */
 public class SchemaServiceTranslator extends Translator {
 
-    private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(SchemaServiceTranslator.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SchemaServiceTranslator.class);
 
     private static final String SchemaServiceClientType = "schema.service";
 
@@ -55,8 +55,9 @@ public class SchemaServiceTranslator extends Translator {
     @Value("${schema.service.edges.endpoint}")
     private String edgeSchemaUri;
 
+    @Qualifier("restClient")
     @Autowired
-    private RestClientFactory restClientFactory;
+    private RestClient restClient;
 
     public SchemaServiceTranslator(SchemaVersions schemaVersions) {
         super(schemaVersions);
@@ -64,7 +65,7 @@ public class SchemaServiceTranslator extends Translator {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.onap.aai.setup.ConfigTranslator#getNodeFiles()
      */
 
@@ -78,7 +79,6 @@ public class SchemaServiceTranslator extends Translator {
 
         headersMap.put(HttpHeaders.ACCEPT, MediaType.APPLICATION_XML.toString());
         headersMap.put(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_XML.toString());
-        RestClient restClient = restClientFactory.getRestClient(SchemaServiceClientType);
         ResponseEntity<Resource> schemaResponse = restClient.getGetResource(content, uri, headersMap);
         verifySchemaServiceResponse(schemaResponse.getStatusCode());
         LOGGER.debug("SchemaResponse Status code" + schemaResponse.getStatusCode());
@@ -95,8 +95,6 @@ public class SchemaServiceTranslator extends Translator {
         String content = "";
         String uri = edgeSchemaUri + version.toString();
         Map<String, String> headersMap = new HashMap<>();
-
-        RestClient restClient = restClientFactory.getRestClient(SchemaServiceClientType);
 
         ResponseEntity<String> schemaResponse = restClient.getGetRequest(content, uri, headersMap);
         verifySchemaServiceResponse(schemaResponse.getStatusCode());

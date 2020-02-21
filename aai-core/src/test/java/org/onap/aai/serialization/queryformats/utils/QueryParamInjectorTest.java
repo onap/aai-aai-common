@@ -48,11 +48,11 @@ public class QueryParamInjectorTest {
         MockitoAnnotations.initMocks(this);
         QueryParamInjector injector = QueryParamInjector.getInstance();
 
-        Builder b = new Builder(loader, serializer, urlBuilder);
         MultivaluedMap<String, String> params = new MultivaluedHashMap<>();
         params.putSingle("nodesOnly", "true");
         params.putSingle("depth", "10");
         params.putSingle("invalid", "1000");
+        Builder b = new Builder(loader, serializer, urlBuilder, params);
         injector.injectParams(b, params);
 
         assertEquals("is nodes only", true, b.isNodesOnly());

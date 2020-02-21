@@ -20,16 +20,18 @@
 
 package org.onap.aai.introspection;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.onap.aai.AAISetup;
 
+import java.util.HashSet;
+import java.util.Set;
+
+@Ignore("Not a used/flushed out feature")
 public class JSONStrategyTest extends AAISetup {
     private JSONStrategy jsonStrategy;
     private JSONStrategy jsonStrategyContainer;

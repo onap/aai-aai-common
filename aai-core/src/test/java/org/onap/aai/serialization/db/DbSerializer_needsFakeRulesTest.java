@@ -20,17 +20,10 @@
 
 package org.onap.aai.serialization.db;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.*;
-
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
-import org.apache.tinkerpop.gremlin.structure.*;
+import org.apache.tinkerpop.gremlin.structure.Direction;
+import org.apache.tinkerpop.gremlin.structure.Graph;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.janusgraph.core.JanusGraphFactory;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
@@ -38,18 +31,20 @@ import org.junit.runner.RunWith;
 import org.onap.aai.config.ConfigConfiguration;
 import org.onap.aai.config.IntrospectionConfig;
 import org.onap.aai.config.SpringContextAware;
+import org.onap.aai.config.XmlFormatTransformerConfiguration;
 import org.onap.aai.db.props.AAIProperties;
-import org.onap.aai.dbmap.DBConnectionType;
 import org.onap.aai.edges.EdgeIngestor;
 import org.onap.aai.exceptions.AAIException;
-import org.onap.aai.introspection.*;
+import org.onap.aai.introspection.Introspector;
+import org.onap.aai.introspection.Loader;
+import org.onap.aai.introspection.LoaderFactory;
+import org.onap.aai.introspection.ModelType;
 import org.onap.aai.nodes.NodeIngestor;
 import org.onap.aai.parsers.query.QueryParser;
 import org.onap.aai.serialization.engines.JanusGraphDBEngine;
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 import org.onap.aai.serialization.queryformats.QueryFormatTestHelper;
-import org.onap.aai.setup.SchemaLocationsBean;
 import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.setup.SchemaVersions;
 import org.onap.aai.util.AAIConstants;
@@ -58,11 +53,23 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
+
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
+
 //@RunWith(value = Parameterized.class) TODO replace this functionality
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(
         classes = {ConfigConfiguration.class, AAICoreFakeEdgesConfigTranslator.class, NodeIngestor.class,
-                EdgeIngestor.class, EdgeSerializer.class, SpringContextAware.class, IntrospectionConfig.class})
+                EdgeIngestor.class, EdgeSerializer.class, SpringContextAware.class, IntrospectionConfig.class, XmlFormatTransformerConfiguration.class})
 @TestPropertySource(
         properties = {"schema.translator.list = config", "schema.nodes.location=src/test/resources/onap/oxm",
                 "schema.edges.location=src/test/resources/onap/dbedgerules"})
@@ -84,7 +91,6 @@ public class DbSerializer_needsFakeRulesTest {
 
     private SchemaVersion version;
     private final ModelType introspectorFactoryType = ModelType.MOXY;
-    private final DBConnectionType type = DBConnectionType.REALTIME;
     private Loader loader;
     private TransactionalGraphEngine dbEngine;
     private TransactionalGraphEngine engine; // for tests that aren't mocking the engine
@@ -92,18 +98,7 @@ public class DbSerializer_needsFakeRulesTest {
     TransactionalGraphEngine spy;
     TransactionalGraphEngine.Admin adminSpy;
 
-    // @Parameterized.Parameter(value = 0)
     public QueryStyle queryStyle = QueryStyle.TRAVERSAL;
-
-    /*
-     * @Parameterized.Parameters(name = "QueryStyle.{0}")
-     * public static Collection<Object[]> data() {
-     * return Arrays.asList(new Object[][]{
-     * {QueryStyle.TRAVERSAL},
-     * {QueryStyle.TRAVERSAL_URI}
-     * });
-     * }
-     */
 
     @BeforeClass
     public static void init() throws Exception {
@@ -117,15 +112,14 @@ public class DbSerializer_needsFakeRulesTest {
 
     @Before
     public void setup() throws Exception {
-        // createGraph();
         version = schemaVersions.getDefaultVersion();
         loader = SpringContextAware.getBean(LoaderFactory.class).createLoaderForVersion(introspectorFactoryType,
                 version);
-        dbEngine = new JanusGraphDBEngine(queryStyle, type, loader);
+        dbEngine = new JanusGraphDBEngine(queryStyle, loader);
         spy = spy(dbEngine);
         adminSpy = spy(dbEngine.asAdmin());
 
-        engine = new JanusGraphDBEngine(queryStyle, type, loader);
+        engine = new JanusGraphDBEngine(queryStyle, loader);
         dbser = new DBSerializer(version, engine, introspectorFactoryType, "AAI-TEST");
     }
 
@@ -145,16 +139,14 @@ public class DbSerializer_needsFakeRulesTest {
          * and edges
          */
 
-        Vertex l3interipv4addresslist_1 = graph.traversal().addV("aai-node-type", "l3-interface-ipv4-address-list",
-                "l3-interface-ipv4-address", "l3-interface-ipv4-address-1").next();
-        Vertex subnet_2 = graph.traversal().addV("aai-node-type", "subnet", "subnet-id", "subnet-id-2").next();
-        Vertex l3interipv6addresslist_3 = graph.traversal().addV("aai-node-type", "l3-interface-ipv6-address-list",
-                "l3-interface-ipv6-address", "l3-interface-ipv6-address-3").next();
-        Vertex subnet_4 = graph.traversal().addV("aai-node-type", "subnet", "subnet-id", "subnet-id-4").next();
-        Vertex subnet_5 = graph.traversal().addV("aai-node-type", "subnet", "subnet-id", "subnet-id-5").next();
-        Vertex l3network_6 = graph.traversal()
-                .addV("aai-node-type", "l3-network", "network-id", "network-id-6", "network-name", "network-name-6")
-                .next();
+        Vertex l3interipv4addresslist_1 = graph.addVertex("aai-node-type", "l3-interface-ipv4-address-list",
+                "l3-interface-ipv4-address", "l3-interface-ipv4-address-1");
+        Vertex subnet_2 = graph.addVertex("aai-node-type", "subnet", "subnet-id", "subnet-id-2");
+        Vertex l3interipv6addresslist_3 = graph.addVertex("aai-node-type", "l3-interface-ipv6-address-list",
+                "l3-interface-ipv6-address", "l3-interface-ipv6-address-3");
+        Vertex subnet_4 = graph.addVertex("aai-node-type", "subnet", "subnet-id", "subnet-id-4");
+        Vertex subnet_5 = graph.addVertex("aai-node-type", "subnet", "subnet-id", "subnet-id-5");
+        Vertex l3network_6 = graph.addVertex("aai-node-type", "l3-network", "network-id", "network-id-6", "network-name", "network-name-6");
 
         GraphTraversalSource g = graph.traversal();
         edgeSer.addEdge(g, l3interipv4addresslist_1, subnet_2);
@@ -190,7 +182,13 @@ public class DbSerializer_needsFakeRulesTest {
         engine.startTransaction();
 
         engine.tx().addVertex("aai-node-type", "vnfc", "vnfc-name", "vnfc-" + testName, AAIProperties.AAI_URI,
-                "/network/vnfcs/vnfc/vnfc-" + testName);
+                "/network/vnfcs/vnfc/vnfc-" + testName,
+            AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
+            AAIProperties.CREATED_TS, 123,
+            AAIProperties.SOURCE_OF_TRUTH, "sot",
+            AAIProperties.RESOURCE_VERSION, "123",
+            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
+            AAIProperties.LAST_MOD_TS, 333);
 
         Introspector relationship = loader.introspectorFromName("relationship");
         relationship.setValue("related-to", "vnfc");
@@ -222,9 +220,19 @@ public class DbSerializer_needsFakeRulesTest {
         engine.startTransaction();
 
         Vertex gvnf = engine.tx().addVertex("aai-node-type", "generic-vnf", "vnf-id", "myvnf", "aai-uri",
-                "/network/generic-vnfs/generic-vnf/myvnf");
+                "/network/generic-vnfs/generic-vnf/myvnf", "aai-uuid", "a",
+            AAIProperties.CREATED_TS, 123,
+            AAIProperties.SOURCE_OF_TRUTH, "sot",
+            AAIProperties.RESOURCE_VERSION, "123",
+            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
+            AAIProperties.LAST_MOD_TS, 333);
         Vertex vnfc = engine.tx().addVertex("aai-node-type", "vnfc", "vnfc-name", "a-name", "aai-uri",
-                "/network/vnfcs/vnfc/a-name");
+                "/network/vnfcs/vnfc/a-name", "aai-uuid", "b",
+            AAIProperties.CREATED_TS, 123,
+            AAIProperties.SOURCE_OF_TRUTH, "sot",
+            AAIProperties.RESOURCE_VERSION, "123",
+            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
+            AAIProperties.LAST_MOD_TS, 333);
 
         // sunny day case
         Introspector relData = loader.introspectorFromName("relationship-data");
@@ -236,7 +244,7 @@ public class DbSerializer_needsFakeRulesTest {
         relationship.setValue("relationship-data", relData);
         relationship.setValue("relationship-label", "over-uses");
 
-        assertTrue(localDbser.createEdge(relationship, gvnf));
+        assertNotNull(dbser.createEdge(relationship, gvnf));
         assertTrue(engine.tx().traversal().V(gvnf).both("over-uses").hasNext());
         assertTrue(engine.tx().traversal().V(vnfc).both("over-uses").hasNext());
 
@@ -264,7 +272,7 @@ public class DbSerializer_needsFakeRulesTest {
         relationship.setValue("relationship-data", relData);
         relationship.setValue("relationship-label", "re-uses");
 
-        assertTrue(localDbser.createEdge(relationship, gvnf));
+        assertNotNull(dbser.createEdge(relationship, gvnf));
         assertTrue(engine.tx().traversal().V(gvnf).both("re-uses").hasNext());
         assertTrue(engine.tx().traversal().V(vnfc).both("re-uses").hasNext());
         assertEquals("Number of edges between vertexes is 1", Long.valueOf(1),
@@ -280,9 +288,21 @@ public class DbSerializer_needsFakeRulesTest {
         engine.startTransaction();
 
         Vertex gvnf = engine.tx().addVertex("aai-node-type", "generic-vnf", "vnf-id", "myvnf", "aai-uri",
-                "/network/generic-vnfs/generic-vnf/myvnf");
+                "/network/generic-vnfs/generic-vnf/myvnf",
+            AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
+            AAIProperties.CREATED_TS, 123,
+            AAIProperties.SOURCE_OF_TRUTH, "sot",
+            AAIProperties.RESOURCE_VERSION, "123",
+            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
+            AAIProperties.LAST_MOD_TS, 333);
         Vertex vnfc = engine.tx().addVertex("aai-node-type", "vnfc", "vnfc-name", "a-name", "aai-uri",
-                "/network/vnfcs/vnfc/a-name");
+                "/network/vnfcs/vnfc/a-name",
+            AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
+            AAIProperties.CREATED_TS, 123,
+            AAIProperties.SOURCE_OF_TRUTH, "sot",
+            AAIProperties.RESOURCE_VERSION, "123",
+            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
+            AAIProperties.LAST_MOD_TS, 333);
         edgeSer.addEdge(graph.traversal(), gvnf, vnfc, "uses");
 
         Introspector relData = loader.introspectorFromName("relationship-data");
@@ -297,7 +317,7 @@ public class DbSerializer_needsFakeRulesTest {
 
         relationship.setValue("relationship-label", "re-uses");
 
-        assertTrue(localDbser.createEdge(relationship, gvnf));
+        assertNotNull(dbser.createEdge(relationship, gvnf));
         assertTrue(engine.tx().traversal().V(gvnf).both("re-uses").hasNext());
         assertTrue(engine.tx().traversal().V(vnfc).both("re-uses").hasNext());
         assertTrue(engine.tx().traversal().V(gvnf).both("uses").hasNext());
@@ -317,9 +337,21 @@ public class DbSerializer_needsFakeRulesTest {
         engine.startTransaction();
 
         Vertex gvnf = engine.tx().addVertex("aai-node-type", "generic-vnf", "vnf-id", "myvnf", "aai-uri",
-                "/network/generic-vnfs/generic-vnf/myvnf");
+                "/network/generic-vnfs/generic-vnf/myvnf",
+            AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
+            AAIProperties.CREATED_TS, 123,
+            AAIProperties.SOURCE_OF_TRUTH, "sot",
+            AAIProperties.RESOURCE_VERSION, "123",
+            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
+            AAIProperties.LAST_MOD_TS, 333);
         Vertex vnfc = engine.tx().addVertex("aai-node-type", "vnfc", "vnfc-name", "a-name", "aai-uri",
-                "/network/vnfcs/vnfc/a-name");
+                "/network/vnfcs/vnfc/a-name",
+            AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
+            AAIProperties.CREATED_TS, 123,
+            AAIProperties.SOURCE_OF_TRUTH, "sot",
+            AAIProperties.RESOURCE_VERSION, "123",
+            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
+            AAIProperties.LAST_MOD_TS, 333);
 
         Introspector relData = loader.introspectorFromName("relationship-data");
         relData.setValue("relationship-key", "vnfc.vnfc-name");
@@ -330,7 +362,7 @@ public class DbSerializer_needsFakeRulesTest {
         relationship.setValue("relationship-data", relData);
         localDbser.createEdge(relationship, gvnf);
 
-        assertTrue(localDbser.createEdge(relationship, gvnf));
+        assertNotNull(dbser.createEdge(relationship, gvnf));
         assertTrue(engine.tx().traversal().V(gvnf).both("uses").hasNext());
         assertTrue(engine.tx().traversal().V(vnfc).both("uses").hasNext());
         assertEquals("Number of edges between vertexes is 1", Long.valueOf(1),
@@ -348,9 +380,21 @@ public class DbSerializer_needsFakeRulesTest {
         engine.startTransaction();
 
         Vertex gvnf = engine.tx().addVertex("aai-node-type", "generic-vnf", "vnf-id", "myvnf", "aai-uri",
-                "/network/generic-vnfs/generic-vnf/myvnf");
+                "/network/generic-vnfs/generic-vnf/myvnf",
+            AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
+            AAIProperties.CREATED_TS, 123,
+            AAIProperties.SOURCE_OF_TRUTH, "sot",
+            AAIProperties.RESOURCE_VERSION, "123",
+            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
+            AAIProperties.LAST_MOD_TS, 333);
         Vertex vnfc = engine.tx().addVertex("aai-node-type", "vnfc", "vnfc-name", "a-name", "aai-uri",
-                "/network/vnfcs/vnfc/a-name");
+                "/network/vnfcs/vnfc/a-name",
+            AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
+            AAIProperties.CREATED_TS, 123,
+            AAIProperties.SOURCE_OF_TRUTH, "sot",
+            AAIProperties.RESOURCE_VERSION, "123",
+            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
+            AAIProperties.LAST_MOD_TS, 333);
         edgeSer.addEdge(graph.traversal(), gvnf, vnfc, "uses");
         edgeSer.addEdge(graph.traversal(), gvnf, vnfc, "re-uses");
         edgeSer.addEdge(graph.traversal(), gvnf, vnfc, "over-uses");
@@ -363,7 +407,7 @@ public class DbSerializer_needsFakeRulesTest {
         relationship.setValue("related-link", "/network/vnfcs/vnfc/a-name");
         relationship.setValue("relationship-data", relData);
 
-        assertTrue(localDbser.deleteEdge(relationship, gvnf));
+        assertTrue(localDbser.deleteEdge(relationship, gvnf).isPresent());
         assertFalse("generic-vnf has no edge uses", engine.tx().traversal().V(gvnf).both("uses").hasNext());
         assertFalse("vnfc has no edge uses", engine.tx().traversal().V(vnfc).both("uses").hasNext());
         assertTrue("generic-vnf has edge re-uses", engine.tx().traversal().V(gvnf).both("re-uses").hasNext());
@@ -386,9 +430,21 @@ public class DbSerializer_needsFakeRulesTest {
         engine.startTransaction();
 
         Vertex gvnf = engine.tx().addVertex("aai-node-type", "generic-vnf", "vnf-id", "myvnf", "aai-uri",
-                "/network/generic-vnfs/generic-vnf/myvnf");
+                "/network/generic-vnfs/generic-vnf/myvnf",
+            AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
+            AAIProperties.CREATED_TS, 123,
+            AAIProperties.SOURCE_OF_TRUTH, "sot",
+            AAIProperties.RESOURCE_VERSION, "123",
+            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
+            AAIProperties.LAST_MOD_TS, 333);
         Vertex vnfc = engine.tx().addVertex("aai-node-type", "vnfc", "vnfc-name", "a-name", "aai-uri",
-                "/network/vnfcs/vnfc/a-name");
+                "/network/vnfcs/vnfc/a-name",
+            AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
+            AAIProperties.CREATED_TS, 123,
+            AAIProperties.SOURCE_OF_TRUTH, "sot",
+            AAIProperties.RESOURCE_VERSION, "123",
+            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
+            AAIProperties.LAST_MOD_TS, 333);
         edgeSer.addEdge(graph.traversal(), gvnf, vnfc, "uses");
         edgeSer.addEdge(graph.traversal(), gvnf, vnfc, "re-uses");
         edgeSer.addEdge(graph.traversal(), gvnf, vnfc, "over-uses");
@@ -402,7 +458,7 @@ public class DbSerializer_needsFakeRulesTest {
         relationship.setValue("relationship-data", relData);
         relationship.setValue("relationship-label", "re-uses");
 
-        assertTrue(localDbser.deleteEdge(relationship, gvnf));
+        assertTrue(localDbser.deleteEdge(relationship, gvnf).isPresent());
         assertTrue("generic-vnf has edge uses", engine.tx().traversal().V(gvnf).both("uses").hasNext());
         assertTrue("vnfc has edge uses", engine.tx().traversal().V(vnfc).both("uses").hasNext());
         assertFalse("generic-vnf has no edge re-uses", engine.tx().traversal().V(gvnf).both("re-uses").hasNext());
@@ -456,7 +512,12 @@ public class DbSerializer_needsFakeRulesTest {
 
         engine.startTransaction();
 
-        engine.tx().addVertex("aai-node-type", "vnfc", "vnfc-name", "a-name", "aai-uri", "/network/vnfcs/vnfc/a-name");
+        engine.tx().addVertex("aai-node-type", "vnfc", "vnfc-name", "a-name", "aai-uri", "/network/vnfcs/vnfc/a-name", "aai-uuid", "b",
+            AAIProperties.CREATED_TS, 123,
+            AAIProperties.SOURCE_OF_TRUTH, "sot",
+            AAIProperties.RESOURCE_VERSION, "123",
+            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
+            AAIProperties.LAST_MOD_TS, 333);
 
         Introspector relationship = loader.introspectorFromName("relationship");
         relationship.setValue("related-to", "vnfc");
@@ -505,7 +566,13 @@ public class DbSerializer_needsFakeRulesTest {
 
         engine.startTransaction();
 
-        engine.tx().addVertex("aai-node-type", "vnfc", "vnfc-name", "a-name", "aai-uri", "/network/vnfcs/vnfc/a-name");
+        engine.tx().addVertex("aai-node-type", "vnfc", "vnfc-name", "a-name", "aai-uri", "/network/vnfcs/vnfc/a-name",
+            AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
+            AAIProperties.CREATED_TS, 123,
+            AAIProperties.SOURCE_OF_TRUTH, "sot",
+            AAIProperties.RESOURCE_VERSION, "123",
+            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
+            AAIProperties.LAST_MOD_TS, 333);
 
         Introspector relationship = loader.introspectorFromName("relationship");
         relationship.setValue("related-to", "vnfc");
@@ -585,7 +652,13 @@ public class DbSerializer_needsFakeRulesTest {
         DBSerializer localDbser = getDBSerializerWithSpecificEdgeRules();
 
         engine.startTransaction();
-        engine.tx().addVertex("aai-node-type", "vnfc", "vnfc-name", "a-name", "aai-uri", "/network/vnfcs/vnfc/a-name");
+        engine.tx().addVertex("aai-node-type", "vnfc", "vnfc-name", "a-name", "aai-uri", "/network/vnfcs/vnfc/a-name",
+            AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
+            AAIProperties.CREATED_TS, 123,
+            AAIProperties.SOURCE_OF_TRUTH, "sot",
+            AAIProperties.RESOURCE_VERSION, "123",
+            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
+            AAIProperties.LAST_MOD_TS, 333);
 
         Introspector relationship;
         Introspector relationshipList;
@@ -652,7 +725,13 @@ public class DbSerializer_needsFakeRulesTest {
         DBSerializer localDbser = getDBSerializerWithSpecificEdgeRules();
 
         engine.startTransaction();
-        engine.tx().addVertex("aai-node-type", "vnfc", "vnfc-name", "a-name", "aai-uri", "/network/vnfcs/vnfc/a-name");
+        engine.tx().addVertex("aai-node-type", "vnfc", "vnfc-name", "a-name", "aai-uri", "/network/vnfcs/vnfc/a-name",
+            AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
+            AAIProperties.CREATED_TS, 123,
+            AAIProperties.SOURCE_OF_TRUTH, "sot",
+            AAIProperties.RESOURCE_VERSION, "123",
+            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
+            AAIProperties.LAST_MOD_TS, 333);
 
         Introspector relationship;
         Introspector relationshipList;
@@ -713,10 +792,8 @@ public class DbSerializer_needsFakeRulesTest {
 
     }
 
-    private DBSerializer getDBSerializerWithSpecificEdgeRules()
-            throws NoSuchFieldException, AAIException, IllegalAccessException {
+    private DBSerializer getDBSerializerWithSpecificEdgeRules() throws AAIException {
 
-        DBSerializer localDbser = new DBSerializer(version, engine, introspectorFactoryType, "AAI-TEST");
-        return localDbser;
+        return new DBSerializer(version, engine, introspectorFactoryType, "AAI-TEST");
     }
 }

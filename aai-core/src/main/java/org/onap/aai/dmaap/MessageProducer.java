@@ -25,4 +25,5 @@ import org.json.JSONObject;
 public interface MessageProducer {
 
     void sendMessageToDefaultDestination(JSONObject finalJson);
+    void sendMessageToDefaultDestination(String msg);
 }

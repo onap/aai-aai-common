@@ -20,8 +20,8 @@
 
 package org.onap.aai.restclient;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 import java.util.Map;
@@ -35,7 +35,7 @@ import org.springframework.util.MultiValueMap;
 @Component(value = ClientType.AAI)
 public class AAIRestClient extends TwoWaySSLRestClient {
 
-    private static EELFLogger logger = EELFManager.getInstance().getLogger(AAIRestClient.class);
+    private static Logger logger = LoggerFactory.getLogger(AAIRestClient.class);
 
     @Value("${aai.base.url}")
     private String baseUrl;

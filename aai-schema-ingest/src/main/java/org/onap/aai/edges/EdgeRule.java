@@ -20,12 +20,12 @@
 
 package org.onap.aai.edges;
 
+import org.apache.tinkerpop.gremlin.structure.Direction;
+import org.onap.aai.edges.enums.*;
+
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.tinkerpop.gremlin.structure.Direction;
-import org.onap.aai.edges.enums.*;
 
 /**
  * Container for A&AI edge rule information
@@ -43,7 +43,7 @@ public class EdgeRule {
 
     /**
      * Instantiates a new edge rule.
-     * 
+     *
      * @param fieldVals - Map<String, String> where first string is
      *        an EdgeField value and second string is the
      *        value of that field
@@ -56,14 +56,14 @@ public class EdgeRule {
         label = fieldVals.get(EdgeField.LABEL.toString());
         direction = Direction.valueOf(fieldVals.get(EdgeField.DIRECTION.toString()));
         multiplicityRule = MultiplicityRule.getValue(fieldVals.get(EdgeField.MULTIPLICITY.toString()));
-        isPrivateEdge = Boolean.valueOf(fieldVals.getOrDefault(EdgeField.PRIVATE.toString(), "false"));
+        isPrivateEdge = Boolean.parseBoolean(fieldVals.getOrDefault(EdgeField.PRIVATE.toString(), "false"));
 
         for (EdgeProperty prop : EdgeProperty.values()) {
             String rawVal = fieldVals.get(prop.toString());
             edgeFields.put(prop, convertNotation(direction, rawVal));
         }
 
-        isDefaultEdge = Boolean.valueOf(fieldVals.get(EdgeField.DEFAULT.toString()));
+        isDefaultEdge = Boolean.parseBoolean(fieldVals.get(EdgeField.DEFAULT.toString()));
         description = fieldVals.get(EdgeField.DESCRIPTION.toString());
         if (description == null) { // bc description is optional and not in v12 and earlier
             description = "";
@@ -86,7 +86,7 @@ public class EdgeRule {
     /**
      * Converts whatever string was in the json for an edge property value into
      * the appropriate AAIDirection
-     * 
+     *
      * @param Direction dir - the edge direction
      * @param String rawVal - property value from the json, may be
      *        IN, OUT, BOTH, NONE, ${direction}, or !${direction}
@@ -114,7 +114,7 @@ public class EdgeRule {
 
     /**
      * Gets the name of the node type in the "from" field
-     * 
+     *
      * @return String nodetype
      */
     public String getFrom() {
@@ -123,7 +123,7 @@ public class EdgeRule {
 
     /**
      * Gets the name of the node type in the "to" field
-     * 
+     *
      * @return String nodetype
      */
     public String getTo() {
@@ -177,7 +177,7 @@ public class EdgeRule {
 
     /**
      * Gets the value of the prevent-delete property
-     * 
+     *
      * @return String prevent-delete property value
      */
     public String getPreventDelete() {
@@ -186,7 +186,7 @@ public class EdgeRule {
 
     /**
      * Returns if this rule is a default or not
-     * 
+     *
      * @return boolean
      */
     public boolean isDefault() {
@@ -195,7 +195,7 @@ public class EdgeRule {
 
     /**
      * Gets the description on the edge rule (if there is one)
-     * 
+     *
      * @return String description
      */
     public String getDescription() {

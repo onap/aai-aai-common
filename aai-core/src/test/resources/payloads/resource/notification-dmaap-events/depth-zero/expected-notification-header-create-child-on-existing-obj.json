@@ -1,0 +1,9 @@
+{
+    "id": "JUNIT-TRANSACTION",
+    "source-name": "JUNIT",
+    "version": "v14",
+    "action": "CREATE",
+    "entity-type": "p-interface",
+    "top-entity-type": "pserver",
+    "entity-link": "/aai/v14/cloud-infrastructure/pservers/pserver/example-hostname-val-85598/p-interfaces/p-interface/p-interface-1"
+}

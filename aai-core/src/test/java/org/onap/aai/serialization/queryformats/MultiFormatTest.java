@@ -20,15 +20,8 @@
 
 package org.onap.aai.serialization.queryformats;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.*;
-
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
-import java.io.UnsupportedEncodingException;
-
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.Tree;
@@ -42,10 +35,10 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.onap.aai.AAISetup;
-import org.onap.aai.dbmap.DBConnectionType;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.introspection.ModelType;
+import org.onap.aai.serialization.db.DBSerializer;
 import org.onap.aai.serialization.db.EdgeSerializer;
 import org.onap.aai.serialization.engines.JanusGraphDBEngine;
 import org.onap.aai.serialization.engines.QueryStyle;
@@ -56,6 +49,13 @@ import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
 import org.onap.aai.setup.SchemaVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
+
+import javax.ws.rs.core.MultivaluedHashMap;
+import java.io.UnsupportedEncodingException;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.*;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class MultiFormatTest extends AAISetup {
@@ -79,7 +79,12 @@ public class MultiFormatTest extends AAISetup {
     private JsonObject expectedPathIdFormat = new JsonParser().parse(
             "{\"path\":[{\"resource-type\":\"generic-vnf\"},{\"resource-type\":\"vserver\"},{\"resource-type\":\"pserver\"},{\"resource-type\":\"complex\"}]}")
             .getAsJsonObject();
-
+    private JsonObject expectedAsTreeWithResourceFormat = new JsonParser().parse(
+        "{\"results\":[{\"generic-vnf\":{\"vnf-id\":\"vnf-id-1\",\"vnf-name\":\"vnf-name-1\",\"related-nodes\":[{\"vserver\":{\"vserver-id\":\"vserver-id-1\",\"vserver-name\":\"vserver-name-1\",\"related-nodes\":[{\"pserver\":{\"hostname\":\"hostname-1\"}}]}},{\"pserver\":{\"hostname\":\"hostname-2\",\"related-nodes\":[{\"complex\":{\"physical-location-id\":\"physical-location-id-2\",\"country\":\"US\"}}]}}]}}]}")
+        .getAsJsonObject();
+    private JsonObject expectedAsTreeWithSimpleFormat = new JsonParser().parse(
+        "{\"results\":[{\"id\":\"0\",\"node-type\":\"generic-vnf\",\"url\":null,\"properties\":{\"vnf-id\":\"vnf-id-1\",\"vnf-name\":\"vnf-name-1\"},\"related-to\":[{\"id\":\"1\",\"relationship-label\":\"tosca.relationships.HostedOn\",\"node-type\":\"vserver\",\"url\":null},{\"id\":\"5\",\"relationship-label\":\"tosca.relationships.HostedOn\",\"node-type\":\"pserver\",\"url\":null}],\"related-nodes\":[{\"id\":\"1\",\"node-type\":\"vserver\",\"url\":null,\"properties\":{\"vserver-id\":\"vserver-id-1\",\"vserver-name\":\"vserver-name-1\"},\"related-to\":[{\"id\":\"0\",\"relationship-label\":\"tosca.relationships.HostedOn\",\"node-type\":\"generic-vnf\",\"url\":null},{\"id\":\"2\",\"relationship-label\":\"tosca.relationships.HostedOn\",\"node-type\":\"pserver\",\"url\":null}],\"related-nodes\":[{\"id\":\"2\",\"node-type\":\"pserver\",\"url\":null,\"properties\":{\"hostname\":\"hostname-1\"},\"related-to\":[{\"id\":\"1\",\"relationship-label\":\"tosca.relationships.HostedOn\",\"node-type\":\"vserver\",\"url\":null},{\"id\":\"3\",\"relationship-label\":\"org.onap.relationships.inventory.LocatedIn\",\"node-type\":\"complex\",\"url\":null}]}]},{\"id\":\"5\",\"node-type\":\"pserver\",\"url\":null,\"properties\":{\"hostname\":\"hostname-2\"},\"related-to\":[{\"id\":\"0\",\"relationship-label\":\"tosca.relationships.HostedOn\",\"node-type\":\"generic-vnf\",\"url\":null},{\"id\":\"6\",\"relationship-label\":\"org.onap.relationships.inventory.LocatedIn\",\"node-type\":\"complex\",\"url\":null}],\"related-nodes\":[{\"id\":\"6\",\"node-type\":\"complex\",\"url\":null,\"properties\":{\"physical-location-id\":\"physical-location-id-2\",\"country\":\"US\"},\"related-to\":[{\"id\":\"5\",\"relationship-label\":\"org.onap.relationships.inventory.LocatedIn\",\"node-type\":\"pserver\",\"url\":null}]}]}]}]}")
+        .getAsJsonObject();
     @Before
     public void setUp() throws Exception {
 
@@ -130,6 +135,42 @@ public class MultiFormatTest extends AAISetup {
     }
 
     @Test
+    public void testAsTreeParamAndSimpleFormat()
+        throws AAIFormatVertexException, AAIException, AAIFormatQueryResultFormatNotSupported {
+
+        createLoaderEngineSetup();
+        DBSerializer serializer = new DBSerializer(version, dbEngine, factoryType, "Junit");
+        MultivaluedHashMap<String, String> params = new MultivaluedHashMap<>();
+        params.add("as-tree", "true");
+        SimpleFormat sf = new SimpleFormat(new RawFormat.Builder(loader, serializer, urlBuilder).isTree(true));
+
+        assertNotNull(dbEngine.tx());
+        assertNotNull(dbEngine.asAdmin());
+
+        JsonObject json = sf.formatObject(resultTree).get();
+        assertEquals(this.expectedAsTreeWithSimpleFormat, json);
+
+    }
+
+    @Test
+    public void testAsTreeParamAndResourceFormat()
+        throws AAIFormatVertexException, AAIException, AAIFormatQueryResultFormatNotSupported {
+
+        createLoaderEngineSetup();
+        DBSerializer serializer = new DBSerializer(version, dbEngine, factoryType, "Junit");
+        MultivaluedHashMap<String, String> params = new MultivaluedHashMap<>();
+        params.add("as-tree", "true");
+        Resource sf = new Resource(new Resource.Builder(loader, serializer, urlBuilder, params).isTree(true));
+
+        assertNotNull(dbEngine.tx());
+        assertNotNull(dbEngine.asAdmin());
+
+        JsonObject json = sf.formatObject(resultTree).get();
+        assertEquals(this.expectedAsTreeWithResourceFormat, json);
+    }
+
+
+    @Test
     public void testPathResultQueryIdFormat()
             throws AAIFormatVertexException, AAIException, AAIFormatQueryResultFormatNotSupported {
 
@@ -159,7 +200,7 @@ public class MultiFormatTest extends AAISetup {
         if (loader == null) {
             loader = loaderFactory.createLoaderForVersion(factoryType, version);
             // loader = LoaderFactory.createLoaderForVersion(factoryType, version);
-            dbEngine = spy(new JanusGraphDBEngine(QueryStyle.TRAVERSAL, DBConnectionType.CACHED, loader));
+            dbEngine = spy(new JanusGraphDBEngine(QueryStyle.TRAVERSAL, loader));
 
             TransactionalGraphEngine.Admin spyAdmin = spy(dbEngine.asAdmin());
 
@@ -167,7 +208,7 @@ public class MultiFormatTest extends AAISetup {
             when(dbEngine.asAdmin()).thenReturn(spyAdmin);
 
             when(spyAdmin.getReadOnlyTraversalSource())
-                    .thenReturn(graph.traversal(GraphTraversalSource.build().with(ReadOnlyStrategy.instance())));
+                    .thenReturn(graph.traversal().withStrategies(ReadOnlyStrategy.instance()));
             when(spyAdmin.getTraversalSource()).thenReturn(graph.traversal());
         }
     }

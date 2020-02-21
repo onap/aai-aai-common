@@ -26,8 +26,8 @@ import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -63,7 +63,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @DirtiesContext
 public class GraphSONTest {
 
-    private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(GraphSONTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GraphSONTest.class);
 
     private Graph graph;
     private Vertex v1;
@@ -111,7 +111,7 @@ public class GraphSONTest {
 
     /**
      * Case where there is only one private edge
-     * 
+     *
      * <pre>
      *     {
      *         "id": 21,
@@ -167,7 +167,7 @@ public class GraphSONTest {
     /**
      * Case where there is one private edge and regular edge
      * with the same edge label name
-     * 
+     *
      * <pre>
      *     {
      *         "id": 21,
@@ -230,7 +230,7 @@ public class GraphSONTest {
     /**
      * Case where there is one private edge and regular edge to same label
      * And another regular edge to a different label
-     * 
+     *
      * <pre>
      *     {
      *         "id": 21,
@@ -328,7 +328,7 @@ public class GraphSONTest {
     /**
      * Case where there is one private edge and regular edge to same label
      * And another regular edge to a different label
-     * 
+     *
      * <pre>
      *     {
      *         "id": 21,
@@ -395,7 +395,7 @@ public class GraphSONTest {
     /**
      * Case where there is one private edge and regular edge to same label
      * And another regular edge to a different label
-     * 
+     *
      * <pre>
      *     {
      *         "id": 21,

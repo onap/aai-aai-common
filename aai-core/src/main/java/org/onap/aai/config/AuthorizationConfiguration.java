@@ -20,7 +20,7 @@
 
 package org.onap.aai.config;
 
-import org.onap.aai.auth.AAIAuthCore;
+import org.onap.aai.aaf.auth.AAIAuthCore;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

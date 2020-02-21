@@ -20,8 +20,8 @@
 
 package org.onap.aai.extensions;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 
@@ -30,7 +30,7 @@ import org.onap.aai.util.AAIConfig;
 
 public class ExtensionController {
 
-    private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(ExtensionController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExtensionController.class);
 
     /**
      * Run extension.

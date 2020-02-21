@@ -20,12 +20,10 @@
 
 package org.onap.aai.logging;
 
+import org.junit.Test;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-
-import org.junit.Test;
-import org.onap.aai.logging.CNName;
-import org.onap.aai.logging.CustomLogPatternLayout;
 
 public class CustomLogPatternLayoutTest {
 

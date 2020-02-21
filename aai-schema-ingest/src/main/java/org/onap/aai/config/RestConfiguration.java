@@ -44,21 +44,6 @@ public class RestConfiguration {
     @Value("${schema.service.client:one-way-ssl}")
     private String schemaServiceClient;
 
-    @Autowired
-    private RestClient restClient;
-
-    @Bean
-    public RestClientFactory restClientFactory() {
-
-        return new RestClientFactory() {
-            @Override
-            public RestClient getRestClient(String clientType) {
-                return restClient;
-
-            }
-        };
-    }
-
     /*
      * In the below cases bean name and method names are different because all of them qualify as restClient
      */

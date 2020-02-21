@@ -21,7 +21,6 @@
 package org.onap.aai.serialization.db;
 
 import org.janusgraph.core.JanusGraph;
-import org.onap.aai.dbmap.DBConnectionType;
 
 public class InMemoryGraphSingleton extends GraphSingleton {
 
@@ -51,8 +50,4 @@ public class InMemoryGraphSingleton extends GraphSingleton {
         return inMemgraph;
     }
 
-    @Override
-    public JanusGraph getTxGraph(DBConnectionType connectionType) {
-        return inMemgraph;
-    }
 }

@@ -1115,7 +1115,17 @@
 			"prevent-delete": "NONE",
 			"default": "true",
 			"description":""
-		},
+		},{
+            "from": "sriov-vf",
+            "to": "l-interface",
+            "label": "NOT.A.REAL.EDGERULE",
+            "direction": "OUT",
+            "multiplicity": "ONE2ONE",
+            "contains-other-v": "NONE",
+            "delete-other-v": "!${direction}",
+            "prevent-delete": "NONE",
+            "description":""
+        },
 		{
 			"from": "vlan",
 			"to": "l-interface",
@@ -3051,6 +3061,6 @@
 			"default": "true",
 			"description":""
 		}
-		
+
 	]
 }

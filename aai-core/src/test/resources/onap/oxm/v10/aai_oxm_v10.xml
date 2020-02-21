@@ -1653,6 +1653,7 @@
         <xml-property name="namespace" value="cloud-infrastructure"/>
         <xml-property name="uriTemplate" value="/cloud-infrastructure/pservers/pserver/{hostname}"/>
       <xml-property name="requiredProps" value="hostname,in-maint"/>
+          <xml-property name="dslStartNodeProps" value="hostname,pserver-id,pserver-name2,inv-status"/>
       </xml-properties>
     </java-type>
 

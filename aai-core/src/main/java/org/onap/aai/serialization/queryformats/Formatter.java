@@ -20,46 +20,70 @@
 
 package org.onap.aai.serialization.queryformats;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Stream;
-
+import org.json.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.onap.aai.logging.LogFormatTools;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatQueryResultFormatNotSupported;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
 
+import javax.ws.rs.core.MultivaluedMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Stream;
+
 public class Formatter {
 
-    private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(Formatter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Formatter.class);
 
-    protected JsonParser parser = new JsonParser();
     protected final FormatMapper format;
+    protected MultivaluedMap<String, String> params;
 
     public Formatter(FormatMapper format) {
         this.format = format;
     }
 
-    public JsonObject output(List<Object> queryResults) {
+    public Formatter(FormatMapper format, MultivaluedMap<String, String> params) {
+        this.format = format;
+        this.params = params;
+    }
 
-        Stream<Object> stream;
-        JsonObject result = new JsonObject();
-        JsonArray body = new JsonArray();
+    public JsonObject output(List<Object> queryResults, Map<String, List<String>> properties) {
+
+        final JsonArray body;
 
         if (this.format instanceof Count) {
             JsonObject countResult;
+            body = new JsonArray();
             try {
                 countResult = format.formatObject(queryResults).orElseThrow(() -> new AAIFormatVertexException(""));
                 body.add(countResult);
             } catch (Exception e) {
                 LOGGER.warn("Failed to format result type of the query " + LogFormatTools.getStackTop(e));
             }
+        } else if (this.format instanceof LifecycleFormat) {
+            LifecycleFormat lifecycleFormat = (LifecycleFormat) format;
+            body = lifecycleFormat.process(queryResults);
+        } else if (this.format instanceof Aggregate) {
+            Aggregate aggregateFormat = (Aggregate) format;
+            body = aggregateFormat.process(queryResults, properties);
+            JsonObject result = new JsonObject();
+            if (body != null && body.size() > 0) {
+                result.add("results", (body.get(0)).getAsJsonObject().get("results"));
+            }
+            return result;
         } else {
+
+            body = new JsonArray();
+            Stream<Object> stream;
             if (queryResults.size() >= format.parallelThreshold()) {
                 stream = queryResults.parallelStream();
             } else {
@@ -70,7 +94,11 @@ public class Formatter {
 
             stream.map(o -> {
                 try {
-                    return format.formatObject(o);
+                    if (properties!= null && !properties.isEmpty()){
+                        return format.formatObject(o, properties);
+                    } else {
+                        return format.formatObject(o);
+                    }
                 } catch (AAIFormatVertexException e) {
                     LOGGER.warn("Failed to format vertex, returning a partial list " + LogFormatTools.getStackTop(e));
                 } catch (AAIFormatQueryResultFormatNotSupported e) {
@@ -78,19 +106,38 @@ public class Formatter {
                 }
 
                 return Optional.<JsonObject>empty();
-            }).filter(Optional::isPresent).map(Optional::get).forEach(json -> {
-                if (isParallel) {
-                    synchronized (body) {
+            }).filter(Optional::isPresent)
+                .map(Optional::get)
+                .forEach(json -> {
+                    if (isParallel) {
+                        synchronized (body) {
+                            body.add(json);
+                        }
+                    } else {
                         body.add(json);
                     }
-                } else {
-                    body.add(json);
-                }
-            });
+                });
 
         }
+
+        if (params !=null && params.containsKey("as-tree")) {
+            String isAsTree = params.get("as-tree").get(0);
+            if (isAsTree != null && isAsTree.equalsIgnoreCase("true")
+                && body != null && body.size() != 0) {
+                JsonObject jsonObjectBody = body.get(0).getAsJsonObject();
+                if (jsonObjectBody != null && jsonObjectBody.size() > 0) {
+                    return body.get(0).getAsJsonObject();
+                }
+            }
+        }
+        JsonObject result = new JsonObject();
         result.add("results", body);
         return result.getAsJsonObject();
+
+    }
+
+    public JsonObject output(List<Object> queryResults) {
+        return output(queryResults, null);
     }
 
 }

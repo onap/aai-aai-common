@@ -20,22 +20,13 @@
 
 package org.onap.aai.rest.ueb;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import javax.ws.rs.core.Response.Status;
-
-import org.onap.aai.config.SpringContextAware;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.introspection.LoaderFactory;
+import org.onap.aai.introspection.ModelType;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.onap.aai.introspection.exceptions.AAIUnmarshallingException;
 import org.onap.aai.logging.LogFormatTools;
@@ -43,15 +34,20 @@ import org.onap.aai.parsers.uri.URIToObject;
 import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.setup.SchemaVersions;
 
+import javax.ws.rs.core.Response.Status;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.util.*;
+
 /**
  * The Class UEBNotification.
  */
 public class UEBNotification {
 
-    private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(UEBNotification.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(UEBNotification.class);
 
     private Loader currentVersionLoader = null;
-    protected List<NotificationEvent> events = null;
+    protected Map<String, NotificationEvent> events = null;
     private SchemaVersion notificationVersion = null;
 
     /**
@@ -60,9 +56,23 @@ public class UEBNotification {
      * @param loader the loader
      */
     public UEBNotification(Loader loader, LoaderFactory loaderFactory, SchemaVersions schemaVersions) {
-        events = new ArrayList<>();
+        events = new LinkedHashMap<>();
         SchemaVersion defaultVersion = schemaVersions.getDefaultVersion();
         currentVersionLoader = loaderFactory.createLoaderForVersion(loader.getModelType(), defaultVersion);
+        notificationVersion = defaultVersion;
+    }
+
+    /**
+     * Instantiates a new UEB notification.
+     *
+     * @param modelType - Model type
+     * @param loaderFactory - the loader factory
+     * @param schemaVersions the schema versions bean
+     */
+    public UEBNotification(ModelType modelType, LoaderFactory loaderFactory, SchemaVersions schemaVersions) {
+        events = new LinkedHashMap<>();
+        SchemaVersion defaultVersion = schemaVersions.getDefaultVersion();
+        currentVersionLoader = loaderFactory.createLoaderForVersion(modelType, defaultVersion);
         notificationVersion = defaultVersion;
     }
 
@@ -97,7 +107,6 @@ public class UEBNotification {
             Introspector eventHeader = currentVersionLoader.introspectorFromName("notification-event-header");
             URIToObject parser = new URIToObject(currentVersionLoader, uri, relatedObjects);
 
-            String entityLink = "";
             if ((basePath != null) && (!basePath.isEmpty())) {
                 if (!(basePath.startsWith("/"))) {
                     basePath = "/" + basePath;
@@ -113,10 +122,12 @@ public class UEBNotification {
                 }
             }
 
-            if (uri.toString().startsWith("/")) {
-                entityLink = basePath + notificationVersion + uri;
+            String uriStr = getUri(uri.toString(), basePath);
+            String entityLink;
+            if (uriStr.startsWith("/")) {
+                entityLink = basePath + notificationVersion + uriStr;
             } else {
-                entityLink = basePath + notificationVersion + "/" + uri;
+                entityLink = basePath + notificationVersion + "/" + uriStr;
             }
 
             eventHeader.setValue("entity-link", entityLink);
@@ -166,7 +177,7 @@ public class UEBNotification {
             }
             final NotificationEvent event =
                     new NotificationEvent(currentVersionLoader, eventHeader, eventObject, transactionId, sourceOfTruth);
-            events.add(event);
+            events.put(uri.toString(), event);
         } catch (AAIUnknownObjectException e) {
             throw new RuntimeException("Fatal error - notification-event-header object not found!");
         } catch (AAIUnmarshallingException e) {
@@ -181,14 +192,41 @@ public class UEBNotification {
      * @throws AAIException the AAI exception
      */
     public void triggerEvents() throws AAIException {
-        for (NotificationEvent event : events) {
+        for (NotificationEvent event : events.values()) {
             event.trigger();
         }
-        events.clear();
+        clearEvents();
     }
 
     public List<NotificationEvent> getEvents() {
+        return new ArrayList<>(this.events.values());
+    }
+    public Map<String, NotificationEvent> getEventsMap() {
         return this.events;
     }
 
+    private String getUri(String uri, String basePath) {
+        if (uri == null || uri.isEmpty()) {
+            return uri;
+        } else if (uri.charAt(0) != '/') {
+            uri = '/' + uri;
+        }
+
+        if ((basePath != null) && (!basePath.isEmpty())) {
+            if (!(basePath.startsWith("/"))) {
+                basePath = "/" + basePath;
+            }
+            if (!(basePath.endsWith("/"))) {
+                basePath = basePath + "/";
+            }
+        }
+
+        LOGGER.trace("Notification header uri base path:'{}', uri:'{}'", basePath, uri);
+
+        return uri.replaceAll("^" + basePath + "v\\d+", "");
+    }
+
+    public void clearEvents() {
+        events.clear();
+    }
 }

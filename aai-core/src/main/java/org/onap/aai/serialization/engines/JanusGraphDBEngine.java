@@ -20,15 +20,14 @@
 
 package org.onap.aai.serialization.engines;
 
+import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.apache.tinkerpop.gremlin.structure.VertexProperty;
+import org.onap.aai.introspection.Loader;
+import org.onap.aai.serialization.db.JanusGraphSingleton;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.apache.tinkerpop.gremlin.structure.VertexProperty;
-import org.onap.aai.dbmap.DBConnectionType;
-import org.onap.aai.introspection.Loader;
-import org.onap.aai.serialization.db.JanusGraphSingleton;
 
 public class JanusGraphDBEngine extends TransactionalGraphEngine {
 
@@ -38,8 +37,8 @@ public class JanusGraphDBEngine extends TransactionalGraphEngine {
      * @param style the style
      * @param loader the loader
      */
-    public JanusGraphDBEngine(QueryStyle style, DBConnectionType connectionType, Loader loader) {
-        super(style, loader, connectionType, JanusGraphSingleton.getInstance());
+    public JanusGraphDBEngine(QueryStyle style, Loader loader) {
+        super(style, loader, JanusGraphSingleton.getInstance());
     }
 
     /**
@@ -82,7 +81,7 @@ public class JanusGraphDBEngine extends TransactionalGraphEngine {
     @Override
     public List<Object> getListProperty(Vertex v, String name) {
 
-        List<Object> result = new ArrayList<Object>();
+        List<Object> result = new ArrayList<>();
 
         Iterator<VertexProperty<Object>> iterator = v.properties(name);
 
@@ -90,7 +89,7 @@ public class JanusGraphDBEngine extends TransactionalGraphEngine {
             result.add(iterator.next().value());
         }
 
-        if (result.size() == 0) {
+        if (result.isEmpty()) {
             result = null;
         }
 
