@@ -26,6 +26,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.onap.aai.aailog.filter.RestClientLoggingInterceptor;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
@@ -39,8 +40,8 @@ public abstract class NoAuthRestClient extends RestClient {
 
     @PostConstruct
     public void init() throws Exception {
-        restTemplate =
-            new RestTemplateBuilder().requestFactory(this.getHttpRequestFactory()).build();
+        restTemplate = new RestTemplate();
+        restTemplate.setRequestFactory(this.getHttpRequestFactory());
         restTemplate.setErrorHandler(new RestClientResponseErrorHandler());
         RestClientLoggingInterceptor loggingInterceptor = new RestClientLoggingInterceptor();
         restTemplate.getInterceptors().add(loggingInterceptor);

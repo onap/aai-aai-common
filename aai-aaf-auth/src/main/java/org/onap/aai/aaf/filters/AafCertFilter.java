@@ -27,7 +27,7 @@ import org.onap.aaf.cadi.filter.CadiFilter;
 import org.onap.aai.aaf.auth.AafRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.filter.OrderedRequestContextFilter;
+import org.springframework.boot.web.servlet.filter.OrderedRequestContextFilter;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
