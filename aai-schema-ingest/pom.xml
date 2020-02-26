@@ -26,7 +26,7 @@ limitations under the License.
 	<parent>
 		<groupId>org.onap.aai.aai-common</groupId>
 		<artifactId>aai-parent</artifactId>
-		<version>1.6.8-SNAPSHOT</version>
+		<version>1.6.9-SNAPSHOT</version>
 		<relativePath>../aai-parent/pom.xml</relativePath>
 	</parent>
 	<artifactId>aai-schema-ingest</artifactId>

@@ -25,11 +25,11 @@
     <parent>
         <groupId>org.onap.aai.aai-common</groupId>
         <artifactId>aai-common-docker</artifactId>
-        <version>1.6.8-SNAPSHOT</version>
+        <version>1.6.9-SNAPSHOT</version>
     </parent>
 
     <artifactId>aai-haproxy-image</artifactId>
-    <version>1.6.8-SNAPSHOT</version>
+    <version>1.6.9-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>aai-aai-haproxy-image</name>
     <description>Contains dockerfiles for aai-haproxy image.</description>
