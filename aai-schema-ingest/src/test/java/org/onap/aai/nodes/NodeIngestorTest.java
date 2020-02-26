@@ -51,7 +51,10 @@ import org.w3c.dom.Document;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestPropertySource(
-        properties = {"schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-ss-wiring-test.properties"})
+        properties = {
+            "schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-ss-wiring-test.properties",
+            "spring.main.allow-bean-definition-overriding=true"
+        })
 
 @ContextConfiguration(classes = {MockProvider.class, NodesConfiguration.class})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)

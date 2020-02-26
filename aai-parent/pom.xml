@@ -110,7 +110,7 @@ limitations under the License.
 		<reflections.version>0.9.10</reflections.version>
 		<snakeyaml.version>1.25</snakeyaml.version>
 
-		<spring.boot.version>1.5.22.RELEASE</spring.boot.version>
+	      <spring.boot.version>1.5.22.RELEASE</spring.boot.version>
         <javax.servlet.version>3.1.0</javax.servlet.version>
         <javax.annotation.version>1.2</javax.annotation.version>
 
@@ -129,9 +129,9 @@ limitations under the License.
 
 		<sonar.scanner.version>3.7.0.1746</sonar.scanner.version>
 
-        <spring.version>4.3.25.RELEASE</spring.version>
-		<spring.jms.version>4.3.25.RELEASE</spring.jms.version>
-		<spring.test.version>4.3.25.RELEASE</spring.test.version>
+        <spring.version>5.1.13.RELEASE</spring.version>
+		<spring.jms.version>5.1.13.RELEASE</spring.jms.version>
+		<spring.test.version>5.1.13.RELEASE</spring.test.version>
 		<spring.security.rsa.version>1.0.8.RELEASE</spring.security.rsa.version>
 		<json.simple.version>1.1.1</json.simple.version>
 		<powermock.api.mockito2.version>2.0.4</powermock.api.mockito2.version>
@@ -143,7 +143,7 @@ limitations under the License.
 	  <profile>
 	    <id>spring-boot-2-1</id>
 	    <properties>
-	      <spring.boot.version>1.5.22.RELEASE</spring.boot.version>
+	      <spring.boot.version>2.1.12.RELEASE</spring.boot.version>
 	    </properties>
 	  </profile>
 	</profiles>
