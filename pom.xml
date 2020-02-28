@@ -58,6 +58,7 @@
     </profiles>
 
     <properties>
+        <aai.common.version>${project.version}</aai.common.version>
         <aai.generate.schema>true</aai.generate.schema>
         <sitePath>/content/sites/site/org/onap/aai/aai-common/${project.artifactId}/${project.version}</sitePath>
         <onap.nexus.url>https://nexus.onap.org</onap.nexus.url>
