@@ -1,33 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-   ============LICENSE_START======================================================
-   org.onap.aai
-   ===============================================================================
-   Copyright © 2019 AT&T Intellectual Property. All rights reserved.
-   ===============================================================================
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+============LICENSE_START======================================================
+org.onap.aai
+===============================================================================
+Copyright © 2019 AT&T Intellectual Property. All rights reserved.
+===============================================================================
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-   http://www.apache.org/licenses/LICENSE-2.0
+http://www.apache.org/licenses/LICENSE-2.0
 
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 ===========LICENSE_END=========================================================
 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.onap.aai.aai-common</groupId>
     <artifactId>aai-common</artifactId>
-    <version>1.6.10-SNAPSHOT</version>
+    <version>1.6.11-SNAPSHOT</version>
   </parent>
   <artifactId>aai-parent</artifactId>
   <name>aai-parent</name>
@@ -101,7 +101,7 @@
     <slf4j.version>1.7.25</slf4j.version>
     <log4j.version>1.2.17</log4j.version>
     <mockito.all.version>1.10.19</mockito.all.version>
-    <mockito.core.version>2.15.0</mockito.core.version>
+    <mockito.core.version>1.10.19</mockito.core.version>
     <netty.handler.version>4.1.43.Final</netty.handler.version>
     <netty.version>4.0.56.Final</netty.version>
     <opencsv.version>3.1</opencsv.version>
@@ -110,11 +110,11 @@
     <reflections.version>0.9.10</reflections.version>
     <snakeyaml.version>1.25</snakeyaml.version>
 
-    <spring.boot.version>1.5.22.RELEASE</spring.boot.version>
+    <spring.boot.version>2.1.12.RELEASE</spring.boot.version>
     <javax.servlet.version>3.1.0</javax.servlet.version>
     <javax.annotation.version>1.2</javax.annotation.version>
 
-   <sonar.jacoco.reportPath />
+    <sonar.jacoco.reportPath />
     <sonar.jacoco.itReportPath />
     <sonar.jacoco.reportMissing.force.zero />
 
@@ -129,9 +129,9 @@
 
     <sonar.scanner.version>3.7.0.1746</sonar.scanner.version>
 
-    <spring.version>4.3.25.RELEASE</spring.version>
-    <spring.jms.version>4.3.25.RELEASE</spring.jms.version>
-    <spring.test.version>4.3.25.RELEASE</spring.test.version>
+    <spring.version>5.1.13.RELEASE</spring.version>
+    <spring.jms.version>5.1.13.RELEASE</spring.jms.version>
+    <spring.test.version>5.1.13.RELEASE</spring.test.version>
     <spring.security.rsa.version>1.0.8.RELEASE</spring.security.rsa.version>
     <json.simple.version>1.1.1</json.simple.version>
     <powermock.api.mockito2.version>2.0.4</powermock.api.mockito2.version>
@@ -142,6 +142,12 @@
   <profiles>
     <profile>
       <id>spring-boot-2-1</id>
+      <properties>
+        <spring.boot.version>2.1.12.RELEASE</spring.boot.version>
+      </properties>
+    </profile>
+    <profile>
+      <id>spring-boot-1-5</id>
       <properties>
         <spring.boot.version>1.5.22.RELEASE</spring.boot.version>
       </properties>
