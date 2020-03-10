@@ -42,8 +42,8 @@ public abstract class OneWaySSLRestClient extends RestClient {
 
     @PostConstruct
     public void init() throws Exception {
-        restTemplate = new RestTemplate();
-        restTemplate.setRequestFactory(this.getHttpRequestFactory());
+        restTemplate =
+            new RestTemplateBuilder().requestFactory(this.getHttpRequestFactory()).build();
 
         restTemplate.setErrorHandler(new RestClientResponseErrorHandler());
         RestClientLoggingInterceptor loggingInterceptor = new RestClientLoggingInterceptor();
