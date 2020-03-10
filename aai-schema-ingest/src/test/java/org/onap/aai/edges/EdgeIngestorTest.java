@@ -50,10 +50,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {MockProvider.class, EdgesConfiguration.class})
 @TestPropertySource(
-        properties = {
-            "schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-wiring-test.properties",
-            "spring.main.allow-bean-definition-overriding=true"
-        })
+        properties = {"schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-wiring-test.properties"})
+
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 @SpringBootTest
 public class EdgeIngestorTest {

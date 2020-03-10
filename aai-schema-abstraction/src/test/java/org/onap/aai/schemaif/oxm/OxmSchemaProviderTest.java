@@ -30,14 +30,14 @@ import java.util.Set;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.onap.aai.schemaif.SchemaProviderException;
 import org.onap.aai.schemaif.definitions.EdgeSchema;
 import org.onap.aai.schemaif.definitions.PropertySchema;
 import org.onap.aai.schemaif.definitions.VertexSchema;
 import org.onap.aai.schemaif.definitions.types.DataType.Type;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class OxmSchemaProviderTest extends OxmSchemaServiceSetup {
 
     @Test
@@ -49,15 +49,15 @@ public class OxmSchemaProviderTest extends OxmSchemaServiceSetup {
             VertexSchema vertSchema = schemaProvider.getVertexSchema("pserver", schemaProvider.getLatestSchemaVersion());
             System.out.println(vertSchema.toString());
 
-            EdgeSchema edgeSchema = schemaProvider.getEdgeSchema("org.onap.relationships.inventory.LocatedIn",
+            EdgeSchema edgeSchema = schemaProvider.getEdgeSchema("org.onap.relationships.inventory.LocatedIn", 
                     "cloud-region", "zone", schemaProvider.getLatestSchemaVersion());
             System.out.println(edgeSchema.toString());
-
+            
             // Validate vertex schema
             assertTrue(vertSchema.getName().equals("pserver"));
             assertTrue(vertSchema.getAnnotationValue("nameProps").equals("pserver-name2"));
             assertTrue(vertSchema.getAnnotationValue("dependentOn") == null);
-
+            
             PropertySchema propSchema = vertSchema.getPropertySchema("hostname");
             assertTrue(propSchema.getName().equals("hostname"));
             assertTrue(propSchema.getDefaultValue().equals(""));
@@ -66,7 +66,7 @@ public class OxmSchemaProviderTest extends OxmSchemaServiceSetup {
             assertTrue(propSchema.getDataType().getType().compareTo(Type.STRING) == 0);
             Object obj = propSchema.validateValue("somestring");
             assertTrue(obj instanceof String);
-
+            
             propSchema = vertSchema.getPropertySchema("in-maint");
             assertTrue(propSchema.getName().equals("in-maint"));
             assertTrue(propSchema.getDefaultValue().equals("false"));
@@ -79,8 +79,8 @@ public class OxmSchemaProviderTest extends OxmSchemaServiceSetup {
             obj = propSchema.validateValue("false");
             assertTrue(obj instanceof Boolean);
             assertTrue(propSchema.getDataType().validateValue("badValue") == null);
-
-
+            
+            
             propSchema = vertSchema.getPropertySchema("aai-node-type");
             assertTrue(propSchema.getName().equals("aai-node-type"));
             assertTrue(propSchema.getDefaultValue().equals(""));
@@ -88,7 +88,7 @@ public class OxmSchemaProviderTest extends OxmSchemaServiceSetup {
             assertTrue(!propSchema.isKey());
             assertTrue(propSchema.isReserved());
             assertTrue(propSchema.getDataType().getType().compareTo(Type.STRING) == 0);
-
+            
             propSchema = vertSchema.getPropertySchema("pserver-id");
             assertTrue(propSchema.getName().equals("pserver-id"));
             assertTrue(propSchema.getDefaultValue().equals(""));
@@ -96,7 +96,7 @@ public class OxmSchemaProviderTest extends OxmSchemaServiceSetup {
             assertTrue(!propSchema.isReserved());
             assertTrue(propSchema.isKey());
             assertTrue(propSchema.getDataType().getType().compareTo(Type.STRING) == 0);
-
+            
             propSchema = vertSchema.getPropertySchema("number-of-cpus");
             assertTrue(propSchema.getName().equals("number-of-cpus"));
             assertTrue(propSchema.getAnnotationValue("source-of-truth-type").equals("openstack"));
@@ -107,7 +107,7 @@ public class OxmSchemaProviderTest extends OxmSchemaServiceSetup {
             assertTrue(obj instanceof Integer);
             assertTrue(propSchema.getDataType().validateValue("5.5") == null);
             assertTrue(propSchema.getDataType().validateValue("xyz") == null);
-
+            
             // Validate edge schema
             assertTrue(edgeSchema.getName().equals("org.onap.relationships.inventory.LocatedIn"));
             assertTrue(edgeSchema.getSource().equals("cloud-region"));
@@ -115,7 +115,7 @@ public class OxmSchemaProviderTest extends OxmSchemaServiceSetup {
             assertTrue(edgeSchema.getMultiplicity().equals(EdgeSchema.Multiplicity.MANY_2_ONE));
             assertTrue(edgeSchema.getAnnotationValue("contains-other-v").equals("NONE"));
             assertTrue(edgeSchema.getPropertySchema("prevent-delete").getDataType().getType().equals(Type.STRING));
-
+            
             // Validate 'dependentOn' annotation
             vertSchema = schemaProvider.getVertexSchema("tenant", schemaProvider.getLatestSchemaVersion());
             assertTrue(vertSchema.getAnnotationValue("dependentOn").equals("cloud-region"));
@@ -128,19 +128,19 @@ public class OxmSchemaProviderTest extends OxmSchemaServiceSetup {
             assertTrue(false);
         }
     }
-
+    
     @Test
     public void testAdjacentEdges() throws SchemaProviderException {
         try {
             OxmSchemaProvider schemaProvider = new OxmSchemaProvider();
             schemaProvider.loadSchema();
 
-            Set<EdgeSchema> edgeSchemaList =
+            Set<EdgeSchema> edgeSchemaList = 
                     schemaProvider.getAdjacentEdgeSchema("snapshot", schemaProvider.getLatestSchemaVersion());
-
+            
             // Validate edge schema
             assertTrue(edgeSchemaList.size() == 2);
-
+            
             for (EdgeSchema es : edgeSchemaList) {
                 System.out.println(es.toString());
                 if (es.getName().equals("org.onap.relationships.inventory.BelongsTo")) {
@@ -166,15 +166,15 @@ public class OxmSchemaProviderTest extends OxmSchemaServiceSetup {
             assertTrue(false);
         }
     }
-
+    
     @Test
     public void testValidSourceTargetEdge() throws SchemaProviderException {
         try {
             OxmSchemaProvider schemaProvider = new OxmSchemaProvider();
             schemaProvider.loadSchema();
 
-            Set<EdgeSchema> edgeSchemaList =
-                    schemaProvider.getEdgeSchemaForSourceTarget("service-instance", "customer",
+            Set<EdgeSchema> edgeSchemaList = 
+                    schemaProvider.getEdgeSchemaForSourceTarget("service-instance", "customer", 
                             schemaProvider.getLatestSchemaVersion());
 
             // Validate edge schema
@@ -183,14 +183,14 @@ public class OxmSchemaProviderTest extends OxmSchemaServiceSetup {
             assertTrue(edgeSchemaList.iterator().next().getSource().equals("service-instance"));
             assertTrue(edgeSchemaList.iterator().next().getTarget().equals("customer"));
             assertTrue(edgeSchemaList.iterator().next().getMultiplicity().equals(EdgeSchema.Multiplicity.MANY_2_MANY));
-
-            edgeSchemaList =
-                    schemaProvider.getEdgeSchemaForSourceTarget("cloud-region", "complex",
+            
+            edgeSchemaList = 
+                    schemaProvider.getEdgeSchemaForSourceTarget("cloud-region", "complex", 
                             schemaProvider.getLatestSchemaVersion());
-
+            
             // Validate edge schema
             assertTrue(edgeSchemaList.size() == 2);
-
+            
             for (EdgeSchema es : edgeSchemaList) {
                 System.out.println(es.toString());
                 if (es.getName().equals("org.onap.relationships.inventory.FoundIn")) {
@@ -207,11 +207,11 @@ public class OxmSchemaProviderTest extends OxmSchemaServiceSetup {
                     assertTrue(false);
                 }
             }
-
-            edgeSchemaList =
-                    schemaProvider.getEdgeSchemaForSourceTarget("cloud-region", "bad-node",
+            
+            edgeSchemaList = 
+                    schemaProvider.getEdgeSchemaForSourceTarget("cloud-region", "bad-node", 
                             schemaProvider.getLatestSchemaVersion());
-
+            
             // Validate edge schema
             assertTrue(edgeSchemaList.size() == 0);
         }
@@ -223,23 +223,23 @@ public class OxmSchemaProviderTest extends OxmSchemaServiceSetup {
             assertTrue(false);
         }
     }
-
+    
     @Test
     public void testInvalidVertexOrEdge() throws SchemaProviderException {
         try {
             OxmSchemaProvider schemaProvider = new OxmSchemaProvider();
             schemaProvider.loadSchema();
 
-            VertexSchema vertSchema =
+            VertexSchema vertSchema = 
                     schemaProvider.getVertexSchema("bad-node", schemaProvider.getLatestSchemaVersion());
             assertTrue(vertSchema == null);
 
-            EdgeSchema edgeSchema = schemaProvider.getEdgeSchema("org.onap.relationships.inventory.LocatedIn",
+            EdgeSchema edgeSchema = schemaProvider.getEdgeSchema("org.onap.relationships.inventory.LocatedIn", 
                     "cloud-region", "bad-node", schemaProvider.getLatestSchemaVersion());
             assertTrue(edgeSchema == null);
-
-            Set<EdgeSchema> edgeSchemaList =
-                    schemaProvider.getAdjacentEdgeSchema("org.onap.nodes.bad-node",
+            
+            Set<EdgeSchema> edgeSchemaList = 
+                    schemaProvider.getAdjacentEdgeSchema("org.onap.nodes.bad-node", 
                             schemaProvider.getLatestSchemaVersion());
             assertTrue(edgeSchemaList.isEmpty());
         }
