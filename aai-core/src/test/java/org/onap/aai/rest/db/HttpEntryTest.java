@@ -23,6 +23,9 @@ package org.onap.aai.rest.db;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.javatuples.Pair;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -136,7 +139,7 @@ public class HttpEntryTest extends AAISetup {
             objType = "relationship";
         }
         Introspector obj;
-        if (method.equals(HttpMethod.GET)) {
+        if (method.equals(HttpMethod.GET) || method.equals(HttpMethod.GET_RELATIONSHIP)) {
             obj = loader.introspectorFromName(objType);
         } else {
             obj = loader.unmarshal(objType, content, org.onap.aai.restcore.MediaType.getEnum("application/json"));
@@ -603,4 +606,98 @@ public class HttpEntryTest extends AAISetup {
         assertThat("Related to pserver is returned.", respBody,
                 containsString("\"hostname\":\"junit-abstract-test-pserver\""));
     }
+
+    @Test
+    public void getRelationshipListTest() throws UnsupportedEncodingException, AAIException {
+        traversalHttpEntry.setHttpEntryProperties(schemaVersions.getDefaultVersion());
+        Loader loader = traversalHttpEntry.getLoader();
+        TransactionalGraphEngine dbEngine = traversalHttpEntry.getDbEngine();
+
+        // Put pserver
+        String uri = "/cloud-infrastructure/pservers/pserver/httpEntryTest-pserver-01";
+        String content = "{\"hostname\":\"httpEntryTest-pserver-01\"}";
+        doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, content);
+        // Put complex
+        uri = "/cloud-infrastructure/complexes/complex/httpEntryTest-complex-01";
+        content =
+            "{\"physical-location-id\":\"httpEntryTest-complex-01\",\"physical-location-type\":\"AAIDefault\",\"street1\":\"AAIDefault\",\"city\":\"AAIDefault\",\"state\":\"NJ\",\"postal-code\":\"07748\",\"country\":\"USA\",\"region\":\"US\"}";
+        doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, content);
+
+        // Put Relationship
+        uri = "/cloud-infrastructure/pservers/pserver/httpEntryTest-pserver-01/relationship-list/relationship";
+        content = "{\"related-to\":\"complex\",\"related-link\":\"/aai/" + schemaVersions.getDefaultVersion().toString()
+            + "/cloud-infrastructure/complexes/complex/httpEntryTest-complex-01\",\"relationship-label\":\"org.onap.relationships.inventory.LocatedIn\"}" +
+            "\"relationship-daasSta\":[{" +
+            "\"relationship-key\":\"complex.physical-location-id\"," +
+            "\"relationship-value\":\"httpEntryTest-complex-01\"" +
+            "}]";
+        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT_EDGE, uri, content);
+        assertEquals("Expected the pserver relationship to be created", 200, response.getStatus());
+
+        // Get Relationship
+        uri = "/cloud-infrastructure/pservers/pserver/httpEntryTest-pserver-01";
+        content = "";
+        response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET_RELATIONSHIP, uri, content);
+        String expected = "{\"relationship\":[{\"related-to\":\"complex\",\"relationship-label\":\"org.onap.relationships.inventory.LocatedIn\",\"related-link\":\"/aai/v14/cloud-infrastructure/complexes/complex/httpEntryTest-complex-01\",\"relationship-data\":[{\"relationship-key\":\"complex.physical-location-id\",\"relationship-value\":\"httpEntryTest-complex-01\"}]}]}";
+        Assert.assertEquals(expected, response.getEntity().toString());
+
+        dbEngine.rollback();
+    }
+
+    @Test
+    public void getRelationshipListTestWithFormatSimple() throws UnsupportedEncodingException, AAIException {
+        traversalHttpEntry.setHttpEntryProperties(schemaVersions.getDefaultVersion());
+        Loader loader = traversalHttpEntry.getLoader();
+        TransactionalGraphEngine dbEngine = traversalHttpEntry.getDbEngine();
+
+        // Put pserver
+        String uri = "/cloud-infrastructure/pservers/pserver/httpEntryTest-pserver-01";
+        String content = "{\"hostname\":\"httpEntryTest-pserver-01\"}";
+        doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, content);
+        // Put complex
+        uri = "/cloud-infrastructure/complexes/complex/httpEntryTest-complex-01";
+        content =
+            "{\"physical-location-id\":\"httpEntryTest-complex-01\",\"physical-location-type\":\"AAIDefault\",\"street1\":\"AAIDefault\",\"city\":\"AAIDefault\",\"state\":\"NJ\",\"postal-code\":\"07748\",\"country\":\"USA\",\"region\":\"US\"}";
+        doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, content);
+
+        // Put Relationship
+        uri = "/cloud-infrastructure/pservers/pserver/httpEntryTest-pserver-01/relationship-list/relationship";
+        content = "{\"related-to\":\"complex\",\"related-link\":\"/aai/" + schemaVersions.getDefaultVersion().toString()
+            + "/cloud-infrastructure/complexes/complex/httpEntryTest-complex-01\",\"relationship-label\":\"org.onap.relationships.inventory.LocatedIn\"}" +
+            "\"relationship-daasSta\":[{" +
+            "\"relationship-key\":\"complex.physical-location-id\"," +
+            "\"relationship-value\":\"httpEntryTest-complex-01\"" +
+            "}]";
+        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT_EDGE, uri, content);
+        assertEquals("Expected the pserver relationship to be created", 200, response.getStatus());
+
+        // GET complex
+        uri = "/cloud-infrastructure/pservers/pserver/httpEntryTest-pserver-01";
+        content = "";
+        response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri, content);
+
+        // Get Relationship
+        uri = "/cloud-infrastructure/pservers/pserver/httpEntryTest-pserver-01";
+        queryParameters.add("format", "resource");
+        content = "";
+        response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET_RELATIONSHIP, uri, content);
+        String responsePayload = response.getEntity().toString();
+        JSONObject responseJsonObject = new JSONObject(responsePayload);
+        JSONArray responseResultsArray = responseJsonObject.getJSONArray("results");
+        String responseResults = responseResultsArray.get(0).toString();
+        JSONObject pserverResponseObject = new JSONObject(responseResults);
+        String pserverResponse = pserverResponseObject.get("pserver").toString();
+        JSONObject pserverResponseFields = new JSONObject(pserverResponse);
+        String pserverResponseRelationshipList = pserverResponseFields.get("relationship-list").toString();
+
+        String expected = "{\"relationship\":[{\"related-to\":\"complex\",\"relationship-data\":[{\"relationship-value\":\"httpEntryTest-complex-01\",\"relationship-key\":\"complex.physical-location-id\"}],\"related-link\":\"/aai/v14/cloud-infrastructure/complexes/complex/httpEntryTest-complex-01\",\"relationship-label\":\"org.onap.relationships.inventory.LocatedIn\"}]}";
+        assertEquals(expected, pserverResponseRelationshipList);
+//        Assert.assertEquals(expected, response.getEntity().toString());
+        queryParameters.remove("format");
+
+        dbEngine.rollback();
+    }
+
+
+
 }
