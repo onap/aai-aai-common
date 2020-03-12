@@ -1,0 +1,8 @@
+{
+	"related-to": "generic-vnf",
+    "related-link": "http://localhost/aai/v10/network/generic-vnfs/generic-vnf/key1",
+	"relationship-data" : [{
+		"relationship-key" : "generic-vnf.vnf-id",
+		"relationship-value":"key1"
+	}]
+}
