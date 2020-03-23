@@ -42,7 +42,7 @@ limitations under the License.
     <aai.release.version>${aai.common.version}</aai.release.version>
     <aai.common.logging.version>1.5.1</aai.common.logging.version>
     <aai.rest.client.version>1.5.1</aai.rest.client.version>
-    <aai.schema.service.version>1.6.4</aai.schema.service.version>
+    <aai.schema.service.version>1.6.6</aai.schema.service.version>
 
     <aaf.version>2.1.15</aaf.version>
     <antlr.version>4.7.2</antlr.version>
