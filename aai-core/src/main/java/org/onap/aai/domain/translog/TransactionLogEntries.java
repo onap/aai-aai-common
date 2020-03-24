@@ -105,11 +105,11 @@ import java.util.List;
  *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {"transactionLogEntries"})
+@XmlType(name = "", propOrder = {"logEntries"})
 @XmlRootElement(name = "transaction-log-entries", namespace = "http://org.onap.aai.inventory")
 public class TransactionLogEntries {
 
-    protected List<TransactionLogEntry> transactionLogEntries;
+    protected List<TransactionLogEntry> logEntries;
 
     /**
      * Gets the transaction log entries.
@@ -117,10 +117,10 @@ public class TransactionLogEntries {
      * @return the transaction log entries
      */
     public List<TransactionLogEntry> getTransactionLogEntries() {
-        if (transactionLogEntries == null) {
-            transactionLogEntries = new ArrayList<TransactionLogEntry>();
+        if (logEntries == null) {
+            logEntries = new ArrayList<>();
         }
-        return this.transactionLogEntries;
+        return this.logEntries;
     }
 
 }

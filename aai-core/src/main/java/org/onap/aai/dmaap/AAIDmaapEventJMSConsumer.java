@@ -101,8 +101,8 @@ public class AAIDmaapEventJMSConsumer implements MessageListener {
                 } else {
                     return;
                 }
-                if (jo.getString("event-topic") != null) {
-                    eventName = jo.getString("event-topic");
+                if (jo.getString(EVENT_TOPIC) != null) {
+                    eventName = jo.getString(EVENT_TOPIC);
                 }
                 if (joPayload.has("event-header")) {
                     try {
@@ -129,7 +129,7 @@ public class AAIDmaapEventJMSConsumer implements MessageListener {
                 if ("AAI-EVENT".equals(eventName)) {
                     restTemplate.exchange(baseUrl + endpoint, HttpMethod.POST, httpEntity, String.class);
                 } else {
-                    LOGGER.error(eventName + "|Event Topic invalid.");
+                    LOGGER.error(String.format("%s|Event Topic invalid.", eventName));
                 }
             } catch (JMSException | JSONException e) {
                 aaiElsErrorCode = AaiElsErrorCode.DATA_ERROR;

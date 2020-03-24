@@ -23,7 +23,6 @@
 package org.onap.aai.config;
 
 import org.onap.aai.restclient.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -48,19 +47,19 @@ public class RestConfiguration {
      * In the below cases bean name and method names are different because all of them qualify as restClient
      */
     @Bean(name = "restClient")
-    @ConditionalOnProperty(name = "schema.service.client", havingValue = "two-way-ssl", matchIfMissing = true)
+    @ConditionalOnProperty(name = "schema.service.client", havingValue = TWO_WAY_SSL, matchIfMissing = true)
     public RestClient getSchemaServiceTwoWayClient() {
         return new SchemaServiceRestClient();
     }
 
     @Bean(name = "restClient")
-    @ConditionalOnProperty(name = "schema.service.client", havingValue = "no-auth")
+    @ConditionalOnProperty(name = "schema.service.client", havingValue = NO_AUTH)
     public RestClient getSchemaServiceNoAuthClient() {
         return new SchemaServiceNoAuthClient();
     }
 
     @Bean(name = "restClient")
-    @ConditionalOnProperty(name = "schema.service.client", havingValue = "one-way-ssl")
+    @ConditionalOnProperty(name = "schema.service.client", havingValue = ONE_WAY_SSL)
     public RestClient getSchemaServiceOneWayClient() {
         return new SchemaServiceOneWayClient();
     }

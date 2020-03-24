@@ -357,7 +357,7 @@ public class Fault {
                  */
                 public List<String> getVariable() {
                     if (variable == null) {
-                        variable = new ArrayList<String>();
+                        variable = new ArrayList<>();
                     }
                     return this.variable;
                 }
