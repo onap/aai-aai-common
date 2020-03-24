@@ -20,16 +20,7 @@
 
 package org.onap.aai.dbgen;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.google.common.collect.Multimap;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.janusgraph.core.Cardinality;
 import org.janusgraph.core.JanusGraph;
@@ -37,36 +28,41 @@ import org.janusgraph.core.Multiplicity;
 import org.janusgraph.core.PropertyKey;
 import org.janusgraph.core.schema.JanusGraphManagement;
 import org.onap.aai.config.SpringContextAware;
-import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.edges.EdgeIngestor;
 import org.onap.aai.edges.EdgeRule;
 import org.onap.aai.edges.exceptions.EdgeRuleNotFoundException;
-import org.onap.aai.introspection.*;
+import org.onap.aai.introspection.Introspector;
+import org.onap.aai.introspection.Loader;
+import org.onap.aai.introspection.LoaderUtil;
 import org.onap.aai.logging.LogFormatTools;
 import org.onap.aai.schema.enums.PropertyMetadata;
-import org.onap.aai.setup.SchemaVersions;
 import org.onap.aai.util.AAIConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.*;
 
 public class SchemaGenerator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SchemaGenerator.class);
 
+    private SchemaGenerator() {
+
+    }
+
     /**
      * Load schema into JanusGraph.
      *
-     * @param graph
-     *        the graph
      * @param graphMgmt
      *        the graph mgmt
      */
-    public static void loadSchemaIntoJanusGraph(final JanusGraph graph, final JanusGraphManagement graphMgmt,
+    public static void loadSchemaIntoJanusGraph(final JanusGraphManagement graphMgmt,
             String backend) {
 
         try {
             AAIConfig.init();
         } catch (Exception ex) {
             LOGGER.error(" ERROR - Could not run AAIConfig.init(). " + LogFormatTools.getStackTop(ex));
-            // System.out.println(" ERROR - Could not run AAIConfig.init(). ");
             System.exit(1);
         }
 
@@ -177,7 +173,7 @@ public class SchemaGenerator {
         String imsg = "-- About to call graphMgmt commit";
         LOGGER.info(imsg);
         if (backend != null) {
-            LOGGER.info("Successfully loaded the schema to " + backend);
+            LOGGER.info(String.format("Successfully loaded the schema to %s", backend));
         }
 
         graphMgmt.commit();

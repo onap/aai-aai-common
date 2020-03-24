@@ -54,8 +54,11 @@ import java.util.Properties;
 public class AAIGraph {
 
     private static final Logger logger = LoggerFactory.getLogger(AAIGraph.class);
+    private static final String IN_MEMORY = "inmemory";
     protected JanusGraph graph;
     private static boolean isInit = false;
+
+
 
     /**
      * Instantiates a new AAI graph.
@@ -107,7 +110,7 @@ public class AAIGraph {
             propertiesConfiguration.getKeys()
                     .forEachRemaining(k -> graphProps.setProperty(k, propertiesConfiguration.getString(k)));
 
-            if ("inmemory".equals(graphProps.get("storage.backend"))) {
+            if (IN_MEMORY.equals(graphProps.get("storage.backend"))) {
                 // Load the propertyKeys, indexes and edge-Labels into the DB
                 loadSchema(graph);
                 loadSnapShotToInMemoryGraph(graph, graphProps);
@@ -131,13 +134,12 @@ public class AAIGraph {
             if ("true".equals(value)) {
                 try (Graph transaction = graph.newTransaction()) {
                     String location = System.getProperty("snapshot.location");
-                    logAndPrint("Loading snapshot to inmemory graph.");
+                    logger.info("Loading snapshot to inmemory graph.");
                     transaction.io(IoCore.graphson()).readGraph(location);
                     transaction.tx().commit();
-                    logAndPrint("Snapshot loaded to inmemory graph.");
+                    logger.info("Snapshot loaded to inmemory graph.");
                 } catch (Exception e) {
-                    logAndPrint("ERROR: Could not load datasnapshot to in memory graph. \n"
-                            + ExceptionUtils.getFullStackTrace(e));
+                    logger.info(String.format("ERROR: Could not load datasnapshot to in memory graph. %n%s", ExceptionUtils.getFullStackTrace(e)));
                     throw new RuntimeException(e);
                 }
             }
@@ -148,11 +150,11 @@ public class AAIGraph {
         // Load the propertyKeys, indexes and edge-Labels into the DB
         JanusGraphManagement graphMgt = graph.openManagement();
 
-        System.out.println("-- loading schema into JanusGraph");
+        logger.info("-- loading schema into JanusGraph");
         if ("true".equals(SpringContextAware.getApplicationContext().getEnvironment().getProperty("history.enabled", "false"))) {
-            SchemaGenerator4Hist.loadSchemaIntoJanusGraph(graph, graphMgt, "inmemory");
+            SchemaGenerator4Hist.loadSchemaIntoJanusGraph(graph, graphMgt, IN_MEMORY);
         } else {
-            SchemaGenerator.loadSchemaIntoJanusGraph(graph, graphMgt, "inmemory");
+            SchemaGenerator.loadSchemaIntoJanusGraph(graphMgt, IN_MEMORY);
         }
     }
 
@@ -174,8 +176,4 @@ public class AAIGraph {
         return graph;
     }
 
-    private void logAndPrint(String msg) {
-        System.out.println(msg);
-        logger.info(msg);
-    }
 }

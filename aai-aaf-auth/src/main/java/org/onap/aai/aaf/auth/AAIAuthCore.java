@@ -54,7 +54,7 @@ public final class AAIAuthCore {
 
     private String globalAuthFileName = AAIConstants.AAI_AUTH_CONFIG_FILENAME;
 
-    private final Pattern AUTH_POLICY_PATTERN;
+    private final Pattern authPolicyPattern;
     private final Set<String> validFunctions = new HashSet<>();
     private Map<String, AAIUser> users;
     private boolean timerSet = false;
@@ -72,14 +72,14 @@ public final class AAIAuthCore {
     public AAIAuthCore(String basePath, String filename){
         this.basePath = basePath;
         this.globalAuthFileName = filename;
-        AUTH_POLICY_PATTERN = Pattern.compile("^" + this.basePath + "/v\\d+/([\\w\\-]*)");
+        authPolicyPattern = Pattern.compile("^" + this.basePath + "/v\\d+/([\\w\\-]*)");
         init();
     }
 
     public AAIAuthCore(String basePath, String filename, String pattern){
         this.basePath = basePath;
         this.globalAuthFileName = filename;
-        AUTH_POLICY_PATTERN = Pattern.compile(pattern);
+        authPolicyPattern = Pattern.compile(pattern);
         init();
     }
 
@@ -253,7 +253,7 @@ public final class AAIAuthCore {
         } else if (uri.startsWith(basePath + "/tools")) {
             authPolicyFunctionName = "tools";
         } else {
-            Matcher match = AUTH_POLICY_PATTERN.matcher(uri);
+            Matcher match = authPolicyPattern.matcher(uri);
             if (match.find()) {
                 authPolicyFunctionName = match.group(1);
             }

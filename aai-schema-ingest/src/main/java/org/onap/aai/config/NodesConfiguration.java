@@ -47,7 +47,6 @@ import org.springframework.context.annotation.PropertySource;
 @Configuration
 public class NodesConfiguration {
 
-    private static final String CONFIG_TRANSLATOR = "config";
     private static final String SCHEMA_SERVICE_TRANSLATOR = "schema-service";
     private static final Logger LOGGER = LoggerFactory.getLogger(NodesConfiguration.class);
 
