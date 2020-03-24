@@ -49,7 +49,7 @@ import org.apache.tinkerpop.gremlin.structure.io.Mapper;
 import org.apache.tinkerpop.gremlin.structure.io.graphson.GraphSONMapper;
 import org.apache.tinkerpop.gremlin.structure.io.graphson.GraphSONReader;
 import org.apache.tinkerpop.gremlin.structure.io.graphson.GraphSONTokens;
-import org.apache.tinkerpop.gremlin.structure.io.graphson.GraphSONVersion;
+import org.apache.tinkerpop.gremlin.structure.io.graphson.GraphSONWriter;
 import org.apache.tinkerpop.gremlin.structure.io.gryo.GryoWriter;
 import org.apache.tinkerpop.gremlin.structure.util.Attachable;
 import org.apache.tinkerpop.gremlin.structure.util.Host;
@@ -60,7 +60,6 @@ import org.apache.tinkerpop.shaded.jackson.core.type.TypeReference;
 import org.apache.tinkerpop.shaded.jackson.databind.JsonNode;
 import org.apache.tinkerpop.shaded.jackson.databind.ObjectMapper;
 import org.apache.tinkerpop.shaded.jackson.databind.node.JsonNodeType;
-import org.onap.aai.dbmap.InMemoryGraph;
 
 /**
  * This is a Wrapper around the GraphsonReader class
@@ -68,16 +67,15 @@ import org.onap.aai.dbmap.InMemoryGraph;
  * GraphsonReader is a final class . hence the use of the Wrapper
  * instead of inheriting-overwriting
  *
- * 
+ *
  */
 public final class GraphSONPartialReader implements GraphReader {
     private final ObjectMapper mapper;
     private final long batchSize;
-    private final GraphSONVersion version;
     private boolean unwrapAdjacencyList = false;
     private final GraphSONReader reader;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(InMemoryGraph.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GraphSONPartialReader.class);
 
     final TypeReference<Map<String, Object>> mapTypeReference = new TypeReference<Map<String, Object>>() {};
 
@@ -85,7 +83,6 @@ public final class GraphSONPartialReader implements GraphReader {
         mapper = builder.mapper.createMapper();
         batchSize = builder.batchSize;
         unwrapAdjacencyList = builder.unwrapAdjacencyList;
-        version = ((GraphSONMapper) builder.mapper).getVersion();
         reader = GraphSONReader.build().create();
     }
 
@@ -119,7 +116,7 @@ public final class GraphSONPartialReader implements GraphReader {
                         if (supportsTx && counter.incrementAndGet() % batchSize == 0)
                             graphToWriteTo.tx().commit();
                     } catch (Exception ex) {
-                        LOGGER.info("Error in reading vertex from graphson" + vertex.toString());
+                        LOGGER.info(String.format("Error in reading vertex from graphson%s", vertex.toString()));
                     }
                 });
 
@@ -138,13 +135,13 @@ public final class GraphSONPartialReader implements GraphReader {
                                     : cachedOutV.addEdge(e.label(), cachedInV);
                     e.properties().forEachRemaining(p -> newEdge.property(p.key(), p.value()));
                 } else {
-                    LOGGER.debug("Ghost edges from " + cachedOutV + " to " + cachedInV);
+                    LOGGER.debug(String.format("Ghost edges from %s to %s", cachedOutV, cachedInV));
 
                 }
                 if (supportsTx && counter.incrementAndGet() % batchSize == 0)
                     graphToWriteTo.tx().commit();
             } catch (Exception ex) {
-                LOGGER.info("Error in writing vertex into graph" + e.toString());
+                LOGGER.info(String.format("Error in writing vertex into graph%s", e.toString()));
             }
         }));
 
@@ -168,9 +165,6 @@ public final class GraphSONPartialReader implements GraphReader {
             final Function<Attachable<Vertex>, Vertex> vertexAttachMethod,
             final Function<Attachable<Edge>, Edge> edgeAttachMethod, final Direction attachEdgesOfThisDirection)
             throws IOException {
-        // return readVertexStrings(inputStream).<Vertex>map(FunctionUtils.wrapFunction(line -> readVertex(new
-        // ByteArrayInputStream(line.getBytes()), vertexAttachMethod, edgeAttachMethod,
-        // attachEdgesOfThisDirection))).iterator();
         return reader.readVertices(inputStream, vertexAttachMethod, edgeAttachMethod, attachEdgesOfThisDirection);
 
     }
@@ -219,23 +213,6 @@ public final class GraphSONPartialReader implements GraphReader {
     @Override
     public Edge readEdge(final InputStream inputStream, final Function<Attachable<Edge>, Edge> edgeAttachMethod)
             throws IOException {
-        /*
-         * if (version == GraphSONVersion.v1_0) {
-         * final Map<String, Object> edgeData = mapper.readValue(inputStream, mapTypeReference);
-         * 
-         * final Map<String, Object> edgeProperties = edgeData.containsKey(GraphSONTokens.PROPERTIES) ?
-         * (Map<String, Object>) edgeData.get(GraphSONTokens.PROPERTIES) : Collections.EMPTY_MAP;
-         * final DetachedEdge edge = new DetachedEdge(edgeData.get(GraphSONTokens.ID),
-         * edgeData.get(GraphSONTokens.LABEL).toString(),
-         * edgeProperties,
-         * Pair.with(edgeData.get(GraphSONTokens.OUT), edgeData.get(GraphSONTokens.OUT_LABEL).toString()),
-         * Pair.with(edgeData.get(GraphSONTokens.IN), edgeData.get(GraphSONTokens.IN_LABEL).toString()));
-         * 
-         * return edgeAttachMethod.apply(edge);
-         * } else {
-         * return edgeAttachMethod.apply((DetachedEdge) mapper.readValue(inputStream, Edge.class));
-         * }
-         */
         return reader.readEdge(inputStream, edgeAttachMethod);
     }
 
@@ -252,19 +229,6 @@ public final class GraphSONPartialReader implements GraphReader {
     @Override
     public VertexProperty readVertexProperty(final InputStream inputStream,
             final Function<Attachable<VertexProperty>, VertexProperty> vertexPropertyAttachMethod) throws IOException {
-        /*
-         * if (version == GraphSONVersion.v1_0) {
-         * final Map<String, Object> vpData = mapper.readValue(inputStream, mapTypeReference);
-         * final Map<String, Object> metaProperties = (Map<String, Object>) vpData.get(GraphSONTokens.PROPERTIES);
-         * final DetachedVertexProperty vp = new DetachedVertexProperty(vpData.get(GraphSONTokens.ID),
-         * vpData.get(GraphSONTokens.LABEL).toString(),
-         * vpData.get(GraphSONTokens.VALUE), metaProperties);
-         * return vertexPropertyAttachMethod.apply(vp);
-         * } else {
-         * return vertexPropertyAttachMethod.apply((DetachedVertexProperty) mapper.readValue(inputStream,
-         * VertexProperty.class));
-         * }
-         */
         return reader.readVertexProperty(inputStream, vertexPropertyAttachMethod);
     }
 
@@ -279,16 +243,6 @@ public final class GraphSONPartialReader implements GraphReader {
     @Override
     public Property readProperty(final InputStream inputStream,
             final Function<Attachable<Property>, Property> propertyAttachMethod) throws IOException {
-        /*
-         * if (version == GraphSONVersion.v1_0) {
-         * final Map<String, Object> propertyData = mapper.readValue(inputStream, mapTypeReference);
-         * final DetachedProperty p = new DetachedProperty(propertyData.get(GraphSONTokens.KEY).toString(),
-         * propertyData.get(GraphSONTokens.VALUE));
-         * return propertyAttachMethod.apply(p);
-         * } else {
-         * return propertyAttachMethod.apply((DetachedProperty) mapper.readValue(inputStream, Property.class));
-         * }
-         */
         return reader.readProperty(inputStream, propertyAttachMethod);
     }
 
@@ -318,7 +272,7 @@ public final class GraphSONPartialReader implements GraphReader {
         return new Builder();
     }
 
-    public final static class Builder implements ReaderBuilder<GraphSONPartialReader> {
+    public static final class Builder implements ReaderBuilder<GraphSONPartialReader> {
         private long batchSize = 10000;
 
         private Mapper<ObjectMapper> mapper = GraphSONMapper.build().create();

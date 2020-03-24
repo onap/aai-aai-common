@@ -33,7 +33,6 @@ import org.apache.tinkerpop.gremlin.structure.io.Io;
 import org.apache.tinkerpop.gremlin.structure.io.IoRegistry;
 import org.apache.tinkerpop.gremlin.structure.io.Mapper;
 import org.apache.tinkerpop.gremlin.structure.io.graphson.GraphSONMapper;
-import org.apache.tinkerpop.gremlin.structure.io.graphson.GraphSONReader;
 import org.apache.tinkerpop.gremlin.structure.io.graphson.GraphSONVersion;
 import org.apache.tinkerpop.gremlin.structure.io.graphson.GraphSONWriter;
 
@@ -119,7 +118,7 @@ public final class GraphSONPartialIO
         return new Builder(version);
     }
 
-    public final static class Builder implements Io.Builder<GraphSONPartialIO> {
+    public static final class Builder implements Io.Builder<GraphSONPartialIO> {
 
         private IoRegistry registry = null;
         private Graph graph;

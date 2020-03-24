@@ -44,7 +44,6 @@ import org.springframework.context.annotation.PropertySource;
 @Configuration
 public class EdgesConfiguration {
 
-    private static final String CONFIG_TRANSLATOR = "config";
     private static final String SCHEMA_SERVICE_TRANSLATOR = "schema-service";
 
     @Autowired(required = false)

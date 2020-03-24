@@ -20,11 +20,11 @@
 
 package org.onap.aai.exceptions;
 
-import java.util.HashMap;
+import java.util.Map;
 
 public class AAIExceptionWithInfo extends AAIException {
 
-    HashMap<String, Object> infoHash;
+    Map<String, Object> infoHash;
     String info;
 
     /**
@@ -33,7 +33,7 @@ public class AAIExceptionWithInfo extends AAIException {
      * @param infoHash the info hash
      * @param info the info
      */
-    public AAIExceptionWithInfo(HashMap<String, Object> infoHash, String info) {
+    public AAIExceptionWithInfo(Map<String, Object> infoHash, String info) {
         super();
         setInfoHash(infoHash);
         setInfo(info);
@@ -46,7 +46,7 @@ public class AAIExceptionWithInfo extends AAIException {
      * @param infoHash the info hash
      * @param info the info
      */
-    public AAIExceptionWithInfo(String code, HashMap<String, Object> infoHash, String info) {
+    public AAIExceptionWithInfo(String code, Map<String, Object> infoHash, String info) {
         super(code);
         setInfoHash(infoHash);
         setInfo(info);
@@ -60,7 +60,7 @@ public class AAIExceptionWithInfo extends AAIException {
      * @param infoHash the info hash
      * @param info the info
      */
-    public AAIExceptionWithInfo(String code, String details, HashMap<String, Object> infoHash, String info) {
+    public AAIExceptionWithInfo(String code, String details, Map<String, Object> infoHash, String info) {
         super(code, details);
         setInfoHash(infoHash);
         setInfo(info);
@@ -74,7 +74,7 @@ public class AAIExceptionWithInfo extends AAIException {
      * @param infoHash the info hash
      * @param info the info
      */
-    public AAIExceptionWithInfo(String code, Throwable cause, HashMap<String, Object> infoHash, String info) {
+    public AAIExceptionWithInfo(String code, Throwable cause, Map<String, Object> infoHash, String info) {
         super(code, cause);
         setInfoHash(infoHash);
         setInfo(info);
@@ -89,7 +89,7 @@ public class AAIExceptionWithInfo extends AAIException {
      * @param infoHash the info hash
      * @param info the info
      */
-    public AAIExceptionWithInfo(String code, Throwable cause, String details, HashMap<String, Object> infoHash,
+    public AAIExceptionWithInfo(String code, Throwable cause, String details, Map<String, Object> infoHash,
             String info) {
         super(code, cause, details);
         setInfoHash(infoHash);
@@ -101,7 +101,7 @@ public class AAIExceptionWithInfo extends AAIException {
      *
      * @return the info hash
      */
-    public HashMap<String, Object> getInfoHash() {
+    public Map<String, Object> getInfoHash() {
         return infoHash;
     }
 
@@ -110,7 +110,7 @@ public class AAIExceptionWithInfo extends AAIException {
      *
      * @param infoHash the info hash
      */
-    public void setInfoHash(HashMap<String, Object> infoHash) {
+    public void setInfoHash(Map<String, Object> infoHash) {
         this.infoHash = infoHash;
     }
 
