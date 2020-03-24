@@ -19,8 +19,6 @@
  */
 package org.onap.aai.serialization.db;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.google.common.base.CaseFormat;
 import org.apache.commons.lang.StringUtils;
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
@@ -69,6 +67,8 @@ import org.onap.aai.util.AAIConfig;
 import org.onap.aai.util.AAIConstants;
 import org.onap.aai.util.delta.*;
 import org.onap.aai.workarounds.NamingExceptions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
 import javax.ws.rs.core.UriBuilder;

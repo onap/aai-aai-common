@@ -20,9 +20,9 @@
 
 package org.onap.aai.util;
 
-import java.io.UnsupportedEncodingException;
-
 import org.springframework.web.util.UriUtils;
+
+import java.io.UnsupportedEncodingException;
 
 public class RestURLEncoder {
 

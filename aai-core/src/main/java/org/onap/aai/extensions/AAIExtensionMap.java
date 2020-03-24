@@ -20,14 +20,6 @@
 
 package org.onap.aai.extensions;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.UriInfo;
-
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
@@ -36,6 +28,13 @@ import org.onap.aai.introspection.Loader;
 import org.onap.aai.rest.db.DBRequest;
 import org.onap.aai.rest.db.HttpEntry;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.UriInfo;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class AAIExtensionMap {
     // =======================================================================

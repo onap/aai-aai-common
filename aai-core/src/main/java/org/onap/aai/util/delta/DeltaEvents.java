@@ -20,13 +20,16 @@
 
 package org.onap.aai.util.delta;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import com.google.gson.*;
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.dmaap.AAIDmaapEventJMSProducer;
 import org.onap.aai.dmaap.MessageProducer;
 import org.onap.aai.util.AAIConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

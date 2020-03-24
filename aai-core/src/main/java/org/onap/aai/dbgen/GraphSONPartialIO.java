@@ -20,22 +20,17 @@
 
 package org.onap.aai.dbgen;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Optional;
-import java.util.function.Consumer;
-
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.io.Io;
 import org.apache.tinkerpop.gremlin.structure.io.IoRegistry;
 import org.apache.tinkerpop.gremlin.structure.io.Mapper;
 import org.apache.tinkerpop.gremlin.structure.io.graphson.GraphSONMapper;
-import org.apache.tinkerpop.gremlin.structure.io.graphson.GraphSONReader;
 import org.apache.tinkerpop.gremlin.structure.io.graphson.GraphSONVersion;
 import org.apache.tinkerpop.gremlin.structure.io.graphson.GraphSONWriter;
+
+import java.io.*;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 /**
  * Constructs GraphSON IO implementations given a {@link Graph} and {@link IoRegistry}. Implementers of the
@@ -119,7 +114,7 @@ public final class GraphSONPartialIO
         return new Builder(version);
     }
 
-    public final static class Builder implements Io.Builder<GraphSONPartialIO> {
+    public static final class Builder implements Io.Builder<GraphSONPartialIO> {
 
         private IoRegistry registry = null;
         private Graph graph;

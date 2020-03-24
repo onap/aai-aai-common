@@ -20,8 +20,6 @@
 
 package org.onap.aai.parsers.query;
 
-import java.net.URI;
-
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.onap.aai.config.SpringContextAware;
 import org.onap.aai.introspection.Loader;
@@ -30,6 +28,8 @@ import org.onap.aai.introspection.LoaderUtil;
 import org.onap.aai.query.builder.QueryBuilder;
 import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.setup.SchemaVersions;
+
+import java.net.URI;
 
 /**
  * The Class QueryParser.

@@ -20,11 +20,11 @@
 
 package org.onap.aai.introspection.tools;
 
-import java.util.Map;
-import java.util.UUID;
-
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.schema.enums.PropertyMetadata;
+
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * <b>CreateUUID</b> is an issue resolver that is responsible

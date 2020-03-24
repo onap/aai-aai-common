@@ -21,14 +21,12 @@
 package org.onap.aai.query.builder;
 
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.parsers.query.QueryParser;
-import org.onap.aai.parsers.query.TraversalStrategy;
 
 import javax.ws.rs.core.MultivaluedMap;
 import java.io.UnsupportedEncodingException;

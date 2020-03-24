@@ -22,20 +22,7 @@
 
 package org.onap.aai.audit;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.google.common.base.CaseFormat;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.apache.commons.lang.StringUtils;
 import org.onap.aai.config.SpringContextAware;
 import org.onap.aai.introspection.Introspector;
@@ -46,7 +33,13 @@ import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.onap.aai.logging.LogFormatTools;
 import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.setup.SchemaVersions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * The Class ListEndpoints.
@@ -76,7 +69,6 @@ public class ListEndpoints {
         if (schemaUriBasePath == null) {
             String errorMsg = "Unable to find the property schema.uri.base.path,"
                     + " please check if specified in system property or in schema-ingest.properties";
-            System.err.println(errorMsg);
             LOGGER.error(errorMsg);
         }
 
@@ -96,11 +88,11 @@ public class ListEndpoints {
         Loader loader = SpringContextAware.getBean(LoaderFactory.class).createLoaderForVersion(ModelType.MOXY, version);
 
         try {
-            final Introspector start = loader.introspectorFromName(this.START);
+            final Introspector start = loader.introspectorFromName(START);
             Set<String> startMap = new HashSet<>();
             beginAudit(start, basePath + "/" + version, startMap);
         } catch (AAIUnknownObjectException e) {
-            throw new RuntimeException("Failed to find object " + this.START + ", cannot run ListEndpoints audit");
+            throw new RuntimeException("Failed to find object " + START + ", cannot run ListEndpoints audit");
         }
     }
 
@@ -114,7 +106,7 @@ public class ListEndpoints {
 
         String currentUri = "";
 
-        if (!obj.getDbName().equals("inventory")) {
+        if (!obj.getDbName().equals(START)) {
             currentUri = uri + obj.getGenericURI();
         } else {
             currentUri = uri;
@@ -125,8 +117,6 @@ public class ListEndpoints {
         if (!obj.isContainer()) {
             endpoints.add(currentUri);
         }
-
-        String dbName = obj.getDbName();
 
         populateLogicalName(obj, uri, currentUri);
 
@@ -196,7 +186,7 @@ public class ListEndpoints {
         }
 
         if (uri.endsWith("/relationship-list")) {
-            uri = uri.substring(0, uri.lastIndexOf("/"));
+            uri = uri.substring(0, uri.lastIndexOf('/'));
         }
 
         String logicalName = "";
@@ -222,8 +212,8 @@ public class ListEndpoints {
 
         if (endpointToLogicalName.containsKey(uri) && uri.endsWith("}")) {
             logicalName = logicalName + "From" + endpointToLogicalName.get(uri);
-        } else if (endpointToLogicalName.containsKey(uri.substring(0, uri.lastIndexOf("/")))) {
-            logicalName = logicalName + "From" + endpointToLogicalName.get(uri.substring(0, uri.lastIndexOf("/")));
+        } else if (endpointToLogicalName.containsKey(uri.substring(0, uri.lastIndexOf('/')))) {
+            logicalName = logicalName + "From" + endpointToLogicalName.get(uri.substring(0, uri.lastIndexOf('/')));
         }
 
         endpointToLogicalName.put(currentUri, logicalName);
@@ -264,7 +254,6 @@ public class ListEndpoints {
         Matcher m = null;
         if (!filterOut.equals("")) {
             p = Pattern.compile(filterOut);
-            m = null;
         }
         for (String s : endpoints) {
             if (p != null) {

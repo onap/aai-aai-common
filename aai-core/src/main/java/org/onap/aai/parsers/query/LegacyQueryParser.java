@@ -20,17 +20,6 @@
 
 package org.onap.aai.parsers.query;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.*;
-import java.util.Map.Entry;
-
-import javax.ws.rs.core.MultivaluedMap;
-
 import org.onap.aai.edges.enums.EdgeType;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
@@ -43,6 +32,15 @@ import org.onap.aai.parsers.uri.URIToObject;
 import org.onap.aai.query.builder.QueryBuilder;
 import org.onap.aai.restcore.util.URITools;
 import org.onap.aai.schema.enums.PropertyMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.ws.rs.core.MultivaluedMap;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * The Class LegacyQueryParser.

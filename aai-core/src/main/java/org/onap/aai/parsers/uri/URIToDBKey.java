@@ -21,22 +21,20 @@
 package org.onap.aai.parsers.uri;
 
 import com.google.common.base.Joiner;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.ws.rs.core.MultivaluedMap;
-
 import org.onap.aai.edges.enums.EdgeType;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
 
+import javax.ws.rs.core.MultivaluedMap;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Creates a Unique database key from a URI
- * 
+ *
  * The key is of the form node-type/key(s).
  */
 public class URIToDBKey implements Parsable {

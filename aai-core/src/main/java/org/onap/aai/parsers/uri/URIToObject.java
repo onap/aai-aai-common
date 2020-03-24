@@ -20,13 +20,6 @@
 
 package org.onap.aai.parsers.uri;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.util.HashMap;
-import java.util.List;
-
-import javax.ws.rs.core.MultivaluedMap;
-
 import org.onap.aai.edges.enums.EdgeType;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
@@ -34,10 +27,16 @@ import org.onap.aai.introspection.Loader;
 import org.onap.aai.schema.enums.ObjectMetadata;
 import org.onap.aai.setup.SchemaVersion;
 
+import javax.ws.rs.core.MultivaluedMap;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.List;
+
 /**
  * Given a URI this class returns an object, or series of nested objects
  * with their keys populated based off the values in the URI.
- * 
+ *
  * It populates the keys in the order they are listed in the model.
  */
 public class URIToObject implements Parsable {

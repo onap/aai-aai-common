@@ -20,20 +20,17 @@
 
 package org.onap.aai.introspection.sideeffect;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.onap.aai.exceptions.AAIException;
+import org.onap.aai.introspection.Introspector;
+import org.onap.aai.serialization.db.DBSerializer;
+import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.util.LinkedHashSet;
 import java.util.Set;
-
-import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.onap.aai.exceptions.AAIException;
-import org.onap.aai.introspection.Introspector;
-import org.onap.aai.serialization.db.DBSerializer;
-import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 
 public class SideEffectRunner {
 

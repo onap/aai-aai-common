@@ -20,8 +20,6 @@
 
 package org.onap.aai.introspection;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.google.common.base.CaseFormat;
 import org.apache.commons.lang.ClassUtils;
 import org.eclipse.persistence.exceptions.DynamicException;
@@ -36,6 +34,8 @@ import org.onap.aai.schema.enums.ObjectMetadata;
 import org.onap.aai.schema.enums.PropertyMetadata;
 import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.workarounds.NamingExceptions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;

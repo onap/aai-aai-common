@@ -20,13 +20,6 @@
 
 package org.onap.aai.query.builder;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.ws.rs.core.MultivaluedMap;
-
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.onap.aai.exceptions.AAIException;
@@ -35,6 +28,12 @@ import org.onap.aai.introspection.Loader;
 import org.onap.aai.parsers.query.QueryParser;
 import org.onap.aai.parsers.query.TraversalStrategy;
 import org.onap.aai.parsers.query.UniqueStrategy;
+
+import javax.ws.rs.core.MultivaluedMap;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The Class GremlinUnique.

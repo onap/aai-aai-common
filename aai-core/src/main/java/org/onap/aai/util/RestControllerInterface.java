@@ -21,7 +21,6 @@
 package org.onap.aai.util;
 
 import org.onap.aai.exceptions.AAIException;
-import org.onap.aai.util.RestObject;
 
 public interface RestControllerInterface {
 

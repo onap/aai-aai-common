@@ -20,8 +20,6 @@
 
 package org.onap.aai.restcore;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
@@ -30,6 +28,8 @@ import org.onap.aai.introspection.tools.*;
 import org.onap.aai.logging.ErrorLogHelper;
 import org.onap.aai.util.AAIConfig;
 import org.onap.aai.util.FormatDate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;

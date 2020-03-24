@@ -22,9 +22,6 @@ package org.onap.aai.query.builder;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-
-import java.util.*;
-
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
@@ -48,6 +45,8 @@ import org.onap.aai.introspection.Loader;
 import org.onap.aai.schema.enums.ObjectMetadata;
 import org.onap.aai.schema.enums.PropertyMetadata;
 import org.onap.aai.serialization.db.exceptions.NoEdgeRuleFoundException;
+
+import java.util.*;
 
 /**
  * The Class GraphTraversalBuilder.

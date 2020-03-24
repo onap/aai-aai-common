@@ -20,15 +20,14 @@
 
 package org.onap.aai.parsers.query;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-
-import javax.ws.rs.core.MultivaluedMap;
-
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.query.builder.QueryBuilder;
+
+import javax.ws.rs.core.MultivaluedMap;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
 
 /**
  * The Class QueryParserStrategy.
@@ -86,7 +85,7 @@ public abstract class QueryParserStrategy {
 
     /**
      * Builds an ObjectNameQueryParser.
-     * 
+     *
      * @param objName - the name of the object type as used in the database
      * @return
      */

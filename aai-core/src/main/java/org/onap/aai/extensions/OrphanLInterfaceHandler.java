@@ -20,22 +20,21 @@
 
 package org.onap.aai.extensions;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.onap.aai.edges.enums.EdgeType;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
-import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.onap.aai.parsers.query.QueryParser;
 import org.onap.aai.query.builder.QueryBuilder;
 import org.onap.aai.rest.db.DBRequest;
 import org.onap.aai.restcore.HttpMethod;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class OrphanLInterfaceHandler {
 

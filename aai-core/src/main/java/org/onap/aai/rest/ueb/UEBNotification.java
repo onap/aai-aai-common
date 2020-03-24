@@ -20,8 +20,6 @@
 
 package org.onap.aai.rest.ueb;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
@@ -33,6 +31,8 @@ import org.onap.aai.logging.LogFormatTools;
 import org.onap.aai.parsers.uri.URIToObject;
 import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.setup.SchemaVersions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.Response.Status;
 import java.io.UnsupportedEncodingException;

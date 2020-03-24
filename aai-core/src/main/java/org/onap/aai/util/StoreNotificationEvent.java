@@ -20,15 +20,6 @@
 
 package org.onap.aai.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.StringWriter;
-import java.util.Iterator;
-import java.util.UUID;
-
-import javax.xml.bind.Marshaller;
-
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
 import org.json.JSONException;
@@ -40,8 +31,15 @@ import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
+
+import javax.xml.bind.Marshaller;
+import java.io.StringWriter;
+import java.util.Iterator;
+import java.util.UUID;
 
 public class StoreNotificationEvent {
 

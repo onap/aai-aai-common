@@ -20,12 +20,6 @@
 
 package org.onap.aai.parsers.query;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriBuilder;
-
 import org.onap.aai.edges.enums.EdgeType;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
@@ -34,6 +28,11 @@ import org.onap.aai.parsers.uri.Parsable;
 import org.onap.aai.parsers.uri.URIParser;
 import org.onap.aai.parsers.uri.URIToDBKey;
 import org.onap.aai.query.builder.QueryBuilder;
+
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.UriBuilder;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
 
 /**
  * The Class UniqueURIQueryParser.

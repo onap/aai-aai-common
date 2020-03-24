@@ -20,36 +20,25 @@
 
 package org.onap.aai.dbmap;
 
-import static org.janusgraph.graphdb.configuration.GraphDatabaseConfiguration.*;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import com.google.common.base.Preconditions;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterators;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.lang.management.ManagementFactory;
-import java.util.Iterator;
-import java.util.Objects;
-import java.util.regex.Pattern;
-
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.lang.StringUtils;
 import org.janusgraph.diskstorage.configuration.ConfigElement;
-import org.janusgraph.diskstorage.configuration.backend.CommonsConfiguration;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.lang.management.ManagementFactory;
+import java.util.Objects;
 
 /**
  * For building a config that JanusGraphFactory.open can use with an identifiable graph.unique-instance-id
  */
 public class AAIGraphConfig {
 
-    private static final Logger logger = LoggerFactory.getLogger(AAIGraphConfig.class);
 
     private AAIGraphConfig() {
-    };
+
+    }
 
     public PropertiesConfiguration getCc(String configPath, String graphType, String service)
             throws ConfigurationException, FileNotFoundException {

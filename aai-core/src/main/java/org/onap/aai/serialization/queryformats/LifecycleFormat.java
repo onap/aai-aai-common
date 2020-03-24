@@ -20,8 +20,6 @@
 
 package org.onap.aai.serialization.queryformats;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.apache.tinkerpop.gremlin.structure.Edge;
@@ -31,6 +29,8 @@ import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.logging.LogFormatTools;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatQueryResultFormatNotSupported;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 

@@ -20,8 +20,6 @@
 
 package org.onap.aai.introspection.tools;
 
-import java.util.*;
-
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
@@ -29,6 +27,8 @@ import org.onap.aai.introspection.IntrospectorWalker;
 import org.onap.aai.introspection.Visibility;
 import org.onap.aai.introspection.Wanderer;
 import org.onap.aai.schema.enums.PropertyMetadata;
+
+import java.util.*;
 
 public class IntrospectorValidator implements Wanderer {
 

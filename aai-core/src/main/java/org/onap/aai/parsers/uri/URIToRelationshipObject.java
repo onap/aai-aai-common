@@ -20,14 +20,6 @@
 
 package org.onap.aai.parsers.uri;
 
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-
-import javax.ws.rs.core.MultivaluedMap;
-
 import org.onap.aai.config.SpringContextAware;
 import org.onap.aai.edges.enums.EdgeType;
 import org.onap.aai.exceptions.AAIException;
@@ -39,13 +31,20 @@ import org.onap.aai.setup.SchemaVersions;
 import org.onap.aai.util.AAIConfig;
 import org.onap.aai.util.AAIConstants;
 
+import javax.ws.rs.core.MultivaluedMap;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+
 /**
  * Given a URI a Relationship Object is returned.
- * 
+ *
  * The relationship-data objects are created from the keys in the model.
  * The keys are processed in the order they appear in the model.
  *
- * 
+ *
  */
 public class URIToRelationshipObject implements Parsable {
 

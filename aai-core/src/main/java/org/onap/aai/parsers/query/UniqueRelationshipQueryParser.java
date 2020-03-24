@@ -20,13 +20,13 @@
 
 package org.onap.aai.parsers.query;
 
-import java.io.UnsupportedEncodingException;
-
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.parsers.relationship.RelationshipToURI;
 import org.onap.aai.query.builder.QueryBuilder;
+
+import java.io.UnsupportedEncodingException;
 
 /**
  * The Class UniqueRelationshipQueryParser.

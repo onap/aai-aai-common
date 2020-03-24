@@ -20,9 +20,9 @@
 
 package org.onap.aai.introspection;
 
-import java.util.List;
-
 import org.onap.aai.exceptions.AAIException;
+
+import java.util.List;
 
 public interface Wanderer {
 

@@ -22,9 +22,6 @@
 
 package org.onap.aai.config;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.onap.aai.introspection.LoaderFactory;
 import org.onap.aai.introspection.MoxyLoader;
 import org.onap.aai.setup.SchemaVersion;
@@ -33,6 +30,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Import({ConfigConfiguration.class, SchemaServiceConfiguration.class, NodesConfiguration.class,
         EdgesConfiguration.class})

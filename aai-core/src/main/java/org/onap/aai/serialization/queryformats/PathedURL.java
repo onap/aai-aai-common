@@ -22,11 +22,6 @@ package org.onap.aai.serialization.queryformats;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.exceptions.AAIException;
@@ -41,6 +36,9 @@ import org.onap.aai.serialization.queryformats.params.NodesOnly;
 import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
 
 import javax.ws.rs.core.MultivaluedMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public final class PathedURL extends MultiFormatMapper {
 

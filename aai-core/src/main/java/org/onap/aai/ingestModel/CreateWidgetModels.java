@@ -20,17 +20,6 @@
 
 package org.onap.aai.ingestModel;
 
-import java.io.File;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.UUID;
-
-import javax.xml.transform.stream.StreamSource;
-
-import org.onap.aai.config.SpringContextAware;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.introspection.LoaderFactory;
@@ -39,6 +28,15 @@ import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.util.AAIConfig;
 import org.onap.aai.util.AAIConstants;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+import javax.xml.transform.stream.StreamSource;
+import java.io.File;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * The Class CreateWidgetModels.

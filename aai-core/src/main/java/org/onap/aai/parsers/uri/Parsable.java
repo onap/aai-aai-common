@@ -20,11 +20,11 @@
 
 package org.onap.aai.parsers.uri;
 
-import javax.ws.rs.core.MultivaluedMap;
-
 import org.onap.aai.edges.enums.EdgeType;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
+
+import javax.ws.rs.core.MultivaluedMap;
 
 /**
  * The Interface Parsable.
@@ -32,7 +32,7 @@ import org.onap.aai.introspection.Introspector;
 public interface Parsable {
 
     /**
-     * 
+     *
      * @param obj
      * @param type
      * @param uriKeys

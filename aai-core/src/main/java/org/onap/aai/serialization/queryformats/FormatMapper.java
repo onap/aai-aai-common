@@ -21,13 +21,12 @@
 package org.onap.aai.serialization.queryformats;
 
 import com.google.gson.JsonObject;
+import org.onap.aai.serialization.queryformats.exceptions.AAIFormatQueryResultFormatNotSupported;
+import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
-import org.onap.aai.serialization.queryformats.exceptions.AAIFormatQueryResultFormatNotSupported;
-import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
 
 public interface FormatMapper {
 

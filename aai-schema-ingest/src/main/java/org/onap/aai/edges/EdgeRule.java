@@ -24,7 +24,6 @@ import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.onap.aai.edges.enums.*;
 
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -77,7 +76,7 @@ public class EdgeRule {
         this.label = edgeRule.label;
         this.direction = Direction.valueOf(edgeRule.direction.toString());
         this.multiplicityRule = MultiplicityRule.valueOf(edgeRule.multiplicityRule.toString());
-        this.edgeFields = new HashMap<>(edgeRule.edgeFields);
+        this.edgeFields = new EnumMap<>(edgeRule.edgeFields);
         this.isDefaultEdge = edgeRule.isDefaultEdge;
         this.description = edgeRule.description;
         this.isPrivateEdge = edgeRule.isPrivateEdge;

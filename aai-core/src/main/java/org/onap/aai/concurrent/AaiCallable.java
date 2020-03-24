@@ -20,10 +20,10 @@
 
 package org.onap.aai.concurrent;
 
+import org.slf4j.MDC;
+
 import java.util.Map;
 import java.util.concurrent.Callable;
-
-import org.slf4j.MDC;
 
 /**
  * The Class AaiCallable ensures that the Callable gets a copy of the MDC, so that any logging related fields are

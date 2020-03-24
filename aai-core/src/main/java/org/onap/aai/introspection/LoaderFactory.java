@@ -20,10 +20,10 @@
 
 package org.onap.aai.introspection;
 
-import java.util.Map;
-
 import org.onap.aai.setup.SchemaVersion;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Map;
 
 public class LoaderFactory {
 

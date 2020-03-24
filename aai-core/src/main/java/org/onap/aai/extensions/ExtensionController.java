@@ -20,13 +20,12 @@
 
 package org.onap.aai.extensions;
 
+import org.onap.aai.exceptions.AAIException;
+import org.onap.aai.util.AAIConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
-
-import org.onap.aai.exceptions.AAIException;
-import org.onap.aai.util.AAIConfig;
 
 public class ExtensionController {
 

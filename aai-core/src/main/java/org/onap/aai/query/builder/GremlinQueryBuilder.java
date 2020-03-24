@@ -22,14 +22,9 @@
 
 package org.onap.aai.query.builder;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-
-import java.util.*;
-
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
@@ -48,6 +43,10 @@ import org.onap.aai.introspection.Loader;
 import org.onap.aai.restcore.search.GremlinGroovyShell;
 import org.onap.aai.schema.enums.ObjectMetadata;
 import org.onap.aai.serialization.db.exceptions.NoEdgeRuleFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.*;
 
 /**
  * The Class GremlinQueryBuilder.
@@ -180,7 +179,7 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
         stepIndex++;
         return (QueryBuilder<Vertex>) this;
     }
-    
+
     /**
      * @{inheritDoc}
      */
@@ -189,7 +188,7 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
         ArrayList<String> arguments = new ArrayList<>(Arrays.asList(value.split(",")));
         //add the single quotes
         for (int i = 0; i < arguments.size(); i++) {
-           if(arguments.get(i) != null && !arguments.get(i).startsWith("'") 
+           if(arguments.get(i) != null && !arguments.get(i).startsWith("'")
         		   && !arguments.get(i).endsWith("'")) {
         	   arguments.set(i,"'" + arguments.get(i).trim() + "'");
            }
@@ -720,7 +719,7 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
 
         return this;
     }
-    
+
     @Override
     public QueryBuilder<E> valueMap() {
         this.list.add(".valueMap()");
@@ -728,7 +727,7 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
 
         return this;
     }
-    
+
     @Override
     public QueryBuilder<E> valueMap(String... names) {
     	 String stepString = ".valueMap('";
@@ -744,7 +743,7 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
 
          return this;
     }
-    
+
 
     /**
      * {@inheritDoc}

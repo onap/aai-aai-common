@@ -19,8 +19,6 @@
  */
 package org.onap.aai.serialization.db;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.commons.lang.StringUtils;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.onap.aai.exceptions.AAIException;
@@ -30,6 +28,8 @@ import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 import org.onap.aai.serialization.engines.query.QueryEngine;
 import org.onap.aai.util.AAIConfigProxy;
 import org.onap.aai.util.AAIConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Objects;

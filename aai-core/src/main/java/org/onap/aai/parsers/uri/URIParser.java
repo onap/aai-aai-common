@@ -21,14 +21,6 @@
 
 package org.onap.aai.parsers.uri;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.util.Set;
-
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriBuilder;
-
 import org.onap.aai.edges.enums.EdgeType;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
@@ -37,6 +29,13 @@ import org.onap.aai.parsers.exceptions.DoesNotStartWithValidNamespaceException;
 import org.onap.aai.rest.RestTokens;
 import org.onap.aai.schema.enums.ObjectMetadata;
 import org.springframework.web.util.UriUtils;
+
+import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.UriBuilder;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.util.Set;
 
 /**
  * The Class URIParser.
@@ -52,7 +51,7 @@ public class URIParser {
     private URI originalURI = null;
 
     private MultivaluedMap<String, String> queryParams = null;
-  
+
     private static String aaiExceptionCode = "AAI_3001";
 
     /**

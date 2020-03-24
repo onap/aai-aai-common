@@ -20,11 +20,11 @@
 
 package org.onap.aai.serialization.db;
 
+import org.apache.tinkerpop.gremlin.structure.Direction;
+
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.tinkerpop.gremlin.structure.Direction;
 
 public class EdgePropertyMap<K, V> extends HashMap<K, V> {
 

@@ -20,25 +20,24 @@
 
 package org.onap.aai.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.jersey.api.client.ClientResponse;
+import org.onap.aai.exceptions.AAIException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
-import org.onap.aai.exceptions.AAIException;
 
 public class RestController implements RestControllerInterface {
 
@@ -474,17 +473,17 @@ public class RestController implements RestControllerInterface {
      */
     /*
      * DoesResourceExist
-     * 
+     *
      * To check whether a resource exist or get a copy of the existing version of the resource
-     * 
+     *
      * Resourcepath: should contain the qualified resource path (including encoded unique key identifier value),
      * resourceClassName: is the canonical name of the resource class name,
      * fromAppId:
      * transId:
-     * 
+     *
      * Will return null (if the resource doesn’t exist) (or)
      * Will return the specified resource from the Graph.
-     * 
+     *
      * Example:
      * LogicalLink llink = new LogicalLink();
      * String resourceClassName = llink.getClass().getCanonicalName();

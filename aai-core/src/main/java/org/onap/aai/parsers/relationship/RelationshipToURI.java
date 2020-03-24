@@ -20,19 +20,6 @@
 
 package org.onap.aai.parsers.relationship;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
-
-import javax.ws.rs.core.UriBuilder;
-
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.onap.aai.config.SpringContextAware;
 import org.onap.aai.edges.EdgeIngestor;
@@ -43,14 +30,28 @@ import org.onap.aai.edges.enums.EdgeType;
 import org.onap.aai.edges.exceptions.AmbiguousRuleChoiceException;
 import org.onap.aai.edges.exceptions.EdgeRuleNotFoundException;
 import org.onap.aai.exceptions.AAIException;
-import org.onap.aai.introspection.*;
+import org.onap.aai.introspection.Introspector;
+import org.onap.aai.introspection.IntrospectorFactory;
+import org.onap.aai.introspection.Loader;
+import org.onap.aai.introspection.ModelType;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.onap.aai.parsers.exceptions.AAIIdentityMapParseException;
 import org.onap.aai.parsers.exceptions.AmbiguousMapAAIException;
 import org.onap.aai.parsers.uri.URIParser;
 import org.onap.aai.schema.enums.ObjectMetadata;
 import org.onap.aai.setup.SchemaVersions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
+
+import javax.ws.rs.core.UriBuilder;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * The Class RelationshipToURI.
@@ -98,7 +99,7 @@ public class RelationshipToURI {
 
     /**
      * Parses the.
-     * 
+     *
      * @throws
      *
      *         @throws UnsupportedEncodingException the unsupported encoding exception

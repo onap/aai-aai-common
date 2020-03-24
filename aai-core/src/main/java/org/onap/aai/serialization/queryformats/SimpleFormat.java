@@ -22,12 +22,6 @@ package org.onap.aai.serialization.queryformats;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Property;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
@@ -36,6 +30,11 @@ import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
+
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class SimpleFormat extends RawFormat {
 

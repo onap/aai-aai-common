@@ -20,23 +20,16 @@
 
 package org.onap.aai.util;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.*;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
 
+import javax.annotation.Generated;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.annotation.Generated;
-
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
@@ -55,7 +48,7 @@ public class Entity {
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     /**
-     * 
+     *
      * @return
      *         The equipmentRole
      */
@@ -65,7 +58,7 @@ public class Entity {
     }
 
     /**
-     * 
+     *
      * @param equipmentRole
      *        The equipment-role
      */
@@ -80,7 +73,7 @@ public class Entity {
     }
 
     /**
-     * 
+     *
      * @return
      *         The action
      */
@@ -90,7 +83,7 @@ public class Entity {
     }
 
     /**
-     * 
+     *
      * @param action
      *        The action
      */
@@ -105,7 +98,7 @@ public class Entity {
     }
 
     /**
-     * 
+     *
      * @return
      *         The keyValueList
      */
@@ -115,7 +108,7 @@ public class Entity {
     }
 
     /**
-     * 
+     *
      * @param keyValueList
      *        The key-value-list
      */
@@ -130,7 +123,7 @@ public class Entity {
     }
 
     /**
-     * 
+     *
      * @return
      *         The selfLink
      */
@@ -140,7 +133,7 @@ public class Entity {
     }
 
     /**
-     * 
+     *
      * @param selfLink
      *        The self-link
      */

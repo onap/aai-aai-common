@@ -20,15 +20,6 @@
 
 package org.onap.aai.db;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
-
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 import org.onap.aai.exceptions.AAIException;
@@ -39,6 +30,11 @@ import org.onap.aai.parsers.query.QueryParser;
 import org.onap.aai.parsers.relationship.RelationshipToURI;
 import org.onap.aai.query.builder.QueryBuilder;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.util.*;
+import java.util.Map.Entry;
 
 public class DbMethHelper {
 
@@ -56,7 +52,7 @@ public class DbMethHelper {
     }
 
     /**
-     * 
+     *
      * @param type
      * @param map - form [{type}.{propname}:{value}]
      * @return

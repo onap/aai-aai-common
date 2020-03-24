@@ -20,10 +20,10 @@
 
 package org.onap.aai.introspection.tools;
 
-import java.util.Map;
-
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.schema.enums.PropertyMetadata;
+
+import java.util.Map;
 
 public class DefaultFields implements IssueResolver {
 

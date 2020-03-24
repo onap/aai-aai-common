@@ -33,7 +33,7 @@ public class AAIResourceKeys {
      */
     public List<AAIResourceKey> getAaiResourceKey() {
         if (aaiResourceKey == null) {
-            aaiResourceKey = new ArrayList<AAIResourceKey>();
+            aaiResourceKey = new ArrayList<>();
         }
         return aaiResourceKey;
     }

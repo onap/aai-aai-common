@@ -20,12 +20,6 @@
 
 package org.onap.aai.serialization.db;
 
-import java.util.EnumMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.UUID;
-
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Edge;
@@ -46,6 +40,12 @@ import org.onap.aai.serialization.db.exceptions.MultipleEdgeRuleFoundException;
 import org.onap.aai.serialization.db.exceptions.NoEdgeRuleFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.EnumMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.UUID;
 
 @Component
 public class EdgeSerializer {

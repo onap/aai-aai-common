@@ -20,24 +20,18 @@
 
 package org.onap.aai.restcore.util;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
-
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.sideeffect.exceptions.AAIMissingRequiredPropertyException;
 import org.onap.aai.schema.enums.PropertyMetadata;
 import org.springframework.web.util.UriUtils;
+
+import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.MultivaluedMap;
+import java.net.URI;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class URITools {
 

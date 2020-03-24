@@ -20,11 +20,11 @@
 
 package org.onap.aai.introspection.tools;
 
-import java.net.URI;
-
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.parsers.uri.URIToObject;
+
+import java.net.URI;
 
 public class InjectKeysFromURI implements IssueResolver {
 

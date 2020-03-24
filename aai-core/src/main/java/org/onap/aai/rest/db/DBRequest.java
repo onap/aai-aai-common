@@ -20,17 +20,16 @@
 
 package org.onap.aai.rest.db;
 
-import java.net.URI;
-import java.util.Optional;
-
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.UriInfo;
-
 import org.onap.aai.aailog.logs.DBRequestWrapper;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.MarshallerProperties;
 import org.onap.aai.parsers.query.QueryParser;
 import org.onap.aai.restcore.HttpMethod;
+
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.UriInfo;
+import java.net.URI;
+import java.util.Optional;
 
 /**
  * The Class DBRequest.

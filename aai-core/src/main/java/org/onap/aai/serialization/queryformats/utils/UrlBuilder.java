@@ -20,9 +20,6 @@
 
 package org.onap.aai.serialization.queryformats.utils;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.serialization.db.DBSerializer;
@@ -31,6 +28,9 @@ import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.setup.SchemaVersions;
 import org.onap.aai.util.AAIConfig;
 import org.onap.aai.util.AAIConstants;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
 
 public class UrlBuilder {
 

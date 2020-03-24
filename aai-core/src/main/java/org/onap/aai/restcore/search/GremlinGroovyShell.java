@@ -22,13 +22,12 @@ package org.onap.aai.restcore.search;
 
 import groovy.lang.Binding;
 import groovy.lang.Script;
-
-import java.util.Map;
-
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
+
+import java.util.Map;
 
 /**
  * Creates and returns a groovy shell with the

@@ -20,11 +20,7 @@
 
 package org.onap.aai.restcore;
 
-import org.apache.commons.cli.BasicParser;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.*;
 import org.eclipse.jetty.util.security.Password;
 
 /*
@@ -32,13 +28,13 @@ import org.eclipse.jetty.util.security.Password;
  * manually applying jetty obfuscation/deobfuscation
  * so that one can obfuscate the various passwords/secrets
  * in aaiconfig.properties.
- * 
+ *
  * Originally, they were being encrypted by a similar
  * command line utility, however the encryption key
  * was being hardcoded in the src package
  * which is a security violation.
  * Since this ultimately just moved the problem of how
- * to hide secrets to a different secret in a different file, 
+ * to hide secrets to a different secret in a different file,
  * and since that encryption was really just being done to
  * obfuscate those values in case someone needed to look at
  * properties with others looking at their screen,

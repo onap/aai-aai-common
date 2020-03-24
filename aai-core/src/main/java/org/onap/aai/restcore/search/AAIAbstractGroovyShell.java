@@ -22,11 +22,6 @@ package org.onap.aai.restcore.search;
 
 import groovy.lang.GroovyShell;
 import groovy.transform.TimedInterrupt;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.codehaus.groovy.ast.ClassHelper;
@@ -42,6 +37,10 @@ import org.onap.aai.introspection.ModelType;
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 import org.onap.aai.setup.SchemaVersions;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public abstract class AAIAbstractGroovyShell {
 

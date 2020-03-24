@@ -20,16 +20,16 @@
 
 package org.onap.aai.introspection;
 
+import org.json.simple.JSONObject;
+import org.onap.aai.schema.enums.ObjectMetadata;
+import org.onap.aai.schema.enums.PropertyMetadata;
+import org.onap.aai.setup.SchemaVersion;
+
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-
-import org.json.simple.JSONObject;
-import org.onap.aai.schema.enums.ObjectMetadata;
-import org.onap.aai.schema.enums.PropertyMetadata;
-import org.onap.aai.setup.SchemaVersion;
 
 public class JSONStrategy extends Introspector {
 
@@ -273,10 +273,10 @@ public class JSONStrategy extends Introspector {
     /*
      * @Override
      * public String findEdgeName(String parent, String child) {
-     * 
+     *
      * // Always has for now
      * return "has";
-     * 
+     *
      * }
      */
 
