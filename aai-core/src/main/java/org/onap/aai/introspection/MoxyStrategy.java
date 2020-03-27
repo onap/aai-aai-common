@@ -44,8 +44,6 @@ import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
 import org.onap.aai.config.SpringContextAware;
 import org.onap.aai.logging.LogFormatTools;
-import org.onap.aai.nodes.CaseFormatStore;
-import org.onap.aai.nodes.NodeIngestor;
 import org.onap.aai.restcore.MediaType;
 import org.onap.aai.schema.enums.ObjectMetadata;
 import org.onap.aai.schema.enums.PropertyMetadata;
