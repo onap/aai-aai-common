@@ -24,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.google.common.base.CaseFormat;
 import com.google.common.base.Joiner;
-
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
@@ -44,8 +43,6 @@ import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
 import org.onap.aai.config.SpringContextAware;
 import org.onap.aai.logging.LogFormatTools;
-import org.onap.aai.nodes.CaseFormatStore;
-import org.onap.aai.nodes.NodeIngestor;
 import org.onap.aai.restcore.MediaType;
 import org.onap.aai.schema.enums.ObjectMetadata;
 import org.onap.aai.schema.enums.PropertyMetadata;
