@@ -24,9 +24,6 @@ import static org.janusgraph.graphdb.configuration.GraphDatabaseConfiguration.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.google.common.base.Preconditions;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterators;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -34,7 +31,6 @@ import java.lang.management.ManagementFactory;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.regex.Pattern;
-
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.lang.StringUtils;

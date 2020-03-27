@@ -37,14 +37,12 @@ import org.janusgraph.core.Multiplicity;
 import org.janusgraph.core.PropertyKey;
 import org.janusgraph.core.schema.JanusGraphManagement;
 import org.onap.aai.config.SpringContextAware;
-import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.edges.EdgeIngestor;
 import org.onap.aai.edges.EdgeRule;
 import org.onap.aai.edges.exceptions.EdgeRuleNotFoundException;
 import org.onap.aai.introspection.*;
 import org.onap.aai.logging.LogFormatTools;
 import org.onap.aai.schema.enums.PropertyMetadata;
-import org.onap.aai.setup.SchemaVersions;
 import org.onap.aai.util.AAIConfig;
 
 public class SchemaGenerator {
