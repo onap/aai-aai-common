@@ -1,4 +1,5 @@
 .. This work is licensed under a Creative Commons Attribution 4.0 International License.
+.. _architecture:
 
 Architecture
 ------------
@@ -6,7 +7,7 @@ Architecture
 AAI Architecture in ONAP
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-AAI provides ONAP with its logically centralized view of inventory data, taking in updates from orchestrators, controllers, and assurance systems.  With that responsibility, it takes on a key data management role, providing the ONAP components not only the current “as-built” view of the services, but also the view into the data of the system itself; it’s integrity, it’s chronology, and where the source of the information can be found.
+AAI provides ONAP with its logically centralized view of inventory data, taking in updates from orchestrators, controllers, and assurance systems.  With that responsibility, it takes on a key data management role, providing the ONAP components not only the current "as-built" view of the services, but also the view into the data of the system itself; it's integrity, it's chronology, and where the source of the information can be found.
 
 In addition to inventory and topology management, AAI provides the ability to do inventory administration.  Data in AAI is continually updated in real-time as changes are made within the cloud. Because AAI is metadata-driven, new resources and services can be added quickly with Service Design and Creation (SDC) catalog definitions, using the AAI model loader, thus eliminating the need for lengthy development cycles. In addition, new inventory item types can be added quickly through schema configuration files.
 
