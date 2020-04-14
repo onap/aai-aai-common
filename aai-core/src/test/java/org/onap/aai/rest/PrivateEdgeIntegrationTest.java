@@ -21,6 +21,7 @@
 package org.onap.aai.rest;
 
 import static junit.framework.TestCase.fail;
+
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -51,7 +52,9 @@ import org.onap.aai.PayloadUtil;
 import org.onap.aai.dbmap.AAIGraph;
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.setup.SchemaVersion;
+import org.springframework.test.annotation.DirtiesContext;
 
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 @RunWith(value = Parameterized.class)
 public class PrivateEdgeIntegrationTest extends AAISetup {
 
