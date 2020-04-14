@@ -44,6 +44,7 @@ import org.onap.aai.serialization.queryformats.exceptions.AAIFormatQueryResultFo
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
 import org.onap.aai.setup.SchemaVersion;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.Arrays;
 import java.util.List;
@@ -51,6 +52,10 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
+
+
+
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 
 public class CountQuerySupportTest extends AAISetup {
 
