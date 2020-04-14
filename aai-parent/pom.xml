@@ -72,7 +72,8 @@ limitations under the License.
     <jackson.bom.version>2.10.1</jackson.bom.version>
     <janusgraph.version>0.2.3</janusgraph.version>
     <javatuples.version>1.2</javatuples.version>
-    <jaxb.version>2.2.12</jaxb.version>
+    <jaxb.version>2.3.1</jaxb.version>
+    <old.jaxb.version>2.3.0.1</old.jaxb.version>
     <jaxrs.version>2.0.1</jaxrs.version>
     <jcommander.version>1.78</jcommander.version>
     <jersey.version>1.19.4</jersey.version>
@@ -502,7 +503,19 @@ limitations under the License.
       <dependency>
         <groupId>com.sun.xml.bind</groupId>
         <artifactId>jaxb-xjc</artifactId>
-        <version>${jaxb.version}</version>
+        <version>${old.jaxb.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.sun.xml.bind</groupId>
+        <artifactId>jaxb-impl</artifactId>
+        <version>${old.jaxb.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.sun.xml.bind</groupId>
+        <artifactId>jaxb-core</artifactId>
+        <version>${old.jaxb.version}</version>
       </dependency>
 
       <dependency>
