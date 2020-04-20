@@ -16,6 +16,23 @@
       "revId": "f7f5094cccca417f3411cfef05335b40d22db696",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "81318fdb_3ff9df70",
+        "filename": "aai-core/src/main/java/org/onap/aai/serialization/queryformats/GraphSON.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2020-04-20T14:59:40Z",
+      "side": 1,
+      "message": "These changes seem inconsistent - sometimes it\u0027s moving like this from java.util.* to specifying the specific classes.   What\u0027s the rationale for that?",
+      "revId": "f7f5094cccca417f3411cfef05335b40d22db696",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
     }
   ]
 }
