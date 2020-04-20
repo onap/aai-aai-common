@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bc917ffe_4d248ec9",
+        "filename": "aai-core/src/main/java/org/onap/aai/restcore/JettyObfuscationConversionCommandLineUtil.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2020-04-20T14:54:07Z",
+      "side": 1,
+      "message": "Is this * import preferred?",
+      "revId": "f7f5094cccca417f3411cfef05335b40d22db696",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
