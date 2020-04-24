@@ -67,8 +67,16 @@ public class JSONStrategyTest extends AAISetup {
         Assert.assertEquals("value1", jsonStrategy.getValue("hostname"));
         Assert.assertEquals(4, jsonStrategy.getValue("numberofCpus"));
         Assert.assertEquals(1024, jsonStrategy.getValue("ramInMegabytes"));
-    }
 
+    }
+    @Test
+    public void testGetMethods(){
+        Assert.assertEquals("pserver-type",jsonStrategy.getName());
+        Assert.assertEquals("pserver-type",jsonStrategy.getDbName());
+        Assert.assertEquals("",jsonStrategy.getGenericURI());
+        Assert.assertNull(jsonStrategy.getChildName());
+        Assert.assertEquals("key",jsonStrategy.preProcessKey("key"));
+    }
     @Test
     public void getPropertiesTest() {
         Set<String> expected = new HashSet<>();
