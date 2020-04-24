@@ -93,9 +93,9 @@ public class HttpsAuthClient {
 
             ctx = SSLContext.getInstance("TLSv1.2");
             KeyManagerFactory kmf = null;
-            try {
+
+            try(FileInputStream fin = new FileInputStream(keystorePath)) {
                 kmf = KeyManagerFactory.getInstance("SunX509");
-                FileInputStream fin = new FileInputStream(keystorePath);
                 KeyStore ks = KeyStore.getInstance("PKCS12");
                 char[] pwd = keystorePassword.toCharArray();
                 ks.load(fin, pwd);
