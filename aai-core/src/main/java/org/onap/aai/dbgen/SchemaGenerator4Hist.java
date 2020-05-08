@@ -20,12 +20,9 @@
 
 package org.onap.aai.dbgen;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.google.common.collect.Multimap;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.janusgraph.core.Cardinality;
-import org.janusgraph.core.JanusGraph;
 import org.janusgraph.core.Multiplicity;
 import org.janusgraph.core.PropertyKey;
 import org.janusgraph.core.schema.JanusGraphManagement;
@@ -39,8 +36,14 @@ import org.onap.aai.introspection.LoaderUtil;
 import org.onap.aai.logging.LogFormatTools;
 import org.onap.aai.schema.enums.PropertyMetadata;
 import org.onap.aai.util.AAIConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 import static org.onap.aai.db.props.AAIProperties.*;
 
@@ -48,22 +51,21 @@ public class SchemaGenerator4Hist {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SchemaGenerator4Hist.class);
 
+    private SchemaGenerator4Hist(){
+
+    }
     /**
      * Load schema into JanusGraph.
      *
-     * @param graph
-     *        the graph
      * @param graphMgmt
      *        the graph mgmt
      */
-    public static void loadSchemaIntoJanusGraph(final JanusGraph graph, final JanusGraphManagement graphMgmt,
-            String backend) {
+    public static void loadSchemaIntoJanusGraph(final JanusGraphManagement graphMgmt, String backend) {
 
         try {
             AAIConfig.init();
         } catch (Exception ex) {
-            LOGGER.error(" ERROR - Could not run AAIConfig.init(). " + LogFormatTools.getStackTop(ex));
-            // System.out.println(" ERROR - Could not run AAIConfig.init(). ");
+            LOGGER.error(" ERROR - Could not run AAIConfig.init(). {}", LogFormatTools.getStackTop(ex));
             System.exit(1);
         }
 
@@ -97,11 +99,9 @@ public class SchemaGenerator4Hist {
 
         for (String label : labels) {
             if (graphMgmt.containsRelationType(label)) {
-                String dmsg = " EdgeLabel  [" + label + "] already existed. ";
-                LOGGER.debug(dmsg);
+                LOGGER.debug(" EdgeLabel  [{}] already existed. ", label);
             } else {
-                String dmsg = "Making EdgeLabel: [" + label + "]";
-                LOGGER.debug(dmsg);
+                LOGGER.debug("Making EdgeLabel: [{}]", label);
                 graphMgmt.makeEdgeLabel(label).multiplicity(Multiplicity.valueOf("MULTI")).make();
             }
         }
@@ -119,8 +119,7 @@ public class SchemaGenerator4Hist {
                     dbPropName = alias.get();
                 }
                 if (graphMgmt.containsRelationType(dbPropName)) {
-                    String dmsg = " PropertyKey  [" + dbPropName + "] already existed in the DB. ";
-                    LOGGER.debug(dmsg);
+                    LOGGER.debug(" PropertyKey  [{}] already existed in the DB. ", dbPropName);
                 } else {
                     Class<?> type = obj.getClass(propName);
                     Cardinality cardinality = Cardinality.LIST;
@@ -132,7 +131,6 @@ public class SchemaGenerator4Hist {
                     	// above) will be stored in our db as a single String.  And that
                     	// single string will have Cardinality = LIST so we can track its
                     	// history.
-                        //cardinality = Cardinality.SET;
                         type = obj.getGenericTypeClass(propName);
                         process = true;
                     } else if (obj.isSimpleType(propName)) {
@@ -141,9 +139,8 @@ public class SchemaGenerator4Hist {
 
                     if (process) {
 
-                        String imsg = " Creating PropertyKey: [" + dbPropName + "], [" + type.getSimpleName() + "], ["
-                                + cardinality + "]";
-                        LOGGER.info(imsg);
+                        LOGGER.info(" Creating PropertyKey: [{}], [{}], [{}]",
+                                dbPropName, type.getSimpleName(), cardinality);
                         PropertyKey propK;
                         if (!seenProps.containsKey(dbPropName)) {
                             propK = graphMgmt.makePropertyKey(dbPropName).dataType(type).cardinality(cardinality)
@@ -153,17 +150,14 @@ public class SchemaGenerator4Hist {
                             propK = seenProps.get(dbPropName);
                         }
                         if (graphMgmt.containsGraphIndex(dbPropName)) {
-                            String dmsg = " Index  [" + dbPropName + "] already existed in the DB. ";
-                            LOGGER.debug(dmsg);
+                            LOGGER.debug(" Index  [{}] already existed in the DB. ", dbPropName);
                         } else {
                             if (obj.getIndexedProperties().contains(propName)) {
                             	// NOTE - for History we never add a unique index - just a regular index
-                                imsg = "Add index for PropertyKey: [" + dbPropName + "]";
-                                LOGGER.info(imsg);
+                                LOGGER.info("Add index for PropertyKey: [{}]", dbPropName);
                                 graphMgmt.buildIndex(dbPropName, Vertex.class).addKey(propK).buildCompositeIndex();
                             } else {
-                                imsg = "No index needed/added for PropertyKey: [" + dbPropName + "]";
-                                LOGGER.info(imsg);
+                                LOGGER.info("No index needed/added for PropertyKey: [{}]", dbPropName);
                             }
                         }
                     }
@@ -176,63 +170,53 @@ public class SchemaGenerator4Hist {
         //  only have one of them.  That is, a Property can show up many times in a
         //  node, but each instance of that property will only have a single start-ts,
         //  end-ts, end-source-of-truth.  Same goes for a node or edge itself.
-        if (graphMgmt.containsRelationType(END_SOT)) {
-            String dmsg = "PropertyKey [" + END_SOT + "] already existed in the DB. ";
-            LOGGER.debug(dmsg);
-        } else if (!seenProps.containsKey(END_SOT)  ) {
-        	String imsg = " Creating PropertyKey: [" + END_SOT + "], [String], [SINGLE]";
-        	LOGGER.info(imsg);
-        	graphMgmt.makePropertyKey(END_SOT).dataType(String.class)
-        		.cardinality(Cardinality.SINGLE).make();
-        }
+        makeStringProperty(graphMgmt,seenProps, END_SOT);
+        makeLongProperty(graphMgmt,seenProps, START_TS);
+        makeLongProperty(graphMgmt,seenProps, END_TS);
+        makeStringProperty(graphMgmt,seenProps, START_TX_ID);
+        makeStringProperty(graphMgmt,seenProps, END_TX_ID);
 
-        if (graphMgmt.containsRelationType(START_TS)) {
-            String dmsg = " PropertyKey [" + START_TS + "] already existed in the DB. ";
-            LOGGER.debug(dmsg);
-        } else if (!seenProps.containsKey(START_TS)  ) {
-        	String imsg = " Creating PropertyKey: [" + START_TS + "], [Long], [SINGLE]";
-        	LOGGER.info(imsg);
-        	graphMgmt.makePropertyKey(START_TS).dataType(Long.class)
-        		.cardinality(Cardinality.SINGLE).make();
-        }
-
-        if (graphMgmt.containsRelationType(END_TS)) {
-            String dmsg = "PropertyKey [" + END_TS + "] already existed in the DB. ";
-            LOGGER.debug(dmsg);
-        } else if (!seenProps.containsKey(END_TS)  ) {
-        	String imsg = " Creating PropertyKey: [" + END_TS + "], [Long], [SINGLE]";
-        	LOGGER.info(imsg);
-        	graphMgmt.makePropertyKey(END_TS).dataType(Long.class)
-        		.cardinality(Cardinality.SINGLE).make();
-        }
-
-        if (graphMgmt.containsRelationType(START_TX_ID)) {
-            String dmsg = "PropertyKey [" + START_TX_ID + "] already existed in the DB. ";
-            LOGGER.debug(dmsg);
-        } else if (!seenProps.containsKey(START_TX_ID)  ) {
-            String imsg = " Creating PropertyKey: [" + START_TX_ID + "], [String], [SINGLE]";
-            LOGGER.info(imsg);
-            graphMgmt.makePropertyKey(START_TX_ID).dataType(String.class)
-                .cardinality(Cardinality.SINGLE).make();
-        }
-
-        if (graphMgmt.containsRelationType(END_TX_ID)) {
-            String dmsg = "PropertyKey [" + END_TX_ID + "] already existed in the DB. ";
-            LOGGER.debug(dmsg);
-        } else if (!seenProps.containsKey(END_TX_ID)  ) {
-            String imsg = " Creating PropertyKey: [" + END_TX_ID + "], [String], [SINGLE]";
-            LOGGER.info(imsg);
-            graphMgmt.makePropertyKey(END_TX_ID).dataType(String.class)
-                .cardinality(Cardinality.SINGLE).make();
-        }
 
         String imsg = "-- About to call graphMgmt commit";
         LOGGER.info(imsg);
         graphMgmt.commit();
         if (backend != null) {
-            LOGGER.info("Successfully loaded the schema to " + backend);
+            LOGGER.info("Successfully loaded the schema to {}", backend);
         }
 
     }
 
+    private static void makeStringProperty(JanusGraphManagement graphMgmt,
+                                           Map<String, PropertyKey> seenProps,
+                                           String endSot) {
+        makeNewProperty(graphMgmt, seenProps, String.class, endSot);
+    }
+
+    private static void makeLongProperty(JanusGraphManagement graphMgmt,
+                                         Map<String, PropertyKey> seenProps,
+                                         String endSot) {
+        makeNewProperty(graphMgmt, seenProps, Long.class, endSot);
+    }
+
+    private static <T> void makeNewProperty(JanusGraphManagement graphMgmt,
+                                            Map<String, PropertyKey> seenProps,
+                                            Class<T> type,
+                                            String endSot) {
+        if (graphMgmt.containsRelationType(endSot)) {
+            LOGGER.debug("PropertyKey [{}] already existed in the DB.", endSot);
+        } else if (!seenProps.containsKey(endSot)) {
+            LOGGER.info("Creating PropertyKey: [{}], [{}], [{}]", endSot, type.getSimpleName(), Cardinality.SINGLE);
+            makePropertyKey(graphMgmt, endSot, type, Cardinality.SINGLE);
+        }
+    }
+
+    private static PropertyKey makePropertyKey(
+            JanusGraphManagement graphMgmt,
+            String dbPropName,
+            Class<?> type,
+            Cardinality cardinality
+    ) {
+        return graphMgmt.makePropertyKey(dbPropName).dataType(type).cardinality(cardinality)
+                .make();
+    }
 }
