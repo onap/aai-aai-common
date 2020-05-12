@@ -166,6 +166,29 @@ public class DBSerializer {
         initBeans();
     }
 
+    public DBSerializer(SchemaVersion version,
+                        TransactionalGraphEngine engine,
+                        ModelType introspectionType,
+                        String sourceOfTruth,
+                        int notificationDepth,
+                        String serverBase) throws AAIException {
+        this.engine = engine;
+        this.sourceOfTruth = sourceOfTruth;
+        this.introspectionType = introspectionType;
+        this.schemaVersions = (SchemaVersions) SpringContextAware.getBean("schemaVersions");
+        SchemaVersion latestVersion = schemaVersions.getDefaultVersion();
+        this.latestLoader =
+            SpringContextAware.getBean(LoaderFactory.class).createLoaderForVersion(introspectionType, latestVersion);
+        this.version = version;
+        this.loader =
+            SpringContextAware.getBean(LoaderFactory.class).createLoaderForVersion(introspectionType, version);
+        this.namedPropNodes = this.latestLoader.getNamedPropNodes();
+        this.baseURL = serverBase;
+        this.currentTimeMillis = System.currentTimeMillis();
+        this.notificationDepth = notificationDepth;
+        initBeans();
+    }
+
     private void initBeans() {
         // TODO proper spring wiring, but that requires a lot of refactoring so for now we have this
         ApplicationContext ctx = SpringContextAware.getApplicationContext();
@@ -1334,7 +1357,7 @@ public class DBSerializer {
         Set<Vertex> seen = new HashSet<>();
         int depth = 0;
         StopWatch.conditionalStart();
-        this.dbToObject(obj, v, seen, depth, false, FALSE);
+        this.dbToObject(obj, v, seen, depth, true, FALSE);
         dbTimeMsecs += StopWatch.stopIfStarted();
         return obj;
 
@@ -1470,9 +1493,9 @@ public class DBSerializer {
             // only for the older apis and the new apis if the edge rule
             // is removed will not be seen in the newer version of the API
 
-            String bNodeType = null;
+            String bNodeType;
             if (otherV.property(AAIProperties.NODE_TYPE).isPresent()) {
-                bNodeType = otherV.property(AAIProperties.NODE_TYPE).value().toString();
+                bNodeType = otherV.value(AAIProperties.NODE_TYPE);
             } else {
                 continue;
             }

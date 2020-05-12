@@ -37,6 +37,9 @@ public class AaiDmaapMetricLog extends MDCSetup {
     private static final String TARGET_ENTITY = "DMaaP";
 
     public AaiDmaapMetricLog() {
+    	if(MDC.get(ONAPLogConstants.MDCs.SERVER_FQDN) == null) {
+    		setServerFQDN();
+    	}
     }
     public void pre(String targetServiceName, String event, String transactionId, String serviceName) {
 

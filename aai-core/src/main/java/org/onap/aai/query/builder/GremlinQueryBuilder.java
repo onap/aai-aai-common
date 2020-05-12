@@ -57,7 +57,7 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
     private static final String ARGUMENT2 = "#!#argument#!#";
     private static final String HAS = ".has('";
     private static final String SINGLE_QUOTE = "'";
-    private static final String ESCAPE_SINGLE_QUOTE = "\\'";
+    private static final String ESCAPE_SINGLE_QUOTE = "\\\'";
     private GremlinGroovyShell gremlinGroovy = new GremlinGroovyShell();
     private GraphTraversal<?, ?> completeTraversal = null;
     protected List<String> list = null;
@@ -119,11 +119,20 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
         String term = "";
         if (value != null && !(value instanceof String)) {
             String valueString = value.toString();
+
             if (valueString.indexOf('\'') != -1) {
                 value =  valueString.replace(SINGLE_QUOTE, ESCAPE_SINGLE_QUOTE);
             }
             LOGGER.trace("Inside getVerticesByProperty(): key = {}, value = {}", key, value);
             term = value.toString();
+        } else if (value != null && value instanceof String) {
+            String valueString = value.toString();
+
+            if (valueString.indexOf('\'') != -1) {
+                value =  valueString.replace(SINGLE_QUOTE, ESCAPE_SINGLE_QUOTE);
+            }
+            LOGGER.trace("Inside getVerticesByProperty(): key = {}, value = {}", key, value);
+            term = "'" + value + "'";
         } else {
             term = "'" + value + "'";
         }

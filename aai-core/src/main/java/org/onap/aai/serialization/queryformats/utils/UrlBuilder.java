@@ -54,10 +54,14 @@ public class UrlBuilder {
     }
 
     public UrlBuilder(SchemaVersion version, DBSerializer serializer, String serverBase, SchemaVersions schemaVersions,
-            String basePath) {
+            String basePath) throws AAIException {
         this.serializer = serializer;
         this.version = version;
-        this.serverBase = serverBase;
+        if(serverBase == null){
+           this.serverBase = getServerBase();
+        } else {
+            this.serverBase = serverBase;
+        }
         this.schemaVersions = schemaVersions;
         if (!basePath.endsWith("/")) {
             this.basePath = basePath + "/";

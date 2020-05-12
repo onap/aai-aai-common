@@ -34,6 +34,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.onap.aai.AAISetup;
+import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.serialization.db.DBSerializer;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
 import org.onap.aai.setup.SchemaVersion;
@@ -58,7 +59,7 @@ public class UrlBuilderTest extends AAISetup {
     }
 
     @Test
-    public void v11Pathed() throws AAIFormatVertexException {
+    public void v11Pathed() throws AAIFormatVertexException, AAIException {
         SchemaVersion version = new SchemaVersion("v11");
         UrlBuilder builder = new UrlBuilder(version, serializer, protocolAndHost, schemaVersions, basePath);
         String result = builder.pathed(v);
@@ -68,7 +69,7 @@ public class UrlBuilderTest extends AAISetup {
     }
 
     @Test
-    public void v11Id() {
+    public void v11Id() throws AAIException {
         SchemaVersion version = new SchemaVersion("v11");
         UrlBuilder builder = new UrlBuilder(version, serializer, protocolAndHost, schemaVersions, basePath);
         String result = builder.id(v);
@@ -78,7 +79,7 @@ public class UrlBuilderTest extends AAISetup {
     }
 
     @Test
-    public void beforeV11Pathed() throws AAIFormatVertexException {
+    public void beforeV11Pathed() throws AAIFormatVertexException, AAIException {
         SchemaVersion version = new SchemaVersion("v10");
         UrlBuilder builder = new UrlBuilder(version, serializer, protocolAndHost, schemaVersions, basePath);
         String result = builder.pathed(v);
@@ -88,7 +89,7 @@ public class UrlBuilderTest extends AAISetup {
     }
 
     @Test
-    public void beforeV11Id() {
+    public void beforeV11Id() throws AAIException {
         SchemaVersion version = new SchemaVersion("v10");
         UrlBuilder builder = new UrlBuilder(version, serializer, protocolAndHost, schemaVersions, basePath);
         String result = builder.id(v);

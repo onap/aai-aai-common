@@ -616,13 +616,30 @@ public class DbSerializerTest extends AAISetup {
     public void getVertexPropertiesTest() throws AAIException, UnsupportedEncodingException {
         engine.startTransaction();
 
-        Vertex cr =
-                engine.tx().addVertex("aai-node-type", "cloud-region", "cloud-owner", "me", "cloud-region-id", "123");
+        Vertex gvnf = engine.tx().addVertex("aai-node-type", "generic-vnf", "vnf-id", "myvnf", "aai-uri",
+            "/network/generic-vnfs/generic-vnf/myvnf",
+            AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
+            AAIProperties.CREATED_TS, 123L,
+            AAIProperties.SOURCE_OF_TRUTH, "sot",
+            AAIProperties.RESOURCE_VERSION, "123",
+            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
+            AAIProperties.LAST_MOD_TS, 333L);
+        Vertex vnfc = engine.tx().addVertex("aai-node-type", "vnfc", "vnfc-name", "a-name", "aai-uri",
+            "/network/vnfcs/vnfc/a-name",
+            AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
+            AAIProperties.CREATED_TS, 123L,
+            AAIProperties.SOURCE_OF_TRUTH, "sot",
+            AAIProperties.RESOURCE_VERSION, "123",
+            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
+            AAIProperties.LAST_MOD_TS, 333L);
 
-        Introspector crIntro = dbser.getVertexProperties(cr);
-        assertEquals("cloud-region", crIntro.getDbName());
-        assertEquals("me", crIntro.getValue("cloud-owner"));
-        assertEquals("123", crIntro.getValue("cloud-region-id"));
+        edgeSer.addEdge(engine.tx().traversal(), gvnf, vnfc);
+
+        Introspector vnf = dbser.getVertexProperties(gvnf);
+        assertEquals("generic-vnf", vnf.getDbName());
+        assertEquals("myvnf", vnf.getValue("vnf-id"));
+
+        assertFalse(vnf.marshal(false).contains("relationship-list"));
 
     }
 

@@ -109,6 +109,8 @@ public class HttpEntry {
     @Value("${delta.events.enabled:false}")
     private boolean isDeltaEventsEnabled;
 
+    private String serverBase;
+
     @Autowired
     private XmlFormatTransformer xmlFormatTransformer;
 
@@ -147,6 +149,23 @@ public class HttpEntry {
         } else {
             this.notificationDepth = AAIProperties.MINIMUM_DEPTH;
         }
+        return this;
+    }
+
+    public HttpEntry setHttpEntryProperties(SchemaVersion version, String serverBase) {
+        this.version = version;
+        this.loader = loaderFactory.createLoaderForVersion(introspectorFactoryType, version);
+        this.dbEngine = new JanusGraphDBEngine(queryStyle, loader);
+
+        getDbEngine().startTransaction();
+        this.notification = new UEBNotification(loader, loaderFactory, schemaVersions);
+        if("true".equals(AAIConfig.get("aai.notification.depth.all.enabled", "true"))){
+            this.notificationDepth = AAIProperties.MAXIMUM_DEPTH;
+        } else {
+            this.notificationDepth = AAIProperties.MINIMUM_DEPTH;
+        }
+
+        this.serverBase = serverBase;
         return this;
     }
 
@@ -322,7 +341,14 @@ public class HttpEntry {
     public Pair<Boolean, List<Pair<URI, Response>>> process(List<DBRequest> requests, String sourceOfTruth,
             boolean enableResourceVersion) throws AAIException {
 
-        DBSerializer serializer = new DBSerializer(version, dbEngine, introspectorFactoryType, sourceOfTruth, notificationDepth);
+        DBSerializer serializer = null;
+
+        if(serverBase != null){
+            serializer = new DBSerializer(version, dbEngine, introspectorFactoryType, sourceOfTruth, notificationDepth, serverBase);
+        } else {
+            serializer = new DBSerializer(version, dbEngine, introspectorFactoryType, sourceOfTruth, notificationDepth);
+        }
+
         Response response;
         Introspector obj;
         QueryParser query;
@@ -465,7 +491,7 @@ public class HttpEntry {
                                 }
                             } else {
                                 FormatFactory ff =
-                                        new FormatFactory(loader, serializer, schemaVersions, basePath + "/");
+                                        new FormatFactory(loader, serializer, schemaVersions, basePath + "/", serverBase);
                                 Formatter formatter = ff.get(format, params);
                                 result = formatter.output(vertices.stream().map(vertex -> (Object) vertex)
                                         .collect(Collectors.toList())).toString();
@@ -503,7 +529,7 @@ public class HttpEntry {
                                 }
                             } else {
                                 FormatFactory ff =
-                                        new FormatFactory(loader, serializer, schemaVersions, basePath + "/");
+                                        new FormatFactory(loader, serializer, schemaVersions, basePath + "/", serverBase);
                                 Formatter formatter = ff.get(format, params);
                                 result = formatter.output(vertices.stream().map(vertex -> (Object) vertex)
                                         .collect(Collectors.toList())).toString();

@@ -289,8 +289,4 @@ public class MockRestClient extends RestClient {
         return null;
     }
 
-    protected Logger getLogger() {
-        return null;
-    }
-
 }

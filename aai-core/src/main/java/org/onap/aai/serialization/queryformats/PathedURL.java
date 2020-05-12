@@ -60,16 +60,12 @@ public final class PathedURL extends MultiFormatMapper {
         this.parser = new JsonParser();
         this.loader = builder.getLoader();
         this.isTree = builder.isTree();
+        this.includeUrl = builder.isIncludeUrl();
     }
 
     @Override
     public int parallelThreshold() {
         return 20;
-    }
-
-    public PathedURL includeUrl() {
-        this.includeUrl = true;
-        return this;
     }
 
     @Override

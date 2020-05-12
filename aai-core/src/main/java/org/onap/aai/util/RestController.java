@@ -43,7 +43,7 @@ import org.onap.aai.exceptions.AAIException;
 public class RestController implements RestControllerInterface {
 
     private static final String TARGET_NAME = "AAI";
-    private static Logger LOGGER = LoggerFactory.getLogger(RestController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RestController.class);
 
     private static Client client = null;
 
@@ -85,28 +85,8 @@ public class RestController implements RestControllerInterface {
     public static final String REST_APIPATH_LOGICALLINKS = "network/logical-links/";
     public static final String REST_APIPATH_LOGICALLINK = "network/logical-links/logical-link/";
 
-    public RestController() throws AAIException {
-        this.initRestClient();
-    }
-
     public RestController(String truststorePath, String truststorePassword, String keystorePath, String keystorePassword) throws AAIException {
         this.initRestClient(truststorePath, truststorePassword, keystorePath, keystorePassword);
-    }
-    /**
-     * Inits the rest client.
-     *
-     * @throws AAIException the AAI exception
-     */
-    public void initRestClient() throws AAIException {
-        if (client == null) {
-            try {
-                client = getHttpsAuthClient();
-            } catch (KeyManagementException e) {
-                throw new AAIException("AAI_7117", "KeyManagementException in REST call to DB: " + e.toString());
-            } catch (Exception e) {
-                throw new AAIException("AAI_7117", " Exception in REST call to DB: " + e.toString());
-            }
-        }
     }
     /**
      * Inits the rest client.
@@ -340,6 +320,42 @@ public class RestController implements RestControllerInterface {
                         AAIConfig.get(AAIConstants.AAI_DEFAULT_API_VERSION_PROP)) + path;
             }
         }
+
+        ClientResponse cres = client.resource(url).accept("application/json").header("X-TransactionId", transId)
+                .header("X-FromAppId", sourceID).header("Real-Time", "true").type("application/json").entity(t)
+                .put(ClientResponse.class);
+
+        // System.out.println("cres.tostring()="+cres.toString());
+
+        int statuscode = cres.getStatus();
+        if (statuscode >= 200 && statuscode <= 299) {
+            LOGGER.debug(methodName + ": url=" + url + ", request=" + path);
+        } else {
+            throw new AAIException("AAI_7116", methodName + " with status=" + statuscode + ", url=" + url + ", msg="
+                    + cres.getEntity(String.class));
+        }
+    }
+    
+    /**
+     * Put.
+     *
+     * @param <T> the generic type
+     * @param t the t
+     * @param sourceID the source ID
+     * @param transId the trans id
+     * @param path the path
+     * @param apiVersion version number
+     * @throws AAIException the AAI exception
+     */
+    public <T> void Put(T t, String sourceID, String transId, String path, String apiVersion)
+            throws AAIException {
+        String methodName = "Put";
+        String url = "";
+        transId += ":" + UUID.randomUUID().toString();
+
+        LOGGER.debug(methodName + " start");
+        
+        url = AAIConfig.get(AAIConstants.AAI_SERVER_URL_BASE) + apiVersion + "/" + path;
 
         ClientResponse cres = client.resource(url).accept("application/json").header("X-TransactionId", transId)
                 .header("X-FromAppId", sourceID).header("Real-Time", "true").type("application/json").entity(t)

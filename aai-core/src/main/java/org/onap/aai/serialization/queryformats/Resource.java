@@ -27,9 +27,7 @@ import com.google.gson.JsonParser;
 
 import java.io.UnsupportedEncodingException;
 import java.util.*;
-import java.util.stream.Stream;
 
-import org.apache.tinkerpop.gremlin.process.traversal.step.util.BulkSet;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.Tree;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.onap.aai.db.props.AAIProperties;
@@ -70,12 +68,15 @@ public class Resource extends MultiFormatMapper {
     }
 
     @Override
-    protected Optional<JsonObject> getRelatedNodesFromTree(Tree<?> tree) throws AAIFormatVertexException {
+    protected Optional<JsonObject> getRelatedNodesFromTree(Tree<?> tree, Map<String, List<String>> properties) throws AAIFormatVertexException {
         if (tree.isEmpty()) {
             return Optional.of(new JsonObject());
         }
+
+        Map<String, Set<String>> filterPropertiesMap = createFilteredPropertyMap(properties);
+
         JsonObject t = new JsonObject();
-        JsonArray ja = this.getRelatedNodesArray(tree, "related-nodes");
+        JsonArray ja = this.getRelatedNodesArray(tree, filterPropertiesMap,"related-nodes");
         if (ja.size() > 0) {
             t.add("results", ja);
             return Optional.of(t);
@@ -84,7 +85,7 @@ public class Resource extends MultiFormatMapper {
         return Optional.empty();
     }
 
-    protected JsonArray getRelatedNodesArray(Tree<?> tree, String nodeIdentifier) throws AAIFormatVertexException {
+    protected JsonArray getRelatedNodesArray(Tree<?> tree, Map<String, Set<String>> filterPropertiesMap, String nodeIdentifier) throws AAIFormatVertexException {
         JsonArray nodes = new JsonArray();
         if (tree.isEmpty()) {
             return nodes;
@@ -97,16 +98,22 @@ public class Resource extends MultiFormatMapper {
                     obj = this.getJsonFromVertex((Vertex) entry.getKey());
                 }
                 if (obj != null && obj.isPresent()) {
-                    me = obj.get();
+                    me = getPropertyFilteredObject(obj, filterPropertiesMap);
                 } else {
                     continue;
                 }
             }
-            JsonArray ja = this.getRelatedNodesArray(entry.getValue(), nodeIdentifier);
+            JsonArray ja = this.getRelatedNodesArray(entry.getValue(), filterPropertiesMap, nodeIdentifier);
             if (ja.size() > 0) {
                 try {
-                    me.entrySet().stream().findFirst().get().getValue().getAsJsonObject().add(nodeIdentifier, ja);
+                    for (Map.Entry<String, JsonElement> mapEntry : me.entrySet()) {
+                        JsonElement value = mapEntry.getValue();
+                        if (value != null && value.isJsonObject()) {
+                            value.getAsJsonObject().add(nodeIdentifier, ja);
+                        }
+                    }
                 } catch(Exception e) {
+                    logger.debug("Failed to add related-nodes array: {}", e.getMessage());
                     throw new AAIFormatVertexException("Failed to add related-nodes array: " + e.getMessage(), e);
                 }
             }
@@ -133,8 +140,22 @@ public class Resource extends MultiFormatMapper {
     }
 
     @Override
-    protected Optional<JsonObject> getJsonFromVertex(Vertex input, Map<String, List<String>> properties) throws AAIFormatVertexException {
-        return Optional.empty();
+    protected Optional<JsonObject> getJsonFromVertex(Vertex v, Map<String, List<String>> properties) throws AAIFormatVertexException {
+        JsonObject json = new JsonObject();
+
+        if (this.includeUrl) {
+            json.addProperty("url", this.urlBuilder.pathed(v));
+        }
+        Optional<JsonObject> jsonObject = this.vertexToJsonObject(v);
+        if (jsonObject.isPresent()) {
+            String nodeType = v.<String>value(AAIProperties.NODE_TYPE);
+            Map<String, Set<String>> filterPropertiesMap = createFilteredPropertyMap(properties);       // this change is for resource_and_url with/out as-tree. and no as-tree req
+            JsonObject jo = filterProperties(jsonObject, nodeType, filterPropertiesMap);
+            json.add(v.<String>property(AAIProperties.NODE_TYPE).orElse(null), jo);
+        } else {
+            return Optional.empty();
+        }
+        return Optional.of(json);
     }
 
     protected Optional<JsonObject> vertexToJsonObject(Vertex v) throws AAIFormatVertexException {
@@ -143,7 +164,7 @@ public class Resource extends MultiFormatMapper {
         }
         try {
             final Introspector obj =
-                    getLoader().introspectorFromName(v.<String>property(AAIProperties.NODE_TYPE).orElse(null));
+                getLoader().introspectorFromName(v.<String>property(AAIProperties.NODE_TYPE).orElse(null));
 
             final List<Vertex> wrapper = new ArrayList<>();
 
@@ -153,7 +174,7 @@ public class Resource extends MultiFormatMapper {
                 getSerializer().dbToObject(wrapper, obj, this.depth, this.nodesOnly, "false", isSkipRelatedTo);
             } catch (AAIException | UnsupportedEncodingException e) {
                 throw new AAIFormatVertexException(
-                        "Failed to format vertex - error while serializing: " + e.getMessage(), e);
+                    "Failed to format vertex - error while serializing: " + e.getMessage(), e);
             }
 
             final String json = obj.marshal(false);
