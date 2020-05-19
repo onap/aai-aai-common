@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "dad4a165_a0956d5d",
+        "filename": "aai-aaf-auth/src/test/java/org/onap/aai/aaf/auth/AafRequestWrapperTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 6614
+      },
+      "writtenOn": "2020-05-19T19:35:31Z",
+      "side": 1,
+      "message": "You could add additional unit tests make this work complete. For example, what would happen if `getHeader` is requested to get a header that has never been passed?\n\nOverall you are testing the relationship between `getHeader` and `putHeader` (By the way, this relatioship is called a \"property\" in some circles). So no matter what header is passed to putHeader, it should always be returned by getHeader. What about this:\n```\nString randomHeaderKey \u003d \"Header - \" + System.currentTimeMillis();\nString randomHeaderValue \u003d \"Value - \" + System.currentTimeMillis();\n\nAafRequestWrapper af\u003d new AafRequestWrapper(mockRequest);\nassertEquals(af.getHeader(randomHeaderKey),randomHeaderValue);\n```\nThis guarantees that no matter the header passed, it\u0027s always returned when calling getHeader. Now having said that, a request is supposed to be immutable. So why not just removing `putHeader` and add the header in the constructor of the AafRequestWrapper?\n\nThe next use case is what if the header has never been passed to `putHeader`? You should ensure that `getHeader` returns the expected value (probably a null but this has to be verified). Ideally you should not return nulls, but the request wrapper API is done that way. Maybe a `getHeaderOption` could be added to AafRequestWrapper and then used in the filter?\n\nFinally, to reduce boilder plate, a factory function for a mocked HttpServletRequest could be created:\n```\nprivate HttpServletRequest makeMockedHttpServletRequest(\n  Map\u003cString, String\u003e headers\n) {\n  HttpServletRequest mockRequest \u003d createMock(HttpServletRequest.class);\n  headers.forEach((k, v) -\u003e \n    expect(mockRequest.getHeader(k))\n      .andReturn(v)\n      .anyTimes()\n  )\n  return mockRequest;\n}\n```\n\nSorry for the long post, your change made me thinking a bit :)",
+      "revId": "c28d33fd2cac8b57b5bb3ff64e56876ac377ce5e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
