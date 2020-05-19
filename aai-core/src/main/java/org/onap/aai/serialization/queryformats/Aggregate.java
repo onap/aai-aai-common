@@ -28,7 +28,10 @@ import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 import org.onap.aai.db.props.AAIProperties;
+import org.onap.aai.exceptions.AAIException;
+import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
+import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.onap.aai.logging.LogFormatTools;
 import org.onap.aai.serialization.db.DBSerializer;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatQueryResultFormatNotSupported;
@@ -38,6 +41,7 @@ import org.onap.aai.serialization.queryformats.params.Depth;
 import org.onap.aai.serialization.queryformats.params.NodesOnly;
 import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
 
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -80,29 +84,25 @@ public class Aggregate extends MultiFormatMapper {
     }
 
     public Optional<JsonObject> createPropertiesObject(Vertex v) throws AAIFormatVertexException {
-        JsonObject json = new JsonObject();
-        Iterator<VertexProperty<Object>> iter = v.properties();
+        try {
+            final Introspector obj =
+                loader.introspectorFromName(v.<String>property(AAIProperties.NODE_TYPE).orElse(null));
 
-        while (iter.hasNext()) {
-            VertexProperty<Object> prop = iter.next();
-            if (prop.value() instanceof String) {
-                json.addProperty(prop.key(), (String) prop.value());
-            } else if (prop.value() instanceof Boolean) {
-                json.addProperty(prop.key(), (Boolean) prop.value());
-            } else if (prop.value() instanceof Number) {
-                json.addProperty(prop.key(), (Number) prop.value());
-            } else if (prop.value() instanceof List) {
-                Gson gson = new Gson();
-                String list = gson.toJson(prop.value());
+            final List<Vertex> wrapper = new ArrayList<>();
+            wrapper.add(v);
 
-                json.addProperty(prop.key(), list);
-            } else {
-                // throw exception?
-                return null;
+            try {
+                serializer.dbToObject(wrapper, obj, 0, true, "false");
+            } catch (AAIException | UnsupportedEncodingException e) {
+                throw new AAIFormatVertexException(
+                    "Failed to format vertex - error while serializing: " + e.getMessage(), e);
             }
-        }
 
-        return Optional.of(json);
+            final String json = obj.marshal(false);
+            return Optional.of(parser.parse(json).getAsJsonObject());
+        } catch (AAIUnknownObjectException e) {
+            return Optional.empty();
+        }
     }
 
     public Optional<JsonObject> createSelectedPropertiesObject(Vertex v, Map<String, List<String>> selectedProps) throws AAIFormatVertexException {

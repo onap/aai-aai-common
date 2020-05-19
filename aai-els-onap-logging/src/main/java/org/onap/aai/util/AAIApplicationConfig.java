@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Properties;
-import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -44,9 +43,11 @@ public class AAIApplicationConfig {
     private static final String PASSPHRASSES_FILENAME = ".passphrases";
     private static final String PASSWORD_FILENAME = ".password";
     private static final String TRUSTSTORE_PASSWORD_PROP_NAME = "cadi_truststore_password";
-    private static final String SERVER_SSL_KEYSTORE_PROP_NAME = "server.ssl.key-store";
-    private static final String SERVER_SSL_KEYSTORE_PKCS12_PROP_NAME = "server.ssl.key-store.pkcs12";
-    private static final String SERVER_SSL_TRUSTSTORE_PROP_NAME = "server.ssl.trust-store";
+    public static final String SERVER_SSL_KEYSTORE_PROP_NAME = "server.ssl.key-store";
+    public static final String SERVER_SSL_KEYSTORE_PKCS12_PROP_NAME = "server.ssl.key-store.pkcs12";
+    public static final String SERVER_SSL_TRUSTSTORE_PROP_NAME = "server.ssl.trust-store";
+    public static final String TRUSTSTORE_PASSWORD_NAME = "server.ssl.trust-store-password";
+    public static final String KEYSTORE_PASSWORD_NAME = "server.ssl.key-store-password";
     private static Properties serverProps;
     private static boolean propsInitialized = false;
     private static String TRUSTSTORE_PASSWORD = null;
@@ -66,20 +67,9 @@ public class AAIApplicationConfig {
      * @throws AAIException the AAI exception
      */
     public synchronized static void init() {
-        /*LoggingContext.save();
-        LoggingContext.component("config");
-        LoggingContext.partnerName("NA");
-        LoggingContext.targetEntity("AAI");
-        LoggingContext.requestId(UUID.randomUUID().toString());
-        LoggingContext.serviceName("AAI");
-        LoggingContext.targetServiceName("init");
-        LoggingContext.statusCode(StatusCode.COMPLETE);*/
 
         LOGGER.info("Initializing AAIApplicationConfig");
-
         AAIApplicationConfig.reloadConfig();
-
-        //LoggingContext.restore();
     }
 
     /**
@@ -210,6 +200,14 @@ public class AAIApplicationConfig {
         catch (AAIException e) {
             return null;
         }
+        return (retrieveKeystorePasswordWithCertPath(certPath));
+    }
+    /**
+     * Retrieve the keystore password
+     *
+     * @return the password
+     */
+    private static String retrieveKeystorePasswordWithCertPath(String certPath) {
 
         File passwordFile = null;
         InputStream passwordStream = null;
@@ -238,7 +236,6 @@ public class AAIApplicationConfig {
         }
         return keystorePassword;
     }
-
     /**
      * Get the keystore password
      *
@@ -247,23 +244,13 @@ public class AAIApplicationConfig {
     public static String getKeystorePassword() {
         return (KEYSTORE_PASSWORD);
     }
-
     /**
      * Gets the truststore password
      *
      * @return the password
      */
-    private static String retrieveTruststorePassword() {
-        String certPath = serverProps.getProperty(SERVER_CERTS_LOCATION_PROP_NAME);
-        if (certPath == null) {
-            return null;
-        }
-        try {
-            certPath = replaceProperties(certPath);
-        }
-        catch (AAIException e) {
-            return null;
-        }
+    private static String retrieveTruststorePasswordWithCertPath(String certPath) {
+
         File passphrasesFile = null;
         InputStream passphrasesStream = null;
         String truststorePassword = null;
@@ -293,6 +280,24 @@ public class AAIApplicationConfig {
         }
 
         return truststorePassword;
+    }
+    /**
+     * Gets the truststore password
+     *
+     * @return the password
+     */
+    private static String retrieveTruststorePassword() {
+        String certPath = serverProps.getProperty(SERVER_CERTS_LOCATION_PROP_NAME);
+        if (certPath == null) {
+            return null;
+        }
+        try {
+            certPath = replaceProperties(certPath);
+        }
+        catch (AAIException e) {
+            return null;
+        }
+        return (retrieveTruststorePasswordWithCertPath(certPath));
     }
 
     /**
@@ -358,5 +363,52 @@ public class AAIApplicationConfig {
         }
         m.appendTail(sb);
         return(sb.toString());
+    }
+
+    public static Properties retrieveKeystoreProps() throws AAIException {
+
+        Properties props = new Properties();
+        String truststorePath = System.getProperty(SERVER_SSL_TRUSTSTORE_PROP_NAME);
+        String truststorePassword = System.getProperty(TRUSTSTORE_PASSWORD_NAME);
+        String keystorePath = System.getProperty(SERVER_SSL_KEYSTORE_PKCS12_PROP_NAME);
+        String keystorePassword = System.getProperty(KEYSTORE_PASSWORD_NAME);
+        String certLocation = System.getProperty(SERVER_CERTS_LOCATION_PROP_NAME);
+
+        if (truststorePath == null || truststorePath.isEmpty()){
+            truststorePath = AAIApplicationConfig.getTruststore();
+        }
+        if (truststorePath != null) {
+            props.setProperty(SERVER_SSL_TRUSTSTORE_PROP_NAME, truststorePath);
+        }
+        if (truststorePassword == null || truststorePassword.isEmpty()) {
+            if (certLocation != null && (!certLocation.isEmpty())) {
+                truststorePassword = AAIApplicationConfig.retrieveTruststorePasswordWithCertPath(certLocation);
+            }
+            else {
+                truststorePassword = AAIApplicationConfig.getTruststorePassword();
+            }
+
+        }
+        if (truststorePassword != null) {
+            props.setProperty(TRUSTSTORE_PASSWORD_NAME, truststorePassword);
+        }
+        if (keystorePath == null || keystorePath.isEmpty()){
+            keystorePath = AAIApplicationConfig.getKeystorePkcs12();
+        }
+        if (keystorePath != null) {
+            props.setProperty(SERVER_SSL_KEYSTORE_PKCS12_PROP_NAME, keystorePath);
+        }
+        if (keystorePassword == null || keystorePassword.isEmpty()){
+            if (certLocation != null && (!certLocation.isEmpty())) {
+                keystorePassword = AAIApplicationConfig.retrieveKeystorePasswordWithCertPath(certLocation);
+            }
+            else {
+                keystorePassword = AAIApplicationConfig.getKeystorePassword();
+            }
+        }
+        if (keystorePassword != null) {
+            props.setProperty(KEYSTORE_PASSWORD_NAME, keystorePassword);
+        }
+        return(props);
     }
 }

@@ -78,8 +78,8 @@ public class ValidationService {
     static final String REQUEST_TIMEOUT_STRING =
         "Request to validation service took longer than the currently set timeout";
 
-    static final String VALIDATION_ENDPOINT = "/v1/app/validate";
-    static final String VALIDATION_HEALTH_ENDPOINT = "/v1/core/core-service/info";
+    static final String VALIDATION_ENDPOINT = "/v1/validate";
+    static final String VALIDATION_HEALTH_ENDPOINT = "/v1/info";
 
     private static final String ENTITY_TYPE = "entity-type";
     private static final String ACTION = "action";

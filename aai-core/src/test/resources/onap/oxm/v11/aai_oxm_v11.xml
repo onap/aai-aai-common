@@ -142,6 +142,11 @@
             <xml-property name="description" value="The URL to the specific resource"/>
           </xml-properties>
         </xml-element>
+          <xml-element java-attribute="resourceVersion" name="resource-version" type="java.lang.String">
+              <xml-properties>
+                  <xml-property name="description" value="The resource version to the specific resource"/>
+              </xml-properties>
+          </xml-element>
       </java-attributes>
     </java-type>
 

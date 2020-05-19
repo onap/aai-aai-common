@@ -46,6 +46,14 @@ public class FormatFactory {
         this.injector = QueryParamInjector.getInstance();
     }
 
+    public FormatFactory(Loader loader, DBSerializer serializer, SchemaVersions schemaVersions, String basePath, String serverBase)
+        throws AAIException {
+        this.loader = loader;
+        this.serializer = serializer;
+        this.urlBuilder = new UrlBuilder(loader.getVersion(), serializer, serverBase, schemaVersions, basePath);
+        this.injector = QueryParamInjector.getInstance();
+    }
+
     public Formatter get(Format format) throws AAIException {
         return get(format, new MultivaluedHashMap<>());
     }
@@ -109,6 +117,10 @@ public class FormatFactory {
             case lifecycle:
                 formatter =
                     new Formatter(inject(new LifecycleFormat.Builder(loader, serializer, urlBuilder), params).build(format));
+                break;
+            case tree:
+                formatter = new Formatter(
+                    inject(new TreeFormat.Builder(loader, serializer, urlBuilder), params).build());
                 break;
             default:
                 break;
