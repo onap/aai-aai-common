@@ -7,9 +7,78 @@
 AAI Release Notes
 ==================
 
-Version: 5.0.2
+Abstract
+========
 
-:Release Data: 2019-10-03
+This document provides release notes for the Active and Available Inventory Project's Frankfurt Release
+
+Release Data
+============
+
+Version: 6.0.0
+--------------
+
+:Release Date: 2020-06-04 (TBD)
+
+New Features
+------------
+
+The R6 Frankfurt release of ONAP includes updates to both use cases and non-functional requirements.  AAI is serving v19 as the latest version of the REST APIs, and has support for v16 (Dublin and El Alto).
+
+- Implemented new parent POM under org.onap.aai.aai-common.aai-parent for simplified management of 3rd party dependencies
+- Upgrade to spring-boot 2 (partially complete)
+- Model updates and edge rules changes in support of the following use cases:
+  * CCVPN for SOTN NNI
+  * 5G Network Slicing
+  * Multi-Domain Optical Network Services
+  * PNF enhancements
+- Papyrus XMI UML files for run-time data model reverse engineering
+- Integration with sonarcloud
+- All containers run as non-root user
+
+champ, spike, and gizmo are deprecated and removed from the helm chart. This will be the last release where aai manages its own helm chart, in R7 Guilin and beyond, the aai/oom submodule will be merged back into the oom project.
+
+Known Limitations, Issues, and Workarounds
+==========================================
+
+Known Issues
+------------
+
+* `AAI-2766 <https://jira.onap.org/browse/AAI-2766>`_ - AAI data-router cannot communicate with DMaaP message router service
+* `AAI-2905 <https://jira.onap.org/browse/AAI-2905>`_ - AAI sparky cannot communicate with portal due to certificate issue, might be related to https://jira.onap.org/browse/PORTAL-875
+
+The AAI sub-project External System Registry (ESR) is re-using elalto containers.  The integration team has helped ESR to meet security requirements for Frankfurt, and the AAI is grateful for the contribution.
+
+Workarounds
+-----------
+
+Roles for sparky are loaded into AAF by default, so previous workaround is no longer required.  However, the pods cannot resolve portal.api.simpledemo.onap.org anymore, so it's necessary to add an entry to /etc/hosts in the sparky-be pod.  This will get around the "unknown host" issue, but then it's leads to AAI-2905, where AAI cannot get the roles from Portal due to the issue with the AAF auto-created certificate.
+
+The community has been unable to make data-router communicate with DMaaP, we welcome contributors who can help resurrect this service, or it will be deprecated in Guilin.
+
+References
+==========
+
+Quick links:
+
+- `AAI project page <https://wiki.onap.org/display/DW/Active+and+Available+Inventory+Project>`_
+- `Passing Badge information for AAI <https://bestpractices.coreinfrastructure.org/en/projects/1591>`_
+
+For more information on the ONAP Frankfurt release, please see:
+ 
+#. `ONAP Home Page`_
+#. `ONAP Documentation`_
+#. `ONAP Release Downloads`_
+#. `ONAP Wiki Page`_
+ 
+.. _`ONAP Home Page`: https://www.onap.org
+.. _`ONAP Wiki Page`: https://wiki.onap.org
+.. _`ONAP Documentation`: https://docs.onap.org
+.. _`ONAP Release Downloads`: https://git.onap.org
+
+Version: 5.0.2
+--------------
+:Release Date: 2019-10-03
 
 **New Features**
 
@@ -103,8 +172,9 @@ Quick Links:
 
 
 Version: 1.4.0
+--------------
 
-:Release Data: 2019-06-08
+:Release Date: 2019-06-08
 
 **New Features**
 
