@@ -21,3 +21,8 @@ AAI is where the data converges, where the pictures come together, and where the
 With the high volume and variety of data, AAI must be prepared to answer many types of queries; real-time search to quickly retrieve specific items from an ocean of data, relationships to determine impacts and consequences, aggregations and counts to explore availability and consumption, validation and integrity to establish whether systems are acting on good information, history and provenance to reconstruct the current view and its context, and enrichment out to legacy systems to examine the low-level details of the network and virtual assets.
 
 .. image:: images/aai_in_onap.png
+
+Component Diagram
+_________________
+
+.. image:: images/aai_components.png
