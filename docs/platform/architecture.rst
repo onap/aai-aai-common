@@ -21,3 +21,87 @@ AAI is where the data converges, where the pictures come together, and where the
 With the high volume and variety of data, AAI must be prepared to answer many types of queries; real-time search to quickly retrieve specific items from an ocean of data, relationships to determine impacts and consequences, aggregations and counts to explore availability and consumption, validation and integrity to establish whether systems are acting on good information, history and provenance to reconstruct the current view and its context, and enrichment out to legacy systems to examine the low-level details of the network and virtual assets.
 
 .. image:: images/aai_in_onap.png
+
+AAI Components
+^^^^^^^^^^^^^^
+
+.. image:: images/aai_components.png
+
+ESR
+"""
+Applications for management of external systems.
+
+==================  ===
+**aai/esr-gui**     External system management ui. UI for esr-server.
+**aai/esr-server**  ESR backend, mainly include the function of external system reachable check and data pretreatment.
+==================  ===
+
+Input abstraction
+"""""""""""""""""
+Applications that serve as entry points to A&AI.
+
+====================  ===
+**aai/model-loader**  Obtains SDC artifacts and loads them into the A&AI Resources service for storage.
+**aai/sparky-be**     AAI user interface back end.
+**aai/sparky-fe**     AAI user interface front end.
+====================  ===
+
+Query abstraction
+"""""""""""""""""
+Query abstraction point for clients that routes AAI queries and event data.
+
+===================  ===
+**aai/data-router**  AAI Microservice used to route AAI queries and event data to correct storage engine. Serves as a query abstraction point for clients, as well as a gateway.
+===================  ===
+
+Data management
+"""""""""""""""
+Microservices that facilitate data management of AAI objects.
+
+============================  ===
+**aai/babel**                 AAI Microservice to generate AAI model XML from SDC TOSCA CSAR artifacts.
+**aai/cacher**                Cacher is a generic service that can be used to snapshot json responses, force sync them, sync them periodically, or update them by consuming dmaap events.
+**aai/chameleon**             (deprecated) Abstraction service for historical database.
+**aai/champ**                 Abstraction from underlying graph storage systems that A&AI would interface with.
+**aai/gizmo**                 (deprecated) CRUD Rest API endpoint for resources and relationships, delivering atomic interactions with the graph for improved scalability.
+**aai/resources**             AAI Resources Micro Service providing CRUD REST APIs for inventory resources. This microservice provides the main path for updating and searching the graph - java-types defined in the OXM file for each version of the API define the REST endpoints - for example, the java-type "CloudRegion" in aai-common/aai-schema/src/main/resources/oxm/aai_oxm_v11.xml maps to /aai/v11/cloud-infrastructure/cloud-regions/cloud-region.
+**aai/search-data-service**   Abstraction layer for searchengine, supporting queries and updates. Currently supports Elasticsearch, but has also been design with Solr support in mind.
+**aai/spike**                 (deprecated) Microservice used to generate events describing changes to the graph data.
+**aai/tabular-data-service**  (deprecated) Microservice which serves as an abstraction layer to a tabular data store.
+**aai/validation**            Microservice used to invoke validation mechanism .
+============================  ===
+
+Graph services
+""""""""""""""
+Set of components, which store, provide or display schemas.
+
+======================  ===
+**aai/graphadmin**      Microservice with various functions for graph management.
+**aai/graphgraph**      Microservice used to provide view of AAI model, schema and edge rules.
+**aai/schema-service**  Application holds and provides specified schema versions.
+**aai/traversal**       AAI Traversal Micro Service providing REST APIs for traversal/search of inventory resources. Custom queries (gremin-style traversals) model based queries (which use a model either manually created or loaded from SDC models) and named-queries (traversals which ignore edge labels and direction and just link together objects of given node types from a starting node).
+======================  ===
+
+Libraries
+"""""""""
+Libraries don't run as standalone applications. They contain general functionality, which may be imported and used in other modules.
+
+=======================  ===
+**aai/aai-common**       This holds the model, annotations and common modules used across the Resources and Traversal micro services. aai/aai-common creates artifacts like aai-core, aai-schema and aai-annotations, which are used by the rest of the microservices and libraries.
+**aai/event-client**     Event bus client library.
+**aai/logging-service**  AAI common logging library.
+**aai/rest-client**      Library for making REST calls.
+**aai/router-core**      Library containing the core camel components for the data router.
+=======================  ===
+
+Configuration repositories
+""""""""""""""""""""""""""
+Contain several repositories that include various configuration.
+
+===================  ===
+**aai/aai-data**     (deprecated) AAI Chef environment files.
+**aai/aai-config**   (deprecated) AAI Chef cookbooks.
+**aai/aai-service**  (deprecated) AAI REST based services.
+**aai/oom**
+**aai/test-config**  Repository containing test configuration for use in continuous integration.
+===================  ===
