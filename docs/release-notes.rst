@@ -2,7 +2,10 @@
 .. http://creativecommons.org/licenses/by/4.0
 .. Copyright 2017 AT&T Intellectual Property.  All rights reserved.
 .. _release_notes:
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2182b53... Add _release_notes reference in Release Note RST file
 
 AAI Release Notes
 ==================
