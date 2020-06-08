@@ -23,6 +23,9 @@ package org.onap.aai.serialization.queryformats;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import java.util.stream.Collectors;
+import org.apache.commons.lang3.tuple.ImmutableTriple;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.Tree;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
@@ -38,6 +41,11 @@ public abstract class MultiFormatMapper implements FormatMapper {
     Logger logger = LoggerFactory.getLogger(MultiFormatMapper.class);
 
     protected boolean isTree = false;
+    protected static final String PROPERTIES_KEY = "properties";
+    protected static final String NODE_TYPE_KEY = "node-type";
+
+    protected static final String RETURNED_EMPTY_JSONARRAY_MSG =
+        "Returned empty JsonArray - Could not populate nested json objects for wrapper: {}";
 
     @Override
     public Optional<JsonObject> formatObject(Object input)
@@ -118,7 +126,7 @@ public abstract class MultiFormatMapper implements FormatMapper {
         if (ja.size() > 0) {
             t.add("nodes", ja);
         } else {
-            logger.debug("Returned empty JsonArray - Could not populate nested json objects for wrapper: {}", nodeIdentifier);
+            logger.debug(RETURNED_EMPTY_JSONARRAY_MSG, nodeIdentifier);
         }
 
         return Optional.of(t);
@@ -147,7 +155,7 @@ public abstract class MultiFormatMapper implements FormatMapper {
             t.add("results", ja);
             return Optional.of(t);
         } else {
-            logger.debug("Returned empty JsonArray - Could not populate nested json objects for wrapper: {}", nodeIdentifier);
+            logger.debug(RETURNED_EMPTY_JSONARRAY_MSG, nodeIdentifier);
         }
 
         return Optional.empty();
@@ -177,7 +185,7 @@ public abstract class MultiFormatMapper implements FormatMapper {
             if (ja.size() > 0) {
                 me.add(nodeIdentifier, ja);
             } else {
-                logger.debug("Returned empty JsonArray - Could not populate nested json objects for wrapper: {}", nodeIdentifier);
+                logger.debug(RETURNED_EMPTY_JSONARRAY_MSG, nodeIdentifier);
             }
             nodes.add(me);
         }
@@ -193,18 +201,15 @@ public abstract class MultiFormatMapper implements FormatMapper {
         if (properties == null)
             return new HashMap<>();
 
-        Map<String, Set<String>> filterPropertiesMap = new HashMap<>();
-        for (String key : properties.keySet()) {
-            if (!filterPropertiesMap.containsKey(key)) {
-                Set<String> newSet = new HashSet<>();
-                for (String currProperty : properties.get(key)) {
-                    currProperty = truncateApostrophes(currProperty);
-                    newSet.add(currProperty);
+        return properties.entrySet().stream()
+            .map(entry -> {
+                    Set<String> newSet = entry.getValue().stream()
+                        .map(this::truncateApostrophes)
+                        .collect(Collectors.toSet());
+
+                    return Pair.of(entry.getKey(), newSet);
                 }
-                filterPropertiesMap.put(key, newSet);
-            }
-        }
-        return filterPropertiesMap;
+            ).collect(Collectors.toMap(Pair::getKey, Pair::getValue));
     }
 
     /**
@@ -229,37 +234,55 @@ public abstract class MultiFormatMapper implements FormatMapper {
      * @param filterPropertiesMap
      * @return
      */
-    protected JsonObject getPropertyFilteredObject(Optional<JsonObject> obj, Map<String, Set<String>> filterPropertiesMap) {
-        if (filterPropertiesMap == null || filterPropertiesMap.isEmpty()) {
-            return obj.get();
-        }
-        JsonObject jsonObj = obj.get();
-        JsonObject result = new JsonObject();
-        if (jsonObj != null) {
-            String nodeType = "";
-            JsonObject properties = null;
-            // clone object
-            for (Map.Entry<String, JsonElement> mapEntry : jsonObj.entrySet()) {
-                String key = mapEntry.getKey(); JsonElement value = mapEntry.getValue();
+    protected JsonObject getPropertyFilteredObject(Optional<JsonObject> obj,
+        Map<String, Set<String>> filterPropertiesMap) {
+        return obj.map(
+            jsonObj -> {
+                if (filterPropertiesMap == null || filterPropertiesMap.isEmpty()) {
+                    return jsonObj;
+                } else {
+                    ImmutableTriple<JsonObject, Optional<String>, Optional<JsonObject>> triple =
+                        cloneObjectAndExtractNodeTypeAndProperties(jsonObj);
 
-                // also, check if payload has node-type and properties fields
-                if (key.equals("node-type") && value != null) {
-                    nodeType = value.getAsString();
-                } else if (key.equals("properties") && value != null && value.isJsonObject()) {
-                    properties = value.getAsJsonObject();
+                    JsonObject result = triple.left;
+                    Optional<String> nodeType = triple.middle;
+                    Optional<JsonObject> properties = triple.right;
+
+                    // Filter current object based on it containing fields: "node-type" and "properties"
+                    if (nodeType.isPresent() && properties.isPresent()) {
+                        filterByNodeTypeAndProperties(result, nodeType.get(), properties.get(), filterPropertiesMap);
+                    } else {
+                        // filter current object based on the: key - nodeType & value - JsonObject of nodes properties
+                        filterByJsonObj(result, jsonObj, filterPropertiesMap);
+                    }
+
+                    return result;
                 }
-                result.add(key, value);
             }
+        ).orElseGet(JsonObject::new);
+    }
 
-            // Filter current object based on it containing fields: "node-type" and "properties"
-            if (!nodeType.isEmpty() && properties != null) {
-                filterByNodeTypeAndProperties(result, nodeType, properties, filterPropertiesMap);
-            } else {
-                // filter current object based on the: key - nodeType & value - JsonObject of nodes properties
-                filterByJsonObj(result, jsonObj, filterPropertiesMap);
+    private ImmutableTriple<JsonObject, Optional<String>, Optional<JsonObject>> cloneObjectAndExtractNodeTypeAndProperties(
+        JsonObject jsonObj) {
+        JsonObject result = new JsonObject();
+        Optional<String> nodeType = Optional.empty();
+        Optional<JsonObject> properties = Optional.empty();
+
+        // clone object
+        for (Map.Entry<String, JsonElement> mapEntry : jsonObj.entrySet()) {
+            String key = mapEntry.getKey();
+            JsonElement value = mapEntry.getValue();
+
+            // also, check if payload has node-type and properties fields
+            if (key.equals(NODE_TYPE_KEY) && value != null) {
+                nodeType = Optional.of(value.getAsString());
+            } else if (key.equals(PROPERTIES_KEY) && value != null && value.isJsonObject()) {
+                properties = Optional.of(value.getAsJsonObject());
             }
+            result.add(key, value);
         }
-        return result;
+
+        return ImmutableTriple.of(result, nodeType, properties);
     }
 
     /**
@@ -283,8 +306,8 @@ public abstract class MultiFormatMapper implements FormatMapper {
                     filteredProperties.add(property, properties.get(property));
                 }
             }
-            result.remove("properties");
-            result.add("properties", filteredProperties);
+            result.remove(PROPERTIES_KEY);
+            result.add(PROPERTIES_KEY, filteredProperties);
         }
         return result;
     }
@@ -302,7 +325,8 @@ public abstract class MultiFormatMapper implements FormatMapper {
         }
 
         for (Map.Entry<String, JsonElement> mapEntry : jsonObj.entrySet()) {
-            String key = mapEntry.getKey(); JsonElement value = mapEntry.getValue();
+            String key = mapEntry.getKey();
+            JsonElement value = mapEntry.getValue();
             JsonObject filteredProperties = new JsonObject();
             if (value != null && value.isJsonObject() && filterPropertiesMap.containsKey(key)) {
                 JsonObject joProperties = value.getAsJsonObject();
@@ -325,14 +349,14 @@ public abstract class MultiFormatMapper implements FormatMapper {
      * @param filterPropertiesMap
      * @return
      */
-    protected JsonObject filterProperties(Optional<JsonObject> properties, String nodeType, Map<String, Set<String>> filterPropertiesMap) {
-        if (filterPropertiesMap == null || filterPropertiesMap.isEmpty()) {
-            return properties.get();
-        }
+    protected JsonObject filterProperties(Optional<JsonObject> properties, String nodeType,
+        Map<String, Set<String>> filterPropertiesMap) {
+        return properties.map(jo -> {
+            if (filterPropertiesMap == null || filterPropertiesMap.isEmpty()) {
+                return properties.get();
+            }
 
-        JsonObject jo = properties.get();
-        JsonObject result = new JsonObject();
-        if (jo != null) {
+            JsonObject result = new JsonObject();
             // clone the object
             for (Map.Entry<String, JsonElement> mapEntry : jo.entrySet()) {
                 String key = mapEntry.getKey();
@@ -350,8 +374,8 @@ public abstract class MultiFormatMapper implements FormatMapper {
                     }
                 }
             }
-        }
-        return result;
+            return result;
+        }).orElseGet(JsonObject::new);
     }
 
     @Override
