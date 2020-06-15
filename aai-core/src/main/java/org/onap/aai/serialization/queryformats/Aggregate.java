@@ -129,7 +129,7 @@ public class Aggregate extends MultiFormatMapper {
                         json.addProperty(prop.key(), gson.toJson(prop.value()));
                     } else {
                         // throw exception?
-                        return null;
+                        return Optional.empty();
                     }
                 }
             } else {
@@ -214,7 +214,7 @@ public class Aggregate extends MultiFormatMapper {
                 json.add(inner);
             } else {
                 Optional<JsonObject> obj = this.getJsonFromVertex((Vertex)l, properties);
-                json.add(obj.get());
+                if(obj.isPresent()) json.add(obj.get());
             }
         }
         return Optional.of(json);
