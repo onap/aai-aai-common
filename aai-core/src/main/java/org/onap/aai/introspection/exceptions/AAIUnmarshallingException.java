@@ -26,18 +26,19 @@ public class AAIUnmarshallingException extends AAIException {
 
     private static final long serialVersionUID = -5615651557821878103L;
 
+    private static final String AAI_MSG="AAI_3000";
     public AAIUnmarshallingException() {
     }
 
     public AAIUnmarshallingException(String message) {
-        super("AAI_3000", message);
+        super(AAI_MSG, message);
     }
 
     public AAIUnmarshallingException(Throwable cause) {
-        super("AAI_3000", cause);
+        super(AAI_MSG, cause);
     }
 
     public AAIUnmarshallingException(String message, Throwable cause) {
-        super("AAI_3000", cause, message);
+        super(AAI_MSG, cause, message);
     }
 }
