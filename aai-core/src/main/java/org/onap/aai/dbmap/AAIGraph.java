@@ -152,7 +152,7 @@ public class AAIGraph {
 
         logger.info("-- loading schema into JanusGraph");
         if ("true".equals(SpringContextAware.getApplicationContext().getEnvironment().getProperty("history.enabled", "false"))) {
-            SchemaGenerator4Hist.loadSchemaIntoJanusGraph(graph, graphMgt, IN_MEMORY);
+            SchemaGenerator4Hist.loadSchemaIntoJanusGraph(graphMgt, IN_MEMORY);
         } else {
             SchemaGenerator.loadSchemaIntoJanusGraph(graphMgt, IN_MEMORY);
         }
