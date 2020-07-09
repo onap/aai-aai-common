@@ -16,6 +16,24 @@
       "revId": "d3b0ddb3fc41af23138a7ba4e4212be89d91fce1",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "88a59dd4_ca824214",
+        "filename": "aai-core/src/main/java/org/onap/aai/dbgen/SchemaGenerator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 156,
+      "author": {
+        "id": 6614
+      },
+      "writtenOn": "2020-07-09T14:27:43Z",
+      "side": 1,
+      "message": "To be honest, `ers -\u003e ers.values().stream().map(EdgeRule::getLabel).collect(Collectors.toSet())` is less readable to me.\n\nThis is why I isolated this piece of code in CollectionUtils. This enables us to only mention what has to be done (EdgeRule::getLabel) instead of telling how it should be done (which is actually a best practice referred to as Local Reasoning).\n\nWhat is the exact problem here? The passing of a function to a higher order function? Could you please elaborate a bit?",
+      "parentUuid": "e8a79db6_d586ce07",
+      "revId": "d3b0ddb3fc41af23138a7ba4e4212be89d91fce1",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
     }
   ]
 }
