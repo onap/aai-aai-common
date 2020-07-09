@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e8a79db6_d586ce07",
+        "filename": "aai-core/src/main/java/org/onap/aai/dbgen/SchemaGenerator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 156,
+      "author": {
+        "id": 1043
+      },
+      "writtenOn": "2020-07-09T14:14:41Z",
+      "side": 1,
+      "message": "This is central to the schema creation, for simplicity and readability the collection utils class could be replaced with the following\ners -\u003e ers.values().stream().map(EdgeRule::getLabel).collect(Collectors.toSet())\nand some supporting comments.",
+      "revId": "d3b0ddb3fc41af23138a7ba4e4212be89d91fce1",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
