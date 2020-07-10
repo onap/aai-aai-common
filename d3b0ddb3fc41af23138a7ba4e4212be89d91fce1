@@ -52,6 +52,24 @@
       "revId": "d3b0ddb3fc41af23138a7ba4e4212be89d91fce1",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fa983a36_da3b3e00",
+        "filename": "aai-core/src/main/java/org/onap/aai/dbgen/SchemaGenerator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 156,
+      "author": {
+        "id": 6614
+      },
+      "writtenOn": "2020-07-10T18:19:16Z",
+      "side": 1,
+      "message": "I have isolated the function in SchemaGenerator and set it as private. I\u0027ve also added some javadoc (even though it\u0027s a private function). Initially I thought about putting in its own class, as collecting values is a pretty common need, but I agree that for this change, this may not be required. Let\u0027s wait for future cases to show up.\n\nThank you for your help.",
+      "parentUuid": "98380783_da20d167",
+      "revId": "d3b0ddb3fc41af23138a7ba4e4212be89d91fce1",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
