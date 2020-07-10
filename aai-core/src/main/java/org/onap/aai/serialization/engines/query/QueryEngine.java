@@ -1,4 +1,4 @@
-/**
+/*
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
@@ -34,7 +34,7 @@ import org.onap.aai.introspection.Loader;
 
 public abstract class QueryEngine {
 
-    final protected GraphTraversalSource g;
+    protected final GraphTraversalSource g;
     protected double dbTimeMsecs = 0;
 
     /**
@@ -177,5 +177,4 @@ public abstract class QueryEngine {
     public abstract List<Path> findCousinsAsPath(Vertex start);
 
     public abstract double getDBTimeMsecs();
-
 }

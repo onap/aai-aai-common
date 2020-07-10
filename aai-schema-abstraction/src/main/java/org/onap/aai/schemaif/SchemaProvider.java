@@ -21,77 +21,75 @@
 
 package org.onap.aai.schemaif;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.onap.aai.schemaif.definitions.EdgeSchema;
 import org.onap.aai.schemaif.definitions.VertexSchema;
 
+import java.util.Map;
+import java.util.Set;
+
 public interface SchemaProvider {
-    
+
     /**
      * Load the schema into memory
      */
-    public void loadSchema() throws SchemaProviderException;
-    
+    void loadSchema() throws SchemaProviderException;
+
     /**
      * Get the identifier for the more recent version of the schema
      *
      * @return The schema version identifier
      */
-    public String getLatestSchemaVersion() throws SchemaProviderException;
-    
+    String getLatestSchemaVersion() throws SchemaProviderException;
+
     /**
      * Get the schema definition for a vertex
      *
      * @param vertexName - Name of the vertex
      * @param schemaVersion - Version of the schema to use
-     * 
+     *
      * @return The vertex schema definition
      */
-    public VertexSchema getVertexSchema(String vertexName, String schemaVersion) throws SchemaProviderException;
-    
+    VertexSchema getVertexSchema(String vertexName, String schemaVersion) throws SchemaProviderException;
+
     /**
      * Get the schema definition for an edge
      *
      * @param edgeType - Type of the edge
      * @param sourceVertex - The source vertex for the edge
      * @param targetVertex - The target vertex for the edge
-     * @param schemaVersion - Version of the schema to use
-     * 
+     * @param version - Version of the schema to use
+     *
      * @return The edge schema definition
      */
-    public EdgeSchema getEdgeSchema(String edgeType, String sourceVertex, String targetVertex, String version) throws SchemaProviderException;
+    EdgeSchema getEdgeSchema(String edgeType, String sourceVertex, String targetVertex, String version) throws SchemaProviderException;
 
     /**
      * Get the list of edge definitions which are adjacent to the given vertex
      *
      * @param vertexType - Type of the vertex
-     * @param schemaVersion - Version of the schema to use
-     * 
+     * @param version - Version of the schema to use
+     *
      * @return The list of edge schema definitions
      */
-    public Set<EdgeSchema> getAdjacentEdgeSchema(String vertexType, String version) throws SchemaProviderException;
-    
+    Set<EdgeSchema> getAdjacentEdgeSchema(String vertexType, String version) throws SchemaProviderException;
+
     /**
      * Get the list of edge definitions which are valid for the given source and target
      *
      * @param sourceType - Type of the source vertex
      * @param targetType - Type of the target vertex
-     * @param schemaVersion - Version of the schema to use
-     * 
+     * @param version - Version of the schema to use
+     *
      * @return The list of edge schema definitions
      */
-    public Set<EdgeSchema> getEdgeSchemaForSourceTarget(String sourceType, String targetType, String version) throws SchemaProviderException;
+    Set<EdgeSchema> getEdgeSchemaForSourceTarget(String sourceType, String targetType, String version) throws SchemaProviderException;
 
     /**
      * Get vertex map for a schema version
      *
      * @param schemaVersion - Version of the schema to use
-     * 
+     *
      * @return The list of vertex types
      */
-    public Map<String, VertexSchema> getVertexMap(String schemaVersion) throws SchemaProviderException;
-
+    Map<String, VertexSchema> getVertexMap(String schemaVersion) throws SchemaProviderException;
  }

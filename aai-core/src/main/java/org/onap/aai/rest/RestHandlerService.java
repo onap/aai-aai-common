@@ -1,4 +1,4 @@
-/**
+/*
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
@@ -24,10 +24,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
 public class RestHandlerService {
-    private static RestHandlerService single_instance = null;
+    private static RestHandlerService singleInstance = null;
     public ThreadPoolExecutor executor;
 
-    // private constructor restricted to this class itself
     private RestHandlerService() {
         executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(50);
     }
@@ -38,9 +37,9 @@ public class RestHandlerService {
      * @return single instance of RestHandlerService
      */
     public static RestHandlerService getInstance() {
-        if (single_instance == null) {
-            single_instance = new RestHandlerService();
+        if (singleInstance == null) {
+            singleInstance = new RestHandlerService();
         }
-        return single_instance;
+        return singleInstance;
     }
 }

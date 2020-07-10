@@ -1,4 +1,4 @@
-/**
+/*
  * ﻿============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
@@ -40,7 +40,7 @@ public class OxmSchemaProvider implements SchemaProvider {
         OxmEdgeRulesLoader.loadModels();
         OxmSchemaLoader.loadModels();
     }
-    
+
     @Override
     public String getLatestSchemaVersion() throws SchemaProviderException {
         return OxmSchemaLoader.getLatestVersion();
@@ -72,41 +72,41 @@ public class OxmSchemaProvider implements SchemaProvider {
         if (edgeRule == null) {
             return null;
         }
-        
+
         FromOxmEdgeSchema es = new FromOxmEdgeSchema();
         es.fromEdgeRule(edgeRule);
-        
+
         return es;
     }
 
     @Override
     public Set<EdgeSchema> getAdjacentEdgeSchema(String vertexType, String version) throws SchemaProviderException {
         RelationshipSchema relSchema = OxmEdgeRulesLoader.getSchemaForVersion(version);
-        Set<EdgeSchema> edges = new HashSet<EdgeSchema>();
+        Set<EdgeSchema> edges = new HashSet<>();
         List<EdgeRule> rules = relSchema.lookupAdjacentEdges(vertexType);
-        
+
         for (EdgeRule rule : rules) {
             FromOxmEdgeSchema es = new FromOxmEdgeSchema();
             es.fromEdgeRule(rule);
             edges.add(es);
         }
-        
+
         return edges;
     }
-    
+
     @Override
     public Set<EdgeSchema> getEdgeSchemaForSourceTarget(String sourceType, String targetType, String version) throws SchemaProviderException {
         RelationshipSchema relSchema = OxmEdgeRulesLoader.getSchemaForVersion(version);
-        Set<EdgeSchema> edges = new HashSet<EdgeSchema>();
+        Set<EdgeSchema> edges = new HashSet<>();
         Set<String> relTypes = relSchema.getValidRelationTypes(sourceType, targetType);
-        
+
         for (String type : relTypes) {
             EdgeSchema edgeSchema = getEdgeSchema(type, sourceType, targetType, version);
             if (edgeSchema != null) {
                 edges.add(edgeSchema);
             }
         }
-        
+
         return edges;
     }
 

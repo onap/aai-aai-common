@@ -1,4 +1,4 @@
-/**
+/*
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
@@ -55,7 +55,7 @@ public class AAIGraphTest extends AAISetup {
     }
 
     @Test
-    public void getRealtimeInstanceConnectionName() throws Exception {
+    public void getRealtimeInstanceConnectionName() {
 
         JanusGraphManagement graphMgt = AAIGraph.getInstance().getGraph().openManagement();
         String connectionInstanceName =
@@ -96,7 +96,7 @@ public class AAIGraphTest extends AAISetup {
 
     @Ignore("Need to create schema specific to the test")
     @Test
-    public void checkIndexOfAliasedIndexedProps() throws Exception {
+    public void checkIndexOfAliasedIndexedProps() {
         Set<String> aliasedIndexedProps = getAliasedIndexedProps();
         JanusGraphManagement graphMgt = AAIGraph.getInstance().getGraph().openManagement();
         for (String aliasedIndexedProp : aliasedIndexedProps) {

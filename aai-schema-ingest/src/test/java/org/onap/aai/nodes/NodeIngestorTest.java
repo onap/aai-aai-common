@@ -1,4 +1,4 @@
-/** 
+/*
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
@@ -20,18 +20,6 @@
 
 package org.onap.aai.nodes;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
-
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
-import javax.xml.bind.SchemaOutputResolver;
-import javax.xml.transform.*;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
 import org.junit.Rule;
@@ -48,6 +36,26 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.w3c.dom.Document;
+
+import javax.xml.bind.SchemaOutputResolver;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Result;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestPropertySource(
@@ -76,12 +84,12 @@ public class NodeIngestorTest {
         DynamicEntity foo10 = ctx10.newDynamicEntity("Foo");
 
         foo10.set("fooId", "bar");
-        assertTrue("bar".equals(foo10.get("fooId")));
+        assertEquals("bar", foo10.get("fooId"));
 
         // should work bc Bar is valid in test_business_v10 schema
         DynamicEntity bar10 = ctx10.newDynamicEntity("Bar");
         bar10.set("barId", "bar2");
-        assertTrue("bar2".equals(bar10.get("barId")));
+        assertEquals("bar2", bar10.get("barId"));
         XSDOutputResolver outputResolver10 = new XSDOutputResolver();
         ctx10.generateSchema(outputResolver10);
 
@@ -90,11 +98,11 @@ public class NodeIngestorTest {
         // should work bc Foo.quantity is valid in test_network_v11 schema
         DynamicEntity foo11 = ctx11.newDynamicEntity("Foo");
         foo11.set("quantity", "12");
-        assertTrue("12".equals(foo11.get("quantity")));
+        assertEquals("12", foo11.get("quantity"));
 
         DynamicEntity quux11 = ctx11.newDynamicEntity("Quux");
         quux11.set("qManagerName", "some guy");
-        assertTrue("some guy".equals(quux11.get("qManagerName")));
+        assertEquals("some guy", quux11.get("qManagerName"));
         XSDOutputResolver outputResolver11 = new XSDOutputResolver();
         ctx11.generateSchema(outputResolver11);
 
@@ -154,24 +162,19 @@ public class NodeIngestorTest {
         transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
         transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
 
-        transformer.transform(new DOMSource(doc), new StreamResult(new OutputStreamWriter(out, "UTF-8")));
+        transformer.transform(new DOMSource(doc), new StreamResult(new OutputStreamWriter(out, UTF_8)));
     }
 
-    private class XSDOutputResolver extends SchemaOutputResolver {
+    private static class XSDOutputResolver extends SchemaOutputResolver {
 
         @Override
         public Result createOutput(String namespaceUri, String suggestedFileName) throws IOException {
-
-            // create new file
-            // create stream result
             File temp = File.createTempFile("schema", ".xsd");
             StreamResult result = new StreamResult(temp);
             System.out.println("Schema file: " + temp.getAbsolutePath());
 
-            // set system id
             result.setSystemId(temp.toURI().toURL().toString());
 
-            // return result
             return result;
         }
     }
