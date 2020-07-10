@@ -34,6 +34,24 @@
       "revId": "d3b0ddb3fc41af23138a7ba4e4212be89d91fce1",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "98380783_da20d167",
+        "filename": "aai-core/src/main/java/org/onap/aai/dbgen/SchemaGenerator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 156,
+      "author": {
+        "id": 1043
+      },
+      "writtenOn": "2020-07-10T16:16:58Z",
+      "side": 1,
+      "message": "First statement it seems that is matter of opinion so no issue there.\nCompletely agree with the 2nd statement.\nThe need for an entire separate class for one method that is only used in 1 place seems a bit much.\nIf there are other use cases you are aware of for that method then its perfectly fine as is but some comments would be helpful otherwise can it be moved to the SchemaGenerator class with comments.",
+      "parentUuid": "88a59dd4_ca824214",
+      "revId": "d3b0ddb3fc41af23138a7ba4e4212be89d91fce1",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
     }
   ]
 }
