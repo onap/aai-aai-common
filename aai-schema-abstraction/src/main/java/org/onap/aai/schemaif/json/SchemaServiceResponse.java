@@ -1,4 +1,4 @@
-/**
+/*
  * ﻿============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
@@ -20,26 +20,24 @@
  */
 package org.onap.aai.schemaif.json;
 
-import org.onap.aai.schemaif.SchemaProviderException;
-import org.onap.aai.schemaif.json.definitions.JsonSchema;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
+import org.onap.aai.schemaif.SchemaProviderException;
+import org.onap.aai.schemaif.json.definitions.JsonSchema;
 
 public class SchemaServiceResponse {
     public static final String SCHEMA_TYPE_OXM = "oxm";
     public static final String SCHEMA_TYPE_JSON = "json";
-    
+
     private static final Gson gson = new GsonBuilder().create();
 
     @SerializedName("schema-version")
     private String version;
-    
+
     @SerializedName("schema-content")
     private JsonSchema data;
-   
+
     public String getVersion() {
         return version;
     }
@@ -57,11 +55,10 @@ public class SchemaServiceResponse {
             if (json == null || json.isEmpty()) {
                 throw new SchemaProviderException("Empty schema-service response");
             }
-            
+
             return gson.fromJson(json, SchemaServiceResponse.class);
         } catch (Exception ex) {
             throw new SchemaProviderException("Invalid response from schema service: " + ex.getMessage());
         }
     }
-
 }
