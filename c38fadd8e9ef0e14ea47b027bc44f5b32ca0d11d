@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9d626794_9b28b303",
+        "filename": "aai-els-onap-logging/src/main/java/org/onap/aai/util/HbaseSaltPrefixer.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 6614
+      },
+      "writtenOn": "2020-07-10T11:53:48Z",
+      "side": 0,
+      "message": "I remove this javadoc because it does not add much information considering it describes what a constructor does.",
+      "revId": "c38fadd8e9ef0e14ea47b027bc44f5b32ca0d11d",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0efe038e_cb07c8a7",
+        "filename": "aai-els-onap-logging/src/main/java/org/onap/aai/util/HbaseSaltPrefixer.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 6614
+      },
+      "writtenOn": "2020-07-10T11:53:48Z",
+      "side": 0,
+      "message": "I remove this javadoc because it does not add much information considering the function\u0027s signature.",
+      "revId": "c38fadd8e9ef0e14ea47b027bc44f5b32ca0d11d",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a9f08c66_6bf8e193",
+        "filename": "aai-els-onap-logging/src/main/java/org/onap/aai/util/HbaseSaltPrefixer.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 6614
+      },
+      "writtenOn": "2020-07-10T11:53:48Z",
+      "side": 0,
+      "message": "I remove this javadoc because it does not add much information considering the function\u0027s signature.",
+      "revId": "c38fadd8e9ef0e14ea47b027bc44f5b32ca0d11d",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
