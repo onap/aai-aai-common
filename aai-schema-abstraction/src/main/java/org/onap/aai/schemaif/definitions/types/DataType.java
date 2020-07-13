@@ -1,4 +1,4 @@
-/**
+/*
  * ﻿============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
@@ -21,11 +21,9 @@
 
 package org.onap.aai.schemaif.definitions.types;
 
-import org.onap.aai.schemaif.SchemaProviderException;
-
 public abstract class DataType {
     public enum Type {
-        STRING, 
+        STRING,
         BOOL,
         INT,
         LONG,
@@ -34,9 +32,9 @@ public abstract class DataType {
         MAP,
         COMPLEX
     }
-    
-    private Type type;
-    
+
+    private final Type type;
+
     public DataType(Type type) {
         this.type = type;
     }
@@ -44,9 +42,9 @@ public abstract class DataType {
     public Type getType() {
         return type;
     }
-    
+
     public abstract Object validateValue(String value);
-    
+
     public String toString() {
         return getType().toString();
     }

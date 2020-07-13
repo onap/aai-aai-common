@@ -1,4 +1,4 @@
-/**
+/*
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
@@ -39,7 +39,7 @@ public class LoggingContextTest {
         LoggingContext.elapsedTime(300, TimeUnit.MILLISECONDS);
         assertEquals(MDC.get(LoggingContext.LoggingField.ELAPSED_TIME.toString()), "300");
         LoggingContext.init();
-        assertTrue(MDC.get(LoggingContext.LoggingField.ELAPSED_TIME.toString()) == null);
+        assertNull(MDC.get(LoggingContext.LoggingField.ELAPSED_TIME.toString()));
     }
     @Test
     public void stopWatchTest() {
@@ -60,7 +60,7 @@ public class LoggingContextTest {
         assertEquals(testServiceName, MDC.get(LoggingContext.LoggingField.SERVICE_NAME.toString()));
 
         LoggingContext.clear();
-        assertTrue(MDC.get(LoggingContext.LoggingField.SERVICE_NAME.toString()) == null);
+        assertNull(MDC.get(LoggingContext.LoggingField.SERVICE_NAME.toString()));
 
     }
 
@@ -71,7 +71,7 @@ public class LoggingContextTest {
         assertEquals(testServiceName, MDC.get(LoggingContext.LoggingField.SERVICE_NAME.toString()));
 
         LoggingContext.remove(LoggingContext.LoggingField.SERVICE_NAME.toString());
-        assertTrue(MDC.get(LoggingContext.LoggingField.SERVICE_NAME.toString()) == null);
+        assertNull(MDC.get(LoggingContext.LoggingField.SERVICE_NAME.toString()));
 
     }
 
