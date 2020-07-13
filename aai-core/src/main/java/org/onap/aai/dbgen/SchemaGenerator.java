@@ -1,4 +1,4 @@
-/**
+/*
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
@@ -23,7 +23,6 @@ package org.onap.aai.dbgen;
 import com.google.common.collect.Multimap;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.janusgraph.core.Cardinality;
-import org.janusgraph.core.JanusGraph;
 import org.janusgraph.core.Multiplicity;
 import org.janusgraph.core.PropertyKey;
 import org.janusgraph.core.schema.JanusGraphManagement;
@@ -32,7 +31,6 @@ import org.onap.aai.edges.EdgeIngestor;
 import org.onap.aai.edges.EdgeRule;
 import org.onap.aai.edges.exceptions.EdgeRuleNotFoundException;
 import org.onap.aai.introspection.Introspector;
-import org.onap.aai.introspection.Loader;
 import org.onap.aai.introspection.LoaderUtil;
 import org.onap.aai.logging.LogFormatTools;
 import org.onap.aai.schema.enums.PropertyMetadata;
@@ -40,14 +38,19 @@ import org.onap.aai.util.AAIConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class SchemaGenerator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SchemaGenerator.class);
 
     private SchemaGenerator() {
-
     }
 
     /**
@@ -56,13 +59,12 @@ public class SchemaGenerator {
      * @param graphMgmt
      *        the graph mgmt
      */
-    public static void loadSchemaIntoJanusGraph(final JanusGraphManagement graphMgmt,
-            String backend) {
+    public static void loadSchemaIntoJanusGraph(final JanusGraphManagement graphMgmt, String backend) {
 
         try {
             AAIConfig.init();
         } catch (Exception ex) {
-            LOGGER.error(" ERROR - Could not run AAIConfig.init(). " + LogFormatTools.getStackTop(ex));
+            LOGGER.error(" ERROR - Could not run AAIConfig.init(). {}", LogFormatTools.getStackTop(ex));
             System.exit(1);
         }
 
@@ -79,35 +81,10 @@ public class SchemaGenerator {
         // multiplicty definitions depends on which two types of nodes are being
         // connected.
 
-        Multimap<String, EdgeRule> edges = null;
-        Set<String> labels = new HashSet<>();
+        makeEdgeLabels(graphMgmt);
 
-        EdgeIngestor edgeIngestor = SpringContextAware.getBean(EdgeIngestor.class);
 
-        try {
-            edges = edgeIngestor.getAllCurrentRules();
-        } catch (EdgeRuleNotFoundException e) {
-            LOGGER.error("Unable to find all rules {}", LogFormatTools.getStackTop(e));
-        }
-
-        for (EdgeRule rule : edges.values()) {
-            labels.add(rule.getLabel());
-        }
-
-        for (String label : labels) {
-            if (graphMgmt.containsRelationType(label)) {
-                String dmsg = " EdgeLabel  [" + label + "] already existed. ";
-                LOGGER.debug(dmsg);
-            } else {
-                String dmsg = "Making EdgeLabel: [" + label + "]";
-                LOGGER.debug(dmsg);
-                graphMgmt.makeEdgeLabel(label).multiplicity(Multiplicity.valueOf("MULTI")).make();
-            }
-        }
-
-        Loader loader = LoaderUtil.getLatestVersion();
-
-        Map<String, Introspector> objs = loader.getAllObjects();
+        Map<String, Introspector> objs = LoaderUtil.getLatestVersion().getAllObjects();
         Map<String, PropertyKey> seenProps = new HashMap<>();
 
         for (Introspector obj : objs.values()) {
@@ -118,8 +95,7 @@ public class SchemaGenerator {
                     dbPropName = alias.get();
                 }
                 if (graphMgmt.containsRelationType(dbPropName)) {
-                    String dmsg = " PropertyKey  [" + dbPropName + "] already existed in the DB. ";
-                    LOGGER.debug(dmsg);
+                    LOGGER.debug(" PropertyKey  [{}] already existed in the DB. ", dbPropName);
                 } else {
                     Class<?> type = obj.getClass(propName);
                     Cardinality cardinality = Cardinality.SINGLE;
@@ -134,9 +110,8 @@ public class SchemaGenerator {
 
                     if (process) {
 
-                        String imsg = "Creating PropertyKey: [" + dbPropName + "], [" + type.getSimpleName() + "], ["
-                                + cardinality + "]";
-                        LOGGER.info(imsg);
+                        LOGGER.info("Creating PropertyKey: [{}], [{}], [{}]",
+                                dbPropName, type.getSimpleName(), cardinality);
                         PropertyKey propK;
                         if (!seenProps.containsKey(dbPropName)) {
                             propK = graphMgmt.makePropertyKey(dbPropName).dataType(type).cardinality(cardinality)
@@ -146,23 +121,19 @@ public class SchemaGenerator {
                             propK = seenProps.get(dbPropName);
                         }
                         if (graphMgmt.containsGraphIndex(dbPropName)) {
-                            String dmsg = " Index  [" + dbPropName + "] already existed in the DB. ";
-                            LOGGER.debug(dmsg);
+                            LOGGER.debug(" Index  [{}] already existed in the DB. ", dbPropName);
                         } else {
                             if (obj.getIndexedProperties().contains(propName)) {
                                 if (obj.getUniqueProperties().contains(propName)) {
-                                    imsg = "Add Unique index for PropertyKey: [" + dbPropName + "]";
-                                    LOGGER.info(imsg);
+                                    LOGGER.info("Add Unique index for PropertyKey: [{}]", dbPropName);
                                     graphMgmt.buildIndex(dbPropName, Vertex.class).addKey(propK).unique()
                                             .buildCompositeIndex();
                                 } else {
-                                    imsg = "Add index for PropertyKey: [" + dbPropName + "]";
-                                    LOGGER.info(imsg);
+                                    LOGGER.info("Add index for PropertyKey: [{}]", dbPropName);
                                     graphMgmt.buildIndex(dbPropName, Vertex.class).addKey(propK).buildCompositeIndex();
                                 }
                             } else {
-                                imsg = "No index added for PropertyKey: [" + dbPropName + "]";
-                                LOGGER.info(imsg);
+                                LOGGER.info("No index added for PropertyKey: [{}]", dbPropName);
                             }
                         }
                     }
@@ -170,13 +141,46 @@ public class SchemaGenerator {
             }
         }
 
-        String imsg = "-- About to call graphMgmt commit";
-        LOGGER.info(imsg);
+        LOGGER.info("-- About to call graphMgmt commit");
         if (backend != null) {
-            LOGGER.info(String.format("Successfully loaded the schema to %s", backend));
+            LOGGER.info("Successfully loaded the schema to {}", backend);
         }
 
         graphMgmt.commit();
+    }
+
+    private static void makeEdgeLabels(JanusGraphManagement graphMgmt) {
+        try {
+            EdgeIngestor edgeIngestor = SpringContextAware.getBean(EdgeIngestor.class);
+
+            Set<String> labels = Optional.ofNullable(edgeIngestor.getAllCurrentRules())
+                    .map(collectValues(EdgeRule::getLabel))
+                    .orElseGet(HashSet::new);
+
+            labels.forEach(label -> {
+                if (graphMgmt.containsRelationType(label)) {
+                    LOGGER.debug(" EdgeLabel  [{}] already existed. ", label);
+                } else {
+                    LOGGER.debug("Making EdgeLabel: [{}]", label);
+                    graphMgmt.makeEdgeLabel(label).multiplicity(Multiplicity.valueOf("MULTI")).make();
+                }
+            });
+        } catch (EdgeRuleNotFoundException e) {
+            LOGGER.error("Unable to find all rules {}", LogFormatTools.getStackTop(e));
+        }
+    }
+
+    /**
+     * Returns a function collecting all the values in a {@link com.google.common.collect.Multimap}
+     * given a mapping function
+     *
+     * @param f The mapper function
+     * @param <K> The type of key used by the provided {@link com.google.common.collect.Multimap}
+     * @param <V> The type of value used by the provided {@link com.google.common.collect.Multimap}
+     * @param <V0> The type which <V> is mapped to
+     */
+    private static <K, V, V0> Function<Multimap<K, V>, Set<V0>> collectValues(Function<V, V0> f) {
+        return as -> as.values().stream().map(f).collect(Collectors.toSet());
     }
 
 }
