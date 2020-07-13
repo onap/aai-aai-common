@@ -26,6 +26,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import java.util.Map.Entry;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.BulkSet;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.Tree;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
@@ -41,14 +42,12 @@ import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexExcepti
 import org.onap.aai.serialization.queryformats.params.Depth;
 import org.onap.aai.serialization.queryformats.params.NodesOnly;
 import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
-import org.onap.aai.util.AAIConfig;
 
 import java.io.UnsupportedEncodingException;
 import java.util.*;
-import java.util.stream.Stream;
 
 public class TreeFormat extends MultiFormatMapper {
-    private static final EELFLogger LOGGER = EELFManager.getInstance().getLogger(TreeFormat.class);
+    private static final EELFLogger TREE_FORMAT_LOGGER = EELFManager.getInstance().getLogger(TreeFormat.class);
     protected JsonParser parser = new JsonParser();
     protected final DBSerializer serializer;
     protected final Loader loader;
@@ -137,16 +136,19 @@ public class TreeFormat extends MultiFormatMapper {
             return new TreeFormat(this);
         }
     }
-    
+
     public JsonArray process(List<Object> queryResults, Map<String, List<String>> properties) {
         JsonArray body = new JsonArray();
         for (Object o : queryResults) {
             try {
-                return this.formatObjectToJsonArray(o, properties).get();
+                return this.formatObjectToJsonArray(o, properties).orElseGet( () -> {
+                    TREE_FORMAT_LOGGER.warn("Empty Optional returned by 'formatObjectToJsonArray'");
+                    return body;
+                });
             } catch (AAIFormatVertexException e) {
-                LOGGER.warn("Failed to format vertex, returning a partial list " + LogFormatTools.getStackTop(e));
+                TREE_FORMAT_LOGGER.warn("Failed to format vertex, returning a partial list " + LogFormatTools.getStackTop(e));
             } catch (AAIFormatQueryResultFormatNotSupported e) {
-                LOGGER.warn("Failed to format result type of the query " + LogFormatTools.getStackTop(e));
+                TREE_FORMAT_LOGGER.warn("Failed to format result type of the query " + LogFormatTools.getStackTop(e));
             }
         }
         return body;
@@ -158,13 +160,13 @@ public class TreeFormat extends MultiFormatMapper {
         if (input == null)
             return Optional.of(json);
         if (input instanceof Tree) {
-            return this.getJsonArrayFromTree((Tree<?>) input);
+            return this.getJsonArrayFromTree((Tree<Object>) input);
         } else {
             throw new AAIFormatQueryResultFormatNotSupported();
         }
     }
 
-    protected Optional<JsonArray> getJsonArrayFromTree(Tree<?> tree) throws AAIFormatVertexException {
+    protected Optional<JsonArray> getJsonArrayFromTree(Tree<Object> tree) throws AAIFormatVertexException {
         if (tree.isEmpty()) {
             return Optional.of(new JsonArray());
         }
@@ -172,23 +174,24 @@ public class TreeFormat extends MultiFormatMapper {
         // DSL Query
         JsonArray jsonArray = new JsonArray();
         JsonObject jsonObject = new JsonObject();
-        for (Object o : tree.keySet()) {
+        for (Map.Entry<Object, Tree<Object>> entry : tree.entrySet()) {
+            Object o = entry.getKey();
+
             // DSL Query
-            if (o instanceof AbstractSet) {
+            if (o instanceof BulkSet) {
                 BulkSet bs = (BulkSet) o;
                 for (Object o1 : bs) {
                     Optional<JsonObject> obj = this.getJsonFromVertex((Vertex) o1);
                     if (obj.isPresent()) {
                         jsonObject = obj.get();
                         for (Map.Entry<String, JsonElement> mapEntry : jsonObject.entrySet()) {
-                            String s = mapEntry.getKey();
-                            JsonElement jsonRootElementContents = jsonObject.get(s);        // getting everyObject inside
+                            JsonElement jsonRootElementContents = mapEntry.getValue();        // getting everyObject inside
                             if (jsonRootElementContents != null && jsonRootElementContents.isJsonObject()) {
                                 JsonObject relatedJsonNode = (JsonObject) jsonRootElementContents;
-                                JsonArray relatedNodes = this.getRelatedNodes(relatedJsonNode).get();
-                                if (relatedNodes != null && relatedNodes.size() > 0) {
-                                    jsonRootElementContents.getAsJsonObject().add("related-nodes", relatedNodes);
-                                }
+                                addRelatedNodesToJsonObject(
+                                    jsonRootElementContents.getAsJsonObject(),
+                                    getRelatedNodes(relatedJsonNode)
+                                );
                             }
                         }
                         jsonArray.add(jsonObject);
@@ -201,13 +204,11 @@ public class TreeFormat extends MultiFormatMapper {
                 if (obj.isPresent()) {
                     jsonObject = obj.get();
                     for (Map.Entry<String, JsonElement> mapEntry : jsonObject.entrySet()) {
-                        String s = mapEntry.getKey();
-                        JsonElement jsonRootElementContents = jsonObject.get(s);
+                        JsonElement jsonRootElementContents = mapEntry.getValue();
                         if (jsonRootElementContents != null && jsonRootElementContents.isJsonObject()) {
-                            JsonArray relatedNodes = this.getRelatedNodes(tree.get(o)).get();
-                            if (relatedNodes != null && relatedNodes.size() > 0) {
-                                jsonRootElementContents.getAsJsonObject().add("related-nodes", relatedNodes);
-                            }
+                            addRelatedNodesToJsonObject(
+                                jsonRootElementContents.getAsJsonObject(),
+                                getRelatedNodes(entry.getValue()));
                         }
                     }
                     jsonArray.add(jsonObject);
@@ -224,39 +225,54 @@ public class TreeFormat extends MultiFormatMapper {
             JsonElement jsonRootElementContents = jsonObj.get(s);
             if (jsonRootElementContents != null && jsonRootElementContents.isJsonObject()) {
                 JsonObject relatedJsonNode = jsonRootElementContents.getAsJsonObject();
-                JsonArray currRelatedNodes = this.getRelatedNodes(relatedJsonNode).get();
-                if (currRelatedNodes != null && currRelatedNodes.size() > 0) {
-                    relatedJsonNode.add("related-nodes", currRelatedNodes);
-                }
+                addRelatedNodesToJsonObject(
+                    relatedJsonNode,
+                    this.getRelatedNodes(relatedJsonNode)
+                );
                 relatedNodes.add(relatedJsonNode);
             }
         }
         return Optional.of(relatedNodes);
     }
 
-    protected Optional<JsonArray> getRelatedNodes(Tree<?> tree) throws AAIFormatVertexException {
+    protected Optional<JsonArray> getRelatedNodes(Tree<Object> tree) throws AAIFormatVertexException {
         JsonArray relatedNodes = new JsonArray();
-        for (Object o : tree.keySet()) {
+        for (Map.Entry<Object, Tree<Object>> entry : tree.entrySet()) {
+            Object o = entry.getKey();
+
             if (o instanceof Vertex) {
-                Optional<JsonObject> obj = this.getJsonFromVertex((Vertex) o);
-                if (obj.isPresent()) {
-                    JsonObject jsonObj = obj.get();
-                    for (Map.Entry<String, JsonElement> mapEntry : jsonObj.entrySet()) {
-                        String s = mapEntry.getKey();
-                        JsonElement jsonRootElementContents = jsonObj.get(s);
-                        if (jsonRootElementContents != null && jsonRootElementContents.isJsonObject()) {
-                            JsonArray currRelatedNodes = this.getRelatedNodes(tree.get(o)).get();
-                            JsonObject jsonObject = jsonRootElementContents.getAsJsonObject();
-                            if (currRelatedNodes != null && currRelatedNodes.size() > 0) {
-                                jsonObject.add("related-nodes", currRelatedNodes);
-                            }
-                            relatedNodes.add(jsonObject);
-                        }
-                    }
-                }
+                processVertex(relatedNodes, entry, (Vertex) o);
             }
         }
         return Optional.of(relatedNodes);
+    }
+
+    private void processVertex(JsonArray relatedNodes, Entry<Object, Tree<Object>> entry, Vertex o)
+        throws AAIFormatVertexException {
+        Optional<JsonObject> obj = this.getJsonFromVertex(o);
+        if (obj.isPresent()) {
+            JsonObject jsonObj = obj.get();
+            for (Entry<String, JsonElement> mapEntry : jsonObj.entrySet()) {
+                JsonElement jsonRootElementContents = mapEntry.getValue();
+                if (jsonRootElementContents != null && jsonRootElementContents.isJsonObject()) {
+                    JsonObject jsonObject = addRelatedNodesToJsonObject(
+                        jsonRootElementContents.getAsJsonObject(),
+                        getRelatedNodes(entry.getValue()));
+                    relatedNodes.add(jsonObject);
+                }
+            }
+        }
+    }
+
+
+    private static JsonObject addRelatedNodesToJsonObject(JsonObject jsonObject, Optional<JsonArray> relatedNodesOpt) {
+        relatedNodesOpt.ifPresent( relatedNodes -> {
+            if (relatedNodes.size() > 0) {
+                jsonObject.add("related-nodes", relatedNodes);
+            }
+        });
+
+        return jsonObject;
     }
 
     /**
