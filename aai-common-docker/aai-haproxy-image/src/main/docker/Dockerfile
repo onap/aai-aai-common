@@ -9,7 +9,11 @@ ENV https_proxy  ""
 RUN apk add --no-cache \
     ca-certificates \
     curl \
-    openssl
+    openssl \
+    shadow \
+    util-linux && \
+    groupadd haproxy -g 1000 && \
+    adduser -u 1000 -S -D -G haproxy -s /bin/bash haproxy
 
 RUN mkdir -p /etc/ssl/certs/ && mkdir -p /etc/ssl/private
 
