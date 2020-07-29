@@ -30,6 +30,7 @@ import java.util.function.Consumer;
 
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.io.Io;
+import org.apache.tinkerpop.gremlin.structure.io.Io.Builder;
 import org.apache.tinkerpop.gremlin.structure.io.IoRegistry;
 import org.apache.tinkerpop.gremlin.structure.io.Mapper;
 import org.apache.tinkerpop.gremlin.structure.io.graphson.GraphSONMapper;
@@ -129,15 +130,6 @@ public final class GraphSONPartialIO
             this.version = version;
         }
 
-        /**
-         * @deprecated As of release 3.2.2, replaced by {@link #onMapper(Consumer)}.
-         */
-        @Deprecated
-        @Override
-        public Io.Builder<GraphSONPartialIO> registry(final IoRegistry registry) {
-            this.registry = registry;
-            return this;
-        }
 
         @Override
         public Io.Builder<? extends Io> onMapper(final Consumer<Mapper.Builder> onMapper) {
@@ -149,6 +141,11 @@ public final class GraphSONPartialIO
         public Io.Builder<GraphSONPartialIO> graph(final Graph g) {
             this.graph = g;
             return this;
+        }
+
+
+        public <V> boolean requiresVersion(V version) {
+            return false;
         }
 
         @Override

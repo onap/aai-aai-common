@@ -33,10 +33,10 @@ limitations under the License.
 	<name>aai-core</name>
 	<packaging>jar</packaging>
 	<properties>
-		<springframework.version>4.3.24.RELEASE</springframework.version>
+		<springframework.version>5.1.13.RELEASE</springframework.version>
 
 		<jacoco.line.coverage.limit>0.50</jacoco.line.coverage.limit>
-		<gremlin.version>3.2.2</gremlin.version>
+		<gremlin.version>3.4.6</gremlin.version>
 		<groovy.version>2.4.15</groovy.version>
 		<!-- Start of Default ONAP Schema Properties -->
 		<aai.wiki.link>https://wiki.onap.org/</aai.wiki.link>
@@ -61,7 +61,7 @@ limitations under the License.
 		<profile>
 			<id>onap</id>
 			<properties>
-				<springframework.version>4.3.24.RELEASE</springframework.version>
+				<springframework.version>5.1.13.RELEASE</springframework.version>
 				<aai.release>onap</aai.release>
 				<schema.configuration.location>N/A</schema.configuration.location>
 				<schema.nodes.location>aai-schema/src/main/resources/${aai.release}/oxm</schema.nodes.location>

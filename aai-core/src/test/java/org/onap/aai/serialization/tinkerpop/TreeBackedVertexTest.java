@@ -45,20 +45,20 @@ public class TreeBackedVertexTest {
     public void configure() {
         GraphTraversalSource g = graph.traversal();
 
-        startKey = g.addV(T.label, "vserver").as("v1").property("test", "hello").addV(T.label, "vserver").as("v2")
-                .addV(T.label, "interface").property("name", "interface 1").as("v10").addInE("hasChild", "v2")
-                .property(EdgeProperty.CONTAINS.toString(), true).addV(T.label, "pserver").property("name", "pserver 1")
-                .as("v4").addOutE("runsOn", "v1").property(EdgeProperty.CONTAINS.toString(), false)
-                .addV(T.label, "interface").property("name", "interface 2").as("v3").addInE("hasChild", "v1")
-                .property(EdgeProperty.CONTAINS.toString(), true).addV(T.label, "address").property("name", "address 1")
-                .addInE("hasChild", "v3").property(EdgeProperty.CONTAINS.toString(), true).addV(T.label, "address")
-                .property("name", "address 2").addInE("hasChild", "v3").property(EdgeProperty.CONTAINS.toString(), true)
-                .addV(T.label, "complex").property("name", "complex 1").addInE("locatedIn", "v4")
-                .property(EdgeProperty.CONTAINS.toString(), false).addV(T.label, "interface")
-                .property("name", "interface 3").addInE("hasChild", "v4")
-                .property(EdgeProperty.CONTAINS.toString(), true).addV(T.label, "subnet").property("name", "subnet 1")
-                .as("v5").addInE("in", "v3").property(EdgeProperty.CONTAINS.toString(), false).addV(T.label, "address")
-                .property("name", "address 3").as("v6").addInE("hasChild", "v5")
+        startKey = g.addV("vserver").as("v1").property("test", "hello").addV("vserver").as("v2")
+                .addV("interface").property("name", "interface 1").as("v10").addE("hasChild").from("v2")
+                .property(EdgeProperty.CONTAINS.toString(), true).addV("pserver").property("name", "pserver 1")
+                .as("v4").addE("runsOn").to("v1").property(EdgeProperty.CONTAINS.toString(), false)
+                .addV("interface").property("name", "interface 2").as("v3").addE("hasChild").from( "v1")
+                .property(EdgeProperty.CONTAINS.toString(), true).addV("address").property("name", "address 1")
+                .addE("hasChild").from("v3").property(EdgeProperty.CONTAINS.toString(), true).addV("address")
+                .property("name", "address 2").addE("hasChild").from("v3").property(EdgeProperty.CONTAINS.toString(), true)
+                .addV("complex").property("name", "complex 1").addE("locatedIn").from("v4")
+                .property(EdgeProperty.CONTAINS.toString(), false).addV("interface")
+                .property("name", "interface 3").addE("hasChild").from( "v4")
+                .property(EdgeProperty.CONTAINS.toString(), true).addV("subnet").property("name", "subnet 1")
+                .as("v5").addE("in").from("v3").property(EdgeProperty.CONTAINS.toString(), false).addV("address")
+                .property("name", "address 3").as("v6").addE("hasChild").from("v5")
                 .property(EdgeProperty.CONTAINS.toString(), true).select("v1").next();
 
         tree = new GraphTraversalQueryEngine(g).findSubGraph((Vertex) startKey);
