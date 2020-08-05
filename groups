@@ -1,4 +1,5 @@
 # UUID                                                                         	Group Name
 #
+52ba14b5fa06181049a6f9b5c4f3ac5ce4df08ae                                       	saml/onap-gerrit-aai-aai-common-committers
 daebbf523be390041a1a9c0e340a6d833aae5043                                       	GitHub Replication
 ldap:cn=onap-gerrit-aai-aai-common-committers,ou=Groups,dc=freestandards,dc=org	ldap/onap-gerrit-aai-aai-common-committers
