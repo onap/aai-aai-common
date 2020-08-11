@@ -36,7 +36,9 @@ import org.onap.aai.introspection.Loader;
 import org.onap.aai.introspection.ModelType;
 import org.onap.aai.restcore.HttpMethod;
 import org.onap.aai.setup.SchemaVersion;
+import org.springframework.test.annotation.DirtiesContext;
 
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class URIToExtensionInformationTest extends AAISetup {
 
     private Loader specificLoader;
