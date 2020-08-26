@@ -8,7 +8,7 @@ AAI Release Notes
 
 Version: 5.0.2
 
-:Release Data: 2019-10-03
+:Release Date: 2019-10-03
 
 **New Features**
 
@@ -26,7 +26,7 @@ seamless upgrade from 0.2.0 which was used in Dublin.
 Users who would like to further reduce the AAI footprint can update the
 aai/oom helm charts.
 
-To re-enable the services that have been disabled by default, update 
+To re-enable the services that have been disabled by default, update
 to "enabled: true" in aai/oom/values.yaml:
 
  .. code-block:: bash
@@ -48,9 +48,9 @@ aai/oom/values.yaml for each of the following services:
         enabled: false
     aai-search-data:
         enabled: false
-    aai-elasticsearch: 
+    aai-elasticsearch:
         enabled: false
-    aai-sparky-fe: 
+    aai-sparky-fe:
         enabled: false
 
 *Known Vulnerabilities in Used Modules*
@@ -103,7 +103,7 @@ Quick Links:
 
 Version: 1.4.0
 
-:Release Data: 2019-06-08
+:Release Date: 2019-06-08
 
 **New Features**
 
