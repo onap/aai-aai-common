@@ -96,6 +96,7 @@ public class DBSerializer {
 
     private final TransactionalGraphEngine engine;
     private final String sourceOfTruth;
+    private final Set<String> groups;
     private final ModelType introspectionType;
     private final SchemaVersion version;
     private final Loader latestLoader;
@@ -128,6 +129,7 @@ public class DBSerializer {
             String sourceOfTruth) throws AAIException {
         this.engine = engine;
         this.sourceOfTruth = sourceOfTruth;
+        this.groups = Collections.EMPTY_SET;
         this.introspectionType = introspectionType;
         this.schemaVersions = (SchemaVersions) SpringContextAware.getBean("schemaVersions");
         SchemaVersion latestVersion = schemaVersions.getDefaultVersion();
@@ -144,6 +146,27 @@ public class DBSerializer {
         initBeans();
     }
 
+    public DBSerializer(SchemaVersion version, TransactionalGraphEngine engine, ModelType introspectionType,
+        String sourceOfTruth, Set<String> groups) throws AAIException {
+        this.engine = engine;
+        this.sourceOfTruth = sourceOfTruth;
+        this.groups = groups;
+        this.introspectionType = introspectionType;
+        this.schemaVersions = (SchemaVersions) SpringContextAware.getBean("schemaVersions");
+        SchemaVersion latestVersion = schemaVersions.getDefaultVersion();
+        this.latestLoader =
+            SpringContextAware.getBean(LoaderFactory.class).createLoaderForVersion(introspectionType, latestVersion);
+        this.version = version;
+        this.loader =
+            SpringContextAware.getBean(LoaderFactory.class).createLoaderForVersion(introspectionType, version);
+        this.namedPropNodes = this.latestLoader.getNamedPropNodes();
+        this.baseURL = AAIConfig.get(AAIConstants.AAI_SERVER_URL_BASE);
+        this.currentTimeMillis = System.currentTimeMillis();
+        // If creating the DBSerializer the old way then set the notification depth to maximum
+        this.notificationDepth = AAIProperties.MAXIMUM_DEPTH;
+        initBeans();
+    }
+
     public DBSerializer(SchemaVersion version,
                         TransactionalGraphEngine engine,
                         ModelType introspectionType,
@@ -151,6 +174,31 @@ public class DBSerializer {
                         int notificationDepth) throws AAIException {
         this.engine = engine;
         this.sourceOfTruth = sourceOfTruth;
+        this.groups = Collections.EMPTY_SET;
+        this.introspectionType = introspectionType;
+        this.schemaVersions = (SchemaVersions) SpringContextAware.getBean("schemaVersions");
+        SchemaVersion latestVersion = schemaVersions.getDefaultVersion();
+        this.latestLoader =
+            SpringContextAware.getBean(LoaderFactory.class).createLoaderForVersion(introspectionType, latestVersion);
+        this.version = version;
+        this.loader =
+            SpringContextAware.getBean(LoaderFactory.class).createLoaderForVersion(introspectionType, version);
+        this.namedPropNodes = this.latestLoader.getNamedPropNodes();
+        this.baseURL = AAIConfig.get(AAIConstants.AAI_SERVER_URL_BASE);
+        this.currentTimeMillis = System.currentTimeMillis();
+        this.notificationDepth = notificationDepth;
+        initBeans();
+    }
+
+    public DBSerializer(SchemaVersion version,
+        TransactionalGraphEngine engine,
+        ModelType introspectionType,
+        String sourceOfTruth,
+        Set<String> groups,
+        int notificationDepth) throws AAIException {
+        this.engine = engine;
+        this.sourceOfTruth = sourceOfTruth;
+        this.groups = groups;
         this.introspectionType = introspectionType;
         this.schemaVersions = (SchemaVersions) SpringContextAware.getBean("schemaVersions");
         SchemaVersion latestVersion = schemaVersions.getDefaultVersion();
@@ -174,6 +222,32 @@ public class DBSerializer {
                         String serverBase) throws AAIException {
         this.engine = engine;
         this.sourceOfTruth = sourceOfTruth;
+        this.groups = Collections.EMPTY_SET;
+        this.introspectionType = introspectionType;
+        this.schemaVersions = (SchemaVersions) SpringContextAware.getBean("schemaVersions");
+        SchemaVersion latestVersion = schemaVersions.getDefaultVersion();
+        this.latestLoader =
+            SpringContextAware.getBean(LoaderFactory.class).createLoaderForVersion(introspectionType, latestVersion);
+        this.version = version;
+        this.loader =
+            SpringContextAware.getBean(LoaderFactory.class).createLoaderForVersion(introspectionType, version);
+        this.namedPropNodes = this.latestLoader.getNamedPropNodes();
+        this.baseURL = serverBase;
+        this.currentTimeMillis = System.currentTimeMillis();
+        this.notificationDepth = notificationDepth;
+        initBeans();
+    }
+
+    public DBSerializer(SchemaVersion version,
+        TransactionalGraphEngine engine,
+        ModelType introspectionType,
+        String sourceOfTruth,
+        Set<String> groups,
+        int notificationDepth,
+        String serverBase) throws AAIException {
+        this.engine = engine;
+        this.sourceOfTruth = sourceOfTruth;
+        this.groups = groups;
         this.introspectionType = introspectionType;
         this.schemaVersions = (SchemaVersions) SpringContextAware.getBean("schemaVersions");
         SchemaVersion latestVersion = schemaVersions.getDefaultVersion();
@@ -221,6 +295,10 @@ public class DBSerializer {
 
     public Map<String, Pair<Introspector, LinkedHashMap<String, Introspector>>> getImpliedDeleteUriObjectPair(){
         return impliedDeleteUriObjectPair;
+    }
+
+    public Set<String> getGroups() {
+        return this.groups;
     }
 
     /**
@@ -2193,7 +2271,7 @@ public class DBSerializer {
     private void executePreSideEffects(Introspector obj, Vertex self) throws AAIException {
 
         SideEffectRunner runner = new SideEffectRunner.Builder(this.engine, this).addSideEffect(DataCopy.class)
-                .addSideEffect(PrivateEdge.class).build();
+                .addSideEffect(PrivateEdge.class).addSideEffect(OwnerCheck.class).build();
 
         runner.execute(obj, self);
     }

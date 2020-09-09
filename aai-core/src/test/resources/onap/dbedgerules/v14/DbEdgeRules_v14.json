@@ -1570,6 +1570,18 @@
 			"default": "true",
 			"description":""
 		},
+        {
+            "from": "pnf",
+            "to": "owning-entity",
+            "label": "org.onap.relationships.inventory.BelongsTo",
+            "direction": "OUT",
+            "multiplicity": "MANY2ONE",
+            "contains-other-v": "NONE",
+            "delete-other-v": "NONE",
+            "prevent-delete": "NONE",
+            "default": "true",
+            "description":""
+        },
 		{
 			"from": "cvlan-tag",
 			"to": "port-group",
