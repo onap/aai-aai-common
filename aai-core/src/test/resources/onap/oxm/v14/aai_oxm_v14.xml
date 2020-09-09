@@ -5128,6 +5128,7 @@
         <xml-element java-attribute="pnfName" name="pnf-name" required="true" type="java.lang.String" xml-key="true">
           <xml-properties>
             <xml-property name="description" value="unique name of Physical Network Function."/>
+            <xml-property name="ownerCheck" value="N/A"/>
           </xml-properties>
         </xml-element>
         <xml-element java-attribute="pnfName2" name="pnf-name2" type="java.lang.String">

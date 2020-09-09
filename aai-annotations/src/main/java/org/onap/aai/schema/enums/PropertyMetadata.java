@@ -71,7 +71,13 @@ public enum PropertyMetadata {
      * Add a private edge between two objects based on the uri provided by user which should provide
      * the appropriate information from the url similar to dataCopy
      */
-    PRIVATE_EDGE("privateEdge");
+    PRIVATE_EDGE("privateEdge"),
+
+    /**
+     * Checks if user's owning entity equals to pnf's owning entity (if it exists)
+     *
+     */
+    OWNER_CHECK("ownerCheck");
 
     private final String name;
 
