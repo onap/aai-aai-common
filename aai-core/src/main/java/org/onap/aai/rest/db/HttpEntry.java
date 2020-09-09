@@ -243,6 +243,13 @@ public class HttpEntry {
         return dbEngine;
     }
 
+    public Pair<Boolean, List<Pair<URI, Response>>> process(List<DBRequest> requests,
+        String sourceOfTruth,
+        Set<String> groups)
+        throws AAIException {
+        return this.process(requests, sourceOfTruth, groups, true);
+    }
+
     public Pair<Boolean, List<Pair<URI, Response>>> process(List<DBRequest> requests, String sourceOfTruth)
             throws AAIException {
         return this.process(requests, sourceOfTruth, true);
@@ -339,14 +346,21 @@ public class HttpEntry {
      * @throws AAIException the AAI exception
      */
     public Pair<Boolean, List<Pair<URI, Response>>> process(List<DBRequest> requests, String sourceOfTruth,
-            boolean enableResourceVersion) throws AAIException {
+        boolean enableResourceVersion) throws AAIException {
+        return this.process(requests, sourceOfTruth, Collections.EMPTY_SET, enableResourceVersion);
+    }
+
+    private Pair<Boolean, List<Pair<URI, Response>>> process(List<DBRequest> requests,
+        String sourceOfTruth,
+        Set<String> groups,
+        boolean enableResourceVersion) throws AAIException {
 
         DBSerializer serializer = null;
 
         if(serverBase != null){
-            serializer = new DBSerializer(version, dbEngine, introspectorFactoryType, sourceOfTruth, notificationDepth, serverBase);
+            serializer = new DBSerializer(version, dbEngine, introspectorFactoryType, sourceOfTruth, groups, notificationDepth, serverBase);
         } else {
-            serializer = new DBSerializer(version, dbEngine, introspectorFactoryType, sourceOfTruth, notificationDepth);
+            serializer = new DBSerializer(version, dbEngine, introspectorFactoryType, sourceOfTruth, groups, notificationDepth);
         }
 
         Response response;
