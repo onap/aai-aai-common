@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3c394dcb_fd45ba0a",
+        "filename": "aai-core/src/test/resources/onap/oxm/v14/aai_oxm_v14.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 5131,
+      "author": {
+        "id": 75
+      },
+      "writtenOn": "2020-09-10T16:55:18Z",
+      "side": 1,
+      "message": "The value being used here doesn\u0027t make sense as it was only applicable to private edge use case where it was trying to create an edge to model.\nIn your case, please set this value\u003d\"N/A\" so that it doesn\u0027t cause confusion",
+      "revId": "4e4527d1f06789bd074ff6050f153e91e1922a5c",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
