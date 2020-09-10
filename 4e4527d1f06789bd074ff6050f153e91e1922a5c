@@ -51,6 +51,24 @@
       "revId": "4e4527d1f06789bd074ff6050f153e91e1922a5c",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9b234af4_fbd7ac41",
+        "filename": "aai-core/src/test/resources/onap/oxm/v14/aai_oxm_v14.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 5131,
+      "author": {
+        "id": 6625
+      },
+      "writtenOn": "2020-09-10T19:10:35Z",
+      "side": 1,
+      "message": "Done ! I changed the code in OwnerCheck so it traverses from pnf vertex .",
+      "parentUuid": "087270af_4378294b",
+      "revId": "4e4527d1f06789bd074ff6050f153e91e1922a5c",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
