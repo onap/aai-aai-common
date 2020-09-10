@@ -16,6 +16,24 @@
       "revId": "4e4527d1f06789bd074ff6050f153e91e1922a5c",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "087270af_4378294b",
+        "filename": "aai-core/src/test/resources/onap/oxm/v14/aai_oxm_v14.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 5131,
+      "author": {
+        "id": 6625
+      },
+      "writtenOn": "2020-09-10T17:12:22Z",
+      "side": 1,
+      "message": "When I use N/A the side effect (owner check) does not work because completeUri is empty . How can I get the URI for the PNF inside the side effect ?",
+      "parentUuid": "3c394dcb_fd45ba0a",
+      "revId": "4e4527d1f06789bd074ff6050f153e91e1922a5c",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
     }
   ]
 }
