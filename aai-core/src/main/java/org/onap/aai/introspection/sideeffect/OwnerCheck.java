@@ -48,8 +48,8 @@ public class OwnerCheck extends SideEffect {
         if (serializer.getGroups() != null && !serializer.getGroups().isEmpty()) {
             List<Vertex> owningEntity = self.graph().traversal()
                 .V(self)
-                .inE("org.onap.relationships.inventory.BelongsTo")
-                .outV()
+                .bothE("org.onap.relationships.inventory.BelongsTo")
+                .bothV()
                 .has("aai-node-type", "owning-entity")
                 .toList();
 
