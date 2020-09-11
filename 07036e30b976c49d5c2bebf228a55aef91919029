@@ -16,6 +16,24 @@
       "revId": "07036e30b976c49d5c2bebf228a55aef91919029",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8d635636_6c525436",
+        "filename": "aai-core/src/main/java/org/onap/aai/introspection/sideeffect/OwnerCheck.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 6625
+      },
+      "writtenOn": "2020-09-11T14:26:11Z",
+      "side": 1,
+      "message": "Done.",
+      "parentUuid": "cba0f524_81f6af55",
+      "revId": "07036e30b976c49d5c2bebf228a55aef91919029",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
