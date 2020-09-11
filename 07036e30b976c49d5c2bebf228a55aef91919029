@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "cba0f524_81f6af55",
+        "filename": "aai-core/src/main/java/org/onap/aai/introspection/sideeffect/OwnerCheck.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 75
+      },
+      "writtenOn": "2020-09-11T14:05:34Z",
+      "side": 1,
+      "message": "Please use bothE(\"org.onap.relationships.inventory.BelongsTo\").otherV() because bothE().bothV() will include the source vertex so the pnf vertex will possibly returned.",
+      "revId": "07036e30b976c49d5c2bebf228a55aef91919029",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
