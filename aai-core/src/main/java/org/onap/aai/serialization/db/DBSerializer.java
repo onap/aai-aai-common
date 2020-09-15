@@ -2287,7 +2287,8 @@ public class DBSerializer {
     private void enrichData(Introspector obj, Vertex self) throws AAIException {
 
         SideEffectRunner runner =
-                new SideEffectRunner.Builder(this.engine, this).addSideEffect(DataLinkReader.class).build();
+                new SideEffectRunner.Builder(this.engine, this).addSideEffect(DataLinkReader.class)
+                    .addSideEffect(OwnerCheck.class).build();
 
         runner.execute(obj, self);
     }
