@@ -30,6 +30,8 @@ import javax.ws.rs.core.UriBuilder;
 import javax.xml.bind.JAXBException;
 
 import org.junit.Test;
+import org.springframework.test.annotation.DirtiesContext;
+
 import org.onap.aai.AAISetup;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Loader;
@@ -37,6 +39,7 @@ import org.onap.aai.introspection.ModelType;
 import org.onap.aai.restcore.HttpMethod;
 import org.onap.aai.setup.SchemaVersion;
 
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class URIToExtensionInformationTest extends AAISetup {
 
     private Loader specificLoader;
