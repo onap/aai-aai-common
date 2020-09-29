@@ -154,6 +154,9 @@ public final class AAIConstants {
     public static final String AAI_TRAVERSAL_MS = "aai-traversal";
     public static final String AAI_RESOURCES_MS = "aai-resources";
 
+    /** Flag to control concurrency lock */
+    public static final String AAI_LOCK_URI_ENABLED = "aai.lock.uri.enabled";
+
     /**
      * Instantiates a new AAI constants.
      */
