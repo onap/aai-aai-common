@@ -24,6 +24,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.test.annotation.DirtiesContext;
 import org.junit.rules.ExpectedException;
 import org.onap.aai.AAISetup;
 import org.onap.aai.concurrent.AaiCallable;
@@ -47,7 +48,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import static org.junit.Assert.assertTrue;
-
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class ListEndpointsTest extends AAISetup {
 
     private Properties properties;
