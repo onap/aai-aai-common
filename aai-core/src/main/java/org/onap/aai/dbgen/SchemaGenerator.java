@@ -19,13 +19,15 @@
  */
 
 package org.onap.aai.dbgen;
-
+import org.onap.aai.util.AAIConstants;
 import com.google.common.collect.Multimap;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.janusgraph.core.Cardinality;
 import org.janusgraph.core.Multiplicity;
 import org.janusgraph.core.PropertyKey;
 import org.janusgraph.core.schema.JanusGraphManagement;
+import org.janusgraph.core.schema.JanusGraphIndex;
+import org.janusgraph.core.schema.ConsistencyModifier;
 import org.onap.aai.config.SpringContextAware;
 import org.onap.aai.edges.EdgeIngestor;
 import org.onap.aai.edges.EdgeRule;
@@ -116,6 +118,14 @@ public class SchemaGenerator {
                         if (!seenProps.containsKey(dbPropName)) {
                             propK = graphMgmt.makePropertyKey(dbPropName).dataType(type).cardinality(cardinality)
                                     .make();
+                            if (dbPropName.equals("aai-uri")) {
+                                String aai_uri_lock_enabled = AAIConfig.get(AAIConstants.AAI_LOCK_URI_ENABLED, "false");
+                                LOGGER.info(" Info: aai_uri_lock_enabled:" + aai_uri_lock_enabled);
+                                if ("true".equals(aai_uri_lock_enabled)) {
+                                    LOGGER.info(" Lock is being set for aai-uri Property.");
+                                    graphMgmt.setConsistency(propK, ConsistencyModifier.LOCK);
+                                }
+                            }
                             seenProps.put(dbPropName, propK);
                         } else {
                             propK = seenProps.get(dbPropName);
@@ -124,13 +134,22 @@ public class SchemaGenerator {
                             LOGGER.debug(" Index  [{}] already existed in the DB. ", dbPropName);
                         } else {
                             if (obj.getIndexedProperties().contains(propName)) {
+                                JanusGraphIndex indexG = null;
                                 if (obj.getUniqueProperties().contains(propName)) {
                                     LOGGER.info("Add Unique index for PropertyKey: [{}]", dbPropName);
-                                    graphMgmt.buildIndex(dbPropName, Vertex.class).addKey(propK).unique()
-                                            .buildCompositeIndex();
+                                    indexG = graphMgmt.buildIndex(dbPropName, Vertex.class).addKey(propK).unique()
+                                           .buildCompositeIndex();
                                 } else {
                                     LOGGER.info("Add index for PropertyKey: [{}]", dbPropName);
-                                    graphMgmt.buildIndex(dbPropName, Vertex.class).addKey(propK).buildCompositeIndex();
+                                    indexG = graphMgmt.buildIndex(dbPropName, Vertex.class).addKey(propK).buildCompositeIndex();
+                                }
+                                if (indexG != null && dbPropName.equals("aai-uri")) {
+                                    String aai_uri_lock_enabled = AAIConfig.get(AAIConstants.AAI_LOCK_URI_ENABLED, "false");
+                                    LOGGER.info(" Info:: aai_uri_lock_enabled:" + aai_uri_lock_enabled);
+                                    if ("true".equals(aai_uri_lock_enabled)) {
+                                        LOGGER.info("Lock is being set for aai-uri Index.");
+                                        graphMgmt.setConsistency(indexG, ConsistencyModifier.LOCK);
+                                    }
                                 }
                             } else {
                                 LOGGER.info("No index added for PropertyKey: [{}]", dbPropName);
