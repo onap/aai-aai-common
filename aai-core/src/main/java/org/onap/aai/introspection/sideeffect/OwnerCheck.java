@@ -45,9 +45,19 @@ public class OwnerCheck extends SideEffect {
     @Override
     protected void processURI(Optional<String> completeUri, Entry<String, String> entry)
         throws AAIException {
-        if (serializer.getGroups() != null && !serializer.getGroups().isEmpty()) {
-            List<Vertex> owningEntity = self.graph().traversal()
-                .V(self)
+        if (!isAuthorized(serializer.getGroups(), self)) {
+
+            throw new AAIException("AAI_3304",
+                "Group(s) :" + serializer.getGroups() + " not authorized to perform function");
+
+        } //else skip processing because no required properties were specified
+
+    }
+
+    public static boolean isAuthorized(java.util.Set<String> groups, Vertex vertex) {
+        if (groups != null && !groups.isEmpty()) {
+            List<Vertex> owningEntity = vertex.graph().traversal()
+                .V(vertex)
                 .bothE("org.onap.relationships.inventory.BelongsTo")
                 .otherV()
                 .has("aai-node-type", "owning-entity")
@@ -56,13 +66,11 @@ public class OwnerCheck extends SideEffect {
             if(!owningEntity.isEmpty()) {
                 VertexProperty owningEntityName = owningEntity.get(0).property("owning-entity-name");
 
-                if(!serializer.getGroups().contains(owningEntityName.orElseGet(null))) {
-                    throw new AAIException("AAI_3304",
-                        "Group(s) :" + serializer.getGroups() + " not authorized to perform function");
-                }
+                return groups.contains(owningEntityName.orElseGet(null));
             }
-        } //else skip processing because no required properties were specified
+        }
 
+        return true;
     }
 
     @Override

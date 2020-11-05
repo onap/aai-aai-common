@@ -20,6 +20,7 @@
 
 package org.onap.aai.rest.db;
 
+import org.onap.aai.introspection.sideeffect.OwnerCheck;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -400,16 +401,23 @@ public class HttpEntry {
                     transactionId = request.getTransactionId();
                     uriTemp = request.getUri().getRawPath().replaceFirst("^v\\d+/", "");
                     uri = UriBuilder.fromPath(uriTemp).build();
-                    List<Vertex> vertTemp;
+
+                    List<Vertex> queryResult = query.getQueryBuilder().toList();
                     List<Vertex> vertices;
                     if (this.isPaginated()) {
-                        vertTemp = query.getQueryBuilder().toList();
+                        List<Vertex> vertTemp = queryResult.stream().filter((vx) -> {
+                            return OwnerCheck.isAuthorized(groups, vx);
+                        }).collect(Collectors.toList());
                         this.setTotalsForPaging(vertTemp.size(), this.paginationBucket);
                         vertices = vertTemp.subList(((this.paginationIndex - 1) * this.paginationBucket),
                                 Math.min((this.paginationBucket * this.paginationIndex), vertTemp.size()));
                     } else {
-                        vertices = query.getQueryBuilder().toList();
+                        vertices = queryResult.size() > 1 ? queryResult.stream().filter((vx) -> {
+                            return OwnerCheck.isAuthorized(groups, vx);
+                        }).collect(Collectors.toList()) : queryResult;
+
                     }
+
                     boolean isNewVertex;
                     HttpHeaders headers = request.getHeaders();
                     outputMediaType = getMediaType(headers.getAcceptableMediaTypes());
