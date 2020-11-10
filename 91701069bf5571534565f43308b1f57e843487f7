@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "cfb0de72_9c4a75a7",
+        "filename": "aai-core/src/main/java/org/onap/aai/introspection/sideeffect/OwnerCheck.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 6615
+      },
+      "writtenOn": "2020-11-10T20:34:38Z",
+      "side": 1,
+      "message": "We want this to return true (authorized) if no groups or owning entity are found so that no authorization/filter is applied. if groups and owning entity found, then we want to make sure the owning entity belongs to the user group.",
+      "parentUuid": "6fc4d168_f04f1cb5",
+      "revId": "91701069bf5571534565f43308b1f57e843487f7",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7b382a75_98ba6fde",
         "filename": "aai-core/src/main/java/org/onap/aai/rest/db/HttpEntry.java",
         "patchSetId": 1
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "bae00222_190786df",
+        "filename": "aai-core/src/main/java/org/onap/aai/rest/db/HttpEntry.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 408,
+      "author": {
+        "id": 6615
+      },
+      "writtenOn": "2020-11-10T20:34:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7b382a75_98ba6fde",
+      "revId": "91701069bf5571534565f43308b1f57e843487f7",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "99f2c509_0c6714a5",
         "filename": "aai-core/src/main/java/org/onap/aai/rest/db/HttpEntry.java",
         "patchSetId": 1
@@ -50,6 +86,24 @@
       "revId": "91701069bf5571534565f43308b1f57e843487f7",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "424476b1_99ec85f8",
+        "filename": "aai-core/src/main/java/org/onap/aai/rest/db/HttpEntry.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 415,
+      "author": {
+        "id": 6615
+      },
+      "writtenOn": "2020-11-10T20:34:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "99f2c509_0c6714a5",
+      "revId": "91701069bf5571534565f43308b1f57e843487f7",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
