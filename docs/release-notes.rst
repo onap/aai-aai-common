@@ -17,7 +17,11 @@ Release Data
 Version: 7.0.0
 --------------
 
+<<<<<<< HEAD   (82dc09 Updated the release-notes with data for the guilin release s)
 :Release Date: 2020-11-19 (TBD)
+=======
+:Release Date: 2020-12-03 (TBD)
+>>>>>>> CHANGE (e90972 Update the release notes to have the workaround for the dmaa)
 
 New Features
 ------------
@@ -49,6 +53,28 @@ Known Issues
 
 * `AAI-3219 <https://jira.onap.org/browse/AAI-3219>`_ - AAI-EVENT notifications failed to be published to DMaap
 
+<<<<<<< HEAD   (82dc09 Updated the release-notes with data for the guilin release s)
+=======
+Workarounds
+-----------
+
+The following is our workaround (i.e., replacing HTTPS with HTTP):
+
+ .. code-block:: bash
+
+    /** Change each of these configmaps below**/
+    kubectl -n onap edit configmaps dev-aai-resources-configmap
+    kubectl -n onap edit configmaps dev-aai-traversal-configmap
+    kubectl -n onap edit configmaps dev-aai-graphadmin-configmap
+    kubectl -n onap edit configmaps dev-aai-data-router-dynamic
+    // The target attributes need to be changed are:
+    // change Dmaap port from 3905 => 3904
+    // change Dmaap protocol from https => http
+    /** Restart related pods **/
+    kubectl n onap delete pod {POD1} {POD2} {POD3} {POD4}
+    //where POD1-4 are pod names of dev-aai-resources, dev-aai-traversal, dev-aai-graphadmin, and dev-aai-data-router, respectively.
+
+>>>>>>> CHANGE (e90972 Update the release notes to have the workaround for the dmaa)
 References
 ==========
 
