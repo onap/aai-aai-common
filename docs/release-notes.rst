@@ -17,7 +17,7 @@ Release Data
 Version: 7.0.0
 --------------
 
-:Release Date: 2020-11-19 (TBD)
+:Release Date: 2020-12-04 (TBD)
 
 New Features
 ------------
@@ -44,10 +44,31 @@ The R7 Guilin release of ONAP includes updates to both use cases and non-functio
     * ESR GUI is retired
     * AAI Sparky UI is not supported in Guilin nor is its supporting mS data-router, search-data-service, or elastic. Targeted for retirement in Honolulu.
 
+Known Limitations, Issues, and Workarounds
+==========================================
+
 Known Issues
 ------------
 
 * `AAI-3219 <https://jira.onap.org/browse/AAI-3219>`_ - AAI-EVENT notifications failed to be published to DMaap
+
+Workarounds
+-----------
+
+The following is our workaround (i.e., replacing HTTPS with HTTP):
+
+    .. code-block:: bash
+        /** Change each of these configmaps below**/
+        kubectl -n onap edit configmaps dev-aai-resources-configmap
+        kubectl -n onap edit configmaps dev-aai-traversal-configmap
+        kubectl -n onap edit configmaps dev-aai-graphadmin-configmap
+        kubectl -n onap edit configmaps dev-aai-data-router-dynamic
+        // The target attributes need to be changed are:
+        // change Dmaap port from 3905 => 3904
+        // change Dmaap protocol from https => http
+        /** Restart related pods **/
+        kubectl n onap delete pod {POD1} {POD2} {POD3} {POD4}
+        //where POD1-4 are pod names of dev-aai-resources, dev-aai-traversal, dev-aai-graphadmin, and dev-aai-data-router, respectively.
 
 References
 ==========
