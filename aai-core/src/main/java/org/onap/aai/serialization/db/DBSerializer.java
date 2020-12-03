@@ -115,6 +115,7 @@ public class DBSerializer {
     private Map<String, Pair<Introspector, LinkedHashMap<String, Introspector>>> impliedDeleteUriObjectPair = new LinkedHashMap<>();
     private int notificationDepth;
     private boolean isDeltaEventsEnabled;
+    private boolean isMultiTenancyEnabled;
 
     /**
      * Instantiates a new DB serializer.
@@ -271,6 +272,7 @@ public class DBSerializer {
         EdgeSerializer es = ctx.getBean(EdgeSerializer.class);
         setEdgeSerializer(es);
         isDeltaEventsEnabled = Boolean.parseBoolean(SpringContextAware.getApplicationContext().getEnvironment().getProperty("delta.events.enabled", FALSE));
+        isMultiTenancyEnabled = Boolean.parseBoolean(SpringContextAware.getApplicationContext().getEnvironment().getProperty("multi.tenancy.enabled", FALSE));
     }
 
     public void setEdgeSerializer(EdgeSerializer edgeSer) {
@@ -2270,10 +2272,12 @@ public class DBSerializer {
 
     private void executePreSideEffects(Introspector obj, Vertex self) throws AAIException {
 
-        SideEffectRunner runner = new SideEffectRunner.Builder(this.engine, this).addSideEffect(DataCopy.class)
-                .addSideEffect(PrivateEdge.class).addSideEffect(OwnerCheck.class).build();
-
-        runner.execute(obj, self);
+        SideEffectRunner.Builder runnerBuilder =
+            new SideEffectRunner.Builder(this.engine, this).addSideEffect(DataCopy.class).addSideEffect(PrivateEdge.class);
+        if (isMultiTenancyEnabled) {
+            runnerBuilder.addSideEffect(OwnerCheck.class);
+        }
+        runnerBuilder.build().execute(obj, self);
     }
 
     private void executePostSideEffects(Introspector obj, Vertex self) throws AAIException {
@@ -2286,11 +2290,13 @@ public class DBSerializer {
 
     private void enrichData(Introspector obj, Vertex self) throws AAIException {
 
-        SideEffectRunner runner =
-                new SideEffectRunner.Builder(this.engine, this).addSideEffect(DataLinkReader.class)
-                    .addSideEffect(OwnerCheck.class).build();
+        SideEffectRunner.Builder runnerBuilder =
+            new SideEffectRunner.Builder(this.engine, this).addSideEffect(DataLinkReader.class);
 
-        runner.execute(obj, self);
+        if (isMultiTenancyEnabled) {
+            runnerBuilder.addSideEffect(OwnerCheck.class);
+        }
+        runnerBuilder.build().execute(obj, self);
     }
 
     public double getDBTimeMsecs() {

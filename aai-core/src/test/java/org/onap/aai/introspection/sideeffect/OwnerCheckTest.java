@@ -86,16 +86,10 @@ public class OwnerCheckTest extends AAISetup {
             .addV("pnf")
             .property("aai-node-type", "pnf")
             .property("pnf-name", "my-pnf")
+            .property("data-owner", "Operator")
             .property(AAIProperties.AAI_URI, "/network/pnfs/pnf/my-pnf")
             .property("model-invariant-id", "key1")
             .as("v1")
-            .addV("owning-entity")
-            .property("aai-node-type", "owning-entity")
-            .property("owning-entity-name", "OE-Generic")
-            .property("owning-entity-id", "367c897c-8cec-47ba-b7f5-4b6139f06691")
-            .property(AAIProperties.AAI_URI,"/network/pnfs/pnf/my-pnf/business/owning-entities/owning-entity/367c897c-8cec-47ba-b7f5-4b6139f06691")
-            .as("oe")
-            .addE("org.onap.relationships.inventory.BelongsTo").to("v1").from("oe")
             .property(EdgeProperty.CONTAINS.toString(), true)
             .addV("model-ver")
             .property("aai-node-type", "model-ver")
@@ -137,14 +131,13 @@ public class OwnerCheckTest extends AAISetup {
     }
 
     @Test
-    public void shouldFailComparisonWithDiffOwningEntity() throws Exception  {
+    public void shouldFailIfGroupsNotContainsDataOwner() throws Exception  {
 
         final Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
         final Introspector obj = loader.introspectorFromName("pnf");
         obj.setValue("pnf-name", "my-pnf");
         obj.setValue("model-invariant-id", "key1");
         obj.setValue("model-version-id", "key2");
-        //obj.setValue("owning-entity-id", "367c897c-8cec-47ba-b7f5-4b6139f06691");
         TransactionalGraphEngine spy = spy(dbEngine);
         TransactionalGraphEngine.Admin adminSpy = spy(dbEngine.asAdmin());
         Graph g = graph.newTransaction();
@@ -152,30 +145,29 @@ public class OwnerCheckTest extends AAISetup {
         when(spy.asAdmin()).thenReturn(adminSpy);
         when(adminSpy.getTraversalSource()).thenReturn(traversal);
         DBSerializer serializer =
-                new DBSerializer(schemaVersions.getDefaultVersion(),
-                    spy, introspectorFactoryType,
-                    "AAI_TEST", new HashSet<>(Arrays.asList("OE-GenericI", "OE-GenericII")));
+            new DBSerializer(schemaVersions.getDefaultVersion(),
+                spy, introspectorFactoryType,
+                "AAI_TEST", new HashSet<>(Arrays.asList("OperatorI", "OperatorII")));
 
         Vertex selfV = g.traversal().V().has("aai-node-type", "pnf").next();
 
         OwnerCheck ownerCheck = new OwnerCheck(obj, selfV, spy, serializer);
 
         thrown.expect(AAIException.class);
-        thrown.expectMessage("Group(s) :[OE-GenericI, OE-GenericII] not authorized to perform function");
+        thrown.expectMessage("Group(s) :[OperatorII, OperatorI] not authorized to perform function");
         ownerCheck.execute();
         g.tx().rollback();
 
     }
 
     @Test
-    public void shouldPassIfOwningEntityEqual() throws Exception  {
+    public void shouldPassIfGroupsContainsDataOwner() throws Exception  {
 
         final Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
         final Introspector obj = loader.introspectorFromName("pnf");
         obj.setValue("pnf-name", "my-pnf");
         obj.setValue("model-invariant-id", "key1");
         obj.setValue("model-version-id", "key2");
-        //obj.setValue("owning-entity-id", "367c897c-8cec-47ba-b7f5-4b6139f06691");
         TransactionalGraphEngine spy = spy(dbEngine);
         TransactionalGraphEngine.Admin adminSpy = spy(dbEngine.asAdmin());
         Graph g = graph.newTransaction();
@@ -189,25 +181,78 @@ public class OwnerCheckTest extends AAISetup {
         DBSerializer serializer =
             new DBSerializer(schemaVersions.getDefaultVersion(),
                 spy, introspectorFactoryType,
-                "AAI_TEST", new HashSet<>(Arrays.asList("OE-Generic", "OE-GenericII")));
+                "AAI_TEST", new HashSet<>(Arrays.asList("OperatorIII", "Operator")));
 
         OwnerCheck ownerCheck = new OwnerCheck(obj, selfV, spy, serializer);
 
         ownerCheck.execute();
-
-
         g.tx().rollback();
     }
 
     @Test
-    public void shouldPassIfUserOwningEntityEmptyl() throws Exception  {
+    public void shouldPassIfGroupsIsEmpty() throws Exception  {
 
         final Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
         final Introspector obj = loader.introspectorFromName("pnf");
         obj.setValue("pnf-name", "my-pnf");
         obj.setValue("model-invariant-id", "key1");
         obj.setValue("model-version-id", "key2");
-        //obj.setValue("owning-entity-id", "367c897c-8cec-47ba-b7f5-4b6139f06691");
+        TransactionalGraphEngine spy = spy(dbEngine);
+        TransactionalGraphEngine.Admin adminSpy = spy(dbEngine.asAdmin());
+        Graph g = graph.newTransaction();
+        GraphTraversalSource traversal = g.traversal();
+        when(spy.asAdmin()).thenReturn(adminSpy);
+        when(adminSpy.getTraversalSource()).thenReturn(traversal);
+        DBSerializer serializer =
+            new DBSerializer(schemaVersions.getDefaultVersion(),
+                spy, introspectorFactoryType,
+                "AAI_TEST");
+
+        Vertex selfV = g.traversal().V().has("aai-node-type", "pnf").next();
+
+        OwnerCheck ownerCheck = new OwnerCheck(obj, selfV, spy, serializer);
+
+        ownerCheck.execute();
+        g.tx().rollback();
+    }
+
+    @Test
+    public void shouldPassIfDataOwnerIsNull() throws Exception  {
+
+        final Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
+        final Introspector obj = loader.introspectorFromName("pnf");
+        obj.setValue("pnf-name", "my-pnf");
+        obj.setValue("model-invariant-id", "key1");
+        obj.setValue("model-version-id", "key2");
+        obj.setValue("data-owner", null);
+        TransactionalGraphEngine spy = spy(dbEngine);
+        TransactionalGraphEngine.Admin adminSpy = spy(dbEngine.asAdmin());
+        Graph g = graph.newTransaction();
+        GraphTraversalSource traversal = g.traversal();
+        when(spy.asAdmin()).thenReturn(adminSpy);
+        when(adminSpy.getTraversalSource()).thenReturn(traversal);
+        DBSerializer serializer =
+            new DBSerializer(schemaVersions.getDefaultVersion(),
+                spy, introspectorFactoryType,
+                "AAI_TEST");
+
+        Vertex selfV = g.traversal().V().has("aai-node-type", "pnf").next();
+
+        OwnerCheck ownerCheck = new OwnerCheck(obj, selfV, spy, serializer);
+
+        ownerCheck.execute();
+        g.tx().rollback();
+    }
+
+    @Test
+    public void shouldPassIfDataOwnerIsEmpty() throws Exception  {
+
+        final Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
+        final Introspector obj = loader.introspectorFromName("pnf");
+        obj.setValue("pnf-name", "my-pnf");
+        obj.setValue("model-invariant-id", "key1");
+        obj.setValue("model-version-id", "key2");
+        obj.setValue("data-owner", "");
         TransactionalGraphEngine spy = spy(dbEngine);
         TransactionalGraphEngine.Admin adminSpy = spy(dbEngine.asAdmin());
         Graph g = graph.newTransaction();

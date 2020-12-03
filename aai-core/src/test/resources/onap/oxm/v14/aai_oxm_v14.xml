@@ -5131,6 +5131,11 @@
             <xml-property name="ownerCheck" value="N/A"/>
           </xml-properties>
         </xml-element>
+        <xml-element java-attribute="dataOwner" name="data-owner" type="java.lang.String">
+            <xml-properties>
+                <xml-property name="description" value="Resource owner"/>
+            </xml-properties>
+        </xml-element>
         <xml-element java-attribute="pnfName2" name="pnf-name2" type="java.lang.String">
           <xml-properties>
             <xml-property name="description" value="name of Physical Network Function."/>
