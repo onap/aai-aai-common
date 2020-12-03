@@ -10,69 +10,15 @@ AAI Release Notes
 Abstract
 ========
 
-This document provides release notes for the Active and Available Inventory Project's Guilin Release
+This document provides release notes for the Active and Available Inventory Project's Frankfurt Release
 
 Release Data
 ============
-Version: 7.0.0
---------------
-
-:Release Date: 2020-11-19 (TBD)
-
-New Features
-------------
-
-The R7 Guilin release of ONAP includes updates to both use cases and non-functional requirements. The AAI platform maturity rating graduated from Incubation to Mature in Guilin.  AAI is serving v21 as the latest version of the REST APIs, and has support for v19.
-
-- Functional Updates
-    * Model updates as part of CCVPN Transport Slicing Feature
-    * Model updates as part of xNF Software Upgrade feature
-    * Model updates as part of Multi-tenancy
-    * Updates to SDC model parsing to support Bulk PM/PM Data Control Extension & E2E Network Slicing features
-    * Configurable ability to control concurrency locking
-    * Configurable ability to enforce ownership of owning entity on pnf crud interactions (Multi-tenancy poc)
-    * Enhancements to the model based on physical inventory
-    * Support for nested json formatted responses using the as-tree=true parameter for traversal mS calls
-- Non-functional Updates
-    * Updated microservices to run as non-root
-    * Spring boot 2 upgrades to our microservices
-    * Enhanced logging
-    * Added limits to aai pods
-    * Update mS based on license scan findings
-- Deprecation Notice
-    * ESR Server is retired
-    * ESR GUI is retired
-    * AAI Sparky UI is not supported in Guilin nor is its supporting mS data-router, search-data-service, or elastic. Targeted for retirement in Honolulu.
-
-Known Issues
-------------
-
-* `AAI-3219 <https://jira.onap.org/browse/AAI-3219>`_ - AAI-EVENT notifications failed to be published to DMaap
-
-References
-==========
-
-Quick links:
-
-- `AAI project page <https://wiki.onap.org/display/DW/Active+and+Available+Inventory+Project>`_
-- `Passing Badge information for AAI <https://bestpractices.coreinfrastructure.org/en/projects/1591>`_
-
-For more information on the ONAP Guilin release, please see:
-
-#. `ONAP Home Page`_
-#. `ONAP Documentation`_
-#. `ONAP Release Downloads`_
-#. `ONAP Wiki Page`_
-
-.. _`ONAP Home Page`: https://www.onap.org
-.. _`ONAP Wiki Page`: https://wiki.onap.org
-.. _`ONAP Documentation`: https://docs.onap.org
-.. _`ONAP Release Downloads`: https://git.onap.org
 
 Version: 6.0.0
 --------------
 
-:Release Date: 2020-06-04
+:Release Date: 2020-06-04 (TBD)
 
 New Features
 ------------
@@ -90,7 +36,7 @@ The R6 Frankfurt release of ONAP includes updates to both use cases and non-func
 - Integration with sonarcloud
 - All containers run as non-root user
 
-champ, spike, and gizmo are deprecated and removed from the helm chart.
+champ, spike, and gizmo are deprecated and removed from the helm chart. This will be the last release where aai manages its own helm chart, in R7 Guilin and beyond, the aai/oom submodule will be merged back into the oom project.
 
 Known Limitations, Issues, and Workarounds
 ==========================================
@@ -119,12 +65,12 @@ Quick links:
 - `Passing Badge information for AAI <https://bestpractices.coreinfrastructure.org/en/projects/1591>`_
 
 For more information on the ONAP Frankfurt release, please see:
-
+ 
 #. `ONAP Home Page`_
 #. `ONAP Documentation`_
 #. `ONAP Release Downloads`_
 #. `ONAP Wiki Page`_
-
+ 
 .. _`ONAP Home Page`: https://www.onap.org
 .. _`ONAP Wiki Page`: https://wiki.onap.org
 .. _`ONAP Documentation`: https://docs.onap.org
@@ -150,7 +96,7 @@ seamless upgrade from 0.2.0 which was used in Dublin.
 Users who would like to further reduce the AAI footprint can update the
 aai/oom helm charts.
 
-To re-enable the services that have been disabled by default, update
+To re-enable the services that have been disabled by default, update 
 to "enabled: true" in aai/oom/values.yaml:
 
  .. code-block:: bash
@@ -172,9 +118,9 @@ aai/oom/values.yaml for each of the following services:
         enabled: false
     aai-search-data:
         enabled: false
-    aai-elasticsearch:
+    aai-elasticsearch: 
         enabled: false
-    aai-sparky-fe:
+    aai-sparky-fe: 
         enabled: false
 
 *Known Vulnerabilities in Used Modules*
