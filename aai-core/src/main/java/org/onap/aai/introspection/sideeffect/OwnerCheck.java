@@ -20,23 +20,21 @@
 
 package org.onap.aai.introspection.sideeffect;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URISyntaxException;
-
-import java.util.List;
 import java.util.Map.Entry;
 import java.util.Optional;
+
 import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.apache.tinkerpop.gremlin.structure.VertexProperty;
-import org.onap.aai.edges.exceptions.AmbiguousRuleChoiceException;
-import org.onap.aai.edges.exceptions.EdgeRuleNotFoundException;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.schema.enums.PropertyMetadata;
 import org.onap.aai.serialization.db.DBSerializer;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
+import org.springframework.util.CollectionUtils;
 
 public class OwnerCheck extends SideEffect {
+
+    public static final String READ_ONLY_SUFFIX = "_readOnly";
+    private static final String DATA_OWNER = "data-owner";
 
     public OwnerCheck(Introspector obj, Vertex self, TransactionalGraphEngine dbEngine, DBSerializer serializer) {
         super(obj, self, dbEngine, serializer);
@@ -55,19 +53,11 @@ public class OwnerCheck extends SideEffect {
     }
 
     public static boolean isAuthorized(java.util.Set<String> groups, Vertex vertex) {
-        if (groups != null && !groups.isEmpty()) {
-            List<Vertex> owningEntity = vertex.graph().traversal()
-                .V(vertex)
-                .bothE("org.onap.relationships.inventory.BelongsTo")
-                .otherV()
-                .has("aai-node-type", "owning-entity")
-                .toList();
-
-            if(!owningEntity.isEmpty()) {
-                VertexProperty owningEntityName = owningEntity.get(0).property("owning-entity-name");
-
-                return groups.contains(owningEntityName.orElseGet(null));
-            }
+        if (!CollectionUtils.isEmpty(groups)) {
+            return Optional.ofNullable(vertex.property(DATA_OWNER).orElse(null))
+                .map(dataOwner -> groups.stream()
+                    .anyMatch(group -> group.equals(dataOwner.toString()) || group.equals(dataOwner.toString() + READ_ONLY_SUFFIX)))
+                .orElse(true);
         }
 
         return true;
