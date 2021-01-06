@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b11f27d1_66daffb2",
+        "filename": "aai-core/src/main/java/org/onap/aai/introspection/sideeffect/OwnerCheck.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 75
+      },
+      "writtenOn": "2021-01-06T14:06:15Z",
+      "side": 1,
+      "message": "Can you clean up the lambda here to be more readable or not use lambda expression?\n\nLambda is supposed to make the code look cleaner and easier to read.\nIn this case, it gets an little hard to read\n\n```\n  list.stream()\n      .filter(s -\u003e s.startsWith(\"hello\"))\n      .map(s -\u003e s + \"!\")\n      .collect(Collectors.toList())\n```\n\nAbove example, you can clearly read and try to understand what the user is trying to do.\nIn the lambda that you have, you have the map that passes another complex lambda that makes it harder to read.\n\nYou can create an lambda function for that to make it easier to read.",
+      "revId": "946d8bac1960dd4f3212d5493e76f7740f75f8f9",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
