@@ -1,7 +1,4 @@
-FROM openjdk:8-jre-alpine3.9
-
-# Set the version of the gosu command and if needs to be, it can be modified at runtime
-ENV GOSU_VERSION 1.10
+FROM adoptopenjdk/openjdk11:jre-11.0.9_11-alpine
 
 # For building the image in a proxy environment if necessary
 ARG HTTP_PROXY
@@ -31,9 +28,16 @@ RUN \
         && apk add --no-cache ${DEPS} \
         # need fastjar for some projects to update app's jar on container restart
         && ln -snf /usr/bin/fastjar $JAVA_HOME/bin/jar \
-        # Get the dpkg to properly download and install that version compatible to install GOSU on the image
-        && dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
-        # Downloads the gosu command based on the dpkg version and gosu version supplied
-        && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch" \
-        # Use GPG to install the gosu application locally
-        && chmod +x /usr/local/bin/gosu
+        && mkdir -p /opt/aaihome/aaiadmin && \
+        groupadd aaiadmin -g 1000 && \
+        useradd --shell=/bin/bash -u 1000 -g 1000 -o -c "" -m aaiadmin
+
+# Reset the proxy after done with it download necessary dependencies
+
+ENV HTTP_PROXY  ""
+ENV HTTPS_PROXY ""
+ENV http_proxy  ""
+ENV https_proxy ""
+ENV no_proxy ""
+
+USER aaiadmin
