@@ -1,4 +1,4 @@
-FROM haproxy:1.7.10
+FROM haproxy:1.7.10-alpine
 
 # Set up your corporate proxy if there is
 ENV HTTP_PROXY  ""
