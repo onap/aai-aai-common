@@ -10,14 +10,83 @@ AAI Release Notes
 Abstract
 ========
 
-This document provides release notes for the Active and Available Inventory Project's Guilin Release
+This document provides release notes for the Active and Available Inventory Project's Honolulu Release
 
 Release Data
 ============
+Version: 8.0.0
+--------------
+
+:Release Date: 2021-04-01 (TBD)
+
+New Features
+------------
+
+The R8 Honolulu release of ONAP includes updates to both use cases and non-functional requirements. AAI is serving v23 as the latest version of the REST APIs, and has support for v20.
+
+- Functional Updates
+    * Model updates as part of CCVPN Transport Slicing Feature
+    * Model updates as part of Network Slicing Feature
+    * Model updates as part of Multi-tenancy
+    * Multi-tenancy implemented allowing for control of data by owner (disabled by default)
+    * GraphGraph POC enhanced for schema visualization and visual model generation
+    * Sparky UI updates including Browse, Specialized Search, BYOQ, and BYOQ Builder Views
+- Non-functional Updates
+    * Updated eligible microservices (non-janusgraph dependent) to use Java 11
+- Deprecation Notice
+    * Data-router, Search-data-service, Elastic, and Router-Core are put into maintenance mode and removed from release.
+
+Known Limitations, Issues, and Workarounds
+==========================================
+
+Known Issues
+------------
+
+* None
+
+Workarounds
+-----------
+
+The following is our workaround (i.e., replacing HTTPS with HTTP):
+
+ .. code-block:: bash
+
+    /** Change each of these configmaps below**/
+    kubectl -n onap edit configmaps dev-aai-resources-configmap
+    kubectl -n onap edit configmaps dev-aai-traversal-configmap
+    kubectl -n onap edit configmaps dev-aai-graphadmin-configmap
+    kubectl -n onap edit configmaps dev-aai-data-router-dynamic
+    // The target attributes need to be changed are:
+    // change Dmaap port from 3905 => 3904
+    // change Dmaap protocol from https => http
+    /** Restart related pods **/
+    kubectl n onap delete pod {POD1} {POD2} {POD3} {POD4}
+    //where POD1-4 are pod names of dev-aai-resources, dev-aai-traversal, dev-aai-graphadmin, and dev-aai-data-router, respectively.
+
+References
+==========
+
+Quick links:
+
+- `AAI project page <https://wiki.onap.org/display/DW/Active+and+Available+Inventory+Project>`_
+- `Passing Badge information for AAI <https://bestpractices.coreinfrastructure.org/en/projects/1591>`_
+
+For more information on the ONAP Honolulu release, please see:
+
+#. `ONAP Home Page`_
+#. `ONAP Documentation`_
+#. `ONAP Release Downloads`_
+#. `ONAP Wiki Page`_
+
+.. _`ONAP Home Page`: https://www.onap.org
+.. _`ONAP Wiki Page`: https://wiki.onap.org
+.. _`ONAP Documentation`: https://docs.onap.org
+.. _`ONAP Release Downloads`: https://git.onap.org
+
 Version: 7.0.0
 --------------
 
-:Release Date: 2020-12-03 (TBD)
+:Release Date: 2020-12-03
 
 New Features
 ------------
