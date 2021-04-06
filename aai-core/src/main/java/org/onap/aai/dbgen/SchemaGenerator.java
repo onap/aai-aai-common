@@ -126,6 +126,14 @@ public class SchemaGenerator {
                                     graphMgmt.setConsistency(propK, ConsistencyModifier.LOCK);
                                 }
                             }
+                            else if (dbPropName.equals("resource-version")) {
+                                String aai_rv_lock_enabled = AAIConfig.get(AAIConstants.AAI_LOCK_RV_ENABLED, "false");
+                                LOGGER.info(" Info: aai_rv_lock_enabled:" + aai_rv_lock_enabled);
+                                if ("true".equals(aai_rv_lock_enabled)) {
+                                    LOGGER.info(" Lock is being set for resource-version Property.");
+                                    graphMgmt.setConsistency(propK, ConsistencyModifier.LOCK);
+                                }
+                            }
                             seenProps.put(dbPropName, propK);
                         } else {
                             propK = seenProps.get(dbPropName);
@@ -148,6 +156,14 @@ public class SchemaGenerator {
                                     LOGGER.info(" Info:: aai_uri_lock_enabled:" + aai_uri_lock_enabled);
                                     if ("true".equals(aai_uri_lock_enabled)) {
                                         LOGGER.info("Lock is being set for aai-uri Index.");
+                                        graphMgmt.setConsistency(indexG, ConsistencyModifier.LOCK);
+                                    }
+                                }
+                                else if (indexG != null && dbPropName.equals("resource-version")) {
+                                    String aai_rv_lock_enabled = AAIConfig.get(AAIConstants.AAI_LOCK_RV_ENABLED, "false");
+                                    LOGGER.info(" Info:: aai_rv_lock_enabled:" + aai_rv_lock_enabled);
+                                    if ("true".equals(aai_rv_lock_enabled)) {
+                                        LOGGER.info("Lock is being set for resource-version Index.");
                                         graphMgmt.setConsistency(indexG, ConsistencyModifier.LOCK);
                                     }
                                 }
