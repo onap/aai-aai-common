@@ -1,10 +1,13 @@
 FROM haproxy:1.7.10-alpine
 
-# Set up your corporate proxy if there is
-ENV HTTP_PROXY  ""
-ENV HTTPS_PROXY  ""
-ENV http_proxy  ""
-ENV https_proxy  ""
+# For building the image in a proxy environment if necessary
+ARG HTTP_PROXY
+ARG HTTPS_PROXY
+
+ENV HTTP_PROXY   ${HTTP_PROXY}
+ENV HTTPS_PROXY  ${HTTPS_PROXY}
+ENV http_proxy   ${HTTP_PROXY}
+ENV https_proxy  ${HTTPS_PROXY}
 
 RUN apk add --no-cache \
     ca-certificates \
@@ -27,5 +30,5 @@ RUN chmod +x /docker-entrypoint.sh
 USER haproxy
 
 ENTRYPOINT [ "/docker-entrypoint.sh" ]
-CMD [ "haproxy", "-f", "/usr/local/etc/haproxy/haproxy.cfg", "-f", "/usr/local/etc/haproxy/resolvers.conf" ] 
+CMD [ "haproxy", "-f", "/usr/local/etc/haproxy/haproxy.cfg", "-f", "/usr/local/etc/haproxy/resolvers.conf" ]
 EXPOSE 8443

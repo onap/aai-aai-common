@@ -40,7 +40,9 @@ import org.onap.aai.AAISetup;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.*;
 import org.onap.aai.setup.SchemaVersion;
+import org.springframework.test.annotation.DirtiesContext;
 
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class URIToRelationshipObjectTest extends AAISetup {
 
     private SchemaVersion latest;
