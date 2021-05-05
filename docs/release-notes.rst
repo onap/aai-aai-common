@@ -14,10 +14,21 @@ This document provides release notes for the Active and Available Inventory Proj
 
 Release Data
 ============
+Version: 7.0.1
+--------------
+
+:Release Date: 2021-05-10 (TBD)
+
+The R7 Guilin maintenance release of ONAP A&AI just addressed some bug fixes and certificate updates
+
+- Updated Certificates
+- Updated Edge rule for bandwidth attribute
+- AAI-EVENT notifications failing to publish was fixed
+
 Version: 7.0.0
 --------------
 
-:Release Date: 2020-12-03 (TBD)
+:Release Date: 2020-12-03
 
 New Features
 ------------
