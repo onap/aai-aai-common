@@ -27,12 +27,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Properties;
 
-import org.eclipse.jetty.util.security.Password;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onap.aai.AAISetup;
@@ -98,7 +93,6 @@ public class AAIConfigTest extends AAISetup {
     @Test
     public void testGetInt() throws AAIException {
         int res = AAIConfig.getInt("aai.example.int");
-        assertNotNull(res);
         assertEquals(7748, res);
     }
 

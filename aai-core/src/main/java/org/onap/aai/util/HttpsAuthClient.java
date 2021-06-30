@@ -24,24 +24,29 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
-import com.sun.jersey.api.client.filter.LoggingFilter;
 import com.sun.jersey.api.json.JSONConfiguration;
 import com.sun.jersey.client.urlconnection.HTTPSProperties;
-import org.onap.aai.aailog.filter.RestControllerClientLoggingInterceptor;
-import org.onap.aai.exceptions.AAIException;
-
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.security.*;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
-
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
+import org.onap.aai.aailog.filter.RestControllerClientLoggingInterceptor;
+import org.onap.aai.exceptions.AAIException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HttpsAuthClient {
+
+    private static final Logger logger = LoggerFactory.getLogger(HttpsAuthClient.class);
 
     /**
      * The main method.
@@ -61,9 +66,9 @@ public class HttpsAuthClient {
             // System.out.println(res.getEntity(String.class).toString());
 
         } catch (KeyManagementException e) {
-            e.printStackTrace();
+            logger.debug("HttpsAuthClient KeyManagement error : {}", e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.debug("HttpsAuthClient error : {}", e.getMessage());
         }
     }
     /**
@@ -94,17 +99,15 @@ public class HttpsAuthClient {
             ctx = SSLContext.getInstance("TLSv1.2");
             KeyManagerFactory kmf = null;
 
-            try(FileInputStream fin = new FileInputStream(keystorePath)) {
+            try (FileInputStream fin = new FileInputStream(keystorePath)) {
                 kmf = KeyManagerFactory.getInstance("SunX509");
                 KeyStore ks = KeyStore.getInstance("PKCS12");
                 char[] pwd = keystorePassword.toCharArray();
                 ks.load(fin, pwd);
                 kmf.init(ks, pwd);
             } catch (Exception e) {
-                System.out.println("Error setting up kmf: exiting");
-                e.printStackTrace();
+                System.out.println("Error setting up kmf: exiting " + e.getMessage());
                 throw e;
-                //System.exit(1);
             }
 
             ctx.init(kmf.getKeyManagers(), null, null);
@@ -116,10 +119,8 @@ public class HttpsAuthClient {
                     }
                 }, ctx));
         } catch (Exception e) {
-            System.out.println("Error setting up config: exiting");
-            e.printStackTrace();
+            System.out.println("Error setting up config: exiting " + e.getMessage());
             throw e;
-            //System.exit(1);
         }
 
         Client client = Client.create(config);
@@ -136,21 +137,17 @@ public class HttpsAuthClient {
      * @throws KeyManagementException the key management exception
      */
     public static Client getClient() throws KeyManagementException, AAIException, UnrecoverableKeyException, CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
-        String truststore_path = null;
-        String truststore_password = null;
-        String keystore_path = null;
-        String keystore_password = null;
-        try {
-            truststore_path =
-                AAIConstants.AAI_HOME_ETC_AUTH + AAIConfig.get(AAIConstants.AAI_TRUSTSTORE_FILENAME);
-            truststore_password = AAIConfig.get(AAIConstants.AAI_TRUSTSTORE_PASSWD);
-            keystore_path = AAIConstants.AAI_HOME_ETC_AUTH + AAIConfig.get(AAIConstants.AAI_KEYSTORE_FILENAME);
-            keystore_password = AAIConfig.get(AAIConstants.AAI_KEYSTORE_PASSWD);
-        }
-        catch (AAIException e) {
-            throw e;
-        }
-        return(getClient(truststore_path, truststore_password, keystore_path, keystore_password));
+        String truststorePath = null;
+        String truststorePassword = null;
+        String keystorePath = null;
+        String keystorePassword = null;
+        truststorePath =
+            AAIConstants.AAI_HOME_ETC_AUTH + AAIConfig.get(AAIConstants.AAI_TRUSTSTORE_FILENAME);
+        truststorePassword = AAIConfig.get(AAIConstants.AAI_TRUSTSTORE_PASSWD);
+        keystorePath =
+            AAIConstants.AAI_HOME_ETC_AUTH + AAIConfig.get(AAIConstants.AAI_KEYSTORE_FILENAME);
+        keystorePassword = AAIConfig.get(AAIConstants.AAI_KEYSTORE_PASSWD);
+        return getClient(truststorePath, truststorePassword, keystorePath, keystorePassword);
     }
 
 }

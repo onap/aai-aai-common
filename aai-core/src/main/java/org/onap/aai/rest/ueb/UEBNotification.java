@@ -20,8 +20,14 @@
 
 package org.onap.aai.rest.ueb;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import javax.ws.rs.core.Response.Status;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
@@ -33,11 +39,8 @@ import org.onap.aai.logging.LogFormatTools;
 import org.onap.aai.parsers.uri.URIToObject;
 import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.setup.SchemaVersions;
-
-import javax.ws.rs.core.Response.Status;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.util.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Class UEBNotification.
@@ -207,7 +210,7 @@ public class UEBNotification {
 
     private String getUri(String uri, String basePath) {
         if (uri == null || uri.isEmpty()) {
-            return uri;
+            return "";
         } else if (uri.charAt(0) != '/') {
             uri = '/' + uri;
         }

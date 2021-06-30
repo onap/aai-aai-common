@@ -24,9 +24,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Callable;
@@ -35,20 +32,19 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
 import javax.ws.rs.core.Response;
-
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.janusgraph.core.JanusGraph;
 import org.janusgraph.core.JanusGraphTransaction;
 import org.junit.Ignore;
-import org.junit.Test;
 import org.onap.aai.AAISetup;
 import org.onap.aai.HttpTestUtil;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.dbmap.AAIGraph;
 import org.onap.aai.serialization.engines.QueryStyle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PserverDuplicateTest extends AAISetup {
 
@@ -92,10 +88,7 @@ public class PserverDuplicateTest extends AAISetup {
 
         testUtil = new HttpTestUtil(QueryStyle.TRAVERSAL_URI);
 
-        if (pserverList.size() == 1) {
-            return false;
-        }
-        return true;
+        return pserverList.size() != 1;
     }
 
     @Ignore

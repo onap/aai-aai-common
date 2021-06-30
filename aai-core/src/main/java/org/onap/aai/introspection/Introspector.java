@@ -20,9 +20,18 @@
 
 package org.onap.aai.introspection;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.google.common.base.CaseFormat;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.apache.commons.lang.ClassUtils;
 import org.eclipse.persistence.exceptions.DynamicException;
 import org.onap.aai.config.SpringContextAware;
@@ -36,11 +45,8 @@ import org.onap.aai.schema.enums.ObjectMetadata;
 import org.onap.aai.schema.enums.PropertyMetadata;
 import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.workarounds.NamingExceptions;
-
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.InvocationTargetException;
-import java.util.*;
-import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class Introspector implements Cloneable {
 
@@ -177,7 +183,7 @@ public abstract class Introspector implements Cloneable {
         if (obj != null) {
 
             try {
-                if (!obj.getClass().getName().equals(nameClass.getName())) {
+                if (!nameClass.isAssignableFrom(obj.getClass())) {
                     if (nameClass.isPrimitive()) {
                         nameClass = ClassUtils.primitiveToWrapper(nameClass);
                         result = nameClass.getConstructor(String.class).newInstance(obj.toString());

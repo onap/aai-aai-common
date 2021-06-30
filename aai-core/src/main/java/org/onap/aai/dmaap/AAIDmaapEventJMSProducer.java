@@ -47,7 +47,9 @@ public class AAIDmaapEventJMSProducer implements MessageProducer {
         if (jmsTemplate != null) {
             jmsTemplate.convertAndSend(finalJson.toString());
             CachingConnectionFactory ccf = (CachingConnectionFactory) this.jmsTemplate.getConnectionFactory();
-            ccf.destroy();
+            if (ccf != null) {
+                ccf.destroy();
+            }
         }
     }
 
@@ -55,7 +57,9 @@ public class AAIDmaapEventJMSProducer implements MessageProducer {
         if (jmsTemplate != null) {
             jmsTemplate.convertAndSend(msg);
             CachingConnectionFactory ccf = (CachingConnectionFactory) this.jmsTemplate.getConnectionFactory();
-            ccf.destroy();
+            if (ccf != null) {
+                ccf.destroy();
+            }
         }
     }
 }

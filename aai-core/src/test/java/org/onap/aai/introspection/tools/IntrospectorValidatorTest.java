@@ -26,10 +26,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.onap.aai.AAISetup;
-import org.onap.aai.introspection.*;
+import org.onap.aai.introspection.Introspector;
+import org.onap.aai.introspection.Loader;
+import org.onap.aai.introspection.ModelType;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.springframework.test.annotation.DirtiesContext;
 
@@ -104,13 +108,16 @@ public class IntrospectorValidatorTest extends AAISetup {
     @Test
     public void testIntrospectorValidatorGetIssues() throws AAIUnknownObjectException {
         setupIssue("Some message", IssueType.MISSING_REQUIRED_PROP, "hostname", introspector);
-        iv.getIssues();
+        List<Issue> result = iv.getIssues();
+        Assert.assertNotNull(result);
+
     }
 
     @Test
     public void testIntrospectorValidatorProcessComplexObject() throws AAIUnknownObjectException {
         setupIssue("Some message", IssueType.MISSING_REQUIRED_PROP, "hostname", introspector);
         iv.processComplexObj(introspector);
+        Assert.assertNotNull(introspector);
     }
 
     @Test

@@ -19,22 +19,19 @@
  */
 package org.onap.aai.aailog.filter;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.UUID;
 import org.onap.aai.aailog.logs.ServiceName;
 import org.onap.logging.filter.base.AbstractMetricLogFilter;
 import org.onap.logging.filter.base.Constants;
-import org.onap.logging.filter.base.MDCSetup;
 import org.onap.logging.ref.slf4j.ONAPLogConstants;
 import org.slf4j.MDC;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.http.HttpHeaders;
-
-import javax.ws.rs.core.MultivaluedMap;
-import java.io.IOException;
-import java.util.List;
-import java.util.UUID;
 
 public class RestClientLoggingInterceptor extends AbstractMetricLogFilter<HttpRequest, ClientHttpResponse, HttpHeaders> implements ClientHttpRequestInterceptor {
     @Override
@@ -61,8 +58,8 @@ public class RestClientLoggingInterceptor extends AbstractMetricLogFilter<HttpRe
         String requestId = extractRequestID(requestHeaders);
         addHeader(requestHeaders, ONAPLogConstants.Headers.REQUEST_ID, requestId);
         addHeader(requestHeaders, Constants.HttpHeaders.HEADER_REQUEST_ID, requestId);
-        if (requestHeaders.getFirst(Constants.HttpHeaders.TRANSACTION_ID) == null ||
-            requestHeaders.getFirst(Constants.HttpHeaders.TRANSACTION_ID).isEmpty()) {
+        String transactionId = requestHeaders.getFirst(Constants.HttpHeaders.TRANSACTION_ID);
+        if (transactionId == null || transactionId.isEmpty()) {
             addHeader(requestHeaders, Constants.HttpHeaders.TRANSACTION_ID, requestId);
         }
         addHeader(requestHeaders, Constants.HttpHeaders.ECOMP_REQUEST_ID, requestId);
