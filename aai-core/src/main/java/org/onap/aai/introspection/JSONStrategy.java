@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.onap.aai.schema.enums.ObjectMetadata;
 import org.onap.aai.schema.enums.PropertyMetadata;
@@ -146,10 +146,9 @@ public class JSONStrategy extends Introspector {
 
     @Override
     public Class<?> getGenericTypeClass(String name) {
-        Object resultObject = null;
         Class<?> resultClass = null;
-        resultObject = this.getValue(name);
-        if (resultObject.getClass().getName().equals("org.json.simple.JSONArray")) {
+        Object resultObject = this.getValue(name);
+        if (resultObject instanceof JSONArray) {
             resultClass = ((List) resultObject).get(0).getClass();
         }
 
@@ -177,48 +176,25 @@ public class JSONStrategy extends Introspector {
     @Override
     public boolean isComplexType(String name) {
         String result = this.getType(name);
-
-        if (result.contains("JSONObject")) {
-            return true;
-        } else {
-            return false;
-        }
-
+        return result.contains("JSONObject");
     }
 
     @Override
     public boolean isComplexGenericType(String name) {
         String result = this.getGenericType(name);
-
-        if (result.contains("JSONObject")) {
-            return true;
-        } else {
-            return false;
-        }
-
+        return result.contains("JSONObject");
     }
 
     @Override
     public boolean isListType(String name) {
         String result = this.getType(name);
-
-        if (result.contains("java.util.List")) {
-            return true;
-        } else {
-            return false;
-        }
-
+        return result.contains("java.util.List");
     }
 
     @Override
     public boolean isContainer() {
         Set<String> props = this.getProperties();
-        boolean result = false;
-        if (props.size() == 1 && this.isListType(props.iterator().next())) {
-            result = true;
-        }
-
-        return result;
+        return props.size() == 1 && this.isListType(props.iterator().next());
     }
 
     @Override
@@ -264,19 +240,13 @@ public class JSONStrategy extends Introspector {
         return null;
     }
 
-    @Override
-    public Object clone() {
-        // TODO
-        return null;
-    }
-
     /*
      * @Override
      * public String findEdgeName(String parent, String child) {
-     * 
+     *
      * // Always has for now
      * return "has";
-     * 
+     *
      * }
      */
 

@@ -21,6 +21,7 @@
 package org.onap.aai.exceptions;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 import org.onap.aai.AAISetup;
@@ -40,7 +41,7 @@ public class AAIExceptionTest extends AAISetup {
     @Test
     public void testConstructorWith0Params() throws Exception {
         AAIException exception = new AAIException();
-        assertEquals(exception, exception);
+        assertEquals(AAIException.DEFAULT_EXCEPTION_CODE, exception.getCode());
     }
 
     /**
@@ -51,7 +52,7 @@ public class AAIExceptionTest extends AAISetup {
     @Test
     public void testConstructorWith1Params() throws Exception {
         AAIException exception = new AAIException(code);
-        assertEquals(exception, exception);
+        assertEquals(code, exception.getCode());
     }
 
     /**

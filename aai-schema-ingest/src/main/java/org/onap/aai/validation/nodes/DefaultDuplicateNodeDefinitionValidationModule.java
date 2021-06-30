@@ -1,4 +1,4 @@
-/** 
+/**
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
@@ -43,7 +43,7 @@ import org.xml.sax.SAXException;
  * Default duplicate rules for A&AI -
  * node types may never have a duplicate definition
  * within the same Version's file set.
- * 
+ *
  * Finds all duplicates and what files they're in.
  *
  */
@@ -51,13 +51,15 @@ public class DefaultDuplicateNodeDefinitionValidationModule implements Duplicate
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.onap.aai.nodes.validation.DuplicateNodeDefinitionValidationModule#findDuplicates(java.util.List)
      */
     @Override
     public String findDuplicates(List<String> files, SchemaVersion v) {
         try {
             final DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+            docFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+            docFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
             docFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
             final DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 

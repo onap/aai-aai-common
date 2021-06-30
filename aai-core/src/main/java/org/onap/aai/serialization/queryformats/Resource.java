@@ -24,10 +24,13 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
 import java.io.UnsupportedEncodingException;
-import java.util.*;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import javax.ws.rs.core.MultivaluedMap;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.Tree;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.onap.aai.db.props.AAIProperties;
@@ -37,14 +40,16 @@ import org.onap.aai.introspection.Loader;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.onap.aai.serialization.db.DBSerializer;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
-import org.onap.aai.serialization.queryformats.params.Depth;
 import org.onap.aai.serialization.queryformats.params.AsTree;
+import org.onap.aai.serialization.queryformats.params.Depth;
 import org.onap.aai.serialization.queryformats.params.NodesOnly;
 import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
-
-import javax.ws.rs.core.MultivaluedMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Resource extends MultiFormatMapper {
+
+    private static final Logger logger = LoggerFactory.getLogger(Resource.class);
 
     private final Loader loader;
     private final DBSerializer serializer;
@@ -93,11 +98,8 @@ public class Resource extends MultiFormatMapper {
         for (Map.Entry<?, ? extends Tree<?>> entry : tree.entrySet()) {
             JsonObject me = new JsonObject();
             if (entry.getKey() instanceof Vertex) {
-                Optional<JsonObject> obj = null;
-                if (entry.getKey() != null) {
-                    obj = this.getJsonFromVertex((Vertex) entry.getKey());
-                }
-                if (obj != null && obj.isPresent()) {
+                Optional<JsonObject> obj = this.getJsonFromVertex((Vertex) entry.getKey());
+                if (obj.isPresent()) {
                     me = getPropertyFilteredObject(obj, filterPropertiesMap);
                 } else {
                     continue;

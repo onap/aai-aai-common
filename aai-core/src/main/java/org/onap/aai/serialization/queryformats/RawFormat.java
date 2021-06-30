@@ -24,10 +24,13 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
-import java.util.*;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
@@ -36,8 +39,8 @@ import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.serialization.db.DBSerializer;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
-import org.onap.aai.serialization.queryformats.params.Depth;
 import org.onap.aai.serialization.queryformats.params.AsTree;
+import org.onap.aai.serialization.queryformats.params.Depth;
 import org.onap.aai.serialization.queryformats.params.NodesOnly;
 import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
 
@@ -100,7 +103,7 @@ public class RawFormat extends MultiFormatMapper {
                 json.addProperty(prop.key(), list);
             } else {
                 // throw exception?
-                return null;
+                return Optional.empty();
             }
         }
 
@@ -128,7 +131,7 @@ public class RawFormat extends MultiFormatMapper {
                         json.addProperty(prop.key(), gson.toJson(prop.value()));
                     } else {
                         // throw exception?
-                        return null;
+                        return Optional.empty();
                     }
                 }
             } else {

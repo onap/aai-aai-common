@@ -27,8 +27,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.junit.Before;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.onap.aai.edges.EdgeIngestor;
 import org.onap.aai.nodes.NodeIngestor;
 import org.onap.aai.setup.AAIConfigTranslator;
@@ -37,6 +39,7 @@ import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.setup.SchemaConfigVersions;
 import org.onap.aai.setup.Translator;
 
+@RunWith(MockitoJUnitRunner.class)
 public class OxmSchemaServiceSetup {
 
     @Mock

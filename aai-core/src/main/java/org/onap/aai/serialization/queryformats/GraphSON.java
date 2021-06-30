@@ -24,12 +24,13 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.*;
-
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.io.graphson.GraphSONMapper;
@@ -37,8 +38,12 @@ import org.apache.tinkerpop.gremlin.structure.io.graphson.GraphSONWriter;
 import org.janusgraph.graphdb.tinkerpop.JanusGraphIoRegistry;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatQueryResultFormatNotSupported;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GraphSON implements FormatMapper {
+
+    private static final Logger logger = LoggerFactory.getLogger(GraphSON.class);
 
     private final GraphSONMapper mapper =
             GraphSONMapper.build().addRegistry(JanusGraphIoRegistry.getInstance()).create();
@@ -54,8 +59,7 @@ public class GraphSON implements FormatMapper {
 
             result = os.toString();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.debug("GraphSON writeVertex error : {}", e.getMessage());
         }
 
         JsonObject jsonObject = parser.parse(result).getAsJsonObject();
@@ -79,7 +83,8 @@ public class GraphSON implements FormatMapper {
     }
 
     @Override
-    public Optional<JsonObject> formatObject(Object o, Map<String, List<String>> properties) throws AAIFormatVertexException, AAIFormatQueryResultFormatNotSupported {
+    public Optional<JsonObject> formatObject(Object obj, Map<String, List<String>> properties)
+        throws AAIFormatVertexException, AAIFormatQueryResultFormatNotSupported {
         return Optional.empty();
     }
 

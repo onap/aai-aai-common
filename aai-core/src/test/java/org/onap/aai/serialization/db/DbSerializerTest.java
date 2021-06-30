@@ -897,6 +897,8 @@ public class DbSerializerTest extends AAISetup {
         relationship.setValue("related-link", "/network/vnfcs/vnfc/a-name");
         relationship.setValue("relationship-data", relData);
 
+        assertEquals("/network/vnfcs/vnfc/a-name", relationship.getValue("related-link"));
+
         dbser.createEdge(relationship, gvnf);
     }
 

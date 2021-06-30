@@ -20,28 +20,30 @@
 
 package org.onap.aai.introspection.sideeffect;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.onap.aai.config.SpringContextAware;
-import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.edges.exceptions.AmbiguousRuleChoiceException;
 import org.onap.aai.edges.exceptions.EdgeRuleNotFoundException;
 import org.onap.aai.exceptions.AAIException;
-import org.onap.aai.introspection.*;
+import org.onap.aai.introspection.Introspector;
+import org.onap.aai.introspection.Loader;
+import org.onap.aai.introspection.LoaderUtil;
 import org.onap.aai.introspection.sideeffect.exceptions.AAIMissingRequiredPropertyException;
 import org.onap.aai.schema.enums.PropertyMetadata;
 import org.onap.aai.serialization.db.DBSerializer;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
-import org.onap.aai.setup.SchemaVersions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class SideEffect {
 
@@ -72,7 +74,7 @@ public abstract class SideEffect {
             try {
                 this.processURI(completeUri, entry);
             } catch (EdgeRuleNotFoundException | AmbiguousRuleChoiceException e) {
-                logger.warn("Unable to execute the side effect {} due to ", e, this.getClass().getName());
+                logger.warn("Unable to execute the side effect {} due to ", this.getClass().getName(), e);
             }
         }
     }
