@@ -55,7 +55,7 @@ public class AAIUtils {
      */
     public static String genDate() {
         Date date = new Date();
-        DateFormat formatter = new SimpleDateFormat("YYMMdd-HH:mm:ss:SSS");
+        DateFormat formatter = new SimpleDateFormat("yyMMdd-HH:mm:ss:SSS");
         formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
         return formatter.format(date);
     }

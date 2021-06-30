@@ -21,6 +21,7 @@
 package org.onap.aai.serialization.queryformats;
 
 import com.google.gson.JsonObject;
+import java.util.Optional;
 import org.apache.tinkerpop.gremlin.process.traversal.strategy.verification.ReadOnlyStrategy;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
@@ -137,9 +138,10 @@ public class ResourceWithSoTTest extends AAISetup {
     }
 
     @Test
-    public void testGetJsonFromVertexWithNullVertex() throws AAIFormatVertexException, AAIException {
-        // Null check, will return null.
-        assertNull(resourceWithSoT.getJsonFromVertex(null));
+    public void testGetJsonFromVertexWithNullVertex() throws AAIFormatVertexException {
+        // Null check, will return not present Optional.
+        Optional<JsonObject> result = resourceWithSoT.getJsonFromVertex(null);
+        assertFalse(result.isPresent());
     }
 
     public void createLoaderEngineSetup() throws AAIException {

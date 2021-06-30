@@ -130,7 +130,7 @@ public class DeltaEvents {
      */
     private String getTimeStamp(long timestamp) {
         //SimpleDateFormat is not thread safe new instance needed
-        DateFormat df = new SimpleDateFormat("YYYYMMdd-HH:mm:ss:SSS");
+        DateFormat df = new SimpleDateFormat("yyyyMMdd-HH:mm:ss:SSS");
         return df.format(new Date(timestamp));
     }
 }

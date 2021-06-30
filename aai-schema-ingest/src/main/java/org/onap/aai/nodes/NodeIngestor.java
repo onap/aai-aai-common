@@ -22,23 +22,24 @@
 
 package org.onap.aai.nodes;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.google.common.base.CaseFormat;
-
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.annotation.PostConstruct;
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
@@ -46,6 +47,8 @@ import org.onap.aai.setup.ConfigTranslator;
 import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.setup.SchemaVersions;
 import org.onap.aai.setup.Translator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
@@ -76,7 +79,7 @@ public class NodeIngestor {
 
     /**
      * Instantiates the NodeIngestor bean.
-     * 
+     *
      * @param translatorSet
      */
 
@@ -158,6 +161,8 @@ public class NodeIngestor {
             throws ParserConfigurationException, IOException, SAXException {
         Set<String> types = new HashSet<>();
         final DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+        docFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        docFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
         docFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
         final DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 
@@ -191,6 +196,8 @@ public class NodeIngestor {
         InputStream inputStream = inputStreams.get(0);
         inputStream.reset();
         final DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+        docFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        docFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
         docFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
         DocumentBuilder masterDocBuilder = docFactory.newDocumentBuilder();
         return masterDocBuilder.parse(inputStream);
@@ -199,6 +206,8 @@ public class NodeIngestor {
     private Document createCombinedSchema(List<InputStream> inputStreams, SchemaVersion version)
             throws ParserConfigurationException, SAXException, IOException {
         final DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+        docFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        docFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
         docFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
         final DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
         DocumentBuilder masterDocBuilder = docFactory.newDocumentBuilder();

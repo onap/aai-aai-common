@@ -145,7 +145,7 @@ public class HttpEntry {
 
         getDbEngine().startTransaction();
         this.notification = new UEBNotification(loader, loaderFactory, schemaVersions);
-        if("true".equals(AAIConfig.get("aai.notification.depth.all.enabled", "true"))){
+        if ("true".equals(AAIConfig.get("aai.notification.depth.all.enabled", "true"))) {
             this.notificationDepth = AAIProperties.MAXIMUM_DEPTH;
         } else {
             this.notificationDepth = AAIProperties.MINIMUM_DEPTH;
@@ -160,7 +160,7 @@ public class HttpEntry {
 
         getDbEngine().startTransaction();
         this.notification = new UEBNotification(loader, loaderFactory, schemaVersions);
-        if("true".equals(AAIConfig.get("aai.notification.depth.all.enabled", "true"))){
+        if ("true".equals(AAIConfig.get("aai.notification.depth.all.enabled", "true"))) {
             this.notificationDepth = AAIProperties.MAXIMUM_DEPTH;
         } else {
             this.notificationDepth = AAIProperties.MINIMUM_DEPTH;
@@ -177,7 +177,7 @@ public class HttpEntry {
 
         this.notification = notification;
 
-        if("true".equals(AAIConfig.get("aai.notification.depth.all.enabled", "true"))){
+        if ("true".equals(AAIConfig.get("aai.notification.depth.all.enabled", "true"))) {
             this.notificationDepth = AAIProperties.MAXIMUM_DEPTH;
         } else {
             this.notificationDepth = AAIProperties.MINIMUM_DEPTH;
@@ -504,11 +504,12 @@ public class HttpEntry {
                                 if (obj != null) {
                                     status = Status.OK;
                                     MarshallerProperties properties;
-                                    if (!request.getMarshallerProperties().isPresent()) {
-                                        properties = new MarshallerProperties.Builder(
-                                                org.onap.aai.restcore.MediaType.getEnum(outputMediaType)).build();
+                                    Optional<MarshallerProperties> marshallerPropOpt = request.getMarshallerProperties();
+                                    if (marshallerPropOpt.isPresent()) {
+                                        properties = marshallerPropOpt.get();
                                     } else {
-                                        properties = request.getMarshallerProperties().get();
+                                        properties = new MarshallerProperties.Builder(
+                                            org.onap.aai.restcore.MediaType.getEnum(outputMediaType)).build();
                                     }
                                     result = obj.marshal(properties);
                                 }
@@ -519,11 +520,11 @@ public class HttpEntry {
                                 result = formatter.output(vertices.stream().map(vertex -> (Object) vertex)
                                         .collect(Collectors.toList())).toString();
 
-                                if(outputMediaType == null){
+                                if (outputMediaType == null) {
                                     outputMediaType = MediaType.APPLICATION_JSON;
                                 }
 
-                                if(MediaType.APPLICATION_XML_TYPE.isCompatible(MediaType.valueOf(outputMediaType))){
+                                if (MediaType.APPLICATION_XML_TYPE.isCompatible(MediaType.valueOf(outputMediaType))) {
                                     result = xmlFormatTransformer.transform(result);
                                 }
                                 status = Status.OK;
@@ -557,11 +558,11 @@ public class HttpEntry {
                                 result = formatter.output(vertices.stream().map(vertex -> (Object) vertex)
                                         .collect(Collectors.toList())).toString();
 
-                                if(outputMediaType == null){
+                                if (outputMediaType == null) {
                                     outputMediaType = MediaType.APPLICATION_JSON;
                                 }
 
-                                if(MediaType.APPLICATION_XML_TYPE.isCompatible(MediaType.valueOf(outputMediaType))){
+                                if (MediaType.APPLICATION_XML_TYPE.isCompatible(MediaType.valueOf(outputMediaType))) {
                                     result = xmlFormatTransformer.transform(result);
                                 }
                                 status = Status.OK;
@@ -581,7 +582,7 @@ public class HttpEntry {
                             if (notificationDepth == AAIProperties.MINIMUM_DEPTH) {
                                 Map<String, Pair<Introspector, LinkedHashMap<String,Introspector>>> allImpliedDeleteObjs = serializer.getImpliedDeleteUriObjectPair();
 
-                                for(Map.Entry<String, Pair<Introspector, LinkedHashMap<String,Introspector>>> entry: allImpliedDeleteObjs.entrySet()){
+                                for (Map.Entry<String, Pair<Introspector, LinkedHashMap<String,Introspector>>> entry: allImpliedDeleteObjs.entrySet()) {
                                     // The format is purposefully %s/%s%s due to the fact
                                     // that every aai-uri will have a slash at the beginning
                                     // If that assumption isn't true, then its best to change this code
@@ -772,9 +773,12 @@ public class HttpEntry {
     /**
      * Generate notification events for the resulting db requests.
      */
-    private void generateEvents(String sourceOfTruth, DBSerializer serializer, String transactionId, QueryEngine queryEngine, Set<Vertex> mainVertexesToNotifyOn) throws AAIException {
+    private void generateEvents(String sourceOfTruth, DBSerializer serializer, String transactionId,
+                                QueryEngine queryEngine, Set<Vertex> mainVertexesToNotifyOn)
+        throws AAIException {
         if (notificationDepth == AAIProperties.MINIMUM_DEPTH) {
-            serializer.getUpdatedVertexes().entrySet().stream().filter(Map.Entry::getValue).map(Map.Entry::getKey).forEach(mainVertexesToNotifyOn::add);
+            serializer.getUpdatedVertexes().entrySet().stream().filter(Map.Entry::getValue)
+                .map(Map.Entry::getKey).forEach(mainVertexesToNotifyOn::add);
         }
         Set<Vertex> edgeVertexes = serializer.touchStandardVertexPropertiesForEdges().stream()
             .filter(v -> !mainVertexesToNotifyOn.contains(v)).collect(Collectors.toSet());
@@ -789,13 +793,15 @@ public class HttpEntry {
 
         // Since @Autowired required is set to false, we need to do a null check
         // for the existence of the validationService since its only enabled if profile is enabled
-        if(validationService != null){
+        if (validationService != null){
             validationService.validate(notification.getEvents());
         }
         notification.triggerEvents();
         if (isDeltaEventsEnabled) {
             try {
-                DeltaEvents deltaEvents = new DeltaEvents(transactionId, sourceOfTruth, version.toString(), serializer.getObjectDeltas());
+                DeltaEvents deltaEvents =
+                    new DeltaEvents(transactionId, sourceOfTruth, version.toString(),
+                        serializer.getObjectDeltas());
                 deltaEvents.triggerEvents();
             } catch (Exception e) {
                 LOGGER.error("Error sending Delta Events", e);
@@ -808,7 +814,7 @@ public class HttpEntry {
      */
     private void createNotificationEvents(Set<Vertex> vertexesToNotifyOn, String sourceOfTruth, DBSerializer serializer,
                                           String transactionId, QueryEngine queryEngine, int eventDepth) throws AAIException, UnsupportedEncodingException {
-        for(Vertex vertex : vertexesToNotifyOn){
+        for (Vertex vertex : vertexesToNotifyOn) {
             if (canGenerateEvent(vertex)) {
                 boolean isCurVertexNew = vertex.value(AAIProperties.CREATED_TS).equals(vertex.value(AAIProperties.LAST_MOD_TS));
                 Status curObjStatus = (isCurVertexNew) ? Status.CREATED : Status.OK;
@@ -820,7 +826,8 @@ public class HttpEntry {
                 if (!curObj.isTopLevel()) {
                     curRelatedObjs = serializer.getRelatedObjects(queryEngine, vertex, curObj, this.loader);
                 }
-                notification.createNotificationEvent(transactionId, sourceOfTruth, curObjStatus, URI.create(uri), curObj, curRelatedObjs, basePath);
+                notification.createNotificationEvent(transactionId, sourceOfTruth, curObjStatus,
+                    URI.create(uri), curObj, curRelatedObjs, basePath);
             }
         }
     }
@@ -833,10 +840,11 @@ public class HttpEntry {
     private boolean canGenerateEvent(Vertex vertex) {
         boolean canGenerate = true;
         try {
-            if(!vertex.property(AAIProperties.AAI_URI).isPresent()){
+            if (!vertex.property(AAIProperties.AAI_URI).isPresent()) {
                 LOGGER.debug("Encountered an vertex {} with missing aai-uri", vertex.id());
                 canGenerate = false;
-            } else if(!vertex.property(AAIProperties.CREATED_TS).isPresent() || !vertex.property(AAIProperties.LAST_MOD_TS).isPresent()){
+            } else if (!vertex.property(AAIProperties.CREATED_TS).isPresent() ||
+                !vertex.property(AAIProperties.LAST_MOD_TS).isPresent()) {
                 LOGGER.debug("Encountered an vertex {} with missing timestamp", vertex.id());
                 canGenerate = false;
             }

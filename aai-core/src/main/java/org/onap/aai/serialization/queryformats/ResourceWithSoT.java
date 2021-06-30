@@ -22,11 +22,9 @@ package org.onap.aai.serialization.queryformats;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.introspection.Loader;
@@ -37,8 +35,6 @@ import org.onap.aai.serialization.queryformats.params.Depth;
 import org.onap.aai.serialization.queryformats.params.NodesOnly;
 import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
 import org.onap.aai.util.AAIConfig;
-
-import java.util.Optional;
 
 public class ResourceWithSoT extends MultiFormatMapper {
     protected JsonParser parser = new JsonParser();
@@ -154,7 +150,7 @@ public class ResourceWithSoT extends MultiFormatMapper {
     protected Optional<JsonObject> getJsonFromVertex(Vertex v) throws AAIFormatVertexException {
         // Null check
         if (v == null) {
-            return null;
+            return Optional.empty();
         }
 
         JsonObject json = new JsonObject();

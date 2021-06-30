@@ -20,28 +20,37 @@
 
 package org.onap.aai.restcore;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.onap.aai.db.props.AAIProperties;
-import org.onap.aai.exceptions.AAIException;
-import org.onap.aai.introspection.Introspector;
-import org.onap.aai.introspection.Loader;
-import org.onap.aai.introspection.tools.*;
-import org.onap.aai.logging.ErrorLogHelper;
-import org.onap.aai.util.AAIConfig;
-import org.onap.aai.util.FormatDate;
-
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import org.onap.aai.db.props.AAIProperties;
+import org.onap.aai.exceptions.AAIException;
+import org.onap.aai.introspection.Introspector;
+import org.onap.aai.introspection.Loader;
+import org.onap.aai.introspection.tools.CreateUUID;
+import org.onap.aai.introspection.tools.DefaultFields;
+import org.onap.aai.introspection.tools.InjectKeysFromURI;
+import org.onap.aai.introspection.tools.IntrospectorValidator;
+import org.onap.aai.introspection.tools.Issue;
+import org.onap.aai.introspection.tools.RemoveNonVisibleProperty;
+import org.onap.aai.logging.ErrorLogHelper;
+import org.onap.aai.util.AAIConfig;
+import org.onap.aai.util.FormatDate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Base class for AAI REST API classes.
@@ -306,6 +315,10 @@ public class RESTAPI {
                     String.format("Timeout limit of %s seconds reached.", timeoutLimit / 1000));
             response = consumerExceptionResponseGenerator(headers, info, method, ex);
             handler.cancel(true);
+        } catch (InterruptedException e) {
+            AAIException ex = new AAIException("AAI_4000", e);
+            response = consumerExceptionResponseGenerator(headers, info, method, ex);
+            Thread.currentThread().interrupt();
         } catch (Exception e) {
             AAIException ex = new AAIException("AAI_4000", e);
             response = consumerExceptionResponseGenerator(headers, info, method, ex);

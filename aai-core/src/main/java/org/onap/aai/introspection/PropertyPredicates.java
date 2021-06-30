@@ -22,7 +22,6 @@ package org.onap.aai.introspection;
 
 import java.util.Map;
 import java.util.Set;
-
 import org.onap.aai.schema.enums.PropertyMetadata;
 
 public final class PropertyPredicates {
@@ -37,9 +36,6 @@ public final class PropertyPredicates {
             if (map.containsKey(PropertyMetadata.VISIBILITY)) {
                 return !(Visibility.internal.equals(Visibility.valueOf(map.get(PropertyMetadata.VISIBILITY)))
                         || Visibility.deployment.equals(Visibility.valueOf(map.get(PropertyMetadata.VISIBILITY))));
-            }
-            if (map.containsKey("dataLocation")) {
-                return false;
             }
             return true;
         };
@@ -60,9 +56,6 @@ public final class PropertyPredicates {
             final Map<PropertyMetadata, String> map = obj.getPropertyMetadata(prop);
             if (map.containsKey(PropertyMetadata.VISIBILITY)) {
                 return !Visibility.internal.equals(Visibility.valueOf(map.get(PropertyMetadata.VISIBILITY)));
-            }
-            if (map.containsKey("dataLocation")) {
-                return false;
             }
             return true;
         };

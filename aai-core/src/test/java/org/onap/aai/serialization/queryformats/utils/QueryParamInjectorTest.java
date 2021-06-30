@@ -26,14 +26,17 @@ import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.serialization.db.DBSerializer;
 import org.onap.aai.serialization.queryformats.Resource;
 import org.onap.aai.serialization.queryformats.Resource.Builder;
 
+@RunWith(MockitoJUnitRunner.class)
 public class QueryParamInjectorTest {
 
     @Mock
