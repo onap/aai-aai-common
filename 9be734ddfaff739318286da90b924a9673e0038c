@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5b54d963_716579be",
+        "filename": "aai-core/src/main/java/org/onap/aai/introspection/Introspector.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 186,
+      "author": {
+        "id": 75
+      },
+      "writtenOn": "2021-07-01T16:38:14Z",
+      "side": 1,
+      "message": "This can lead to some unexpected behavior in the future. As the original intention of the code and what isAssignableFrom seems to be different.",
+      "revId": "9be734ddfaff739318286da90b924a9673e0038c",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
