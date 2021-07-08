@@ -20,15 +20,15 @@
 
 package org.onap.aai.setup;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.onap.aai.restclient.RestClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.*;
-import java.util.*;
-
-import javax.ws.rs.HttpMethod;
-
-import org.onap.aai.restclient.RestClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -82,7 +82,10 @@ public class SchemaServiceTranslator extends Translator {
         ResponseEntity<Resource> schemaResponse = restClient.getGetResource(content, uri, headersMap);
         verifySchemaServiceResponse(schemaResponse.getStatusCode());
         LOGGER.debug("SchemaResponse Status code" + schemaResponse.getStatusCode());
-        inputStreams.add(schemaResponse.getBody().getInputStream());
+        Resource resultBody = schemaResponse.getBody();
+        if (resultBody != null) {
+            inputStreams.add(resultBody.getInputStream());
+        }
         return inputStreams;
     }
 

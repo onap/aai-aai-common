@@ -20,6 +20,9 @@
 
 package org.onap.aai.introspection;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
@@ -28,20 +31,32 @@ import org.springframework.test.annotation.DirtiesContext;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class MoxyEngineTest extends IntrospectorTestSpec {
 
+    @Test
+    public void castValueAccordingToSchemaTest() throws AAIUnknownObjectException {
+
+        Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDepthVersion());
+        Introspector introspector = loader.introspectorFromName("pserver");
+        Object test1 = "name1";
+        Object result = introspector.castValueAccordingToSchema("hostname", test1);
+        Assert.assertTrue(result instanceof java.lang.String);
+
+        Object test2 = "4";
+        Object result2 = introspector.castValueAccordingToSchema("number-of-cpus", test2);
+        Assert.assertTrue(result2 instanceof java.lang.Integer);
+    }
+
     /**
      * Container object.
-     * 
+     *
      * @throws AAIUnknownObjectException
      */
     @Test
     public void containerObject() throws AAIUnknownObjectException {
 
         Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDepthVersion());
-
         Introspector obj = loader.introspectorFromName("port-groups");
-
         this.containerTestSet(obj);
-
+        Assert.assertTrue(true);
     }
 
     @Test

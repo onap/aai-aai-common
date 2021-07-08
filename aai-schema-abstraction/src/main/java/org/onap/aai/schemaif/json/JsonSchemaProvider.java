@@ -20,8 +20,9 @@
  */
 package org.onap.aai.schemaif.json;
 
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
+import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Arrays;
@@ -32,7 +33,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
 import org.onap.aai.cl.api.Logger;
 import org.onap.aai.cl.eelf.LoggerFactory;
 import org.onap.aai.schemaif.SchemaProvider;
@@ -162,7 +162,7 @@ public class JsonSchemaProvider implements SchemaProvider {
         }
 
         try {
-            SchemaServiceResponse resp = SchemaServiceResponse.fromJson(unzipAndGetJSONString(response));
+            SchemaServiceResponse resp = SchemaServiceResponse.fromJson(unzipAndGetJSONString(response.getBody()));
             loadSchema(resp.getData().toJson(), version);
         }
         catch (Exception ex) {
@@ -178,34 +178,42 @@ public class JsonSchemaProvider implements SchemaProvider {
         logger.info(SchemaProviderMsgs.LOADED_SCHEMA_FILE, version);
     }
 
-    private String unzipAndGetJSONString(ResponseEntity<byte[]> response) throws IOException {
-        StringBuffer sb = new StringBuffer("");
+    static final int BUFFER = 512;
+    static final long TOOBIG = 0x6400000; // Max size of unzipped data, 100MB
+    static final int TOOMANY = 1024;      // Max number of files
 
-        ZipInputStream zipStream = null;
-        try {
-
-            zipStream = new ZipInputStream(new ByteArrayInputStream(response.getBody()));
-            ZipEntry entry = null;
-            while ((entry = zipStream.getNextEntry()) != null) {
-                Scanner sc = new Scanner(zipStream);
-                while (sc.hasNextLine()) {
-                    sb.append(sc.nextLine());
+    protected String unzipAndGetJSONString(byte[] inputData) throws java.io.IOException {
+        ZipEntry entry;
+        String result = "";
+        int entries = 0;
+        long total = 0;
+        try (ByteArrayInputStream bis = new ByteArrayInputStream(inputData); ZipInputStream zis = new ZipInputStream(bis)) {
+            while ((entry = zis.getNextEntry()) != null) {
+                int count;
+                byte[] data = new byte[BUFFER];
+                if (entry.isDirectory()) {
+                    continue;
                 }
-
-            }
-        } finally {
-            try {
-                if (zipStream != null) {
-                    zipStream.closeEntry();
-                    zipStream.close();
+                ByteArrayOutputStream fos = new ByteArrayOutputStream();
+                BufferedOutputStream dest = new BufferedOutputStream(fos, BUFFER);
+                while (total + BUFFER <= TOOBIG && (count = zis.read(data, 0, BUFFER)) != -1) {
+                    dest.write(data, 0, count);
+                    total += count;
                 }
-            } catch (Exception e) {
-                logger.warn(SchemaProviderMsgs.SCHEMA_LOAD_ERROR, e.toString());
-
+                dest.flush();
+                result = fos.toString();
+                dest.close();
+                zis.closeEntry();
+                entries++;
+                if (entries > TOOMANY) {
+                    throw new IllegalStateException("Too many files to unzip.");
+                }
+                if (total + BUFFER > TOOBIG) {
+                    throw new IllegalStateException("File being unzipped is too big.");
+                }
             }
         }
-
-        return sb.toString();
+        return result;
     }
 
     private SchemaInstance getSchemaVersion(String version) throws SchemaProviderException {

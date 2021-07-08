@@ -23,6 +23,11 @@ package org.onap.aai.serialization.queryformats;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Pair;
@@ -34,11 +39,9 @@ import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexExcepti
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
-
 public abstract class MultiFormatMapper implements FormatMapper {
 
-    Logger logger = LoggerFactory.getLogger(MultiFormatMapper.class);
+    private static final Logger logger = LoggerFactory.getLogger(MultiFormatMapper.class);
 
     protected boolean isTree = false;
     protected static final String PROPERTIES_KEY = "properties";

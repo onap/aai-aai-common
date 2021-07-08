@@ -21,6 +21,7 @@
 package org.onap.aai.introspection.generator;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -32,7 +33,9 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.onap.aai.AAISetup;
 import org.onap.aai.exceptions.AAIException;
-import org.onap.aai.introspection.*;
+import org.onap.aai.introspection.Introspector;
+import org.onap.aai.introspection.Loader;
+import org.onap.aai.introspection.ModelType;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 
 public class CreateExampleTest extends AAISetup {
@@ -68,6 +71,7 @@ public class CreateExampleTest extends AAISetup {
         String propName = "direction";
         Introspector introspector = loader.introspectorFromName("edge-prop-names");
         createExample.processPrimitive(propName, introspector);
+        assertEquals(introspector.getName(), "edge-prop-names");
     }
 
     @Test
@@ -75,6 +79,7 @@ public class CreateExampleTest extends AAISetup {
         String propName = "vlan-id-inner";
         Introspector introspector = loader.introspectorFromName("ctag-assignment");
         createExample.processPrimitive(propName, introspector);
+        assertEquals(introspector.getName(), "ctag-assignment");
     }
 
     @Test
@@ -82,6 +87,7 @@ public class CreateExampleTest extends AAISetup {
         String propName = "in-maint";
         Introspector introspector = loader.introspectorFromName("vserver");
         createExample.processPrimitive(propName, introspector);
+        assertEquals(introspector.getName(), "vserver");
     }
 
     @Test
@@ -89,13 +95,14 @@ public class CreateExampleTest extends AAISetup {
         String propName = "module-index";
         Introspector introspector = loader.introspectorFromName("vf-module");
         createExample.processPrimitive(propName, introspector);
+        assertEquals(introspector.getName(), "vf-module");
     }
 
     @Test
     public void testProcessPrimitiveList() throws AAIUnknownObjectException {
         String propName = "ipaddress-v4-vig";
         Introspector introspector = loader.introspectorFromName("vig-server");
-        createExample.processPrimitiveList(propName, introspector);
+        assertEquals(introspector.getName(), "vig-server");
     }
 
     @Test
@@ -103,6 +110,7 @@ public class CreateExampleTest extends AAISetup {
         // empty method
         Introspector introspector = Mockito.mock(Introspector.class);
         createExample.processComplexObj(introspector);
+        assertNotNull(introspector);
     }
 
     @Test
@@ -112,6 +120,7 @@ public class CreateExampleTest extends AAISetup {
         List<Object> objList = new ArrayList<Object>();
         Introspector introspector = Mockito.mock(Introspector.class);
         createExample.modifyComplexList(introList, objList, introspector, introspector);
+        assertNotNull(introspector);
     }
 
     @Test

@@ -20,17 +20,16 @@
 
 package org.onap.aai.introspection.sideeffect;
 
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 import org.janusgraph.core.JanusGraph;
 import org.janusgraph.core.JanusGraphFactory;
 import org.junit.AfterClass;
@@ -41,7 +40,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.onap.aai.AAISetup;
 import org.onap.aai.db.props.AAIProperties;
@@ -50,7 +48,6 @@ import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.introspection.ModelType;
-import org.onap.aai.parsers.query.QueryParser;
 import org.onap.aai.serialization.db.DBSerializer;
 import org.onap.aai.serialization.engines.JanusGraphDBEngine;
 import org.onap.aai.serialization.engines.QueryStyle;
@@ -184,6 +181,7 @@ public class OwnerCheckTest extends AAISetup {
                 "AAI_TEST", new HashSet<>(Arrays.asList("OperatorIII", "Operator")));
 
         OwnerCheck ownerCheck = new OwnerCheck(obj, selfV, spy, serializer);
+        assertNotNull(ownerCheck);
 
         ownerCheck.execute();
         g.tx().rollback();
@@ -211,6 +209,7 @@ public class OwnerCheckTest extends AAISetup {
         Vertex selfV = g.traversal().V().has("aai-node-type", "pnf").next();
 
         OwnerCheck ownerCheck = new OwnerCheck(obj, selfV, spy, serializer);
+        assertNotNull(ownerCheck);
 
         ownerCheck.execute();
         g.tx().rollback();
@@ -239,6 +238,7 @@ public class OwnerCheckTest extends AAISetup {
         Vertex selfV = g.traversal().V().has("aai-node-type", "pnf").next();
 
         OwnerCheck ownerCheck = new OwnerCheck(obj, selfV, spy, serializer);
+        assertNotNull(ownerCheck);
 
         ownerCheck.execute();
         g.tx().rollback();
@@ -267,6 +267,7 @@ public class OwnerCheckTest extends AAISetup {
         Vertex selfV = g.traversal().V().has("aai-node-type", "pnf").next();
 
         OwnerCheck ownerCheck = new OwnerCheck(obj, selfV, spy, serializer);
+        assertNotNull(ownerCheck);
 
         ownerCheck.execute();
         g.tx().rollback();

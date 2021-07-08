@@ -58,7 +58,7 @@ public class AAIConfig {
         AAIConfig.getConfigFile();
         AAIConfig.reloadConfig();
 
-        if (AAIConstants.AAI_NODENAME == null || AAIConstants.AAI_NODENAME == "") {
+        if (AAIConstants.AAI_NODENAME == null || AAIConstants.AAI_NODENAME.equals("")) {
             ErrorLogHelper.logError("AAI_4005", " AAI_NODENAME is not defined");
         } else {
             LOGGER.info("A&AI Server Node Name = " + AAIConstants.AAI_NODENAME);

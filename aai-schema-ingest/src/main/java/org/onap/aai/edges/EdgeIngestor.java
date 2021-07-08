@@ -239,8 +239,9 @@ public class EdgeIngestor {
 
     public Multimap<String, EdgeRule> getRules(EdgeRuleQuery q) throws EdgeRuleNotFoundException {
         Multimap<String, EdgeRule> found = null;
-        if (q.getVersion().isPresent()) {
-            found = extractRules(q.getFilter(), q.getVersion().get());
+        Optional<SchemaVersion> versionOpt = q.getVersion();
+        if (versionOpt.isPresent()) {
+            found = extractRules(q.getFilter(), versionOpt.get());
         } else {
             found = extractRules(q.getFilter(), schemaVersions.getDefaultVersion());
         }
@@ -287,8 +288,9 @@ public class EdgeIngestor {
      */
     public EdgeRule getRule(EdgeRuleQuery q) throws EdgeRuleNotFoundException, AmbiguousRuleChoiceException {
         Multimap<String, EdgeRule> found = null;
-        if (q.getVersion().isPresent()) {
-            found = extractRules(q.getFilter(), q.getVersion().get());
+        Optional<SchemaVersion> versionOpt = q.getVersion();
+        if (versionOpt.isPresent()) {
+            found = extractRules(q.getFilter(), versionOpt.get());
         } else {
             found = extractRules(q.getFilter(), schemaVersions.getDefaultVersion());
         }
@@ -361,8 +363,9 @@ public class EdgeIngestor {
      * @return boolean
      */
     public boolean hasRule(EdgeRuleQuery q) {
-        if (q.getVersion().isPresent()) {
-            return !extractRules(q.getFilter(), q.getVersion().get()).isEmpty();
+        Optional<SchemaVersion> versionOpt = q.getVersion();
+        if (versionOpt.isPresent()) {
+            return !extractRules(q.getFilter(), versionOpt.get()).isEmpty();
         } else {
             return !extractRules(q.getFilter(), schemaVersions.getDefaultVersion()).isEmpty();
         }
@@ -418,7 +421,7 @@ public class EdgeIngestor {
 
     /**
      * Returns if the given node type has any cousin relationships in the current version.
-     * 
+     *
      * @param nodeType
      * @return boolean
      */
@@ -428,7 +431,7 @@ public class EdgeIngestor {
 
     /**
      * Returns if the given node type has any cousin relationships in the given version.
-     * 
+     *
      * @param nodeType
      * @return boolean
      */
@@ -479,7 +482,7 @@ public class EdgeIngestor {
     /**
      * Returns if the given node type has any child relationships (ie it contains another node type) in the current
      * version.
-     * 
+     *
      * @param nodeType
      * @return boolean
      */
@@ -490,7 +493,7 @@ public class EdgeIngestor {
     /**
      * Returns if the given node type has any child relationships (ie it contains another node type) in the given
      * version.
-     * 
+     *
      * @param nodeType
      * @return boolean
      */
@@ -541,7 +544,7 @@ public class EdgeIngestor {
     /**
      * Returns if the given node type has any parent relationships (ie it is contained by another node type) in the
      * current version.
-     * 
+     *
      * @param nodeType
      * @return boolean
      */
@@ -552,7 +555,7 @@ public class EdgeIngestor {
     /**
      * Returns if the given node type has any parent relationships (ie it is contained by another node type) in the
      * given version.
-     * 
+     *
      * @param nodeType
      * @return boolean
      */

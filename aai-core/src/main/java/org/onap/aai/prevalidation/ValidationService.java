@@ -23,6 +23,18 @@ package org.onap.aai.prevalidation;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import java.net.ConnectException;
+import java.net.SocketTimeoutException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import javax.annotation.PostConstruct;
 import org.apache.http.conn.ConnectTimeoutException;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
@@ -37,13 +49,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-import javax.annotation.PostConstruct;
-import java.net.ConnectException;
-import java.net.SocketTimeoutException;
-import java.util.*;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * <b>ValidationService</b> routes all the writes to the database
@@ -234,12 +239,13 @@ public class ValidationService {
                 body
             );
 
+            Object responseBody = responseEntity.getBody();
             if(isSuccess(responseEntity)){
                 LOGGER.debug("Validation Service returned following response status code {} and body {}", responseEntity.getStatusCodeValue(), responseEntity.getBody());
-            } else {
+            } else if (responseBody != null) {
                 Validation validation = null;
                 try {
-                    validation = gson.fromJson(responseEntity.getBody().toString(), Validation.class);
+                    validation = gson.fromJson(responseBody.toString(), Validation.class);
                 } catch(JsonSyntaxException jsonException){
                     LOGGER.warn("Unable to convert the response body {}", jsonException.getMessage());
                 }
@@ -253,6 +259,8 @@ public class ValidationService {
                 } else {
                     violations.addAll(extractViolations(validation));
                 }
+            } else {
+                LOGGER.warn("Unable to convert the response body null");
             }
         } catch(Exception e){
             // If the exception cause is client side timeout
