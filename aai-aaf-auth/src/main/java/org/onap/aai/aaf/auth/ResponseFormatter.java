@@ -33,6 +33,11 @@ import java.util.Collections;
 public class ResponseFormatter {
 
     private static final String ACCEPT_HEADER = "accept";
+    private static final String CONTENT_TYPE_HEADER = "Content-Type";
+
+    private ResponseFormatter() {
+        throw new IllegalStateException("Utility class");
+    }
 
     public static void errorResponse(HttpServletRequest request, HttpServletResponse response) throws IOException {
         errorResponse(new AAIException("AAI_3300"), request, response);
@@ -44,10 +49,17 @@ public class ResponseFormatter {
             return;
         }
 
-        String accept = request.getHeader(ACCEPT_HEADER) == null ? MediaType.APPLICATION_XML : request.getHeader(ACCEPT_HEADER);
+        String accept = request.getHeader(ACCEPT_HEADER);
+        switch (accept != null ? accept : MediaType.APPLICATION_XML) {
+            case MediaType.APPLICATION_JSON:
+                response.setHeader(CONTENT_TYPE_HEADER, MediaType.APPLICATION_JSON);
+                break;
+            case MediaType.APPLICATION_XML:
+            default:
+                response.setHeader(CONTENT_TYPE_HEADER, MediaType.APPLICATION_XML);
+        }
 
         response.setStatus(exception.getErrorObject().getHTTPResponseCode().getStatusCode());
-        response.setHeader("Content-Type", accept);
         response.resetBuffer();
 
         String resp = ErrorLogHelper.getRESTAPIErrorResponse(Collections.singletonList(MediaType.valueOf(accept)), exception, new ArrayList<>());
