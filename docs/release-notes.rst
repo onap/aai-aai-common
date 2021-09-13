@@ -10,19 +10,73 @@ AAI Release Notes
 Abstract
 ========
 
-This document provides release notes for the Active and Available Inventory Project's Honolulu Release
+This document provides release notes for the Active and Available Inventory Project's Istanbul Release
 
 Release Data
 ============
-Version: 8.0.0
+
+Version: 9.0.0
 --------------
 
-:Release Date: 2021-04-01 (TBD)
+:Release Date: 2021-10-28 (TBD)
 
 New Features
 ------------
 
-The R8 Honolulu release of ONAP includes updates to both use cases and non-functional requirements. AAI is serving v23 as the latest version of the REST APIs, and has support for v20.
+The R9 Istanbul release of ONAP includes updates to both use cases and non-functional requirements. AAI is serving v24 as the latest version of the REST APIs, and has support for v21.
+
+- Functional Updates
+    * Model updates as part of CCVPN Transport Slicing Feature
+    * Model updates as part of Smart Intent Guarantee based on IBN Feature
+    * Model updates as part of CNF Orchestration Feature
+- Non-functional Updates
+    * Sonar & Security updates
+    * Rolling upgrade functionality
+    * Micrometer integration
+    * Prometheus monitoring integration
+
+Known Limitations, Issues, and Workarounds
+==========================================
+
+Known Issues
+------------
+
+* None
+
+Workarounds
+-----------
+
+* None
+
+References
+==========
+
+Quick links:
+
+- `AAI project page <https://wiki.onap.org/display/DW/Active+and+Available+Inventory+Project>`_
+- `Passing Badge information for AAI <https://bestpractices.coreinfrastructure.org/en/projects/1591>`_
+
+For more information on the ONAP Honolulu release, please see:
+
+#. `ONAP Home Page`_
+#. `ONAP Documentation`_
+#. `ONAP Release Downloads`_
+#. `ONAP Wiki Page`_
+
+.. _`ONAP Home Page`: https://www.onap.org
+.. _`ONAP Wiki Page`: https://wiki.onap.org
+.. _`ONAP Documentation`: https://docs.onap.org
+.. _`ONAP Release Downloads`: https://git.onap.org
+
+Version: 8.0.0
+--------------
+
+:Release Date: 2021-04-29
+
+New Features
+------------
+
+The R8 Honolulu release of ONAP includes updates to both use cases and non-functional requirements.
 
 - Functional Updates
     * Model updates as part of CCVPN Transport Slicing Feature
