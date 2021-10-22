@@ -126,7 +126,7 @@ For more information on the ONAP Honolulu release, please see:
 Version: 7.0.1
 --------------
 
-:Release Date: 2021-05-10 (TBD)
+:Release Date: 2021-05-10
 
 The R7 Guilin maintenance release of ONAP A&AI just addressed some bug fixes and certificate updates
 
