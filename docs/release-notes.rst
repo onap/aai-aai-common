@@ -18,7 +18,7 @@ Release Data
 Version: 9.0.0
 --------------
 
-:Release Date: 2021-10-28 (TBD)
+:Release Date: 2021-11-04
 
 New Features
 ------------
@@ -126,7 +126,7 @@ For more information on the ONAP Honolulu release, please see:
 Version: 7.0.1
 --------------
 
-:Release Date: 2021-05-10 (TBD)
+:Release Date: 2021-05-10
 
 The R7 Guilin maintenance release of ONAP A&AI just addressed some bug fixes and certificate updates
 
@@ -325,7 +325,7 @@ AAI code has been formally scanned during build time using NexusIQ and
 all Critical vulnerabilities have been addressed, items that remain
 open have been assessed for risk and determined to be false
 positive. The AAI open Critical security vulnerabilities and their
-risk assessment have been documented as part of the linkTBD
+risk assessment have been documented as part of the link
 
 **Known Issues**
 
