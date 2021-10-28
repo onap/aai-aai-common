@@ -18,7 +18,7 @@ Release Data
 Version: 9.0.0
 --------------
 
-:Release Date: 2021-10-28 (TBD)
+:Release Date: 2021-11-04
 
 New Features
 ------------
@@ -325,7 +325,7 @@ AAI code has been formally scanned during build time using NexusIQ and
 all Critical vulnerabilities have been addressed, items that remain
 open have been assessed for risk and determined to be false
 positive. The AAI open Critical security vulnerabilities and their
-risk assessment have been documented as part of the linkTBD
+risk assessment have been documented as part of the link
 
 **Known Issues**
 
