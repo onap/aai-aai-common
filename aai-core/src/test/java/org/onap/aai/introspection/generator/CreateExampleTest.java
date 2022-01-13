@@ -37,9 +37,7 @@ import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.introspection.ModelType;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
-import org.junit.Ignore;
 
-@Ignore
 public class CreateExampleTest extends AAISetup {
 
     private static CreateExample createExample;
