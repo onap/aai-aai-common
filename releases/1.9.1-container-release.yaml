@@ -1,7 +1,7 @@
 distribution_type: container
 container_release_tag: 1.9.1
 project: aai-common
-ref: a688684528086ebbe49a680f5fe99276cd1fbb27
+ref: d0f38ff7817960826ccd793b5d24f5c505a55c0b
 containers:
     - name: aai-common-alpine
       version: latest
