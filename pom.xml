@@ -234,6 +234,11 @@
     <!-- Start of ONAP Specific Repositories -->
     <repositories>
         <repository>
+            <id>Log4j</id>
+            <name>Log4J repository</name>
+            <url>https://mvnrepository.com/artifact/org.apache.logging.log4j</url>
+        </repository>
+        <repository>
             <id>AJSC</id>
             <name>AJSC repository</name>
             <url>https://mvnrepository.com/artifact/com.att.ajsc</url>
