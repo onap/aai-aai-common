@@ -30,7 +30,7 @@
 
     <groupId>org.onap.aai.aai-common</groupId>
     <artifactId>aai-common</artifactId>
-    <version>1.9.0-SNAPSHOT</version>
+    <version>1.9.2-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>aai-aai-common</name>
     <description>Contains all of the common code for resources and traversal repos</description>
@@ -233,6 +233,11 @@
 
     <!-- Start of ONAP Specific Repositories -->
     <repositories>
+        <repository>
+            <id>Log4j</id>
+            <name>Log4J repository</name>
+            <url>https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j</url>
+        </repository>
         <repository>
             <id>AJSC</id>
             <name>AJSC repository</name>
