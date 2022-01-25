@@ -58,9 +58,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
+import org.junit.Ignore;
 
 @RunWith(value = Parameterized.class)
-
+@Ignore
 public class DataCopyTest extends AAISetup {
 
     private static JanusGraph graph;

@@ -52,9 +52,10 @@ import org.onap.aai.serialization.db.DBSerializer;
 import org.onap.aai.serialization.engines.JanusGraphDBEngine;
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
+import org.junit.Ignore;
 
 @RunWith(value = Parameterized.class)
-
+@Ignore
 public class OwnerCheckTest extends AAISetup {
 
     private static JanusGraph graph;
