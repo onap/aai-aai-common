@@ -27,15 +27,6 @@ AAI Components
 
 .. image:: images/aai_components.png
 
-ESR
-"""
-Applications for management of external systems.
-
-==================  ===
-**aai/esr-gui**     External system management ui. UI for esr-server.
-**aai/esr-server**  ESR backend, mainly include the function of external system reachable check and data pretreatment.
-==================  ===
-
 Input abstraction
 """""""""""""""""
 Applications that serve as entry points to A&AI.
@@ -46,36 +37,13 @@ Applications that serve as entry points to A&AI.
 **aai/sparky-fe**     AAI user interface front end.
 ====================  ===
 
-Query abstraction
-"""""""""""""""""
-Query abstraction point for clients that routes AAI queries and event data.
-
-===================  ===
-**aai/data-router**  AAI Microservice used to route AAI queries and event data to correct storage engine. Serves as a query abstraction point for clients, as well as a gateway.
-===================  ===
-
-Data management
+Services
 """""""""""""""
-Microservices that facilitate data management of AAI objects.
-
-============================  ===
-**aai/babel**                 AAI Microservice to generate AAI model XML from SDC TOSCA CSAR artifacts.
-**aai/cacher**                Cacher is a generic service that can be used to snapshot json responses, force sync them, sync them periodically, or update them by consuming dmaap events.
-**aai/chameleon**             (deprecated) Abstraction service for historical database.
-**aai/champ**                 Abstraction from underlying graph storage systems that A&AI would interface with.
-**aai/gizmo**                 (deprecated) CRUD Rest API endpoint for resources and relationships, delivering atomic interactions with the graph for improved scalability.
-**aai/resources**             AAI Resources Micro Service providing CRUD REST APIs for inventory resources. This microservice provides the main path for updating and searching the graph - java-types defined in the OXM file for each version of the API define the REST endpoints - for example, the java-type "CloudRegion" in aai-common/aai-schema/src/main/resources/oxm/aai_oxm_v11.xml maps to /aai/v11/cloud-infrastructure/cloud-regions/cloud-region.
-**aai/search-data-service**   Abstraction layer for searchengine, supporting queries and updates. Currently supports Elasticsearch, but has also been design with Solr support in mind.
-**aai/spike**                 (deprecated) Microservice used to generate events describing changes to the graph data.
-**aai/tabular-data-service**  (deprecated) Microservice which serves as an abstraction layer to a tabular data store.
-**aai/validation**            Microservice used to invoke validation mechanism .
-============================  ===
-
-Graph services
-""""""""""""""
-Set of components, which store, provide or display schemas.
+The core microservices that facilitate management of AAI objects.
 
 ======================  ===
+**aai/babel**           AAI Microservice to generate AAI model XML from SDC TOSCA CSAR artifacts.
+**aai/resources**       AAI Resources Micro Service providing CRUD REST APIs for inventory resources. This microservice provides the main path for updating and searching the graph - java-types defined in the OXM file for each version of the API define the REST endpoints - for example, the java-type "CloudRegion" in aai-common/aai-schema/src/main/resources/oxm/aai_oxm_v11.xml maps to /aai/v11/cloud-infrastructure/cloud-regions/cloud-region.
 **aai/graphadmin**      Microservice with various functions for graph management.
 **aai/graphgraph**      Microservice used to provide view of AAI model, schema and edge rules.
 **aai/schema-service**  Application holds and provides specified schema versions.
@@ -91,7 +59,6 @@ Libraries don't run as standalone applications. They contain general functionali
 **aai/event-client**     Event bus client library.
 **aai/logging-service**  AAI common logging library.
 **aai/rest-client**      Library for making REST calls.
-**aai/router-core**      Library containing the core camel components for the data router.
 =======================  ===
 
 Configuration repositories
