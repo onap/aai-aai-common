@@ -15,6 +15,15 @@ This document provides release notes for the Active and Available Inventory Proj
 Release Data
 ============
 
+Version: 9.0.1
+--------------
+
+:Release Date: 2022-02-12 (TBD)
+
+The R9 Istanbul maintenance release of ONAP A&AI addressed some security vulnerabilities mainly for the Log4J dependencies
+
+- Updated the log4j libraries to 2.17.2
+
 Version: 9.0.0
 --------------
 
