@@ -50,7 +50,7 @@ limitations under the License.
     <codehaus.jackson.version>1.9.13</codehaus.jackson.version>
     <commons.beanutils.version>1.9.4</commons.beanutils.version>
     <commons.cli.version>1.4</commons.cli.version>
-    <commons.compress.version>1.19</commons.compress.version>
+    <commons.compress.version>1.21</commons.compress.version>
     <commons.configuration.version>1.10</commons.configuration.version>
     <commons.io.version>2.8.0</commons.io.version>
     <commons.lang.version>2.6</commons.lang.version>
@@ -65,7 +65,7 @@ limitations under the License.
     <freemarker.version>2.3.31</freemarker.version>
     <google.guava.version>19.0</google.guava.version>
     <gremlin.version>3.2.3</gremlin.version>
-    <groovy.version>2.5.13</groovy.version>
+    <groovy.version>2.5.15</groovy.version>
     <gson.version>2.8.6</gson.version>
     <hamcrest.junit.version>2.0.0.0</hamcrest.junit.version>
     <hamcrest.core.version>2.2</hamcrest.core.version>
@@ -103,13 +103,13 @@ limitations under the License.
     <log4j.version>2.17.1</log4j.version>
     <mockito.all.version>1.10.19</mockito.all.version>
     <mockito.core.version>1.10.19</mockito.core.version>
-    <netty.handler.version>4.1.43.Final</netty.handler.version>
+    <netty.handler.version>4.1.63.Final</netty.handler.version>
     <netty.version>4.1.63.Final</netty.version>
     <opencsv.version>3.1</opencsv.version>
     <powermock.version>1.6.6</powermock.version>
     <plexus.utils.version>3.1.1</plexus.utils.version>
     <reflections.version>0.9.10</reflections.version>
-    <snakeyaml.version>1.25</snakeyaml.version>
+    <snakeyaml.version>1.29</snakeyaml.version>
 
     <spring.boot.version>2.1.12.RELEASE</spring.boot.version>
     <javax.servlet.version>3.1.0</javax.servlet.version>
