@@ -1,0 +1,11 @@
+distribution_type: container
+container_release_tag: 1.9.3
+project: aai-common
+ref: defaad0e744abeb6f0ce20c4a6ff46992a34b04a
+containers:
+    - name: aai-common-alpine
+      version: latest
+    - name: aai-common-ubuntu
+      version: latest
+    - name: aai-haproxy
+      version: latest
