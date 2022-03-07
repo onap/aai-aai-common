@@ -37,7 +37,7 @@ limitations under the License.
 
 		<jacoco.line.coverage.limit>0.50</jacoco.line.coverage.limit>
 		<gremlin.version>3.2.2</gremlin.version>
-		<groovy.version>2.4.15</groovy.version>
+		<groovy.version>2.5.15</groovy.version>
 		<!-- Start of Default ONAP Schema Properties -->
 		<aai.wiki.link>https://wiki.onap.org/</aai.wiki.link>
 		<gendoc.version>v15</gendoc.version>
@@ -326,6 +326,7 @@ limitations under the License.
 		<dependency>
 			<groupId>org.codehaus.groovy</groupId>
 			<artifactId>groovy</artifactId>
+            <version>${groovy.version}</version>
 			<classifier>indy</classifier>
 		</dependency>
 		<dependency>
