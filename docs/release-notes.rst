@@ -22,7 +22,13 @@ Version: 9.0.1
 
 The R9 Istanbul maintenance release of ONAP A&AI addressed some security vulnerabilities mainly for the Log4J dependencies
 
-- Updated the log4j libraries to 2.17.2
+- Updated the direct dependency log4j libraries to 2.17.2
+- Please note log4j is still on older versions in a transitive dependency for aaf auth for the following mS
+  * onap-aai-aai-common
+  * onap-aai-babel
+  * onap-aai-resources
+  * onap-aai-schema-service
+  * onap-aai-traversal
 
 Version: 9.0.0
 --------------
