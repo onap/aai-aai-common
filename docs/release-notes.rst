@@ -15,10 +15,27 @@ This document provides release notes for the Active and Available Inventory Proj
 Release Data
 ============
 
+Version: 10.0.0
+--------------
+
+:Release Date: 2022-05-12 (TBD)
+
+The R10 Jakarta release of ONAP A&AI addressed security vulnerabilities and enhanced the model for the CCVPN Use Case
+
+- Schema updated for CCVPN use case mainly enhancing and bug fixes of the Cloud Leased Line (CLL) service
+- Updated versions for indy, httpclient, freemarker, activemq, commons-io, commons-compress, logback-core,
+commons-codec, groovy, netty-all, netty-handler, gson, and snakeyaml in various mS
+- Please note log4j is still on older versions in a transitive dependency for aaf auth for the following mS
+  * onap-aai-aai-common
+  * onap-aai-babel
+  * onap-aai-resources
+  * onap-aai-schema-service
+  * onap-aai-traversal
+
 Version: 9.0.1
 --------------
 
-:Release Date: 2022-02-17 (TBD)
+:Release Date: 2022-02-17
 
 The R9 Istanbul maintenance release of ONAP A&AI addressed some security vulnerabilities mainly for the Log4J dependencies
 
