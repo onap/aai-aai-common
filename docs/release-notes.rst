@@ -10,7 +10,7 @@ AAI Release Notes
 Abstract
 ========
 
-This document provides release notes for the Active and Available Inventory Project's Istanbul Release
+This document provides release notes for the Active and Available Inventory Project's Jakarta Release
 
 Release Data
 ============
@@ -18,7 +18,7 @@ Release Data
 Version: 10.0.0
 --------------
 
-:Release Date: 2022-05-12 (TBD)
+:Release Date: 2022-05-12
 
 The R10 Jakarta release of ONAP A&AI addressed security vulnerabilities and enhanced the model for the CCVPN Use Case
 
