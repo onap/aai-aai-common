@@ -18,7 +18,7 @@ Release Data
 Version: 10.0.0
 --------------
 
-:Release Date: 2022-05-12
+:Release Date: 2022-06-02
 
 The R10 Jakarta release of ONAP A&AI addressed security vulnerabilities and enhanced the model for the CCVPN Use Case
 
