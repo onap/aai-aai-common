@@ -10,10 +10,88 @@ AAI Release Notes
 Abstract
 ========
 
-This document provides release notes for the Active and Available Inventory Project's Jakarta Release
+This document provides release notes for the Active and Available Inventory Project's Kohn Release
 
 Release Data
 ============
+
+Version: 11.0.0
+--------------
+
+:Release Date: 2022-11-10
+
+New Features
+------------
+
+The R11 Kohn release of ONAP includes updates to the schema and edge rules. AAI is serving v27 as the latest version of the REST APIs, and has support for v25.
+
+- Model updates made on the following nodes for changes to attributes or indexing, present in v27
+    * User Network Interfaces (uni)
+    * Route target
+    * Network Route
+    * Bgp neighbor
+    * Vpn binding
+    * Lag interface
+    * Physical interface
+    * Logical interface
+
+- Edge rule changes include
+    * UPDATE collection > service instance edge label and multiplicity change
+    * ADD configuration > p-interface
+    * ADD collection>endpoint
+    * ADD collection>configuration
+    * ADD collection>aggregate-route
+    * ADD collection>parameter-list
+    * ADD collection>policy-key-term
+    * ADD collection>policy-map-member
+    * ADD collection>rule
+    * ADD collection>profile
+    * ADD collection>policy
+    * ADD collection>l3-network
+    * ADD collection>vpn-binding
+    * ADD collection>community-list
+    * ADD collection>object-group
+    * ADD p-interface>object-group
+
+- Please note log4j is still on older versions in a transitive dependency for aaf auth for the following mS
+  * onap-aai-aai-common
+  * onap-aai-babel
+  * onap-aai-resources
+  * onap-aai-schema-service
+  * onap-aai-traversal
+
+Known Limitations, Issues, and Workarounds
+==========================================
+
+Known Issues
+------------
+
+* DMAAP Events are Not Being Published from AAI-Resources (AAI-3507)
+
+Workarounds
+-----------
+
+* None
+
+References
+==========
+
+Quick links:
+
+- `AAI project page <https://wiki.onap.org/display/DW/Active+and+Available+Inventory+Project>`_
+- `Passing Badge information for AAI <https://bestpractices.coreinfrastructure.org/en/projects/1591>`_
+
+For more information on the ONAP Honolulu release, please see:
+
+#. `ONAP Home Page`_
+#. `ONAP Documentation`_
+#. `ONAP Release Downloads`_
+#. `ONAP Wiki Page`_
+
+.. _`ONAP Home Page`: https://www.onap.org
+.. _`ONAP Wiki Page`: https://wiki.onap.org
+.. _`ONAP Documentation`: https://docs.onap.org
+.. _`ONAP Release Downloads`: https://git.onap.org
 
 Version: 10.0.0
 --------------
