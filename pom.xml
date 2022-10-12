@@ -19,8 +19,8 @@
     ============LICENSE_END=========================================================
 
 -->
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.onap.oparent</groupId>
@@ -36,17 +36,17 @@
     <description>Contains all of the common code for resources and traversal repos</description>
 
     <modules>
-    	<module>aai-parent</module>
-		<module>aai-rest</module>
-		<module>aai-schema-ingest</module>
-		<module>aai-annotations</module>
+        <module>aai-parent</module>
+        <module>aai-rest</module>
+        <module>aai-schema-ingest</module>
+        <module>aai-annotations</module>
         <module>aai-aaf-auth</module>
-		<module>aai-core</module>
-		<module>aai-auth</module>
+        <module>aai-core</module>
+        <module>aai-auth</module>
         <module>aai-els-onap-logging</module>
         <module>aai-failover</module>
-		<module>aai-utils</module>
-		<module>aai-schema-abstraction</module>
+        <module>aai-utils</module>
+        <module>aai-schema-abstraction</module>
     </modules>
 
     <profiles>
@@ -154,30 +154,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
                 <version>3.6</version>
-                <configuration>
-                    <reportPlugins>
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-project-info-reports-plugin</artifactId>
-                            <version>2.4</version>
-                            <configuration>
-                                <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
-                                <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
-                            </configuration>
-                            <reports>
-                                <report>dependencies</report>
-                            </reports>
-                        </plugin>
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-javadoc-plugin</artifactId>
-                            <version>2.8</version>
-                            <configuration>
-                                <additionalparam>-Xdoclint:none</additionalparam>
-                            </configuration>
-                        </plugin>
-                    </reportPlugins>
-                </configuration>
                 <dependencies>
                     <dependency>
                         <groupId>org.apache.maven.wagon</groupId>
@@ -226,6 +202,26 @@
                     <additionalparam>-views -Xdoclint:none</additionalparam>
                     <excludePackageNames>org.onap.aai.domain.yang.*:org.onap.aai.util.*</excludePackageNames>
                     <useStandardDocletOptions>true</useStandardDocletOptions>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
+                    <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+                </configuration>
+                <reports>
+                    <report>dependencies</report>
+                </reports>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.8</version>
+                <configuration>
+                    <additionalparam>-Xdoclint:none</additionalparam>
                 </configuration>
             </plugin>
         </plugins>
