@@ -12,5 +12,7 @@ bundleconfig-local/etc/logback.xml
 */.idea
 *.iml
 .idea/
+.vscode/
+.devcontainer/
 *.log
 aai-core/logs/
