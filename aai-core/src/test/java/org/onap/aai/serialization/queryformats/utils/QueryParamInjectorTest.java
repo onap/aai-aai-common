@@ -29,11 +29,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.serialization.db.DBSerializer;
-import org.onap.aai.serialization.queryformats.Resource;
 import org.onap.aai.serialization.queryformats.Resource.Builder;
 
 @RunWith(MockitoJUnitRunner.class)

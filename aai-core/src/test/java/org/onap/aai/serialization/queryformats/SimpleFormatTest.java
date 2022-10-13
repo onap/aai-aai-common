@@ -20,7 +20,23 @@
 
 package org.onap.aai.serialization.queryformats;
 
-import com.google.gson.JsonObject;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyObject;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
+
+import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
+
+import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.MultivaluedMap;
+
 import org.apache.tinkerpop.gremlin.process.traversal.strategy.verification.ReadOnlyStrategy;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.T;
@@ -44,14 +60,7 @@ import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexExcepti
 import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
 import org.springframework.test.annotation.DirtiesContext;
 
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
-import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
-
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import com.google.gson.JsonObject;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class SimpleFormatTest extends AAISetup {

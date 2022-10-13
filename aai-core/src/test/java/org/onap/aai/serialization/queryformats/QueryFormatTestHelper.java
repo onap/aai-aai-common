@@ -20,7 +20,7 @@
 
 package org.onap.aai.serialization.queryformats;
 
-import static org.mockito.Matchers.isA;
+import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -46,7 +46,7 @@ public class QueryFormatTestHelper {
     public static void mockPathed(UrlBuilder mock) throws AAIFormatVertexException {
         Answer<String> answer = new Answer<String>() {
             public String answer(InvocationOnMock invocation) throws Throwable {
-                Vertex v = invocation.getArgumentAt(0, Vertex.class);
+                Vertex v = invocation.getArgument(0);
 
                 return v.<String>property(AAIProperties.AAI_URI).orElse("urimissing");
             }
