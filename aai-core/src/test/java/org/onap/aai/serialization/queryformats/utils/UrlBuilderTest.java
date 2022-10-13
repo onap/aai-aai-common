@@ -21,7 +21,7 @@
 package org.onap.aai.serialization.queryformats.utils;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.io.UnsupportedEncodingException;
@@ -38,7 +38,6 @@ import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.serialization.db.DBSerializer;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
 import org.onap.aai.setup.SchemaVersion;
-import org.onap.aai.util.AAIConstants;
 
 public class UrlBuilderTest extends AAISetup {
 

@@ -38,6 +38,7 @@ limitations under the License.
 		<jacoco.line.coverage.limit>0.50</jacoco.line.coverage.limit>
 		<gremlin.version>3.2.2</gremlin.version>
 		<groovy.version>2.5.15</groovy.version>
+		<mockito.core.version>2.4.0</mockito.core.version>
 		<!-- Start of Default ONAP Schema Properties -->
 		<aai.wiki.link>https://wiki.onap.org/</aai.wiki.link>
 		<gendoc.version>v15</gendoc.version>
@@ -133,13 +134,7 @@ limitations under the License.
 		<dependency>
 			<groupId>com.att.eelf</groupId>
 			<artifactId>eelf-core</artifactId>
-			<exclusions><!-- excluding transitive dependency coming from this artifact,
-					as we would need powermock-api-mockito2 -->
-				<exclusion>
-					<groupId>org.powermock</groupId>
-					<artifactId>powermock-api-mockito</artifactId>
-				</exclusion>
-			</exclusions>
+			<version>2.0.0-oss</version>
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
@@ -162,11 +157,6 @@ limitations under the License.
 		<dependency>
 			<groupId>org.hamcrest</groupId>
 			<artifactId>hamcrest-core</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-all</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
