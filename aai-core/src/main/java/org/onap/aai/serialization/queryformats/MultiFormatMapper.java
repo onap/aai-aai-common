@@ -20,15 +20,13 @@
 
 package org.onap.aai.serialization.queryformats;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
@@ -38,6 +36,10 @@ import org.onap.aai.serialization.queryformats.exceptions.AAIFormatQueryResultFo
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 public abstract class MultiFormatMapper implements FormatMapper {
 

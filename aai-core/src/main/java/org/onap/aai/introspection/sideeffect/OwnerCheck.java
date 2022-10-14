@@ -20,6 +20,9 @@
 
 package org.onap.aai.introspection.sideeffect;
 
+import java.util.Map.Entry;
+import java.util.Optional;
+
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.onap.aai.exceptions.AAIException;
@@ -28,9 +31,6 @@ import org.onap.aai.schema.enums.PropertyMetadata;
 import org.onap.aai.serialization.db.DBSerializer;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 import org.springframework.util.CollectionUtils;
-
-import java.util.Map.Entry;
-import java.util.Optional;
 
 public class OwnerCheck extends SideEffect {
 

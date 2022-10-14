@@ -45,7 +45,7 @@ package org.onap.aai.serialization.engines.query;/*-
 // import java.util.regex.Matcher;
 // import java.util.regex.Pattern;
 //
-// import org.apache.commons.collections.IteratorUtils;
+// import org.apache.commons3.collections.IteratorUtils;
 //
 // import org.onap.aai.db.AAIProperties;
 // import org.onap.aai.query.builder.QueryBuilder;

@@ -20,15 +20,15 @@
 
 package org.onap.aai.dbmap;
 
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.PropertiesConfiguration;
-import org.apache.commons.lang.StringUtils;
-import org.janusgraph.diskstorage.configuration.ConfigElement;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.lang.management.ManagementFactory;
 import java.util.Objects;
+
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.commons.lang3.StringUtils;
+import org.janusgraph.diskstorage.configuration.ConfigElement;
 
 /**
  * For building a config that JanusGraphFactory.open can use with an identifiable graph.unique-instance-id

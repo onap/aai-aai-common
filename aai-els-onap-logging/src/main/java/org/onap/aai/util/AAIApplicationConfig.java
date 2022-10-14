@@ -20,12 +20,6 @@
 
 package org.onap.aai.util;
 
-import org.apache.commons.io.IOUtils;
-import org.eclipse.jetty.util.security.Password;
-import org.onap.aai.exceptions.AAIException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -34,6 +28,12 @@ import java.nio.charset.Charset;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.commons.io.IOUtils;
+import org.eclipse.jetty.util.security.Password;
+import org.onap.aai.exceptions.AAIException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AAIApplicationConfig {
 

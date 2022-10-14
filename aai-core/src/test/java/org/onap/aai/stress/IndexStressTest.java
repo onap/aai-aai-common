@@ -20,22 +20,21 @@
 
 package org.onap.aai.stress;
 
-import org.apache.commons.lang.RandomStringUtils;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.janusgraph.core.JanusGraphTransaction;
 import org.junit.Before;
-import org.junit.Test;
 import org.junit.Ignore;
+import org.junit.Test;
 import org.onap.aai.AAISetup;
 import org.onap.aai.dbmap.AAIGraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.annotation.DirtiesContext;
-
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 @Ignore("Run this only to test indexes limit")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
