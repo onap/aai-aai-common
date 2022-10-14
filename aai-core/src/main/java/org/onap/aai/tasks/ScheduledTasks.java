@@ -20,6 +20,10 @@
 
 package org.onap.aai.tasks;
 
+import java.io.File;
+import java.util.Arrays;
+import java.util.Date;
+
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.comparator.LastModifiedFileComparator;
 import org.onap.aai.aailog.logs.AaiScheduledTaskAuditLog;
@@ -31,10 +35,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
-import java.io.File;
-import java.util.Arrays;
-import java.util.Date;
 
 @Component
 public class ScheduledTasks {

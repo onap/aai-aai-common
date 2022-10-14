@@ -22,10 +22,11 @@
 
 package org.onap.aai.dbmap;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.io.FileNotFoundException;
+import java.util.Properties;
+
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.io.IoCore;
 import org.janusgraph.core.JanusGraph;
@@ -36,9 +37,8 @@ import org.onap.aai.dbgen.SchemaGenerator;
 import org.onap.aai.dbgen.SchemaGenerator4Hist;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.util.AAIConstants;
-
-import java.io.FileNotFoundException;
-import java.util.Properties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Database Mapping class which acts as the middle man between the REST
@@ -139,7 +139,7 @@ public class AAIGraph {
                     transaction.tx().commit();
                     logger.info("Snapshot loaded to inmemory graph.");
                 } catch (Exception e) {
-                    logger.info(String.format("ERROR: Could not load datasnapshot to in memory graph. %n%s", ExceptionUtils.getFullStackTrace(e)));
+                    logger.info(String.format("ERROR: Could not load datasnapshot to in memory graph. %n%s", ExceptionUtils.getStackTrace(e)));
                     throw new RuntimeException(e);
                 }
             }

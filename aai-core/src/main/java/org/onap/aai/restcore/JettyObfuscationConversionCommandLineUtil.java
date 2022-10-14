@@ -20,9 +20,9 @@
 
 package org.onap.aai.restcore;
 
-import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.eclipse.jetty.util.security.Password;
@@ -59,7 +59,7 @@ public class JettyObfuscationConversionCommandLineUtil {
         options.addOption("e", true, "obfuscate the given string");
         options.addOption("d", true, "deobfuscate the given string");
 
-        CommandLineParser parser = new BasicParser();
+        CommandLineParser parser = new DefaultParser();
 
         try {
             CommandLine cmd = parser.parse(options, args);
@@ -89,7 +89,7 @@ public class JettyObfuscationConversionCommandLineUtil {
      * Usage.
      */
     private static void usage() {
-        System.out.println("usage:");;
+        System.out.println("usage:");
         System.out.println("-e [string] to obfuscate");
         System.out.println("-d [string] to deobfuscate");
         System.out.println("-h help");

@@ -28,11 +28,11 @@ import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
 import org.onap.aai.cl.api.Logger;
 import org.onap.aai.cl.eelf.LoggerFactory;
 import org.onap.aai.schemaif.SchemaProvider;
@@ -52,7 +52,8 @@ import org.springframework.web.client.RestTemplate;
 
 
 public class JsonSchemaProvider implements SchemaProvider {
-    Logger logger = LoggerFactory.getInstance().getLogger(JsonSchemaProvider.class.getName());
+    // Logger logger = LoggerFactory.getInstance().getLogger(JsonSchemaProvider.class.getName());
+    Logger logger = LoggerFactory.getInstance().getLogger(SchemaProvider.class);
 
     private JsonSchemaProviderConfig config;
     private Map<String,SchemaInstance> schemaCache = new ConcurrentHashMap<>();

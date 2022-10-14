@@ -19,8 +19,9 @@
  */
 package org.onap.aai.util.delta;
 
-import com.google.gson.annotations.SerializedName;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+
+import com.google.gson.annotations.SerializedName;
 
 public class PropertyDelta {
 

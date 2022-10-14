@@ -20,7 +20,6 @@
 
 package org.onap.aai.introspection;
 
-import com.google.common.base.CaseFormat;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -32,7 +31,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.apache.commons.lang.ClassUtils;
+
+import org.apache.commons.lang3.ClassUtils;
 import org.eclipse.persistence.exceptions.DynamicException;
 import org.onap.aai.config.SpringContextAware;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
@@ -47,6 +47,8 @@ import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.workarounds.NamingExceptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.CaseFormat;
 
 public abstract class Introspector implements Cloneable {
 

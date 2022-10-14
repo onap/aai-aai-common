@@ -19,14 +19,15 @@
  */
 package org.onap.aai.aaf.filters;
 
-import org.apache.commons.io.IOUtils;
-import org.onap.aaf.cadi.BufferedServletInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
+
+import org.apache.commons.io.IOUtils;
+import org.onap.aaf.cadi.BufferedServletInputStream;
 
 /**
  * This class buffers the payload of the servlet request. The reason is that we access the payload multiple times,

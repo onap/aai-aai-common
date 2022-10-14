@@ -44,6 +44,10 @@
 
     <dependencies>
         <dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+		</dependency>
+        <dependency>
             <groupId>com.att.eelf</groupId>
             <artifactId>eelf-core</artifactId>
         </dependency>

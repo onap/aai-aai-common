@@ -19,16 +19,6 @@
  */
 package org.onap.aai.restclient;
 
-import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.EnumerablePropertySource;
-import org.springframework.core.env.MapPropertySource;
-import org.springframework.core.env.PropertySource;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -38,6 +28,16 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.EnumerablePropertySource;
+import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.env.PropertySource;
 
 public class PropertyPasswordConfiguration implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 

@@ -20,15 +20,15 @@
 
 package org.onap.aai.logging;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
-import org.onap.aai.exceptions.AAIException;
-import org.onap.aai.util.AAIConfig;
-import org.onap.aai.util.AAIConstants;
-
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.onap.aai.exceptions.AAIException;
+import org.onap.aai.util.AAIConfig;
+import org.onap.aai.util.AAIConstants;
 
 public class LogFormatTools {
 

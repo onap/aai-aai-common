@@ -22,21 +22,21 @@
 
 package org.onap.aai.edges;
 
-import com.jayway.jsonpath.Criteria;
-import com.jayway.jsonpath.Filter;
-import com.jayway.jsonpath.Predicate;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.onap.aai.edges.enums.AAIDirection;
 import org.onap.aai.edges.enums.EdgeField;
 import org.onap.aai.edges.enums.EdgeProperty;
 import org.onap.aai.edges.enums.EdgeType;
 import org.onap.aai.setup.SchemaVersion;
+
+import com.jayway.jsonpath.Criteria;
+import com.jayway.jsonpath.Filter;
+import com.jayway.jsonpath.Predicate;
 
 /**
  * For querying the edge rules schema (not the database)

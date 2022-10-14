@@ -20,7 +20,6 @@
  */
 package org.onap.aai.schemaif.oxm;
 
-import com.google.common.collect.Multimap;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -32,7 +31,9 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
 import org.apache.commons.io.IOUtils;
+import org.onap.aai.cl.api.Logger;
 import org.onap.aai.cl.eelf.LoggerFactory;
 import org.onap.aai.edges.EdgeIngestor;
 import org.onap.aai.edges.EdgeRule;
@@ -43,6 +44,8 @@ import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.setup.Translator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.google.common.collect.Multimap;
 
 @Component
 public class OxmEdgeRulesLoader {
@@ -60,7 +63,7 @@ public class OxmEdgeRulesLoader {
     final static Pattern propsFilePattern = Pattern.compile(propsPrefix + "(.*)" + propsSuffix);
     final static Pattern propsVersionPattern = Pattern.compile("(?i)v\\d*");
 
-    private static org.onap.aai.cl.api.Logger logger =
+    private static Logger logger =
             LoggerFactory.getInstance().getLogger(OxmEdgeRulesLoader.class.getName());
 
     private OxmEdgeRulesLoader() {}

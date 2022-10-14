@@ -20,38 +20,9 @@
 
 package org.onap.aai.restcore;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
-import org.apache.tinkerpop.gremlin.structure.Graph;
-import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.janusgraph.core.JanusGraphFactory;
-import org.junit.*;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.Assert;
+import org.junit.Test;
 import org.onap.aai.AAISetup;
-import org.onap.aai.db.DbMethHelper;
-import org.onap.aai.exceptions.AAIException;
-import org.onap.aai.introspection.Introspector;
-import org.onap.aai.introspection.Loader;
-import org.onap.aai.introspection.ModelType;
-import org.onap.aai.parsers.exceptions.AmbiguousMapAAIException;
-import org.onap.aai.serialization.db.DBSerializer;
-import org.onap.aai.serialization.db.EdgeSerializer;
-import org.onap.aai.serialization.engines.JanusGraphDBEngine;
-import org.onap.aai.serialization.engines.QueryStyle;
-import org.onap.aai.serialization.engines.TransactionalGraphEngine;
-import org.onap.aai.setup.SchemaVersion;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.DirtiesContext;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.text.ParseException;
-import java.util.*;
-
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
 
 public class JettyObfuscationConversionCommandLineUtilTest extends AAISetup {
     public static JettyObfuscationConversionCommandLineUtil jettyObfuscationConversionCommandLineUtil;

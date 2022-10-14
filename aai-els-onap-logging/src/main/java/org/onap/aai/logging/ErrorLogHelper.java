@@ -20,7 +20,22 @@
 
 package org.onap.aai.logging;
 
-import org.apache.commons.lang.StringUtils;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Properties;
+
+import javax.ws.rs.core.MediaType;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
+
+import org.apache.commons.lang3.StringUtils;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.util.AAIConstants;
 import org.onap.aai.util.MapperUtil;
@@ -30,16 +45,6 @@ import org.onap.logging.ref.slf4j.ONAPLogConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
-
-import javax.ws.rs.core.MediaType;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.util.*;
-import java.util.Map.Entry;
 
 /**
  *
