@@ -23,7 +23,7 @@ Version: 11.0.0
 New Features
 ------------
 
-The R11 Kohn release of ONAP includes updates to the schema and edge rules. AAI is serving v27 as the latest version of the REST APIs, and has support for v25.
+The R11 Kohn release of ONAP includes updates to the schema and edge rules of A&AI. AAI is serving v27 as the latest version of the REST APIs, and has support for v25.
 
 - Model updates made on the following nodes for changes to attributes or indexing, present in v27
     * User Network Interfaces (uni)
