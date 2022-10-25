@@ -2,6 +2,8 @@ from docs_conf.conf import *
 
 branch = 'latest'
 master_doc = 'index'
+release = 'master'
+version = 'master'
 
 linkcheck_ignore = [
     'http://localhost',
