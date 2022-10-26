@@ -145,8 +145,8 @@ The R9 Istanbul release of ONAP includes updates to both use cases and non-funct
     * Micrometer integration
     * Prometheus monitoring integration
 
-Known Limitations, Issues, and Workarounds
-==========================================
+Istanbul Known Limitations, Issues, and Workarounds
+---------------------------------------------------
 
 Known Issues
 ------------
@@ -158,8 +158,8 @@ Workarounds
 
 * None
 
-References
-==========
+Honolulu References
+-------------------
 
 Quick links:
 
@@ -200,8 +200,8 @@ The R8 Honolulu release of ONAP includes updates to both use cases and non-funct
 - Deprecation Notice
     * Data-router, Search-data-service, Elastic, and Router-Core are put into maintenance mode and removed from release.
 
-Known Limitations, Issues, and Workarounds
-==========================================
+Honolulu Known Limitations, Issues, and Workarounds
+---------------------------------------------------
 
 Known Issues
 ------------
@@ -213,8 +213,8 @@ Workarounds
 
 * None
 
-References
-==========
+Istanbul References
+-------------------
 
 Quick links:
 
@@ -274,8 +274,8 @@ The R7 Guilin release of ONAP includes updates to both use cases and non-functio
     * ESR GUI is retired
     * AAI Sparky UI is not supported in Guilin nor is its supporting mS data-router, search-data-service, or elastic. Targeted for retirement in Honolulu.
 
-Known Limitations, Issues, and Workarounds
-==========================================
+Guilin Known Limitations, Issues, and Workarounds
+-------------------------------------------------
 
 Known Issues
 ------------
@@ -301,8 +301,8 @@ The following is our workaround (i.e., replacing HTTPS with HTTP):
     kubectl n onap delete pod {POD1} {POD2} {POD3} {POD4}
     //where POD1-4 are pod names of dev-aai-resources, dev-aai-traversal, dev-aai-graphadmin, and dev-aai-data-router, respectively.
 
-References
-==========
+Guilin References
+-----------------
 
 Quick links:
 
@@ -344,8 +344,8 @@ The R6 Frankfurt release of ONAP includes updates to both use cases and non-func
 
 champ, spike, and gizmo are deprecated and removed from the helm chart.
 
-Known Limitations, Issues, and Workarounds
-==========================================
+Frankfurt Known Limitations, Issues, and Workarounds
+----------------------------------------------------
 
 Known Issues
 ------------
@@ -362,8 +362,8 @@ Roles for sparky are loaded into AAF by default, so previous workaround is no lo
 
 The community has been unable to make data-router communicate with DMaaP, we welcome contributors who can help resurrect this service, or it will be deprecated in Guilin.
 
-References
-==========
+Frankfurt References
+--------------------
 
 Quick links:
 
