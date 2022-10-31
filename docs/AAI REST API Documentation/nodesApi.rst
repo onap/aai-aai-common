@@ -18,11 +18,9 @@ in querying AAI, allowing clients to circumvent the need to know
 every key in the hierarchy. Using the previous example, the below is
 how the API called would change for looking up a vserver by name:
 
-.. code::
-
-  GET /aai/v$/cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}/tenants/tenant/{tenant-id}/vservers?vserver-name={vserver-name}
-  becomes
-  GET /aai/v$/nodes/vservers?vserver-name={vserver-name}
+GET /aai/v$/cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}/tenants/tenant/{tenant-id}/vservers?vserver-name={vserver-name}
+becomes
+GET /aai/v$/nodes/vservers?vserver-name={vserver-name}
 
 A side effect of this is that if the same vserver name was reused between
 multiple cloud-regions or tenants the client will receive multiple
@@ -35,20 +33,17 @@ API URI
 
 nodes can be used to start a URI from any node type, whether singular or plural.
 
-.. code::
-    GET /aai/v$/nodes/{plural}
-    OR
-    GET /aai/v$/nodes/{singular}/{key}
+GET /aai/v$/nodes/{plural}
+OR
+GET /aai/v$/nodes/{singular}/{key}
 
 From there, it can be expanded on similarly to our Resources API.  For example:
 
-.. code::
+GET /aai/v$/nodes/{plural}?{property}={value}
 
-    GET /aai/v$/nodes/{plural}?{property}={value}
- 
-    GET /aai/v$/nodes/tenant/{tenant-id}/vservers
- 
-    GET /aai/v$/nodes/generic-vnf/{vnf-id}/related-to/platforms
+GET /aai/v$/nodes/tenant/{tenant-id}/vservers
+
+GET /aai/v$/nodes/generic-vnf/{vnf-id}/related-to/platforms
 
 Optional Query Parameters
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -64,9 +59,7 @@ returned. By default the output will be depth = 0 (no "children", only
 format query parameter, it will only apply to the on the resource or
 resource_and_url formats.
 
-.. code::
-
-   GET /aai/v$/nodes/{plural}/{singular}/{key}?depth={integer}
+GET /aai/v$/nodes/{plural}/{singular}/{key}?depth={integer}
 
 Nodes Only
 ~~~~~~~~~~
@@ -74,23 +67,19 @@ Nodes Only
 You can pass a nodes only query parameter to have the output only contain
 the object properties with no relationships.
 
-.. code::
-
-   GET /aai/v$/nodes/{plural}/{singular}/{key}?nodes-only
-   OR
-   GET /aai/v$/nodes/{plural}/{singular}/{key}?format={format}&nodesOnly=true
+GET /aai/v$/nodes/{plural}/{singular}/{key}?nodes-only
+OR
+GET /aai/v$/nodes/{plural}/{singular}/{key}?format={format}&nodesOnly=true
 
 Format
 ~~~~~~
 
 You can optionally request an output format different from the default
-REST API output. You can reference the list of formats on the `Custom
-Query <customQueries.html>`_ wiki page for the full list of available
+REST API output. You can reference the list of formats on the
+Query wiki page for the full list of available
 formats and examples.
 
-.. code::
-
-   GET /aai/v$/nodes/{plural}/{singular}/{key}?format={format}
+GET /aai/v$/nodes/{plural}/{singular}/{key}?format={format}
 
 Usage with Custom Query
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -99,7 +88,5 @@ The Nodes API can be called directly or as the start node for Custom
 Queries. Please reference the Custom Queries wiki page for full
 documentation on how to use that interface.
 
-.. code::
-
-   PUT /aai/v$/query?format={format} with payload like..
-   { "start": ["nodes/{plural}/{singular}/{key}"], "query": "query/{query-name}" }
+PUT /aai/v$/query?format={format} with payload like..
+{ "start": ["nodes/{plural}/{singular}/{key}"], "query": "query/{query-name}" }
