@@ -16,7 +16,7 @@ Release Data
 ============
 
 Version: 11.0.0
---------------
+---------------
 
 :Release Date: 2022-11-10
 
@@ -94,7 +94,7 @@ For more information on the ONAP Honolulu release, please see:
 .. _`ONAP Release Downloads`: https://git.onap.org
 
 Version: 10.0.0
---------------
+---------------
 
 :Release Date: 2022-06-02
 
