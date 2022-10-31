@@ -18,7 +18,7 @@ in querying AAI, allowing clients to circumvent the need to know
 every key in the hierarchy. Using the previous example, the below is
 how the API called would change for looking up a vserver by name:
 
-.. code::
+
 
   GET /aai/v$/cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}/tenants/tenant/{tenant-id}/vservers?vserver-name={vserver-name}
   becomes
@@ -35,19 +35,19 @@ API URI
 
 nodes can be used to start a URI from any node type, whether singular or plural.
 
-.. code::
+
     GET /aai/v$/nodes/{plural}
     OR
     GET /aai/v$/nodes/{singular}/{key}
 
 From there, it can be expanded on similarly to our Resources API.  For example:
 
-.. code::
+
 
     GET /aai/v$/nodes/{plural}?{property}={value}
- 
+
     GET /aai/v$/nodes/tenant/{tenant-id}/vservers
- 
+
     GET /aai/v$/nodes/generic-vnf/{vnf-id}/related-to/platforms
 
 Optional Query Parameters
@@ -64,7 +64,7 @@ returned. By default the output will be depth = 0 (no "children", only
 format query parameter, it will only apply to the on the resource or
 resource_and_url formats.
 
-.. code::
+
 
    GET /aai/v$/nodes/{plural}/{singular}/{key}?depth={integer}
 
@@ -74,7 +74,7 @@ Nodes Only
 You can pass a nodes only query parameter to have the output only contain
 the object properties with no relationships.
 
-.. code::
+
 
    GET /aai/v$/nodes/{plural}/{singular}/{key}?nodes-only
    OR
@@ -88,7 +88,7 @@ REST API output. You can reference the list of formats on the `Custom
 Query <customQueries.html>`_ wiki page for the full list of available
 formats and examples.
 
-.. code::
+
 
    GET /aai/v$/nodes/{plural}/{singular}/{key}?format={format}
 
@@ -99,7 +99,7 @@ The Nodes API can be called directly or as the start node for Custom
 Queries. Please reference the Custom Queries wiki page for full
 documentation on how to use that interface.
 
-.. code::
+
 
    PUT /aai/v$/query?format={format} with payload like..
    { "start": ["nodes/{plural}/{singular}/{key}"], "query": "query/{query-name}" }
