@@ -7,13 +7,13 @@
 Nodes Query
 ===========
 
-A&AI Nodes Query Implementation Notes:	
+A&AI Nodes Query Implementation Notes:
 
 Overview
 --------
 
-AAI continues to support this API, but clients may find that `Custom
-Queries <customQueries.html>`_ meet the needs more most queries.
+AAI continues to support this API, but clients may find that custom
+queries meet the needs more most queries.
 
 The Nodes Query mechanism is mostly being implemented in support of
 searching the pservers which do not have the ipv4-oam-ipaddress
@@ -35,7 +35,7 @@ use in which environment/release.
 
 The URL expects the following URL parameters:
 
-**search-node-type** - node type of the node to be searched. 
+**search-node-type** - node type of the node to be searched.
 
 **filter** – list of properties that specify the search
 criterion. Format will be
@@ -43,7 +43,7 @@ criterion. Format will be
 .. code::
 
  filter=<property-name>:<EQUALS|DOES-NOT-EQUAL|EXISTS|DOES-NOT-EXIST>:<property-value>
- 
+
  such as
 
  filter=ipv4-oam-address:DOES-NOT-EXIST:
@@ -53,7 +53,7 @@ For EXISTS and DOES-NOT-EXIST the property value is not specified
 
 The queries return a search-results object back which includes a list
 of result-data which contains the node-type and a link for each
-resource that was found. 
+resource that was found.
 
 
 Requirements
@@ -67,7 +67,7 @@ Requirements
 
 * The search results can be asked to be returned in json or xml based
   on the ACCEPT header.
-  
+
 * If no filter params are specified, it would return all nodes of that node type.
 
 Design
@@ -93,13 +93,13 @@ Design
 Supported queries
 -----------------
 
-* Search pserver nodes for which ipv4-oam-address DOES-NOT-EXIST 
+* Search pserver nodes for which ipv4-oam-address DOES-NOT-EXIST
 
 .. code::
 
  URL:
  /aai/v16/search/nodes-query?search-node-type=pserver&filter=ipv4-oam-address:DOES-NOT-EXIST:
- 
+
 Search result
 
 .. code::
