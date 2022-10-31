@@ -16,7 +16,7 @@ Release Data
 ============
 
 Version: 11.0.0
---------------
+---------------
 
 :Release Date: 2022-11-10
 
@@ -94,15 +94,14 @@ For more information on the ONAP Honolulu release, please see:
 .. _`ONAP Release Downloads`: https://git.onap.org
 
 Version: 10.0.0
---------------
+---------------
 
 :Release Date: 2022-06-02
 
 The R10 Jakarta release of ONAP A&AI addressed security vulnerabilities and enhanced the model for the CCVPN Use Case
 
 - Schema updated for CCVPN use case mainly enhancing and bug fixes of the Cloud Leased Line (CLL) service
-- Updated versions for indy, httpclient, freemarker, activemq, commons-io, commons-compress, logback-core,
-commons-codec, groovy, netty-all, netty-handler, gson, and snakeyaml in various mS
+- Updated versions for indy, httpclient, freemarker, activemq, commons-io, commons-compress, logback-core, commons-codec, groovy, netty-all, netty-handler, gson, and snakeyaml in various mS
 - Please note log4j is still on older versions in a transitive dependency for aaf auth for the following mS
   * onap-aai-aai-common
   * onap-aai-babel
@@ -967,7 +966,7 @@ Source code of AAI is released under the following repositories at https://gerri
 
 **Known Issues**
 
-If the either the aai-resources or aai-traversal pod is deleted, haproxy will not automatically detect when the pod is re-instantiated.  As a temporary workaround, you can delete the haproxy pod (the one named "aai", for example, "dev-aai-8794fbff5-clx7d") and when the aai pod restarts the service should operate normally. A proposed fix is here: https://gerrit.onap.org/r/#/c/51075/1 if you want to see how to configure the haproxy service to auto-recover when the IP address of either the aai-resources or aai-traversal pod changes.
+If the either the aai-resources or aai-traversal pod is deleted, haproxy will not automatically detect when the pod is re-instantiated.  As a temporary workaround, you can delete the haproxy pod (the one named "aai", for example, "dev-aai-8794fbff5-clx7d") and when the aai pod restarts the service should operate normally. A proposed fix is `here <https://gerrit.onap.org/r/#/c/51075/1>`_ if you want to see how to configure the haproxy service to auto-recover when the IP address of either the aai-resources or aai-traversal pod changes.
 
 **Security Notes**
 
@@ -1163,8 +1162,6 @@ Source code of AAI is released under the following repositories at https://gerri
 **Known Issues**
 
 - `AAI-61 <https://jira.onap.org/browse/AAI-61>`_ AAI cleaned up references to OpenECOMP but in order to keep the release stable for R1, the XML namespace still contains openecomp.
-
-Client systems should use http://org.openecomp.aai.inventory/v11 as the XML namespace for ONAP AAI R1.
 
 **Security Issues**
 
