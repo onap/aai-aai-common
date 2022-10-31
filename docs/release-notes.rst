@@ -16,7 +16,7 @@ Release Data
 ============
 
 Version: 11.0.0
---------------
+---------------
 
 :Release Date: 2022-11-10
 
@@ -94,15 +94,14 @@ For more information on the ONAP Honolulu release, please see:
 .. _`ONAP Release Downloads`: https://git.onap.org
 
 Version: 10.0.0
---------------
+---------------
 
 :Release Date: 2022-06-02
 
 The R10 Jakarta release of ONAP A&AI addressed security vulnerabilities and enhanced the model for the CCVPN Use Case
 
 - Schema updated for CCVPN use case mainly enhancing and bug fixes of the Cloud Leased Line (CLL) service
-- Updated versions for indy, httpclient, freemarker, activemq, commons-io, commons-compress, logback-core,
-commons-codec, groovy, netty-all, netty-handler, gson, and snakeyaml in various mS
+- Updated versions for indy, httpclient, freemarker, activemq, commons-io, commons-compress, logback-core, commons-codec, groovy, netty-all, netty-handler, gson, and snakeyaml in various mS
 - Please note log4j is still on older versions in a transitive dependency for aaf auth for the following mS
   * onap-aai-aai-common
   * onap-aai-babel
