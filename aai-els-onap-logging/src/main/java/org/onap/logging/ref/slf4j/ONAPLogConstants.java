@@ -27,7 +27,9 @@ import org.slf4j.MarkerFactory;
 /**
  * Constants for standard ONAP headers, MDCs, etc.
  *
- * <p>See <tt>package-info.java</tt>.</p>
+ * <p>
+ * See <tt>package-info.java</tt>.
+ * </p>
  */
 public final class ONAPLogConstants {
 
@@ -57,7 +59,7 @@ public final class ONAPLogConstants {
 
         /** Marker reporting invocation. */
         public static final Marker INVOKE = MarkerFactory.getMarker("INVOKE");
-        
+
         /** Marker reporting invocation return. */
         public static final Marker INVOKE_RETURN = MarkerFactory.getMarker("INVOKE_RETURN");
 
@@ -75,6 +77,7 @@ public final class ONAPLogConstants {
 
         /**
          * Build nested, detached marker.
+         * 
          * @param m1 top token.
          * @param m2 sub-token.
          * @return detached Marker.
@@ -114,7 +117,7 @@ public final class ONAPLogConstants {
 
         /** MDC recording target service. */
         public static final String TARGET_SERVICE_NAME = "TargetServiceName";
-        
+
         /** MDC recording target entity. */
         public static final String TARGET_ENTITY = "TargetEntity";
 
@@ -124,7 +127,7 @@ public final class ONAPLogConstants {
         /** MDC recording current service instance id. */
         public static final String SERVICE_INSTANCE_ID = "ServiceInstanceID";
 
-        /** MDC recording current  instance id. */
+        /** MDC recording current instance id. */
         public static final String INSTANCE_UUID = "InstanceID";
 
         // Network. ////////////////////////////////////////////////////////////
@@ -148,14 +151,21 @@ public final class ONAPLogConstants {
          * MDC recording timestamp at the start of the current request,
          * with the same scope as {@link #REQUEST_ID}.
          *
-         * <p>Open issues:
+         * <p>
+         * Open issues:
          * <ul>
-         *     <ul>Easily confused with {@link #INVOKE_TIMESTAMP}.</ul>
-         *     <ul>No mechanism for propagation between components, e.g. via HTTP headers.</ul>
-         *     <ul>Whatever mechanism we define, it's going to be costly.</ul>
+         * <ul>
+         * Easily confused with {@link #INVOKE_TIMESTAMP}.
+         * </ul>
+         * <ul>
+         * No mechanism for propagation between components, e.g. via HTTP headers.
+         * </ul>
+         * <ul>
+         * Whatever mechanism we define, it's going to be costly.
+         * </ul>
          * </ul>
          * </p>
-         * */
+         */
         public static final String ENTRY_TIMESTAMP = "EntryTimestamp";
 
         /** MDC recording timestamp at the start of the current invocation. */
@@ -164,7 +174,7 @@ public final class ONAPLogConstants {
         /** MDC recording elapsed time. */
         public static final String ELAPSED_TIME = "ElapsedTime";
 
-        /** MDC recording log timestamp. */	
+        /** MDC recording log timestamp. */
         public static final String LOG_TIMESTAMP = "LogTimestamp";
 
         // Outcomes. ///////////////////////////////////////////////////////////
@@ -182,8 +192,8 @@ public final class ONAPLogConstants {
         public static final String RESPONSE_STATUS_CODE = "StatusCode";
 
         /** MDC recording error code. */
-        public static final String ERROR_CODE = "ErrorCode";       
-	
+        public static final String ERROR_CODE = "ErrorCode";
+
         /** MDC recording error description. */
         public static final String ERROR_DESC = "ErrorDesc";
 
@@ -235,7 +245,7 @@ public final class ONAPLogConstants {
 
         /** Not. */
         ERROR,
-        
+
         /** In Progress. */
         INPROGRESS
     }

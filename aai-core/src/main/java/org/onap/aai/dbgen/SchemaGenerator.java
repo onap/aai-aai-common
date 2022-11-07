@@ -19,15 +19,24 @@
  */
 
 package org.onap.aai.dbgen;
-import org.onap.aai.util.AAIConstants;
+
 import com.google.common.collect.Multimap;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.janusgraph.core.Cardinality;
 import org.janusgraph.core.Multiplicity;
 import org.janusgraph.core.PropertyKey;
-import org.janusgraph.core.schema.JanusGraphManagement;
-import org.janusgraph.core.schema.JanusGraphIndex;
 import org.janusgraph.core.schema.ConsistencyModifier;
+import org.janusgraph.core.schema.JanusGraphIndex;
+import org.janusgraph.core.schema.JanusGraphManagement;
 import org.onap.aai.config.SpringContextAware;
 import org.onap.aai.edges.EdgeIngestor;
 import org.onap.aai.edges.EdgeRule;
@@ -37,16 +46,9 @@ import org.onap.aai.introspection.LoaderUtil;
 import org.onap.aai.logging.LogFormatTools;
 import org.onap.aai.schema.enums.PropertyMetadata;
 import org.onap.aai.util.AAIConfig;
+import org.onap.aai.util.AAIConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class SchemaGenerator {
 
@@ -85,7 +87,6 @@ public class SchemaGenerator {
 
         makeEdgeLabels(graphMgmt);
 
-
         Map<String, Introspector> objs = LoaderUtil.getLatestVersion().getAllObjects();
         Map<String, PropertyKey> seenProps = new HashMap<>();
 
@@ -112,8 +113,8 @@ public class SchemaGenerator {
 
                     if (process) {
 
-                        LOGGER.info("Creating PropertyKey: [{}], [{}], [{}]",
-                                dbPropName, type.getSimpleName(), cardinality);
+                        LOGGER.info("Creating PropertyKey: [{}], [{}], [{}]", dbPropName, type.getSimpleName(),
+                                cardinality);
                         PropertyKey propK;
                         if (!seenProps.containsKey(dbPropName)) {
                             propK = graphMgmt.makePropertyKey(dbPropName).dataType(type).cardinality(cardinality)
@@ -125,8 +126,7 @@ public class SchemaGenerator {
                                     LOGGER.info(" Lock is being set for aai-uri Property.");
                                     graphMgmt.setConsistency(propK, ConsistencyModifier.LOCK);
                                 }
-                            }
-                            else if (dbPropName.equals("resource-version")) {
+                            } else if (dbPropName.equals("resource-version")) {
                                 String aai_rv_lock_enabled = AAIConfig.get(AAIConstants.AAI_LOCK_RV_ENABLED, "false");
                                 LOGGER.info(" Info: aai_rv_lock_enabled:" + aai_rv_lock_enabled);
                                 if ("true".equals(aai_rv_lock_enabled)) {
@@ -146,21 +146,23 @@ public class SchemaGenerator {
                                 if (obj.getUniqueProperties().contains(propName)) {
                                     LOGGER.info("Add Unique index for PropertyKey: [{}]", dbPropName);
                                     indexG = graphMgmt.buildIndex(dbPropName, Vertex.class).addKey(propK).unique()
-                                           .buildCompositeIndex();
+                                            .buildCompositeIndex();
                                 } else {
                                     LOGGER.info("Add index for PropertyKey: [{}]", dbPropName);
-                                    indexG = graphMgmt.buildIndex(dbPropName, Vertex.class).addKey(propK).buildCompositeIndex();
+                                    indexG = graphMgmt.buildIndex(dbPropName, Vertex.class).addKey(propK)
+                                            .buildCompositeIndex();
                                 }
                                 if (indexG != null && dbPropName.equals("aai-uri")) {
-                                    String aai_uri_lock_enabled = AAIConfig.get(AAIConstants.AAI_LOCK_URI_ENABLED, "false");
+                                    String aai_uri_lock_enabled =
+                                            AAIConfig.get(AAIConstants.AAI_LOCK_URI_ENABLED, "false");
                                     LOGGER.info(" Info:: aai_uri_lock_enabled:" + aai_uri_lock_enabled);
                                     if ("true".equals(aai_uri_lock_enabled)) {
                                         LOGGER.info("Lock is being set for aai-uri Index.");
                                         graphMgmt.setConsistency(indexG, ConsistencyModifier.LOCK);
                                     }
-                                }
-                                else if (indexG != null && dbPropName.equals("resource-version")) {
-                                    String aai_rv_lock_enabled = AAIConfig.get(AAIConstants.AAI_LOCK_RV_ENABLED, "false");
+                                } else if (indexG != null && dbPropName.equals("resource-version")) {
+                                    String aai_rv_lock_enabled =
+                                            AAIConfig.get(AAIConstants.AAI_LOCK_RV_ENABLED, "false");
                                     LOGGER.info(" Info:: aai_rv_lock_enabled:" + aai_rv_lock_enabled);
                                     if ("true".equals(aai_rv_lock_enabled)) {
                                         LOGGER.info("Lock is being set for resource-version Index.");
@@ -189,8 +191,7 @@ public class SchemaGenerator {
             EdgeIngestor edgeIngestor = SpringContextAware.getBean(EdgeIngestor.class);
 
             Set<String> labels = Optional.ofNullable(edgeIngestor.getAllCurrentRules())
-                    .map(collectValues(EdgeRule::getLabel))
-                    .orElseGet(HashSet::new);
+                    .map(collectValues(EdgeRule::getLabel)).orElseGet(HashSet::new);
 
             labels.forEach(label -> {
                 if (graphMgmt.containsRelationType(label)) {

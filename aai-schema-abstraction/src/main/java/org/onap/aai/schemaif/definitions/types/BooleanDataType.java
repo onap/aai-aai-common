@@ -21,8 +21,7 @@
 
 package org.onap.aai.schemaif.definitions.types;
 
-
-public class BooleanDataType extends DataType {    
+public class BooleanDataType extends DataType {
     public BooleanDataType() {
         super(Type.BOOL);
     }
@@ -32,7 +31,7 @@ public class BooleanDataType extends DataType {
         if (value.equalsIgnoreCase("true") || (value.equalsIgnoreCase("false"))) {
             return Boolean.parseBoolean(value);
         }
-        
+
         return null;
     }
 }

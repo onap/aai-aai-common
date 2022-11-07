@@ -20,9 +20,6 @@
 
 package org.onap.aai.parsers.relationship;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -50,6 +47,8 @@ import org.onap.aai.parsers.exceptions.AmbiguousMapAAIException;
 import org.onap.aai.parsers.uri.URIParser;
 import org.onap.aai.schema.enums.ObjectMetadata;
 import org.onap.aai.setup.SchemaVersions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
 /**

@@ -23,7 +23,7 @@ package org.onap.aai.schemaif.definitions.types;
 
 public class MapDataType extends DataType {
     private DataType mapType;
-    
+
     public MapDataType(DataType mapType) {
         super(Type.MAP);
         this.mapType = mapType;
@@ -32,7 +32,7 @@ public class MapDataType extends DataType {
     public DataType getMapType() {
         return mapType;
     }
-    
+
     @Override
     public Object validateValue(String value) {
         // TODO: Break the string into a map and validate each element against the mapType

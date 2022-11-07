@@ -92,11 +92,11 @@ public abstract class AAIAbstractGroovyShell {
      * @return result of graph traversal
      */
     public abstract String executeTraversal(TransactionalGraphEngine engine, String traversal,
-                                            Map<String, Object> params, QueryStyle style, GraphTraversalSource source);
+            Map<String, Object> params, QueryStyle style, GraphTraversalSource source);
 
-    protected Loader getLoader(){
+    protected Loader getLoader() {
         SchemaVersions schemaVersions = (SchemaVersions) SpringContextAware.getBean("schemaVersions");
         return SpringContextAware.getBean(LoaderFactory.class).createLoaderForVersion(ModelType.MOXY,
-            schemaVersions.getDefaultVersion());
+                schemaVersions.getDefaultVersion());
     }
 }

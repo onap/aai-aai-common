@@ -20,31 +20,33 @@
 
 package org.onap.aai.logging;
 
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class StopWatchNotStartedExceptionTest {
+import org.junit.Test;
 
+public class StopWatchNotStartedExceptionTest {
 
     @Test
     public void stopWatchNotStartedExceptionTest() {
         StopWatchNotStartedException e = new StopWatchNotStartedException();
         assertTrue(e instanceof RuntimeException);
     }
+
     @Test
     public void stopWatchNotStartedExceptionWithMessageTest() {
         StopWatchNotStartedException e = new StopWatchNotStartedException("Error Message");
         assertTrue(e instanceof RuntimeException);
         assertEquals("Error Message", e.getMessage());
     }
+
     @Test
     public void stopWatchNotStartedExceptionWithCauseTest() {
         StopWatchNotStartedException e = new StopWatchNotStartedException(new ArithmeticException());
         assertTrue(e instanceof RuntimeException);
         assertTrue(e.getCause() instanceof ArithmeticException);
     }
+
     @Test
     public void stopWatchNotStartedExceptionWithMsgCauseTest() {
         StopWatchNotStartedException e = new StopWatchNotStartedException("Error Message", new ArithmeticException());

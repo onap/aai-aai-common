@@ -20,7 +20,16 @@
 
 package org.onap.aai.query.builder.optimization;
 
+import static org.junit.Assert.assertEquals;
+
 import com.google.common.base.CaseFormat;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
+
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
@@ -39,14 +48,6 @@ import org.onap.aai.serialization.engines.JanusGraphDBEngine;
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
-
-import static org.junit.Assert.assertEquals;
 
 public abstract class AbstractGraphTraversalBuilderOptmizationTest extends AAISetup {
 
@@ -104,12 +105,10 @@ public abstract class AbstractGraphTraversalBuilderOptmizationTest extends AAISe
         for (int crCtr = 0; crCtr < 3; crCtr++) {
             crUri = String.format(crUriPattern, prefix + "cloud-owner-" + crCtr, prefix + "cloud-region-id-" + crCtr);
             // System.out.println(crUri);
-            cr = g.addV(CLOUD_REGION)
-                .property(AAIProperties.NODE_TYPE, CLOUD_REGION)
-                .property(CLOUD_REGION_ID, prefix + "cloud-region-id-" + crCtr)
-                .property(CLOUD_OWNER, prefix + "cloud-owner-" + crCtr)
-                .property(AAIProperties.AAI_URI, crUri)
-                .next();
+            cr = g.addV(CLOUD_REGION).property(AAIProperties.NODE_TYPE, CLOUD_REGION)
+                    .property(CLOUD_REGION_ID, prefix + "cloud-region-id-" + crCtr)
+                    .property(CLOUD_OWNER, prefix + "cloud-owner-" + crCtr).property(AAIProperties.AAI_URI, crUri)
+                    .next();
             for (int i = 0; i < tenantNum; i++) {
                 Introspector intro = loader.introspectorFromName(TENANT);
                 tenant = dbser.createNewVertex(intro);

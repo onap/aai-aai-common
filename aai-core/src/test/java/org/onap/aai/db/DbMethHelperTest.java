@@ -108,8 +108,10 @@ public class DbMethHelperTest extends AAISetup {
         dbser = new DBSerializer(version, dbEngine, introspectorFactoryType, "AAI-TEST");
         dbMethHelper = new DbMethHelper(loader, spy);
 
-        Vertex pserver1 = graph.addVertex("aai-node-type", "pserver", "hostname", "testSearchVertexByIdentityMap-pserver-hostname-01");
-        Vertex pserver2 = graph.addVertex("aai-node-type", "pserver", "hostname", "testSearchVertexByIdentityMap-pserver-hostname-02");
+        Vertex pserver1 = graph.addVertex("aai-node-type", "pserver", "hostname",
+                "testSearchVertexByIdentityMap-pserver-hostname-01");
+        Vertex pserver2 = graph.addVertex("aai-node-type", "pserver", "hostname",
+                "testSearchVertexByIdentityMap-pserver-hostname-02");
         Vertex genericVnf1 = graph.addVertex("aai-node-type", "generic-vnf", "vnf-id", "key1", "vnf-name", "vnfName1");
         Vertex complex1 = graph.addVertex("aai-node-type", "complex", "physical-location-id", "id1");
         GraphTraversalSource g = graph.traversal();
@@ -119,7 +121,7 @@ public class DbMethHelperTest extends AAISetup {
     }
 
     @Test
-    public void testSearchVertexByIdentityMap() throws Exception{
+    public void testSearchVertexByIdentityMap() throws Exception {
         String type = "pserver";
         Map<String, Object> map = new HashMap<>();
         map.put("pserver.hostname", "testSearchVertexByIdentityMap-pserver-hostname-01");
@@ -134,7 +136,8 @@ public class DbMethHelperTest extends AAISetup {
     }
 
     @Test(expected = AmbiguousMapAAIException.class)
-    public void testSearchVertexByIdentityMap_throwAmbiguousMapAAIException() throws AmbiguousMapAAIException, Exception {
+    public void testSearchVertexByIdentityMap_throwAmbiguousMapAAIException()
+            throws AmbiguousMapAAIException, Exception {
         String type = "pserver";
         Map<String, Object> map = new HashMap<>();
         map.put("pserver.hostname", "testSearchVertexByIdentityMap-pserver-hostname-01");
@@ -155,14 +158,16 @@ public class DbMethHelperTest extends AAISetup {
         Vertex complex2 = graph.addVertex("aai-node-type", "complex", "physical-location-id", "id2");
         map.put("physical-location-id", "id2");
         Optional<Vertex> optionalVertex = dbMethHelper.locateUniqueVertex(type, map);
-        Assert.assertEquals("vp[physical-location-id->id2]", optionalVertex.get().property("physical-location-id").toString());
+        Assert.assertEquals("vp[physical-location-id->id2]",
+                optionalVertex.get().property("physical-location-id").toString());
     }
 
     @Test(expected = AAIException.class)
     public void testLocateUniqueVertex_throwsException() throws AAIException, Exception {
         String type = "Pserver";
         Map<String, Object> map = new HashMap<>();
-        Introspector obj = loader.unmarshal("relationship", this.getJsonString("related-link-and-relationship-data.json"));
+        Introspector obj =
+                loader.unmarshal("relationship", this.getJsonString("related-link-and-relationship-data.json"));
         map.put("hostname", "testSearchVertexByIdentityMap-pserver-hostname-01");
         dbMethHelper.locateUniqueVertex(type, map);
     }
@@ -178,8 +183,9 @@ public class DbMethHelperTest extends AAISetup {
 
     @Test
     public void testGetVertexProperties() throws Exception {
-        Vertex pserver3 = graph.addVertex("aai-node-type", "pserver", "hostname", "testGetVertexProperties-pserver-hostname-01",
-            "ptnii-equip-name", "testGetVertexProperties-pserver-ptnii-equip-name-01");
+        Vertex pserver3 =
+                graph.addVertex("aai-node-type", "pserver", "hostname", "testGetVertexProperties-pserver-hostname-01",
+                        "ptnii-equip-name", "testGetVertexProperties-pserver-ptnii-equip-name-01");
         String type = "pserver";
         Map<String, Object> map = new HashMap<>();
         map.put("pserver.hostname", "testGetVertexProperties-pserver-hostname-01");
@@ -194,8 +200,10 @@ public class DbMethHelperTest extends AAISetup {
         Vertex v = optionalVertex.get();
         List<String> vertexProperties = dbMethHelper.getVertexProperties(v);
         Assert.assertTrue(vertexProperties.contains("Prop: [aai-node-type], val = [pserver] "));
-        Assert.assertTrue(vertexProperties.contains("Prop: [hostname], val = [testGetVertexProperties-pserver-hostname-01] "));
-        Assert.assertTrue(vertexProperties.contains("Prop: [ptnii-equip-name], val = [testGetVertexProperties-pserver-ptnii-equip-name-01] "));
+        Assert.assertTrue(
+                vertexProperties.contains("Prop: [hostname], val = [testGetVertexProperties-pserver-hostname-01] "));
+        Assert.assertTrue(vertexProperties
+                .contains("Prop: [ptnii-equip-name], val = [testGetVertexProperties-pserver-ptnii-equip-name-01] "));
     }
 
     @Test

@@ -61,7 +61,8 @@ public class GremlinGroovyShell extends AAIAbstractGroovyShell {
     }
 
     @Override
-    public String executeTraversal(TransactionalGraphEngine engine, String traversal, Map<String, Object> params, QueryStyle style, GraphTraversalSource source) {
+    public String executeTraversal(TransactionalGraphEngine engine, String traversal, Map<String, Object> params,
+            QueryStyle style, GraphTraversalSource source) {
         throw new UnsupportedOperationException();
     }
 }

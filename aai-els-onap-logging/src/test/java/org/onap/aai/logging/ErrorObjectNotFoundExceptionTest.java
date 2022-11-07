@@ -20,11 +20,11 @@
 
 package org.onap.aai.logging;
 
-import org.junit.Test;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
 
 public class ErrorObjectNotFoundExceptionTest {
 
@@ -33,18 +33,21 @@ public class ErrorObjectNotFoundExceptionTest {
         ErrorObjectNotFoundException e = new ErrorObjectNotFoundException();
         assertTrue(e instanceof Exception);
     }
+
     @Test
     public void errorObjectNotFoundExceptionWithMessageTest() {
         ErrorObjectNotFoundException e = new ErrorObjectNotFoundException("Error Message");
         assertTrue(e instanceof Exception);
         assertEquals("Error Message", e.getMessage());
     }
+
     @Test
     public void errorObjectNotFoundExceptionWithCauseTest() {
         ErrorObjectNotFoundException e = new ErrorObjectNotFoundException(new ArithmeticException());
         assertTrue(e instanceof Exception);
         assertTrue(e.getCause() instanceof ArithmeticException);
     }
+
     @Test
     public void errorObjectNotFoundExceptionWithMsgCauseTest() {
         ErrorObjectNotFoundException e = new ErrorObjectNotFoundException("Error Message", new ArithmeticException());
@@ -52,10 +55,12 @@ public class ErrorObjectNotFoundExceptionTest {
         assertTrue(e.getCause() instanceof ArithmeticException);
         assertEquals("Error Message", e.getMessage());
     }
+
     @Test
     public void errorObjectNotFoundExceptionTest() {
 
-        ErrorObjectNotFoundException e = new ErrorObjectNotFoundException("Error Message", new ArithmeticException(), true, true);
+        ErrorObjectNotFoundException e =
+                new ErrorObjectNotFoundException("Error Message", new ArithmeticException(), true, true);
         assertTrue(e instanceof Exception);
         assertTrue(e.getCause() instanceof ArithmeticException);
         assertEquals("Error Message", e.getMessage());
@@ -63,7 +68,8 @@ public class ErrorObjectNotFoundExceptionTest {
         assertTrue((e.getSuppressed())[0] instanceof IOException);
         assertEquals("Test IO Exception", (e.getSuppressed())[0].getMessage());
 
-        ErrorObjectNotFoundException e1 = new ErrorObjectNotFoundException("Error Message", new ArithmeticException(), false, true);
+        ErrorObjectNotFoundException e1 =
+                new ErrorObjectNotFoundException("Error Message", new ArithmeticException(), false, true);
         e1.addSuppressed(new IOException("Test IO Exception"));
         assertTrue((e1.getSuppressed() == null) || e1.getSuppressed().length == 0);
 
@@ -72,29 +78,31 @@ public class ErrorObjectNotFoundExceptionTest {
     @Test
     public void errorObjectNotFoundExceptionStackTraceTest() {
 
-        ErrorObjectNotFoundException e1 = new ErrorObjectNotFoundException("Error Message", new ArithmeticException(), true, true);
+        ErrorObjectNotFoundException e1 =
+                new ErrorObjectNotFoundException("Error Message", new ArithmeticException(), true, true);
         try {
             throw e1;
-        }
-        catch (ErrorObjectNotFoundException e) {
+        } catch (ErrorObjectNotFoundException e) {
             StackTraceElement[] stackTrace = e.getStackTrace();
             assertNotNull(stackTrace);
             assertTrue(stackTrace.length > 0);
         }
 
-        ErrorObjectNotFoundException e2 = new ErrorObjectNotFoundException("Error Message", new ArithmeticException(), true, false);
+        ErrorObjectNotFoundException e2 =
+                new ErrorObjectNotFoundException("Error Message", new ArithmeticException(), true, false);
         try {
             throw e2;
-        }
-        catch (ErrorObjectNotFoundException e) {
+        } catch (ErrorObjectNotFoundException e) {
             StackTraceElement[] stackTrace = e.getStackTrace();
             assertTrue(stackTrace == null || stackTrace.length == 0);
         }
 
     }
-    /*public ErrorObjectNotFoundException(String message, Throwable cause, boolean enableSuppression,
-                                        boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
-        // TODO Auto-generated constructor stub
-    }*/
+    /*
+     * public ErrorObjectNotFoundException(String message, Throwable cause, boolean enableSuppression,
+     * boolean writableStackTrace) {
+     * super(message, cause, enableSuppression, writableStackTrace);
+     * // TODO Auto-generated constructor stub
+     * }
+     */
 }

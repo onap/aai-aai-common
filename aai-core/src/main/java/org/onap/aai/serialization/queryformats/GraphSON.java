@@ -24,6 +24,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -31,6 +32,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.io.graphson.GraphSONMapper;
@@ -84,7 +86,7 @@ public class GraphSON implements FormatMapper {
 
     @Override
     public Optional<JsonObject> formatObject(Object obj, Map<String, List<String>> properties)
-        throws AAIFormatVertexException, AAIFormatQueryResultFormatNotSupported {
+            throws AAIFormatVertexException, AAIFormatQueryResultFormatNotSupported {
         return Optional.empty();
     }
 

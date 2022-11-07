@@ -22,16 +22,16 @@
 
 package org.onap.aai.restclient;
 
+import java.util.Collections;
+import java.util.Map;
+import java.util.UUID;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.util.MultiValueMap;
-
-import java.util.Collections;
-import java.util.Map;
-import java.util.UUID;
 
 public class SchemaServiceRestClient extends TwoWaySSLRestClient {
     private static Logger logger = LoggerFactory.getLogger(SchemaServiceRestClient.class);

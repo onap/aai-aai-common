@@ -20,23 +20,24 @@
 
 package org.onap.aai.aaf.filters;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.io.IOException;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.onap.aaf.cadi.PropAccess;
 import org.onap.aaf.cadi.filter.CadiFilter;
 import org.onap.aai.aaf.auth.AafRequestFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.filter.OrderedRequestContextFilter;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
-
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 /**
  * AAF with client cert authentication filter
@@ -57,12 +58,12 @@ public class AafCertFilter extends OrderedRequestContextFilter {
     private final CadiProps cadiProps;
 
     @Autowired
-    public AafCertFilter( @Value("${aaf.userchain.pattern}") String aafUserChainPattern,
-                          CadiProps cadiProps) throws IOException, ServletException {
+    public AafCertFilter(@Value("${aaf.userchain.pattern}") String aafUserChainPattern, CadiProps cadiProps)
+            throws IOException, ServletException {
 
         this.aafUserChainPattern = aafUserChainPattern;
         this.cadiProps = cadiProps;
-        cadiFilter = new CadiFilter(new PropAccess((level,element)->{
+        cadiFilter = new CadiFilter(new PropAccess((level, element) -> {
             switch (level) {
                 case DEBUG:
                     LOGGER.debug(buildMsg(element));
@@ -86,22 +87,24 @@ public class AafCertFilter extends OrderedRequestContextFilter {
                 case NONE:
                     break;
             }
-        }, new String[]{"cadi_prop_files=" + cadiProps.getCadiFileName()} ));
+        }, new String[] {"cadi_prop_files=" + cadiProps.getCadiFileName()}));
         this.setOrder(FilterPriority.AAF_CERT_AUTHENTICATION.getPriority());
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
-        AafRequestFilter.authenticationFilter(request, response, filterChain, cadiFilter, cadiProps.getCadiProperties(), aafUserChainPattern);
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws IOException, ServletException {
+        AafRequestFilter.authenticationFilter(request, response, filterChain, cadiFilter, cadiProps.getCadiProperties(),
+                aafUserChainPattern);
     }
+
     private String buildMsg(Object[] objects) {
         StringBuilder sb = new StringBuilder();
         boolean first = true;
-        for ( Object o: objects ) {
+        for (Object o : objects) {
             if (first) {
                 first = false;
-            }
-            else {
+            } else {
                 sb.append(' ');
             }
             sb.append(o.toString());

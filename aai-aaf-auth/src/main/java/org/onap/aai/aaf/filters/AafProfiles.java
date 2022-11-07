@@ -17,17 +17,19 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.aaf.filters;
 
 public class AafProfiles {
 
     // AAF Basic Auth
-    public static final String AAF_AUTHENTICATION  = "aaf-auth";
+    public static final String AAF_AUTHENTICATION = "aaf-auth";
 
     // AAF Auth with Client Certs
-    public static final String AAF_CERT_AUTHENTICATION  = "aaf-cert-auth";
+    public static final String AAF_CERT_AUTHENTICATION = "aaf-cert-auth";
 
-    public static final String TWO_WAY_SSL  = "two-way-ssl";
+    public static final String TWO_WAY_SSL = "two-way-ssl";
 
-    private AafProfiles(){}
+    private AafProfiles() {
+    }
 }

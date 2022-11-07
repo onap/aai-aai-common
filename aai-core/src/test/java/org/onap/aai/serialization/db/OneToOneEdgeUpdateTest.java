@@ -20,6 +20,16 @@
 
 package org.onap.aai.serialization.db;
 
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.Collections;
+
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.janusgraph.core.JanusGraphFactory;
@@ -39,16 +49,6 @@ import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 import org.onap.aai.setup.SchemaVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Arrays;
-import java.util.Collections;
-
-import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class OneToOneEdgeUpdateTest extends AAISetup {
@@ -108,8 +108,8 @@ public class OneToOneEdgeUpdateTest extends AAISetup {
      */
     private void initData() throws UnsupportedEncodingException, AAIException, URISyntaxException {
         engine.startTransaction();
-        DBSerializer serializer = new DBSerializer(version, engine, introspectorFactoryType, SOURCE_OF_TRUTH, AAIProperties.MINIMUM_DEPTH);
-
+        DBSerializer serializer = new DBSerializer(version, engine, introspectorFactoryType, SOURCE_OF_TRUTH,
+                AAIProperties.MINIMUM_DEPTH);
 
         Introspector gvnf = loader.introspectorFromName("generic-vnf");
         gvnf.setValue("vnf-id", "gvnf-a" + SOURCE_OF_TRUTH);
@@ -139,28 +139,16 @@ public class OneToOneEdgeUpdateTest extends AAISetup {
         lints.setValue("l-interface", Arrays.asList(lint.getUnderlyingObject(), lintA.getUnderlyingObject()));
         gvnf.setValue("l-interfaces", lints.getUnderlyingObject());
 
-
         System.out.println(gvnf.marshal(true));
         Vertex gvnfV = serializer.createNewVertex(gvnf);
         QueryParser uriQuery = engine.getQueryBuilder().createQueryFromURI(new URI(gvnfAUri));
         serializer.serializeToDb(gvnf, gvnfV, uriQuery, "generic-vnf", gvnf.marshal(false));
 
-        assertTrue("generic-vnf-a created", engine.tx().traversal().V()
-            .has(AAIProperties.AAI_URI, gvnfAUri)
-            .hasNext());
-        assertTrue("l-int created", engine.tx().traversal().V()
-            .has(AAIProperties.AAI_URI, lintUri)
-            .hasNext());
-        assertTrue("l-int-a created", engine.tx().traversal().V()
-            .has(AAIProperties.AAI_URI, lintAUri)
-            .hasNext());
-        assertTrue("sriov-vf created", engine.tx().traversal().V()
-            .has(AAIProperties.AAI_URI, sriovVfUri)
-            .hasNext());
-        assertTrue("sriov-vf-a created", engine.tx().traversal().V()
-            .has(AAIProperties.AAI_URI, sriovVfAUri)
-            .hasNext());
-
+        assertTrue("generic-vnf-a created", engine.tx().traversal().V().has(AAIProperties.AAI_URI, gvnfAUri).hasNext());
+        assertTrue("l-int created", engine.tx().traversal().V().has(AAIProperties.AAI_URI, lintUri).hasNext());
+        assertTrue("l-int-a created", engine.tx().traversal().V().has(AAIProperties.AAI_URI, lintAUri).hasNext());
+        assertTrue("sriov-vf created", engine.tx().traversal().V().has(AAIProperties.AAI_URI, sriovVfUri).hasNext());
+        assertTrue("sriov-vf-a created", engine.tx().traversal().V().has(AAIProperties.AAI_URI, sriovVfAUri).hasNext());
 
         gvnf = loader.introspectorFromName("generic-vnf");
         gvnf.setValue("vnf-id", "gvnf-b" + SOURCE_OF_TRUTH);
@@ -183,87 +171,57 @@ public class OneToOneEdgeUpdateTest extends AAISetup {
         serializer.serializeToDb(gvnf, gvnfV, uriQuery, "generic-vnf", gvnf.marshal(false));
 
         engine.tx().traversal().V().forEachRemaining(v -> System.out.println(v.<String>value(AAIProperties.AAI_URI)));
-        assertTrue("generic-vnf-b created", engine.tx().traversal().V()
-            .has(AAIProperties.AAI_URI, gvnfBUri)
-            .hasNext());
-        assertTrue("l-int-b created", engine.tx().traversal().V()
-            .has(AAIProperties.AAI_URI, lIntBUri)
-            .hasNext());
+        assertTrue("generic-vnf-b created", engine.tx().traversal().V().has(AAIProperties.AAI_URI, gvnfBUri).hasNext());
+        assertTrue("l-int-b created", engine.tx().traversal().V().has(AAIProperties.AAI_URI, lIntBUri).hasNext());
         assertTrue("l-interface relationship sriov-vf created", engine.tx().traversal().V()
-            .has(AAIProperties.AAI_URI, lIntBUri)
-            .both()
-            .has(AAIProperties.AAI_URI, sriovVfUri)
-            .hasNext());
+                .has(AAIProperties.AAI_URI, lIntBUri).both().has(AAIProperties.AAI_URI, sriovVfUri).hasNext());
 
     }
 
-
     @Test
     public void verifyReadOfGenericVnfATest() throws AAIException, UnsupportedEncodingException {
-        DBSerializer serializer = new DBSerializer(version, engine, introspectorFactoryType, SOURCE_OF_TRUTH, AAIProperties.MINIMUM_DEPTH);
+        DBSerializer serializer = new DBSerializer(version, engine, introspectorFactoryType, SOURCE_OF_TRUTH,
+                AAIProperties.MINIMUM_DEPTH);
 
-        String gvnfALatestView = serializer.getLatestVersionView(
-            engine.tx().traversal().V().has(AAIProperties.AAI_URI, gvnfAUri).next()).marshal(false);
+        String gvnfALatestView =
+                serializer.getLatestVersionView(engine.tx().traversal().V().has(AAIProperties.AAI_URI, gvnfAUri).next())
+                        .marshal(false);
 
-        assertThat(gvnfALatestView,
-            hasJsonPath(
-                "$.l-interfaces.l-interface[*]",
-                hasSize(2)
-            ));
-        assertThat(gvnfALatestView,
-            hasJsonPath(
-                "$.l-interfaces.l-interface[*].sriov-vfs.sriov-vf[*]",
-                hasSize(2)
-            ));
-        assertThat(gvnfALatestView,
-            hasJsonPath(
+        assertThat(gvnfALatestView, hasJsonPath("$.l-interfaces.l-interface[*]", hasSize(2)));
+        assertThat(gvnfALatestView, hasJsonPath("$.l-interfaces.l-interface[*].sriov-vfs.sriov-vf[*]", hasSize(2)));
+        assertThat(gvnfALatestView, hasJsonPath(
                 "$.l-interfaces.l-interface[*].sriov-vfs.sriov-vf[*].relationship-list.relationship[*].related-link",
-                containsInAnyOrder(
-                    "/aai/" + schemaVersions.getDefaultVersion() + lIntBUri
-                )
-            ));
+                containsInAnyOrder("/aai/" + schemaVersions.getDefaultVersion() + lIntBUri)));
     }
 
     @Test
     public void verifyReadOfGenericVnfBTest() throws AAIException, UnsupportedEncodingException {
-        DBSerializer serializer = new DBSerializer(version, engine, introspectorFactoryType, SOURCE_OF_TRUTH, AAIProperties.MINIMUM_DEPTH);
+        DBSerializer serializer = new DBSerializer(version, engine, introspectorFactoryType, SOURCE_OF_TRUTH,
+                AAIProperties.MINIMUM_DEPTH);
 
-        String gvnfBLatestView = serializer.getLatestVersionView(
-            engine.tx().traversal().V().has(AAIProperties.AAI_URI, gvnfBUri).next()).marshal(false);
+        String gvnfBLatestView =
+                serializer.getLatestVersionView(engine.tx().traversal().V().has(AAIProperties.AAI_URI, gvnfBUri).next())
+                        .marshal(false);
 
+        assertThat(gvnfBLatestView, hasJsonPath("$.l-interfaces.l-interface[*]", hasSize(1)));
+        assertThat(gvnfBLatestView, not(hasJsonPath("$.l-interfaces.l-interface[*].sriov-vfs.sriov-vf[*]")));
         assertThat(gvnfBLatestView,
-            hasJsonPath(
-                "$.l-interfaces.l-interface[*]",
-                hasSize(1)
-            ));
-        assertThat(gvnfBLatestView,
-            not(hasJsonPath(
-                "$.l-interfaces.l-interface[*].sriov-vfs.sriov-vf[*]"
-            )));
-        assertThat(gvnfBLatestView,
-            hasJsonPath(
-                "$.l-interfaces.l-interface[*].relationship-list.relationship[*].related-link",
-                containsInAnyOrder(
-                    "/aai/" + schemaVersions.getDefaultVersion() + sriovVfUri
-                )
-            ));
+                hasJsonPath("$.l-interfaces.l-interface[*].relationship-list.relationship[*].related-link",
+                        containsInAnyOrder("/aai/" + schemaVersions.getDefaultVersion() + sriovVfUri)));
     }
 
     @Test
-    public void replaceRelationshipToSriovVfTest() throws AAIException, UnsupportedEncodingException, URISyntaxException {
-        DBSerializer serializer = new DBSerializer(version, engine, introspectorFactoryType, SOURCE_OF_TRUTH, AAIProperties.MINIMUM_DEPTH);
+    public void replaceRelationshipToSriovVfTest()
+            throws AAIException, UnsupportedEncodingException, URISyntaxException {
+        DBSerializer serializer = new DBSerializer(version, engine, introspectorFactoryType, SOURCE_OF_TRUTH,
+                AAIProperties.MINIMUM_DEPTH);
 
-        Introspector lint = serializer.getLatestVersionView(
-            engine.tx().traversal().V().has(AAIProperties.AAI_URI, lIntBUri).next());
+        Introspector lint = serializer
+                .getLatestVersionView(engine.tx().traversal().V().has(AAIProperties.AAI_URI, lIntBUri).next());
         String lintView = lint.marshal(false);
 
-        assertThat(lintView,
-            hasJsonPath(
-                "$.relationship-list.relationship[*].related-link",
-                containsInAnyOrder(
-                    "/aai/" + schemaVersions.getDefaultVersion() + sriovVfUri
-                )
-            ));
+        assertThat(lintView, hasJsonPath("$.relationship-list.relationship[*].related-link",
+                containsInAnyOrder("/aai/" + schemaVersions.getDefaultVersion() + sriovVfUri)));
 
         Introspector relationship = loader.introspectorFromName("relationship");
         relationship.setValue("related-link", sriovVfAUri);
@@ -273,13 +231,14 @@ public class OneToOneEdgeUpdateTest extends AAISetup {
 
         QueryParser uriQuery = engine.getQueryBuilder().createQueryFromURI(new URI(lIntBUri));
         serializer.serializeToDb(lint, engine.tx().traversal().V().has(AAIProperties.AAI_URI, lIntBUri).next(),
-            uriQuery, "generic-vnf", lint.marshal(false));
+                uriQuery, "generic-vnf", lint.marshal(false));
     }
 
-
     @Test
-    public void createRelationshipForNonExistentRuleTest() throws AAIException, UnsupportedEncodingException, URISyntaxException {
-        DBSerializer serializer = new DBSerializer(version, engine, introspectorFactoryType, SOURCE_OF_TRUTH, AAIProperties.MINIMUM_DEPTH);
+    public void createRelationshipForNonExistentRuleTest()
+            throws AAIException, UnsupportedEncodingException, URISyntaxException {
+        DBSerializer serializer = new DBSerializer(version, engine, introspectorFactoryType, SOURCE_OF_TRUTH,
+                AAIProperties.MINIMUM_DEPTH);
 
         Vertex gvnfAV = engine.tx().traversal().V().has(AAIProperties.AAI_URI, gvnfAUri).next();
         Introspector gvnfA = serializer.getLatestVersionView(gvnfAV);

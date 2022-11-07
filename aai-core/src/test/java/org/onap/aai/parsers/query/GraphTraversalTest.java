@@ -46,7 +46,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.onap.aai.AAISetup;
 import org.onap.aai.DataLinkSetup;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.exceptions.AAIException;

@@ -70,6 +70,7 @@ public class NotificationEvent {
     public String getNotificationEvent() throws AAIException {
         return new StoreNotificationEvent(transactionId, sourceOfTruth).storeEventOnly(loader, eventHeader, obj);
     }
+
     /**
      * Gets the notification version.
      *

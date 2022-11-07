@@ -26,7 +26,8 @@ public class AAIUnmarshallingException extends AAIException {
 
     private static final long serialVersionUID = -5615651557821878103L;
 
-    private static final String AAI_MSG="AAI_3000";
+    private static final String AAI_MSG = "AAI_3000";
+
     public AAIUnmarshallingException() {
     }
 

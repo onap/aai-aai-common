@@ -23,12 +23,12 @@ package org.onap.aai.util.delta;
 public class PropertyDeltaFactory {
 
     public static PropertyDelta getDelta(DeltaAction action, Object value, Object oldValue) {
-        //TODO handle if action is not UPDATE
+        // TODO handle if action is not UPDATE
         return new PropertyDelta(action, value, oldValue);
     }
 
     public static PropertyDelta getDelta(DeltaAction action, Object value) {
-        //TODO handle if action is UPDATE
+        // TODO handle if action is UPDATE
         return new PropertyDelta(action, value);
     }
 }

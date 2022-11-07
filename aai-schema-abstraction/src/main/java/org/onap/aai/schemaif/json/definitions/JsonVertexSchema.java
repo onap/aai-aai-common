@@ -18,24 +18,25 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.schemaif.json.definitions;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.util.List;
 import java.util.Map;
 
 import org.onap.aai.schemaif.SchemaProviderException;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 public class JsonVertexSchema {
     private static final Gson gson = new GsonBuilder().create();
-    
+
     private String name;
     private String description;
     private List<JsonPropertySchema> properties;
-    private Map<String,String> annotations;
-    
+    private Map<String, String> annotations;
+
     public String getName() {
         return name;
     }
@@ -59,17 +60,17 @@ public class JsonVertexSchema {
     public void setProperties(List<JsonPropertySchema> properties) {
         this.properties = properties;
     }
-    
-    public Map<String,String> getAnnotations() {
+
+    public Map<String, String> getAnnotations() {
         return annotations;
     }
 
-    public void setAnnotations(Map<String,String> annotations) {
+    public void setAnnotations(Map<String, String> annotations) {
         this.annotations = annotations;
     }
 
     public void validate() throws SchemaProviderException {
-        if ( (getName() == null) || (getName().isEmpty()) ) {
+        if ((getName() == null) || (getName().isEmpty())) {
             throw new SchemaProviderException("Node definition missing a name");
         }
 
@@ -79,19 +80,19 @@ public class JsonVertexSchema {
             }
         }
     }
-    
+
     public String toJson() {
         return gson.toJson(this);
     }
-    
+
     public static JsonVertexSchema fromJson(String json) {
         return gson.fromJson(json, JsonVertexSchema.class);
     }
 
     @Override
     public String toString() {
-        return "JsonVertexSchema [name=" + name + ", description=" + description + ", properties="
-            + properties + ", annotations=" + annotations + "]";
+        return "JsonVertexSchema [name=" + name + ", description=" + description + ", properties=" + properties
+                + ", annotations=" + annotations + "]";
     }
 
     @Override
@@ -136,6 +137,5 @@ public class JsonVertexSchema {
             return false;
         return true;
     }
-    
-    
+
 }

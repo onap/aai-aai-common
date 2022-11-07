@@ -22,8 +22,6 @@
 
 package org.onap.aai.query.builder;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
@@ -48,6 +46,8 @@ import org.onap.aai.introspection.Loader;
 import org.onap.aai.restcore.search.GremlinGroovyShell;
 import org.onap.aai.schema.enums.ObjectMetadata;
 import org.onap.aai.serialization.db.exceptions.NoEdgeRuleFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Class GremlinQueryBuilder.
@@ -85,7 +85,6 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
         list = new ArrayList<>();
     }
 
-
     @Override
     public QueryBuilder<Vertex> exactMatchQuery(Introspector obj) {
         // TODO not implemented because this is implementation is no longer used
@@ -121,7 +120,7 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
             String valueString = value.toString();
 
             if (valueString.indexOf('\'') != -1) {
-                value =  valueString.replace(SINGLE_QUOTE, ESCAPE_SINGLE_QUOTE);
+                value = valueString.replace(SINGLE_QUOTE, ESCAPE_SINGLE_QUOTE);
             }
             LOGGER.trace("Inside getVerticesByProperty(): key = {}, value = {}", key, value);
             term = value.toString();
@@ -129,7 +128,7 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
             String valueString = value.toString();
 
             if (valueString.indexOf('\'') != -1) {
-                value =  valueString.replace(SINGLE_QUOTE, ESCAPE_SINGLE_QUOTE);
+                value = valueString.replace(SINGLE_QUOTE, ESCAPE_SINGLE_QUOTE);
             }
             LOGGER.trace("Inside getVerticesByProperty(): key = {}, value = {}", key, value);
             term = "'" + value + "'";
@@ -189,22 +188,20 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
         stepIndex++;
         return (QueryBuilder<Vertex>) this;
     }
-    
+
     /**
      * @{inheritDoc}
      */
     @Override
     public QueryBuilder<Vertex> getVerticesByCommaSeperatedValue(String key, String value) {
         ArrayList<String> arguments = new ArrayList<>(Arrays.asList(value.split(",")));
-        //add the single quotes
+        // add the single quotes
         for (int i = 0; i < arguments.size(); i++) {
-           if(arguments.get(i) != null && !arguments.get(i).startsWith("'") 
-        		   && !arguments.get(i).endsWith("'")) {
-        	   arguments.set(i,"'" + arguments.get(i).trim() + "'");
-           }
-           else {
-        	   arguments.set(i, arguments.get(i).trim());
-           }
+            if (arguments.get(i) != null && !arguments.get(i).startsWith("'") && !arguments.get(i).endsWith("'")) {
+                arguments.set(i, "'" + arguments.get(i).trim() + "'");
+            } else {
+                arguments.set(i, arguments.get(i).trim());
+            }
         }
         String predicate = "P.within(#!#argument#!#)";
         String argument = Joiner.on(",").join(arguments);
@@ -339,7 +336,7 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
     public QueryBuilder<Vertex> getTypedVerticesByMap(String type, Map<String, String> map) {
 
         for (Map.Entry<String, String> es : map.entrySet()) {
-            //TODO what is this and where is it used - need to check
+            // TODO what is this and where is it used - need to check
             list.add(HAS + es.getKey() + "', '" + es.getValue() + "')");
             stepIndex++;
         }
@@ -729,7 +726,7 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
 
         return this;
     }
-    
+
     @Override
     public QueryBuilder<E> valueMap() {
         this.list.add(".valueMap()");
@@ -737,23 +734,22 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
 
         return this;
     }
-    
+
     @Override
     public QueryBuilder<E> valueMap(String... names) {
-    	 String stepString = ".valueMap('";
-         for (int i = 0; i < names.length; i++) {
-             stepString = stepString + names[i] + "'";
-             if (i != (names.length - 1)) {
-                 stepString = stepString + ",'";
-             }
-         }
-         stepString = stepString + ")";
-         this.list.add(stepString);
-         stepIndex++;
+        String stepString = ".valueMap('";
+        for (int i = 0; i < names.length; i++) {
+            stepString = stepString + names[i] + "'";
+            if (i != (names.length - 1)) {
+                stepString = stepString + ",'";
+            }
+        }
+        stepString = stepString + ")";
+        this.list.add(stepString);
+        stepIndex++;
 
-         return this;
+        return this;
     }
-    
 
     /**
      * {@inheritDoc}
@@ -954,6 +950,5 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
     /*
      * This is required for the subgraphstrategies to work
      */
-
 
 }

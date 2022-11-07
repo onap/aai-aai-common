@@ -20,21 +20,20 @@
 
 package org.onap.aai.query.builder;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.ws.rs.core.MultivaluedMap;
+
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.parsers.query.QueryParser;
-import org.onap.aai.parsers.query.TraversalStrategy;
-
-import javax.ws.rs.core.MultivaluedMap;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The Class GremlinTraversal.
@@ -60,9 +59,8 @@ public class HistoryGremlinTraversal<E> extends GremlinTraversal<E> {
         super(loader, source, start);
     }
 
-
     protected HistoryGremlinTraversal(List<String> traversal, Loader loader, GraphTraversalSource source,
-                                      GremlinQueryBuilder<E> gtb) {
+            GremlinQueryBuilder<E> gtb) {
         super(traversal, loader, source, gtb);
     }
 
@@ -155,15 +153,15 @@ public class HistoryGremlinTraversal<E> extends GremlinTraversal<E> {
     /*
      * This is required for the subgraphstrategies to work
      */
-    private void touchHistoryProperties(String key){
-        if(key != null && !key.isEmpty() && !key.equals(AAIProperties.NODE_TYPE)) {
+    private void touchHistoryProperties(String key) {
+        if (key != null && !key.isEmpty() && !key.equals(AAIProperties.NODE_TYPE)) {
             list.add(".where(__.properties('" + key + "'))");
         }
 
     }
 
     private void touchHistoryProperties(String key, Object value) {
-        if(key != null && !key.isEmpty() && !key.equals(AAIProperties.NODE_TYPE)) {
+        if (key != null && !key.isEmpty() && !key.equals(AAIProperties.NODE_TYPE)) {
             list.add(".where(__.properties('" + key + "').hasValue(" + value + "))");
         }
     }

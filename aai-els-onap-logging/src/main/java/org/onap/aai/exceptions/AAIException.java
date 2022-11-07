@@ -22,12 +22,12 @@
 
 package org.onap.aai.exceptions;
 
+import java.util.Collection;
+import java.util.LinkedList;
+
 import org.onap.aai.logging.ErrorLogHelper;
 import org.onap.aai.logging.ErrorObject;
 import org.onap.aai.logging.ErrorObjectNotFoundException;
-
-import java.util.Collection;
-import java.util.LinkedList;
 
 public class AAIException extends Exception {
 

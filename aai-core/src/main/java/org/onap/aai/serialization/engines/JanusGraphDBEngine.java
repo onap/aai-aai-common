@@ -20,14 +20,14 @@
 
 package org.onap.aai.serialization.engines;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.serialization.db.JanusGraphSingleton;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 public class JanusGraphDBEngine extends TransactionalGraphEngine {
 

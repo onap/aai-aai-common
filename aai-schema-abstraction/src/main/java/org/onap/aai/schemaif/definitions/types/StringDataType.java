@@ -21,15 +21,15 @@
 
 package org.onap.aai.schemaif.definitions.types;
 
-public class StringDataType extends DataType {    
+public class StringDataType extends DataType {
     public StringDataType() {
         super(Type.STRING);
     }
 
     @Override
     public Object validateValue(String value) {
-        // TODO:  In Tosca, you can impose constraints such as string length, regex matches, valid values, 
-        // string length maximums, etc.  In future we can add this type of validation
+        // TODO: In Tosca, you can impose constraints such as string length, regex matches, valid values,
+        // string length maximums, etc. In future we can add this type of validation
         return value;
     }
 }

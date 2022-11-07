@@ -26,11 +26,11 @@
 
 package org.onap.aai.domain.restResponseInfo;
 
-import org.junit.Test;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
 
 public class InfoTest {
     private Info info = new Info();
@@ -38,7 +38,8 @@ public class InfoTest {
     @Test
     public void infoTest() {
         Info.ResponseMessages responseMessages = info.getResponseMessages();
-        if (responseMessages == null) responseMessages = new Info.ResponseMessages();
+        if (responseMessages == null)
+            responseMessages = new Info.ResponseMessages();
 
         List<Info.ResponseMessages.ResponseMessage> list = responseMessages.getResponseMessage();
         Info.ResponseMessages.ResponseMessage respMsg = new Info.ResponseMessages.ResponseMessage();

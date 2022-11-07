@@ -20,8 +20,14 @@
 
 package org.onap.aai.serialization.queryformats;
 
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
+
 import com.google.gson.JsonObject;
+
 import java.util.Optional;
+
 import org.apache.tinkerpop.gremlin.process.traversal.strategy.verification.ReadOnlyStrategy;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
@@ -41,10 +47,6 @@ import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
 import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
 import org.onap.aai.setup.SchemaVersion;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
 
 public class ResourceWithSoTTest extends AAISetup {
     @Mock
@@ -115,7 +117,8 @@ public class ResourceWithSoTTest extends AAISetup {
     // This test is to simulate a PUT request
     @Test
     public void testGetJsonFromVertexWithCreateVertex() throws AAIFormatVertexException, AAIException {
-        if (putVertex == null) fail("The vertex used for this test is null. Fail immediately.");
+        if (putVertex == null)
+            fail("The vertex used for this test is null. Fail immediately.");
 
         JsonObject json = resourceWithSoT.getJsonFromVertex(putVertex).get();
         assertEquals(jsonPutObj, json);
@@ -124,8 +127,10 @@ public class ResourceWithSoTTest extends AAISetup {
     // This test is to simulate PATCH requests
     @Test
     public void testGetJsonFromVertexWithModifyVertex() throws AAIFormatVertexException, AAIException {
-        if (patchVertex1 == null) fail("The vertex 1 used for this test is null. Fail immediately.");
-        if (patchVertex2 == null) fail("The vertex 2 used for this test is null. Fail immediately.");
+        if (patchVertex1 == null)
+            fail("The vertex 1 used for this test is null. Fail immediately.");
+        if (patchVertex2 == null)
+            fail("The vertex 2 used for this test is null. Fail immediately.");
 
         // Differing Source of Truths will indicate that the action performed modified the vertex
         JsonObject json1 = resourceWithSoT.getJsonFromVertex(patchVertex1).get();

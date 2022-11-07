@@ -18,40 +18,44 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.schemaif.json;
 
-
 public class JsonSchemaProviderConfig {
-    
+
     private String schemaServiceBaseUrl;
     private String schemaServiceCertFile;
     private String schemaServiceCertPwd;
     private String serviceName;
-    
+
     public String getSchemaServiceBaseUrl() {
         return schemaServiceBaseUrl;
     }
+
     public void setSchemaServiceBaseUrl(String schemaServiceBaseUrl) {
         this.schemaServiceBaseUrl = schemaServiceBaseUrl;
     }
-    
+
     public String getSchemaServiceCertFile() {
         return schemaServiceCertFile;
     }
+
     public void setSchemaServiceCertFile(String schemaServiceCertFile) {
         this.schemaServiceCertFile = schemaServiceCertFile;
     }
-    
+
     public String getSchemaServiceCertPwd() {
         return schemaServiceCertPwd;
     }
+
     public void setSchemaServiceCertPwd(String schemaServiceCertPwd) {
         this.schemaServiceCertPwd = schemaServiceCertPwd;
     }
-    
+
     public String getServiceName() {
         return serviceName;
     }
+
     public void setServiceName(String serviceName) {
         this.serviceName = serviceName;
     }

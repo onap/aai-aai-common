@@ -31,6 +31,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
+import com.google.gson.JsonObject;
+
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 
@@ -59,8 +61,6 @@ import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
 import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
 import org.springframework.test.annotation.DirtiesContext;
-
-import com.google.gson.JsonObject;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class SimpleFormatTest extends AAISetup {
@@ -140,7 +140,8 @@ public class SimpleFormatTest extends AAISetup {
         createLoaderEngineSetup();
         serializer = new DBSerializer(schemaVersions.getRelatedLinkVersion(), dbEngine, factoryType, "Junit");
 
-        FormatFactory ff = new FormatFactory(loader, serializer, schemaVersions, basePath, "https://localhost:8447/aai/");
+        FormatFactory ff =
+                new FormatFactory(loader, serializer, schemaVersions, basePath, "https://localhost:8447/aai/");
         MultivaluedMap mvm = new MultivaluedHashMap();
         mvm.add("depth", "0");
         Formatter formatter = ff.get(Format.simple, mvm);

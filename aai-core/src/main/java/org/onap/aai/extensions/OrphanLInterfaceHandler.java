@@ -31,7 +31,6 @@ import org.onap.aai.edges.enums.EdgeType;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
-import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.onap.aai.parsers.query.QueryParser;
 import org.onap.aai.query.builder.QueryBuilder;
 import org.onap.aai.rest.db.DBRequest;

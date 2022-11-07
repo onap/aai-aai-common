@@ -20,19 +20,19 @@
 
 package org.onap.aai.aailog.filter;
 
-import org.onap.aai.aailog.logs.ServiceName;
-import org.onap.logging.filter.base.AuditLogContainerFilter;
-import org.onap.logging.filter.base.Constants;
-import org.onap.logging.filter.base.SimpleMap;
-import org.onap.logging.ref.slf4j.ONAPLogConstants;
-import org.slf4j.MDC;
-
 import javax.annotation.Priority;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.PreMatching;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.UriInfo;
+
+import org.onap.aai.aailog.logs.ServiceName;
+import org.onap.logging.filter.base.AuditLogContainerFilter;
+import org.onap.logging.filter.base.Constants;
+import org.onap.logging.filter.base.SimpleMap;
+import org.onap.logging.ref.slf4j.ONAPLogConstants;
+import org.slf4j.MDC;
 
 @PreMatching
 @Priority(1)
@@ -43,7 +43,7 @@ public class AaiAuditLogContainerFilter extends AuditLogContainerFilter {
         String partnerName = headers.get(ONAPLogConstants.Headers.PARTNER_NAME);
         if (partnerName == null || partnerName.isEmpty()) {
             logger.trace("No valid X-ONAP-PartnerName header value. Checking X-FromAppId header for partnerName.");
-            partnerName = headers.get (Constants.HttpHeaders.HEADER_FROM_APP_ID);
+            partnerName = headers.get(Constants.HttpHeaders.HEADER_FROM_APP_ID);
             if (partnerName == null || partnerName.isEmpty()) {
                 logger.trace("No valid X-FromAppId header value. Checking User-Agent header for partnerName.");
                 partnerName = headers.get(HttpHeaders.USER_AGENT);
@@ -59,6 +59,7 @@ public class AaiAuditLogContainerFilter extends AuditLogContainerFilter {
         }
         MDC.put(ONAPLogConstants.MDCs.PARTNER_NAME, partnerName);
     }
+
     @Override
     protected void setServiceName(ContainerRequestContext containerRequest) {
         UriInfo uriInfo = containerRequest.getUriInfo();

@@ -21,15 +21,15 @@
 
 package org.onap.logging.ref.slf4j;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsInstanceOf.instanceOf;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsInstanceOf.instanceOf;
 
 /**
  * Tests for {@link ONAPLogConstants}.
@@ -51,8 +51,7 @@ public class ONAPLogConstantsTest {
             c.setAccessible(true);
             c.newInstance();
             Assert.fail("Should fail for hidden constructor.");
-        }
-        catch (final InvocationTargetException e) {
+        } catch (final InvocationTargetException e) {
             assertThat(e.getCause(), instanceOf(UnsupportedOperationException.class));
         }
     }
@@ -82,8 +81,7 @@ public class ONAPLogConstantsTest {
 
     @Test
     public void testInvocationModeToString() {
-        assertThat(ONAPLogConstants.InvocationMode.SYNCHRONOUS.toString(),
-                is("SYNCHRONOUS"));
+        assertThat(ONAPLogConstants.InvocationMode.SYNCHRONOUS.toString(), is("SYNCHRONOUS"));
     }
 
     @Test
@@ -114,8 +112,7 @@ public class ONAPLogConstantsTest {
         try {
             c.getDeclaredConstructors()[0].newInstance();
             Assert.fail("Should fail for hidden constructor.");
-        }
-        catch (final IllegalAccessException e) {
+        } catch (final IllegalAccessException e) {
 
         }
 
@@ -124,8 +121,7 @@ public class ONAPLogConstantsTest {
             constructor.setAccessible(true);
             constructor.newInstance();
             Assert.fail("Should fail even when invoked.");
-        }
-        catch (final InvocationTargetException e) {
+        } catch (final InvocationTargetException e) {
             assertThat(e.getCause(), instanceOf(UnsupportedOperationException.class));
         }
     }

@@ -20,6 +20,16 @@
 
 package org.onap.aai.serialization.db;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.*;
+
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Graph;
@@ -47,16 +57,6 @@ import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.util.AAIConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.*;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
 
 @RunWith(value = Parameterized.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
@@ -165,58 +165,42 @@ public class DbSerializerTest extends AAISetup {
          */
 
         Vertex l3interipv4addresslist_1 = graph.addVertex("aai-node-type", "l3-interface-ipv4-address-list",
-                "l3-interface-ipv4-address", "l3-interface-ipv4-address-1",
-            AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
-            AAIProperties.CREATED_TS, 123L,
-            AAIProperties.SOURCE_OF_TRUTH, "sot",
-            AAIProperties.RESOURCE_VERSION, "123",
-            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
-            AAIProperties.LAST_MOD_TS, 333L);
-        Vertex subnet_2 = graph.addVertex("aai-node-type", "subnet", "subnet-id", "subnet-id-2",
-            AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
-            AAIProperties.CREATED_TS, 123L,
-            AAIProperties.SOURCE_OF_TRUTH, "sot",
-            AAIProperties.RESOURCE_VERSION, "123",
-            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
-            AAIProperties.LAST_MOD_TS, 333L);
+                "l3-interface-ipv4-address", "l3-interface-ipv4-address-1", AAIProperties.AAI_UUID,
+                UUID.randomUUID().toString(), AAIProperties.CREATED_TS, 123L, AAIProperties.SOURCE_OF_TRUTH, "sot",
+                AAIProperties.RESOURCE_VERSION, "123", AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
+                AAIProperties.LAST_MOD_TS, 333L);
+        Vertex subnet_2 = graph.addVertex("aai-node-type", "subnet", "subnet-id", "subnet-id-2", AAIProperties.AAI_UUID,
+                UUID.randomUUID().toString(), AAIProperties.CREATED_TS, 123L, AAIProperties.SOURCE_OF_TRUTH, "sot",
+                AAIProperties.RESOURCE_VERSION, "123", AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
+                AAIProperties.LAST_MOD_TS, 333L);
         Vertex l3interipv6addresslist_3 = graph.addVertex("aai-node-type", "l3-interface-ipv6-address-list",
-                "l3-interface-ipv6-address", "l3-interface-ipv6-address-3",
-            AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
-            AAIProperties.CREATED_TS, 123L,
-            AAIProperties.SOURCE_OF_TRUTH, "sot",
-            AAIProperties.RESOURCE_VERSION, "123",
-            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
-            AAIProperties.LAST_MOD_TS, 333L);
-        Vertex subnet_4 = graph.addVertex("aai-node-type", "subnet", "subnet-id", "subnet-id-4",
-            AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
-            AAIProperties.CREATED_TS, 123L,
-            AAIProperties.SOURCE_OF_TRUTH, "sot",
-            AAIProperties.RESOURCE_VERSION, "123",
-            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
-            AAIProperties.LAST_MOD_TS, 333L);
-        Vertex subnet_5 = graph.addVertex("aai-node-type", "subnet", "subnet-id", "subnet-id-5",
-            AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
-            AAIProperties.CREATED_TS, 123L,
-            AAIProperties.SOURCE_OF_TRUTH, "sot",
-            AAIProperties.RESOURCE_VERSION, "123",
-            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
-            AAIProperties.LAST_MOD_TS, 333L);
-        Vertex l3network_6 = graph.addVertex("aai-node-type", "l3-network", "network-id", "network-id-6", "network-name", "network-name-6",
-                    AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
-                    AAIProperties.CREATED_TS, 123L,
-                    AAIProperties.SOURCE_OF_TRUTH, "sot",
-                    AAIProperties.RESOURCE_VERSION, "123",
-                    AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
-                    AAIProperties.LAST_MOD_TS, 333L);
+                "l3-interface-ipv6-address", "l3-interface-ipv6-address-3", AAIProperties.AAI_UUID,
+                UUID.randomUUID().toString(), AAIProperties.CREATED_TS, 123L, AAIProperties.SOURCE_OF_TRUTH, "sot",
+                AAIProperties.RESOURCE_VERSION, "123", AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
+                AAIProperties.LAST_MOD_TS, 333L);
+        Vertex subnet_4 = graph.addVertex("aai-node-type", "subnet", "subnet-id", "subnet-id-4", AAIProperties.AAI_UUID,
+                UUID.randomUUID().toString(), AAIProperties.CREATED_TS, 123L, AAIProperties.SOURCE_OF_TRUTH, "sot",
+                AAIProperties.RESOURCE_VERSION, "123", AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
+                AAIProperties.LAST_MOD_TS, 333L);
+        Vertex subnet_5 = graph.addVertex("aai-node-type", "subnet", "subnet-id", "subnet-id-5", AAIProperties.AAI_UUID,
+                UUID.randomUUID().toString(), AAIProperties.CREATED_TS, 123L, AAIProperties.SOURCE_OF_TRUTH, "sot",
+                AAIProperties.RESOURCE_VERSION, "123", AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
+                AAIProperties.LAST_MOD_TS, 333L);
+        Vertex l3network_6 = graph.addVertex("aai-node-type", "l3-network", "network-id", "network-id-6",
+                "network-name", "network-name-6", AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
+                AAIProperties.CREATED_TS, 123L, AAIProperties.SOURCE_OF_TRUTH, "sot", AAIProperties.RESOURCE_VERSION,
+                "123", AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot", AAIProperties.LAST_MOD_TS, 333L);
 
         GraphTraversalSource g = graph.traversal();
         edgeSer.addEdge(g, l3interipv4addresslist_1, subnet_2);
         edgeSer.addEdge(g, l3interipv6addresslist_3, subnet_4);
         edgeSer.addTreeEdge(g, subnet_5, l3network_6);
 
-        l3interipv4addresslist_1.property(AAIProperties.AAI_URI, dbser.getURIForVertex(l3interipv4addresslist_1).toString());
+        l3interipv4addresslist_1.property(AAIProperties.AAI_URI,
+                dbser.getURIForVertex(l3interipv4addresslist_1).toString());
         subnet_2.property(AAIProperties.AAI_URI, dbser.getURIForVertex(subnet_2).toString());
-        l3interipv6addresslist_3.property(AAIProperties.AAI_URI, dbser.getURIForVertex(l3interipv6addresslist_3).toString());
+        l3interipv6addresslist_3.property(AAIProperties.AAI_URI,
+                dbser.getURIForVertex(l3interipv6addresslist_3).toString());
         subnet_4.property(AAIProperties.AAI_URI, dbser.getURIForVertex(subnet_4).toString());
         subnet_5.property(AAIProperties.AAI_URI, dbser.getURIForVertex(subnet_5).toString());
         l3network_6.property(AAIProperties.AAI_URI, dbser.getURIForVertex(l3network_6).toString());
@@ -230,52 +214,31 @@ public class DbSerializerTest extends AAISetup {
          */
 
         Vertex l3network1 = graph.addVertex("aai-node-type", "l3-network", "network-id", "network-id-v1",
-                "network-name", "network-name-v1",
-            AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
-            AAIProperties.CREATED_TS, 123L,
-            AAIProperties.SOURCE_OF_TRUTH, "sot",
-            AAIProperties.RESOURCE_VERSION, "123",
-            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
-            AAIProperties.LAST_MOD_TS, 333L);
+                "network-name", "network-name-v1", AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
+                AAIProperties.CREATED_TS, 123L, AAIProperties.SOURCE_OF_TRUTH, "sot", AAIProperties.RESOURCE_VERSION,
+                "123", AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot", AAIProperties.LAST_MOD_TS, 333L);
         Vertex l3network2 = graph.addVertex("aai-node-type", "l3-network", "network-id", "network-id-v2",
-                "network-name", "network-name-v2",
-            AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
-            AAIProperties.CREATED_TS, 123L,
-            AAIProperties.SOURCE_OF_TRUTH, "sot",
-            AAIProperties.RESOURCE_VERSION, "123",
-            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
-            AAIProperties.LAST_MOD_TS, 333L);
-        Vertex subnet1 = graph.addVertex("aai-node-type", "subnet", "subnet-id", "subnet-id-v1",
-            AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
-            AAIProperties.CREATED_TS, 123L,
-            AAIProperties.SOURCE_OF_TRUTH, "sot",
-            AAIProperties.RESOURCE_VERSION, "123",
-            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
-            AAIProperties.LAST_MOD_TS, 333L);
-        Vertex subnet2 = graph.addVertex("aai-node-type", "subnet", "subnet-id", "subnet-id-v2",
-            AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
-            AAIProperties.CREATED_TS, 123L,
-            AAIProperties.SOURCE_OF_TRUTH, "sot",
-            AAIProperties.RESOURCE_VERSION, "123",
-            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
-            AAIProperties.LAST_MOD_TS, 333L);
+                "network-name", "network-name-v2", AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
+                AAIProperties.CREATED_TS, 123L, AAIProperties.SOURCE_OF_TRUTH, "sot", AAIProperties.RESOURCE_VERSION,
+                "123", AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot", AAIProperties.LAST_MOD_TS, 333L);
+        Vertex subnet1 = graph.addVertex("aai-node-type", "subnet", "subnet-id", "subnet-id-v1", AAIProperties.AAI_UUID,
+                UUID.randomUUID().toString(), AAIProperties.CREATED_TS, 123L, AAIProperties.SOURCE_OF_TRUTH, "sot",
+                AAIProperties.RESOURCE_VERSION, "123", AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
+                AAIProperties.LAST_MOD_TS, 333L);
+        Vertex subnet2 = graph.addVertex("aai-node-type", "subnet", "subnet-id", "subnet-id-v2", AAIProperties.AAI_UUID,
+                UUID.randomUUID().toString(), AAIProperties.CREATED_TS, 123L, AAIProperties.SOURCE_OF_TRUTH, "sot",
+                AAIProperties.RESOURCE_VERSION, "123", AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
+                AAIProperties.LAST_MOD_TS, 333L);
 
         Vertex l3interipv4addresslist_1 = graph.addVertex("aai-node-type", "l3-interface-ipv4-address-list",
-                "l3-interface-ipv4-address", "l3-intr-v1",
-            AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
-            AAIProperties.CREATED_TS, 123L,
-            AAIProperties.SOURCE_OF_TRUTH, "sot",
-            AAIProperties.RESOURCE_VERSION, "123",
-            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
-            AAIProperties.LAST_MOD_TS, 333L);
+                "l3-interface-ipv4-address", "l3-intr-v1", AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
+                AAIProperties.CREATED_TS, 123L, AAIProperties.SOURCE_OF_TRUTH, "sot", AAIProperties.RESOURCE_VERSION,
+                "123", AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot", AAIProperties.LAST_MOD_TS, 333L);
         Vertex l3interipv6addresslist_1 = graph.addVertex("aai-node-type", "l3-interface-ipv6-address-list",
-                "l3-interface-ipv6-address", "l3-interface-ipv6-v1",
-            AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
-            AAIProperties.CREATED_TS, 123L,
-            AAIProperties.SOURCE_OF_TRUTH, "sot",
-            AAIProperties.RESOURCE_VERSION, "123",
-            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
-            AAIProperties.LAST_MOD_TS, 333L);
+                "l3-interface-ipv6-address", "l3-interface-ipv6-v1", AAIProperties.AAI_UUID,
+                UUID.randomUUID().toString(), AAIProperties.CREATED_TS, 123L, AAIProperties.SOURCE_OF_TRUTH, "sot",
+                AAIProperties.RESOURCE_VERSION, "123", AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
+                AAIProperties.LAST_MOD_TS, 333L);
 
         GraphTraversalSource g = graph.traversal();
         edgeSer.addTreeEdge(g, subnet1, l3network1);
@@ -285,12 +248,11 @@ public class DbSerializerTest extends AAISetup {
         edgeSer.addTreeEdge(g, subnet2, l3network2);
 
         subnet1.property(AAIProperties.AAI_URI, dbser.getURIForVertex(subnet1).toString());
-        l3interipv4addresslist_1.property(AAIProperties.AAI_URI, dbser.getURIForVertex(l3interipv4addresslist_1).toString());
+        l3interipv4addresslist_1.property(AAIProperties.AAI_URI,
+                dbser.getURIForVertex(l3interipv4addresslist_1).toString());
         l3network1.property(AAIProperties.AAI_URI, dbser.getURIForVertex(l3network1).toString());
         subnet2.property(AAIProperties.AAI_URI, dbser.getURIForVertex(subnet2).toString());
         l3network2.property(AAIProperties.AAI_URI, dbser.getURIForVertex(l3network2).toString());
-
-
 
     }
 
@@ -300,61 +262,40 @@ public class DbSerializerTest extends AAISetup {
          * and edges
          */
 
-        Vertex vserver1 = graph.addVertex("aai-node-type", "vserver", "vserver-id", "vss1",
-            AAIProperties.AAI_URI, "/cloud-infrastructure/cloud-regions/cloud-region/me/123/tenants/tenant/453/vservers/vserver/vss1",
-            AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
-            AAIProperties.CREATED_TS, 123L,
-            AAIProperties.SOURCE_OF_TRUTH, "sot",
-            AAIProperties.RESOURCE_VERSION, "123",
-            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
-            AAIProperties.LAST_MOD_TS, 333L);
+        Vertex vserver1 = graph.addVertex("aai-node-type", "vserver", "vserver-id", "vss1", AAIProperties.AAI_URI,
+                "/cloud-infrastructure/cloud-regions/cloud-region/me/123/tenants/tenant/453/vservers/vserver/vss1",
+                AAIProperties.AAI_UUID, UUID.randomUUID().toString(), AAIProperties.CREATED_TS, 123L,
+                AAIProperties.SOURCE_OF_TRUTH, "sot", AAIProperties.RESOURCE_VERSION, "123",
+                AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot", AAIProperties.LAST_MOD_TS, 333L);
 
         Vertex lInterface1 = graph.addVertex("aai-node-type", "l-interface", "interface-name", "lIntr1",
-            AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
-            AAIProperties.CREATED_TS, 123L,
-            AAIProperties.SOURCE_OF_TRUTH, "sot",
-            AAIProperties.RESOURCE_VERSION, "123",
-            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
-            AAIProperties.LAST_MOD_TS, 333L);
+                AAIProperties.AAI_UUID, UUID.randomUUID().toString(), AAIProperties.CREATED_TS, 123L,
+                AAIProperties.SOURCE_OF_TRUTH, "sot", AAIProperties.RESOURCE_VERSION, "123",
+                AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot", AAIProperties.LAST_MOD_TS, 333L);
         Vertex lInterface2 = graph.addVertex("aai-node-type", "l-interface", "interface-name", "lIntr2",
-            AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
-            AAIProperties.CREATED_TS, 123L,
-            AAIProperties.SOURCE_OF_TRUTH, "sot",
-            AAIProperties.RESOURCE_VERSION, "123",
-            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
-            AAIProperties.LAST_MOD_TS, 333L);
+                AAIProperties.AAI_UUID, UUID.randomUUID().toString(), AAIProperties.CREATED_TS, 123L,
+                AAIProperties.SOURCE_OF_TRUTH, "sot", AAIProperties.RESOURCE_VERSION, "123",
+                AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot", AAIProperties.LAST_MOD_TS, 333L);
 
         Vertex logicalLink1 = graph.addVertex("aai-node-type", "logical-link", "link-name", "logLink1",
-            AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
-            AAIProperties.CREATED_TS, 123L,
-            AAIProperties.SOURCE_OF_TRUTH, "sot",
-            AAIProperties.RESOURCE_VERSION, "123",
-            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
-            AAIProperties.LAST_MOD_TS, 333L);
+                AAIProperties.AAI_UUID, UUID.randomUUID().toString(), AAIProperties.CREATED_TS, 123L,
+                AAIProperties.SOURCE_OF_TRUTH, "sot", AAIProperties.RESOURCE_VERSION, "123",
+                AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot", AAIProperties.LAST_MOD_TS, 333L);
         Vertex logicalLink2 = graph.addVertex("aai-node-type", "logical-link", "link-name", "logLink2",
-            AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
-            AAIProperties.CREATED_TS, 123L,
-            AAIProperties.SOURCE_OF_TRUTH, "sot",
-            AAIProperties.RESOURCE_VERSION, "123",
-            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
-            AAIProperties.LAST_MOD_TS, 333L);
+                AAIProperties.AAI_UUID, UUID.randomUUID().toString(), AAIProperties.CREATED_TS, 123L,
+                AAIProperties.SOURCE_OF_TRUTH, "sot", AAIProperties.RESOURCE_VERSION, "123",
+                AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot", AAIProperties.LAST_MOD_TS, 333L);
 
         Vertex l3interipv4addresslist_1 = graph.addVertex("aai-node-type", "l3-interface-ipv4-address-list",
-                "l3-interface-ipv4-address", "l3-intr-ipv4-address-1",
-            AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
-            AAIProperties.CREATED_TS, 123L,
-            AAIProperties.SOURCE_OF_TRUTH, "sot",
-            AAIProperties.RESOURCE_VERSION, "123",
-            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
-            AAIProperties.LAST_MOD_TS, 333L);
+                "l3-interface-ipv4-address", "l3-intr-ipv4-address-1", AAIProperties.AAI_UUID,
+                UUID.randomUUID().toString(), AAIProperties.CREATED_TS, 123L, AAIProperties.SOURCE_OF_TRUTH, "sot",
+                AAIProperties.RESOURCE_VERSION, "123", AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
+                AAIProperties.LAST_MOD_TS, 333L);
         Vertex l3interipv6addresslist_2 = graph.addVertex("aai-node-type", "l3-interface-ipv6-address-list",
-                "l3-interface-ipv4-address", "l3-intr-ipv6-address-1",
-            AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
-            AAIProperties.CREATED_TS, 123L,
-            AAIProperties.SOURCE_OF_TRUTH, "sot",
-            AAIProperties.RESOURCE_VERSION, "123",
-            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
-            AAIProperties.LAST_MOD_TS, 333L);
+                "l3-interface-ipv4-address", "l3-intr-ipv6-address-1", AAIProperties.AAI_UUID,
+                UUID.randomUUID().toString(), AAIProperties.CREATED_TS, 123L, AAIProperties.SOURCE_OF_TRUTH, "sot",
+                AAIProperties.RESOURCE_VERSION, "123", AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
+                AAIProperties.LAST_MOD_TS, 333L);
 
         GraphTraversalSource g = graph.traversal();
 
@@ -369,8 +310,10 @@ public class DbSerializerTest extends AAISetup {
         vserver1.property(AAIProperties.AAI_URI, dbser.getURIForVertex(vserver1).toString());
         lInterface1.property(AAIProperties.AAI_URI, dbser.getURIForVertex(lInterface1).toString());
         lInterface2.property(AAIProperties.AAI_URI, dbser.getURIForVertex(lInterface2).toString());
-        l3interipv4addresslist_1.property(AAIProperties.AAI_URI, dbser.getURIForVertex(l3interipv4addresslist_1).toString());
-        l3interipv6addresslist_2.property(AAIProperties.AAI_URI, dbser.getURIForVertex(l3interipv6addresslist_2).toString());
+        l3interipv4addresslist_1.property(AAIProperties.AAI_URI,
+                dbser.getURIForVertex(l3interipv4addresslist_1).toString());
+        l3interipv6addresslist_2.property(AAIProperties.AAI_URI,
+                dbser.getURIForVertex(l3interipv6addresslist_2).toString());
         logicalLink1.property(AAIProperties.AAI_URI, dbser.getURIForVertex(logicalLink1).toString());
         logicalLink2.property(AAIProperties.AAI_URI, dbser.getURIForVertex(logicalLink2).toString());
     }
@@ -617,21 +560,13 @@ public class DbSerializerTest extends AAISetup {
         engine.startTransaction();
 
         Vertex gvnf = engine.tx().addVertex("aai-node-type", "generic-vnf", "vnf-id", "myvnf", "aai-uri",
-            "/network/generic-vnfs/generic-vnf/myvnf",
-            AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
-            AAIProperties.CREATED_TS, 123L,
-            AAIProperties.SOURCE_OF_TRUTH, "sot",
-            AAIProperties.RESOURCE_VERSION, "123",
-            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
-            AAIProperties.LAST_MOD_TS, 333L);
+                "/network/generic-vnfs/generic-vnf/myvnf", AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
+                AAIProperties.CREATED_TS, 123L, AAIProperties.SOURCE_OF_TRUTH, "sot", AAIProperties.RESOURCE_VERSION,
+                "123", AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot", AAIProperties.LAST_MOD_TS, 333L);
         Vertex vnfc = engine.tx().addVertex("aai-node-type", "vnfc", "vnfc-name", "a-name", "aai-uri",
-            "/network/vnfcs/vnfc/a-name",
-            AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
-            AAIProperties.CREATED_TS, 123L,
-            AAIProperties.SOURCE_OF_TRUTH, "sot",
-            AAIProperties.RESOURCE_VERSION, "123",
-            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
-            AAIProperties.LAST_MOD_TS, 333L);
+                "/network/vnfcs/vnfc/a-name", AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
+                AAIProperties.CREATED_TS, 123L, AAIProperties.SOURCE_OF_TRUTH, "sot", AAIProperties.RESOURCE_VERSION,
+                "123", AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot", AAIProperties.LAST_MOD_TS, 333L);
 
         edgeSer.addEdge(engine.tx().traversal(), gvnf, vnfc);
 
@@ -663,21 +598,13 @@ public class DbSerializerTest extends AAISetup {
         engine.startTransaction();
 
         Vertex gvnf = engine.tx().addVertex("aai-node-type", "generic-vnf", "vnf-id", "myvnf", "aai-uri",
-                "/network/generic-vnfs/generic-vnf/myvnf",
-            AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
-            AAIProperties.CREATED_TS, 123L,
-            AAIProperties.SOURCE_OF_TRUTH, "sot",
-            AAIProperties.RESOURCE_VERSION, "123",
-            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
-            AAIProperties.LAST_MOD_TS, 333L);
+                "/network/generic-vnfs/generic-vnf/myvnf", AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
+                AAIProperties.CREATED_TS, 123L, AAIProperties.SOURCE_OF_TRUTH, "sot", AAIProperties.RESOURCE_VERSION,
+                "123", AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot", AAIProperties.LAST_MOD_TS, 333L);
         Vertex vnfc = engine.tx().addVertex("aai-node-type", "vnfc", "vnfc-name", "a-name", "aai-uri",
-                "/network/vnfcs/vnfc/a-name",
-            AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
-            AAIProperties.CREATED_TS, 123L,
-            AAIProperties.SOURCE_OF_TRUTH, "sot",
-            AAIProperties.RESOURCE_VERSION, "123",
-            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
-            AAIProperties.LAST_MOD_TS, 333L);
+                "/network/vnfcs/vnfc/a-name", AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
+                AAIProperties.CREATED_TS, 123L, AAIProperties.SOURCE_OF_TRUTH, "sot", AAIProperties.RESOURCE_VERSION,
+                "123", AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot", AAIProperties.LAST_MOD_TS, 333L);
 
         edgeSer.addEdge(engine.tx().traversal(), gvnf, vnfc);
 
@@ -850,19 +777,21 @@ public class DbSerializerTest extends AAISetup {
         Introspector obj = loader.introspectorFromName("generic-vnf");
         obj = dbser.dbToObject(Collections.singletonList(gvnf), obj, AAIProperties.MAXIMUM_DEPTH, false, "false");
 
-        assertFalse("Relationship does not contain edge-property", obj.getWrappedValue("relationship-list").getWrappedListValue("relationship").get(0).hasProperty("relationship-label"));
+        assertFalse("Relationship does not contain edge-property", obj.getWrappedValue("relationship-list")
+                .getWrappedListValue("relationship").get(0).hasProperty("relationship-label"));
 
     }
 
     @Test
-    public void createEdgeWithInvalidLabelTest() throws AAIException, UnsupportedEncodingException,
-            SecurityException, IllegalArgumentException {
+    public void createEdgeWithInvalidLabelTest()
+            throws AAIException, UnsupportedEncodingException, SecurityException, IllegalArgumentException {
 
         engine.startTransaction();
 
         Vertex gvnf = engine.tx().addVertex("aai-node-type", "generic-vnf", "vnf-id", "myvnf", "aai-uri",
                 "/network/generic-vnfs/generic-vnf/myvnf", "aai-uuid", "a");
-        engine.tx().addVertex("aai-node-type", "vnfc", "vnfc-name", "a-name", "aai-uri", "/network/vnfcs/vnfc/a-name", "aai-uuid", "b");
+        engine.tx().addVertex("aai-node-type", "vnfc", "vnfc-name", "a-name", "aai-uri", "/network/vnfcs/vnfc/a-name",
+                "aai-uuid", "b");
 
         Introspector relData = loader.introspectorFromName("relationship-data");
         relData.setValue("relationship-key", "vnfc.vnfc-name");
@@ -881,13 +810,15 @@ public class DbSerializerTest extends AAISetup {
     }
 
     @Test
-    public void createEdgeUsingIntrospectorTest() throws AAIException, UnsupportedEncodingException, SecurityException, IllegalArgumentException {
+    public void createEdgeUsingIntrospectorTest()
+            throws AAIException, UnsupportedEncodingException, SecurityException, IllegalArgumentException {
 
         engine.startTransaction();
 
         Vertex gvnf = engine.tx().addVertex("aai-node-type", "generic-vnf", "vnf-id", "myvnf", "aai-uri",
-            "/network/generic-vnfs/generic-vnf/myvnf", "aai-uuid", "a");
-        engine.tx().addVertex("aai-node-type", "vnfc", "vnfc-name", "a-name", "aai-uri", "/network/vnfcs/vnfc/a-name", "aai-uuid", "b");
+                "/network/generic-vnfs/generic-vnf/myvnf", "aai-uuid", "a");
+        engine.tx().addVertex("aai-node-type", "vnfc", "vnfc-name", "a-name", "aai-uri", "/network/vnfcs/vnfc/a-name",
+                "aai-uuid", "b");
 
         Introspector relData = loader.introspectorFromName("relationship-data");
         relData.setValue("relationship-key", "vnfc.vnfc-name");
@@ -979,22 +910,15 @@ public class DbSerializerTest extends AAISetup {
     public void deleteItemsWithTraversal() throws AAIException {
         DBSerializer dbser = new DBSerializer(version, engine, ModelType.MOXY, "AAI-TEST");
         engine.startTransaction();
-        Vertex gv = engine.tx().addVertex("aai-node-type", "generic-vnf", "vnf-id", "id1",
-            AAIProperties.AAI_URI, "/network/generic-vnfs/generic-vnf/id1",
-            AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
-            AAIProperties.CREATED_TS, 123L,
-            AAIProperties.SOURCE_OF_TRUTH, "sot",
-            AAIProperties.RESOURCE_VERSION, "123",
-            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
-            AAIProperties.LAST_MOD_TS, 333L);
+        Vertex gv = engine.tx().addVertex("aai-node-type", "generic-vnf", "vnf-id", "id1", AAIProperties.AAI_URI,
+                "/network/generic-vnfs/generic-vnf/id1", AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
+                AAIProperties.CREATED_TS, 123L, AAIProperties.SOURCE_OF_TRUTH, "sot", AAIProperties.RESOURCE_VERSION,
+                "123", AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot", AAIProperties.LAST_MOD_TS, 333L);
         Vertex lint = engine.tx().addVertex("aai-node-type", "l-interface", "interface-name", "name1",
-            AAIProperties.AAI_URI, "/network/generic-vnfs/generic-vnf/id1/l-interfaces/l-interface/name1",
-            AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
-            AAIProperties.CREATED_TS, 123L,
-            AAIProperties.SOURCE_OF_TRUTH, "sot",
-            AAIProperties.RESOURCE_VERSION, "123",
-            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
-            AAIProperties.LAST_MOD_TS, 333L);
+                AAIProperties.AAI_URI, "/network/generic-vnfs/generic-vnf/id1/l-interfaces/l-interface/name1",
+                AAIProperties.AAI_UUID, UUID.randomUUID().toString(), AAIProperties.CREATED_TS, 123L,
+                AAIProperties.SOURCE_OF_TRUTH, "sot", AAIProperties.RESOURCE_VERSION, "123",
+                AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot", AAIProperties.LAST_MOD_TS, 333L);
 
         assertTrue(engine.tx().traversal().V().has("vnf-id", "id1").hasNext());
         assertTrue(engine.tx().traversal().V().has("interface-name", "name1").hasNext());
@@ -1012,20 +936,12 @@ public class DbSerializerTest extends AAISetup {
         DBSerializer dbser = new DBSerializer(version, engine, ModelType.MOXY, "AAI-TEST");
         engine.startTransaction();
         Vertex gv = engine.tx().addVertex("aai-node-type", "generic-vnf", "vnf-id", "id1", "aai-uri",
-                "/network/generic-vnfs/generic-vnf/id1", "aai-uuid", "a",
-            AAIProperties.CREATED_TS, 123L,
-            AAIProperties.SOURCE_OF_TRUTH, "sot",
-            AAIProperties.RESOURCE_VERSION, "123",
-            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
-            AAIProperties.LAST_MOD_TS, 333L);
-        Vertex lint = engine.tx().addVertex("aai-node-type", "l-interface",
-            "aai-uri", "abc",
-            "aai-uuid", "b",
-            AAIProperties.CREATED_TS, 123L,
-            AAIProperties.SOURCE_OF_TRUTH, "sot",
-            AAIProperties.RESOURCE_VERSION, "123",
-            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
-            AAIProperties.LAST_MOD_TS, 333L);
+                "/network/generic-vnfs/generic-vnf/id1", "aai-uuid", "a", AAIProperties.CREATED_TS, 123L,
+                AAIProperties.SOURCE_OF_TRUTH, "sot", AAIProperties.RESOURCE_VERSION, "123",
+                AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot", AAIProperties.LAST_MOD_TS, 333L);
+        Vertex lint = engine.tx().addVertex("aai-node-type", "l-interface", "aai-uri", "abc", "aai-uuid", "b",
+                AAIProperties.CREATED_TS, 123L, AAIProperties.SOURCE_OF_TRUTH, "sot", AAIProperties.RESOURCE_VERSION,
+                "123", AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot", AAIProperties.LAST_MOD_TS, 333L);
         edgeSer.addTreeEdge(engine.tx().traversal(), gv, lint);
 
         Introspector lintIntro = loader.introspectorFromName("l-interface");

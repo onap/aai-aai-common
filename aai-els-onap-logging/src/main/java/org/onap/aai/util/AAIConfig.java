@@ -20,15 +20,15 @@
 
 package org.onap.aai.util;
 
-import org.eclipse.jetty.util.security.Password;
-import org.onap.aai.exceptions.AAIException;
-import org.onap.aai.logging.ErrorLogHelper;
-
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.util.Properties;
+
+import org.eclipse.jetty.util.security.Password;
+import org.onap.aai.exceptions.AAIException;
+import org.onap.aai.logging.ErrorLogHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,7 +90,8 @@ public class AAIConfig {
             propsInitialized = true;
             serverProps = newServerProps;
         } catch (Exception fnfe) {
-            final InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("aaiconfig.properties");
+            final InputStream is =
+                    Thread.currentThread().getContextClassLoader().getResourceAsStream("aaiconfig.properties");
             LOGGER.info("Unable to find the aaiconfig.properties from filesystem so using file in jar");
             if (is != null) {
                 try {

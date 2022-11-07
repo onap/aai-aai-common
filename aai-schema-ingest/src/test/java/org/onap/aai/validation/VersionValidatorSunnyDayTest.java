@@ -22,12 +22,9 @@ package org.onap.aai.validation;
 
 import static org.junit.Assert.*;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.onap.aai.config.NodesConfiguration;
-import org.onap.aai.nodes.NodeIngestor;
-import org.onap.aai.setup.SchemaVersionsBean;
 import org.onap.aai.testutils.GoodConfigForValidationTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

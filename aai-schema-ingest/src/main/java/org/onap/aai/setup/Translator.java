@@ -23,8 +23,6 @@ package org.onap.aai.setup;
 import java.io.*;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 /**
  * Converts the contents of the schema config file
  * (which lists which schema files to be loaded) to

@@ -17,11 +17,13 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.aailog.filter;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
+
 import org.onap.aai.aailog.logs.ServiceName;
 import org.onap.logging.filter.base.AbstractMetricLogFilter;
 import org.onap.logging.filter.base.Constants;
@@ -33,11 +35,11 @@ import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 
-public class RestClientLoggingInterceptor extends AbstractMetricLogFilter<HttpRequest, ClientHttpResponse, HttpHeaders> implements ClientHttpRequestInterceptor {
+public class RestClientLoggingInterceptor extends AbstractMetricLogFilter<HttpRequest, ClientHttpResponse, HttpHeaders>
+        implements ClientHttpRequestInterceptor {
     @Override
     public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution)
-        throws IOException
-    {
+            throws IOException {
         this.setInvocationId(request.getHeaders());
         pre(request, request.getHeaders());
         ClientHttpResponse resp = execution.execute(request, body);
@@ -45,6 +47,7 @@ public class RestClientLoggingInterceptor extends AbstractMetricLogFilter<HttpRe
         return resp;
 
     }
+
     protected void pre(HttpRequest request, HttpHeaders requestHeaders) {
         try {
             setupMDC(request);
@@ -54,6 +57,7 @@ public class RestClientLoggingInterceptor extends AbstractMetricLogFilter<HttpRe
             logger.warn("Error in RestClientLoggingInterceptor pre", e);
         }
     }
+
     protected void setupHeaders(HttpRequest clientRequest, HttpHeaders requestHeaders) {
         String requestId = extractRequestID(requestHeaders);
         addHeader(requestHeaders, ONAPLogConstants.Headers.REQUEST_ID, requestId);
@@ -69,6 +73,7 @@ public class RestClientLoggingInterceptor extends AbstractMetricLogFilter<HttpRe
             addHeader(requestHeaders, ONAPLogConstants.Headers.PARTNER_NAME, pName);
         }
     }
+
     protected String extractRequestID(HttpHeaders requestHeaders) {
         String requestId = MDC.get(ONAPLogConstants.MDCs.REQUEST_ID);
         if (requestId == null || requestId.isEmpty()) {
@@ -80,13 +85,14 @@ public class RestClientLoggingInterceptor extends AbstractMetricLogFilter<HttpRe
         }
         return requestId;
     }
+
     public void setInvocationId(HttpHeaders headers) {
         String invocationId = null;
 
         List<String> headerList = headers.get(ONAPLogConstants.Headers.INVOCATION_ID);
         if (headerList != null && (!headerList.isEmpty())) {
             for (String h : headerList) {
-                if ( h != null && (!h.isEmpty()) ) {
+                if (h != null && (!h.isEmpty())) {
                     invocationId = h;
                     break;
                 }
@@ -98,6 +104,7 @@ public class RestClientLoggingInterceptor extends AbstractMetricLogFilter<HttpRe
         }
         MDC.put(ONAPLogConstants.MDCs.INVOCATION_ID, invocationId);
     }
+
     @Override
     protected void addHeader(HttpHeaders requestHeaders, String headerName, String headerValue) {
         requestHeaders.add(headerName, headerValue);
@@ -106,18 +113,18 @@ public class RestClientLoggingInterceptor extends AbstractMetricLogFilter<HttpRe
     protected String getTargetServiceName(HttpRequest request) {
         return (getServiceName(request));
     }
-    protected String getServiceName(HttpRequest request){
+
+    protected String getServiceName(HttpRequest request) {
         String path = request.getURI().getRawPath();
-        return(ServiceName.extractServiceName(path));
+        return (ServiceName.extractServiceName(path));
     }
 
     protected int getHttpStatusCode(ClientHttpResponse response) {
         int result = 0;
-        if (response != null ) {
+        if (response != null) {
             try {
                 result = response.getStatusCode().value();
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 logger.warn("Error in RestClientLoggingInterceptor getHttpStatusCode {}", e.getMessage());
             }
         }
@@ -126,11 +133,10 @@ public class RestClientLoggingInterceptor extends AbstractMetricLogFilter<HttpRe
 
     protected String getResponseCode(ClientHttpResponse response) {
         String result = "";
-        if (response != null ) {
+        if (response != null) {
             try {
                 result = response.getStatusCode().toString();
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 logger.warn("Error in RestClientLoggingInterceptor getResponseCode {}", e.getMessage());
             }
         }
@@ -138,7 +144,7 @@ public class RestClientLoggingInterceptor extends AbstractMetricLogFilter<HttpRe
     }
 
     protected String getTargetEntity(HttpRequest request) {
-        //TODO where do we get this from?
+        // TODO where do we get this from?
         return Constants.DefaultValues.UNKNOWN_TARGET_ENTITY;
     }
 }

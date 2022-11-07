@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -34,9 +35,9 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.onap.aai.edges.EdgeIngestor;
 import org.onap.aai.nodes.NodeIngestor;
 import org.onap.aai.setup.AAIConfigTranslator;
+import org.onap.aai.setup.SchemaConfigVersions;
 import org.onap.aai.setup.SchemaLocationsBean;
 import org.onap.aai.setup.SchemaVersion;
-import org.onap.aai.setup.SchemaConfigVersions;
 import org.onap.aai.setup.Translator;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -65,7 +66,7 @@ public class OxmSchemaServiceSetup {
         Mockito.when(schemaLocationsBean.getNodeDirectory()).thenReturn("src/test/resources/oxm/oxm");
         Mockito.when(schemaLocationsBean.getEdgeDirectory()).thenReturn("src/test/resources/oxm/edge-rules");
 
-        AAIConfigTranslator aaiConfigTranslator = new AAIConfigTranslator(schemaLocationsBean,  schemaConfigVersions);
+        AAIConfigTranslator aaiConfigTranslator = new AAIConfigTranslator(schemaLocationsBean, schemaConfigVersions);
         Set<Translator> translators = new HashSet<>();
         translators.add(aaiConfigTranslator);
         NodeIngestor nodeIngestor = new NodeIngestor(translators);

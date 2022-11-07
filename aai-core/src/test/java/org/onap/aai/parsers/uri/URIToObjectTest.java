@@ -37,11 +37,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.onap.aai.AAISetup;
-import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.*;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
-import org.onap.aai.schema.enums.ObjectMetadata;
 import org.onap.aai.setup.SchemaVersion;
 import org.springframework.test.annotation.DirtiesContext;
 

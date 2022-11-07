@@ -18,7 +18,10 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.schemaif.oxm;
+
+import com.google.common.collect.Multimap;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -45,8 +48,6 @@ import org.onap.aai.setup.Translator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.google.common.collect.Multimap;
-
 @Component
 public class OxmEdgeRulesLoader {
 
@@ -63,10 +64,10 @@ public class OxmEdgeRulesLoader {
     final static Pattern propsFilePattern = Pattern.compile(propsPrefix + "(.*)" + propsSuffix);
     final static Pattern propsVersionPattern = Pattern.compile("(?i)v\\d*");
 
-    private static Logger logger =
-            LoggerFactory.getInstance().getLogger(OxmEdgeRulesLoader.class.getName());
+    private static Logger logger = LoggerFactory.getInstance().getLogger(OxmEdgeRulesLoader.class.getName());
 
-    private OxmEdgeRulesLoader() {}
+    private OxmEdgeRulesLoader() {
+    }
 
     /**
      * This constructor presents an awkward marrying of Spring bean creation and static method use. This
@@ -88,7 +89,7 @@ public class OxmEdgeRulesLoader {
      * Finds all DB Edge Rules and Edge Properties files for all OXM models.
      *
      * @throws SchemaProviderException
-     * @throws SchemaProviderException 
+     * @throws SchemaProviderException
      */
     public static synchronized void loadModels() throws SchemaProviderException {
         Map<String, File> propFiles = edgePropertyFiles(edgePropsConfiguration);

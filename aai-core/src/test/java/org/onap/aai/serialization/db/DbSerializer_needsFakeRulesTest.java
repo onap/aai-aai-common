@@ -20,6 +20,18 @@
 
 package org.onap.aai.serialization.db;
 
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
+
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Graph;
@@ -53,23 +65,12 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
-
 //@RunWith(value = Parameterized.class) TODO replace this functionality
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(
         classes = {ConfigConfiguration.class, AAICoreFakeEdgesConfigTranslator.class, NodeIngestor.class,
-                EdgeIngestor.class, EdgeSerializer.class, SpringContextAware.class, IntrospectionConfig.class, XmlFormatTransformerConfiguration.class})
+                EdgeIngestor.class, EdgeSerializer.class, SpringContextAware.class, IntrospectionConfig.class,
+                XmlFormatTransformerConfiguration.class})
 @TestPropertySource(
         properties = {"schema.translator.list = config", "schema.nodes.location=src/test/resources/onap/oxm",
                 "schema.edges.location=src/test/resources/onap/dbedgerules"})
@@ -146,7 +147,8 @@ public class DbSerializer_needsFakeRulesTest {
                 "l3-interface-ipv6-address", "l3-interface-ipv6-address-3");
         Vertex subnet_4 = graph.addVertex("aai-node-type", "subnet", "subnet-id", "subnet-id-4");
         Vertex subnet_5 = graph.addVertex("aai-node-type", "subnet", "subnet-id", "subnet-id-5");
-        Vertex l3network_6 = graph.addVertex("aai-node-type", "l3-network", "network-id", "network-id-6", "network-name", "network-name-6");
+        Vertex l3network_6 = graph.addVertex("aai-node-type", "l3-network", "network-id", "network-id-6",
+                "network-name", "network-name-6");
 
         GraphTraversalSource g = graph.traversal();
         edgeSer.addEdge(g, l3interipv4addresslist_1, subnet_2);
@@ -182,13 +184,9 @@ public class DbSerializer_needsFakeRulesTest {
         engine.startTransaction();
 
         engine.tx().addVertex("aai-node-type", "vnfc", "vnfc-name", "vnfc-" + testName, AAIProperties.AAI_URI,
-                "/network/vnfcs/vnfc/vnfc-" + testName,
-            AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
-            AAIProperties.CREATED_TS, 123,
-            AAIProperties.SOURCE_OF_TRUTH, "sot",
-            AAIProperties.RESOURCE_VERSION, "123",
-            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
-            AAIProperties.LAST_MOD_TS, 333);
+                "/network/vnfcs/vnfc/vnfc-" + testName, AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
+                AAIProperties.CREATED_TS, 123, AAIProperties.SOURCE_OF_TRUTH, "sot", AAIProperties.RESOURCE_VERSION,
+                "123", AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot", AAIProperties.LAST_MOD_TS, 333);
 
         Introspector relationship = loader.introspectorFromName("relationship");
         relationship.setValue("related-to", "vnfc");
@@ -220,19 +218,13 @@ public class DbSerializer_needsFakeRulesTest {
         engine.startTransaction();
 
         Vertex gvnf = engine.tx().addVertex("aai-node-type", "generic-vnf", "vnf-id", "myvnf", "aai-uri",
-                "/network/generic-vnfs/generic-vnf/myvnf", "aai-uuid", "a",
-            AAIProperties.CREATED_TS, 123,
-            AAIProperties.SOURCE_OF_TRUTH, "sot",
-            AAIProperties.RESOURCE_VERSION, "123",
-            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
-            AAIProperties.LAST_MOD_TS, 333);
+                "/network/generic-vnfs/generic-vnf/myvnf", "aai-uuid", "a", AAIProperties.CREATED_TS, 123,
+                AAIProperties.SOURCE_OF_TRUTH, "sot", AAIProperties.RESOURCE_VERSION, "123",
+                AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot", AAIProperties.LAST_MOD_TS, 333);
         Vertex vnfc = engine.tx().addVertex("aai-node-type", "vnfc", "vnfc-name", "a-name", "aai-uri",
-                "/network/vnfcs/vnfc/a-name", "aai-uuid", "b",
-            AAIProperties.CREATED_TS, 123,
-            AAIProperties.SOURCE_OF_TRUTH, "sot",
-            AAIProperties.RESOURCE_VERSION, "123",
-            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
-            AAIProperties.LAST_MOD_TS, 333);
+                "/network/vnfcs/vnfc/a-name", "aai-uuid", "b", AAIProperties.CREATED_TS, 123,
+                AAIProperties.SOURCE_OF_TRUTH, "sot", AAIProperties.RESOURCE_VERSION, "123",
+                AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot", AAIProperties.LAST_MOD_TS, 333);
 
         // sunny day case
         Introspector relData = loader.introspectorFromName("relationship-data");
@@ -288,21 +280,13 @@ public class DbSerializer_needsFakeRulesTest {
         engine.startTransaction();
 
         Vertex gvnf = engine.tx().addVertex("aai-node-type", "generic-vnf", "vnf-id", "myvnf", "aai-uri",
-                "/network/generic-vnfs/generic-vnf/myvnf",
-            AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
-            AAIProperties.CREATED_TS, 123,
-            AAIProperties.SOURCE_OF_TRUTH, "sot",
-            AAIProperties.RESOURCE_VERSION, "123",
-            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
-            AAIProperties.LAST_MOD_TS, 333);
+                "/network/generic-vnfs/generic-vnf/myvnf", AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
+                AAIProperties.CREATED_TS, 123, AAIProperties.SOURCE_OF_TRUTH, "sot", AAIProperties.RESOURCE_VERSION,
+                "123", AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot", AAIProperties.LAST_MOD_TS, 333);
         Vertex vnfc = engine.tx().addVertex("aai-node-type", "vnfc", "vnfc-name", "a-name", "aai-uri",
-                "/network/vnfcs/vnfc/a-name",
-            AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
-            AAIProperties.CREATED_TS, 123,
-            AAIProperties.SOURCE_OF_TRUTH, "sot",
-            AAIProperties.RESOURCE_VERSION, "123",
-            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
-            AAIProperties.LAST_MOD_TS, 333);
+                "/network/vnfcs/vnfc/a-name", AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
+                AAIProperties.CREATED_TS, 123, AAIProperties.SOURCE_OF_TRUTH, "sot", AAIProperties.RESOURCE_VERSION,
+                "123", AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot", AAIProperties.LAST_MOD_TS, 333);
         edgeSer.addEdge(graph.traversal(), gvnf, vnfc, "uses");
 
         Introspector relData = loader.introspectorFromName("relationship-data");
@@ -337,21 +321,13 @@ public class DbSerializer_needsFakeRulesTest {
         engine.startTransaction();
 
         Vertex gvnf = engine.tx().addVertex("aai-node-type", "generic-vnf", "vnf-id", "myvnf", "aai-uri",
-                "/network/generic-vnfs/generic-vnf/myvnf",
-            AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
-            AAIProperties.CREATED_TS, 123,
-            AAIProperties.SOURCE_OF_TRUTH, "sot",
-            AAIProperties.RESOURCE_VERSION, "123",
-            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
-            AAIProperties.LAST_MOD_TS, 333);
+                "/network/generic-vnfs/generic-vnf/myvnf", AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
+                AAIProperties.CREATED_TS, 123, AAIProperties.SOURCE_OF_TRUTH, "sot", AAIProperties.RESOURCE_VERSION,
+                "123", AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot", AAIProperties.LAST_MOD_TS, 333);
         Vertex vnfc = engine.tx().addVertex("aai-node-type", "vnfc", "vnfc-name", "a-name", "aai-uri",
-                "/network/vnfcs/vnfc/a-name",
-            AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
-            AAIProperties.CREATED_TS, 123,
-            AAIProperties.SOURCE_OF_TRUTH, "sot",
-            AAIProperties.RESOURCE_VERSION, "123",
-            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
-            AAIProperties.LAST_MOD_TS, 333);
+                "/network/vnfcs/vnfc/a-name", AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
+                AAIProperties.CREATED_TS, 123, AAIProperties.SOURCE_OF_TRUTH, "sot", AAIProperties.RESOURCE_VERSION,
+                "123", AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot", AAIProperties.LAST_MOD_TS, 333);
 
         Introspector relData = loader.introspectorFromName("relationship-data");
         relData.setValue("relationship-key", "vnfc.vnfc-name");
@@ -380,21 +356,13 @@ public class DbSerializer_needsFakeRulesTest {
         engine.startTransaction();
 
         Vertex gvnf = engine.tx().addVertex("aai-node-type", "generic-vnf", "vnf-id", "myvnf", "aai-uri",
-                "/network/generic-vnfs/generic-vnf/myvnf",
-            AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
-            AAIProperties.CREATED_TS, 123,
-            AAIProperties.SOURCE_OF_TRUTH, "sot",
-            AAIProperties.RESOURCE_VERSION, "123",
-            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
-            AAIProperties.LAST_MOD_TS, 333);
+                "/network/generic-vnfs/generic-vnf/myvnf", AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
+                AAIProperties.CREATED_TS, 123, AAIProperties.SOURCE_OF_TRUTH, "sot", AAIProperties.RESOURCE_VERSION,
+                "123", AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot", AAIProperties.LAST_MOD_TS, 333);
         Vertex vnfc = engine.tx().addVertex("aai-node-type", "vnfc", "vnfc-name", "a-name", "aai-uri",
-                "/network/vnfcs/vnfc/a-name",
-            AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
-            AAIProperties.CREATED_TS, 123,
-            AAIProperties.SOURCE_OF_TRUTH, "sot",
-            AAIProperties.RESOURCE_VERSION, "123",
-            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
-            AAIProperties.LAST_MOD_TS, 333);
+                "/network/vnfcs/vnfc/a-name", AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
+                AAIProperties.CREATED_TS, 123, AAIProperties.SOURCE_OF_TRUTH, "sot", AAIProperties.RESOURCE_VERSION,
+                "123", AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot", AAIProperties.LAST_MOD_TS, 333);
         edgeSer.addEdge(graph.traversal(), gvnf, vnfc, "uses");
         edgeSer.addEdge(graph.traversal(), gvnf, vnfc, "re-uses");
         edgeSer.addEdge(graph.traversal(), gvnf, vnfc, "over-uses");
@@ -430,21 +398,13 @@ public class DbSerializer_needsFakeRulesTest {
         engine.startTransaction();
 
         Vertex gvnf = engine.tx().addVertex("aai-node-type", "generic-vnf", "vnf-id", "myvnf", "aai-uri",
-                "/network/generic-vnfs/generic-vnf/myvnf",
-            AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
-            AAIProperties.CREATED_TS, 123,
-            AAIProperties.SOURCE_OF_TRUTH, "sot",
-            AAIProperties.RESOURCE_VERSION, "123",
-            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
-            AAIProperties.LAST_MOD_TS, 333);
+                "/network/generic-vnfs/generic-vnf/myvnf", AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
+                AAIProperties.CREATED_TS, 123, AAIProperties.SOURCE_OF_TRUTH, "sot", AAIProperties.RESOURCE_VERSION,
+                "123", AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot", AAIProperties.LAST_MOD_TS, 333);
         Vertex vnfc = engine.tx().addVertex("aai-node-type", "vnfc", "vnfc-name", "a-name", "aai-uri",
-                "/network/vnfcs/vnfc/a-name",
-            AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
-            AAIProperties.CREATED_TS, 123,
-            AAIProperties.SOURCE_OF_TRUTH, "sot",
-            AAIProperties.RESOURCE_VERSION, "123",
-            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
-            AAIProperties.LAST_MOD_TS, 333);
+                "/network/vnfcs/vnfc/a-name", AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
+                AAIProperties.CREATED_TS, 123, AAIProperties.SOURCE_OF_TRUTH, "sot", AAIProperties.RESOURCE_VERSION,
+                "123", AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot", AAIProperties.LAST_MOD_TS, 333);
         edgeSer.addEdge(graph.traversal(), gvnf, vnfc, "uses");
         edgeSer.addEdge(graph.traversal(), gvnf, vnfc, "re-uses");
         edgeSer.addEdge(graph.traversal(), gvnf, vnfc, "over-uses");
@@ -512,12 +472,10 @@ public class DbSerializer_needsFakeRulesTest {
 
         engine.startTransaction();
 
-        engine.tx().addVertex("aai-node-type", "vnfc", "vnfc-name", "a-name", "aai-uri", "/network/vnfcs/vnfc/a-name", "aai-uuid", "b",
-            AAIProperties.CREATED_TS, 123,
-            AAIProperties.SOURCE_OF_TRUTH, "sot",
-            AAIProperties.RESOURCE_VERSION, "123",
-            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
-            AAIProperties.LAST_MOD_TS, 333);
+        engine.tx().addVertex("aai-node-type", "vnfc", "vnfc-name", "a-name", "aai-uri", "/network/vnfcs/vnfc/a-name",
+                "aai-uuid", "b", AAIProperties.CREATED_TS, 123, AAIProperties.SOURCE_OF_TRUTH, "sot",
+                AAIProperties.RESOURCE_VERSION, "123", AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
+                AAIProperties.LAST_MOD_TS, 333);
 
         Introspector relationship = loader.introspectorFromName("relationship");
         relationship.setValue("related-to", "vnfc");
@@ -567,12 +525,9 @@ public class DbSerializer_needsFakeRulesTest {
         engine.startTransaction();
 
         engine.tx().addVertex("aai-node-type", "vnfc", "vnfc-name", "a-name", "aai-uri", "/network/vnfcs/vnfc/a-name",
-            AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
-            AAIProperties.CREATED_TS, 123,
-            AAIProperties.SOURCE_OF_TRUTH, "sot",
-            AAIProperties.RESOURCE_VERSION, "123",
-            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
-            AAIProperties.LAST_MOD_TS, 333);
+                AAIProperties.AAI_UUID, UUID.randomUUID().toString(), AAIProperties.CREATED_TS, 123,
+                AAIProperties.SOURCE_OF_TRUTH, "sot", AAIProperties.RESOURCE_VERSION, "123",
+                AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot", AAIProperties.LAST_MOD_TS, 333);
 
         Introspector relationship = loader.introspectorFromName("relationship");
         relationship.setValue("related-to", "vnfc");
@@ -653,12 +608,9 @@ public class DbSerializer_needsFakeRulesTest {
 
         engine.startTransaction();
         engine.tx().addVertex("aai-node-type", "vnfc", "vnfc-name", "a-name", "aai-uri", "/network/vnfcs/vnfc/a-name",
-            AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
-            AAIProperties.CREATED_TS, 123,
-            AAIProperties.SOURCE_OF_TRUTH, "sot",
-            AAIProperties.RESOURCE_VERSION, "123",
-            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
-            AAIProperties.LAST_MOD_TS, 333);
+                AAIProperties.AAI_UUID, UUID.randomUUID().toString(), AAIProperties.CREATED_TS, 123,
+                AAIProperties.SOURCE_OF_TRUTH, "sot", AAIProperties.RESOURCE_VERSION, "123",
+                AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot", AAIProperties.LAST_MOD_TS, 333);
 
         Introspector relationship;
         Introspector relationshipList;
@@ -726,12 +678,9 @@ public class DbSerializer_needsFakeRulesTest {
 
         engine.startTransaction();
         engine.tx().addVertex("aai-node-type", "vnfc", "vnfc-name", "a-name", "aai-uri", "/network/vnfcs/vnfc/a-name",
-            AAIProperties.AAI_UUID, UUID.randomUUID().toString(),
-            AAIProperties.CREATED_TS, 123,
-            AAIProperties.SOURCE_OF_TRUTH, "sot",
-            AAIProperties.RESOURCE_VERSION, "123",
-            AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot",
-            AAIProperties.LAST_MOD_TS, 333);
+                AAIProperties.AAI_UUID, UUID.randomUUID().toString(), AAIProperties.CREATED_TS, 123,
+                AAIProperties.SOURCE_OF_TRUTH, "sot", AAIProperties.RESOURCE_VERSION, "123",
+                AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot", AAIProperties.LAST_MOD_TS, 333);
 
         Introspector relationship;
         Introspector relationshipList;

@@ -17,10 +17,22 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.rest;
+
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.junit.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.*;
+
+import javax.ws.rs.core.Response;
+
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.janusgraph.core.JanusGraph;
@@ -45,15 +57,6 @@ import org.onap.aai.serialization.engines.QueryStyle;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.test.annotation.DirtiesContext;
 
-import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.*;
-
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.junit.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-
 @RunWith(value = Parameterized.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class NotificationDmaapEventTest extends AAISetup {
@@ -63,14 +66,12 @@ public class NotificationDmaapEventTest extends AAISetup {
 
     @Parameterized.Parameters(name = "QueryStyle.{0}")
     public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][] {
-            { QueryStyle.TRAVERSAL },
-            { QueryStyle.TRAVERSAL_URI }
-        });
+        return Arrays.asList(new Object[][] {{QueryStyle.TRAVERSAL}, {QueryStyle.TRAVERSAL_URI}});
     }
 
     @Test
-    public void testCreateWithPserverWithAllChildrenAndVerifyMultipleNotificationsWhenNotificationDepthIsZero() throws IOException, AAIException {
+    public void testCreateWithPserverWithAllChildrenAndVerifyMultipleNotificationsWhenNotificationDepthIsZero()
+            throws IOException, AAIException {
 
         String uri = "/aai/v14/cloud-infrastructure/pservers/pserver/example-hostname-val-85598";
         UEBNotification notification = Mockito.spy(new UEBNotification(ModelType.MOXY, loaderFactory, schemaVersions));
@@ -93,15 +94,9 @@ public class NotificationDmaapEventTest extends AAISetup {
 
             String header = event.getEventHeader().marshal(false);
 
-            assertThat(
-                event.getEventHeader().marshal(false),
-                containsString("\"CREATE\"")
-            );
+            assertThat(event.getEventHeader().marshal(false), containsString("\"CREATE\""));
 
-            assertThat(
-                header,
-                containsString("\"top-entity-type\":\"pserver\"")
-            );
+            assertThat(header, containsString("\"top-entity-type\":\"pserver\""));
 
         });
 
@@ -111,7 +106,8 @@ public class NotificationDmaapEventTest extends AAISetup {
 
     // Test existing pserver create new pinterface check dmaap event for pinterface is CREATE
     @Test
-    public void testExistingPserverCreateNewChildPInterfaceAndCheckDmaapEventForPInterfaceIsCreateWhenNotificationDepthIsZero() throws IOException, AAIException {
+    public void testExistingPserverCreateNewChildPInterfaceAndCheckDmaapEventForPInterfaceIsCreateWhenNotificationDepthIsZero()
+            throws IOException, AAIException {
 
         String uri = "/aai/v14/cloud-infrastructure/pservers/pserver/example-hostname-val-85598";
         UEBNotification notification = Mockito.spy(new UEBNotification(ModelType.MOXY, loaderFactory, schemaVersions));
@@ -126,8 +122,7 @@ public class NotificationDmaapEventTest extends AAISetup {
         assertEquals("Expecting the pserver to be created", 201, response.getStatus());
         notification.clearEvents();
 
-
-        response = httpTestUtil.doGet(uri , "all");
+        response = httpTestUtil.doGet(uri, "all");
         assertEquals("Expecting the pserver to be found", 200, response.getStatus());
 
         JSONObject pserverJson = new JSONObject(response.getEntity().toString());
@@ -153,15 +148,18 @@ public class NotificationDmaapEventTest extends AAISetup {
         assertThat(notificationEventHeader, containsString("\"entity-type\":\"p-interface\""));
         assertThat(notificationEventHeader, containsString("\"top-entity-type\":\"pserver\""));
 
-        String expectedNotificationHeader = PayloadUtil.getResourcePayload("notification-dmaap-events/depth-zero/expected-notification-header-create-child-on-existing-obj.json");
-        String expectedNotificationBody = PayloadUtil.getResourcePayload("notification-dmaap-events/depth-zero/expected-notification-body-create-child-on-existing-obj.json");
+        String expectedNotificationHeader = PayloadUtil.getResourcePayload(
+                "notification-dmaap-events/depth-zero/expected-notification-header-create-child-on-existing-obj.json");
+        String expectedNotificationBody = PayloadUtil.getResourcePayload(
+                "notification-dmaap-events/depth-zero/expected-notification-body-create-child-on-existing-obj.json");
 
         JSONAssert.assertEquals(expectedNotificationHeader, notificationEventHeader, false);
         JSONAssert.assertEquals(expectedNotificationBody, notificationEventBody, false);
     }
 
     @Test
-    public void testExistingPserverCreateNewChildPInterfaceAndCheckDmaapEventForPserverIsSentWithNewPInterfaceWhenNotificationDepthIsAll() throws IOException, AAIException {
+    public void testExistingPserverCreateNewChildPInterfaceAndCheckDmaapEventForPserverIsSentWithNewPInterfaceWhenNotificationDepthIsAll()
+            throws IOException, AAIException {
 
         String uri = "/aai/v14/cloud-infrastructure/pservers/pserver/example-hostname-val-85598";
         UEBNotification notification = Mockito.spy(new UEBNotification(ModelType.MOXY, loaderFactory, schemaVersions));
@@ -175,7 +173,7 @@ public class NotificationDmaapEventTest extends AAISetup {
         response = httpTestUtil.doPut(uri, pserverResource);
         assertEquals("Expecting the pserver to be created", 201, response.getStatus());
 
-        response = httpTestUtil.doGet(uri , "all");
+        response = httpTestUtil.doGet(uri, "all");
         assertEquals("Expecting the pserver to be found", 200, response.getStatus());
 
         JSONObject pserverJson = new JSONObject(response.getEntity().toString());
@@ -203,8 +201,10 @@ public class NotificationDmaapEventTest extends AAISetup {
         assertThat(notificationEventHeader, containsString("\"entity-type\":\"pserver\""));
         assertThat(notificationEventHeader, containsString("\"top-entity-type\":\"pserver\""));
 
-        String expectedNotificationHeader = PayloadUtil.getResourcePayload("notification-dmaap-events/depth-all/expected-notification-header-create-child-on-existing-obj.json");
-        String expectedNotificationBody = PayloadUtil.getResourcePayload("notification-dmaap-events/depth-all/expected-notification-body-create-child-on-existing-obj.json");
+        String expectedNotificationHeader = PayloadUtil.getResourcePayload(
+                "notification-dmaap-events/depth-all/expected-notification-header-create-child-on-existing-obj.json");
+        String expectedNotificationBody = PayloadUtil.getResourcePayload(
+                "notification-dmaap-events/depth-all/expected-notification-body-create-child-on-existing-obj.json");
 
         JSONAssert.assertEquals(expectedNotificationHeader, notificationEventHeader, false);
         JSONAssert.assertEquals(expectedNotificationBody, notificationEventBody, false);
@@ -215,20 +215,19 @@ public class NotificationDmaapEventTest extends AAISetup {
 
         // After an pserver's p-interface is updated on the pserver, even though
         // the pserver nothing changed, expecting the pserver resource version to be changed
-        assertThat(
-            "Expecting the new pserver resource version and old resource version to be not same",
-            newPserverResourceVersion,
-            is(not(pserverResourceVersion))
-        );
+        assertThat("Expecting the new pserver resource version and old resource version to be not same",
+                newPserverResourceVersion, is(not(pserverResourceVersion)));
         assertEquals("Expecting the p-interface to be found", 200, response.getStatus());
     }
 
     // Test Bulk Scenario
     @Test
-    public void testBulkScenarioWhereMultipleCreatesAndEnsureNoDuplicationInDmaapEventsWhenNotificationDepthIsZero() throws UnsupportedEncodingException, AAIException {
+    public void testBulkScenarioWhereMultipleCreatesAndEnsureNoDuplicationInDmaapEventsWhenNotificationDepthIsZero()
+            throws UnsupportedEncodingException, AAIException {
 
         String pserverUri = "/aai/v14/cloud-infrastructure/pservers/pserver/random-pserver";
-        String cloudRegionUri = "/aai/v14/cloud-infrastructure/cloud-regions/cloud-region/random-cloud-region-owner/random-cloud-region-id";
+        String cloudRegionUri =
+                "/aai/v14/cloud-infrastructure/cloud-regions/cloud-region/random-cloud-region-owner/random-cloud-region-id";
 
         UEBNotification notification = Mockito.spy(new UEBNotification(ModelType.MOXY, loaderFactory, schemaVersions));
         HttpTestUtil httpTestUtil = new HttpTestUtil(queryStyle, notification, AAIProperties.MINIMUM_DEPTH);
@@ -252,12 +251,13 @@ public class NotificationDmaapEventTest extends AAISetup {
         });
     }
 
-
     @Test
-    public void testBulkScenarioWhereMultipleCreatesAndEnsureNoDuplicationInDmaapEventsWhenNotificationDepthIsAll() throws UnsupportedEncodingException, AAIException {
+    public void testBulkScenarioWhereMultipleCreatesAndEnsureNoDuplicationInDmaapEventsWhenNotificationDepthIsAll()
+            throws UnsupportedEncodingException, AAIException {
 
         String pserverUri = "/aai/v14/cloud-infrastructure/pservers/pserver/random-pserver";
-        String cloudRegionUri = "/aai/v14/cloud-infrastructure/cloud-regions/cloud-region/random-cloud-region-owner/random-cloud-region-id";
+        String cloudRegionUri =
+                "/aai/v14/cloud-infrastructure/cloud-regions/cloud-region/random-cloud-region-owner/random-cloud-region-id";
 
         UEBNotification notification = Mockito.spy(new UEBNotification(ModelType.MOXY, loaderFactory, schemaVersions));
         HttpTestUtil httpTestUtil = new HttpTestUtil(queryStyle, notification, AAIProperties.MAXIMUM_DEPTH);
@@ -282,7 +282,8 @@ public class NotificationDmaapEventTest extends AAISetup {
     }
 
     @Test
-    public void testDeleteOnExistingPserverAndCheckIfNotificationDepthIsZeroThatAllEventsHaveDeleteAndThatDepthIsZeroOnEachNotificationEvent() throws IOException, AAIException {
+    public void testDeleteOnExistingPserverAndCheckIfNotificationDepthIsZeroThatAllEventsHaveDeleteAndThatDepthIsZeroOnEachNotificationEvent()
+            throws IOException, AAIException {
         String uri = "/aai/v14/cloud-infrastructure/pservers/pserver/example-hostname-val-85598";
         UEBNotification notification = Mockito.spy(new UEBNotification(ModelType.MOXY, loaderFactory, schemaVersions));
         HttpTestUtil httpTestUtil = new HttpTestUtil(queryStyle);
@@ -295,7 +296,7 @@ public class NotificationDmaapEventTest extends AAISetup {
         response = httpTestUtil.doPut(uri, pserverResource);
         assertEquals("Expecting the pserver to be created", 201, response.getStatus());
 
-        response = httpTestUtil.doGet(uri , "all");
+        response = httpTestUtil.doGet(uri, "all");
         assertEquals("Expecting the pserver to be found", 200, response.getStatus());
 
         JSONObject pserverObject = new JSONObject(response.getEntity().toString());
@@ -312,18 +313,11 @@ public class NotificationDmaapEventTest extends AAISetup {
 
             String header = event.getEventHeader().marshal(false);
 
-            assertThat(
-                event.getEventHeader().marshal(false),
-                containsString("\"DELETE\"")
-            );
+            assertThat(event.getEventHeader().marshal(false), containsString("\"DELETE\""));
 
-            assertThat(
-                header,
-                containsString("\"top-entity-type\":\"pserver\"")
-            );
+            assertThat(header, containsString("\"top-entity-type\":\"pserver\""));
         });
     }
-
 
     @Test
     public void testDeleteOnExistingResourceVersionMismatchNoEventGenerated() throws IOException, AAIException {
@@ -339,27 +333,27 @@ public class NotificationDmaapEventTest extends AAISetup {
         response = httpTestUtil.doPut(uri, pserverResource);
         assertEquals("Expecting the pserver to be created", 201, response.getStatus());
 
-        response = httpTestUtil.doGet(uri , "all");
+        response = httpTestUtil.doGet(uri, "all");
         assertEquals("Expecting the pserver to be found", 200, response.getStatus());
 
         JSONObject pserverObject = new JSONObject(response.getEntity().toString());
         String resourceVersion = pserverObject.getString("resource-version");
 
         httpTestUtil = new HttpTestUtil(queryStyle, notification, AAIProperties.MINIMUM_DEPTH);
-        response = httpTestUtil.doDelete(uri, resourceVersion+"123");
+        response = httpTestUtil.doDelete(uri, resourceVersion + "123");
         assertEquals("Resource version mismatch exception", 412, response.getStatus());
 
         List<NotificationEvent> notificationEvents = notification.getEvents();
         assertThat(notificationEvents.size(), is(0));
     }
 
-
     // Test notification depth set to all
     // Scenario for testing the creation of pserver with children, grandchildren
     // Default behaviour is for one event to be sent out
     // which includes all the children and grandchildren, etc
     @Test
-    public void testCreateWithPserverWithAllChildrenAndVerifyOneNotificationWhenNotificationDepthIsAll() throws IOException, AAIException {
+    public void testCreateWithPserverWithAllChildrenAndVerifyOneNotificationWhenNotificationDepthIsAll()
+            throws IOException, AAIException {
 
         String uri = "/aai/v14/cloud-infrastructure/pservers/pserver/example-hostname-val-85598";
         UEBNotification notification = Mockito.spy(new UEBNotification(ModelType.MOXY, loaderFactory, schemaVersions));
@@ -380,25 +374,13 @@ public class NotificationDmaapEventTest extends AAISetup {
         // Verify all the events are create since its a new PUT
         String header = notificationEvent.getEventHeader().marshal(false);
 
-        assertThat(
-            header,
-            containsString("\"CREATE\"")
-        );
+        assertThat(header, containsString("\"CREATE\""));
 
-        assertThat(
-            header,
-            containsString("\"entity-type\":\"pserver\"")
-        );
+        assertThat(header, containsString("\"entity-type\":\"pserver\""));
 
-        assertThat(
-            header,
-            containsString("\"top-entity-type\":\"pserver\"")
-        );
+        assertThat(header, containsString("\"top-entity-type\":\"pserver\""));
 
-        assertThat(
-            header,
-            containsString("\"entity-link\":\"" + uri +  "\"")
-        );
+        assertThat(header, containsString("\"entity-link\":\"" + uri + "\""));
 
         response = httpTestUtil.doGet(uri);
         assertEquals("Expecting the pserver to be found", 200, response.getStatus());
@@ -407,7 +389,8 @@ public class NotificationDmaapEventTest extends AAISetup {
     }
 
     @Test
-    public void testPatchExistingPserverWithChildrenAndModifyOnlyOneObjectAndVerifyThatOnlyOneNotificationEventNoChildrenWhenNotificationDepthIsZero() throws IOException, AAIException {
+    public void testPatchExistingPserverWithChildrenAndModifyOnlyOneObjectAndVerifyThatOnlyOneNotificationEventNoChildrenWhenNotificationDepthIsZero()
+            throws IOException, AAIException {
 
         String uri = "/aai/v14/cloud-infrastructure/pservers/pserver/example-hostname-val-85598";
         UEBNotification notification = Mockito.spy(new UEBNotification(ModelType.MOXY, loaderFactory, schemaVersions));
@@ -443,7 +426,8 @@ public class NotificationDmaapEventTest extends AAISetup {
     }
 
     @Test
-    public void testPatchExistingPserverWithChildrenAndModifyOnlyOneObjectAndVerifyThatOnlyOneNotificationEventIncludeChildrenWhenNotificationDepthIsAll() throws IOException, AAIException {
+    public void testPatchExistingPserverWithChildrenAndModifyOnlyOneObjectAndVerifyThatOnlyOneNotificationEventIncludeChildrenWhenNotificationDepthIsAll()
+            throws IOException, AAIException {
 
         String uri = "/aai/v14/cloud-infrastructure/pservers/pserver/example-hostname-val-85598";
         UEBNotification notification = Mockito.spy(new UEBNotification(ModelType.MOXY, loaderFactory, schemaVersions));
@@ -482,7 +466,8 @@ public class NotificationDmaapEventTest extends AAISetup {
     // Scenario where we are only updating one field in p-interface
     // Make sure the parent and children are included
     @Test
-    public void testUpdateExistingPserverWithChildrenAndModifyOnlyOneObjectAndVerifyThatOnlyOneNotificationEventIncludingChildrenWhenNotificationDepthIsAll() throws IOException, AAIException {
+    public void testUpdateExistingPserverWithChildrenAndModifyOnlyOneObjectAndVerifyThatOnlyOneNotificationEventIncludingChildrenWhenNotificationDepthIsAll()
+            throws IOException, AAIException {
 
         String uri = "/aai/v14/cloud-infrastructure/pservers/pserver/example-hostname-val-85598";
         UEBNotification notification = Mockito.spy(new UEBNotification(ModelType.MOXY, loaderFactory, schemaVersions));
@@ -506,7 +491,8 @@ public class NotificationDmaapEventTest extends AAISetup {
         pInterfaceObject.put("equipment-identifier", "new-equipment-identifier");
 
         httpTestUtil = new HttpTestUtil(queryStyle, notification, AAIProperties.MAXIMUM_DEPTH);
-        response = httpTestUtil.doPut(uri + "/p-interfaces/p-interface/example-interface-name-val-46147", pInterfaceObject.toString());
+        response = httpTestUtil.doPut(uri + "/p-interfaces/p-interface/example-interface-name-val-46147",
+                pInterfaceObject.toString());
         assertThat(response.getStatus(), is(200));
 
         // Get the parent uri as the notification event json has parent structure it makes it easy to compare
@@ -524,7 +510,8 @@ public class NotificationDmaapEventTest extends AAISetup {
     // Test notification depth set to 0
     // Scenario where we are only updating one field in p-interface
     @Test
-    public void testUpdateExistingPserverWithChildrenAndModifyOnlyPInterfaceAndVerifyThatOnlyOneNotificationForPInterfaceIsCreatedWhenNotificationDepthIsZero() throws IOException, AAIException {
+    public void testUpdateExistingPserverWithChildrenAndModifyOnlyPInterfaceAndVerifyThatOnlyOneNotificationForPInterfaceIsCreatedWhenNotificationDepthIsZero()
+            throws IOException, AAIException {
 
         String uri = "/aai/v14/cloud-infrastructure/pservers/pserver/example-hostname-val-85598";
         UEBNotification notification = Mockito.spy(new UEBNotification(ModelType.MOXY, loaderFactory, schemaVersions));
@@ -548,7 +535,8 @@ public class NotificationDmaapEventTest extends AAISetup {
         pInterfaceObject.put("equipment-identifier", "new-equipment-identifier");
 
         httpTestUtil = new HttpTestUtil(queryStyle, notification, AAIProperties.MINIMUM_DEPTH);
-        response = httpTestUtil.doPut(uri + "/p-interfaces/p-interface/example-interface-name-val-46147", pInterfaceObject.toString());
+        response = httpTestUtil.doPut(uri + "/p-interfaces/p-interface/example-interface-name-val-46147",
+                pInterfaceObject.toString());
         assertThat(response.getStatus(), is(200));
 
         response = httpTestUtil.doGet(uri);
@@ -562,7 +550,8 @@ public class NotificationDmaapEventTest extends AAISetup {
     }
 
     @Test
-    public void testExistingPserverWithChildAndGenericVnfAndCreateEdgeBetweenThemAndCheckNoChildWhenNotificationDepthIsZero() throws IOException, AAIException {
+    public void testExistingPserverWithChildAndGenericVnfAndCreateEdgeBetweenThemAndCheckNoChildWhenNotificationDepthIsZero()
+            throws IOException, AAIException {
 
         String hostname = "example-hostname-val-85598";
 
@@ -604,11 +593,14 @@ public class NotificationDmaapEventTest extends AAISetup {
         List<NotificationEvent> notificationEvents = notification.getEvents();
         assertThat(notificationEvents.size(), is(2));
 
-        String expectedNotificationHeader = PayloadUtil.getResourcePayload("notification-dmaap-events/depth-zero/expected-notification-header-create-edge-between-pserver-and-generic-vnf.json");
-        String expectedNotificationBody = PayloadUtil.getResourcePayload("notification-dmaap-events/depth-zero/expected-notification-body-create-edge-between-pserver-and-generic-vnf.json");
+        String expectedNotificationHeader = PayloadUtil.getResourcePayload(
+                "notification-dmaap-events/depth-zero/expected-notification-header-create-edge-between-pserver-and-generic-vnf.json");
+        String expectedNotificationBody = PayloadUtil.getResourcePayload(
+                "notification-dmaap-events/depth-zero/expected-notification-body-create-edge-between-pserver-and-generic-vnf.json");
 
-        JSONAssert.assertEquals(expectedNotificationHeader, notificationEvents.get(0).getEventHeader().marshal(false), false);
-        JSONAssert.assertEquals(expectedNotificationBody, notificationEvents.get(0).getObj().marshal(false),  false);
+        JSONAssert.assertEquals(expectedNotificationHeader, notificationEvents.get(0).getEventHeader().marshal(false),
+                false);
+        JSONAssert.assertEquals(expectedNotificationBody, notificationEvents.get(0).getObj().marshal(false), false);
 
         response = httpTestUtil.doGet(genericVnfUri);
 
@@ -617,7 +609,8 @@ public class NotificationDmaapEventTest extends AAISetup {
     }
 
     @Test
-    public void testExistingPserverWithChildAndGenericVnfAndCreateEdgeBetweenThemAndCheckChildrenIncludedWhenNotificationDepthIsAll() throws IOException, AAIException {
+    public void testExistingPserverWithChildAndGenericVnfAndCreateEdgeBetweenThemAndCheckChildrenIncludedWhenNotificationDepthIsAll()
+            throws IOException, AAIException {
 
         String hostname = "example-hostname-val-85598";
 
@@ -659,12 +652,15 @@ public class NotificationDmaapEventTest extends AAISetup {
         List<NotificationEvent> notificationEvents = notification.getEvents();
         assertThat(notificationEvents.size(), is(2));
 
-        String expectedNotificationHeader = PayloadUtil.getResourcePayload("notification-dmaap-events/depth-all/expected-notification-header-create-edge-between-pserver-and-generic-vnf.json");
-        String expectedNotificationBody   = PayloadUtil.getResourcePayload("notification-dmaap-events/depth-all/expected-notification-body-create-edge-between-pserver-and-generic-vnf.json");
+        String expectedNotificationHeader = PayloadUtil.getResourcePayload(
+                "notification-dmaap-events/depth-all/expected-notification-header-create-edge-between-pserver-and-generic-vnf.json");
+        String expectedNotificationBody = PayloadUtil.getResourcePayload(
+                "notification-dmaap-events/depth-all/expected-notification-body-create-edge-between-pserver-and-generic-vnf.json");
 
         System.out.println("Notification Body: " + notificationEvents.get(0).getObj().marshal(false));
-        JSONAssert.assertEquals(expectedNotificationHeader, notificationEvents.get(0).getEventHeader().marshal(false), false);
-        JSONAssert.assertEquals(expectedNotificationBody, notificationEvents.get(0).getObj().marshal(false),  false);
+        JSONAssert.assertEquals(expectedNotificationHeader, notificationEvents.get(0).getEventHeader().marshal(false),
+                false);
+        JSONAssert.assertEquals(expectedNotificationBody, notificationEvents.get(0).getObj().marshal(false), false);
 
         response = httpTestUtil.doGet(genericVnfUri);
 
@@ -673,7 +669,8 @@ public class NotificationDmaapEventTest extends AAISetup {
     }
 
     @Test
-    public void testExistingPserverWithChildAndGenericVnfAndExistingEdgeBetweenThemAndDeleteEdgeAndCheckNoChildWhenNotificationDepthIsZero() throws IOException, AAIException {
+    public void testExistingPserverWithChildAndGenericVnfAndExistingEdgeBetweenThemAndDeleteEdgeAndCheckNoChildWhenNotificationDepthIsZero()
+            throws IOException, AAIException {
 
         String hostname = "example-hostname-val-85598";
 
@@ -706,7 +703,6 @@ public class NotificationDmaapEventTest extends AAISetup {
         response = httpTestUtil.doGet(genericVnfUri);
         assertEquals("Expecting the generic-vnf to be found", 200, response.getStatus());
         assertThat(response.getEntity().toString(), not(containsString(hostname)));
-
 
         response = httpTestUtil.doPut(pserverUri + "/relationship-list/relationship", relationship);
         assertEquals("Expecting the pserver to generic-vnf relationship to be created", 200, response.getStatus());
@@ -734,16 +730,20 @@ public class NotificationDmaapEventTest extends AAISetup {
 
         assertThat(notificationEvents.size(), is(2));
 
-        String expectedNotificationHeader = PayloadUtil.getResourcePayload("notification-dmaap-events/depth-zero/expected-notification-header-delete-edge-between-pserver-and-generic-vnf.json");
-        String expectedNotificationBody = PayloadUtil.getResourcePayload("notification-dmaap-events/depth-zero/expected-notification-body-delete-edge-between-pserver-and-generic-vnf.json");
+        String expectedNotificationHeader = PayloadUtil.getResourcePayload(
+                "notification-dmaap-events/depth-zero/expected-notification-header-delete-edge-between-pserver-and-generic-vnf.json");
+        String expectedNotificationBody = PayloadUtil.getResourcePayload(
+                "notification-dmaap-events/depth-zero/expected-notification-body-delete-edge-between-pserver-and-generic-vnf.json");
 
-        JSONAssert.assertEquals(expectedNotificationHeader, notificationEvents.get(0).getEventHeader().marshal(false), false);
-        JSONAssert.assertEquals(expectedNotificationBody, notificationEvents.get(0).getObj().marshal(false),  false);
+        JSONAssert.assertEquals(expectedNotificationHeader, notificationEvents.get(0).getEventHeader().marshal(false),
+                false);
+        JSONAssert.assertEquals(expectedNotificationBody, notificationEvents.get(0).getObj().marshal(false), false);
 
     }
 
     @Test
-    public void testExistingPserverWithChildAndGenericVnfAndExistingEdgeBetweenThemAndDeleteEdgeAndCheckChildrenWhenNotificationDepthIsAll() throws IOException, AAIException {
+    public void testExistingPserverWithChildAndGenericVnfAndExistingEdgeBetweenThemAndDeleteEdgeAndCheckChildrenWhenNotificationDepthIsAll()
+            throws IOException, AAIException {
 
         String hostname = "example-hostname-val-85598";
 
@@ -777,7 +777,6 @@ public class NotificationDmaapEventTest extends AAISetup {
         assertEquals("Expecting the generic-vnf to be found", 200, response.getStatus());
         assertThat(response.getEntity().toString(), not(containsString(hostname)));
 
-
         response = httpTestUtil.doPut(pserverUri + "/relationship-list/relationship", relationship);
         assertEquals("Expecting the pserver to generic-vnf relationship to be created", 200, response.getStatus());
 
@@ -803,16 +802,20 @@ public class NotificationDmaapEventTest extends AAISetup {
         List<NotificationEvent> notificationEvents = notification.getEvents();
         assertThat(notificationEvents.size(), is(2));
 
-        String expectedNotificationHeader = PayloadUtil.getResourcePayload("notification-dmaap-events/depth-all/expected-notification-header-delete-edge-between-pserver-and-generic-vnf.json");
-        String expectedNotificationBody = PayloadUtil.getResourcePayload("notification-dmaap-events/depth-all/expected-notification-body-delete-edge-between-pserver-and-generic-vnf.json");
+        String expectedNotificationHeader = PayloadUtil.getResourcePayload(
+                "notification-dmaap-events/depth-all/expected-notification-header-delete-edge-between-pserver-and-generic-vnf.json");
+        String expectedNotificationBody = PayloadUtil.getResourcePayload(
+                "notification-dmaap-events/depth-all/expected-notification-body-delete-edge-between-pserver-and-generic-vnf.json");
 
-        JSONAssert.assertEquals(expectedNotificationHeader, notificationEvents.get(0).getEventHeader().marshal(false), false);
-        JSONAssert.assertEquals(expectedNotificationBody, notificationEvents.get(0).getObj().marshal(false),  false);
+        JSONAssert.assertEquals(expectedNotificationHeader, notificationEvents.get(0).getEventHeader().marshal(false),
+                false);
+        JSONAssert.assertEquals(expectedNotificationBody, notificationEvents.get(0).getObj().marshal(false), false);
 
     }
 
     @Test
-    public void testDeleteOnExistingResourceVersionMismatchNoEventGeneratedFullDepth() throws IOException, AAIException {
+    public void testDeleteOnExistingResourceVersionMismatchNoEventGeneratedFullDepth()
+            throws IOException, AAIException {
         String uri = "/aai/v14/cloud-infrastructure/pservers/pserver/example-hostname-val-85598";
         UEBNotification notification = Mockito.spy(new UEBNotification(ModelType.MOXY, loaderFactory, schemaVersions));
         HttpTestUtil httpTestUtil = new HttpTestUtil(queryStyle);
@@ -825,14 +828,14 @@ public class NotificationDmaapEventTest extends AAISetup {
         response = httpTestUtil.doPut(uri, pserverResource);
         assertEquals("Expecting the pserver to be created", 201, response.getStatus());
 
-        response = httpTestUtil.doGet(uri , "all");
+        response = httpTestUtil.doGet(uri, "all");
         assertEquals("Expecting the pserver to be found", 200, response.getStatus());
 
         JSONObject pserverObject = new JSONObject(response.getEntity().toString());
         String resourceVersion = pserverObject.getString("resource-version");
 
         httpTestUtil = new HttpTestUtil(queryStyle, notification, AAIProperties.MAXIMUM_DEPTH);
-        response = httpTestUtil.doDelete(uri, resourceVersion+"123");
+        response = httpTestUtil.doDelete(uri, resourceVersion + "123");
         assertEquals("Resource version mismatch exception", 412, response.getStatus());
 
         List<NotificationEvent> notificationEvents = notification.getEvents();
@@ -840,70 +843,74 @@ public class NotificationDmaapEventTest extends AAISetup {
     }
 
     @Test
-    public void testCreateVnfWithChildrenCreateCustomerWithChildrenAndCousinBetweenVlanAndServiceInstanceThenDeleteCustomerVerifyingVlanRV() throws IOException, AAIException {
+    public void testCreateVnfWithChildrenCreateCustomerWithChildrenAndCousinBetweenVlanAndServiceInstanceThenDeleteCustomerVerifyingVlanRV()
+            throws IOException, AAIException {
         UEBNotification notification = Mockito.spy(new UEBNotification(ModelType.MOXY, loaderFactory, schemaVersions));
         HttpTestUtil httpTestUtil = new HttpTestUtil(queryStyle);
 
-        JsonObject paylaods = new JsonParser().parse(
-            PayloadUtil.getResourcePayload("customer_with_children_and_generic-vnf_with_children_and_edge_between_service-instance_vlan.json"))
-            .getAsJsonObject();
+        JsonObject paylaods = new JsonParser().parse(PayloadUtil.getResourcePayload(
+                "customer_with_children_and_generic-vnf_with_children_and_edge_between_service-instance_vlan.json"))
+                .getAsJsonObject();
         String gvnfPaylaod = paylaods.get("generic-vnf").toString();
         String custPaylaod = paylaods.get("customer").toString();
         String gvnfUri = "/aai/v14/network/generic-vnfs/generic-vnf/gvnf";
         String custUri = "/aai/v14/business/customers/customer/cust";
         String vlanUri = "/aai/v14/network/generic-vnfs/generic-vnf/gvnf/l-interfaces/l-interface/lint/vlans/vlan/vlan";
 
-        //Setup generic vnf
+        // Setup generic vnf
         Response response = httpTestUtil.doGet(gvnfUri);
         assertEquals("Expecting the generic-vnf to be not found", 404, response.getStatus());
         response = httpTestUtil.doPut(gvnfUri, gvnfPaylaod);
         assertEquals("Expecting the generic-vnf to be created", 201, response.getStatus());
-        response = httpTestUtil.doGet(gvnfUri , "all");
+        response = httpTestUtil.doGet(gvnfUri, "all");
         assertEquals("Expecting the generic-vnf to be found", 200, response.getStatus());
-        response = httpTestUtil.doGet(vlanUri , "all");
+        response = httpTestUtil.doGet(vlanUri, "all");
         assertEquals("Expecting the vlan to be found", 200, response.getStatus());
         String vlanResourceVersion = new JSONObject(response.getEntity().toString()).getString("resource-version");
 
-        //Setup customer with service instance relation to vlan
+        // Setup customer with service instance relation to vlan
         response = httpTestUtil.doGet(custUri);
         assertEquals("Expecting the customer to be not found", 404, response.getStatus());
         response = httpTestUtil.doPut(custUri, custPaylaod);
         assertEquals("Expecting the customer to be created", 201, response.getStatus());
-        response = httpTestUtil.doGet(custUri , "all");
+        response = httpTestUtil.doGet(custUri, "all");
         assertEquals("Expecting the customer to be found", 200, response.getStatus());
         String custResourceVersion = new JSONObject(response.getEntity().toString()).getString("resource-version");
 
-        //Verify vlan rv was updated
-        response = httpTestUtil.doGet(vlanUri , "all");
+        // Verify vlan rv was updated
+        response = httpTestUtil.doGet(vlanUri, "all");
         assertEquals("Expecting the vlan to be found", 200, response.getStatus());
-        String vlanResourceVersionAfterCustPut = new JSONObject(response.getEntity().toString()).getString("resource-version");
-        assertThat("Expecting the vlan resource version to be updated", vlanResourceVersionAfterCustPut, not(is(vlanResourceVersion)));
+        String vlanResourceVersionAfterCustPut =
+                new JSONObject(response.getEntity().toString()).getString("resource-version");
+        assertThat("Expecting the vlan resource version to be updated", vlanResourceVersionAfterCustPut,
+                not(is(vlanResourceVersion)));
 
-        //Delete customer
+        // Delete customer
         notification.clearEvents();
         httpTestUtil = new HttpTestUtil(queryStyle, notification, AAIProperties.MAXIMUM_DEPTH);
         response = httpTestUtil.doDelete(custUri, custResourceVersion);
         assertEquals("Expecting customer to be deleted", 204, response.getStatus());
 
-        //Verify vlan rv was updated
-        response = httpTestUtil.doGet(vlanUri , "all");
+        // Verify vlan rv was updated
+        response = httpTestUtil.doGet(vlanUri, "all");
         assertEquals("Expecting the vlan to be found", 200, response.getStatus());
-        String vlanResourceVersionAfterDelete = new JSONObject(response.getEntity().toString()).getString("resource-version");
-        assertThat("Expecting the vlan resource version to be updated", vlanResourceVersionAfterDelete, not(is(vlanResourceVersionAfterCustPut)));
+        String vlanResourceVersionAfterDelete =
+                new JSONObject(response.getEntity().toString()).getString("resource-version");
+        assertThat("Expecting the vlan resource version to be updated", vlanResourceVersionAfterDelete,
+                not(is(vlanResourceVersionAfterCustPut)));
 
         List<NotificationEvent> notificationEvents = notification.getEvents();
-        assertThat("Expect the delete to generate 4 events customer, its children and vlan", notificationEvents.size(), is(4));
+        assertThat("Expect the delete to generate 4 events customer, its children and vlan", notificationEvents.size(),
+                is(4));
     }
-
 
     @Test
     public void testBulkCreateOfComplexAndPserverWithRelationshipThenBulkDeleteBoth() throws IOException, AAIException {
         UEBNotification notification = Mockito.spy(new UEBNotification(ModelType.MOXY, loaderFactory, schemaVersions));
         HttpTestUtil httpTestUtil = new HttpTestUtil(queryStyle, notification, AAIProperties.MAXIMUM_DEPTH);
 
-        JsonObject paylaods = new JsonParser().parse(
-            PayloadUtil.getResourcePayload("complex_pserver_with_relation.json"))
-            .getAsJsonObject();
+        JsonObject paylaods = new JsonParser()
+                .parse(PayloadUtil.getResourcePayload("complex_pserver_with_relation.json")).getAsJsonObject();
         String complexPaylaod = paylaods.get("complex").toString();
         String pserverPaylaod = paylaods.get("pserver").toString();
         String complexUri = "/aai/v14/cloud-infrastructure/complexes/complex/complex-1";
@@ -914,17 +921,17 @@ public class NotificationDmaapEventTest extends AAISetup {
         response = httpTestUtil.doGet(pserverUri);
         assertEquals("Expecting the pserver to be not found", 404, response.getStatus());
 
-        Map<String,String> puts = new LinkedHashMap<>();
+        Map<String, String> puts = new LinkedHashMap<>();
         puts.put(complexUri, complexPaylaod);
         puts.put(pserverUri, pserverPaylaod);
 
         response = httpTestUtil.doPut(puts);
         assertEquals("Expecting the puts request to succeed", 201, response.getStatus());
         assertEquals("Expect 2 messages to be created", 2, notification.getEvents().size());
-        response = httpTestUtil.doGet(complexUri , "all");
+        response = httpTestUtil.doGet(complexUri, "all");
         assertEquals("Expecting the complex to be found", 200, response.getStatus());
         String complexRV = new JSONObject(response.getEntity().toString()).getString("resource-version");
-        response = httpTestUtil.doGet(pserverUri , "all");
+        response = httpTestUtil.doGet(pserverUri, "all");
         assertEquals("Expecting the pserver to be found", 200, response.getStatus());
         String pserverRv = new JSONObject(response.getEntity().toString()).getString("resource-version");
         assertThat("Resource versions match", complexRV, is(pserverRv));
@@ -943,13 +950,14 @@ public class NotificationDmaapEventTest extends AAISetup {
     }
 
     @Test
-    public void testCreateVnfWithChildrenCreateCustomerWithChildrenAndCousinBetweenVlanAndServiceInstanceThenImplicitDeleteVlanVerifyingServiceInstanceRV() throws IOException, AAIException {
+    public void testCreateVnfWithChildrenCreateCustomerWithChildrenAndCousinBetweenVlanAndServiceInstanceThenImplicitDeleteVlanVerifyingServiceInstanceRV()
+            throws IOException, AAIException {
         UEBNotification notification = Mockito.spy(new UEBNotification(ModelType.MOXY, loaderFactory, schemaVersions));
         HttpTestUtil httpTestUtil = new HttpTestUtil(queryStyle);
 
-        JsonObject paylaods = new JsonParser().parse(
-            PayloadUtil.getResourcePayload("customer_with_children_and_generic-vnf_with_children_and_edge_between_service-instance_vlan.json"))
-            .getAsJsonObject();
+        JsonObject paylaods = new JsonParser().parse(PayloadUtil.getResourcePayload(
+                "customer_with_children_and_generic-vnf_with_children_and_edge_between_service-instance_vlan.json"))
+                .getAsJsonObject();
         String gvnfPaylaod = paylaods.get("generic-vnf").toString();
         String custPaylaod = paylaods.get("customer").toString();
         String custUri = "/aai/v14/business/customers/customer/cust";
@@ -959,36 +967,39 @@ public class NotificationDmaapEventTest extends AAISetup {
         String lintUri = gvnfUri + "/l-interfaces/l-interface/lint";
         String vlanUri = lintUri + "/vlans/vlan/vlan";
 
-        //Setup generic vnf
+        // Setup generic vnf
         Response response = httpTestUtil.doGet(gvnfUri);
         assertEquals("Expecting the generic-vnf to be not found", 404, response.getStatus());
         response = httpTestUtil.doPut(gvnfUri, gvnfPaylaod);
         assertEquals("Expecting the generic-vnf to be created", 201, response.getStatus());
-        response = httpTestUtil.doGet(gvnfUri , "all");
+        response = httpTestUtil.doGet(gvnfUri, "all");
         assertEquals("Expecting the generic-vnf to be found", 200, response.getStatus());
-        response = httpTestUtil.doGet(vlanUri , "all");
+        response = httpTestUtil.doGet(vlanUri, "all");
         assertEquals("Expecting the vlan to be found", 200, response.getStatus());
         String vlanResourceVersion = new JSONObject(response.getEntity().toString()).getString("resource-version");
 
-        //Setup customer with service instance relation to vlan
+        // Setup customer with service instance relation to vlan
         response = httpTestUtil.doGet(custUri);
         assertEquals("Expecting the customer to be not found", 404, response.getStatus());
         response = httpTestUtil.doPut(custUri, custPaylaod);
         assertEquals("Expecting the customer to be created", 201, response.getStatus());
-        response = httpTestUtil.doGet(custUri , "all");
+        response = httpTestUtil.doGet(custUri, "all");
         assertEquals("Expecting the customer to be found", 200, response.getStatus());
-        response = httpTestUtil.doGet(siUri , "all");
+        response = httpTestUtil.doGet(siUri, "all");
         assertEquals("Expecting the service-instance to be found", 200, response.getStatus());
-        String serviceInstanceResourceVersion = new JSONObject(response.getEntity().toString()).getString("resource-version");
+        String serviceInstanceResourceVersion =
+                new JSONObject(response.getEntity().toString()).getString("resource-version");
 
-        //Verify vlan rv was updated
-        response = httpTestUtil.doGet(vlanUri , "all");
+        // Verify vlan rv was updated
+        response = httpTestUtil.doGet(vlanUri, "all");
         assertEquals("Expecting the vlan to be found", 200, response.getStatus());
-        String vlanResourceVersionAfterCustPut = new JSONObject(response.getEntity().toString()).getString("resource-version");
-        assertThat("Expecting the vlan resource version to be updated", vlanResourceVersionAfterCustPut, not(is(vlanResourceVersion)));
+        String vlanResourceVersionAfterCustPut =
+                new JSONObject(response.getEntity().toString()).getString("resource-version");
+        assertThat("Expecting the vlan resource version to be updated", vlanResourceVersionAfterCustPut,
+                not(is(vlanResourceVersion)));
 
-        //Get linterface, replace vlans with empty json (implicit delete) and put triggering implicit delete
-        response = httpTestUtil.doGet(lintUri , "all");
+        // Get linterface, replace vlans with empty json (implicit delete) and put triggering implicit delete
+        response = httpTestUtil.doGet(lintUri, "all");
         assertEquals("Expecting the l-interface to be found", 200, response.getStatus());
         JSONObject lintJson = new JSONObject(response.getEntity().toString());
         lintJson.put("vlans", new JsonObject());
@@ -1000,15 +1011,15 @@ public class NotificationDmaapEventTest extends AAISetup {
         List<NotificationEvent> notificationEvents = notification.getEvents();
         assertThat("Expect the implied delete to generate 2", notificationEvents.size(), is(2));
 
-        //Verify vlan is no longer there anf get service-instance and compare rv
-        response = httpTestUtil.doGet(vlanUri , "all");
+        // Verify vlan is no longer there anf get service-instance and compare rv
+        response = httpTestUtil.doGet(vlanUri, "all");
         assertEquals("Expecting the vlan not to be found", 404, response.getStatus());
-        response = httpTestUtil.doGet(siUri , "all");
+        response = httpTestUtil.doGet(siUri, "all");
         assertEquals("Expecting the service-instance to be found", 200, response.getStatus());
-        String serviceInstanceResourceVersionAfterImplicitDelete = new JSONObject(response.getEntity().toString()).getString("resource-version");
+        String serviceInstanceResourceVersionAfterImplicitDelete =
+                new JSONObject(response.getEntity().toString()).getString("resource-version");
         assertThat("Expecting the service-instance resource version to be updated after implicit delete of vlan",
-            serviceInstanceResourceVersionAfterImplicitDelete,
-            not(is(serviceInstanceResourceVersion)));
+                serviceInstanceResourceVersionAfterImplicitDelete, not(is(serviceInstanceResourceVersion)));
     }
 
     @After
@@ -1019,9 +1030,7 @@ public class NotificationDmaapEventTest extends AAISetup {
 
         GraphTraversalSource g = transaction.traversal();
 
-        g.V()
-            .has(AAIProperties.SOURCE_OF_TRUTH, "JUNIT")
-            .forEachRemaining(Vertex::remove);
+        g.V().has(AAIProperties.SOURCE_OF_TRUTH, "JUNIT").forEachRemaining(Vertex::remove);
 
         transaction.commit();
     }

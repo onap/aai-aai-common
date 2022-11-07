@@ -21,7 +21,6 @@
 
 package org.onap.aai.schemaif.json;
 
-
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -38,7 +37,6 @@ import javax.net.ssl.X509TrustManager;
 
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 
-
 public class SecureClientHttpRequestFactory extends SimpleClientHttpRequestFactory {
 
     private static final String SSL_PROTOCOL = "TLS";
@@ -46,18 +44,15 @@ public class SecureClientHttpRequestFactory extends SimpleClientHttpRequestFacto
     private static final String KEYSTORE_TYPE = "PKCS12";
     private JsonSchemaProviderConfig config;
 
-
-    public SecureClientHttpRequestFactory(JsonSchemaProviderConfig  config) {
+    public SecureClientHttpRequestFactory(JsonSchemaProviderConfig config) {
         super();
         this.config = config;
     }
 
     @Override
-    protected void prepareConnection(final HttpURLConnection connection, final String httpMethod)
-        throws IOException {
+    protected void prepareConnection(final HttpURLConnection connection, final String httpMethod) throws IOException {
         if (connection instanceof HttpsURLConnection) {
-            ((HttpsURLConnection) connection)
-                .setSSLSocketFactory(getSSLContext().getSocketFactory());
+            ((HttpsURLConnection) connection).setSSLSocketFactory(getSSLContext().getSocketFactory());
             ((HttpsURLConnection) connection).setHostnameVerifier(new HostnameVerifier() {
                 @Override
                 public boolean verify(String str, SSLSession sslSession) {
@@ -95,7 +90,7 @@ public class SecureClientHttpRequestFactory extends SimpleClientHttpRequestFacto
             KeyStore ks = KeyStore.getInstance(KEYSTORE_TYPE);
 
             char[] pwd = null;
-            if (config.getSchemaServiceCertPwd()!= null) {
+            if (config.getSchemaServiceCertPwd() != null) {
                 pwd = config.getSchemaServiceCertPwd().toCharArray();
             }
 

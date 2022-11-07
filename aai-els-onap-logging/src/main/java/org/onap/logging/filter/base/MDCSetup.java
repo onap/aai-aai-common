@@ -27,9 +27,11 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
+
 import org.onap.logging.ref.slf4j.ONAPLogConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,7 +88,7 @@ public class MDCSetup {
             return requestId;
         }
         if (requestId != null && !requestId.isEmpty()) {
-            //invalid
+            // invalid
             return UUID.randomUUID().toString();
         }
         logger.trace("No valid X-ONAP-RequestID header value. Checking X-RequestID header for requestId.");
@@ -95,7 +97,7 @@ public class MDCSetup {
             return requestId;
         }
         if (requestId != null && !requestId.isEmpty()) {
-            //invalid
+            // invalid
             return UUID.randomUUID().toString();
         }
         logger.trace("No valid X-RequestID header value. Checking X-TransactionID header for requestId.");
@@ -104,7 +106,7 @@ public class MDCSetup {
             return requestId;
         }
         if (requestId != null && !requestId.isEmpty()) {
-            //invalid
+            // invalid
             return UUID.randomUUID().toString();
         }
         logger.trace("No valid X-TransactionID header value. Checking X-ECOMP-RequestID header for requestId.");
@@ -113,11 +115,12 @@ public class MDCSetup {
             return requestId;
         }
         if (requestId != null && !requestId.isEmpty()) {
-            //invalid
+            // invalid
             return UUID.randomUUID().toString();
         }
         return requestId;
     }
+
     protected boolean isValidUUID(String transId) {
         try {
             UUID.fromString(transId);
@@ -126,6 +129,7 @@ public class MDCSetup {
         }
         return true;
     }
+
     public void setInvocationId(SimpleMap headers) {
         String invocationId = headers.get(ONAPLogConstants.Headers.INVOCATION_ID);
         if (invocationId == null || invocationId.isEmpty())
@@ -200,7 +204,7 @@ public class MDCSetup {
     }
 
     public void clearClientMDCs() {
-        //MDC.remove(ONAPLogConstants.MDCs.INVOCATION_ID);
+        // MDC.remove(ONAPLogConstants.MDCs.INVOCATION_ID);
         MDC.remove(ONAPLogConstants.MDCs.RESPONSE_DESCRIPTION);
         MDC.remove(ONAPLogConstants.MDCs.RESPONSE_STATUS_CODE);
         MDC.remove(ONAPLogConstants.MDCs.RESPONSE_CODE);
@@ -230,7 +234,7 @@ public class MDCSetup {
             logger.info("System property was null or empty. Checking environment variable for: {}", property);
             propertyValue = System.getenv(property);
             if (propertyValue == null || propertyValue.isEmpty()) {
-                logger.info("Environment variable: {} was null or empty", property );
+                logger.info("Environment variable: {} was null or empty", property);
             }
         }
         return propertyValue;

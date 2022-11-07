@@ -54,8 +54,9 @@ public class ObjectFactory {
     public ObjectFactory() {
     }
 
-    /**a
-     *      * Create an instance of {@link Fult }.
+    /**
+     * a
+     * * Create an instance of {@link Fult }.
      *
      * @return the fault
      */

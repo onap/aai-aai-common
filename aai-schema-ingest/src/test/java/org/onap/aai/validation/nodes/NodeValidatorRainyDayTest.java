@@ -27,8 +27,6 @@ import org.junit.runner.RunWith;
 import org.onap.aai.config.NodesConfiguration;
 import org.onap.aai.testutils.BadNodeConfigForValidationTest;
 import org.onap.aai.validation.CheckEverythingStrategy;
-import org.onap.aai.validation.nodes.DefaultDuplicateNodeDefinitionValidationModule;
-import org.onap.aai.validation.nodes.NodeValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;

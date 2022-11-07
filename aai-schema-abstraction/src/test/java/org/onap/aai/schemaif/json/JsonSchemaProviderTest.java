@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.onap.aai.schemaif.SchemaProviderException;
@@ -53,7 +54,6 @@ import org.onap.aai.schemaif.json.definitions.JsonEdgeSchema;
 import org.onap.aai.schemaif.json.definitions.JsonPropertySchema;
 import org.onap.aai.schemaif.json.definitions.JsonSchema;
 import org.onap.aai.schemaif.json.definitions.JsonVertexSchema;
-
 
 public class JsonSchemaProviderTest {
 
@@ -96,8 +96,8 @@ public class JsonSchemaProviderTest {
             // Test Edge Schema
             JsonEdgeSchema edgeSchema = null;
             for (JsonEdgeSchema edge : jsonSchema.getRelationshipTypes()) {
-                if ( (edge.getFrom().equals("onap.nodes.sdwan.uCPE"))
-                        && (edge.getTo().equals("onap.nodes.sdwan.service.SubscriberService")) ) {
+                if ((edge.getFrom().equals("onap.nodes.sdwan.uCPE"))
+                        && (edge.getTo().equals("onap.nodes.sdwan.service.SubscriberService"))) {
                     edgeSchema = edge;
                     break;
                 }
@@ -109,7 +109,7 @@ public class JsonSchemaProviderTest {
             // Test Node Schema
             JsonVertexSchema vertexSchema = null;
             for (JsonVertexSchema v : jsonSchema.getNodeTypes()) {
-                if ( (v.getName().equals("org.onap.resource.NetworkRules")) ) {
+                if ((v.getName().equals("org.onap.resource.NetworkRules"))) {
                     vertexSchema = v;
                     break;
                 }
@@ -120,7 +120,7 @@ public class JsonSchemaProviderTest {
 
             JsonPropertySchema propSchema = null;
             for (JsonPropertySchema p : vertexSchema.getProperties()) {
-                if ( (p.getName().equals("network_policy_entries")) ) {
+                if ((p.getName().equals("network_policy_entries"))) {
                     propSchema = p;
                     break;
                 }
@@ -136,7 +136,7 @@ public class JsonSchemaProviderTest {
             // Test DataType Schema
             DataTypeDefinition dataType = null;
             for (DataTypeDefinition d : jsonSchema.getDataTypes()) {
-                if ( (d.getName().equals("org.onap.datatypes.network.VlanRequirements")) ) {
+                if ((d.getName().equals("org.onap.datatypes.network.VlanRequirements"))) {
                     dataType = d;
                     break;
                 }
@@ -148,7 +148,7 @@ public class JsonSchemaProviderTest {
 
             propSchema = null;
             for (JsonPropertySchema p : dataType.getProperties()) {
-                if ( (p.getName().equals("vlan_type")) ) {
+                if ((p.getName().equals("vlan_type"))) {
                     propSchema = p;
                     break;
                 }
@@ -158,8 +158,7 @@ public class JsonSchemaProviderTest {
             assertEquals(false, propSchema.getRequired());
             assertEquals("string", propSchema.getDataType());
             assertEquals("", propSchema.getDefaultValue());
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             StringWriter writer = new StringWriter();
             PrintWriter printWriter = new PrintWriter(writer);
             ex.printStackTrace(printWriter);
@@ -175,9 +174,8 @@ public class JsonSchemaProviderTest {
             JsonSchemaProvider schemaProvider = new JsonSchemaProvider(config);
             schemaProvider.loadSchema(testSchema, schemaProvider.getLatestSchemaVersion());
 
-            VertexSchema vertSchema =
-                    schemaProvider.getVertexSchema("tosca.nodes.objectstorage",
-                            schemaProvider.getLatestSchemaVersion());
+            VertexSchema vertSchema = schemaProvider.getVertexSchema("tosca.nodes.objectstorage",
+                    schemaProvider.getLatestSchemaVersion());
             System.out.println(vertSchema.toString());
 
             // Validate vertex schema
@@ -204,8 +202,7 @@ public class JsonSchemaProviderTest {
             assertFalse(propSchema.isRequired());
             assertTrue(propSchema.isReserved());
             assertEquals(0, propSchema.getDataType().getType().compareTo(Type.STRING));
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             StringWriter writer = new StringWriter();
             PrintWriter printWriter = new PrintWriter(writer);
             ex.printStackTrace(printWriter);
@@ -222,8 +219,7 @@ public class JsonSchemaProviderTest {
             schemaProvider.loadSchema(testSchema, schemaProvider.getLatestSchemaVersion());
 
             EdgeSchema edgeSchema = schemaProvider.getEdgeSchema("tosca.relationships.hostedOn",
-                    "tosca.nodes.Softwarecomponent", "tosca.nodes.compute",
-                    schemaProvider.getLatestSchemaVersion());
+                    "tosca.nodes.Softwarecomponent", "tosca.nodes.compute", schemaProvider.getLatestSchemaVersion());
             System.out.println(edgeSchema.toString());
 
             // Validate edge schema
@@ -233,9 +229,7 @@ public class JsonSchemaProviderTest {
             assertEquals(edgeSchema.getMultiplicity(), EdgeSchema.Multiplicity.MANY_2_MANY);
             assertEquals("NONE", edgeSchema.getAnnotationValue("contains-other-v"));
 
-
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             StringWriter writer = new StringWriter();
             PrintWriter printWriter = new PrintWriter(writer);
             ex.printStackTrace(printWriter);
@@ -251,9 +245,8 @@ public class JsonSchemaProviderTest {
             JsonSchemaProvider schemaProvider = new JsonSchemaProvider(config);
             schemaProvider.loadSchema(testSchema, schemaProvider.getLatestSchemaVersion());
 
-            Set<EdgeSchema> edgeSchemaList =
-                    schemaProvider.getAdjacentEdgeSchema("tosca.nodes.Database",
-                            schemaProvider.getLatestSchemaVersion());
+            Set<EdgeSchema> edgeSchemaList = schemaProvider.getAdjacentEdgeSchema("tosca.nodes.Database",
+                    schemaProvider.getLatestSchemaVersion());
 
             // Validate edge schema
             assertEquals(3, edgeSchemaList.size());
@@ -277,8 +270,7 @@ public class JsonSchemaProviderTest {
                         break;
                 }
             }
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             StringWriter writer = new StringWriter();
             PrintWriter printWriter = new PrintWriter(writer);
             ex.printStackTrace(printWriter);
@@ -294,10 +286,8 @@ public class JsonSchemaProviderTest {
             JsonSchemaProvider schemaProvider = new JsonSchemaProvider(config);
             schemaProvider.loadSchema(testSchema, schemaProvider.getLatestSchemaVersion());
 
-            Set<EdgeSchema> edgeSchemaList =
-                    schemaProvider.getEdgeSchemaForSourceTarget("tosca.nodes.LoadBalancer",
-                            "tosca.nodes.Database",
-                            schemaProvider.getLatestSchemaVersion());
+            Set<EdgeSchema> edgeSchemaList = schemaProvider.getEdgeSchemaForSourceTarget("tosca.nodes.LoadBalancer",
+                    "tosca.nodes.Database", schemaProvider.getLatestSchemaVersion());
 
             // Validate edge schema
             assertEquals(2, edgeSchemaList.size());
@@ -308,18 +298,15 @@ public class JsonSchemaProviderTest {
                     assertEquals("tosca.nodes.LoadBalancer", es.getSource());
                     assertEquals("tosca.nodes.Database", es.getTarget());
                     assertEquals(es.getMultiplicity(), EdgeSchema.Multiplicity.MANY_2_MANY);
-                }
-                else if (es.getName().equals("tosca.relationships.RoutesTo")) {
+                } else if (es.getName().equals("tosca.relationships.RoutesTo")) {
                     assertEquals("tosca.nodes.LoadBalancer", es.getSource());
                     assertEquals("tosca.nodes.Database", es.getTarget());
                     assertEquals(es.getMultiplicity(), EdgeSchema.Multiplicity.MANY_2_MANY);
-                }
-                else {
+                } else {
                     fail();
                 }
             }
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             StringWriter writer = new StringWriter();
             PrintWriter printWriter = new PrintWriter(writer);
             ex.printStackTrace(printWriter);
@@ -335,9 +322,8 @@ public class JsonSchemaProviderTest {
             JsonSchemaProvider schemaProvider = new JsonSchemaProvider(config);
             schemaProvider.loadSchema(testSchema, schemaProvider.getLatestSchemaVersion());
 
-            EdgeSchema edgeSchema =
-                    schemaProvider.getEdgeSchema("amdocs.linkedTo", "service-instance",
-                            "onap.nodes.sdwan.ManagementDomain", schemaProvider.getLatestSchemaVersion());
+            EdgeSchema edgeSchema = schemaProvider.getEdgeSchema("amdocs.linkedTo", "service-instance",
+                    "onap.nodes.sdwan.ManagementDomain", schemaProvider.getLatestSchemaVersion());
 
             assertEquals("amdocs.linkedTo", edgeSchema.getName());
             assertEquals("service-instance", edgeSchema.getSource());
@@ -348,27 +334,22 @@ public class JsonSchemaProviderTest {
 
             assertNull(edgeSchema);
 
-
-            edgeSchema =
-                    schemaProvider.getEdgeSchema("amdocs.unknownRelationship", "unknown",
-                            "onap.nodes.sdwan.ManagementDomain", schemaProvider.getLatestSchemaVersion());
+            edgeSchema = schemaProvider.getEdgeSchema("amdocs.unknownRelationship", "unknown",
+                    "onap.nodes.sdwan.ManagementDomain", schemaProvider.getLatestSchemaVersion());
 
             assertEquals("amdocs.unknownRelationship", edgeSchema.getName());
             assertEquals("unknown", edgeSchema.getSource());
             assertEquals("onap.nodes.sdwan.ManagementDomain", edgeSchema.getTarget());
 
-            edgeSchema =
-                    schemaProvider.getEdgeSchema("amdocs.unknownRelationship", "onap.nodes.sdwan.ManagementDomain",
-                            "unknown", schemaProvider.getLatestSchemaVersion());
+            edgeSchema = schemaProvider.getEdgeSchema("amdocs.unknownRelationship", "onap.nodes.sdwan.ManagementDomain",
+                    "unknown", schemaProvider.getLatestSchemaVersion());
 
             assertEquals("amdocs.unknownRelationship", edgeSchema.getName());
             assertEquals("onap.nodes.sdwan.ManagementDomain", edgeSchema.getSource());
             assertEquals("unknown", edgeSchema.getTarget());
 
-            Set<EdgeSchema> edgeSchemaList =
-                    schemaProvider.getEdgeSchemaForSourceTarget("service-instance",
-                            "onap.nodes.sdwan.ManagementDomain",
-                            schemaProvider.getLatestSchemaVersion());
+            Set<EdgeSchema> edgeSchemaList = schemaProvider.getEdgeSchemaForSourceTarget("service-instance",
+                    "onap.nodes.sdwan.ManagementDomain", schemaProvider.getLatestSchemaVersion());
             assertEquals(1, edgeSchemaList.size());
 
             edgeSchemaList = schemaProvider.getEdgeSchemaForSourceTarget("unknown", "unknown",
@@ -379,12 +360,11 @@ public class JsonSchemaProviderTest {
                     schemaProvider.getLatestSchemaVersion());
             assertEquals(1, edgeSchemaList.size());
 
-
-            edgeSchemaList = schemaProvider.getAdjacentEdgeSchema("service-instance", schemaProvider.getLatestSchemaVersion());
+            edgeSchemaList =
+                    schemaProvider.getAdjacentEdgeSchema("service-instance", schemaProvider.getLatestSchemaVersion());
             System.out.println("EDGE LIST: \n\n" + edgeSchemaList);
             assertEquals(8, edgeSchemaList.size());
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             StringWriter writer = new StringWriter();
             PrintWriter printWriter = new PrintWriter(writer);
             ex.printStackTrace(printWriter);
@@ -408,12 +388,10 @@ public class JsonSchemaProviderTest {
                     "cloud-region", "bad-node", schemaProvider.getLatestSchemaVersion());
             assertNull(edgeSchema);
 
-            Set<EdgeSchema> edgeSchemaList =
-                    schemaProvider.getAdjacentEdgeSchema("org.onap.nodes.bad-node",
-                            schemaProvider.getLatestSchemaVersion());
+            Set<EdgeSchema> edgeSchemaList = schemaProvider.getAdjacentEdgeSchema("org.onap.nodes.bad-node",
+                    schemaProvider.getLatestSchemaVersion());
             assertTrue(edgeSchemaList.isEmpty());
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             StringWriter writer = new StringWriter();
             PrintWriter printWriter = new PrintWriter(writer);
             ex.printStackTrace(printWriter);
@@ -429,18 +407,16 @@ public class JsonSchemaProviderTest {
             JsonSchemaProvider schemaProvider = new JsonSchemaProvider(config);
             schemaProvider.loadSchema(testSchema, schemaProvider.getLatestSchemaVersion());
 
-            VertexSchema vertSchema =
-                    schemaProvider.getVertexSchema("onap.nodes.sdwan.ManagementDomain",
-                            schemaProvider.getLatestSchemaVersion());
+            VertexSchema vertSchema = schemaProvider.getVertexSchema("onap.nodes.sdwan.ManagementDomain",
+                    schemaProvider.getLatestSchemaVersion());
             System.out.println(vertSchema.toString());
 
             // Validate schema
             PropertySchema propSchema = vertSchema.getPropertySchema("controllers");
             assertEquals(0, propSchema.getDataType().getType().compareTo(Type.LIST));
-            ListDataType listType = (ListDataType)propSchema.getDataType();
+            ListDataType listType = (ListDataType) propSchema.getDataType();
             assertEquals(0, listType.getListType().getType().compareTo(Type.STRING));
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             StringWriter writer = new StringWriter();
             PrintWriter printWriter = new PrintWriter(writer);
             ex.printStackTrace(printWriter);
@@ -456,18 +432,16 @@ public class JsonSchemaProviderTest {
             JsonSchemaProvider schemaProvider = new JsonSchemaProvider(config);
             schemaProvider.loadSchema(testSchema, schemaProvider.getLatestSchemaVersion());
 
-            VertexSchema vertSchema =
-                    schemaProvider.getVertexSchema("onap.nodes.sdwan.ManagementDomain",
-                            schemaProvider.getLatestSchemaVersion());
+            VertexSchema vertSchema = schemaProvider.getVertexSchema("onap.nodes.sdwan.ManagementDomain",
+                    schemaProvider.getLatestSchemaVersion());
             System.out.println(vertSchema.toString());
 
             // Validate schema
             PropertySchema propSchema = vertSchema.getPropertySchema("analyticClusters");
             assertEquals(0, propSchema.getDataType().getType().compareTo(Type.MAP));
-            MapDataType mapType = (MapDataType)propSchema.getDataType();
+            MapDataType mapType = (MapDataType) propSchema.getDataType();
             assertEquals(0, mapType.getMapType().getType().compareTo(Type.STRING));
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             StringWriter writer = new StringWriter();
             PrintWriter printWriter = new PrintWriter(writer);
             ex.printStackTrace(printWriter);
@@ -483,9 +457,8 @@ public class JsonSchemaProviderTest {
             JsonSchemaProvider schemaProvider = new JsonSchemaProvider(config);
             schemaProvider.loadSchema(testSchema, schemaProvider.getLatestSchemaVersion());
 
-            VertexSchema vertSchema =
-                    schemaProvider.getVertexSchema("org.onap.resource.extContrailCP",
-                            schemaProvider.getLatestSchemaVersion());
+            VertexSchema vertSchema = schemaProvider.getVertexSchema("org.onap.resource.extContrailCP",
+                    schemaProvider.getLatestSchemaVersion());
             System.out.println(vertSchema.toString());
 
             System.out.println("\n\nSize: " + vertSchema.getPropertySchemaList().size());
@@ -495,7 +468,7 @@ public class JsonSchemaProviderTest {
             // Validate property schema
             PropertySchema propSchema = vertSchema.getPropertySchema("exCP_naming");
             assertEquals(0, propSchema.getDataType().getType().compareTo(Type.COMPLEX));
-            ComplexDataType complexType = (ComplexDataType)propSchema.getDataType();
+            ComplexDataType complexType = (ComplexDataType) propSchema.getDataType();
             List<PropertySchema> complexProps = complexType.getSubProperties();
             assertEquals(4, complexProps.size());
 
@@ -509,8 +482,7 @@ public class JsonSchemaProviderTest {
             assertNotNull(subProp);
             assertFalse(subProp.isRequired());
             assertEquals(0, subProp.getDataType().getType().compareTo(Type.STRING));
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             StringWriter writer = new StringWriter();
             PrintWriter printWriter = new PrintWriter(writer);
             ex.printStackTrace(printWriter);
@@ -532,8 +504,7 @@ public class JsonSchemaProviderTest {
             System.out.println(jsonSchema.toJson());
 
             assertEquals(1, jsonSchema.getDataTypes().size());
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             StringWriter writer = new StringWriter();
             PrintWriter printWriter = new PrintWriter(writer);
             ex.printStackTrace(printWriter);
@@ -548,8 +519,7 @@ public class JsonSchemaProviderTest {
             String testSchema = readFile("src/test/resources/json/schemaServiceResponse.json");
             SchemaServiceResponse schema = SchemaServiceResponse.fromJson(testSchema);
             schema.getData().validate();
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             StringWriter writer = new StringWriter();
             PrintWriter printWriter = new PrintWriter(writer);
             ex.printStackTrace(printWriter);
@@ -565,8 +535,7 @@ public class JsonSchemaProviderTest {
         try {
             String testSchema = readFile("src/test/resources/json/badEdgeSchema.json");
             schema = SchemaServiceResponse.fromJson(testSchema);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             fail();
             return;
         }
@@ -581,8 +550,7 @@ public class JsonSchemaProviderTest {
         try {
             String testSchema = readFile("src/test/resources/json/badVertexSchema.json");
             schema = SchemaServiceResponse.fromJson(testSchema);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             fail();
             return;
         }
@@ -599,8 +567,7 @@ public class JsonSchemaProviderTest {
         try {
             String testSchema = readFile("src/test/resources/json/badTypeSchema.json");
             schema = SchemaServiceResponse.fromJson(testSchema);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             fail();
             return;
         }
@@ -615,8 +582,7 @@ public class JsonSchemaProviderTest {
         try {
             String testSchema = readFile("src/test/resources/json/badPropSchema.json");
             schema = SchemaServiceResponse.fromJson(testSchema);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             fail();
             return;
         }

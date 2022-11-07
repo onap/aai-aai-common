@@ -20,7 +20,16 @@
 
 package org.onap.aai.dbgen;
 
+import static org.onap.aai.db.props.AAIProperties.*;
+
 import com.google.common.collect.Multimap;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.janusgraph.core.Cardinality;
 import org.janusgraph.core.Multiplicity;
@@ -39,21 +48,14 @@ import org.onap.aai.util.AAIConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-
-import static org.onap.aai.db.props.AAIProperties.*;
-
 public class SchemaGenerator4Hist {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SchemaGenerator4Hist.class);
 
-    private SchemaGenerator4Hist(){
+    private SchemaGenerator4Hist() {
 
     }
+
     /**
      * Load schema into JanusGraph.
      *
@@ -125,12 +127,12 @@ public class SchemaGenerator4Hist {
                     Cardinality cardinality = Cardinality.LIST;
                     boolean process = false;
                     if (obj.isListType(propName) && obj.isSimpleGenericType(propName)) {
-                    	// NOTE - For history - All properties have cardinality = LIST
-                    	// It is assumed that there is special processing in the Resources MS
-                    	// for History to turn what used to be SET (referred to as isListType
-                    	// above) will be stored in our db as a single String.  And that
-                    	// single string will have Cardinality = LIST so we can track its
-                    	// history.
+                        // NOTE - For history - All properties have cardinality = LIST
+                        // It is assumed that there is special processing in the Resources MS
+                        // for History to turn what used to be SET (referred to as isListType
+                        // above) will be stored in our db as a single String. And that
+                        // single string will have Cardinality = LIST so we can track its
+                        // history.
                         type = obj.getGenericTypeClass(propName);
                         process = true;
                     } else if (obj.isSimpleType(propName)) {
@@ -139,8 +141,8 @@ public class SchemaGenerator4Hist {
 
                     if (process) {
 
-                        LOGGER.info(" Creating PropertyKey: [{}], [{}], [{}]",
-                                dbPropName, type.getSimpleName(), cardinality);
+                        LOGGER.info(" Creating PropertyKey: [{}], [{}], [{}]", dbPropName, type.getSimpleName(),
+                                cardinality);
                         PropertyKey propK;
                         if (!seenProps.containsKey(dbPropName)) {
                             propK = graphMgmt.makePropertyKey(dbPropName).dataType(type).cardinality(cardinality)
@@ -153,7 +155,7 @@ public class SchemaGenerator4Hist {
                             LOGGER.debug(" Index  [{}] already existed in the DB. ", dbPropName);
                         } else {
                             if (obj.getIndexedProperties().contains(propName)) {
-                            	// NOTE - for History we never add a unique index - just a regular index
+                                // NOTE - for History we never add a unique index - just a regular index
                                 LOGGER.info("Add index for PropertyKey: [{}]", dbPropName);
                                 graphMgmt.buildIndex(dbPropName, Vertex.class).addKey(propK).buildCompositeIndex();
                             } else {
@@ -163,19 +165,18 @@ public class SchemaGenerator4Hist {
                     }
                 }
             }
-        }// Done processing all properties defined in the OXM
+        } // Done processing all properties defined in the OXM
 
         // Add the 3 new History properties are in the DB
         // They are all Cardinality=Single since instance of a Node, Edge or Property can
-        //  only have one of them.  That is, a Property can show up many times in a
-        //  node, but each instance of that property will only have a single start-ts,
-        //  end-ts, end-source-of-truth.  Same goes for a node or edge itself.
+        // only have one of them. That is, a Property can show up many times in a
+        // node, but each instance of that property will only have a single start-ts,
+        // end-ts, end-source-of-truth. Same goes for a node or edge itself.
         makeNewProperty(graphMgmt, seenProps, String.class, END_SOT);
         makeNewProperty(graphMgmt, seenProps, Long.class, START_TS);
         makeNewProperty(graphMgmt, seenProps, Long.class, END_TS);
         makeNewProperty(graphMgmt, seenProps, String.class, START_TX_ID);
         makeNewProperty(graphMgmt, seenProps, String.class, END_TX_ID);
-
 
         String imsg = "-- About to call graphMgmt commit";
         LOGGER.info(imsg);
@@ -186,17 +187,14 @@ public class SchemaGenerator4Hist {
 
     }
 
-    private static <T> void makeNewProperty(JanusGraphManagement graphMgmt,
-                                            Map<String, PropertyKey> seenProps,
-                                            Class<T> type,
-                                            String propertyName) {
+    private static <T> void makeNewProperty(JanusGraphManagement graphMgmt, Map<String, PropertyKey> seenProps,
+            Class<T> type, String propertyName) {
         if (graphMgmt.containsRelationType(propertyName)) {
             LOGGER.debug("PropertyKey [{}] already existed in the DB.", propertyName);
         } else if (!seenProps.containsKey(propertyName)) {
-            LOGGER.info("Creating PropertyKey: [{}], [{}], [{}]",
-                    propertyName, type.getSimpleName(), Cardinality.SINGLE);
-            graphMgmt.makePropertyKey(propertyName).dataType(type).cardinality(Cardinality.SINGLE)
-                    .make();
+            LOGGER.info("Creating PropertyKey: [{}], [{}], [{}]", propertyName, type.getSimpleName(),
+                    Cardinality.SINGLE);
+            graphMgmt.makePropertyKey(propertyName).dataType(type).cardinality(Cardinality.SINGLE).make();
         }
     }
 }

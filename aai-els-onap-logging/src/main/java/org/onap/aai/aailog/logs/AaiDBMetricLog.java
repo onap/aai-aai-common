@@ -20,13 +20,13 @@
 
 package org.onap.aai.aailog.logs;
 
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+
 import org.onap.logging.filter.base.AbstractMetricLogFilter;
 import org.onap.logging.filter.base.ONAPComponents;
 import org.onap.logging.ref.slf4j.ONAPLogConstants;
 import org.slf4j.*;
-
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
 
 public class AaiDBMetricLog
         extends AbstractMetricLogFilter<DBRequestWrapper, Response, MultivaluedMap<String, Object>> {
@@ -35,6 +35,7 @@ public class AaiDBMetricLog
     private final String partnerName;
     private static final Marker INVOKE_RETURN = MarkerFactory.getMarker("INVOKE-RETURN");
     private static final String TARGET_ENTITY = ONAPComponents.AAI.toString() + ".DB";
+
     public AaiDBMetricLog(String subcomponent) {
         partnerName = getPartnerName(subcomponent);
     }
@@ -85,6 +86,7 @@ public class AaiDBMetricLog
             logger.warn("Error in AaiDBMetricLog pre", e);
         }
     }
+
     public void post(DBRequestWrapper request, Response response) {
         try {
             setLogTimestamp();
@@ -98,13 +100,13 @@ public class AaiDBMetricLog
             logger.warn("Error in AaiDBMetricLog post", e);
         }
     }
+
     @Override
     public void setResponseStatusCode(int code) {
         String statusCode;
         if (code / 100 == 2) {
             statusCode = ONAPLogConstants.ResponseStatus.COMPLETE.toString();
-        }
-        else {
+        } else {
             statusCode = ONAPLogConstants.ResponseStatus.ERROR.toString();
             setErrorCode(code);
             setErrorDesc(code);

@@ -23,7 +23,6 @@ package org.onap.aai.validation;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.onap.aai.validation.CheckEverythingStrategy;
 
 public class CheckEverythingStrategyTest {
 

@@ -20,16 +20,16 @@
 
 package org.onap.aai.audit;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.onap.aai.AAISetup;
 import org.onap.aai.setup.SchemaVersion;
 import org.springframework.test.annotation.DirtiesContext;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class ListEndpointsTest extends AAISetup {

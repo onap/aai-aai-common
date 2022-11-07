@@ -20,6 +20,17 @@
 
 package org.onap.aai.aaf.filters;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.onap.aai.aaf.auth.AafRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,18 +38,6 @@ import org.springframework.boot.web.servlet.filter.OrderedRequestContextFilter;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
-
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Properties;
-import java.util.stream.Collectors;
-
 
 /**
  * AAF with client cert authorization filter
@@ -62,42 +61,41 @@ public class AafCertAuthorizationFilter extends OrderedRequestContextFilter {
     private List<String> advancedKeywordsList;
 
     @Autowired
-    public AafCertAuthorizationFilter(
-        @Value("${permission.type}") String type,
-        @Value("${permission.instance}") String instance,
-        @Value("${advanced.keywords.list:}") String advancedKeys,
-        CadiProps cadiProps
-    ) {
+    public AafCertAuthorizationFilter(@Value("${permission.type}") String type,
+            @Value("${permission.instance}") String instance, @Value("${advanced.keywords.list:}") String advancedKeys,
+            CadiProps cadiProps) {
         this.type = type;
         this.instance = instance;
         this.cadiProps = cadiProps;
-        if(advancedKeys == null || advancedKeys.isEmpty()){
+        if (advancedKeys == null || advancedKeys.isEmpty()) {
             this.advancedKeywordsList = new ArrayList<>();
         } else {
-            this.advancedKeywordsList = Arrays.stream(advancedKeys.split(","))
-                .collect(Collectors.toList());
+            this.advancedKeywordsList = Arrays.stream(advancedKeys.split(",")).collect(Collectors.toList());
         }
         this.setOrder(FilterPriority.AAF_CERT_AUTHORIZATION.getPriority());
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
-        if(advancedKeywordsList == null || advancedKeywordsList.size() == 0){
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws IOException, ServletException {
+        if (advancedKeywordsList == null || advancedKeywordsList.size() == 0) {
             String permission = String.format("%s|%s|%s", type, instance, request.getMethod().toLowerCase());
-            AafRequestFilter.authorizationFilter(request, response, filterChain, permission, cadiProps.getCadiProperties());
+            AafRequestFilter.authorizationFilter(request, response, filterChain, permission,
+                    cadiProps.getCadiProperties());
         } else {
             boolean isAdvanced = this.containsAdvancedKeywords(request);
 
-            //if the URI contains advanced.keywords it's an advanced query
+            // if the URI contains advanced.keywords it's an advanced query
             String queryType = isAdvanced ? ADVANCED : BASIC;
             String permission = String.format("%s|%s|%s", type, instance, queryType);
-            AafRequestFilter.authorizationFilter(request, response, filterChain, permission, cadiProps.getCadiProperties());
+            AafRequestFilter.authorizationFilter(request, response, filterChain, permission,
+                    cadiProps.getCadiProperties());
         }
     }
 
     private boolean containsAdvancedKeywords(HttpServletRequest request) {
         String uri = request.getRequestURI();
-        for (String keyword: advancedKeywordsList) {
+        for (String keyword : advancedKeywordsList) {
             if (uri.contains(keyword)) {
                 return true;
             }

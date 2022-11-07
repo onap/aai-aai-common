@@ -21,10 +21,5 @@
 package org.onap.aai.util.delta;
 
 public enum DeltaAction {
-    CREATE,
-    UPDATE,
-    DELETE,
-    CREATE_REL,
-    DELETE_REL,
-    STATIC
+    CREATE, UPDATE, DELETE, CREATE_REL, DELETE_REL, STATIC
 }

@@ -17,16 +17,18 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.aailog.logs;
 
 public class ServiceName {
     /**
      * Extract the service name from a URI path
      * Service name should be the URI path up to two levels down from the version or less
+     * 
      * @param path the URI path
      * @return the service name
      */
-    public static String extractServiceName (String path) {
+    public static String extractServiceName(String path) {
         StringBuilder sBuilder = new StringBuilder();
         String[] parts = path.split("/");
         String part = "";
@@ -38,8 +40,8 @@ public class ServiceName {
                 break;
             }
         }
-        if ((sBuilder.length() > 0) && (sBuilder.charAt(sBuilder.length()-1) == '/')) {
-            sBuilder.deleteCharAt(sBuilder.length()-1);
+        if ((sBuilder.length() > 0) && (sBuilder.charAt(sBuilder.length() - 1) == '/')) {
+            sBuilder.deleteCharAt(sBuilder.length() - 1);
         }
         String serviceName = sBuilder.toString();
         if (serviceName != null && (!serviceName.isEmpty())) {

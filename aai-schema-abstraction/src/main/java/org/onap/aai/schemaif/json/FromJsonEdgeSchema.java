@@ -18,6 +18,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.schemaif.json;
 
 import java.util.HashMap;
@@ -30,10 +31,10 @@ import org.onap.aai.schemaif.json.definitions.JsonEdgeSchema;
 
 public class FromJsonEdgeSchema extends EdgeSchema {
     public static final String WILDCARD_CHAR = "*";
-    
+
     public FromJsonEdgeSchema() {
     }
-    
+
     public FromJsonEdgeSchema(EdgeSchema other) {
         // A shallow copy should suffice, as edge definitions don't change.
         name = other.getName();
@@ -43,38 +44,38 @@ public class FromJsonEdgeSchema extends EdgeSchema {
         properties = other.getPropertySchemaList();
         annotations = other.getAnnotations();
     }
-    
+
     public void fromJson(JsonEdgeSchema jsonEdge) throws SchemaProviderException {
 
         name = jsonEdge.getLabel();
         source = jsonEdge.getFrom();
         target = jsonEdge.getTo();
-        
-        // TODO:  At present, multiplicity isn't described in the JSON schema.  By default, make everything
+
+        // TODO: At present, multiplicity isn't described in the JSON schema. By default, make everything
         // many-to-many
         multiplicity = Multiplicity.MANY_2_MANY;
-  
+
         // Populate annotation schema
-        annotations = new HashMap<String,String>();
+        annotations = new HashMap<String, String>();
         if (jsonEdge.getAnnotations() != null) {
-            for (Map.Entry<String,String> entry : jsonEdge.getAnnotations().entrySet()) {
+            for (Map.Entry<String, String> entry : jsonEdge.getAnnotations().entrySet()) {
                 annotations.put(entry.getKey().toLowerCase(), entry.getValue());
             }
         }
-        
+
         // Currently edge properties are not supported in the json schema
-        properties = new HashMap<String,PropertySchema>();
+        properties = new HashMap<String, PropertySchema>();
     }
 
     public void replaceWildcard(String vertexName) throws SchemaProviderException {
         if (source.equals(WILDCARD_CHAR) && target.equals(WILDCARD_CHAR)) {
             throw new SchemaProviderException("Edge definition with wildcard source and target: " + toString());
         }
-        
+
         if (source.equals(WILDCARD_CHAR)) {
             source = vertexName;
         }
-        
+
         if (target.equals(WILDCARD_CHAR)) {
             target = vertexName;
         }

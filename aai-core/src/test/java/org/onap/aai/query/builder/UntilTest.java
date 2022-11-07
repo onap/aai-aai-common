@@ -33,7 +33,6 @@ import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
 import org.junit.Before;
 import org.junit.Test;
 import org.onap.aai.AAISetup;
-import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.edges.enums.EdgeType;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Loader;

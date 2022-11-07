@@ -20,18 +20,18 @@
 
 package org.onap.aai.aaf.auth;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.easymock.EasyMock.*;
+import static org.junit.Assert.assertTrue;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 
-import static org.easymock.EasyMock.*;
-import static org.junit.Assert.assertTrue;
+import javax.servlet.http.HttpServletRequest;
+
+import org.junit.Test;
 
 /**
  * The Class CertUtilTest

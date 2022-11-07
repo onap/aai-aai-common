@@ -20,6 +20,17 @@
 
 package org.onap.aai.util;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
+import com.google.common.base.CaseFormat;
+import com.google.common.collect.Multimap;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
@@ -45,28 +56,17 @@ import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.onap.aai.domain.model.AAIResource;
 import org.onap.aai.exceptions.AAIException;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
-import com.google.common.base.CaseFormat;
-import com.google.common.collect.Multimap;
-
 public class PojoUtils {
 
     /**
      * Gets the key value list.
      *
-     * @param <T>   the generic type
-     * @param e     the e
+     * @param <T> the generic type
+     * @param e the e
      * @param clazz the clazz
      * @return the key value list
-     * @throws IllegalAccessException    the illegal access exception
-     * @throws IllegalArgumentException  the illegal argument exception
+     * @throws IllegalAccessException the illegal access exception
+     * @throws IllegalArgumentException the illegal argument exception
      * @throws InvocationTargetException the invocation target exception
      */
     public <T> List<KeyValueList> getKeyValueList(Entity e, T clazz)
@@ -99,12 +99,12 @@ public class PojoUtils {
     /**
      * Gets the json from object.
      *
-     * @param <T>   the generic type
+     * @param <T> the generic type
      * @param clazz the clazz
      * @return the json from object
      * @throws JsonGenerationException the json generation exception
-     * @throws JsonMappingException    the json mapping exception
-     * @throws IOException             Signals that an I/O exception has occurred.
+     * @throws JsonMappingException the json mapping exception
+     * @throws IOException Signals that an I/O exception has occurred.
      */
     public <T> String getJsonFromObject(T clazz) throws JsonGenerationException, JsonMappingException, IOException {
         return getJsonFromObject(clazz, false, true);
@@ -113,26 +113,24 @@ public class PojoUtils {
     /**
      * Gets the json from object.
      *
-     * @param <T>      the generic type
-     * @param clazz    the clazz
+     * @param <T> the generic type
+     * @param clazz the clazz
      * @param wrapRoot the wrap root
-     * @param indent   the indent
+     * @param indent the indent
      * @return the json from object
      * @throws JsonGenerationException the json generation exception
-     * @throws JsonMappingException    the json mapping exception
-     * @throws IOException             Signals that an I/O exception has occurred.
+     * @throws JsonMappingException the json mapping exception
+     * @throws IOException Signals that an I/O exception has occurred.
      */
     public <T> String getJsonFromObject(T clazz, boolean wrapRoot, boolean indent)
             throws JsonGenerationException, JsonMappingException, IOException {
-        ObjectMapper mapper = JsonMapper.builder()
-        .serializationInclusion(JsonInclude.Include.NON_NULL)
-        .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-        .configure(SerializationFeature.INDENT_OUTPUT, indent)
-        .configure(SerializationFeature.WRAP_ROOT_VALUE, wrapRoot)
-        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-        .configure(DeserializationFeature.UNWRAP_ROOT_VALUE, wrapRoot)
-        .addModule(new JaxbAnnotationModule())
-        .build();
+        ObjectMapper mapper = JsonMapper.builder().serializationInclusion(JsonInclude.Include.NON_NULL)
+                .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+                .configure(SerializationFeature.INDENT_OUTPUT, indent)
+                .configure(SerializationFeature.WRAP_ROOT_VALUE, wrapRoot)
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                .configure(DeserializationFeature.UNWRAP_ROOT_VALUE, wrapRoot).addModule(new JaxbAnnotationModule())
+                .build();
 
         return mapper.writeValueAsString(clazz);
     }
@@ -140,14 +138,14 @@ public class PojoUtils {
     /**
      * Gets the json from dynamic object.
      *
-     * @param ent         the ent
+     * @param ent the ent
      * @param jaxbContext the jaxb context
      * @param includeRoot the include root
      * @return the json from dynamic object
      * @throws JsonGenerationException the json generation exception
-     * @throws JsonMappingException    the json mapping exception
-     * @throws IOException             Signals that an I/O exception has occurred.
-     * @throws JAXBException           the JAXB exception
+     * @throws JsonMappingException the json mapping exception
+     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws JAXBException the JAXB exception
      */
     public String getJsonFromDynamicObject(DynamicEntity ent, org.eclipse.persistence.jaxb.JAXBContext jaxbContext,
             boolean includeRoot) throws JsonGenerationException, JsonMappingException, IOException, JAXBException {
@@ -166,7 +164,7 @@ public class PojoUtils {
     /**
      * Gets the xml from object.
      *
-     * @param <T>   the generic type
+     * @param <T> the generic type
      * @param clazz the clazz
      * @return the xml from object
      * @throws JAXBException the JAXB exception
@@ -179,7 +177,7 @@ public class PojoUtils {
             Marshaller marshaller = jc.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             marshaller.marshal(clazz, baos);
-            
+
             return baos.toString(Charset.defaultCharset());
         }
     }
@@ -187,9 +185,9 @@ public class PojoUtils {
     /**
      * Gets the lookup key.
      *
-     * @param baseKey    the base key
+     * @param baseKey the base key
      * @param lookupHash the lookup hash
-     * @param keyProps   the key props
+     * @param keyProps the key props
      * @return the lookup key
      */
     public String getLookupKey(String baseKey, HashMap<String, Object> lookupHash, Collection<String> keyProps) {
@@ -213,7 +211,7 @@ public class PojoUtils {
     /**
      * Gets the lookup keys.
      *
-     * @param lookupHashes         the lookup hashes
+     * @param lookupHashes the lookup hashes
      * @param _dbRulesNodeKeyProps the db rules node key props
      * @return the lookup keys
      */
@@ -237,16 +235,16 @@ public class PojoUtils {
     /**
      * Gets the example object.
      *
-     * @param <T>       the generic type
-     * @param clazz     the clazz
+     * @param <T> the generic type
+     * @param clazz the clazz
      * @param singleton the singleton
      * @return the example object
-     * @throws IllegalAccessException    the illegal access exception
-     * @throws IllegalArgumentException  the illegal argument exception
+     * @throws IllegalAccessException the illegal access exception
+     * @throws IllegalArgumentException the illegal argument exception
      * @throws InvocationTargetException the invocation target exception
-     * @throws NoSuchMethodException     the no such method exception
-     * @throws SecurityException         the security exception
-     * @throws AAIException              the AAI exception
+     * @throws NoSuchMethodException the no such method exception
+     * @throws SecurityException the security exception
+     * @throws AAIException the AAI exception
      */
     public <T> void getExampleObject(T clazz, boolean singleton)
             throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException,
@@ -304,8 +302,8 @@ public class PojoUtils {
      * Gets the dynamic example object.
      *
      * @param childObject the child object
-     * @param aaiRes      the aai res
-     * @param singleton   the singleton
+     * @param aaiRes the aai res
+     * @param singleton the singleton
      * @return the dynamic example object
      */
     public void getDynamicExampleObject(DynamicEntity childObject, AAIResource aaiRes, boolean singleton) {

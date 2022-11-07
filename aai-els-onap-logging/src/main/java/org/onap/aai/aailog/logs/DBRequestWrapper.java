@@ -17,7 +17,9 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.aailog.logs;
+
 import java.net.URI;
 
 public interface DBRequestWrapper {

@@ -20,15 +20,16 @@
 
 package org.onap.aai.aaf.auth;
 
-import org.onap.aai.exceptions.AAIException;
-import org.onap.aai.logging.ErrorLogHelper;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
+
+import org.onap.aai.exceptions.AAIException;
+import org.onap.aai.logging.ErrorLogHelper;
 
 public class ResponseFormatter {
 
@@ -43,9 +44,10 @@ public class ResponseFormatter {
         errorResponse(new AAIException("AAI_3300"), request, response);
     }
 
-    public static void errorResponse(AAIException exception, HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public static void errorResponse(AAIException exception, HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
 
-        if(response.isCommitted()){
+        if (response.isCommitted()) {
             return;
         }
 
@@ -62,7 +64,8 @@ public class ResponseFormatter {
         response.setStatus(exception.getErrorObject().getHTTPResponseCode().getStatusCode());
         response.resetBuffer();
 
-        String resp = ErrorLogHelper.getRESTAPIErrorResponse(Collections.singletonList(MediaType.valueOf(accept)), exception, new ArrayList<>());
+        String resp = ErrorLogHelper.getRESTAPIErrorResponse(Collections.singletonList(MediaType.valueOf(accept)),
+                exception, new ArrayList<>());
         response.getOutputStream().print(resp);
         response.flushBuffer();
     }

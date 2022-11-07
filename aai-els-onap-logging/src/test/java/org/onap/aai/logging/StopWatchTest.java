@@ -20,12 +20,12 @@
 
 package org.onap.aai.logging;
 
+import static java.lang.Thread.sleep;
+import static org.junit.Assert.*;
+
 import org.junit.After;
 import org.junit.Test;
 import org.slf4j.MDC;
-
-import static java.lang.Thread.sleep;
-import static org.junit.Assert.*;
 
 public class StopWatchTest {
 
@@ -33,6 +33,7 @@ public class StopWatchTest {
     public void cleanup() {
         MDC.clear();
     }
+
     @Test
     public void elapsedTimeTest() throws InterruptedException {
         StopWatch.start();
@@ -40,6 +41,7 @@ public class StopWatchTest {
         StopWatch.stop();
         assertTrue(Long.parseLong(MDC.get(LoggingContext.LoggingField.ELAPSED_TIME.toString())) >= 1000L);
     }
+
     @Test
     public void elapsedTimeConditionalTest() throws InterruptedException {
         StopWatch.conditionalStart();
@@ -49,12 +51,13 @@ public class StopWatchTest {
         long elapsedTime = Long.parseLong(elapsedTimeStr);
         assertTrue(elapsedTime >= 1000L);
     }
+
     @Test
     public void clearTest() throws InterruptedException {
         StopWatch.start();
         sleep(1010);
         StopWatch.stop();
-        assertNotNull( MDC.get(LoggingContext.LoggingField.ELAPSED_TIME.toString()));
+        assertNotNull(MDC.get(LoggingContext.LoggingField.ELAPSED_TIME.toString()));
 
         StopWatch.clear();
         assertNull(MDC.get(LoggingContext.LoggingField.STOP_WATCH_START.toString()));

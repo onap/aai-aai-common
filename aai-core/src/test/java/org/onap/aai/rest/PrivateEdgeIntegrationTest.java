@@ -21,7 +21,6 @@
 package org.onap.aai.rest;
 
 import static junit.framework.TestCase.fail;
-
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -30,8 +29,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.jayway.jsonpath.JsonPath;
 
 import java.util.*;
@@ -52,6 +49,8 @@ import org.onap.aai.PayloadUtil;
 import org.onap.aai.dbmap.AAIGraph;
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.setup.SchemaVersion;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.test.annotation.DirtiesContext;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)

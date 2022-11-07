@@ -17,7 +17,11 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.failover;
+
+import java.util.Date;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -26,9 +30,6 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
-import java.util.Date;
-import java.util.concurrent.atomic.AtomicLong;
 
 @Aspect
 @Component
@@ -39,7 +40,7 @@ public class FailoverAspect {
     private final FailoverMonitor failoverMonitor;
     private final AtomicLong atomicLong;
 
-    public FailoverAspect(FailoverMonitor failoverMonitor){
+    public FailoverAspect(FailoverMonitor failoverMonitor) {
         this.failoverMonitor = failoverMonitor;
         this.atomicLong = new AtomicLong(1l);
     }
@@ -69,25 +70,22 @@ public class FailoverAspect {
     @Around("@annotation(org.springframework.scheduling.annotation.Scheduled)")
     public void preSchedule(ProceedingJoinPoint pointcut) throws Throwable {
 
-        Object target             = pointcut.getTarget();
+        Object target = pointcut.getTarget();
         MethodSignature signature = (MethodSignature) pointcut.getSignature();
-        String method             = signature.getMethod().getName();
+        String method = signature.getMethod().getName();
 
-        if(failoverMonitor.shouldRun()){
+        if (failoverMonitor.shouldRun()) {
             atomicLong.set(1l);
             pointcut.proceed();
         } else {
             long currentTime = new Date().getTime();
             long lastMessageTime = atomicLong.get();
 
-            if((currentTime - lastMessageTime) > 120000){
+            if ((currentTime - lastMessageTime) > 120000) {
                 atomicLong.compareAndSet(lastMessageTime, new Date().getTime());
                 LOGGER.debug("Not proceeding the task {}#{} due to is_primary set to false in failover.properties",
-                    target.getClass(),
-                    method
-                );
+                        target.getClass(), method);
             }
         }
     }
 }
-

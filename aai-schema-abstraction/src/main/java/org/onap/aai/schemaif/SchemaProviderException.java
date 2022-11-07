@@ -21,13 +21,12 @@
 
 package org.onap.aai.schemaif;
 
-
 public class SchemaProviderException extends Exception {
 
     private static final long serialVersionUID = 8162385108397238865L;
 
-
-    public SchemaProviderException() {}
+    public SchemaProviderException() {
+    }
 
     public SchemaProviderException(String message) {
         super(message);
@@ -41,7 +40,8 @@ public class SchemaProviderException extends Exception {
         super(message, cause);
     }
 
-    public SchemaProviderException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    public SchemaProviderException(String message, Throwable cause, boolean enableSuppression,
+            boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }

@@ -24,7 +24,6 @@ import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.Tree;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.introspection.ModelType;
 
 public class GremlinTraversalTest extends QueryBuilderTestAbstraction {

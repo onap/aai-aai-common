@@ -17,6 +17,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.aaf.auth;
 
 import org.junit.BeforeClass;
@@ -24,7 +25,7 @@ import org.junit.BeforeClass;
 public class AAISetup {
 
     @BeforeClass
-    public static void preSetup(){
+    public static void preSetup() {
         System.setProperty("AJSC_HOME", ".");
         System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
     }

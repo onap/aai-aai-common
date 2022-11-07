@@ -20,6 +20,16 @@
 
 package org.onap.aai.serialization.db;
 
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Collections;
+
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.janusgraph.core.JanusGraphFactory;
@@ -39,16 +49,6 @@ import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 import org.onap.aai.setup.SchemaVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Collections;
-
-import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class EdgerPairCanBeBothCousinAndParentChildTest extends AAISetup {
@@ -106,8 +106,8 @@ public class EdgerPairCanBeBothCousinAndParentChildTest extends AAISetup {
      */
     private void initData() throws UnsupportedEncodingException, AAIException, URISyntaxException {
         engine.startTransaction();
-        DBSerializer serializer = new DBSerializer(version, engine, introspectorFactoryType, SOURCE_OF_TRUTH, AAIProperties.MINIMUM_DEPTH);
-
+        DBSerializer serializer = new DBSerializer(version, engine, introspectorFactoryType, SOURCE_OF_TRUTH,
+                AAIProperties.MINIMUM_DEPTH);
 
         Introspector gvnf = loader.introspectorFromName("generic-vnf");
         gvnf.setValue("vnf-id", "gvnf-a" + SOURCE_OF_TRUTH);
@@ -127,23 +127,13 @@ public class EdgerPairCanBeBothCousinAndParentChildTest extends AAISetup {
         lagints.setValue("lag-interface", Collections.singletonList(lagInt.getUnderlyingObject()));
         gvnf.setValue("lag-interfaces", lagints.getUnderlyingObject());
 
-
-
         Vertex gvnfV = serializer.createNewVertex(gvnf);
         QueryParser uriQuery = engine.getQueryBuilder().createQueryFromURI(new URI(gvnfAUri));
         serializer.serializeToDb(gvnf, gvnfV, uriQuery, "generic-vnf", gvnf.marshal(false));
 
-        assertTrue("generic-vnf-a created", engine.tx().traversal().V()
-            .has(AAIProperties.AAI_URI, gvnfAUri)
-            .hasNext());
-        assertTrue("lag-int-a created", engine.tx().traversal().V()
-            .has(AAIProperties.AAI_URI, lagIntAUri)
-            .hasNext());
-        assertTrue("l-int created", engine.tx().traversal().V()
-            .has(AAIProperties.AAI_URI, lintUri)
-            .hasNext());
-
-
+        assertTrue("generic-vnf-a created", engine.tx().traversal().V().has(AAIProperties.AAI_URI, gvnfAUri).hasNext());
+        assertTrue("lag-int-a created", engine.tx().traversal().V().has(AAIProperties.AAI_URI, lagIntAUri).hasNext());
+        assertTrue("l-int created", engine.tx().traversal().V().has(AAIProperties.AAI_URI, lintUri).hasNext());
 
         gvnf = loader.introspectorFromName("generic-vnf");
         gvnf.setValue("vnf-id", "gvnf-b" + SOURCE_OF_TRUTH);
@@ -166,69 +156,43 @@ public class EdgerPairCanBeBothCousinAndParentChildTest extends AAISetup {
         serializer.serializeToDb(gvnf, gvnfV, uriQuery, "generic-vnf", gvnf.marshal(false));
 
         engine.tx().traversal().V().forEachRemaining(v -> System.out.println(v.<String>value(AAIProperties.AAI_URI)));
-        assertTrue("generic-vnf-b created", engine.tx().traversal().V()
-            .has(AAIProperties.AAI_URI, gvnfBUri)
-            .hasNext());
-        assertTrue("lag-int-b created", engine.tx().traversal().V()
-            .has(AAIProperties.AAI_URI, lagIntBUri)
-            .hasNext());
+        assertTrue("generic-vnf-b created", engine.tx().traversal().V().has(AAIProperties.AAI_URI, gvnfBUri).hasNext());
+        assertTrue("lag-int-b created", engine.tx().traversal().V().has(AAIProperties.AAI_URI, lagIntBUri).hasNext());
         assertTrue("lag-interface relationship l-interface created", engine.tx().traversal().V()
-            .has(AAIProperties.AAI_URI, lagIntBUri)
-            .both()
-            .has(AAIProperties.AAI_URI, lintUri)
-            .hasNext());
+                .has(AAIProperties.AAI_URI, lagIntBUri).both().has(AAIProperties.AAI_URI, lintUri).hasNext());
     }
-
 
     @Test
     public void verifyReadOfGenericVnfATest() throws AAIException, UnsupportedEncodingException {
-        DBSerializer serializer = new DBSerializer(version, engine, introspectorFactoryType, SOURCE_OF_TRUTH, AAIProperties.MINIMUM_DEPTH);
+        DBSerializer serializer = new DBSerializer(version, engine, introspectorFactoryType, SOURCE_OF_TRUTH,
+                AAIProperties.MINIMUM_DEPTH);
 
-        String gvnfALatestView = serializer.getLatestVersionView(
-            engine.tx().traversal().V().has(AAIProperties.AAI_URI, gvnfAUri).next()).marshal(false);
+        String gvnfALatestView =
+                serializer.getLatestVersionView(engine.tx().traversal().V().has(AAIProperties.AAI_URI, gvnfAUri).next())
+                        .marshal(false);
 
+        assertThat(gvnfALatestView, hasJsonPath("$.lag-interfaces.lag-interface[*]", hasSize(1)));
         assertThat(gvnfALatestView,
-            hasJsonPath(
-                "$.lag-interfaces.lag-interface[*]",
-                hasSize(1)
-            ));
-        assertThat(gvnfALatestView,
-            hasJsonPath(
-                "$.lag-interfaces.lag-interface[*].l-interfaces.l-interface[*]",
-                hasSize(1)
-            ));
-        assertThat(gvnfALatestView,
-            hasJsonPath(
+                hasJsonPath("$.lag-interfaces.lag-interface[*].l-interfaces.l-interface[*]", hasSize(1)));
+        assertThat(gvnfALatestView, hasJsonPath(
                 "$.lag-interfaces.lag-interface[*].l-interfaces.l-interface[*].relationship-list.relationship[*].related-link",
-                containsInAnyOrder(
-                    "/aai/" + schemaVersions.getDefaultVersion() + lagIntBUri
-                )
-            ));
+                containsInAnyOrder("/aai/" + schemaVersions.getDefaultVersion() + lagIntBUri)));
     }
 
     @Test
     public void verifyReadOfGenericVnfBTest() throws AAIException, UnsupportedEncodingException {
-        DBSerializer serializer = new DBSerializer(version, engine, introspectorFactoryType, SOURCE_OF_TRUTH, AAIProperties.MINIMUM_DEPTH);
+        DBSerializer serializer = new DBSerializer(version, engine, introspectorFactoryType, SOURCE_OF_TRUTH,
+                AAIProperties.MINIMUM_DEPTH);
 
-        String gvnfBLatestView = serializer.getLatestVersionView(
-            engine.tx().traversal().V().has(AAIProperties.AAI_URI, gvnfBUri).next()).marshal(false);
+        String gvnfBLatestView =
+                serializer.getLatestVersionView(engine.tx().traversal().V().has(AAIProperties.AAI_URI, gvnfBUri).next())
+                        .marshal(false);
 
+        assertThat(gvnfBLatestView, hasJsonPath("$.lag-interfaces.lag-interface[*]", hasSize(1)));
+        assertThat(gvnfBLatestView, not(hasJsonPath("$.lag-interfaces.lag-interface[*].l-interfaces.l-interface[*]")));
         assertThat(gvnfBLatestView,
-            hasJsonPath(
-                "$.lag-interfaces.lag-interface[*]",
-                hasSize(1)
-            ));
-        assertThat(gvnfBLatestView,
-            not(hasJsonPath(
-                "$.lag-interfaces.lag-interface[*].l-interfaces.l-interface[*]"
-            )));
-        assertThat(gvnfBLatestView,
-            hasJsonPath(
-                "$.lag-interfaces.lag-interface[*].relationship-list.relationship[*].related-link",
-                containsInAnyOrder(
-                    "/aai/" + schemaVersions.getDefaultVersion() + lintUri
-                )
-            ));
+                hasJsonPath("$.lag-interfaces.lag-interface[*].relationship-list.relationship[*].related-link",
+                        containsInAnyOrder("/aai/" + schemaVersions.getDefaultVersion() + lintUri)));
     }
 
 }

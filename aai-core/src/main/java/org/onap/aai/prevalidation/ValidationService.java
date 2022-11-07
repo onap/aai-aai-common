@@ -19,10 +19,12 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.prevalidation;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
@@ -34,7 +36,9 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
 import javax.annotation.PostConstruct;
+
 import org.apache.http.conn.ConnectTimeoutException;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
@@ -63,25 +67,24 @@ public class ValidationService {
      * Error indicating that the service trying to connect is down
      */
     static final String CONNECTION_REFUSED_STRING =
-        "Connection refused to the validation microservice due to service unreachable";
+            "Connection refused to the validation microservice due to service unreachable";
 
     /**
      * Error indicating that the server is unable to reach the port
      * Could be server related connectivity issue
      */
-    static final String CONNECTION_TIMEOUT_STRING =
-        "Connection timeout to the validation microservice as this could " +
-        "indicate the server is unable to reach port, " +
-        "please check on server by running: nc -w10 -z -v ${VALIDATION_HOST} ${VALIDATION_PORT}";
+    static final String CONNECTION_TIMEOUT_STRING = "Connection timeout to the validation microservice as this could "
+            + "indicate the server is unable to reach port, "
+            + "please check on server by running: nc -w10 -z -v ${VALIDATION_HOST} ${VALIDATION_PORT}";
 
     /**
      * Error indicating that the request exceeded the allowed time
      *
      * Note: This means that the service could be active its
-     *       just taking some time to process our request
+     * just taking some time to process our request
      */
     static final String REQUEST_TIMEOUT_STRING =
-        "Request to validation service took longer than the currently set timeout";
+            "Request to validation service took longer than the currently set timeout";
 
     static final String VALIDATION_ENDPOINT = "/v1/validate";
     static final String VALIDATION_HEALTH_ENDPOINT = "/v1/info";
@@ -105,26 +108,20 @@ public class ValidationService {
     private final Gson gson;
 
     @Autowired
-    public ValidationService(
-        @Qualifier("validationRestClient") RestClient validationRestClient,
-        @Value("${spring.application.name}") String appName,
-        @Value("${validation.service.node-types}") String validationNodes,
-        @Value("${validation.service.exclusion-regexes}") String exclusionRegexes
-    ){
+    public ValidationService(@Qualifier("validationRestClient") RestClient validationRestClient,
+            @Value("${spring.application.name}") String appName,
+            @Value("${validation.service.node-types}") String validationNodes,
+            @Value("${validation.service.exclusion-regexes}") String exclusionRegexes) {
         this.validationRestClient = validationRestClient;
         this.appName = appName;
 
-        this.validationNodeTypes = Arrays
-            .stream(validationNodes.split(","))
-            .collect(Collectors.toSet());
+        this.validationNodeTypes = Arrays.stream(validationNodes.split(",")).collect(Collectors.toSet());
 
-        if(exclusionRegexes == null || exclusionRegexes.isEmpty()){
+        if (exclusionRegexes == null || exclusionRegexes.isEmpty()) {
             this.exclusionList = new ArrayList<>();
         } else {
-            this.exclusionList = Arrays
-                .stream(exclusionRegexes.split(","))
-                .map(Pattern::compile)
-                .collect(Collectors.toList());
+            this.exclusionList =
+                    Arrays.stream(exclusionRegexes.split(",")).map(Pattern::compile).collect(Collectors.toList());
         }
         this.gson = new Gson();
         LOGGER.info("Successfully initialized the pre validation service");
@@ -143,32 +140,28 @@ public class ValidationService {
 
         try {
 
-            healthCheckResponse = validationRestClient.execute(
-                VALIDATION_HEALTH_ENDPOINT,
-                HttpMethod.GET,
-                httpHeaders,
-                null
-            );
+            healthCheckResponse =
+                    validationRestClient.execute(VALIDATION_HEALTH_ENDPOINT, HttpMethod.GET, httpHeaders, null);
 
-        } catch(Exception ex){
+        } catch (Exception ex) {
             AAIException validationException = new AAIException("AAI_4021", ex);
             throw validationException;
         }
 
-        if(!isSuccess(healthCheckResponse)){
+        if (!isSuccess(healthCheckResponse)) {
             throw new AAIException("AAI_4021");
         }
 
         LOGGER.info("Successfully connected to the validation service endpoint");
     }
 
-    public boolean shouldValidate(String nodeType){
+    public boolean shouldValidate(String nodeType) {
         return this.validationNodeTypes.contains(nodeType);
     }
 
     public void validate(List<NotificationEvent> notificationEvents) throws AAIException {
 
-        if(notificationEvents == null || notificationEvents.isEmpty()){
+        if (notificationEvents == null || notificationEvents.isEmpty()) {
             return;
         }
 
@@ -177,10 +170,10 @@ public class ValidationService {
             // is in one of the regexes then we skip sending it to validation
             NotificationEvent notification = notificationEvents.get(0);
             Introspector eventHeader = notification.getEventHeader();
-            if(eventHeader != null){
+            if (eventHeader != null) {
                 String source = eventHeader.getValue(SOURCE_NAME);
-                for(Pattern pattern: exclusionList){
-                    if(pattern.matcher(source).matches()){
+                for (Pattern pattern : exclusionList) {
+                    if (pattern.matcher(source).matches()) {
                         return;
                     }
                 }
@@ -192,7 +185,7 @@ public class ValidationService {
 
             Introspector eventHeader = event.getEventHeader();
 
-            if(eventHeader == null){
+            if (eventHeader == null) {
                 // Should I skip processing the request and let it continue
                 // or fail the request and cause client impact
                 continue;
@@ -205,13 +198,13 @@ public class ValidationService {
              * Skipping the delete events for now
              * Note: Might revisit this later when validation supports DELETE events
              */
-            if(DELETE.equalsIgnoreCase(action)){
+            if (DELETE.equalsIgnoreCase(action)) {
                 continue;
             }
 
             if (this.shouldValidate(entityType)) {
                 List<String> violations = this.preValidate(event.getNotificationEvent());
-                if(!violations.isEmpty()){
+                if (!violations.isEmpty()) {
                     AAIException aaiException = new AAIException("AAI_4019");
                     aaiException.getTemplateVars().addAll(violations);
                     throw aaiException;
@@ -232,47 +225,40 @@ public class ValidationService {
         ResponseEntity responseEntity;
         try {
 
-            responseEntity = validationRestClient.execute(
-                VALIDATION_ENDPOINT,
-                HttpMethod.POST,
-                httpHeaders,
-                body
-            );
+            responseEntity = validationRestClient.execute(VALIDATION_ENDPOINT, HttpMethod.POST, httpHeaders, body);
 
             Object responseBody = responseEntity.getBody();
-            if(isSuccess(responseEntity)){
-                LOGGER.debug("Validation Service returned following response status code {} and body {}", responseEntity.getStatusCodeValue(), responseEntity.getBody());
+            if (isSuccess(responseEntity)) {
+                LOGGER.debug("Validation Service returned following response status code {} and body {}",
+                        responseEntity.getStatusCodeValue(), responseEntity.getBody());
             } else if (responseBody != null) {
                 Validation validation = null;
                 try {
                     validation = gson.fromJson(responseBody.toString(), Validation.class);
-                } catch(JsonSyntaxException jsonException){
+                } catch (JsonSyntaxException jsonException) {
                     LOGGER.warn("Unable to convert the response body {}", jsonException.getMessage());
                 }
 
-                if(validation == null){
-                    LOGGER.debug(
-                        "Validation Service following status code {} with body {}",
-                        responseEntity.getStatusCodeValue(),
-                        responseEntity.getBody()
-                    );
+                if (validation == null) {
+                    LOGGER.debug("Validation Service following status code {} with body {}",
+                            responseEntity.getStatusCodeValue(), responseEntity.getBody());
                 } else {
                     violations.addAll(extractViolations(validation));
                 }
             } else {
                 LOGGER.warn("Unable to convert the response body null");
             }
-        } catch(Exception e){
+        } catch (Exception e) {
             // If the exception cause is client side timeout
             // then proceed as if it passed validation
             // resources microservice shouldn't be blocked because of validation service
             // is taking too long or if the validation service is down
             // Any other exception it should block the request from passing?
-            if(e.getCause() instanceof SocketTimeoutException){
+            if (e.getCause() instanceof SocketTimeoutException) {
                 LOGGER.error(REQUEST_TIMEOUT_STRING, e.getCause());
-            } else if(e.getCause() instanceof ConnectException){
+            } else if (e.getCause() instanceof ConnectException) {
                 LOGGER.error(CONNECTION_REFUSED_STRING, e.getCause());
-            } else if(e.getCause() instanceof ConnectTimeoutException){
+            } else if (e.getCause() instanceof ConnectTimeoutException) {
                 LOGGER.error(CONNECTION_TIMEOUT_STRING, e.getCause());
             } else {
                 LOGGER.error("Unknown exception thrown please investigate", e.getCause());
@@ -281,7 +267,7 @@ public class ValidationService {
         return violations;
     }
 
-    boolean isSuccess(ResponseEntity responseEntity){
+    boolean isSuccess(ResponseEntity responseEntity) {
         return responseEntity != null && responseEntity.getStatusCode().is2xxSuccessful();
     }
 
@@ -289,7 +275,7 @@ public class ValidationService {
 
         List<String> errorMessages = new ArrayList<>();
 
-        if(validation == null){
+        if (validation == null) {
             return errorMessages;
         }
 

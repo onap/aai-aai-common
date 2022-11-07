@@ -20,6 +20,8 @@
 
 package org.onap.aai.introspection;
 
+import com.google.common.base.CaseFormat;
+
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -47,8 +49,6 @@ import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.workarounds.NamingExceptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.CaseFormat;
 
 public abstract class Introspector implements Cloneable {
 
@@ -185,7 +185,7 @@ public abstract class Introspector implements Cloneable {
         if (obj != null) {
 
             try {
-                if (! (obj.getClass().getCanonicalName().equals(nameClass.getCanonicalName()))) {
+                if (!(obj.getClass().getCanonicalName().equals(nameClass.getCanonicalName()))) {
                     if (nameClass.isPrimitive()) {
                         nameClass = ClassUtils.primitiveToWrapper(nameClass);
                         result = nameClass.getConstructor(String.class).newInstance(obj.toString());
@@ -317,8 +317,7 @@ public abstract class Introspector implements Cloneable {
             String indexedKeys = this.getMetadata(ObjectMetadata.INDEXED_PROPS);
             if (dslKeys != null) {
                 Arrays.stream(dslKeys.split(",")).forEach(result::add);
-            }
-            else if(indexedKeys != null){
+            } else if (indexedKeys != null) {
                 Arrays.stream(indexedKeys.split(",")).forEach(result::add);
             }
             this.dslStartNodeProperties = Collections.unmodifiableSet(result);

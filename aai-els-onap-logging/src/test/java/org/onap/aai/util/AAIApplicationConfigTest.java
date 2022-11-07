@@ -19,14 +19,15 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.util;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.onap.aai.exceptions.AAIException;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class AAIApplicationConfigTest {
 
@@ -39,6 +40,7 @@ public class AAIApplicationConfigTest {
     public void truststoreTest() throws AAIException {
         assertEquals("truststore.jks", AAIApplicationConfig.getTruststore());
     }
+
     @Test
     public void keystoreTest() throws AAIException {
         assertEquals("keystore.jks", AAIApplicationConfig.getKeystore());
@@ -58,6 +60,7 @@ public class AAIApplicationConfigTest {
     public void getValueTest() throws AAIException {
         assertEquals("certificates", AAIApplicationConfig.get("server.certs.location"));
     }
+
     @Test
     public void getIntValueTest() throws AAIException {
         assertTrue(8446 == AAIApplicationConfig.getInt("server.port"));
@@ -70,6 +73,7 @@ public class AAIApplicationConfigTest {
 
     @Test
     public void getValueWithReplacementTest() throws AAIException {
-        assertEquals("/opt/app/aai/etc/auth/aai-client-cert.p12", AAIApplicationConfig.get("schema.service.ssl.key-store"));
+        assertEquals("/opt/app/aai/etc/auth/aai-client-cert.p12",
+                AAIApplicationConfig.get("schema.service.ssl.key-store"));
     }
 }

@@ -18,7 +18,12 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.aailog.logs;
+
+import java.util.UUID;
+
+import javax.ws.rs.core.Response;
 
 import org.onap.logging.filter.base.MDCSetup;
 import org.onap.logging.ref.slf4j.ONAPLogConstants;
@@ -28,9 +33,6 @@ import org.slf4j.MDC;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
-import javax.ws.rs.core.Response;
-import java.util.UUID;
 
 @Component
 @Scope(scopeName = ConfigurableBeanFactory.SCOPE_PROTOTYPE)

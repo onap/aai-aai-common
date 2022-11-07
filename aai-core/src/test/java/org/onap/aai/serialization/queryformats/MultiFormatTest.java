@@ -20,8 +20,17 @@
 
 package org.onap.aai.serialization.queryformats;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.*;
+
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
+import java.io.UnsupportedEncodingException;
+
+import javax.ws.rs.core.MultivaluedHashMap;
+
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.Tree;
@@ -50,13 +59,6 @@ import org.onap.aai.setup.SchemaVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 
-import javax.ws.rs.core.MultivaluedHashMap;
-import java.io.UnsupportedEncodingException;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.*;
-
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class MultiFormatTest extends AAISetup {
 
@@ -80,11 +82,12 @@ public class MultiFormatTest extends AAISetup {
             "{\"path\":[{\"resource-type\":\"generic-vnf\"},{\"resource-type\":\"vserver\"},{\"resource-type\":\"pserver\"},{\"resource-type\":\"complex\"}]}")
             .getAsJsonObject();
     private JsonObject expectedAsTreeWithResourceFormat = new JsonParser().parse(
-                "{\"results\":[{\"generic-vnf\":{\"vnf-id\":\"vnf-id-1\",\"vnf-name\":\"vnf-name-1\",\"related-nodes\":[{\"vserver\":{\"vserver-id\":\"vserver-id-1\",\"vserver-name\":\"vserver-name-1\",\"related-nodes\":[{\"pserver\":{\"hostname\":\"hostname-1\"}}]}},{\"pserver\":{\"hostname\":\"hostname-2\",\"related-nodes\":[{\"complex\":{\"physical-location-id\":\"physical-location-id-2\",\"country\":\"US\"}}]}}]}}]}")
+            "{\"results\":[{\"generic-vnf\":{\"vnf-id\":\"vnf-id-1\",\"vnf-name\":\"vnf-name-1\",\"related-nodes\":[{\"vserver\":{\"vserver-id\":\"vserver-id-1\",\"vserver-name\":\"vserver-name-1\",\"related-nodes\":[{\"pserver\":{\"hostname\":\"hostname-1\"}}]}},{\"pserver\":{\"hostname\":\"hostname-2\",\"related-nodes\":[{\"complex\":{\"physical-location-id\":\"physical-location-id-2\",\"country\":\"US\"}}]}}]}}]}")
             .getAsJsonObject();
     private JsonObject expectedAsTreeWithSimpleFormat = new JsonParser().parse(
-        "{\"results\":[{\"id\":\"0\",\"node-type\":\"generic-vnf\",\"url\":null,\"properties\":{\"vnf-id\":\"vnf-id-1\",\"vnf-name\":\"vnf-name-1\"},\"related-to\":[{\"id\":\"1\",\"relationship-label\":\"tosca.relationships.HostedOn\",\"node-type\":\"vserver\",\"url\":null},{\"id\":\"5\",\"relationship-label\":\"tosca.relationships.HostedOn\",\"node-type\":\"pserver\",\"url\":null}],\"related-nodes\":[{\"id\":\"1\",\"node-type\":\"vserver\",\"url\":null,\"properties\":{\"vserver-id\":\"vserver-id-1\",\"vserver-name\":\"vserver-name-1\"},\"related-to\":[{\"id\":\"0\",\"relationship-label\":\"tosca.relationships.HostedOn\",\"node-type\":\"generic-vnf\",\"url\":null},{\"id\":\"2\",\"relationship-label\":\"tosca.relationships.HostedOn\",\"node-type\":\"pserver\",\"url\":null}],\"related-nodes\":[{\"id\":\"2\",\"node-type\":\"pserver\",\"url\":null,\"properties\":{\"hostname\":\"hostname-1\"},\"related-to\":[{\"id\":\"1\",\"relationship-label\":\"tosca.relationships.HostedOn\",\"node-type\":\"vserver\",\"url\":null},{\"id\":\"3\",\"relationship-label\":\"org.onap.relationships.inventory.LocatedIn\",\"node-type\":\"complex\",\"url\":null}]}]},{\"id\":\"5\",\"node-type\":\"pserver\",\"url\":null,\"properties\":{\"hostname\":\"hostname-2\"},\"related-to\":[{\"id\":\"0\",\"relationship-label\":\"tosca.relationships.HostedOn\",\"node-type\":\"generic-vnf\",\"url\":null},{\"id\":\"6\",\"relationship-label\":\"org.onap.relationships.inventory.LocatedIn\",\"node-type\":\"complex\",\"url\":null}],\"related-nodes\":[{\"id\":\"6\",\"node-type\":\"complex\",\"url\":null,\"properties\":{\"physical-location-id\":\"physical-location-id-2\",\"country\":\"US\"},\"related-to\":[{\"id\":\"5\",\"relationship-label\":\"org.onap.relationships.inventory.LocatedIn\",\"node-type\":\"pserver\",\"url\":null}]}]}]}]}")
-        .getAsJsonObject();
+            "{\"results\":[{\"id\":\"0\",\"node-type\":\"generic-vnf\",\"url\":null,\"properties\":{\"vnf-id\":\"vnf-id-1\",\"vnf-name\":\"vnf-name-1\"},\"related-to\":[{\"id\":\"1\",\"relationship-label\":\"tosca.relationships.HostedOn\",\"node-type\":\"vserver\",\"url\":null},{\"id\":\"5\",\"relationship-label\":\"tosca.relationships.HostedOn\",\"node-type\":\"pserver\",\"url\":null}],\"related-nodes\":[{\"id\":\"1\",\"node-type\":\"vserver\",\"url\":null,\"properties\":{\"vserver-id\":\"vserver-id-1\",\"vserver-name\":\"vserver-name-1\"},\"related-to\":[{\"id\":\"0\",\"relationship-label\":\"tosca.relationships.HostedOn\",\"node-type\":\"generic-vnf\",\"url\":null},{\"id\":\"2\",\"relationship-label\":\"tosca.relationships.HostedOn\",\"node-type\":\"pserver\",\"url\":null}],\"related-nodes\":[{\"id\":\"2\",\"node-type\":\"pserver\",\"url\":null,\"properties\":{\"hostname\":\"hostname-1\"},\"related-to\":[{\"id\":\"1\",\"relationship-label\":\"tosca.relationships.HostedOn\",\"node-type\":\"vserver\",\"url\":null},{\"id\":\"3\",\"relationship-label\":\"org.onap.relationships.inventory.LocatedIn\",\"node-type\":\"complex\",\"url\":null}]}]},{\"id\":\"5\",\"node-type\":\"pserver\",\"url\":null,\"properties\":{\"hostname\":\"hostname-2\"},\"related-to\":[{\"id\":\"0\",\"relationship-label\":\"tosca.relationships.HostedOn\",\"node-type\":\"generic-vnf\",\"url\":null},{\"id\":\"6\",\"relationship-label\":\"org.onap.relationships.inventory.LocatedIn\",\"node-type\":\"complex\",\"url\":null}],\"related-nodes\":[{\"id\":\"6\",\"node-type\":\"complex\",\"url\":null,\"properties\":{\"physical-location-id\":\"physical-location-id-2\",\"country\":\"US\"},\"related-to\":[{\"id\":\"5\",\"relationship-label\":\"org.onap.relationships.inventory.LocatedIn\",\"node-type\":\"pserver\",\"url\":null}]}]}]}]}")
+            .getAsJsonObject();
+
     @Before
     public void setUp() throws Exception {
 
@@ -136,7 +139,7 @@ public class MultiFormatTest extends AAISetup {
 
     @Test
     public void testAsTreeParamAndSimpleFormat()
-        throws AAIFormatVertexException, AAIException, AAIFormatQueryResultFormatNotSupported {
+            throws AAIFormatVertexException, AAIException, AAIFormatQueryResultFormatNotSupported {
 
         createLoaderEngineSetup();
         DBSerializer serializer = new DBSerializer(version, dbEngine, factoryType, "Junit");
@@ -154,7 +157,7 @@ public class MultiFormatTest extends AAISetup {
 
     @Test
     public void testAsTreeParamAndResourceFormat()
-        throws AAIFormatVertexException, AAIException, AAIFormatQueryResultFormatNotSupported {
+            throws AAIFormatVertexException, AAIException, AAIFormatQueryResultFormatNotSupported {
 
         createLoaderEngineSetup();
         DBSerializer serializer = new DBSerializer(version, dbEngine, factoryType, "Junit");
@@ -168,7 +171,6 @@ public class MultiFormatTest extends AAISetup {
         JsonObject json = sf.formatObject(resultTree).get();
         assertEquals(this.expectedAsTreeWithResourceFormat, json);
     }
-
 
     @Test
     public void testPathResultQueryIdFormat()

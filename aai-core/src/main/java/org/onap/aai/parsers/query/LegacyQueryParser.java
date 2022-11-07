@@ -20,9 +20,6 @@
 
 package org.onap.aai.parsers.query;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -43,6 +40,8 @@ import org.onap.aai.parsers.uri.URIToObject;
 import org.onap.aai.query.builder.QueryBuilder;
 import org.onap.aai.restcore.util.URITools;
 import org.onap.aai.schema.enums.PropertyMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Class LegacyQueryParser.

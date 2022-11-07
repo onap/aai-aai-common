@@ -17,17 +17,18 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.aaf.filters;
 
 import org.springframework.core.Ordered;
 
 public enum FilterPriority {
 
-    AAF_AUTHENTICATION(Ordered.HIGHEST_PRECEDENCE),
-    AAF_AUTHORIZATION(Ordered.HIGHEST_PRECEDENCE + 1), //higher number = lower priority
-    AAF_CERT_AUTHENTICATION(Ordered.HIGHEST_PRECEDENCE + 2 ),
-    AAF_CERT_AUTHORIZATION(Ordered.HIGHEST_PRECEDENCE + 3),
-    TWO_WAY_SSL_AUTH(Ordered.HIGHEST_PRECEDENCE + 4);
+    AAF_AUTHENTICATION(Ordered.HIGHEST_PRECEDENCE), AAF_AUTHORIZATION(Ordered.HIGHEST_PRECEDENCE + 1), // higher number
+                                                                                                       // = lower
+                                                                                                       // priority
+    AAF_CERT_AUTHENTICATION(Ordered.HIGHEST_PRECEDENCE + 2), AAF_CERT_AUTHORIZATION(
+            Ordered.HIGHEST_PRECEDENCE + 3), TWO_WAY_SSL_AUTH(Ordered.HIGHEST_PRECEDENCE + 4);
 
     private final int priority;
 
@@ -35,5 +36,7 @@ public enum FilterPriority {
         priority = p;
     }
 
-    public int getPriority() { return priority; }
+    public int getPriority() {
+        return priority;
+    }
 }

@@ -20,24 +20,20 @@
 
 package org.onap.aai.restcore;
 
-import com.google.common.collect.HashMultimap;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.onap.aai.AAISetup;
-import org.onap.aai.exceptions.AAIException;
-import org.onap.aai.parsers.exceptions.AmbiguousMapAAIException;
-
-import javax.ws.rs.core.*;
-
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Callable;
+
+import javax.ws.rs.core.*;
+
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.onap.aai.AAISetup;
+import org.onap.aai.exceptions.AAIException;
 
 public class RESTAPITest extends AAISetup {
     private static RESTAPI restapi;
@@ -99,7 +95,8 @@ public class RESTAPITest extends AAISetup {
         when(httpHeaders.getRequestHeaders()).thenReturn(requestHeaders);
         when(callable.call()).thenReturn(response);
 
-        Response resp = restapi.runner(AAI_TIMEOUT_ENABLED, AAI_TIMEOUT_BY_APP, AAI_TIMEOUT_DEFAULT_LIMIT, httpHeaders, info, HttpMethod.GET, callable);
+        Response resp = restapi.runner(AAI_TIMEOUT_ENABLED, AAI_TIMEOUT_BY_APP, AAI_TIMEOUT_DEFAULT_LIMIT, httpHeaders,
+                info, HttpMethod.GET, callable);
         Assert.assertNotNull(resp);
     }
 }

@@ -17,15 +17,16 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.exceptions;
 
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.util.HashMap;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import org.junit.Test;
 
 public class AAIExceptionWithInfoTest {
 
@@ -36,7 +37,7 @@ public class AAIExceptionWithInfoTest {
     @Test
     public void aaiExceptionWithInfoTest() {
 
-        aaiException = new AAIExceptionWithInfo(new HashMap<String, Object>(), testInfo );
+        aaiException = new AAIExceptionWithInfo(new HashMap<String, Object>(), testInfo);
 
         assertEquals(testInfo, aaiException.getInfo());
         assertNotNull(aaiException.getInfoHash());
@@ -44,7 +45,7 @@ public class AAIExceptionWithInfoTest {
 
     @Test
     public void aaiExceptionWithCodeInfoTest() {
-        aaiException = new AAIExceptionWithInfo("AAI_3300", new HashMap<String, Object>(), testInfo );
+        aaiException = new AAIExceptionWithInfo("AAI_3300", new HashMap<String, Object>(), testInfo);
 
         assertEquals(testInfo, aaiException.getInfo());
         assertEquals("AAI_3300", aaiException.getCode());
@@ -54,7 +55,7 @@ public class AAIExceptionWithInfoTest {
     @Test
     public void aaiExceptionWithCodeDetailsInfoTest() {
 
-        aaiException = new AAIExceptionWithInfo("AAI_3300", testDetails, new HashMap<String, Object>(), testInfo );
+        aaiException = new AAIExceptionWithInfo("AAI_3300", testDetails, new HashMap<String, Object>(), testInfo);
 
         assertEquals(testInfo, aaiException.getInfo());
         assertEquals("AAI_3300", aaiException.getCode());
@@ -65,7 +66,8 @@ public class AAIExceptionWithInfoTest {
     @Test
     public void aaiExceptionWithCodeThrowableDetailsInfoTest() {
 
-        aaiException = new AAIExceptionWithInfo("AAI_3300", new IOException("File not found"), testDetails, new HashMap<String, Object>(), testInfo );
+        aaiException = new AAIExceptionWithInfo("AAI_3300", new IOException("File not found"), testDetails,
+                new HashMap<String, Object>(), testInfo);
 
         assertEquals(testInfo, aaiException.getInfo());
         assertEquals("AAI_3300", aaiException.getCode());
@@ -76,4 +78,3 @@ public class AAIExceptionWithInfoTest {
     }
 
 }
-

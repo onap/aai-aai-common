@@ -24,13 +24,11 @@ import static org.junit.Assert.*;
 
 import com.google.common.collect.Multimap;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.onap.aai.config.EdgesConfiguration;
 import org.onap.aai.edges.exceptions.EdgeRuleNotFoundException;
 import org.onap.aai.setup.SchemaVersion;
-import org.onap.aai.setup.SchemaVersionsBean;
 import org.onap.aai.testutils.ConfigTranslatorForWiringTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

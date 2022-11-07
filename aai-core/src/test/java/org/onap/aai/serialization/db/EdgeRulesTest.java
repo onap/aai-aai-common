@@ -28,7 +28,6 @@ import static org.junit.Assert.assertEquals;
 import com.google.common.collect.Multimap;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.junit.Rule;

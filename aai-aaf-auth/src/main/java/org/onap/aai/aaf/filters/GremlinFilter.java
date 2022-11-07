@@ -17,6 +17,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.aaf.filters;
 
 import java.io.IOException;
@@ -38,10 +39,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
-@Profile({
-    AafProfiles.AAF_CERT_AUTHENTICATION,
-    AafProfiles.AAF_AUTHENTICATION
-})
+@Profile({AafProfiles.AAF_CERT_AUTHENTICATION, AafProfiles.AAF_AUTHENTICATION})
 public class GremlinFilter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GremlinFilter.class);
@@ -57,44 +55,46 @@ public class GremlinFilter {
     private CadiProps cadiProps;
 
     @Autowired
-    public GremlinFilter(
-        @Value("${permission.type}") String type,
-        @Value("${permission.instance}") String instance,
-        CadiProps cadiProps
-    ) {
+    public GremlinFilter(@Value("${permission.type}") String type, @Value("${permission.instance}") String instance,
+            CadiProps cadiProps) {
         this.type = type;
         this.instance = instance;
         this.cadiProps = cadiProps;
     }
 
-    public void doBasicAuthFilter(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
+    public void doBasicAuthFilter(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws IOException, ServletException {
         PayloadBufferingRequestWrapper requestBufferWrapper = new PayloadBufferingRequestWrapper(request);
 
-        if(ECHO_ENDPOINT.matcher(request.getRequestURI()).matches()){
+        if (ECHO_ENDPOINT.matcher(request.getRequestURI()).matches()) {
             filterChain.doFilter(requestBufferWrapper, response);
         }
 
         String payload = IOUtils.toString(requestBufferWrapper.getInputStream(), StandardCharsets.UTF_8.name());
         boolean containsWordGremlin = payload.contains("\"gremlin\"");
 
-        //if the requestBufferWrapper contains the word "gremlin" it's an "advanced" query needing an "advanced" role
+        // if the requestBufferWrapper contains the word "gremlin" it's an "advanced" query needing an "advanced" role
         String permissionBasic = String.format("%s|%s|%s", type, instance, BASIC);
         String permissionAdvanced = String.format("%s|%s|%s", type, instance, ADVANCED);
 
         boolean isAuthorized;
 
-        if(containsWordGremlin){
+        if (containsWordGremlin) {
             isAuthorized = requestBufferWrapper.isUserInRole(permissionAdvanced);
-        }else{
-            isAuthorized = requestBufferWrapper.isUserInRole(permissionAdvanced) || requestBufferWrapper.isUserInRole(permissionBasic);
+        } else {
+            isAuthorized = requestBufferWrapper.isUserInRole(permissionAdvanced)
+                    || requestBufferWrapper.isUserInRole(permissionBasic);
         }
 
-        if(!isAuthorized){
-            String name = requestBufferWrapper.getUserPrincipal() != null ? requestBufferWrapper.getUserPrincipal().getName() : "unknown";
-            LOGGER.info("User " + name + " does not have a role for " + (containsWordGremlin ? "gremlin" : "non-gremlin") + " query" );
+        if (!isAuthorized) {
+            String name =
+                    requestBufferWrapper.getUserPrincipal() != null ? requestBufferWrapper.getUserPrincipal().getName()
+                            : "unknown";
+            LOGGER.info("User " + name + " does not have a role for "
+                    + (containsWordGremlin ? "gremlin" : "non-gremlin") + " query");
             ResponseFormatter.errorResponse(request, response);
         } else {
-            filterChain.doFilter(requestBufferWrapper,response);
+            filterChain.doFilter(requestBufferWrapper, response);
         }
     }
 }

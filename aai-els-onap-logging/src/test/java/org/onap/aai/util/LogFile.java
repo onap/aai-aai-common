@@ -17,6 +17,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.util;
 
 import java.io.File;
@@ -31,7 +32,7 @@ import org.apache.commons.io.IOUtils;
  * Utility class to read/delete contents of log file
  */
 public class LogFile {
-	
+
     public static String getContents(String fileName) throws IOException {
 
         FileInputStream fileInputStream = null;
@@ -39,12 +40,13 @@ public class LogFile {
         try {
             fileInputStream = new FileInputStream("logs/" + fileName);
             contents = IOUtils.toString(fileInputStream, "UTF-8");
-        }
-        finally {
-            if (fileInputStream != null) fileInputStream.close();
+        } finally {
+            if (fileInputStream != null)
+                fileInputStream.close();
         }
         return contents;
     }
+
     public static void deleteContents(String fileName) throws IOException {
         FileUtils.write(new File("logs/" + fileName), "", Charset.defaultCharset());
     }

@@ -20,20 +20,21 @@
 
 package org.onap.aai.aaf.auth;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.onap.aaf.cadi.filter.CadiFilter;
+import static org.onap.aai.aaf.auth.ResponseFormatter.errorResponse;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 
-import static org.onap.aai.aaf.auth.ResponseFormatter.errorResponse;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.onap.aaf.cadi.filter.CadiFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Class AafRequestFilter provides common auth filter methods

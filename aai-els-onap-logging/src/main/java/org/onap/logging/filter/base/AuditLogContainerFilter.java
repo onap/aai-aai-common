@@ -21,15 +21,14 @@
 package org.onap.logging.filter.base;
 
 import java.io.IOException;
+
 import javax.annotation.Priority;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.container.*;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
+
 import org.onap.logging.ref.slf4j.ONAPLogConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 @Priority(1)

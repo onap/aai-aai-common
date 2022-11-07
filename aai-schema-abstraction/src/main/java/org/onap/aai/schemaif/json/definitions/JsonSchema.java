@@ -18,56 +18,56 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.schemaif.json.definitions;
-
-import java.util.List;
-
-import org.onap.aai.schemaif.SchemaProviderException;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
+
+import java.util.List;
+
+import org.onap.aai.schemaif.SchemaProviderException;
 
 public class JsonSchema {
     private static final Gson gson = new GsonBuilder().create();
 
     @SerializedName("relationship_types")
     private List<JsonEdgeSchema> relationshipTypes;
-    
+
     @SerializedName("node_types")
     private List<JsonVertexSchema> nodeTypes;
-    
+
     @SerializedName("data_types")
     private List<DataTypeDefinition> dataTypes;
-    
+
     @SerializedName("common_node_properties")
     private List<JsonPropertySchema> commonNodeProps;
 
-    
     public void setRelationshipTypes(List<JsonEdgeSchema> relationshipTypes) {
-		this.relationshipTypes = relationshipTypes;
-	}
+        this.relationshipTypes = relationshipTypes;
+    }
 
-	public void setNodeTypes(List<JsonVertexSchema> nodeTypes) {
-		this.nodeTypes = nodeTypes;
-	}
+    public void setNodeTypes(List<JsonVertexSchema> nodeTypes) {
+        this.nodeTypes = nodeTypes;
+    }
 
-	public void setDataTypes(List<DataTypeDefinition> dataTypes) {
-		this.dataTypes = dataTypes;
-	}
+    public void setDataTypes(List<DataTypeDefinition> dataTypes) {
+        this.dataTypes = dataTypes;
+    }
 
-	public List<JsonEdgeSchema> getRelationshipTypes() {
+    public List<JsonEdgeSchema> getRelationshipTypes() {
         return relationshipTypes;
     }
-    
+
     public List<JsonVertexSchema> getNodeTypes() {
         return nodeTypes;
     }
-    
+
     public List<DataTypeDefinition> getDataTypes() {
         return dataTypes;
     }
-    
+
     public List<JsonPropertySchema> getCommonProperties() {
         return commonNodeProps;
     }
@@ -75,21 +75,21 @@ public class JsonSchema {
     public void setCommonProperties(List<JsonPropertySchema> properties) {
         this.commonNodeProps = properties;
     }
-    
+
     public void validate() throws SchemaProviderException {
         if (getNodeTypes() != null) {
             for (JsonVertexSchema vertexSchema : getNodeTypes()) {
                 vertexSchema.validate();
             }
         }
-        
+
         // Validate edges
         if (getRelationshipTypes() != null) {
             for (JsonEdgeSchema edgeSchema : getRelationshipTypes()) {
                 edgeSchema.validate();
             }
         }
-        
+
         // Validate data types
         if (getDataTypes() != null) {
             for (DataTypeDefinition typeSchema : getDataTypes()) {
@@ -97,7 +97,7 @@ public class JsonSchema {
             }
         }
     }
-    
+
     public String toJson() {
         return gson.toJson(this);
     }
@@ -107,7 +107,7 @@ public class JsonSchema {
             if (json == null || json.isEmpty()) {
                 throw new SchemaProviderException("Empty schema definition");
             }
-            
+
             return gson.fromJson(json, JsonSchema.class);
         } catch (Exception ex) {
             throw new SchemaProviderException("Invalid json: " + ex.getMessage());
@@ -116,8 +116,8 @@ public class JsonSchema {
 
     @Override
     public String toString() {
-        return "JsonSchema [relationshipTypes=" + relationshipTypes + ", nodeTypes=" + nodeTypes
-            + ", dataTypes=" + dataTypes + ", commonNodeProps=" + commonNodeProps + "]";
+        return "JsonSchema [relationshipTypes=" + relationshipTypes + ", nodeTypes=" + nodeTypes + ", dataTypes="
+                + dataTypes + ", commonNodeProps=" + commonNodeProps + "]";
     }
 
     @Override
@@ -163,5 +163,4 @@ public class JsonSchema {
         return true;
     }
 
-    
 }

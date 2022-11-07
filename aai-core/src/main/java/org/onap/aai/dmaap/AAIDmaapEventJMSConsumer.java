@@ -22,6 +22,14 @@
 
 package org.onap.aai.dmaap;
 
+import java.util.Map;
+import java.util.Objects;
+
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageListener;
+import javax.jms.TextMessage;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.onap.aai.aailog.logs.AaiDmaapMetricLog;
@@ -37,13 +45,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.client.RestTemplate;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageListener;
-import javax.jms.TextMessage;
-import java.util.Map;
-import java.util.Objects;
-
 public class AAIDmaapEventJMSConsumer implements MessageListener {
 
     private static final String EVENT_TOPIC = "event-topic";
@@ -56,7 +57,6 @@ public class AAIDmaapEventJMSConsumer implements MessageListener {
 
     private Environment environment;
     private Map<String, String> mdcCopy;
-
 
     public AAIDmaapEventJMSConsumer(Environment environment, RestTemplate restTemplate, HttpHeaders httpHeaders) {
         super();
@@ -86,7 +86,7 @@ public class AAIDmaapEventJMSConsumer implements MessageListener {
         String aaiElsErrorCode = AaiElsErrorCode.SUCCESS;
         String errorDescription = "";
 
-        if ( mdcCopy != null ) {
+        if (mdcCopy != null) {
             MDC.setContextMap(mdcCopy);
         }
 
@@ -113,8 +113,7 @@ public class AAIDmaapEventJMSConsumer implements MessageListener {
                         if (aaiEventHeader.has("entity-link")) {
                             serviceName = aaiEventHeader.get("entity-link").toString();
                         }
-                    }
-                    catch (JSONException jexc) {
+                    } catch (JSONException jexc) {
                         // ignore, this is just used for logging
                     }
                 }
@@ -139,8 +138,7 @@ public class AAIDmaapEventJMSConsumer implements MessageListener {
                 aaiElsErrorCode = AaiElsErrorCode.AVAILABILITY_TIMEOUT_ERROR;
                 errorDescription = e.getMessage();
                 ErrorLogHelper.logException(new AAIException("AAI_7304", jsmMessageTxt));
-            }
-            finally {
+            } finally {
                 metricLog.post(aaiElsErrorCode, errorDescription);
             }
         }

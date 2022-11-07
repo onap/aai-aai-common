@@ -17,7 +17,19 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.aailog.filter;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
+
+import java.net.URI;
+
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerResponseContext;
+import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.UriInfo;
 
 import org.junit.After;
 import org.junit.Test;
@@ -29,16 +41,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.onap.logging.filter.base.Constants;
 import org.onap.logging.ref.slf4j.ONAPLogConstants;
 import org.slf4j.MDC;
-
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerResponseContext;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriInfo;
-import java.net.URI;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AaiAuditLogContainerFilterTest {
@@ -59,6 +61,7 @@ public class AaiAuditLogContainerFilterTest {
     public void tearDown() {
         MDC.clear();
     }
+
     @Test
     public void partnerAndServiceNameValueTest() throws java.net.URISyntaxException {
 
@@ -69,8 +72,7 @@ public class AaiAuditLogContainerFilterTest {
         URI uri = null;
         try {
             uri = new URI("https://localhost:9999/onap/aai/network/logical-link");
-        }
-        catch (java.net.URISyntaxException e) {
+        } catch (java.net.URISyntaxException e) {
             throw e;
         }
         when(uriInfo.getAbsolutePath()).thenReturn(uri);
@@ -82,4 +84,3 @@ public class AaiAuditLogContainerFilterTest {
     }
 
 }
-

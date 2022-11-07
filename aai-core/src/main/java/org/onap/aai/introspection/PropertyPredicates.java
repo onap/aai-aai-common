@@ -22,6 +22,7 @@ package org.onap.aai.introspection;
 
 import java.util.Map;
 import java.util.Set;
+
 import org.onap.aai.schema.enums.PropertyMetadata;
 
 public final class PropertyPredicates {

@@ -17,11 +17,12 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.util.delta;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
 import com.google.gson.annotations.SerializedName;
+
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class PropertyDelta {
 
@@ -33,7 +34,6 @@ public class PropertyDelta {
 
     @SerializedName("old-value")
     private Object oldValue;
-
 
     public PropertyDelta(DeltaAction action, Object value) {
         this.action = action;
@@ -71,10 +71,7 @@ public class PropertyDelta {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this)
-            .append("action", action)
-            .append("value", value)
-            .append("oldValue", oldValue)
-            .toString();
+        return new ToStringBuilder(this).append("action", action).append("value", value).append("oldValue", oldValue)
+                .toString();
     }
 }

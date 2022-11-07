@@ -26,7 +26,11 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
+import java.io.UnsupportedEncodingException;
+import java.util.*;
 import java.util.Map.Entry;
+
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.BulkSet;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.Tree;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
@@ -42,9 +46,6 @@ import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexExcepti
 import org.onap.aai.serialization.queryformats.params.Depth;
 import org.onap.aai.serialization.queryformats.params.NodesOnly;
 import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
-
-import java.io.UnsupportedEncodingException;
-import java.util.*;
 
 public class TreeFormat extends MultiFormatMapper {
     private static final EELFLogger TREE_FORMAT_LOGGER = EELFManager.getInstance().getLogger(TreeFormat.class);
@@ -141,12 +142,13 @@ public class TreeFormat extends MultiFormatMapper {
         JsonArray body = new JsonArray();
         for (Object o : queryResults) {
             try {
-                return this.formatObjectToJsonArray(o, properties).orElseGet( () -> {
+                return this.formatObjectToJsonArray(o, properties).orElseGet(() -> {
                     TREE_FORMAT_LOGGER.warn("Empty Optional returned by 'formatObjectToJsonArray'");
                     return body;
                 });
             } catch (AAIFormatVertexException e) {
-                TREE_FORMAT_LOGGER.warn("Failed to format vertex, returning a partial list " + LogFormatTools.getStackTop(e));
+                TREE_FORMAT_LOGGER
+                        .warn("Failed to format vertex, returning a partial list " + LogFormatTools.getStackTop(e));
             } catch (AAIFormatQueryResultFormatNotSupported e) {
                 TREE_FORMAT_LOGGER.warn("Failed to format result type of the query " + LogFormatTools.getStackTop(e));
             }
@@ -155,7 +157,7 @@ public class TreeFormat extends MultiFormatMapper {
     }
 
     public Optional<JsonArray> formatObjectToJsonArray(Object input, Map<String, List<String>> properties)
-        throws AAIFormatVertexException, AAIFormatQueryResultFormatNotSupported {
+            throws AAIFormatVertexException, AAIFormatQueryResultFormatNotSupported {
         JsonArray json = new JsonArray();
         if (input == null)
             return Optional.of(json);
@@ -185,13 +187,11 @@ public class TreeFormat extends MultiFormatMapper {
                     if (obj.isPresent()) {
                         jsonObject = obj.get();
                         for (Map.Entry<String, JsonElement> mapEntry : jsonObject.entrySet()) {
-                            JsonElement jsonRootElementContents = mapEntry.getValue();        // getting everyObject inside
+                            JsonElement jsonRootElementContents = mapEntry.getValue(); // getting everyObject inside
                             if (jsonRootElementContents != null && jsonRootElementContents.isJsonObject()) {
                                 JsonObject relatedJsonNode = (JsonObject) jsonRootElementContents;
-                                addRelatedNodesToJsonObject(
-                                    jsonRootElementContents.getAsJsonObject(),
-                                    getRelatedNodes(relatedJsonNode)
-                                );
+                                addRelatedNodesToJsonObject(jsonRootElementContents.getAsJsonObject(),
+                                        getRelatedNodes(relatedJsonNode));
                             }
                         }
                         jsonArray.add(jsonObject);
@@ -206,9 +206,8 @@ public class TreeFormat extends MultiFormatMapper {
                     for (Map.Entry<String, JsonElement> mapEntry : jsonObject.entrySet()) {
                         JsonElement jsonRootElementContents = mapEntry.getValue();
                         if (jsonRootElementContents != null && jsonRootElementContents.isJsonObject()) {
-                            addRelatedNodesToJsonObject(
-                                jsonRootElementContents.getAsJsonObject(),
-                                getRelatedNodes(entry.getValue()));
+                            addRelatedNodesToJsonObject(jsonRootElementContents.getAsJsonObject(),
+                                    getRelatedNodes(entry.getValue()));
                         }
                     }
                     jsonArray.add(jsonObject);
@@ -225,10 +224,7 @@ public class TreeFormat extends MultiFormatMapper {
             JsonElement jsonRootElementContents = jsonObj.get(s);
             if (jsonRootElementContents != null && jsonRootElementContents.isJsonObject()) {
                 JsonObject relatedJsonNode = jsonRootElementContents.getAsJsonObject();
-                addRelatedNodesToJsonObject(
-                    relatedJsonNode,
-                    this.getRelatedNodes(relatedJsonNode)
-                );
+                addRelatedNodesToJsonObject(relatedJsonNode, this.getRelatedNodes(relatedJsonNode));
                 relatedNodes.add(relatedJsonNode);
             }
         }
@@ -248,25 +244,23 @@ public class TreeFormat extends MultiFormatMapper {
     }
 
     private void processVertex(JsonArray relatedNodes, Entry<Object, Tree<Object>> entry, Vertex o)
-        throws AAIFormatVertexException {
+            throws AAIFormatVertexException {
         Optional<JsonObject> obj = this.getJsonFromVertex(o);
         if (obj.isPresent()) {
             JsonObject jsonObj = obj.get();
             for (Entry<String, JsonElement> mapEntry : jsonObj.entrySet()) {
                 JsonElement jsonRootElementContents = mapEntry.getValue();
                 if (jsonRootElementContents != null && jsonRootElementContents.isJsonObject()) {
-                    JsonObject jsonObject = addRelatedNodesToJsonObject(
-                        jsonRootElementContents.getAsJsonObject(),
-                        getRelatedNodes(entry.getValue()));
+                    JsonObject jsonObject = addRelatedNodesToJsonObject(jsonRootElementContents.getAsJsonObject(),
+                            getRelatedNodes(entry.getValue()));
                     relatedNodes.add(jsonObject);
                 }
             }
         }
     }
 
-
     private static JsonObject addRelatedNodesToJsonObject(JsonObject jsonObject, Optional<JsonArray> relatedNodesOpt) {
-        relatedNodesOpt.ifPresent( relatedNodes -> {
+        relatedNodesOpt.ifPresent(relatedNodes -> {
             if (relatedNodes.size() > 0) {
                 jsonObject.add("related-nodes", relatedNodes);
             }
@@ -303,7 +297,7 @@ public class TreeFormat extends MultiFormatMapper {
     protected Optional<JsonObject> vertexToJsonObject(Vertex v) throws AAIFormatVertexException {
         try {
             final Introspector obj =
-                getLoader().introspectorFromName(v.<String>property(AAIProperties.NODE_TYPE).orElse(null));
+                    getLoader().introspectorFromName(v.<String>property(AAIProperties.NODE_TYPE).orElse(null));
 
             final List<Vertex> wrapper = new ArrayList<>();
 
@@ -313,7 +307,7 @@ public class TreeFormat extends MultiFormatMapper {
                 getSerializer().dbToObject(wrapper, obj, this.depth, this.nodesOnly, "false");
             } catch (AAIException | UnsupportedEncodingException e) {
                 throw new AAIFormatVertexException(
-                    "Failed to format vertex - error while serializing: " + e.getMessage(), e);
+                        "Failed to format vertex - error while serializing: " + e.getMessage(), e);
             }
 
             final String json = obj.marshal(false);
@@ -336,9 +330,9 @@ public class TreeFormat extends MultiFormatMapper {
         return parser;
     }
 
-
     @Override
-    protected Optional<JsonObject> getJsonFromVertex(Vertex input, Map<String, List<String>> properties) throws AAIFormatVertexException {
+    protected Optional<JsonObject> getJsonFromVertex(Vertex input, Map<String, List<String>> properties)
+            throws AAIFormatVertexException {
         return Optional.empty();
     }
 }

@@ -127,7 +127,8 @@ public enum ObjectMetadata {
     ALLOW_DIRECT_WRITE("allowDirectWrite"),
     /**
      * properties that are allowed to be in start node in a DSL
-     * <br><b>comma separated list</b>
+     * <br>
+     * <b>comma separated list</b>
      */
     DSL_START_NODE_PROPS("dslStartNodeProps");
 

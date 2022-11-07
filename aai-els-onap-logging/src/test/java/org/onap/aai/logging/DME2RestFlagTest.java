@@ -20,7 +20,11 @@
 
 package org.onap.aai.logging;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
+
 import ch.qos.logback.access.spi.IAccessEvent;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,9 +32,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DME2RestFlagTest {
@@ -46,8 +47,9 @@ public class DME2RestFlagTest {
     public void setup() {
         when(dme2RestFlag.isStarted()).thenReturn(true);
     }
+
     @Test
-    public void dme2Test(){
+    public void dme2Test() {
         String[] contextArray = {"a", "b", "c"};
         String[] routeOfferArray = {"d", "e", "f"};
         String[] versionArray = {"1", "2", "3"};
@@ -56,8 +58,9 @@ public class DME2RestFlagTest {
         when(accessEvent.getRequestParameter("version")).thenReturn(versionArray);
         assertEquals("DME2", dme2RestFlag.convert(accessEvent));
     }
+
     @Test
-    public void restTest(){
+    public void restTest() {
         String[] contextArray = {""};
         String[] routeOfferArray = {""};
         String[] versionArray = {""};

@@ -20,6 +20,9 @@
 
 package org.onap.aai.introspection;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.junit.Assert;
@@ -27,9 +30,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.onap.aai.AAISetup;
-
-import java.util.HashSet;
-import java.util.Set;
 
 @Ignore("Not a used/flushed out feature")
 public class JSONStrategyTest extends AAISetup {
@@ -69,14 +69,16 @@ public class JSONStrategyTest extends AAISetup {
         Assert.assertEquals(1024, jsonStrategy.getValue("ramInMegabytes"));
 
     }
+
     @Test
-    public void testGetMethods(){
-        Assert.assertEquals("pserver-type",jsonStrategy.getName());
-        Assert.assertEquals("pserver-type",jsonStrategy.getDbName());
-        Assert.assertEquals("",jsonStrategy.getGenericURI());
+    public void testGetMethods() {
+        Assert.assertEquals("pserver-type", jsonStrategy.getName());
+        Assert.assertEquals("pserver-type", jsonStrategy.getDbName());
+        Assert.assertEquals("", jsonStrategy.getGenericURI());
         Assert.assertNull(jsonStrategy.getChildName());
-        Assert.assertEquals("key",jsonStrategy.preProcessKey("key"));
+        Assert.assertEquals("key", jsonStrategy.preProcessKey("key"));
     }
+
     @Test
     public void getPropertiesTest() {
         Set<String> expected = new HashSet<>();

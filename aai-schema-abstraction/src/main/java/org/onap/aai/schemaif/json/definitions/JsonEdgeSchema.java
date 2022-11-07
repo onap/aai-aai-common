@@ -18,78 +18,84 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.schemaif.json.definitions;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.util.Map;
 
 import org.onap.aai.schemaif.SchemaProviderException;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 public class JsonEdgeSchema {
     private static final Gson gson = new GsonBuilder().create();
-    
+
     private String from;
     private String to;
     private String label;
-    private Map<String,String> annotations;
-    
+    private Map<String, String> annotations;
+
     public String getFrom() {
         return from;
     }
+
     public void setFrom(String from) {
         this.from = from;
     }
-    
+
     public String getTo() {
         return to;
     }
+
     public void setTo(String to) {
         this.to = to;
     }
-    
+
     public String getLabel() {
         return label;
     }
+
     public void setLabel(String label) {
         this.label = label;
     }
-    
-    public Map<String,String> getAnnotations() {
+
+    public Map<String, String> getAnnotations() {
         return annotations;
     }
-    public void setAnnotations(Map<String,String> annotations) {
+
+    public void setAnnotations(Map<String, String> annotations) {
         this.annotations = annotations;
     }
-    
+
     public void validate() throws SchemaProviderException {
-        if ( (getTo() == null) || (getTo().isEmpty()) ) {
+        if ((getTo() == null) || (getTo().isEmpty())) {
             throw new SchemaProviderException("Edge definition missing 'to'");
         }
-        
-        if ( (getFrom() == null) || (getFrom().isEmpty()) ) {
+
+        if ((getFrom() == null) || (getFrom().isEmpty())) {
             throw new SchemaProviderException("Edge definition missing 'from'");
         }
-        
-        if ( (getLabel() == null) || (getLabel().isEmpty()) ) {
+
+        if ((getLabel() == null) || (getLabel().isEmpty())) {
             throw new SchemaProviderException("Edge definition missing 'label'");
         }
     }
-    
+
     public String toJson() {
         return gson.toJson(this);
     }
-    
+
     public static JsonEdgeSchema fromJson(String json) {
         return gson.fromJson(json, JsonEdgeSchema.class);
     }
+
     @Override
     public String toString() {
-        return "JsonEdgeSchema [from=" + from + ", to=" + to + ", label=" + label + ", annotations="
-            + annotations + "]";
+        return "JsonEdgeSchema [from=" + from + ", to=" + to + ", label=" + label + ", annotations=" + annotations
+                + "]";
     }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -100,6 +106,7 @@ public class JsonEdgeSchema {
         result = prime * result + ((to == null) ? 0 : to.hashCode());
         return result;
     }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -131,5 +138,5 @@ public class JsonEdgeSchema {
             return false;
         return true;
     }
-    
+
 }

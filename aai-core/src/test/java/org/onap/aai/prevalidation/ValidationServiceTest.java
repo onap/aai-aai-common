@@ -27,6 +27,8 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
+import com.google.gson.Gson;
+
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
@@ -43,8 +45,6 @@ import org.onap.aai.restclient.RestClient;
 import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-
-import com.google.gson.Gson;
 
 public class ValidationServiceTest {
 
@@ -77,62 +77,48 @@ public class ValidationServiceTest {
     }
 
     @Test
-    public void testPreValidateWithSuccessRequestAndServiceIsDownAndShouldErrorWithConnectionRefused() throws IOException, AAIException {
+    public void testPreValidateWithSuccessRequestAndServiceIsDownAndShouldErrorWithConnectionRefused()
+            throws IOException, AAIException {
 
         String pserverRequest = PayloadUtil.getResourcePayload("prevalidation/success-request-with-no-violations.json");
 
-        Mockito
-            .when(
-                restClient.execute(
-                    eq(ValidationService.VALIDATION_ENDPOINT),
-                    eq(HttpMethod.POST),
-                    any(),
-                    eq(pserverRequest)
-                )
-            ).thenThrow(new RuntimeException(new ConnectException("Connection refused")));
+        Mockito.when(restClient.execute(eq(ValidationService.VALIDATION_ENDPOINT), eq(HttpMethod.POST), any(),
+                eq(pserverRequest))).thenThrow(new RuntimeException(new ConnectException("Connection refused")));
 
         validationService.preValidate(pserverRequest);
 
-        assertThat(capture.toString(), containsString("Connection refused to the validation microservice due to service unreachable"));
+        assertThat(capture.toString(),
+                containsString("Connection refused to the validation microservice due to service unreachable"));
     }
 
     @Test
-    public void testPreValidateWithSuccessRequestAndServiceIsUnreachableAndShouldErrorWithConnectionTimeout() throws IOException, AAIException {
+    public void testPreValidateWithSuccessRequestAndServiceIsUnreachableAndShouldErrorWithConnectionTimeout()
+            throws IOException, AAIException {
 
         String pserverRequest = PayloadUtil.getResourcePayload("prevalidation/success-request-with-no-violations.json");
 
-        Mockito
-            .when(
-                restClient.execute(
-                    eq(ValidationService.VALIDATION_ENDPOINT),
-                    eq(HttpMethod.POST),
-                    any(),
-                    eq(pserverRequest)
-                )
-            ).thenThrow(new RuntimeException(new ConnectTimeoutException("Connection timed out")));
+        Mockito.when(restClient.execute(eq(ValidationService.VALIDATION_ENDPOINT), eq(HttpMethod.POST), any(),
+                eq(pserverRequest)))
+                .thenThrow(new RuntimeException(new ConnectTimeoutException("Connection timed out")));
 
         validationService.preValidate(pserverRequest);
 
-        assertThat(capture.toString(), containsString("Connection timeout to the validation microservice as this could indicate the server is unable to reach port"));
+        assertThat(capture.toString(), containsString(
+                "Connection timeout to the validation microservice as this could indicate the server is unable to reach port"));
     }
 
     @Test
-    public void testPreValidateWithSuccessRequestAndRespondSuccessfullyWithinAllowedTime() throws IOException, AAIException {
+    public void testPreValidateWithSuccessRequestAndRespondSuccessfullyWithinAllowedTime()
+            throws IOException, AAIException {
 
         String pserverRequest = PayloadUtil.getResourcePayload("prevalidation/success-request-with-no-violations.json");
-        String validationResponse = PayloadUtil.getResourcePayload("prevalidation/success-response-with-empty-violations.json");
+        String validationResponse =
+                PayloadUtil.getResourcePayload("prevalidation/success-response-with-empty-violations.json");
 
         ResponseEntity responseEntity = Mockito.mock(ResponseEntity.class, Mockito.RETURNS_DEEP_STUBS);
 
-        Mockito
-            .when(
-                restClient.execute(
-                    eq(ValidationService.VALIDATION_ENDPOINT),
-                    eq(HttpMethod.POST),
-                    any(),
-                    eq(pserverRequest)
-                )
-            ).thenReturn(responseEntity);
+        Mockito.when(restClient.execute(eq(ValidationService.VALIDATION_ENDPOINT), eq(HttpMethod.POST), any(),
+                eq(pserverRequest))).thenReturn(responseEntity);
 
         Mockito.when(responseEntity.getStatusCodeValue()).thenReturn(200);
         Mockito.when(responseEntity.getBody()).thenReturn(validationResponse);
@@ -145,23 +131,20 @@ public class ValidationServiceTest {
     }
 
     @Test
-    public void testPreValidateWithSuccessRequestAndServiceIsAvailableAndRequestIsTakingTooLongAndClientShouldTimeout() throws IOException, AAIException {
+    public void testPreValidateWithSuccessRequestAndServiceIsAvailableAndRequestIsTakingTooLongAndClientShouldTimeout()
+            throws IOException, AAIException {
 
         String pserverRequest = PayloadUtil.getResourcePayload("prevalidation/success-request-with-no-violations.json");
 
-        Mockito
-            .when(
-                restClient.execute(
-                    eq(ValidationService.VALIDATION_ENDPOINT),
-                    eq(HttpMethod.POST),
-                    any(),
-                    eq(pserverRequest)
-                )
-            ).thenThrow(new RuntimeException(new SocketTimeoutException("Request timed out due to taking longer than client expected")));
+        Mockito.when(restClient.execute(eq(ValidationService.VALIDATION_ENDPOINT), eq(HttpMethod.POST), any(),
+                eq(pserverRequest)))
+                .thenThrow(new RuntimeException(
+                        new SocketTimeoutException("Request timed out due to taking longer than client expected")));
 
         validationService.preValidate(pserverRequest);
 
-        assertThat(capture.toString(), containsString("Request to validation service took longer than the currently set timeout"));
+        assertThat(capture.toString(),
+                containsString("Request to validation service took longer than the currently set timeout"));
     }
 
     @Test
@@ -173,13 +156,15 @@ public class ValidationServiceTest {
         List<String> errorMessages = validationService.extractViolations(validation);
         assertNotNull("Expected the error messages to be not null", errorMessages);
         assertThat(errorMessages.size(), is(1));
-        assertThat(errorMessages.get(0), is("Invalid nf values, check nf-type, nf-role, nf-function, and nf-naming-code"));
+        assertThat(errorMessages.get(0),
+                is("Invalid nf values, check nf-type, nf-role, nf-function, and nf-naming-code"));
     }
 
     @Test
     public void testErrorMessagesAreEmptyListWhenViolationsReturnEmptyList() throws IOException {
 
-        String genericVnfRequest = PayloadUtil.getResourcePayload("prevalidation/success-response-with-empty-violations.json");
+        String genericVnfRequest =
+                PayloadUtil.getResourcePayload("prevalidation/success-response-with-empty-violations.json");
 
         Validation validation = gson.fromJson(genericVnfRequest, Validation.class);
         List<String> errorMessages = validationService.extractViolations(validation);
@@ -190,7 +175,8 @@ public class ValidationServiceTest {
     @Test
     public void testErrorMessagesAreEmptyListWhenViolationsIsNotFoundInJson() throws IOException {
 
-        String genericVnfRequest = PayloadUtil.getResourcePayload("prevalidation/success-response-with-exclude-violations.json");
+        String genericVnfRequest =
+                PayloadUtil.getResourcePayload("prevalidation/success-response-with-exclude-violations.json");
 
         Validation validation = gson.fromJson(genericVnfRequest, Validation.class);
         List<String> errorMessages = validationService.extractViolations(validation);

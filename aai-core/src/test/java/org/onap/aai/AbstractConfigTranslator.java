@@ -21,7 +21,6 @@
 package org.onap.aai;
 
 import java.io.File;
-import java.net.URL;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

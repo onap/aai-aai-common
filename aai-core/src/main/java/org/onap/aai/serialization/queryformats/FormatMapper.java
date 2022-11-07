@@ -32,7 +32,9 @@ import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexExcepti
 public interface FormatMapper {
 
     Optional<JsonObject> formatObject(Object o) throws AAIFormatVertexException, AAIFormatQueryResultFormatNotSupported;
-    Optional<JsonObject> formatObject(Object o, Map<String, List<String>> properties) throws AAIFormatVertexException, AAIFormatQueryResultFormatNotSupported;
+
+    Optional<JsonObject> formatObject(Object o, Map<String, List<String>> properties)
+            throws AAIFormatVertexException, AAIFormatQueryResultFormatNotSupported;
 
     int parallelThreshold();
 }

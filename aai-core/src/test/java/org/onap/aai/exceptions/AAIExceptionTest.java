@@ -21,7 +21,6 @@
 package org.onap.aai.exceptions;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 import org.onap.aai.AAISetup;

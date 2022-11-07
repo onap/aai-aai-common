@@ -19,12 +19,13 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.util;
+
+import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.onap.aai.exceptions.AAIException;
-
-import static org.junit.Assert.assertNotNull;
 
 public class FormatDateTest {
     private FormatDate formatDate = null;

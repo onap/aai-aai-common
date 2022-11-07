@@ -27,9 +27,10 @@ package org.onap.aai.domain.responseMessage;
 //Generated on: 2015.09.11 at 11:53:27 AM EDT
 //
 
-import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.xml.bind.annotation.*;
 
 /**
  * <p>

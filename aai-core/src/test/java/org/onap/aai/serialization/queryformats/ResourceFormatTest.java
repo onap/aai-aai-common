@@ -20,7 +20,17 @@
 
 package org.onap.aai.serialization.queryformats;
 
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
+
 import com.google.gson.JsonObject;
+
+import java.util.Arrays;
+
+import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.MultivaluedMap;
+
 import org.apache.tinkerpop.gremlin.process.traversal.strategy.verification.ReadOnlyStrategy;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.T;
@@ -41,14 +51,6 @@ import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
 import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
 import org.springframework.test.annotation.DirtiesContext;
-
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
-import java.util.Arrays;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class ResourceFormatTest extends AAISetup {
@@ -126,7 +128,8 @@ public class ResourceFormatTest extends AAISetup {
         createLoaderEngineSetup();
         serializer = new DBSerializer(schemaVersions.getAppRootVersion(), dbEngine, factoryType, "Junit");
 
-        FormatFactory ff = new FormatFactory(loader, serializer, schemaVersions, basePath, "https://localhost:8447/aai/");
+        FormatFactory ff =
+                new FormatFactory(loader, serializer, schemaVersions, basePath, "https://localhost:8447/aai/");
         MultivaluedMap mvm = new MultivaluedHashMap();
         mvm.add("depth", "0");
         Formatter formatter = ff.get(Format.resource, mvm);

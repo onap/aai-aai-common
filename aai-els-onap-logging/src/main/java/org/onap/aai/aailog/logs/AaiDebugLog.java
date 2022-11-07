@@ -20,11 +20,11 @@
 
 package org.onap.aai.aailog.logs;
 
+import java.util.UUID;
+
 import org.onap.logging.filter.base.MDCSetup;
 import org.onap.logging.ref.slf4j.ONAPLogConstants;
 import org.slf4j.MDC;
-
-import java.util.UUID;
 
 public class AaiDebugLog extends MDCSetup {
 

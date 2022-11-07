@@ -21,23 +21,22 @@
 
 package org.onap.aai.schemaif.definitions.types;
 
-public class FloatDataType extends DataType {    
+public class FloatDataType extends DataType {
     public FloatDataType() {
         super(Type.FLOAT);
     }
 
     @Override
     public Object validateValue(String value) {
-        // TODO:  In Tosca, you can impose constraints such as min/max value.
+        // TODO: In Tosca, you can impose constraints such as min/max value.
         // In future we can add this type of validation
         Float floatValue;
         try {
             floatValue = Float.parseFloat(value);
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             return null;
         }
-        
+
         return floatValue;
     }
 }

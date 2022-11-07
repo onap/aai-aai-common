@@ -22,9 +22,6 @@
 
 package org.onap.aai.config;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -32,6 +29,8 @@ import java.util.Set;
 
 import org.onap.aai.nodes.NodeIngestor;
 import org.onap.aai.setup.Translator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;

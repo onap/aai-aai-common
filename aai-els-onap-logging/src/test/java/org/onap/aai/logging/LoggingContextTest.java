@@ -20,20 +20,21 @@
 
 package org.onap.aai.logging;
 
+import static org.junit.Assert.*;
+
+import java.util.concurrent.TimeUnit;
+
 import org.junit.After;
 import org.junit.Test;
 import org.slf4j.MDC;
 
-import java.util.concurrent.TimeUnit;
-
-import static org.junit.Assert.*;
-
 public class LoggingContextTest {
 
     @After
-    public void cleanup(){
+    public void cleanup() {
         MDC.clear();
     }
+
     @Test
     public void elapsedTimeTest() {
         LoggingContext.elapsedTime(300, TimeUnit.MILLISECONDS);
@@ -41,6 +42,7 @@ public class LoggingContextTest {
         LoggingContext.init();
         assertNull(MDC.get(LoggingContext.LoggingField.ELAPSED_TIME.toString()));
     }
+
     @Test
     public void stopWatchTest() {
         LoggingContext.init();
@@ -53,6 +55,7 @@ public class LoggingContextTest {
         assertFalse(LoggingContext.isStopWatchStarted());
         assertTrue(elapsedTime > 0);
     }
+
     @Test
     public void putClearTest() {
         String testServiceName = "TEST-SVC-NAME";

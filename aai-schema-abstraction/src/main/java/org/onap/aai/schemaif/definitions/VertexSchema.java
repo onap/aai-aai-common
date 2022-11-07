@@ -18,15 +18,15 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.schemaif.definitions;
 
 import java.util.Map;
 
-
 public class VertexSchema {
     protected String name;
-    protected Map<String,PropertySchema> properties;
-    protected Map<String,String> annotations;
+    protected Map<String, PropertySchema> properties;
+    protected Map<String, String> annotations;
 
     public String getName() {
         return name;
@@ -36,14 +36,14 @@ public class VertexSchema {
         return properties.get(propName.toLowerCase());
     }
 
-    public Map<String,PropertySchema> getPropertySchemaList() {
+    public Map<String, PropertySchema> getPropertySchemaList() {
         return properties;
     }
 
-    public Map<String,String> getAnnotationSchemaList() {
-      return annotations;
+    public Map<String, String> getAnnotationSchemaList() {
+        return annotations;
     }
-    
+
     public String getAnnotationValue(String annotation) {
         return annotations.get(annotation.toLowerCase());
     }

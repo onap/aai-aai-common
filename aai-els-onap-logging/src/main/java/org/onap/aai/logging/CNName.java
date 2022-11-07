@@ -20,16 +20,18 @@
 
 package org.onap.aai.logging;
 
+import static java.util.Base64.getDecoder;
+
 import ch.qos.logback.access.pattern.AccessConverter;
 import ch.qos.logback.access.spi.IAccessEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.security.cert.X509Certificate;
 
 import javax.security.auth.x500.X500Principal;
 import javax.servlet.http.HttpServletRequest;
-import java.security.cert.X509Certificate;
 
-import static java.util.Base64.getDecoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CNName extends AccessConverter {
     protected static final Logger LOGGER = LoggerFactory.getLogger(CNName.class);

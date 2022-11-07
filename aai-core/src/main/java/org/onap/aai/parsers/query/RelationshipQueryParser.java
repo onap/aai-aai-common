@@ -20,9 +20,6 @@
 
 package org.onap.aai.parsers.query;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.UnsupportedEncodingException;
 
 import org.onap.aai.config.SpringContextAware;
@@ -34,6 +31,8 @@ import org.onap.aai.introspection.ModelType;
 import org.onap.aai.parsers.relationship.RelationshipToURI;
 import org.onap.aai.parsers.uri.URIParser;
 import org.onap.aai.query.builder.QueryBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
 /**

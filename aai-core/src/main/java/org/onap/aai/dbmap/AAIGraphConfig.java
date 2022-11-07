@@ -35,7 +35,6 @@ import org.janusgraph.diskstorage.configuration.ConfigElement;
  */
 public class AAIGraphConfig {
 
-
     private AAIGraphConfig() {
 
     }

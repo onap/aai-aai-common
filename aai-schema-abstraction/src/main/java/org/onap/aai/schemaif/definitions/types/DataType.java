@@ -23,14 +23,7 @@ package org.onap.aai.schemaif.definitions.types;
 
 public abstract class DataType {
     public enum Type {
-        STRING,
-        BOOL,
-        INT,
-        LONG,
-        FLOAT,
-        LIST,
-        MAP,
-        COMPLEX
+        STRING, BOOL, INT, LONG, FLOAT, LIST, MAP, COMPLEX
     }
 
     private final Type type;

@@ -20,6 +20,10 @@
 
 package org.onap.aai.serialization.engines;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.strategy.verification.ReadOnlyStrategy;
 import org.apache.tinkerpop.gremlin.structure.Graph;
@@ -31,10 +35,6 @@ import org.onap.aai.query.builder.*;
 import org.onap.aai.serialization.db.InMemoryGraphSingleton;
 import org.onap.aai.serialization.engines.query.GraphTraversalQueryEngine;
 import org.onap.aai.serialization.engines.query.QueryEngine;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 public class InMemoryDBEngine extends TransactionalGraphEngine {
 

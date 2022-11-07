@@ -26,9 +26,10 @@
 
 package org.onap.aai.domain.restServiceException;
 
-import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.xml.bind.annotation.*;
 
 /**
  * <p>

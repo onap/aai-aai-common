@@ -17,6 +17,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.aailog.filter;
 
 import com.sun.jersey.api.client.ClientHandler;
@@ -24,17 +25,19 @@ import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.jersey.api.client.ClientRequest;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.filter.ClientFilter;
+
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.UUID;
+
+import javax.ws.rs.core.MultivaluedMap;
+
 import org.onap.aai.aailog.logs.ServiceName;
 import org.onap.logging.filter.base.Constants;
 import org.onap.logging.filter.base.MDCSetup;
 import org.onap.logging.ref.slf4j.ONAPLogConstants;
 import org.slf4j.*;
-
-import javax.ws.rs.core.MultivaluedMap;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.UUID;
 
 public class RestControllerClientLoggingInterceptor extends ClientFilter {
     private static final Logger logger = LoggerFactory.getLogger(RestControllerClientLoggingInterceptor.class);
@@ -42,7 +45,7 @@ public class RestControllerClientLoggingInterceptor extends ClientFilter {
     private final MDCSetup mdcSetup;
     private final String partnerName;
 
-    public RestControllerClientLoggingInterceptor () {
+    public RestControllerClientLoggingInterceptor() {
         mdcSetup = new MDCSetup();
         partnerName = getPartnerName();
     }
@@ -62,11 +65,11 @@ public class RestControllerClientLoggingInterceptor extends ClientFilter {
         return clientResponse;
     }
 
-    protected  String getTargetServiceName(ClientRequest clientRequest) {
+    protected String getTargetServiceName(ClientRequest clientRequest) {
         return getServiceName(clientRequest);
     }
 
-    protected  String getServiceName(ClientRequest clientRequest) {
+    protected String getServiceName(ClientRequest clientRequest) {
         String path = clientRequest.getURI().getRawPath();
         return ServiceName.extractServiceName(path);
     }
@@ -75,12 +78,11 @@ public class RestControllerClientLoggingInterceptor extends ClientFilter {
         return response.getStatus();
     }
 
-    protected  String getResponseCode(ClientResponse clientResponse) {
+    protected String getResponseCode(ClientResponse clientResponse) {
         return String.valueOf(clientResponse.getStatus());
     }
 
-
-    protected  String getTargetEntity(ClientRequest ClientRequest) {
+    protected String getTargetEntity(ClientRequest ClientRequest) {
         return Constants.DefaultValues.UNKNOWN_TARGET_ENTITY;
     };
 
@@ -94,12 +96,13 @@ public class RestControllerClientLoggingInterceptor extends ClientFilter {
             logger.warn("Error in RestControllerClientLoggingInterceptor pre", e.getMessage());
         }
     }
+
     public void setInvocationId(ClientRequest clientRequest) {
         String invocationId = null;
         MultivaluedMap<String, Object> requestHeaders = clientRequest.getHeaders();
         Object id = requestHeaders.get(ONAPLogConstants.Headers.INVOCATION_ID);
         if (id != null) {
-            invocationId = (String)id;
+            invocationId = (String) id;
         }
         requestHeaders.remove(ONAPLogConstants.Headers.INVOCATION_ID);
         if (invocationId == null) {
@@ -107,6 +110,7 @@ public class RestControllerClientLoggingInterceptor extends ClientFilter {
         }
         MDC.put(ONAPLogConstants.MDCs.INVOCATION_ID, invocationId);
     }
+
     protected void setupHeaders(ClientRequest clientRequest) {
         String requestId = extractRequestID(clientRequest);
         MultivaluedMap<String, Object> requestHeaders = clientRequest.getHeaders();
@@ -118,14 +122,14 @@ public class RestControllerClientLoggingInterceptor extends ClientFilter {
         }
         addHeader(requestHeaders, Constants.HttpHeaders.ECOMP_REQUEST_ID, requestId);
         addHeader(requestHeaders, ONAPLogConstants.Headers.INVOCATION_ID, MDC.get(ONAPLogConstants.MDCs.INVOCATION_ID));
-        if (partnerName != null && (!partnerName.isEmpty())){
+        if (partnerName != null && (!partnerName.isEmpty())) {
             addHeader(requestHeaders, ONAPLogConstants.Headers.PARTNER_NAME, partnerName);
         }
     }
 
     protected void setupMDC(ClientRequest clientRequest) {
         MDC.put(ONAPLogConstants.MDCs.INVOKE_TIMESTAMP,
-            ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT));
+                ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT));
         MDC.put(ONAPLogConstants.MDCs.TARGET_SERVICE_NAME, getTargetServiceName(clientRequest));
         MDC.put(ONAPLogConstants.MDCs.RESPONSE_STATUS_CODE, ONAPLogConstants.ResponseStatus.INPROGRESS.toString());
         mdcSetup.setInvocationIdFromMDC();
@@ -151,15 +155,15 @@ public class RestControllerClientLoggingInterceptor extends ClientFilter {
             MultivaluedMap<String, Object> requestHeaders = clientRequest.getHeaders();
             Object requestIdObj = requestHeaders.getFirst(Constants.HttpHeaders.TRANSACTION_ID);
             if (requestIdObj != null) {
-                requestId = (String)requestIdObj;
+                requestId = (String) requestIdObj;
             }
-            if ( requestId == null || requestId.isEmpty() ) {
+            if (requestId == null || requestId.isEmpty()) {
                 requestId = UUID.randomUUID().toString();
             }
             mdcSetup.setLogTimestamp();
             mdcSetup.setElapsedTimeInvokeTimestamp();
             logger.warn("No value found in MDC when checking key {} value will be set to {}",
-                ONAPLogConstants.MDCs.REQUEST_ID, requestId);
+                    ONAPLogConstants.MDCs.REQUEST_ID, requestId);
             MDC.put(ONAPLogConstants.MDCs.REQUEST_ID, requestId);
         }
         return requestId;
@@ -178,6 +182,7 @@ public class RestControllerClientLoggingInterceptor extends ClientFilter {
             logger.warn("Error in RestControllerClientLoggingInterceptor post", e.getMessage());
         }
     }
+
     protected String getPartnerName() {
         return mdcSetup.getProperty(Constants.Property.PARTNER_NAME);
     }

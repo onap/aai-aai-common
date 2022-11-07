@@ -26,9 +26,9 @@
 
 package org.onap.aai.domain.notificationEvent;
 
-import org.w3c.dom.Element;
-
 import javax.xml.bind.annotation.*;
+
+import org.w3c.dom.Element;
 
 /**
  * <p>

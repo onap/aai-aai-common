@@ -18,33 +18,34 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.schemaif.json.definitions;
-
-import java.util.Map;
-
-import org.onap.aai.schemaif.SchemaProviderException;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Map;
+
+import org.onap.aai.schemaif.SchemaProviderException;
+
 public class JsonPropertySchema {
     private static final Gson gson = new GsonBuilder().create();
-    
+
     private String name;
     private Boolean required;
     private Boolean unique;
-    
+
     @SerializedName("type")
     private String dataType;
-    
+
     private String description;
-    
+
     @SerializedName("default")
     private String defaultValue;
-    
-    private Map<String,String> annotations;
-    
+
+    private Map<String, String> annotations;
+
     public String getName() {
         return name;
     }
@@ -76,7 +77,7 @@ public class JsonPropertySchema {
     public void setDataType(String dataType) {
         this.dataType = dataType;
     }
-    
+
     public String getDefaultValue() {
         return defaultValue;
     }
@@ -92,39 +93,38 @@ public class JsonPropertySchema {
     public void setDescription(String description) {
         this.description = description;
     }
-    
-    public Map<String,String> getAnnotations() {
+
+    public Map<String, String> getAnnotations() {
         return annotations;
     }
 
-    public void setAnnotations(Map<String,String> annotations) {
+    public void setAnnotations(Map<String, String> annotations) {
         this.annotations = annotations;
     }
 
     public void validate() throws SchemaProviderException {
-        if ( (getName() == null) || (getName().isEmpty()) ) {
+        if ((getName() == null) || (getName().isEmpty())) {
             throw new SchemaProviderException(getName() + " property has no name");
         }
 
-        if ( (getDataType() == null) || (getDataType().isEmpty()) ) {
+        if ((getDataType() == null) || (getDataType().isEmpty())) {
             throw new SchemaProviderException(getName() + " property has no type");
         }
     }
 
-
     public String toJson() {
         return gson.toJson(this);
     }
-    
+
     public static JsonVertexSchema fromJson(String json) {
         return gson.fromJson(json, JsonVertexSchema.class);
     }
 
     @Override
     public String toString() {
-        return "JsonPropertySchema [name=" + name + ", required=" + required + ", unique=" + unique
-            + ", dataType=" + dataType + ", description=" + description + ", defaultValue="
-            + defaultValue + ", annotations=" + annotations + "]";
+        return "JsonPropertySchema [name=" + name + ", required=" + required + ", unique=" + unique + ", dataType="
+                + dataType + ", description=" + description + ", defaultValue=" + defaultValue + ", annotations="
+                + annotations + "]";
     }
 
     @Override
@@ -187,6 +187,5 @@ public class JsonPropertySchema {
             return false;
         return true;
     }
-    
-    
+
 }

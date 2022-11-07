@@ -22,11 +22,8 @@ package org.onap.aai.concurrent;
 
 import static org.junit.Assert.assertTrue;
 
-import java.lang.Object;
-
 import org.junit.Test;
 import org.onap.aai.AAISetup;
-import org.onap.aai.concurrent.AaiCallable;
 import org.slf4j.MDC;
 
 public class AaiCallableTest extends AAISetup {

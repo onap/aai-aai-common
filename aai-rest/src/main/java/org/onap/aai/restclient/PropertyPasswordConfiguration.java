@@ -17,6 +17,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.restclient;
 
 import java.io.File;
@@ -117,7 +118,8 @@ public class PropertyPasswordConfiguration implements ApplicationContextInitiali
             Map<String, Object> propertyOverrides = new LinkedHashMap<>();
             decodePasswords(propertySource, propertyOverrides);
             if (!propertyOverrides.isEmpty()) {
-                PropertySource<?> decodedProperties = new MapPropertySource("decoded "+ propertySource.getName(), propertyOverrides);
+                PropertySource<?> decodedProperties =
+                        new MapPropertySource("decoded " + propertySource.getName(), propertyOverrides);
                 environment.getPropertySources().addBefore(propertySource.getName(), decodedProperties);
             }
 
@@ -143,7 +145,8 @@ public class PropertyPasswordConfiguration implements ApplicationContextInitiali
     }
 
     private String decodePasswordsInString(String input) {
-        if (input == null) return null;
+        if (input == null)
+            return null;
         StringBuffer output = new StringBuffer();
         Matcher matcher = decodePasswordPattern.matcher(input);
         while (matcher.find()) {

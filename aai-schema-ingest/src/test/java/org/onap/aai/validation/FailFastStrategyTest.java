@@ -25,8 +25,6 @@ import static org.junit.Assert.*;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.onap.aai.validation.AAISchemaValidationException;
-import org.onap.aai.validation.FailFastStrategy;
 
 public class FailFastStrategyTest {
     @Rule

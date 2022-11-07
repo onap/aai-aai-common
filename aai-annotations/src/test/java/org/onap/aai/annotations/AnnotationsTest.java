@@ -20,8 +20,6 @@
 
 package org.onap.aai.annotations;
 
-import org.onap.aai.annotations.Metadata;
-
 public class AnnotationsTest {
 
     public AnnotationsTest() {

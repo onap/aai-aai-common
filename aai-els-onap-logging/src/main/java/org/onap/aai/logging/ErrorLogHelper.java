@@ -69,6 +69,7 @@ public class ErrorLogHelper {
 
     /**
      * Load properties.
+     * 
      * @throws IOException the exception
      * @throws ErrorObjectFormatException
      */
@@ -78,9 +79,10 @@ public class ErrorLogHelper {
         final Properties properties = new Properties();
 
         try (final FileInputStream fis = new FileInputStream(filePath)) {
-            LOGGER.info("Found the error.properties in the following location: {}", AAIConstants.AAI_HOME_ETC_APP_PROPERTIES);
+            LOGGER.info("Found the error.properties in the following location: {}",
+                    AAIConstants.AAI_HOME_ETC_APP_PROPERTIES);
             properties.load(fis);
-        } catch(Exception ex){
+        } catch (Exception ex) {
             LOGGER.info("Unable to find the error.properties from filesystem so using file in jar");
             if (is != null) {
                 properties.load(is);
@@ -572,16 +574,16 @@ public class ErrorLogHelper {
     public static void logException(AAIException e) {
         final ErrorObject errorObject = e.getErrorObject();
         /*
-        String severityCode = errorObject.getSeverityCode(errorObject.getSeverity());
-
-        Severify should be left empty per Logging Specification 2019.11
-        if (!StringUtils.isEmpty(severityCode)) {
-            int sevCode = Integer.parseInt(severityCode);
-            if (sevCode > 0 && sevCode <= 3) {
-                LoggingContext.severity(sevCode);
-            }
-        }
-        */
+         * String severityCode = errorObject.getSeverityCode(errorObject.getSeverity());
+         * 
+         * Severify should be left empty per Logging Specification 2019.11
+         * if (!StringUtils.isEmpty(severityCode)) {
+         * int sevCode = Integer.parseInt(severityCode);
+         * if (sevCode > 0 && sevCode <= 3) {
+         * LoggingContext.severity(sevCode);
+         * }
+         * }
+         */
         String stackTrace = "";
         try {
             stackTrace = LogFormatTools.getStackTop(e);

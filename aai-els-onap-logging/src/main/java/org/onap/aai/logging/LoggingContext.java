@@ -20,13 +20,13 @@
 
 package org.onap.aai.logging;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 public class LoggingContext {
 
@@ -42,7 +42,6 @@ public class LoggingContext {
     public static final String UNKNOWN_ERROR = "900";
 
     public static final Map<String, String> responseMap = new HashMap();
-
 
     // Specific Log Event Fields
     public static enum LoggingField {

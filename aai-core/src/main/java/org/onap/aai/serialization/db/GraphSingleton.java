@@ -20,10 +20,10 @@
 
 package org.onap.aai.serialization.db;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.janusgraph.core.JanusGraph;
 import org.onap.aai.dbmap.AAIGraph;
-
-import java.util.concurrent.atomic.AtomicInteger;
 
 /* This class simply calls AAIGraph under the covers for now */
 public class GraphSingleton {

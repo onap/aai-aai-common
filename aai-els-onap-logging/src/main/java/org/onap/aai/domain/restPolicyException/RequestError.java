@@ -22,9 +22,10 @@ package org.onap.aai.domain.restPolicyException;
 
 import com.fasterxml.jackson.annotation.*;
 
-import javax.annotation.Generated;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.annotation.Generated;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")

@@ -26,17 +26,19 @@
 
 package org.onap.aai.domain.restResponseInfo;
 
-import org.junit.Test;
-
 import static org.junit.Assert.assertNotNull;
+
+import org.junit.Test;
 
 public class ObjectFactoryTest {
     private ObjectFactory objectFactory = new ObjectFactory();
 
     @Test
     public void objectFactoryTest() {
-        Info.ResponseMessages.ResponseMessage.Variables variables = objectFactory.createInfoResponseMessagesResponseMessageVariables();
-        Info.ResponseMessages.ResponseMessage responseMessage = objectFactory.createInfoResponseMessagesResponseMessage();
+        Info.ResponseMessages.ResponseMessage.Variables variables =
+                objectFactory.createInfoResponseMessagesResponseMessageVariables();
+        Info.ResponseMessages.ResponseMessage responseMessage =
+                objectFactory.createInfoResponseMessagesResponseMessage();
         Info.ResponseMessages responseMessages = objectFactory.createInfoResponseMessages();
         Info info = objectFactory.createInfo();
 

@@ -17,6 +17,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.config;
 
 import org.onap.aai.transforms.XmlFormatTransformer;
@@ -27,7 +28,7 @@ import org.springframework.context.annotation.Configuration;
 public class XmlFormatTransformerConfiguration {
 
     @Bean
-    public XmlFormatTransformer xmlFormatTransformer(){
+    public XmlFormatTransformer xmlFormatTransformer() {
         return new XmlFormatTransformer();
     }
 }

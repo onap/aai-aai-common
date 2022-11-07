@@ -18,6 +18,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.schemaif.oxm;
 
 import java.util.HashSet;
@@ -31,7 +32,6 @@ import org.onap.aai.schemaif.SchemaProvider;
 import org.onap.aai.schemaif.SchemaProviderException;
 import org.onap.aai.schemaif.definitions.EdgeSchema;
 import org.onap.aai.schemaif.definitions.VertexSchema;
-
 
 public class OxmSchemaProvider implements SchemaProvider {
 
@@ -53,9 +53,8 @@ public class OxmSchemaProvider implements SchemaProvider {
 
         try {
             vs.fromOxm(vertexName, jaxbContext, OxmSchemaLoader.getXmlLookupMap(schemaVersion));
-        }
-        catch (SchemaProviderException ex) {
-            // Node doesn't exist in schema.  Return null.
+        } catch (SchemaProviderException ex) {
+            // Node doesn't exist in schema. Return null.
             return null;
         }
 
@@ -95,7 +94,8 @@ public class OxmSchemaProvider implements SchemaProvider {
     }
 
     @Override
-    public Set<EdgeSchema> getEdgeSchemaForSourceTarget(String sourceType, String targetType, String version) throws SchemaProviderException {
+    public Set<EdgeSchema> getEdgeSchemaForSourceTarget(String sourceType, String targetType, String version)
+            throws SchemaProviderException {
         RelationshipSchema relSchema = OxmEdgeRulesLoader.getSchemaForVersion(version);
         Set<EdgeSchema> edges = new HashSet<>();
         Set<String> relTypes = relSchema.getValidRelationTypes(sourceType, targetType);
@@ -112,6 +112,6 @@ public class OxmSchemaProvider implements SchemaProvider {
 
     @Override
     public Map<String, VertexSchema> getVertexMap(String schemaVersion) throws SchemaProviderException {
-      return OxmSchemaLoader.getVertexLookupForVersion(schemaVersion);
+        return OxmSchemaLoader.getVertexLookupForVersion(schemaVersion);
     }
 }

@@ -27,7 +27,9 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.ws.rs.core.Response.Status;
+
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
@@ -204,6 +206,7 @@ public class UEBNotification {
     public List<NotificationEvent> getEvents() {
         return new ArrayList<>(this.events.values());
     }
+
     public Map<String, NotificationEvent> getEventsMap() {
         return this.events;
     }

@@ -20,6 +20,18 @@
 
 package org.onap.aai.serialization.db;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
@@ -43,18 +55,6 @@ import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 import org.onap.aai.setup.SchemaVersion;
 import org.springframework.test.annotation.DirtiesContext;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
 
 @RunWith(value = Parameterized.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
@@ -90,7 +90,8 @@ public class DbAliasTest extends DataLinkSetup {
     }
 
     @Test
-    public void checkOnWrite() throws AAIException, UnsupportedEncodingException, URISyntaxException, SecurityException, IllegalArgumentException {
+    public void checkOnWrite() throws AAIException, UnsupportedEncodingException, URISyntaxException, SecurityException,
+            IllegalArgumentException {
         final String property = "persona-model-customization-id";
         String dbPropertyName = property;
         TransactionalGraphEngine spy = spy(this.dbEngine);
@@ -129,12 +130,14 @@ public class DbAliasTest extends DataLinkSetup {
     }
 
     @Test
-    public void checkOnRead() throws AAIException, UnsupportedEncodingException, SecurityException, IllegalArgumentException {
+    public void checkOnRead()
+            throws AAIException, UnsupportedEncodingException, SecurityException, IllegalArgumentException {
         final String property = "persona-model-customization-id";
 
         TransactionalGraphEngine spy = spy(dbEngine);
         TransactionalGraphEngine.Admin adminSpy = spy(dbEngine.asAdmin());
-        Vertex v = graph.traversal().addV().property("vnf-id", "key1").property("model-customization-id", "hello").next();
+        Vertex v =
+                graph.traversal().addV().property("vnf-id", "key1").property("model-customization-id", "hello").next();
         graph.tx().commit();
         Graph g = graph.newTransaction();
         GraphTraversalSource traversal = g.traversal();

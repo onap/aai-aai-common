@@ -35,28 +35,26 @@
  *
  *
  */
+
 package org.onap.aai.aaf.auth;
-
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import javax.servlet.http.HttpServletRequest;
 
 import static org.easymock.EasyMock.*;
 import static org.junit.Assert.assertEquals;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.junit.Test;
+
 public class AafRequestWrapperTest {
 
-
-
     @Test
-    public void testGetHeader(){
+    public void testGetHeader() {
         HttpServletRequest mockRequest = createMock(HttpServletRequest.class);
         expect(mockRequest.getHeader(CertUtil.AAI_SSL_CLIENT_OU_HDR)).andReturn("m55555@org.onap.com:TEST").times(1, 4);
         replay(mockRequest);
-        AafRequestWrapper af= new AafRequestWrapper(mockRequest);
-        assertEquals(af.getHeader("X-AAI-SSL-Client-OU"),"m55555@org.onap.com:TEST");
-        af.putHeader("X-AAI-SSL-Client-C","test@org.onap.com:test");
-        assertEquals(af.getHeader("X-AAI-SSL-Client-C"),"test@org.onap.com:test");
+        AafRequestWrapper af = new AafRequestWrapper(mockRequest);
+        assertEquals(af.getHeader("X-AAI-SSL-Client-OU"), "m55555@org.onap.com:TEST");
+        af.putHeader("X-AAI-SSL-Client-C", "test@org.onap.com:test");
+        assertEquals(af.getHeader("X-AAI-SSL-Client-C"), "test@org.onap.com:test");
     }
 }

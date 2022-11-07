@@ -23,7 +23,7 @@ package org.onap.aai.schemaif.definitions.types;
 
 public class ListDataType extends DataType {
     private DataType listType;
-    
+
     public ListDataType(DataType listType) {
         super(Type.LIST);
         this.listType = listType;
@@ -32,7 +32,7 @@ public class ListDataType extends DataType {
     public DataType getListType() {
         return listType;
     }
-    
+
     @Override
     public Object validateValue(String value) {
         // TODO: Break the string into a list and validate each element against the listType

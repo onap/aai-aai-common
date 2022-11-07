@@ -20,9 +20,6 @@
 
 package org.onap.aai.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.StringWriter;
 import java.util.Iterator;
 import java.util.UUID;
@@ -40,6 +37,8 @@ import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 
@@ -273,7 +272,7 @@ public class StoreNotificationEvent {
 
             if (eventHeader.getValue("sequence-number") == null) {
                 eventHeader.setValue("sequence-number",
-                    AAIConfig.get("aai.notificationEvent.default.sequenceNumber", "UNK"));
+                        AAIConfig.get("aai.notificationEvent.default.sequenceNumber", "UNK"));
             }
 
             if (eventHeader.getValue("severity") == null) {
@@ -286,7 +285,7 @@ public class StoreNotificationEvent {
 
             if (notificationEvent.getValue("cambria-partition") == null) {
                 notificationEvent.setValue("cambria-partition",
-                    AAIConfig.get("aai.notificationEvent.default.partition", AAIConstants.UEB_PUB_PARTITION_AAI));
+                        AAIConfig.get("aai.notificationEvent.default.partition", AAIConstants.UEB_PUB_PARTITION_AAI));
             }
 
             notificationEvent.setValue("event-header", eventHeader.getUnderlyingObject());
@@ -322,7 +321,8 @@ public class StoreNotificationEvent {
         }
     }
 
-    public String storeEventAndSendToJms(Loader loader, Introspector eventHeader, Introspector obj) throws AAIException {
+    public String storeEventAndSendToJms(Loader loader, Introspector eventHeader, Introspector obj)
+            throws AAIException {
         if (obj == null) {
             throw new AAIException("AAI_7350");
         }

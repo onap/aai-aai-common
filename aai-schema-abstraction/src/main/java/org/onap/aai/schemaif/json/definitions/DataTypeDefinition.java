@@ -18,22 +18,23 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.schemaif.json.definitions;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.util.List;
 
 import org.onap.aai.schemaif.SchemaProviderException;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 public class DataTypeDefinition {
     private static final Gson gson = new GsonBuilder().create();
-    
+
     private String name;
     private String description;
     private List<JsonPropertySchema> properties;
-    
+
     public String getName() {
         return name;
     }
@@ -57,9 +58,9 @@ public class DataTypeDefinition {
     public void setProperties(List<JsonPropertySchema> properties) {
         this.properties = properties;
     }
-    
+
     public void validate() throws SchemaProviderException {
-        if ( (getName() == null) || (getName().isEmpty()) ) {
+        if ((getName() == null) || (getName().isEmpty())) {
             throw new SchemaProviderException("Type definition missing a name");
         }
 
@@ -69,19 +70,18 @@ public class DataTypeDefinition {
             }
         }
     }
-    
+
     public String toJson() {
         return gson.toJson(this);
     }
-    
+
     public static DataTypeDefinition fromJson(String json) {
         return gson.fromJson(json, DataTypeDefinition.class);
     }
 
     @Override
     public String toString() {
-        return "DataTypeDefinition [name=" + name + ", description=" + description + ", properties="
-            + properties + "]";
+        return "DataTypeDefinition [name=" + name + ", description=" + description + ", properties=" + properties + "]";
     }
 
     @Override
@@ -120,6 +120,5 @@ public class DataTypeDefinition {
             return false;
         return true;
     }
-    
-    
+
 }

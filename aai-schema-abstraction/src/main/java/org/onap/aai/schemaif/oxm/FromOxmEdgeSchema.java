@@ -18,6 +18,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.schemaif.oxm;
 
 import java.util.HashMap;
@@ -29,14 +30,13 @@ import org.onap.aai.schemaif.definitions.EdgeSchema;
 import org.onap.aai.schemaif.definitions.PropertySchema;
 import org.onap.aai.schemaif.definitions.types.DataType;
 
-
 public class FromOxmEdgeSchema extends EdgeSchema {
 
     public void fromEdgeRule(EdgeRule edgeRule) throws SchemaProviderException {
         name = edgeRule.getLabel();
         source = edgeRule.getFrom();
         target = edgeRule.getTo();
-        
+
         switch (edgeRule.getMultiplicityRule()) {
             case MANY2MANY:
                 multiplicity = Multiplicity.MANY_2_MANY;
@@ -52,22 +52,22 @@ public class FromOxmEdgeSchema extends EdgeSchema {
                 break;
         }
 
-        annotations = new HashMap<String,String>();
-        properties = new HashMap<String,PropertySchema>();
-        
-        // TODO:  For now these are hard-coded ... should read them from a config file or something
+        annotations = new HashMap<String, String>();
+        properties = new HashMap<String, PropertySchema>();
+
+        // TODO: For now these are hard-coded ... should read them from a config file or something
         annotations.put(EdgeProperty.CONTAINS.toString().toLowerCase(), edgeRule.getContains());
         annotations.put(EdgeProperty.DELETE_OTHER_V.toString().toLowerCase(), edgeRule.getDeleteOtherV());
         annotations.put(EdgeProperty.PREVENT_DELETE.toString().toLowerCase(), edgeRule.getPreventDelete());
-        
+
         FromOxmPropertySchema pSchema = new FromOxmPropertySchema();
         pSchema.fromRelationship(EdgeProperty.CONTAINS.toString(), DataType.Type.STRING);
         properties.put(EdgeProperty.CONTAINS.toString().toLowerCase(), pSchema);
-        
+
         pSchema = new FromOxmPropertySchema();
         pSchema.fromRelationship(EdgeProperty.DELETE_OTHER_V.toString(), DataType.Type.STRING);
         properties.put(EdgeProperty.DELETE_OTHER_V.toString().toLowerCase(), pSchema);
-        
+
         pSchema = new FromOxmPropertySchema();
         pSchema.fromRelationship(EdgeProperty.PREVENT_DELETE.toString(), DataType.Type.STRING);
         properties.put(EdgeProperty.PREVENT_DELETE.toString().toLowerCase(), pSchema);

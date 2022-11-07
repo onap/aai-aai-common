@@ -20,6 +20,27 @@
 
 package org.onap.aai.nodes;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.*;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+import javax.xml.bind.SchemaOutputResolver;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Result;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
 import org.junit.Rule;
@@ -37,32 +58,10 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.w3c.dom.Document;
 
-import javax.xml.bind.SchemaOutputResolver;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Result;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
-
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestPropertySource(
-        properties = {
-            "schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-ss-wiring-test.properties",
-            "spring.main.allow-bean-definition-overriding=true"
-        })
+        properties = {"schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-ss-wiring-test.properties",
+                "spring.main.allow-bean-definition-overriding=true"})
 
 @ContextConfiguration(classes = {MockProvider.class, NodesConfiguration.class})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)

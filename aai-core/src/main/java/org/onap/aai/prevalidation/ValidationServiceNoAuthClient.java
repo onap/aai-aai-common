@@ -20,19 +20,18 @@
 
 package org.onap.aai.prevalidation;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.onap.aai.restclient.NoAuthRestClient;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.util.MultiValueMap;
-
 import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
+
+import org.onap.aai.restclient.NoAuthRestClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.util.MultiValueMap;
 
 public class ValidationServiceNoAuthClient extends NoAuthRestClient {
 

@@ -20,18 +20,19 @@
 
 package org.onap.aai.aaf.auth;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.security.cert.X509Certificate;
-import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,8 +40,8 @@ import org.slf4j.LoggerFactory;
  * The Class CertUtil provides cert related utility methods.
  */
 public class CertUtil {
-    public static final String DEFAULT_CADI_ISSUERS = "CN=ATT AAF CADI Test Issuing " +
-        "CA 01, OU=CSO, O=ATT, C=US:CN=ATT AAF CADI Test Issuing CA 02, OU=CSO, O=ATT, C=US";
+    public static final String DEFAULT_CADI_ISSUERS = "CN=ATT AAF CADI Test Issuing "
+            + "CA 01, OU=CSO, O=ATT, C=US:CN=ATT AAF CADI Test Issuing CA 02, OU=CSO, O=ATT, C=US";
     public static final String CADI_PROP_FILES = "cadi_prop_files";
     public static final String CADI_ISSUERS_PROP_NAME = "cadi_x509_issuers";
     public static final String CADI_ISSUERS_SEPARATOR = ":";

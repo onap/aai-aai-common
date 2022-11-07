@@ -18,7 +18,10 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.schemaif.oxm;
+
+import com.google.common.base.CaseFormat;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,13 +35,12 @@ import org.onap.aai.schemaif.SchemaProviderException;
 import org.onap.aai.schemaif.definitions.PropertySchema;
 import org.onap.aai.schemaif.definitions.VertexSchema;
 
-import com.google.common.base.CaseFormat;
-
 public class FromOxmVertexSchema extends VertexSchema {
-    public void fromOxm(String vertexType, DynamicJAXBContext jaxbContext, HashMap<String, DynamicType> xmlElementLookup) throws SchemaProviderException {
+    public void fromOxm(String vertexType, DynamicJAXBContext jaxbContext,
+            HashMap<String, DynamicType> xmlElementLookup) throws SchemaProviderException {
         name = vertexType;
-        properties = new HashMap<String,PropertySchema>();
-        annotations = new HashMap<String,String>();
+        properties = new HashMap<String, PropertySchema>();
+        annotations = new HashMap<String, String>();
 
         String javaTypeName = CaseFormat.LOWER_HYPHEN.to(CaseFormat.UPPER_CAMEL, vertexType);
         DynamicType modelObjectType = jaxbContext.getDynamicType(javaTypeName);
@@ -62,21 +64,21 @@ public class FromOxmVertexSchema extends VertexSchema {
             // Vertex isn't found in the OXM
             throw new SchemaProviderException("Vertex " + vertexType + " not found in OXM");
         }
-        
+
         // Check annotations
         Map<String, Object> oxmProps = modelObjectType.getDescriptor().getProperties();
         for (Map.Entry<String, Object> entry : oxmProps.entrySet()) {
             if (entry.getValue() instanceof String) {
-                annotations.put(entry.getKey().toLowerCase(), (String)entry.getValue());
+                annotations.put(entry.getKey().toLowerCase(), (String) entry.getValue());
             }
         }
 
         // Regular props
         for (DatabaseMapping mapping : modelObjectType.getDescriptor().getMappings()) {
             if (mapping instanceof XMLAnyObjectMapping)
-              continue;
-            if(mapping instanceof XMLAnyCollectionMapping)
-              continue;
+                continue;
+            if (mapping instanceof XMLAnyCollectionMapping)
+                continue;
             FromOxmPropertySchema propSchema = new FromOxmPropertySchema();
             propSchema.fromOxm(mapping, modelObjectType, false);
             properties.put(propSchema.getName().toLowerCase(), propSchema);
@@ -90,6 +92,6 @@ public class FromOxmVertexSchema extends VertexSchema {
                 propSchema.fromOxm(mapping, reservedType, true);
                 properties.put(propSchema.getName().toLowerCase(), propSchema);
             }
-        } 
+        }
     }
 }

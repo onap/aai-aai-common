@@ -17,25 +17,26 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.exceptions;
-
-import org.junit.Test;
-import org.onap.aai.logging.AaiElsErrorCode;
-import org.onap.aai.logging.ErrorObject;
-
-import javax.ws.rs.core.Response;
-import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.io.IOException;
+
+import javax.ws.rs.core.Response;
+
+import org.junit.Test;
+import org.onap.aai.logging.AaiElsErrorCode;
+import org.onap.aai.logging.ErrorObject;
 
 public class AAIExceptionTest {
     private AAIException aaiException;
 
     @Test
     public void defaultAAIExceptionTest() {
-        //AAI_4000=5:4:ERROR:4000:500:3002:Internal Error:900
+        // AAI_4000=5:4:ERROR:4000:500:3002:Internal Error:900
         aaiException = new AAIException();
         assertEquals(AAIException.DEFAULT_EXCEPTION_CODE, aaiException.getCode());
 
@@ -53,7 +54,8 @@ public class AAIExceptionTest {
 
     @Test
     public void aaiExceptionTest() {
-        //5:1:WARN:3303:403:3300:Too many objects would be returned by this request, please refine your request and retry:500
+        // 5:1:WARN:3303:403:3300:Too many objects would be returned by this request, please refine your request and
+        // retry:500
         aaiException = new AAIException("AAI_3303");
         assertEquals("AAI_3303", aaiException.getCode());
 
@@ -65,13 +67,15 @@ public class AAIExceptionTest {
         assertEquals(errorObject.getRESTErrorCode(), "3300");
         assertEquals(errorObject.getErrorCode(), "3303");
         assertEquals(errorObject.getAaiElsErrorCode(), AaiElsErrorCode.BUSINESS_PROCESS_ERROR);
-        assertEquals(errorObject.getErrorText(), "Too many objects would be returned by this request, please refine your request and retry");
+        assertEquals(errorObject.getErrorText(),
+                "Too many objects would be returned by this request, please refine your request and retry");
         assertNotNull(aaiException.getTemplateVars());
     }
 
     @Test
     public void aaiExceptionTestWithDetails() {
-        //5:1:WARN:3303:403:3300:Too many objects would be returned by this request, please refine your request and retry:500
+        // 5:1:WARN:3303:403:3300:Too many objects would be returned by this request, please refine your request and
+        // retry:500
         final String testDetails = "Test details";
         aaiException = new AAIException("AAI_3303", testDetails);
         assertEquals(testDetails, aaiException.getMessage());
@@ -98,4 +102,3 @@ public class AAIExceptionTest {
         assertNotNull(aaiException.getTemplateVars());
     }
 }
-

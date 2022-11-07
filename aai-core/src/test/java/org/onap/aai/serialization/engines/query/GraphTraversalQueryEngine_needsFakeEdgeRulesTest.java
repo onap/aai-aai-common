@@ -38,8 +38,6 @@ import org.onap.aai.edges.EdgeIngestor;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.serialization.db.AAICoreFakeEdgesConfigTranslator;
 import org.onap.aai.serialization.db.EdgeSerializer;
-import org.onap.aai.setup.SchemaLocationsBean;
-import org.onap.aai.setup.SchemaVersions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;

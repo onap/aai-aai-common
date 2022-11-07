@@ -21,20 +21,6 @@
 
 package org.onap.logging.ref.slf4j;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
-import org.slf4j.event.Level;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.testng.Assert;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.Test;
-
-import javax.xml.bind.DatatypeConverter;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
@@ -43,6 +29,21 @@ import static org.hamcrest.core.IsNull.nullValue;
 import static org.hamcrest.core.IsSame.sameInstance;
 import static org.hamcrest.core.StringEndsWith.endsWith;
 import static org.hamcrest.number.OrderingComparison.lessThan;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
+import javax.xml.bind.DatatypeConverter;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+import org.slf4j.event.Level;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.Test;
 
 /**
  * Tests for {@link ONAPLogAdapter}.
@@ -68,8 +69,7 @@ public class ONAPLogAdapterTest {
         try {
             ONAPLogAdapter.checkNotNull(null);
             Assert.fail("Should throw NullPointerException");
-        }
-        catch (final NullPointerException e) {
+        } catch (final NullPointerException e) {
 
         }
     }
@@ -126,12 +126,11 @@ public class ONAPLogAdapterTest {
             assertThat(invokeTimestampString, endsWith("Z"));
             final long invokeTimestamp = DatatypeConverter.parseDateTime(invokeTimestampString).getTimeInMillis();
             assertThat(Math.abs(System.currentTimeMillis() - invokeTimestamp), lessThan(5000L));
-        }
-        finally {
+        } finally {
             MDC.clear();
         }
     }
-    
+
     /**
      * Test ENTERING with an EMPTY_STRING serviceName.
      */
@@ -166,8 +165,7 @@ public class ONAPLogAdapterTest {
             assertThat(invokeTimestampString, endsWith("Z"));
             final long invokeTimestamp = DatatypeConverter.parseDateTime(invokeTimestampString).getTimeInMillis();
             assertThat(Math.abs(System.currentTimeMillis() - invokeTimestamp), lessThan(5000L));
-        }
-        finally {
+        } finally {
             MDC.clear();
         }
     }
@@ -217,8 +215,7 @@ public class ONAPLogAdapterTest {
             assertThat(MDC.get("somekey"), is("somevalue"));
             adapter.exiting();
             assertThat(MDC.get("somekey"), nullValue());
-        }
-        finally {
+        } finally {
             MDC.clear();
         }
     }
@@ -238,7 +235,7 @@ public class ONAPLogAdapterTest {
         final UUID asyncUUID = adapter.invoke(ONAPLogConstants.InvocationMode.SYNCHRONOUS);
         assertThat(asyncUUID, notNullValue());
 
-        final UUID agnosticUUID = adapter.invoke((ONAPLogConstants.InvocationMode)null);
+        final UUID agnosticUUID = adapter.invoke((ONAPLogConstants.InvocationMode) null);
         assertThat(agnosticUUID, notNullValue());
 
     }
@@ -253,13 +250,14 @@ public class ONAPLogAdapterTest {
         final ONAPLogAdapter adapter = new ONAPLogAdapter(logger);
 
         final Map<String, String> headers = new HashMap<>();
-        final ONAPLogAdapter.RequestBuilder builder = new ONAPLogAdapter.RequestBuilder<ONAPLogAdapter.RequestBuilder>() {
-            @Override
-            public ONAPLogAdapter.RequestBuilder setHeader(final String name, final String value) {
-                headers.put(name, value);
-                return this;
-            }
-        };
+        final ONAPLogAdapter.RequestBuilder builder =
+                new ONAPLogAdapter.RequestBuilder<ONAPLogAdapter.RequestBuilder>() {
+                    @Override
+                    public ONAPLogAdapter.RequestBuilder setHeader(final String name, final String value) {
+                        headers.put(name, value);
+                        return this;
+                    }
+                };
 
         try {
             final UUID uuid = adapter.invoke(builder, ONAPLogConstants.InvocationMode.SYNCHRONOUS);
@@ -267,8 +265,7 @@ public class ONAPLogAdapterTest {
             assertThat(headers.get(ONAPLogConstants.Headers.INVOCATION_ID), is(uuid.toString()));
             assertThat(headers.containsKey(ONAPLogConstants.Headers.PARTNER_NAME), is(true));
             assertThat(headers.containsKey(ONAPLogConstants.Headers.REQUEST_ID), is(true));
-        }
-        finally {
+        } finally {
             MDC.clear();
         }
     }
@@ -283,13 +280,14 @@ public class ONAPLogAdapterTest {
         final ONAPLogAdapter adapter = new ONAPLogAdapter(logger);
 
         final Map<String, String> headers = new HashMap<>();
-        final ONAPLogAdapter.RequestBuilder builder = new ONAPLogAdapter.RequestBuilder<ONAPLogAdapter.RequestBuilder>() {
-            @Override
-            public ONAPLogAdapter.RequestBuilder setHeader(final String name, final String value) {
-                headers.put(name, value);
-                return this;
-            }
-        };
+        final ONAPLogAdapter.RequestBuilder builder =
+                new ONAPLogAdapter.RequestBuilder<ONAPLogAdapter.RequestBuilder>() {
+                    @Override
+                    public ONAPLogAdapter.RequestBuilder setHeader(final String name, final String value) {
+                        headers.put(name, value);
+                        return this;
+                    }
+                };
 
         try {
             final UUID uuid = adapter.invoke(builder);
@@ -297,8 +295,7 @@ public class ONAPLogAdapterTest {
             assertThat(headers.get(ONAPLogConstants.Headers.INVOCATION_ID), is(uuid.toString()));
             assertThat(headers.containsKey(ONAPLogConstants.Headers.PARTNER_NAME), is(true));
             assertThat(headers.containsKey(ONAPLogConstants.Headers.REQUEST_ID), is(true));
-        }
-        finally {
+        } finally {
             MDC.clear();
         }
     }
@@ -312,8 +309,7 @@ public class ONAPLogAdapterTest {
         request.setRequestURI("/ctx0");
         request.setServerName("srv0");
 
-        final ONAPLogAdapter.HttpServletRequestAdapter adapter
-                = new ONAPLogAdapter.HttpServletRequestAdapter(request);
+        final ONAPLogAdapter.HttpServletRequestAdapter adapter = new ONAPLogAdapter.HttpServletRequestAdapter(request);
         assertThat(adapter.getHeader("uuid"), is(uuid.toString()));
         assertThat(adapter.getRequestURI(), is("/ctx0"));
         assertThat(adapter.getServerAddress(), is("srv0"));
@@ -323,8 +319,7 @@ public class ONAPLogAdapterTest {
     public void testServiceDescriptor() {
         final String uuid = UUID.randomUUID().toString();
 
-        final ONAPLogAdapter.ServiceDescriptor adapter
-                = new ONAPLogAdapter.ServiceDescriptor();
+        final ONAPLogAdapter.ServiceDescriptor adapter = new ONAPLogAdapter.ServiceDescriptor();
         adapter.setServiceUUID(uuid);
         adapter.setServiceName("name0");
 
@@ -341,8 +336,7 @@ public class ONAPLogAdapterTest {
     public void testResponseDescriptor() {
         final String uuid = UUID.randomUUID().toString();
 
-        final ONAPLogAdapter.ResponseDescriptor adapter
-                = new ONAPLogAdapter.ResponseDescriptor();
+        final ONAPLogAdapter.ResponseDescriptor adapter = new ONAPLogAdapter.ResponseDescriptor();
         adapter.setResponseCode("code0");
         adapter.setResponseDescription("desc0");
         adapter.setResponseSeverity(Level.INFO);
@@ -385,20 +379,17 @@ public class ONAPLogAdapterTest {
             // Generate (and log) an invocationID, then use it to
             // invoke another component.
 
-            final RESTClient client = new RESTClient();             // implements ONAPLogAdapter.RequestBuilder<RESTClient>.
+            final RESTClient client = new RESTClient(); // implements ONAPLogAdapter.RequestBuilder<RESTClient>.
             adapter.invoke(client, ONAPLogConstants.InvocationMode.SYNCHRONOUS);
-            final RESTRequest request = null;                       // TODO: build real request.
-            final RESTResponse response = client.execute(request);  // TODO: handle real response.
+            final RESTRequest request = null; // TODO: build real request.
+            final RESTResponse response = client.execute(request); // TODO: handle real response.
 
             // Set response details prior to #exiting.
             // (Obviously there'd be errorhandling, etc. IRL).
 
-            adapter.getResponseDescriptor()
-                    .setResponseCode((String)null)
-                    .setResponseSeverity(Level.INFO)
+            adapter.getResponseDescriptor().setResponseCode((String) null).setResponseSeverity(Level.INFO)
                     .setResponseStatus(ONAPLogConstants.ResponseStatus.COMPLETE);
-        }
-        finally {
+        } finally {
 
             // Return, logging EXIT marker, with response MDCs.
 

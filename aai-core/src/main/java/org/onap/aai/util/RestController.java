@@ -20,8 +20,6 @@
 
 package org.onap.aai.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.sun.jersey.api.client.Client;
@@ -31,14 +29,16 @@ import com.sun.jersey.api.client.ClientResponse;
 import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import org.onap.aai.exceptions.AAIException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RestController implements RestControllerInterface {
 
@@ -85,15 +85,18 @@ public class RestController implements RestControllerInterface {
     public static final String REST_APIPATH_LOGICALLINKS = "network/logical-links/";
     public static final String REST_APIPATH_LOGICALLINK = "network/logical-links/logical-link/";
 
-    public RestController(String truststorePath, String truststorePassword, String keystorePath, String keystorePassword) throws AAIException {
+    public RestController(String truststorePath, String truststorePassword, String keystorePath,
+            String keystorePassword) throws AAIException {
         this.initRestClient(truststorePath, truststorePassword, keystorePath, keystorePassword);
     }
+
     /**
      * Inits the rest client.
      *
      * @throws AAIException the AAI exception
      */
-    public void initRestClient(String truststorePath, String truststorePassword, String keystorePath, String keystorePassword) throws AAIException {
+    public void initRestClient(String truststorePath, String truststorePassword, String keystorePath,
+            String keystorePassword) throws AAIException {
         if (client == null) {
             try {
                 client = getHttpsAuthClient(truststorePath, truststorePassword, keystorePath, keystorePassword);
@@ -104,13 +107,18 @@ public class RestController implements RestControllerInterface {
             }
         }
     }
-    public Client getHttpsAuthClient(String truststorePath, String truststorePassword, String keystorePath, String keystorePassword) throws KeyManagementException, UnrecoverableKeyException, CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
+
+    public Client getHttpsAuthClient(String truststorePath, String truststorePassword, String keystorePath,
+            String keystorePassword) throws KeyManagementException, UnrecoverableKeyException, CertificateException,
+            NoSuchAlgorithmException, KeyStoreException, IOException {
         return HttpsAuthClient.getClient(truststorePath, truststorePassword, keystorePath, keystorePassword);
     }
 
-    public Client getHttpsAuthClient() throws KeyManagementException, UnrecoverableKeyException, CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, AAIException {
+    public Client getHttpsAuthClient() throws KeyManagementException, UnrecoverableKeyException, CertificateException,
+            NoSuchAlgorithmException, KeyStoreException, IOException, AAIException {
         return HttpsAuthClient.getClient();
     }
+
     /**
      * Sets the rest srvr base URL.
      *
@@ -335,7 +343,7 @@ public class RestController implements RestControllerInterface {
                     + cres.getEntity(String.class));
         }
     }
-    
+
     /**
      * Put.
      *
@@ -347,14 +355,13 @@ public class RestController implements RestControllerInterface {
      * @param apiVersion version number
      * @throws AAIException the AAI exception
      */
-    public <T> void Put(T t, String sourceID, String transId, String path, String apiVersion)
-            throws AAIException {
+    public <T> void Put(T t, String sourceID, String transId, String path, String apiVersion) throws AAIException {
         String methodName = "Put";
         String url = "";
         transId += ":" + UUID.randomUUID().toString();
 
         LOGGER.debug(methodName + " start");
-        
+
         url = AAIConfig.get(AAIConstants.AAI_SERVER_URL_BASE) + apiVersion + "/" + path;
 
         ClientResponse cres = client.resource(url).accept("application/json").header("X-TransactionId", transId)

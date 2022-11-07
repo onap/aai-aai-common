@@ -18,24 +18,21 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.schemaif.definitions;
 
 import java.util.Map;
-
 
 public class EdgeSchema {
     protected String name;
     protected String source;
     protected String target;
     protected Multiplicity multiplicity;
-    protected Map<String,String> annotations;
-    protected Map<String,PropertySchema> properties;
+    protected Map<String, String> annotations;
+    protected Map<String, PropertySchema> properties;
 
     public enum Multiplicity {
-        MANY_2_MANY,
-        MANY_2_ONE,
-        ONE_2_MANY,
-        ONE_2_ONE
+        MANY_2_MANY, MANY_2_ONE, ONE_2_MANY, ONE_2_ONE
     }
 
     public String getName() {
@@ -58,7 +55,7 @@ public class EdgeSchema {
         return properties.get(propName.toLowerCase());
     }
 
-    public Map<String,PropertySchema> getPropertySchemaList() {
+    public Map<String, PropertySchema> getPropertySchemaList() {
         return properties;
     }
 
@@ -66,7 +63,7 @@ public class EdgeSchema {
         return annotations.get(annotation.toLowerCase());
     }
 
-    public Map<String,String> getAnnotations() {
+    public Map<String, String> getAnnotations() {
         return annotations;
     }
 
@@ -88,9 +85,8 @@ public class EdgeSchema {
 
         EdgeSchema other = (EdgeSchema) obj;
 
-        return (source.equals(other.getSource()))
-            && (target.equals(other.getTarget()))
-            && (name.equals(other.getName()));
+        return (source.equals(other.getSource())) && (target.equals(other.getTarget()))
+                && (name.equals(other.getName()));
     }
 
     public String toString() {

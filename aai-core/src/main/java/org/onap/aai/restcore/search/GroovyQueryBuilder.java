@@ -28,14 +28,9 @@ import java.util.Map;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.onap.aai.config.SpringContextAware;
-import org.onap.aai.introspection.Loader;
-import org.onap.aai.introspection.LoaderFactory;
-import org.onap.aai.introspection.ModelType;
 import org.onap.aai.query.builder.QueryBuilder;
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
-import org.onap.aai.setup.SchemaVersions;
 
 /**
  * Creates and returns a groovy shell with the
@@ -74,7 +69,8 @@ public class GroovyQueryBuilder extends AAIAbstractGroovyShell {
     }
 
     @Override
-    public String executeTraversal(TransactionalGraphEngine engine, String traversal, Map<String, Object> params, QueryStyle style, GraphTraversalSource traversalSource) {
+    public String executeTraversal(TransactionalGraphEngine engine, String traversal, Map<String, Object> params,
+            QueryStyle style, GraphTraversalSource traversalSource) {
         QueryBuilder<Vertex> builder = engine.getQueryBuilder(style, traversalSource);
         builder.changeLoader(getLoader());
         Binding binding = new Binding(params);

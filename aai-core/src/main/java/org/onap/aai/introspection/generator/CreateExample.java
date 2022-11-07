@@ -20,12 +20,12 @@
 
 package org.onap.aai.introspection.generator;
 
-import org.onap.aai.exceptions.AAIException;
-import org.onap.aai.introspection.*;
-
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.onap.aai.exceptions.AAIException;
+import org.onap.aai.introspection.*;
 
 public class CreateExample implements Wanderer {
 

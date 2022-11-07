@@ -20,6 +20,14 @@
 
 package org.onap.aai.parsers.query;
 
+import static org.junit.Assert.assertEquals;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+
+import javax.ws.rs.core.UriBuilder;
+import javax.xml.bind.JAXBException;
+
 import org.junit.Ignore;
 import org.junit.Test;
 import org.onap.aai.AAISetup;
@@ -29,13 +37,6 @@ import org.onap.aai.serialization.engines.JanusGraphDBEngine;
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 import org.onap.aai.setup.SchemaVersion;
-
-import javax.ws.rs.core.UriBuilder;
-import javax.xml.bind.JAXBException;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-
-import static org.junit.Assert.assertEquals;
 
 @Ignore
 public class LegacyQueryTest extends AAISetup {

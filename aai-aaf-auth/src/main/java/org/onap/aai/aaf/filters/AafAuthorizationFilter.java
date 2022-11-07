@@ -20,6 +20,17 @@
 
 package org.onap.aai.aaf.filters;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.onap.aai.aaf.auth.ResponseFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,16 +38,6 @@ import org.springframework.boot.web.servlet.filter.OrderedRequestContextFilter;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
-
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * AAF authorization filter
@@ -59,52 +60,49 @@ public class AafAuthorizationFilter extends OrderedRequestContextFilter {
     private List<String> advancedKeywordsList;
 
     @Autowired
-    public AafAuthorizationFilter(
-        GremlinFilter gremlinFilter,
-        @Value("${permission.type}") String type,
-        @Value("${permission.instance}") String instance,
-        @Value("${advanced.keywords.list:}") String advancedKeys
-    ) {
+    public AafAuthorizationFilter(GremlinFilter gremlinFilter, @Value("${permission.type}") String type,
+            @Value("${permission.instance}") String instance,
+            @Value("${advanced.keywords.list:}") String advancedKeys) {
         this.gremlinFilter = gremlinFilter;
         this.type = type;
         this.instance = instance;
-        if(advancedKeys == null || advancedKeys.isEmpty()){
+        if (advancedKeys == null || advancedKeys.isEmpty()) {
             this.advancedKeywordsList = new ArrayList<>();
         } else {
-            this.advancedKeywordsList = Arrays.stream(advancedKeys.split(","))
-                .collect(Collectors.toList());
+            this.advancedKeywordsList = Arrays.stream(advancedKeys.split(",")).collect(Collectors.toList());
         }
         this.setOrder(FilterPriority.AAF_AUTHORIZATION.getPriority());
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
-	if(request.getRequestURI().matches("^.*/util/echo$")){
-	    filterChain.doFilter(request, response);
-	}
-        if(request.getRequestURI().endsWith("/query")){
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws IOException, ServletException {
+        if (request.getRequestURI().matches("^.*/util/echo$")) {
+            filterChain.doFilter(request, response);
+        }
+        if (request.getRequestURI().endsWith("/query")) {
             gremlinFilter.doBasicAuthFilter(request, response, filterChain);
         } else {
 
             String permission = null;
 
-            if(advancedKeywordsList == null || advancedKeywordsList.size() == 0) {
+            if (advancedKeywordsList == null || advancedKeywordsList.size() == 0) {
                 permission = String.format("%s|%s|%s", type, instance, request.getMethod().toLowerCase());
             } else {
 
                 boolean isAdvanced = this.containsAdvancedKeywords(request);
 
-                //if the URI contains advanced.keywords it's an advanced query
+                // if the URI contains advanced.keywords it's an advanced query
                 String queryType = isAdvanced ? ADVANCED : BASIC;
                 permission = String.format("%s|%s|%s", type, instance, queryType);
             }
 
             boolean isAuthorized = request.isUserInRole(permission);
 
-            if(!isAuthorized){
+            if (!isAuthorized) {
                 ResponseFormatter.errorResponse(request, response);
             } else {
-                filterChain.doFilter(request,response);
+                filterChain.doFilter(request, response);
             }
 
         }
@@ -112,7 +110,7 @@ public class AafAuthorizationFilter extends OrderedRequestContextFilter {
 
     private boolean containsAdvancedKeywords(HttpServletRequest request) {
         String uri = request.getRequestURI();
-        for (String keyword: advancedKeywordsList) {
+        for (String keyword : advancedKeywordsList) {
             if (uri.contains(keyword)) {
                 return true;
             }

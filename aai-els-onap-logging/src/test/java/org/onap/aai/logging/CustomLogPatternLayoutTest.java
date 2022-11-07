@@ -20,16 +20,16 @@
 
 package org.onap.aai.logging;
 
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
 
 public class CustomLogPatternLayoutTest {
 
     private CustomLogPatternLayout customLogPatternLayout = new CustomLogPatternLayout();
 
     @Test
-    public void defaultConverterTest(){
+    public void defaultConverterTest() {
 
         assertEquals(customLogPatternLayout.getDefaultConverterMap().get("z"), CNName.class.getName());
         assertEquals(customLogPatternLayout.getDefaultConverterMap().get("y"), DME2RestFlag.class.getName());

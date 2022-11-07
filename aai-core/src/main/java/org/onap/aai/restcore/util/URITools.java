@@ -20,7 +20,6 @@
 
 package org.onap.aai.restcore.util;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.LinkedHashSet;

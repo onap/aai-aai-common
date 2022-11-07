@@ -20,16 +20,6 @@
 
 package org.onap.aai.util;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-
-import javax.ws.rs.core.UriBuilder;
-
-import org.onap.aai.exceptions.AAIException;
-
 public class Request<T> {
 
     public static final String V14 = "v14";

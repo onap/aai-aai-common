@@ -22,6 +22,8 @@
 
 package org.onap.aai.audit;
 
+import com.google.common.base.CaseFormat;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -45,8 +47,6 @@ import org.onap.aai.setup.SchemaVersions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-
-import com.google.common.base.CaseFormat;
 
 /**
  * The Class ListEndpoints.

@@ -20,8 +20,18 @@
 
 package org.onap.aai.rest;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
+import static org.junit.Assert.*;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.ws.rs.core.Response;
+
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.janusgraph.core.JanusGraphTransaction;
 import org.json.JSONObject;
@@ -40,18 +50,9 @@ import org.onap.aai.rest.ueb.NotificationEvent;
 import org.onap.aai.rest.ueb.UEBNotification;
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.skyscreamer.jsonassert.JSONAssert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.test.annotation.DirtiesContext;
-
-import javax.ws.rs.core.Response;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNot.not;
-import static org.junit.Assert.*;
 
 @RunWith(value = Parameterized.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
@@ -64,10 +65,7 @@ public class ImpliedDeleteIntegrationTest extends AAISetup {
 
     @Parameterized.Parameters(name = "QueryStyle.{0}")
     public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][] {
-            { QueryStyle.TRAVERSAL },
-            { QueryStyle.TRAVERSAL_URI }
-        });
+        return Arrays.asList(new Object[][] {{QueryStyle.TRAVERSAL}, {QueryStyle.TRAVERSAL_URI}});
     }
 
     @Test
@@ -102,10 +100,8 @@ public class ImpliedDeleteIntegrationTest extends AAISetup {
         List<NotificationEvent> notificationEvents = notification.getEvents();
         assertThat(notificationEvents.size(), is(5));
 
-        List<String> notificationEventHeaders = notification.getEvents()
-            .stream()
-            .map(event -> event.getEventHeader().marshal(false))
-            .collect(Collectors.toList());
+        List<String> notificationEventHeaders = notification.getEvents().stream()
+                .map(event -> event.getEventHeader().marshal(false)).collect(Collectors.toList());
 
         Long deletedEventsCount = notificationEventHeaders.stream().filter(e -> e.contains("\"DELETE\"")).count();
 

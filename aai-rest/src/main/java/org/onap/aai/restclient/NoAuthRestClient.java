@@ -20,17 +20,15 @@
 
 package org.onap.aai.restclient;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.annotation.PostConstruct;
+
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.onap.aai.aailog.filter.RestClientLoggingInterceptor;
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.client.ClientHttpRequestFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
-
-import javax.annotation.PostConstruct;
 
 public abstract class NoAuthRestClient extends RestClient {
 

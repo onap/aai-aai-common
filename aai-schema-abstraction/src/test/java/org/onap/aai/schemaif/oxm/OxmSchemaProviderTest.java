@@ -21,7 +21,6 @@
 
 package org.onap.aai.schemaif.oxm;
 
-
 import static org.junit.Assert.assertTrue;
 
 import java.io.PrintWriter;
@@ -46,7 +45,8 @@ public class OxmSchemaProviderTest extends OxmSchemaServiceSetup {
             OxmSchemaProvider schemaProvider = new OxmSchemaProvider();
             schemaProvider.loadSchema();
 
-            VertexSchema vertSchema = schemaProvider.getVertexSchema("pserver", schemaProvider.getLatestSchemaVersion());
+            VertexSchema vertSchema =
+                    schemaProvider.getVertexSchema("pserver", schemaProvider.getLatestSchemaVersion());
             System.out.println(vertSchema.toString());
 
             EdgeSchema edgeSchema = schemaProvider.getEdgeSchema("org.onap.relationships.inventory.LocatedIn",
@@ -79,7 +79,6 @@ public class OxmSchemaProviderTest extends OxmSchemaServiceSetup {
             obj = propSchema.validateValue("false");
             assertTrue(obj instanceof Boolean);
             assertTrue(propSchema.getDataType().validateValue("badValue") == null);
-
 
             propSchema = vertSchema.getPropertySchema("aai-node-type");
             assertTrue(propSchema.getName().equals("aai-node-type"));
@@ -119,8 +118,7 @@ public class OxmSchemaProviderTest extends OxmSchemaServiceSetup {
             // Validate 'dependentOn' annotation
             vertSchema = schemaProvider.getVertexSchema("tenant", schemaProvider.getLatestSchemaVersion());
             assertTrue(vertSchema.getAnnotationValue("dependentOn").equals("cloud-region"));
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             StringWriter writer = new StringWriter();
             PrintWriter printWriter = new PrintWriter(writer);
             ex.printStackTrace(printWriter);
@@ -147,18 +145,15 @@ public class OxmSchemaProviderTest extends OxmSchemaServiceSetup {
                     assertTrue(es.getSource().equals("snapshot"));
                     assertTrue(es.getTarget().equals("cloud-region"));
                     assertTrue(es.getMultiplicity().equals(EdgeSchema.Multiplicity.MANY_2_ONE));
-                }
-                else if (es.getName().equals("org.onap.relationships.inventory.Uses")) {
+                } else if (es.getName().equals("org.onap.relationships.inventory.Uses")) {
                     assertTrue(es.getSource().equals("vserver"));
                     assertTrue(es.getTarget().equals("snapshot"));
                     assertTrue(es.getMultiplicity().equals(EdgeSchema.Multiplicity.ONE_2_ONE));
-                }
-                else {
+                } else {
                     assertTrue(false);
                 }
             }
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             StringWriter writer = new StringWriter();
             PrintWriter printWriter = new PrintWriter(writer);
             ex.printStackTrace(printWriter);
@@ -173,9 +168,8 @@ public class OxmSchemaProviderTest extends OxmSchemaServiceSetup {
             OxmSchemaProvider schemaProvider = new OxmSchemaProvider();
             schemaProvider.loadSchema();
 
-            Set<EdgeSchema> edgeSchemaList =
-                    schemaProvider.getEdgeSchemaForSourceTarget("service-instance", "customer",
-                            schemaProvider.getLatestSchemaVersion());
+            Set<EdgeSchema> edgeSchemaList = schemaProvider.getEdgeSchemaForSourceTarget("service-instance", "customer",
+                    schemaProvider.getLatestSchemaVersion());
 
             // Validate edge schema
             assertTrue(edgeSchemaList.size() == 1);
@@ -184,9 +178,8 @@ public class OxmSchemaProviderTest extends OxmSchemaServiceSetup {
             assertTrue(edgeSchemaList.iterator().next().getTarget().equals("customer"));
             assertTrue(edgeSchemaList.iterator().next().getMultiplicity().equals(EdgeSchema.Multiplicity.MANY_2_MANY));
 
-            edgeSchemaList =
-                    schemaProvider.getEdgeSchemaForSourceTarget("cloud-region", "complex",
-                            schemaProvider.getLatestSchemaVersion());
+            edgeSchemaList = schemaProvider.getEdgeSchemaForSourceTarget("cloud-region", "complex",
+                    schemaProvider.getLatestSchemaVersion());
 
             // Validate edge schema
             assertTrue(edgeSchemaList.size() == 2);
@@ -197,25 +190,21 @@ public class OxmSchemaProviderTest extends OxmSchemaServiceSetup {
                     assertTrue(es.getSource().equals("cloud-region"));
                     assertTrue(es.getTarget().equals("complex"));
                     assertTrue(es.getMultiplicity().equals(EdgeSchema.Multiplicity.MANY_2_MANY));
-                }
-                else if (es.getName().equals("org.onap.relationships.inventory.LocatedIn")) {
+                } else if (es.getName().equals("org.onap.relationships.inventory.LocatedIn")) {
                     assertTrue(es.getSource().equals("cloud-region"));
                     assertTrue(es.getTarget().equals("complex"));
                     assertTrue(es.getMultiplicity().equals(EdgeSchema.Multiplicity.MANY_2_ONE));
-                }
-                else {
+                } else {
                     assertTrue(false);
                 }
             }
 
-            edgeSchemaList =
-                    schemaProvider.getEdgeSchemaForSourceTarget("cloud-region", "bad-node",
-                            schemaProvider.getLatestSchemaVersion());
+            edgeSchemaList = schemaProvider.getEdgeSchemaForSourceTarget("cloud-region", "bad-node",
+                    schemaProvider.getLatestSchemaVersion());
 
             // Validate edge schema
             assertTrue(edgeSchemaList.size() == 0);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             StringWriter writer = new StringWriter();
             PrintWriter printWriter = new PrintWriter(writer);
             ex.printStackTrace(printWriter);
@@ -238,12 +227,10 @@ public class OxmSchemaProviderTest extends OxmSchemaServiceSetup {
                     "cloud-region", "bad-node", schemaProvider.getLatestSchemaVersion());
             assertTrue(edgeSchema == null);
 
-            Set<EdgeSchema> edgeSchemaList =
-                    schemaProvider.getAdjacentEdgeSchema("org.onap.nodes.bad-node",
-                            schemaProvider.getLatestSchemaVersion());
+            Set<EdgeSchema> edgeSchemaList = schemaProvider.getAdjacentEdgeSchema("org.onap.nodes.bad-node",
+                    schemaProvider.getLatestSchemaVersion());
             assertTrue(edgeSchemaList.isEmpty());
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             StringWriter writer = new StringWriter();
             PrintWriter printWriter = new PrintWriter(writer);
             ex.printStackTrace(printWriter);

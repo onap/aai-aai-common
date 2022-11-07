@@ -27,6 +27,7 @@ import static org.mockito.Mockito.when;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
@@ -35,6 +36,7 @@ import org.janusgraph.core.JanusGraphFactory;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -52,7 +54,6 @@ import org.onap.aai.serialization.db.DBSerializer;
 import org.onap.aai.serialization.engines.JanusGraphDBEngine;
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
-import org.junit.Ignore;
 
 @RunWith(value = Parameterized.class)
 @Ignore
@@ -80,38 +81,22 @@ public class OwnerCheckTest extends AAISetup {
         System.setProperty("AJSC_HOME", ".");
         System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
 
-        graph.traversal()
-            .addV("pnf")
-            .property("aai-node-type", "pnf")
-            .property("pnf-name", "my-pnf")
-            .property("data-owner", "Operator")
-            .property(AAIProperties.AAI_URI, "/network/pnfs/pnf/my-pnf")
-            .property("model-invariant-id", "key1")
-            .as("v1")
-            .property(EdgeProperty.CONTAINS.toString(), true)
-            .addV("model-ver")
-            .property("aai-node-type", "model-ver")
-            .property("model-ver", "myValue")
-            .property("model-version-id", "key2")
-            .property("model-version", "testValue")
-            .property(AAIProperties.AAI_URI, "/network/pnfs/pnf/my-pnf/model-vers/model-ver/key2")
-            .as("v2")
-            .addE("org.onap.relationships.inventory.BelongsTo").to("v1").from("v2")
-            .property(EdgeProperty.CONTAINS.toString(), true)
-            .addV("model")
-            .property("aai-node-type", "model")
-            .property("model-invariant-id", "key3")
-            .property(AAIProperties.AAI_URI, "/service-design-and-creation/models/model/key3")
-            .as("v3")
-            .addV()
-            .property("aai-node-type", "model-ver")
-            .property("model-ver", "myValue")
-            .property("model-version-id", "key4")
-            .property(AAIProperties.AAI_URI, "/service-design-and-creation/models/model/key3/model-vers/model-ver/key4")
-            .as("v4")
-            .addE("org.onap.relationships.inventory.BelongsTo").to("v3").from("v4")
-            .property(EdgeProperty.CONTAINS.toString(), true)
-            .next();
+        graph.traversal().addV("pnf").property("aai-node-type", "pnf").property("pnf-name", "my-pnf")
+                .property("data-owner", "Operator").property(AAIProperties.AAI_URI, "/network/pnfs/pnf/my-pnf")
+                .property("model-invariant-id", "key1").as("v1").property(EdgeProperty.CONTAINS.toString(), true)
+                .addV("model-ver").property("aai-node-type", "model-ver").property("model-ver", "myValue")
+                .property("model-version-id", "key2").property("model-version", "testValue")
+                .property(AAIProperties.AAI_URI, "/network/pnfs/pnf/my-pnf/model-vers/model-ver/key2").as("v2")
+                .addE("org.onap.relationships.inventory.BelongsTo").to("v1").from("v2")
+                .property(EdgeProperty.CONTAINS.toString(), true).addV("model").property("aai-node-type", "model")
+                .property("model-invariant-id", "key3")
+                .property(AAIProperties.AAI_URI, "/service-design-and-creation/models/model/key3").as("v3").addV()
+                .property("aai-node-type", "model-ver").property("model-ver", "myValue")
+                .property("model-version-id", "key4")
+                .property(AAIProperties.AAI_URI,
+                        "/service-design-and-creation/models/model/key3/model-vers/model-ver/key4")
+                .as("v4").addE("org.onap.relationships.inventory.BelongsTo").to("v3").from("v4")
+                .property(EdgeProperty.CONTAINS.toString(), true).next();
         graph.tx().commit();
     }
 
@@ -129,7 +114,7 @@ public class OwnerCheckTest extends AAISetup {
     }
 
     @Test
-    public void shouldFailIfGroupsNotContainsDataOwner() throws Exception  {
+    public void shouldFailIfGroupsNotContainsDataOwner() throws Exception {
 
         final Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
         final Introspector obj = loader.introspectorFromName("pnf");
@@ -142,9 +127,7 @@ public class OwnerCheckTest extends AAISetup {
         GraphTraversalSource traversal = g.traversal();
         when(spy.asAdmin()).thenReturn(adminSpy);
         when(adminSpy.getTraversalSource()).thenReturn(traversal);
-        DBSerializer serializer =
-            new DBSerializer(schemaVersions.getDefaultVersion(),
-                spy, introspectorFactoryType,
+        DBSerializer serializer = new DBSerializer(schemaVersions.getDefaultVersion(), spy, introspectorFactoryType,
                 "AAI_TEST", new HashSet<>(Arrays.asList("OperatorI", "OperatorII")));
 
         Vertex selfV = g.traversal().V().has("aai-node-type", "pnf").next();
@@ -159,7 +142,7 @@ public class OwnerCheckTest extends AAISetup {
     }
 
     @Test
-    public void shouldPassIfGroupsContainsDataOwner() throws Exception  {
+    public void shouldPassIfGroupsContainsDataOwner() throws Exception {
 
         final Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
         final Introspector obj = loader.introspectorFromName("pnf");
@@ -176,9 +159,7 @@ public class OwnerCheckTest extends AAISetup {
 
         Vertex selfV = g.traversal().V().has("aai-node-type", "pnf").next();
 
-        DBSerializer serializer =
-            new DBSerializer(schemaVersions.getDefaultVersion(),
-                spy, introspectorFactoryType,
+        DBSerializer serializer = new DBSerializer(schemaVersions.getDefaultVersion(), spy, introspectorFactoryType,
                 "AAI_TEST", new HashSet<>(Arrays.asList("OperatorIII", "Operator")));
 
         OwnerCheck ownerCheck = new OwnerCheck(obj, selfV, spy, serializer);
@@ -189,7 +170,7 @@ public class OwnerCheckTest extends AAISetup {
     }
 
     @Test
-    public void shouldPassIfGroupsIsEmpty() throws Exception  {
+    public void shouldPassIfGroupsIsEmpty() throws Exception {
 
         final Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
         final Introspector obj = loader.introspectorFromName("pnf");
@@ -203,9 +184,7 @@ public class OwnerCheckTest extends AAISetup {
         when(spy.asAdmin()).thenReturn(adminSpy);
         when(adminSpy.getTraversalSource()).thenReturn(traversal);
         DBSerializer serializer =
-            new DBSerializer(schemaVersions.getDefaultVersion(),
-                spy, introspectorFactoryType,
-                "AAI_TEST");
+                new DBSerializer(schemaVersions.getDefaultVersion(), spy, introspectorFactoryType, "AAI_TEST");
 
         Vertex selfV = g.traversal().V().has("aai-node-type", "pnf").next();
 
@@ -217,7 +196,7 @@ public class OwnerCheckTest extends AAISetup {
     }
 
     @Test
-    public void shouldPassIfDataOwnerIsNull() throws Exception  {
+    public void shouldPassIfDataOwnerIsNull() throws Exception {
 
         final Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
         final Introspector obj = loader.introspectorFromName("pnf");
@@ -232,9 +211,7 @@ public class OwnerCheckTest extends AAISetup {
         when(spy.asAdmin()).thenReturn(adminSpy);
         when(adminSpy.getTraversalSource()).thenReturn(traversal);
         DBSerializer serializer =
-            new DBSerializer(schemaVersions.getDefaultVersion(),
-                spy, introspectorFactoryType,
-                "AAI_TEST");
+                new DBSerializer(schemaVersions.getDefaultVersion(), spy, introspectorFactoryType, "AAI_TEST");
 
         Vertex selfV = g.traversal().V().has("aai-node-type", "pnf").next();
 
@@ -246,7 +223,7 @@ public class OwnerCheckTest extends AAISetup {
     }
 
     @Test
-    public void shouldPassIfDataOwnerIsEmpty() throws Exception  {
+    public void shouldPassIfDataOwnerIsEmpty() throws Exception {
 
         final Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
         final Introspector obj = loader.introspectorFromName("pnf");
@@ -261,9 +238,7 @@ public class OwnerCheckTest extends AAISetup {
         when(spy.asAdmin()).thenReturn(adminSpy);
         when(adminSpy.getTraversalSource()).thenReturn(traversal);
         DBSerializer serializer =
-            new DBSerializer(schemaVersions.getDefaultVersion(),
-                spy, introspectorFactoryType,
-                "AAI_TEST");
+                new DBSerializer(schemaVersions.getDefaultVersion(), spy, introspectorFactoryType, "AAI_TEST");
 
         Vertex selfV = g.traversal().V().has("aai-node-type", "pnf").next();
 

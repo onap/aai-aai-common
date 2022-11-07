@@ -20,8 +20,6 @@
 
 package org.onap.aai.introspection;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.google.common.base.CaseFormat;
 import com.google.common.base.Joiner;
 
@@ -44,12 +42,12 @@ import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
 import org.onap.aai.config.SpringContextAware;
 import org.onap.aai.logging.LogFormatTools;
-import org.onap.aai.nodes.CaseFormatStore;
-import org.onap.aai.nodes.NodeIngestor;
 import org.onap.aai.restcore.MediaType;
 import org.onap.aai.schema.enums.ObjectMetadata;
 import org.onap.aai.schema.enums.PropertyMetadata;
 import org.onap.aai.setup.SchemaVersion;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.util.UriUtils;
 
 public class MoxyStrategy extends Introspector {

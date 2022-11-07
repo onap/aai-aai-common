@@ -20,18 +20,11 @@
 
 package org.onap.aai.aaf.auth;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import org.eclipse.jetty.util.security.Password;
-import org.onap.aai.aaf.auth.exceptions.AAIUnrecognizedFunctionException;
-import org.onap.aai.logging.ErrorLogHelper;
-import org.onap.aai.util.AAIConfig;
-import org.onap.aai.util.AAIConstants;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -42,6 +35,14 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import org.eclipse.jetty.util.security.Password;
+import org.onap.aai.aaf.auth.exceptions.AAIUnrecognizedFunctionException;
+import org.onap.aai.logging.ErrorLogHelper;
+import org.onap.aai.util.AAIConfig;
+import org.onap.aai.util.AAIConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Class AAIAuthCore.
@@ -69,14 +70,14 @@ public final class AAIAuthCore {
         this(basePath, AAIConstants.AAI_AUTH_CONFIG_FILENAME);
     }
 
-    public AAIAuthCore(String basePath, String filename){
+    public AAIAuthCore(String basePath, String filename) {
         this.basePath = basePath;
         this.globalAuthFileName = filename;
         authPolicyPattern = Pattern.compile("^" + this.basePath + "/v\\d+/([\\w\\-]*)");
         init();
     }
 
-    public AAIAuthCore(String basePath, String filename, String pattern){
+    public AAIAuthCore(String basePath, String filename, String pattern) {
         this.basePath = basePath;
         this.globalAuthFileName = filename;
         authPolicyPattern = Pattern.compile(pattern);
@@ -364,7 +365,7 @@ public final class AAIAuthCore {
      * @return true, if successful
      */
     private boolean authorize(AAIUser aaiUser, String aaiMethod, String httpMethod) {
-        if ("info".equalsIgnoreCase(aaiMethod)|| aaiUser.hasAccess(aaiMethod, httpMethod)) {
+        if ("info".equalsIgnoreCase(aaiMethod) || aaiUser.hasAccess(aaiMethod, httpMethod)) {
             LOGGER.debug("AUTH ACCEPTED: " + aaiUser.getUsername() + " on function " + aaiMethod + " request type "
                     + httpMethod);
             return true;

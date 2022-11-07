@@ -88,7 +88,8 @@ public class AAIApplicationConfig {
             TRUSTSTORE_PASSWORD = retrieveTruststorePassword();
             KEYSTORE_PASSWORD = retrieveKeystorePassword();
         } catch (Exception fnfe) {
-            final InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("application.properties");
+            final InputStream is =
+                    Thread.currentThread().getContextClassLoader().getResourceAsStream("application.properties");
             LOGGER.info("Unable to find the application.properties from filesystem so using file in jar");
             if (is != null) {
                 try {
@@ -108,7 +109,7 @@ public class AAIApplicationConfig {
     /**
      * Gets the key value
      *
-     * @param key          the key
+     * @param key the key
      * @param defaultValue the default value
      * @return the string
      */
@@ -165,6 +166,7 @@ public class AAIApplicationConfig {
     public static String getKeystore() throws AAIException {
         return (get(SERVER_SSL_KEYSTORE_PROP_NAME));
     }
+
     /**
      * Gets the PKCS12 keystore path
      *
@@ -174,6 +176,7 @@ public class AAIApplicationConfig {
     public static String getKeystorePkcs12() throws AAIException {
         return (get(SERVER_SSL_KEYSTORE_PKCS12_PROP_NAME));
     }
+
     /**
      * Gets the keystore path
      *
@@ -196,12 +199,12 @@ public class AAIApplicationConfig {
         }
         try {
             certPath = replaceProperties(certPath);
-        }
-        catch (AAIException e) {
+        } catch (AAIException e) {
             return null;
         }
         return (retrieveKeystorePasswordWithCertPath(certPath));
     }
+
     /**
      * Retrieve the keystore password
      *
@@ -236,6 +239,7 @@ public class AAIApplicationConfig {
         }
         return keystorePassword;
     }
+
     /**
      * Get the keystore password
      *
@@ -244,6 +248,7 @@ public class AAIApplicationConfig {
     public static String getKeystorePassword() {
         return (KEYSTORE_PASSWORD);
     }
+
     /**
      * Gets the truststore password
      *
@@ -257,7 +262,6 @@ public class AAIApplicationConfig {
         try {
             passphrasesFile = new File(certPath + PASSPHRASSES_FILENAME);
             passphrasesStream = new FileInputStream(passphrasesFile);
-
 
             Properties passphrasesProps = new Properties();
             passphrasesProps.load(passphrasesStream);
@@ -281,6 +285,7 @@ public class AAIApplicationConfig {
 
         return truststorePassword;
     }
+
     /**
      * Gets the truststore password
      *
@@ -293,8 +298,7 @@ public class AAIApplicationConfig {
         }
         try {
             certPath = replaceProperties(certPath);
-        }
-        catch (AAIException e) {
+        } catch (AAIException e) {
             return null;
         }
         return (retrieveTruststorePasswordWithCertPath(certPath));
@@ -352,17 +356,19 @@ public class AAIApplicationConfig {
     private static String replaceProperties(String originalValue) throws AAIException {
         final Pattern p = Pattern.compile(PROPERTY_REGEX);
         Matcher m = p.matcher(originalValue);
-        /*if (!m.matches()) {
-            return originalValue;
-        }*/
+        /*
+         * if (!m.matches()) {
+         * return originalValue;
+         * }
+         */
         StringBuffer sb = new StringBuffer();
-        while(m.find()) {
+        while (m.find()) {
             String text = m.group(1);
             String replacement = get(text);
             m.appendReplacement(sb, replacement);
         }
         m.appendTail(sb);
-        return(sb.toString());
+        return (sb.toString());
     }
 
     public static Properties retrieveKeystoreProps() throws AAIException {
@@ -374,7 +380,7 @@ public class AAIApplicationConfig {
         String keystorePassword = System.getProperty(KEYSTORE_PASSWORD_NAME);
         String certLocation = System.getProperty(SERVER_CERTS_LOCATION_PROP_NAME);
 
-        if (truststorePath == null || truststorePath.isEmpty()){
+        if (truststorePath == null || truststorePath.isEmpty()) {
             truststorePath = AAIApplicationConfig.getTruststore();
         }
         if (truststorePath != null) {
@@ -383,8 +389,7 @@ public class AAIApplicationConfig {
         if (truststorePassword == null || truststorePassword.isEmpty()) {
             if (certLocation != null && (!certLocation.isEmpty())) {
                 truststorePassword = AAIApplicationConfig.retrieveTruststorePasswordWithCertPath(certLocation);
-            }
-            else {
+            } else {
                 truststorePassword = AAIApplicationConfig.getTruststorePassword();
             }
 
@@ -392,23 +397,22 @@ public class AAIApplicationConfig {
         if (truststorePassword != null) {
             props.setProperty(TRUSTSTORE_PASSWORD_NAME, truststorePassword);
         }
-        if (keystorePath == null || keystorePath.isEmpty()){
+        if (keystorePath == null || keystorePath.isEmpty()) {
             keystorePath = AAIApplicationConfig.getKeystorePkcs12();
         }
         if (keystorePath != null) {
             props.setProperty(SERVER_SSL_KEYSTORE_PKCS12_PROP_NAME, keystorePath);
         }
-        if (keystorePassword == null || keystorePassword.isEmpty()){
+        if (keystorePassword == null || keystorePassword.isEmpty()) {
             if (certLocation != null && (!certLocation.isEmpty())) {
                 keystorePassword = AAIApplicationConfig.retrieveKeystorePasswordWithCertPath(certLocation);
-            }
-            else {
+            } else {
                 keystorePassword = AAIApplicationConfig.getKeystorePassword();
             }
         }
         if (keystorePassword != null) {
             props.setProperty(KEYSTORE_PASSWORD_NAME, keystorePassword);
         }
-        return(props);
+        return (props);
     }
 }

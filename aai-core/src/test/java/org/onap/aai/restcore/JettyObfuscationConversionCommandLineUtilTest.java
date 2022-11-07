@@ -31,20 +31,21 @@ public class JettyObfuscationConversionCommandLineUtilTest extends AAISetup {
     public void testMainObfuscation() {
         String[] args = {"-e", "[thisStringToObfuscate]"};
         jettyObfuscationConversionCommandLineUtil.main(args);
-        Assert.assertTrue(true);    // No exception was encountered
+        Assert.assertTrue(true); // No exception was encountered
     }
 
     @Test
     public void testMainDeobfuscation() {
-        String[] args = {"-d", "OBF:1pj11w261wmr1t3b1vgv1s9r1z7i1vuz1tae1qji1vg71mdb1vgn1qhs1ta01vub1z7k1sbj1vfz1t2v1wnf1w1c1pj5"};
+        String[] args = {"-d",
+                "OBF:1pj11w261wmr1t3b1vgv1s9r1z7i1vuz1tae1qji1vg71mdb1vgn1qhs1ta01vub1z7k1sbj1vfz1t2v1wnf1w1c1pj5"};
         jettyObfuscationConversionCommandLineUtil.main(args);
-        Assert.assertTrue(true);    // No exception was encountered
+        Assert.assertTrue(true); // No exception was encountered
     }
 
     @Test
     public void testMain_failedParseInput() {
         String[] args = {"-e [thisStringToObfuscate]"};
         jettyObfuscationConversionCommandLineUtil.main(args);
-        Assert.assertTrue(true);    // No exception was encountered
+        Assert.assertTrue(true); // No exception was encountered
     }
 }

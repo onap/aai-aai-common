@@ -27,7 +27,7 @@ package org.onap.aai.util;
  * as these keys are generated in a couple places, I made a class to contain that logic
  */
 public class HbaseSaltPrefixer {
-     // the number of hbase region servers per cluster
+    // the number of hbase region servers per cluster
     private static int NUM_REGION_BUCKETS = 3;
 
     private static class SingletonHolder {

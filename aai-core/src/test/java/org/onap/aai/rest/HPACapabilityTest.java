@@ -22,8 +22,6 @@ package org.onap.aai.rest;
 
 import static org.junit.Assert.assertEquals;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.jayway.jsonpath.JsonPath;
 
 import java.util.*;
@@ -40,6 +38,8 @@ import org.onap.aai.HttpTestUtil;
 import org.onap.aai.PayloadUtil;
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.skyscreamer.jsonassert.JSONAssert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Ignore
 @RunWith(AAIJunitRunner.class)

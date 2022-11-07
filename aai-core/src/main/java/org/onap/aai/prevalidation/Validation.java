@@ -19,6 +19,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.prevalidation;
 
 import com.google.gson.annotations.SerializedName;
@@ -70,9 +71,8 @@ public class Validation {
             return false;
         }
         Validation that = (Validation) o;
-        return Objects.equals(validationId, that.validationId) &&
-            Objects.equals(action, that.action) &&
-            Objects.equals(violations, that.violations);
+        return Objects.equals(validationId, that.validationId) && Objects.equals(action, that.action)
+                && Objects.equals(violations, that.violations);
     }
 
     @Override
@@ -82,11 +82,8 @@ public class Validation {
 
     @Override
     public String toString() {
-        return "Validation{" +
-            "validationId='" + validationId + '\'' +
-            ", action='" + action + '\'' +
-            ", violations=" + violations +
-            '}';
+        return "Validation{" + "validationId='" + validationId + '\'' + ", action='" + action + '\'' + ", violations="
+                + violations + '}';
     }
 
 }

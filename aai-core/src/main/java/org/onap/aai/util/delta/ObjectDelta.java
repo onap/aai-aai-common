@@ -20,14 +20,14 @@
 
 package org.onap.aai.util.delta;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
-
-import com.google.gson.annotations.SerializedName;
 
 public class ObjectDelta {
 
@@ -63,7 +63,6 @@ public class ObjectDelta {
     public void addRelationshipDelta(RelationshipDelta relationshipDelta) {
         relationshipDeltas.add(relationshipDelta);
     }
-
 
     public String getUri() {
         return uri;
@@ -115,13 +114,8 @@ public class ObjectDelta {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this)
-            .append("uri", uri)
-            .append("action", action)
-            .append("sourceOfTruth", sourceOfTruth)
-            .append("timestamp", timestamp)
-            .append("propertyDeltas", propertyDeltas)
-            .append("relationshipDeltas", relationshipDeltas)
-            .toString();
+        return new ToStringBuilder(this).append("uri", uri).append("action", action)
+                .append("sourceOfTruth", sourceOfTruth).append("timestamp", timestamp)
+                .append("propertyDeltas", propertyDeltas).append("relationshipDeltas", relationshipDeltas).toString();
     }
 }

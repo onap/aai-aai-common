@@ -20,9 +20,6 @@
 
 package org.onap.aai.restclient;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -34,11 +31,12 @@ import javax.net.ssl.SSLContext;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContextBuilder;
-import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.onap.aai.aailog.filter.RestClientLoggingInterceptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.client.RestTemplate;
-import org.onap.aai.aailog.filter.RestClientLoggingInterceptor;
 
 public abstract class TwoWaySSLRestClient extends RestClient {
 
@@ -69,11 +67,11 @@ public abstract class TwoWaySSLRestClient extends RestClient {
         String trustStore = getTruststorePath();
 
         SSLContext sslContext =
-            SSLContextBuilder.create().loadKeyMaterial(loadPfx(keyStore, keyStorePassword), keyStorePassword)
-                .loadTrustMaterial(ResourceUtils.getFile(trustStore), trustStorePassword).build();
+                SSLContextBuilder.create().loadKeyMaterial(loadPfx(keyStore, keyStorePassword), keyStorePassword)
+                        .loadTrustMaterial(ResourceUtils.getFile(trustStore), trustStorePassword).build();
 
         HttpClient client =
-            HttpClients.custom().setSSLContext(sslContext).setSSLHostnameVerifier((s, sslSession) -> true).build();
+                HttpClients.custom().setSSLContext(sslContext).setSSLHostnameVerifier((s, sslSession) -> true).build();
 
         return client;
     }

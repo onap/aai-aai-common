@@ -20,8 +20,23 @@
 
 package org.onap.aai.rest.db;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
+
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.util.*;
+
+import javax.ws.rs.core.*;
+
 import org.javatuples.Pair;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -45,19 +60,6 @@ import org.onap.aai.restcore.HttpMethod;
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 import org.onap.aai.util.AAIConfig;
-
-import javax.ws.rs.core.*;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.util.*;
-
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
 
 @RunWith(value = Parameterized.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -376,7 +378,6 @@ public class HttpEntryTest extends AAISetup {
         doNothing().when(uebNotification).triggerEvents();
         Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT_EDGE, uri, content);
 
-
         assertEquals("Expected the pserver relationship to be deleted", 200, response.getStatus());
         assertEquals("Two notifications", 2, uebNotification.getEvents().size());
         assertEquals("Notification generated for PUT edge", "UPDATE",
@@ -620,17 +621,15 @@ public class HttpEntryTest extends AAISetup {
         // Put complex
         uri = "/cloud-infrastructure/complexes/complex/httpEntryTest-complex-01";
         content =
-            "{\"physical-location-id\":\"httpEntryTest-complex-01\",\"physical-location-type\":\"AAIDefault\",\"street1\":\"AAIDefault\",\"city\":\"AAIDefault\",\"state\":\"NJ\",\"postal-code\":\"07748\",\"country\":\"USA\",\"region\":\"US\"}";
+                "{\"physical-location-id\":\"httpEntryTest-complex-01\",\"physical-location-type\":\"AAIDefault\",\"street1\":\"AAIDefault\",\"city\":\"AAIDefault\",\"state\":\"NJ\",\"postal-code\":\"07748\",\"country\":\"USA\",\"region\":\"US\"}";
         doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, content);
 
         // Put Relationship
         uri = "/cloud-infrastructure/pservers/pserver/httpEntryTest-pserver-01/relationship-list/relationship";
         content = "{\"related-to\":\"complex\",\"related-link\":\"/aai/" + schemaVersions.getDefaultVersion().toString()
-            + "/cloud-infrastructure/complexes/complex/httpEntryTest-complex-01\",\"relationship-label\":\"org.onap.relationships.inventory.LocatedIn\"}" +
-            "\"relationship-daasSta\":[{" +
-            "\"relationship-key\":\"complex.physical-location-id\"," +
-            "\"relationship-value\":\"httpEntryTest-complex-01\"" +
-            "}]";
+                + "/cloud-infrastructure/complexes/complex/httpEntryTest-complex-01\",\"relationship-label\":\"org.onap.relationships.inventory.LocatedIn\"}"
+                + "\"relationship-daasSta\":[{" + "\"relationship-key\":\"complex.physical-location-id\","
+                + "\"relationship-value\":\"httpEntryTest-complex-01\"" + "}]";
         Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT_EDGE, uri, content);
         assertEquals("Expected the pserver relationship to be created", 200, response.getStatus());
 
@@ -638,7 +637,8 @@ public class HttpEntryTest extends AAISetup {
         uri = "/cloud-infrastructure/pservers/pserver/httpEntryTest-pserver-01";
         content = "";
         response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET_RELATIONSHIP, uri, content);
-        String expected = "{\"relationship\":[{\"related-to\":\"complex\",\"relationship-label\":\"org.onap.relationships.inventory.LocatedIn\",\"related-link\":\"/aai/v14/cloud-infrastructure/complexes/complex/httpEntryTest-complex-01\",\"relationship-data\":[{\"relationship-key\":\"complex.physical-location-id\",\"relationship-value\":\"httpEntryTest-complex-01\"}]}]}";
+        String expected =
+                "{\"relationship\":[{\"related-to\":\"complex\",\"relationship-label\":\"org.onap.relationships.inventory.LocatedIn\",\"related-link\":\"/aai/v14/cloud-infrastructure/complexes/complex/httpEntryTest-complex-01\",\"relationship-data\":[{\"relationship-key\":\"complex.physical-location-id\",\"relationship-value\":\"httpEntryTest-complex-01\"}]}]}";
         Assert.assertEquals(expected, response.getEntity().toString());
 
         dbEngine.rollback();
@@ -657,17 +657,15 @@ public class HttpEntryTest extends AAISetup {
         // Put complex
         uri = "/cloud-infrastructure/complexes/complex/httpEntryTest-complex-01";
         content =
-            "{\"physical-location-id\":\"httpEntryTest-complex-01\",\"physical-location-type\":\"AAIDefault\",\"street1\":\"AAIDefault\",\"city\":\"AAIDefault\",\"state\":\"NJ\",\"postal-code\":\"07748\",\"country\":\"USA\",\"region\":\"US\"}";
+                "{\"physical-location-id\":\"httpEntryTest-complex-01\",\"physical-location-type\":\"AAIDefault\",\"street1\":\"AAIDefault\",\"city\":\"AAIDefault\",\"state\":\"NJ\",\"postal-code\":\"07748\",\"country\":\"USA\",\"region\":\"US\"}";
         doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, content);
 
         // Put Relationship
         uri = "/cloud-infrastructure/pservers/pserver/httpEntryTest-pserver-01/relationship-list/relationship";
         content = "{\"related-to\":\"complex\",\"related-link\":\"/aai/" + schemaVersions.getDefaultVersion().toString()
-            + "/cloud-infrastructure/complexes/complex/httpEntryTest-complex-01\",\"relationship-label\":\"org.onap.relationships.inventory.LocatedIn\"}" +
-            "\"relationship-daasSta\":[{" +
-            "\"relationship-key\":\"complex.physical-location-id\"," +
-            "\"relationship-value\":\"httpEntryTest-complex-01\"" +
-            "}]";
+                + "/cloud-infrastructure/complexes/complex/httpEntryTest-complex-01\",\"relationship-label\":\"org.onap.relationships.inventory.LocatedIn\"}"
+                + "\"relationship-daasSta\":[{" + "\"relationship-key\":\"complex.physical-location-id\","
+                + "\"relationship-value\":\"httpEntryTest-complex-01\"" + "}]";
         Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT_EDGE, uri, content);
         assertEquals("Expected the pserver relationship to be created", 200, response.getStatus());
 
@@ -690,14 +688,13 @@ public class HttpEntryTest extends AAISetup {
         JSONObject pserverResponseFields = new JSONObject(pserverResponse);
         String pserverResponseRelationshipList = pserverResponseFields.get("relationship-list").toString();
 
-        String expected = "{\"relationship\":[{\"related-to\":\"complex\",\"relationship-data\":[{\"relationship-value\":\"httpEntryTest-complex-01\",\"relationship-key\":\"complex.physical-location-id\"}],\"related-link\":\"/aai/v14/cloud-infrastructure/complexes/complex/httpEntryTest-complex-01\",\"relationship-label\":\"org.onap.relationships.inventory.LocatedIn\"}]}";
+        String expected =
+                "{\"relationship\":[{\"related-to\":\"complex\",\"relationship-data\":[{\"relationship-value\":\"httpEntryTest-complex-01\",\"relationship-key\":\"complex.physical-location-id\"}],\"related-link\":\"/aai/v14/cloud-infrastructure/complexes/complex/httpEntryTest-complex-01\",\"relationship-label\":\"org.onap.relationships.inventory.LocatedIn\"}]}";
         assertEquals(expected, pserverResponseRelationshipList);
-//        Assert.assertEquals(expected, response.getEntity().toString());
+        // Assert.assertEquals(expected, response.getEntity().toString());
         queryParameters.remove("format");
 
         dbEngine.rollback();
     }
-
-
 
 }

@@ -27,7 +27,6 @@ import com.google.common.collect.Multimap;
 import java.util.Collection;
 
 import org.apache.tinkerpop.gremlin.structure.Direction;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -38,7 +37,6 @@ import org.onap.aai.edges.enums.MultiplicityRule;
 import org.onap.aai.edges.exceptions.AmbiguousRuleChoiceException;
 import org.onap.aai.edges.exceptions.EdgeRuleNotFoundException;
 import org.onap.aai.restclient.MockProvider;
-import org.onap.aai.restclient.MockRestClient;
 import org.onap.aai.setup.SchemaVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -50,10 +48,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {MockProvider.class, EdgesConfiguration.class})
 @TestPropertySource(
-        properties = {
-            "schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-wiring-test.properties",
-            "spring.main.allow-bean-definition-overriding=true"
-        })
+        properties = {"schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-wiring-test.properties",
+                "spring.main.allow-bean-definition-overriding=true"})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 @SpringBootTest
 public class EdgeIngestorTest {

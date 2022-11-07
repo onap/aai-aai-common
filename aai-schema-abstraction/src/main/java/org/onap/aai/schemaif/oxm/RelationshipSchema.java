@@ -20,7 +20,10 @@
  *
  * ECOMP is a trademark and service mark of AT&T Intellectual Property.
  */
+
 package org.onap.aai.schemaif.oxm;
+
+import com.google.common.collect.Multimap;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,11 +41,7 @@ import org.onap.aai.edges.EdgeRule;
 import org.onap.aai.schemaif.SchemaProviderException;
 import org.onap.aai.schemaif.SchemaProviderMsgs;
 
-import com.google.common.collect.Multimap;
-
-
 public class RelationshipSchema {
-
 
     public static final String SCHEMA_SOURCE_NODE_TYPE = "from";
     public static final String SCHEMA_TARGET_NODE_TYPE = "to";
@@ -62,19 +61,18 @@ public class RelationshipSchema {
     // A map storing the list of valid edge types for a source/target pair
     private Map<String, Set<String>> edgeTypesForNodePair = new HashMap<>();
 
-
-    public RelationshipSchema(Multimap<String, EdgeRule> rules, String props) throws SchemaProviderException, IOException {
+    public RelationshipSchema(Multimap<String, EdgeRule> rules, String props)
+            throws SchemaProviderException, IOException {
         HashMap<String, String> properties = new ObjectMapper().readValue(props, HashMap.class);
 
-        // hold the true values of the edge rules by key 
+        // hold the true values of the edge rules by key
         for (EdgeRule rule : rules.values()) {
             String nodePairKey = buildNodePairKey(rule.getFrom(), rule.getTo());
             if (edgeTypesForNodePair.get(nodePairKey) == null) {
                 Set<String> typeSet = new HashSet<String>();
                 typeSet.add(rule.getLabel());
                 edgeTypesForNodePair.put(nodePairKey, typeSet);
-            }
-            else {
+            } else {
                 edgeTypesForNodePair.get(nodePairKey).add(rule.getLabel());
             }
 
@@ -138,8 +136,6 @@ public class RelationshipSchema {
         });
     }
 
-
-
     public Map<String, Class<?>> lookupRelation(String key) {
         return this.relations.get(key);
     }
@@ -151,7 +147,6 @@ public class RelationshipSchema {
     public boolean isValidType(String type) {
         return relationTypes.containsKey(type);
     }
-
 
     private String buildRelation(String source, String target, String relation) {
         return source + ":" + target + ":" + relation;
@@ -171,7 +166,6 @@ public class RelationshipSchema {
         return source + ":" + target;
     }
 
-
     private Class<?> resolveClass(String type) throws SchemaProviderException, ClassNotFoundException {
         Class<?> clazz = Class.forName(type);
         validateClassTypes(clazz);
@@ -185,5 +179,3 @@ public class RelationshipSchema {
         }
     }
 }
-
-

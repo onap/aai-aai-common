@@ -18,6 +18,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.schemaif.json;
 
 import java.util.HashMap;
@@ -31,12 +32,12 @@ import org.onap.aai.schemaif.json.definitions.DataTypeDefinition;
 import org.onap.aai.schemaif.json.definitions.JsonPropertySchema;
 import org.onap.aai.schemaif.json.definitions.JsonVertexSchema;
 
-
 public class FromJsonVertexSchema extends VertexSchema {
-    public void fromJson(JsonVertexSchema jsonVertex, List<DataTypeDefinition> dataTypes, List<JsonPropertySchema> commonProps) throws SchemaProviderException {
+    public void fromJson(JsonVertexSchema jsonVertex, List<DataTypeDefinition> dataTypes,
+            List<JsonPropertySchema> commonProps) throws SchemaProviderException {
         name = jsonVertex.getName();
-        properties = new HashMap<String,PropertySchema>();
-        annotations = new HashMap<String,String>();
+        properties = new HashMap<String, PropertySchema>();
+        annotations = new HashMap<String, String>();
 
         // Populate property schema
         if (jsonVertex.getProperties() != null) {
@@ -46,7 +47,7 @@ public class FromJsonVertexSchema extends VertexSchema {
                 properties.put(propSchema.getName().toLowerCase(), propSchema);
             }
         }
-        
+
         // Add common properties
         if (commonProps != null) {
             for (JsonPropertySchema pSchema : commonProps) {
@@ -54,40 +55,39 @@ public class FromJsonVertexSchema extends VertexSchema {
                 propSchema.fromJson(pSchema, true, dataTypes);
                 properties.put(propSchema.getName().toLowerCase(), propSchema);
             }
-        }
-        else {
-            // TODO:  This is a hack until the schema-service return the list of common props
+        } else {
+            // TODO: This is a hack until the schema-service return the list of common props
             addCommonProps();
         }
-        
+
         // Populate annotation schema
         if (jsonVertex.getAnnotations() != null) {
-            for (Map.Entry<String,String> entry : jsonVertex.getAnnotations().entrySet()) {
+            for (Map.Entry<String, String> entry : jsonVertex.getAnnotations().entrySet()) {
                 annotations.put(entry.getKey().toLowerCase(), entry.getValue());
             }
         }
-        
-        // The searchable and indexed annotations, need to grab these from the property annotations 
+
+        // The searchable and indexed annotations, need to grab these from the property annotations
         // and store them at the vertex level as well (backwards compatibility with OXM)
         StringBuilder searchableVal = new StringBuilder();
         StringBuilder indexedVal = new StringBuilder();
         for (PropertySchema pSchema : properties.values()) {
-            if ( (pSchema.getAnnotationValue("searchable") != null) 
-                    && (pSchema.getAnnotationValue("searchable").equalsIgnoreCase("true")) ) {
+            if ((pSchema.getAnnotationValue("searchable") != null)
+                    && (pSchema.getAnnotationValue("searchable").equalsIgnoreCase("true"))) {
                 if (searchableVal.length() > 0) {
                     searchableVal.append(",");
                 }
                 searchableVal.append(pSchema.getName());
             }
-            if ( (pSchema.getAnnotationValue("indexed") != null) 
-                    && (pSchema.getAnnotationValue("indexed").equalsIgnoreCase("true")) ) {
+            if ((pSchema.getAnnotationValue("indexed") != null)
+                    && (pSchema.getAnnotationValue("indexed").equalsIgnoreCase("true"))) {
                 if (indexedVal.length() > 0) {
                     indexedVal.append(",");
                 }
                 indexedVal.append(pSchema.getName());
             }
         }
-        
+
         if (searchableVal.length() > 0) {
             annotations.put("searchable", searchableVal.toString());
         }
@@ -105,10 +105,11 @@ public class FromJsonVertexSchema extends VertexSchema {
         addCommonProperty("aai-last-mod-ts", false, false, "string", "false");
         addCommonProperty("source-of-truth", false, false, "string", "false");
         addCommonProperty("aai-uri", false, false, "string", "false");
-        
+
     }
-    
-    private void addCommonProperty(String name, boolean req, boolean unique, String type, String indexed) throws SchemaProviderException {
+
+    private void addCommonProperty(String name, boolean req, boolean unique, String type, String indexed)
+            throws SchemaProviderException {
         JsonPropertySchema pSchema = new JsonPropertySchema();
         pSchema.setName(name);
         pSchema.setRequired(req);
@@ -116,14 +117,14 @@ public class FromJsonVertexSchema extends VertexSchema {
         pSchema.setDataType(type);
         pSchema.setDescription("");
         pSchema.setDefaultValue("");
-        
-        Map<String,String> propAnnotations = new HashMap<String,String>();
+
+        Map<String, String> propAnnotations = new HashMap<String, String>();
         propAnnotations.put("indexed", indexed);
         propAnnotations.put("searchable", "false");
         propAnnotations.put("source_of_truth_type", "AAI");
 
         pSchema.setAnnotations(propAnnotations);
-        
+
         FromJsonPropertySchema propSchema = new FromJsonPropertySchema();
         propSchema.fromJson(pSchema, true, null);
 

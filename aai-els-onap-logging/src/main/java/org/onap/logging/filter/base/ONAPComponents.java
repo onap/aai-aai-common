@@ -24,35 +24,7 @@ import java.util.EnumSet;
 import java.util.Set;
 
 public enum ONAPComponents implements ONAPComponentsList {
-    OPENSTACK_ADAPTER,
-    BPMN,
-    GRM,
-    AAI,
-    DMAAP,
-    POLICY,
-    CATALOG_DB,
-    REQUEST_DB,
-    SNIRO,
-    SDC,
-    EXTERNAL,
-    VNF_ADAPTER,
-    SDNC_ADAPTER,
-    MULTICLOUD,
-    CLAMP,
-    PORTAL,
-    VID,
-    APPC,
-    DCAE,
-    HOLMES,
-    SDNC,
-    SO,
-    VFC,
-    ESR,
-    DBC,
-    DR,
-    MR,
-    OPTF;
-
+    OPENSTACK_ADAPTER, BPMN, GRM, AAI, DMAAP, POLICY, CATALOG_DB, REQUEST_DB, SNIRO, SDC, EXTERNAL, VNF_ADAPTER, SDNC_ADAPTER, MULTICLOUD, CLAMP, PORTAL, VID, APPC, DCAE, HOLMES, SDNC, SO, VFC, ESR, DBC, DR, MR, OPTF;
 
     public static Set<ONAPComponents> getSOInternalComponents() {
         return EnumSet.of(OPENSTACK_ADAPTER, BPMN, CATALOG_DB, REQUEST_DB, VNF_ADAPTER, SDNC_ADAPTER);

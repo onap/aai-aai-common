@@ -33,8 +33,6 @@ import org.onap.aai.nodes.NodeIngestor;
 import org.onap.aai.rest.db.HttpEntry;
 import org.onap.aai.serialization.db.EdgeSerializer;
 import org.onap.aai.serialization.queryformats.QueryFormatTestHelper;
-import org.onap.aai.setup.AAIConfigTranslator;
-import org.onap.aai.setup.SchemaLocationsBean;
 import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.setup.SchemaVersions;
 import org.onap.aai.testutils.TestUtilConfigTranslatorforDataLink;

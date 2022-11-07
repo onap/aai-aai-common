@@ -20,8 +20,15 @@
 
 package org.onap.aai;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Mockito.*;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.util.*;
+
+import javax.ws.rs.core.*;
+
 import org.javatuples.Pair;
 import org.mockito.Mockito;
 import org.onap.aai.config.SpringContextAware;
@@ -40,14 +47,8 @@ import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.setup.SchemaVersions;
-
-import javax.ws.rs.core.*;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.util.*;
-
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Mockito.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HttpTestUtil extends RESTAPI {
 
@@ -91,7 +92,6 @@ public class HttpTestUtil extends RESTAPI {
         this.acceptType = acceptType;
     }
 
-
     public HttpTestUtil(QueryStyle qs, UEBNotification uebNotification, int notificationDepth) {
         this(qs, uebNotification, notificationDepth, "application/json");
     }
@@ -122,7 +122,7 @@ public class HttpTestUtil extends RESTAPI {
         headersMultiMap.add("aai-request-context", "");
 
         outputMediaTypes = new ArrayList<>();
-        if(acceptType.equals("application/json")){
+        if (acceptType.equals("application/json")) {
             outputMediaTypes.add(APPLICATION_JSON);
         } else {
             outputMediaTypes.add(APPLICATION_XML);
@@ -143,7 +143,7 @@ public class HttpTestUtil extends RESTAPI {
         when(httpHeaders.getMediaType()).thenReturn(APPLICATION_JSON);
 
         try {
-            if(notification != null){
+            if (notification != null) {
                 doNothing().when(notification).triggerEvents();
             }
         } catch (AAIException e) {
@@ -167,7 +167,7 @@ public class HttpTestUtil extends RESTAPI {
         try {
 
             List<DBRequest> dbRequestList = new ArrayList<>();
-            for(Map.Entry<String, String> entry : uriPayload.entrySet()){
+            for (Map.Entry<String, String> entry : uriPayload.entrySet()) {
 
                 String uri = entry.getKey();
                 String payload = entry.getValue();
@@ -193,7 +193,7 @@ public class HttpTestUtil extends RESTAPI {
                 }
                 Mockito.when(uriInfo.getPath()).thenReturn(uri);
 
-                if(notification != null){
+                if (notification != null) {
                     traversalHttpEntry.setHttpEntryProperties(version, notification, notificationDepth);
                 } else {
                     traversalHttpEntry.setHttpEntryProperties(version);
@@ -213,23 +213,24 @@ public class HttpTestUtil extends RESTAPI {
                 HttpMethod httpMethod;
                 if (uri.contains("/relationship-list/relationship")) {
                     obj = loader.unmarshal("relationship", payload,
-                        org.onap.aai.restcore.MediaType.getEnum("application/json"));
+                            org.onap.aai.restcore.MediaType.getEnum("application/json"));
                     httpMethod = HttpMethod.PUT_EDGE;
                 } else {
-                    obj = loader.unmarshal(objType, payload, org.onap.aai.restcore.MediaType.getEnum("application/json"));
+                    obj = loader.unmarshal(objType, payload,
+                            org.onap.aai.restcore.MediaType.getEnum("application/json"));
                     httpMethod = HttpMethod.PUT;
                     this.validateIntrospector(obj, loader, uriObject, httpMethod);
                 }
 
                 DBRequest dbRequest = new DBRequest.Builder(httpMethod, uriObject, uriQuery, obj, httpHeaders, uriInfo,
-                    "JUNIT-TRANSACTION").rawRequestContent(payload).build();
+                        "JUNIT-TRANSACTION").rawRequestContent(payload).build();
 
                 dbRequestList.add(dbRequest);
 
             }
 
             Pair<Boolean, List<Pair<URI, Response>>> responsesTuple =
-                traversalHttpEntry.process(dbRequestList, "JUNIT");
+                    traversalHttpEntry.process(dbRequestList, "JUNIT");
             response = responsesTuple.getValue1().get(0).getValue1();
 
         } catch (AAIException e) {
@@ -244,7 +245,7 @@ public class HttpTestUtil extends RESTAPI {
                 if (response != null) {
                     if ((response.getStatus() / 100) == 2) {
                         logger.info("Successfully completed the PUT request with status {} and committing it to DB",
-                            response.getStatus());
+                                response.getStatus());
                     } else {
                         logFailure(HttpMethod.PUT, response);
                     }
@@ -292,7 +293,7 @@ public class HttpTestUtil extends RESTAPI {
             }
             Mockito.when(uriInfo.getPath()).thenReturn(uri);
 
-            if(notification != null){
+            if (notification != null) {
                 traversalHttpEntry.setHttpEntryProperties(version, notification, notificationDepth);
             } else {
                 traversalHttpEntry.setHttpEntryProperties(version);
@@ -315,13 +316,13 @@ public class HttpTestUtil extends RESTAPI {
             this.validateIntrospector(obj, loader, uriObject, httpMethod);
 
             DBRequest dbRequest = new DBRequest.Builder(httpMethod, uriObject, uriQuery, obj, httpHeaders, uriInfo,
-                "JUNIT-TRANSACTION").rawRequestContent(payload).build();
+                    "JUNIT-TRANSACTION").rawRequestContent(payload).build();
 
             List<DBRequest> dbRequestList = new ArrayList<>();
             dbRequestList.add(dbRequest);
 
             Pair<Boolean, List<Pair<URI, Response>>> responsesTuple =
-                traversalHttpEntry.process(dbRequestList, "JUNIT");
+                    traversalHttpEntry.process(dbRequestList, "JUNIT");
             response = responsesTuple.getValue1().get(0).getValue1();
 
         } catch (AAIException e) {
@@ -336,7 +337,7 @@ public class HttpTestUtil extends RESTAPI {
                 if (response != null) {
                     if ((response.getStatus() / 100) == 2) {
                         logger.info("Successfully completed the PUT request with status {} and committing it to DB",
-                            response.getStatus());
+                                response.getStatus());
                     } else {
                         logFailure(HttpMethod.PUT, response);
                     }
@@ -353,8 +354,8 @@ public class HttpTestUtil extends RESTAPI {
         return response;
     }
 
-    public Response doGet(String uri, String depth){
-       return doGet(uri, depth, null);
+    public Response doGet(String uri, String depth) {
+        return doGet(uri, depth, null);
     }
 
     public Response doGet(String uri, String depth, String format) {
@@ -387,7 +388,7 @@ public class HttpTestUtil extends RESTAPI {
                 version = schemaVersions.getDefaultVersion();
             }
 
-            if(notification != null){
+            if (notification != null) {
                 traversalHttpEntry.setHttpEntryProperties(version, notification, notificationDepth);
             } else {
                 traversalHttpEntry.setHttpEntryProperties(version);
@@ -401,7 +402,7 @@ public class HttpTestUtil extends RESTAPI {
                 queryParameters.add("depth", depth);
             }
 
-            if(format != null){
+            if (format != null) {
                 queryParameters.add("format", format);
             }
 
@@ -461,7 +462,7 @@ public class HttpTestUtil extends RESTAPI {
         return this.doGet(uri, "all");
     }
 
-    public Response doDelete(Map<String, Pair<String, String>> deletes){
+    public Response doDelete(Map<String, Pair<String, String>> deletes) {
 
         this.init();
         Response response = null;
@@ -476,7 +477,8 @@ public class HttpTestUtil extends RESTAPI {
                 String resourceVersion = delete.getValue().getValue0();
                 String content = delete.getValue().getValue1();
                 uri = uri.replaceAll("/aai/", "");
-                logger.info("Starting the delete request for the uri {} with resource version {}", uri, resourceVersion);
+                logger.info("Starting the delete request for the uri {} with resource version {}", uri,
+                        resourceVersion);
 
                 String[] arr = uri.split("/");
 
@@ -517,19 +519,20 @@ public class HttpTestUtil extends RESTAPI {
 
                 if (uri.contains("/relationship-list/relationship")) {
                     httpMethod = HttpMethod.DELETE_EDGE;
-                    obj = loader.unmarshal("relationship", content, org.onap.aai.restcore.MediaType.getEnum("application/json"));
+                    obj = loader.unmarshal("relationship", content,
+                            org.onap.aai.restcore.MediaType.getEnum("application/json"));
                 } else {
                     obj = loader.introspectorFromName(objType);
                     httpMethod = HttpMethod.DELETE;
                 }
 
-                DBRequest dbRequest = new DBRequest.Builder(httpMethod, uriObject, uriQuery, obj, httpHeaders, uriInfo, "JUNIT-TRANSACTION").build();
-
+                DBRequest dbRequest = new DBRequest.Builder(httpMethod, uriObject, uriQuery, obj, httpHeaders, uriInfo,
+                        "JUNIT-TRANSACTION").build();
 
                 dbRequestList.add(dbRequest);
             }
             Pair<Boolean, List<Pair<URI, Response>>> responsesTuple =
-                traversalHttpEntry.process(dbRequestList, "JUNIT");
+                    traversalHttpEntry.process(dbRequestList, "JUNIT");
             response = responsesTuple.getValue1().get(0).getValue1();
 
         } catch (AAIException e) {
@@ -544,7 +547,7 @@ public class HttpTestUtil extends RESTAPI {
                 if (response != null) {
                     if ((response.getStatus() / 100) == 2) {
                         logger.info("Successfully completed the DELETE request with status {} and committing it to DB",
-                            response.getStatus());
+                                response.getStatus());
                     } else {
                         logFailure(HttpMethod.DELETE, response);
                     }
@@ -562,6 +565,7 @@ public class HttpTestUtil extends RESTAPI {
     public Response doDelete(String uri, String resourceVersion) {
         return this.doDelete(uri, resourceVersion, null);
     }
+
     public Response doDelete(String uri, String resourceVersion, String content) {
         Map<String, Pair<String, String>> deletes = new HashMap<>();
         deletes.put(uri, new Pair<>(resourceVersion, content));

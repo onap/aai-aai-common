@@ -22,15 +22,13 @@ package org.onap.aai.domain.model;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import com.sun.org.apache.xalan.internal.xsltc.compiler.util.MultiHashtable;
+
+import java.util.*;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.onap.aai.AAISetup;
-import org.onap.aai.audit.ListEndpoints;
-import org.onap.aai.setup.SchemaVersion;
-
-import java.util.*;
 
 public class AAIResourceTest extends AAISetup {
     private AAIResource aaiResource;

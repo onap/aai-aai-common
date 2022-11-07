@@ -37,48 +37,56 @@ import org.slf4j.event.Level;
  * Extensible adapter for cheaply meeting ONAP logging obligations using
  * an SLF4J facade.
  *
- * <p>This can be used with any SLF4J-compatible logging provider, with
- * appropriate provider configuration.</p>
+ * <p>
+ * This can be used with any SLF4J-compatible logging provider, with
+ * appropriate provider configuration.
+ * </p>
  *
- * <p>The basics are that:
+ * <p>
+ * The basics are that:
  * <ul>
- *     <li>{@link #entering} sets all MDCs.</li>
- *     <li>{@link #exiting} unsets all MDCs *and* logs response information.</li>
- *     <li>{@link #invoke} logs and returns a UUID to passed during invocation,
- *     and optionally sets these for you on your downstream request by way of
- *     an adapter.</li>
- *     <li>Call {@link #getServiceDescriptor()} and its setters to set service-related MDCs.</li>
- *     <li>Call {@link #getResponseDescriptor()} and its setters to set response-related MDCs.</li>
+ * <li>{@link #entering} sets all MDCs.</li>
+ * <li>{@link #exiting} unsets all MDCs *and* logs response information.</li>
+ * <li>{@link #invoke} logs and returns a UUID to passed during invocation,
+ * and optionally sets these for you on your downstream request by way of
+ * an adapter.</li>
+ * <li>Call {@link #getServiceDescriptor()} and its setters to set service-related MDCs.</li>
+ * <li>Call {@link #getResponseDescriptor()} and its setters to set response-related MDCs.</li>
  * </ul>
  * </p>
  *
- * <p>Minimal usage is:
+ * <p>
+ * Minimal usage is:
  * <ol>
- *     <li>#entering(RequestAdapter)</li>
- *     <li>#invoke, #invoke, ...</li>
- *     <li>#getResponse + setters (or #setResponse)</li>
- *     <li>#exiting</li>
+ * <li>#entering(RequestAdapter)</li>
+ * <li>#invoke, #invoke, ...</li>
+ * <li>#getResponse + setters (or #setResponse)</li>
+ * <li>#exiting</li>
  * </ol>
  * </p>
  *
- * <p> ... if you're happy for service information to be automatically derived as follows:
+ * <p>
+ * ... if you're happy for service information to be automatically derived as follows:
  * <ul>
- *     <li><tt>ServiceName</tt> - from <tt>HttpServletRequest#getRequestURI()</tt></li>
- *     <li><tt>InstanceUUID</tt> - classloader-scope UUID.</li>
+ * <li><tt>ServiceName</tt> - from <tt>HttpServletRequest#getRequestURI()</tt></li>
+ * <li><tt>InstanceUUID</tt> - classloader-scope UUID.</li>
  * </ul>
  * </p>
  *
- * <p>... and if those defaults don't suit, then you can override using properties on
+ * <p>
+ * ... and if those defaults don't suit, then you can override using properties on
  * {@link #getServiceDescriptor()}, or by injecting your own adapter using
  * {@link #setServiceDescriptor(ServiceDescriptor)}, or by overriding
- * a <tt>protected</tt> methods like{@link #setEnteringMDCs}.</p>
+ * a <tt>protected</tt> methods like{@link #setEnteringMDCs}.
+ * </p>
  *
- * <p>For everything else:
+ * <p>
+ * For everything else:
  * <ul>
- *     <li>The underlying SLF4J {@link Logger} can be retrieved using {@link #unwrap}.
- *     Use this or create your own using the usual SLF4J factor.</li>
- *     <li>Set whatever MDCs you like.</li>
- *     <li>Log whatever else you like.</li>
+ * <li>The underlying SLF4J {@link Logger} can be retrieved using {@link #unwrap}.
+ * Use this or create your own using the usual SLF4J factor.</li>
+ * <li>Set whatever MDCs you like.</li>
+ * <li>Log whatever else you like.</li>
  * </ul>
  * </p>
  */
@@ -178,8 +186,7 @@ public class ONAPLogAdapter {
         try {
             this.mResponseDescriptor.setMDCs();
             this.mLogger.info(ONAPLogConstants.Markers.EXIT, EMPTY_MESSAGE);
-        }
-        finally {
+        } finally {
             MDC.clear();
         }
         return this;
@@ -188,8 +195,10 @@ public class ONAPLogAdapter {
     /**
      * Report pending invocation with <tt>INVOKE</tt> marker.
      *
-     * <p>If you call this variant, then YOU are assuming responsibility for
-     * setting the requisite ONAP headers.</p>
+     * <p>
+     * If you call this variant, then YOU are assuming responsibility for
+     * setting the requisite ONAP headers.
+     * </p>
      *
      * @param sync whether synchronous.
      * @return invocation ID to be passed with invocation.
@@ -218,8 +227,7 @@ public class ONAPLogAdapter {
      * @param sync whether synchronous, nullable.
      * @return invocation ID to be passed with invocation.
      */
-    public UUID invoke(final RequestBuilder builder,
-                       final ONAPLogConstants.InvocationMode sync) {
+    public UUID invoke(final RequestBuilder builder, final ONAPLogConstants.InvocationMode sync) {
 
         // Sync can be defaulted. Builder cannot.
 
@@ -233,8 +241,7 @@ public class ONAPLogAdapter {
 
         builder.setHeader(ONAPLogConstants.Headers.REQUEST_ID,
                 defaultToEmpty(MDC.get(ONAPLogConstants.MDCs.REQUEST_ID)));
-        builder.setHeader(ONAPLogConstants.Headers.INVOCATION_ID,
-                defaultToEmpty(invocationID));
+        builder.setHeader(ONAPLogConstants.Headers.INVOCATION_ID, defaultToEmpty(invocationID));
         builder.setHeader(ONAPLogConstants.Headers.PARTNER_NAME,
                 defaultToEmpty(MDC.get(ONAPLogConstants.MDCs.PARTNER_NAME)));
 
@@ -245,15 +252,16 @@ public class ONAPLogAdapter {
      * Report vanilla <tt>INVOKE</tt> marker.
      *
      * @param builder builder for downstream requests, if you want the
-     *                standard ONAP headers to be added automatically.
+     *        standard ONAP headers to be added automatically.
      * @return invocation ID to be passed with invocation.
      */
     public UUID invoke(final RequestBuilder builder) {
-        return this.invoke(builder, (ONAPLogConstants.InvocationMode)null);
+        return this.invoke(builder, (ONAPLogConstants.InvocationMode) null);
     }
 
     /**
      * Get descriptor, for overriding service details.
+     * 
      * @return non-null descriptor.
      */
     public ServiceDescriptor getServiceDescriptor() {
@@ -262,6 +270,7 @@ public class ONAPLogAdapter {
 
     /**
      * Override {@link ServiceDescriptor}.
+     * 
      * @param d non-null override.
      * @return this.
      */
@@ -272,6 +281,7 @@ public class ONAPLogAdapter {
 
     /**
      * Get descriptor, for setting response details.
+     * 
      * @return non-null descriptor.
      */
     public ResponseDescriptor getResponseDescriptor() {
@@ -280,6 +290,7 @@ public class ONAPLogAdapter {
 
     /**
      * Override {@link ResponseDescriptor}.
+     * 
      * @param d non-null override.
      * @return this.
      */
@@ -297,9 +308,11 @@ public class ONAPLogAdapter {
     /**
      * Set MDCs that persist for the duration of an invocation.
      *
-     * <p>It would be better to roll this into {@link #entering}, like
+     * <p>
+     * It would be better to roll this into {@link #entering}, like
      * with {@link #exiting}. Then it would be easier to do, but it
-     * would mean more work. </p>
+     * would mean more work.
+     * </p>
      *
      * @param request incoming HTTP request.
      * @return this.
@@ -318,8 +331,7 @@ public class ONAPLogAdapter {
         // ServiceDescriptor to add them.
 
         MDC.put(ONAPLogConstants.MDCs.INVOKE_TIMESTAMP,
-                ZonedDateTime.now(ZoneOffset.UTC)
-                        .format(DateTimeFormatter.ISO_INSTANT));
+                ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT));
         MDC.put(ONAPLogConstants.MDCs.REQUEST_ID, requestID);
         MDC.put(ONAPLogConstants.MDCs.INVOCATION_ID, invocationID);
         MDC.put(ONAPLogConstants.MDCs.PARTNER_NAME, partnerName);
@@ -333,8 +345,8 @@ public class ONAPLogAdapter {
         // Default the service name to the requestURI, in the event that
         // no value has been provided.
 
-        if (MDC.get(ONAPLogConstants.MDCs.SERVICE_NAME) == null ||
-                MDC.get(ONAPLogConstants.MDCs.SERVICE_NAME).equalsIgnoreCase(EMPTY_MESSAGE)) {
+        if (MDC.get(ONAPLogConstants.MDCs.SERVICE_NAME) == null
+                || MDC.get(ONAPLogConstants.MDCs.SERVICE_NAME).equalsIgnoreCase(EMPTY_MESSAGE)) {
             MDC.put(ONAPLogConstants.MDCs.SERVICE_NAME, request.getRequestURI());
         }
 
@@ -390,7 +402,9 @@ public class ONAPLogAdapter {
     /**
      * Extensible descriptor for reporting service details.
      *
-     * <p>In most cases extension isn't required. </p>
+     * <p>
+     * In most cases extension isn't required.
+     * </p>
      */
     public static class ServiceDescriptor {
 
@@ -402,6 +416,7 @@ public class ONAPLogAdapter {
 
         /**
          * Set name.
+         * 
          * @param name <tt>ServiceName</tt>.
          * @return this.
          */
@@ -412,6 +427,7 @@ public class ONAPLogAdapter {
 
         /**
          * Set name.
+         * 
          * @param uuid <tt>InstanceUUID</tt>.
          * @return this.
          */
@@ -507,11 +523,15 @@ public class ONAPLogAdapter {
     /**
      * Adapter for reading information from an incoming HTTP request.
      *
-     * <p>Incoming is generally easy, because in most cases you'll be able to
-     * get your hands on the <tt>HttpServletRequest</tt>.</p>
+     * <p>
+     * Incoming is generally easy, because in most cases you'll be able to
+     * get your hands on the <tt>HttpServletRequest</tt>.
+     * </p>
      *
-     * <p>Perhaps should be generalized to refer to constants instead of
-     * requiring the implementation of specific methods.</p>
+     * <p>
+     * Perhaps should be generalized to refer to constants instead of
+     * requiring the implementation of specific methods.
+     * </p>
      *
      * @param <T> type, for chaining.
      */
@@ -519,6 +539,7 @@ public class ONAPLogAdapter {
 
         /**
          * Get header by name.
+         * 
          * @param name header name.
          * @return header value, or null.
          */
@@ -526,18 +547,21 @@ public class ONAPLogAdapter {
 
         /**
          * Get client address.
+         * 
          * @return address, if available.
          */
         String getClientAddress();
 
         /**
          * Get server address.
+         * 
          * @return address, if available.
          */
         String getServerAddress();
 
         /**
          * Get default service name, from service URI.
+         * 
          * @return service name default.
          */
         String getRequestURI();
@@ -554,6 +578,7 @@ public class ONAPLogAdapter {
 
         /**
          * Construct adapter for HTTP request.
+         * 
          * @param request to be wrapped;
          */
         public HttpServletRequestAdapter(final HttpServletRequest request) {
@@ -598,8 +623,10 @@ public class ONAPLogAdapter {
      * vary a lot from caller to caller, since they each get to choose their
      * own REST (or HTTP, or whatever) client APIs.
      *
-     * <p>No default implementation, because there's no HTTP client that's
-     * sufficiently ubiquitous to warrant incurring a mandatory dependency.</p>
+     * <p>
+     * No default implementation, because there's no HTTP client that's
+     * sufficiently ubiquitous to warrant incurring a mandatory dependency.
+     * </p>
      *
      * @param <T> type, for chaining.
      */
@@ -607,6 +634,7 @@ public class ONAPLogAdapter {
 
         /**
          * Set HTTP header.
+         * 
          * @param name header name.
          * @param value header value.
          * @return this.

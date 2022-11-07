@@ -20,17 +20,18 @@
 
 package org.onap.aai.serialization.queryformats;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+
+import java.util.*;
+
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
-
-import java.util.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class StateFormat extends HistoryFormat {
 
@@ -102,18 +103,29 @@ public class StateFormat extends HistoryFormat {
             LOGGER.warn("Vertex {} is missing aai-uri", related.id());
             json.addProperty("uri", "NA");
         }
-        json.addProperty(TIMESTAMP,  e.property(AAIProperties.START_TS).isPresent()? e.value(AAIProperties.START_TS) : 0);
-        json.addProperty(SOT,   e.property(AAIProperties.SOURCE_OF_TRUTH).isPresent()? e.value(AAIProperties.SOURCE_OF_TRUTH) : "");
-        json.addProperty(TX_ID,   e.property(AAIProperties.START_TX_ID).isPresent()? e.value(AAIProperties.START_TX_ID) : "N/A");
+        json.addProperty(TIMESTAMP,
+                e.property(AAIProperties.START_TS).isPresent() ? e.value(AAIProperties.START_TS) : 0);
+        json.addProperty(SOT,
+                e.property(AAIProperties.SOURCE_OF_TRUTH).isPresent() ? e.value(AAIProperties.SOURCE_OF_TRUTH) : "");
+        json.addProperty(TX_ID,
+                e.property(AAIProperties.START_TX_ID).isPresent() ? e.value(AAIProperties.START_TX_ID) : "N/A");
 
         return json;
     }
 
-
     protected void addMetaProperties(JsonObject json, JsonObject metaProperties) {
-        json.addProperty(TIMESTAMP, metaProperties.get(AAIProperties.START_TS) != null ? metaProperties.get(AAIProperties.START_TS).getAsLong() : 0);
-        json.addProperty(SOT, metaProperties.get(AAIProperties.SOURCE_OF_TRUTH) != null ? metaProperties.get(AAIProperties.SOURCE_OF_TRUTH).getAsString() : "");
-        json.addProperty(TX_ID, metaProperties.get(AAIProperties.START_TX_ID) != null ? metaProperties.get(AAIProperties.START_TX_ID).getAsString() : "N/A");
+        json.addProperty(TIMESTAMP,
+                metaProperties.get(AAIProperties.START_TS) != null
+                        ? metaProperties.get(AAIProperties.START_TS).getAsLong()
+                        : 0);
+        json.addProperty(SOT,
+                metaProperties.get(AAIProperties.SOURCE_OF_TRUTH) != null
+                        ? metaProperties.get(AAIProperties.SOURCE_OF_TRUTH).getAsString()
+                        : "");
+        json.addProperty(TX_ID,
+                metaProperties.get(AAIProperties.START_TX_ID) != null
+                        ? metaProperties.get(AAIProperties.START_TX_ID).getAsString()
+                        : "N/A");
     }
 
     @Override
@@ -137,7 +149,8 @@ public class StateFormat extends HistoryFormat {
     }
 
     @Override
-    protected Optional<JsonObject> getJsonFromVertex(Vertex input, Map<String, List<String>> properties) throws AAIFormatVertexException {
+    protected Optional<JsonObject> getJsonFromVertex(Vertex input, Map<String, List<String>> properties)
+            throws AAIFormatVertexException {
         return Optional.empty();
     }
 

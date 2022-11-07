@@ -20,11 +20,11 @@
 
 package org.onap.aai.logging;
 
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 import javax.ws.rs.core.Response;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 public class ErrorObjectTest {
     private ErrorObject errorObject;
@@ -37,18 +37,21 @@ public class ErrorObjectTest {
     private static final String ERROR_TEXT = "Test data error";
     private static final String ERROR_PATTERN = "ERR.5.4.4000";
     private static final String ERROR_SEVERITY_CODE = "2";
+
     @Test
     public void errorObjectDefaultConstructorTest() {
         errorObject = new ErrorObject();
         assertEquals("3002", errorObject.getRESTErrorCode());
-        assertEquals(Response.Status.fromStatusCode(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()), errorObject.getHTTPResponseCode());
-        assertEquals(AaiElsErrorCode.UNKNOWN_ERROR,errorObject.getAaiElsErrorCode());
+        assertEquals(Response.Status.fromStatusCode(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()),
+                errorObject.getHTTPResponseCode());
+        assertEquals(AaiElsErrorCode.UNKNOWN_ERROR, errorObject.getAaiElsErrorCode());
         assertEquals(ERROR_SEVERITY_CODE, errorObject.getSeverityCode(ERROR_SEVERITY));
     }
+
     @Test
     public void errorObjectConstructor7Test() {
         errorObject = new ErrorObject(ERROR_DISPOSITION, ERROR_CATEGORY, ERROR_SEVERITY, ERROR_HTTP_RESPONSE_CODE,
-            ERROR_REST_CODE, ERROR_CODE, ERROR_TEXT);
+                ERROR_REST_CODE, ERROR_CODE, ERROR_TEXT);
         assertEquals(ERROR_DISPOSITION, errorObject.getDisposition());
         assertEquals(ERROR_SEVERITY, errorObject.getSeverity());
         assertEquals(ERROR_CATEGORY, errorObject.getCategory());
@@ -56,7 +59,7 @@ public class ErrorObjectTest {
         assertEquals(ERROR_REST_CODE, errorObject.getRESTErrorCode());
         assertEquals(ERROR_CODE, errorObject.getErrorCode());
         assertEquals(ERROR_TEXT, errorObject.getErrorText());
-        assertEquals(AaiElsErrorCode.UNKNOWN_ERROR,errorObject.getAaiElsErrorCode());
+        assertEquals(AaiElsErrorCode.UNKNOWN_ERROR, errorObject.getAaiElsErrorCode());
         assertEquals(ERROR_SEVERITY_CODE, errorObject.getSeverityCode(ERROR_SEVERITY));
     }
 
@@ -66,18 +69,20 @@ public class ErrorObjectTest {
         assertEquals(ERROR_DISPOSITION, errorObject.getDisposition());
         assertEquals(ERROR_SEVERITY, errorObject.getSeverity());
         assertEquals(ERROR_CATEGORY, errorObject.getCategory());
-        assertEquals(Response.Status.fromStatusCode(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()), errorObject.getHTTPResponseCode());
+        assertEquals(Response.Status.fromStatusCode(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()),
+                errorObject.getHTTPResponseCode());
         assertEquals("3002", errorObject.getRESTErrorCode());
         assertEquals(ERROR_CODE, errorObject.getErrorCode());
         assertEquals(ERROR_TEXT, errorObject.getErrorText());
-        assertEquals(AaiElsErrorCode.UNKNOWN_ERROR,errorObject.getAaiElsErrorCode());
+        assertEquals(AaiElsErrorCode.UNKNOWN_ERROR, errorObject.getAaiElsErrorCode());
         assertEquals(ERROR_PATTERN, errorObject.getErrorCodeString());
         assertEquals(ERROR_SEVERITY_CODE, errorObject.getSeverityCode(ERROR_SEVERITY));
     }
 
     @Test
     public void errorObjectConstructor6Test() {
-        errorObject = new ErrorObject(ERROR_SEVERITY, ERROR_HTTP_RESPONSE_CODE, ERROR_CODE, ERROR_TEXT, ERROR_DISPOSITION, ERROR_CATEGORY);
+        errorObject = new ErrorObject(ERROR_SEVERITY, ERROR_HTTP_RESPONSE_CODE, ERROR_CODE, ERROR_TEXT,
+                ERROR_DISPOSITION, ERROR_CATEGORY);
         assertEquals(ERROR_DISPOSITION, errorObject.getDisposition());
         assertEquals(ERROR_SEVERITY, errorObject.getSeverity());
         assertEquals(ERROR_CATEGORY, errorObject.getCategory());
@@ -90,6 +95,5 @@ public class ErrorObjectTest {
         assertEquals(ERROR_SEVERITY_CODE, errorObject.getSeverityCode(ERROR_SEVERITY));
 
     }
-
 
 }

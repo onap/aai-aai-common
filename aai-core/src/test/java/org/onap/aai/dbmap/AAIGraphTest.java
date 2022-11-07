@@ -20,6 +20,17 @@
 
 package org.onap.aai.dbmap;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.matchesPattern;
+import static org.junit.Assert.*;
+
+import java.io.FileNotFoundException;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+
 import org.janusgraph.core.JanusGraph;
 import org.janusgraph.core.JanusGraphFactory;
 import org.janusgraph.core.schema.JanusGraphIndex;
@@ -36,17 +47,6 @@ import org.onap.aai.introspection.ModelType;
 import org.onap.aai.schema.enums.PropertyMetadata;
 import org.onap.aai.setup.SchemaVersions;
 import org.onap.aai.util.AAIConstants;
-
-import java.io.FileNotFoundException;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.matchesPattern;
-import static org.junit.Assert.*;
 
 public class AAIGraphTest extends AAISetup {
     @Before
@@ -66,7 +66,6 @@ public class AAIGraphTest extends AAISetup {
                 matchesPattern("^\\d+_[\\w\\-\\d]+_" + SERVICE_NAME + "_realtime_\\d+\\(current\\)$"));
         graphMgt.rollback();
     }
-
 
     @Test
     public void janusGraphOpenNameTest() throws Exception {

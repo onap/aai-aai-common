@@ -26,7 +26,6 @@ import java.util.Map;
 import org.onap.aai.schemaif.SchemaProviderException;
 import org.onap.aai.schemaif.definitions.types.DataType;
 
-
 public class PropertySchema {
     protected String name;
     protected DataType dataType;
@@ -34,7 +33,7 @@ public class PropertySchema {
     protected String defaultValue;
     protected Boolean unique;
     protected Boolean isReserved;
-    protected Map<String,String> annotations;
+    protected Map<String, String> annotations;
 
     public String getName() {
         return name;
@@ -47,11 +46,11 @@ public class PropertySchema {
     public Boolean isRequired() {
         return required;
     }
-    
+
     public Boolean isKey() {
         return (unique && required);
     }
-    
+
     public Boolean isUnique() {
         return unique;
     }
@@ -59,17 +58,17 @@ public class PropertySchema {
     public String getDefaultValue() {
         return defaultValue;
     }
-    
+
     public Boolean isReserved() {
         return isReserved;
     }
-    
+
     public String getAnnotationValue(String annotation) {
         return annotations.get(annotation.toLowerCase());
     }
-    
+
     public Map<String, String> getAnnotations() {
-      return annotations;
+        return annotations;
     }
 
     public Object validateValue(String value) throws SchemaProviderException {
@@ -77,10 +76,10 @@ public class PropertySchema {
         if (obj == null) {
             throw new SchemaProviderException("Invalid value for porperty '" + name + "': " + value);
         }
-        
-        return obj; 
+
+        return obj;
     }
-    
+
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("    property: " + getName() + "\n");
@@ -90,11 +89,11 @@ public class PropertySchema {
         sb.append("      reserved: " + isReserved() + "\n");
         sb.append("      default: " + getDefaultValue() + "\n");
         sb.append("      annotations: " + "\n");
-        
+
         for (String annotation : annotations.keySet()) {
             sb.append("        " + annotation + ": " + annotations.get(annotation) + "\n");
         }
-                
+
         return sb.toString();
     }
 }

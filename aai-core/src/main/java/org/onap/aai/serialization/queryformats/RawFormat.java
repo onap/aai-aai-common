@@ -24,6 +24,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -31,6 +32,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
@@ -62,7 +64,8 @@ public class RawFormat extends MultiFormatMapper {
     }
 
     @Override
-    public Optional<JsonObject> getJsonFromVertex(Vertex v, Map<String, List<String>> selectedProps) throws AAIFormatVertexException {
+    public Optional<JsonObject> getJsonFromVertex(Vertex v, Map<String, List<String>> selectedProps)
+            throws AAIFormatVertexException {
         JsonObject json = new JsonObject();
         json.addProperty("id", v.id().toString());
         json.addProperty("node-type", v.<String>value(AAIProperties.NODE_TYPE));
@@ -110,7 +113,8 @@ public class RawFormat extends MultiFormatMapper {
         return Optional.of(json);
     }
 
-    public Optional<JsonObject> createSelectedPropertiesObject(Vertex v, Map<String, List<String>> selectedProps) throws AAIFormatVertexException {
+    public Optional<JsonObject> createSelectedPropertiesObject(Vertex v, Map<String, List<String>> selectedProps)
+            throws AAIFormatVertexException {
         JsonObject json = new JsonObject();
         String nodeType = v.<String>value(AAIProperties.NODE_TYPE);
         Set<String> propList = removeSingleQuotesForProperties(selectedProps.get(nodeType));
@@ -142,10 +146,9 @@ public class RawFormat extends MultiFormatMapper {
         return Optional.of(json);
     }
 
-    private Set<String> removeSingleQuotesForProperties(List<String> props){
+    private Set<String> removeSingleQuotesForProperties(List<String> props) {
         if (props != null && !props.isEmpty()) {
-            return props.stream().map(
-                e -> e.substring(1, e.length()-1)).collect(Collectors.toSet());
+            return props.stream().map(e -> e.substring(1, e.length() - 1)).collect(Collectors.toSet());
         } else {
             return Collections.emptySet();
         }
@@ -215,7 +218,9 @@ public class RawFormat extends MultiFormatMapper {
             return this.urlBuilder;
         }
 
-        protected boolean isTree() { return this.tree; }
+        protected boolean isTree() {
+            return this.tree;
+        }
 
         public Builder isTree(Boolean tree) {
             this.tree = tree;

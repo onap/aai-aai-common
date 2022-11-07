@@ -21,14 +21,9 @@
 package org.onap.aai.setup;
 
 import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.annotation.PostConstruct;
 
 import org.onap.aai.validation.AAISchemaValidationException;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.stereotype.Component;
 
 @PropertySource(value = "classpath:schema-ingest.properties", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${schema.ingest.file}", ignoreResourceNotFound = true)

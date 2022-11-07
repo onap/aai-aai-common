@@ -20,12 +20,12 @@
 
 package org.onap.aai.util.delta;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
-
-import com.google.gson.annotations.SerializedName;
 
 public class RelationshipDelta {
 
@@ -50,7 +50,8 @@ public class RelationshipDelta {
     @SerializedName("props")
     private Map<String, Object> props = new HashMap<>();
 
-    public RelationshipDelta(DeltaAction action, String inVUUID, String outVUUID, String inVUri, String outVUri, String label) {
+    public RelationshipDelta(DeltaAction action, String inVUUID, String outVUUID, String inVUri, String outVUri,
+            String label) {
         this.action = action;
         this.inVUuid = inVUUID;
         this.outVUuid = outVUUID;
@@ -121,14 +122,8 @@ public class RelationshipDelta {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this)
-            .append("action", action)
-            .append("inVUuid", inVUuid)
-            .append("outVUuid", outVUuid)
-            .append("inVUri", inVUri)
-            .append("outVUri", outVUri)
-            .append("label", label)
-            .append("props", props)
-            .toString();
+        return new ToStringBuilder(this).append("action", action).append("inVUuid", inVUuid)
+                .append("outVUuid", outVUuid).append("inVUri", inVUri).append("outVUri", outVUri).append("label", label)
+                .append("props", props).toString();
     }
 }

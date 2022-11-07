@@ -20,6 +20,9 @@
 
 package org.onap.aai.serialization.engines;
 
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.strategy.verification.ReadOnlyStrategy;
 import org.apache.tinkerpop.gremlin.structure.Graph;
@@ -31,9 +34,6 @@ import org.onap.aai.query.builder.*;
 import org.onap.aai.serialization.db.GraphSingleton;
 import org.onap.aai.serialization.engines.query.GraphTraversalQueryEngine;
 import org.onap.aai.serialization.engines.query.QueryEngine;
-
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class TransactionalGraphEngine {
 
@@ -163,7 +163,7 @@ public abstract class TransactionalGraphEngine {
             throw new IllegalArgumentException("History Traversal needs history traversal source");
         } else if (style.equals(QueryStyle.HISTORY_GREMLIN_TRAVERSAL)) {
             throw new IllegalArgumentException("History Gremlin Traversal needs history traversal source");
-        }else {
+        } else {
             throw new IllegalArgumentException("Query Builder type not recognized");
         }
         return queryBuilder;
@@ -182,9 +182,9 @@ public abstract class TransactionalGraphEngine {
             return new TraversalURIOptimizedQuery<>(loader, source);
         } else if (style.equals(QueryStyle.HISTORY_TRAVERSAL)) {
             return new HistoryTraversalURIOptimizedQuery<>(loader, source);
-        }else if (style.equals(QueryStyle.HISTORY_GREMLIN_TRAVERSAL)) {
+        } else if (style.equals(QueryStyle.HISTORY_GREMLIN_TRAVERSAL)) {
             return new HistoryGremlinTraversal<>(loader, source);
-        }else {
+        } else {
             throw new IllegalArgumentException("Query Builder type not recognized");
         }
         return queryBuilder;
@@ -225,7 +225,7 @@ public abstract class TransactionalGraphEngine {
         if (this.tx() == null) {
             this.currentTx = this.getGraph().newTransaction();
             this.currentTraversal = this.tx().traversal();
-            this.readOnlyTraversal =this.tx().traversal().withStrategies(ReadOnlyStrategy.instance());
+            this.readOnlyTraversal = this.tx().traversal().withStrategies(ReadOnlyStrategy.instance());
         }
         return currentTx;
     }

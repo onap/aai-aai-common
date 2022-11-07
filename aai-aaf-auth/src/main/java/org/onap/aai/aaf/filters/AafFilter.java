@@ -20,22 +20,22 @@
 
 package org.onap.aai.aaf.filters;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.onap.aaf.cadi.PropAccess;
-import org.onap.aaf.cadi.filter.CadiFilter;
-import org.onap.aai.aaf.auth.ResponseFormatter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.servlet.filter.OrderedRequestContextFilter;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
+import java.io.IOException;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
+import org.onap.aaf.cadi.PropAccess;
+import org.onap.aaf.cadi.filter.CadiFilter;
+import org.onap.aai.aaf.auth.ResponseFormatter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.filter.OrderedRequestContextFilter;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
 
 /**
  * AAF authentication filter
@@ -51,7 +51,7 @@ public class AafFilter extends OrderedRequestContextFilter {
 
     @Autowired
     public AafFilter(CadiProps cadiProps) throws IOException, ServletException {
-        cadiFilter = new CadiFilter(new PropAccess((level,element)->{
+        cadiFilter = new CadiFilter(new PropAccess((level, element) -> {
             switch (level) {
                 case DEBUG:
                     LOGGER.debug(buildMsg(element));
@@ -75,12 +75,13 @@ public class AafFilter extends OrderedRequestContextFilter {
                 case NONE:
                     break;
             }
-        }, new String[]{"cadi_prop_files=" + cadiProps.getCadiFileName()} ));
+        }, new String[] {"cadi_prop_files=" + cadiProps.getCadiFileName()}));
         this.setOrder(FilterPriority.AAF_AUTHENTICATION.getPriority());
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws IOException, ServletException {
         if (!request.getRequestURI().matches("^.*/util/echo$")) {
             cadiFilter.doFilter(request, response, filterChain);
             if (response.getStatus() == 401 || response.getStatus() == 403) {
@@ -94,11 +95,10 @@ public class AafFilter extends OrderedRequestContextFilter {
     private String buildMsg(Object[] objects) {
         StringBuilder sb = new StringBuilder();
         boolean first = true;
-        for ( Object o: objects ) {
+        for (Object o : objects) {
             if (first) {
                 first = false;
-            }
-            else {
+            } else {
                 sb.append(' ');
             }
             sb.append(o.toString());

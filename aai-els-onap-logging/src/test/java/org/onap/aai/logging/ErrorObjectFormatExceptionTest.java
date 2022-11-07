@@ -20,9 +20,9 @@
 
 package org.onap.aai.logging;
 
-import org.junit.Test;
-
 import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
 
 public class ErrorObjectFormatExceptionTest {
 

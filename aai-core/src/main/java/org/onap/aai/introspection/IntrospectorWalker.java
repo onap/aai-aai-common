@@ -20,9 +20,6 @@
 
 package org.onap.aai.introspection;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -31,6 +28,8 @@ import java.util.Set;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.onap.aai.logging.LogFormatTools;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class IntrospectorWalker {
 

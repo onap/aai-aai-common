@@ -26,9 +26,6 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.onap.aai.edges.enums.EdgeField.CONTAINS;
 
-import com.jayway.jsonpath.JsonPath;
-
-import java.io.InputStream;
 import java.util.*;
 
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;

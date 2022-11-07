@@ -20,9 +20,6 @@
 
 package org.onap.aai.dbmap;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,6 +33,8 @@ import org.janusgraph.core.schema.JanusGraphManagement;
 import org.onap.aai.dbgen.GraphSONPartialIO;
 import org.onap.aai.dbgen.SchemaGenerator;
 import org.onap.aai.logging.LogFormatTools;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class InMemoryGraph {
 
@@ -46,7 +45,7 @@ public class InMemoryGraph {
         /*
          * Create a In-memory graph
          */
-        try(InputStream is = new FileInputStream(builder.propertyFile)){
+        try (InputStream is = new FileInputStream(builder.propertyFile)) {
             graph = JanusGraphFactory.open(builder.propertyFile);
 
             Properties graphProps = new Properties();
@@ -63,7 +62,7 @@ public class InMemoryGraph {
                         transaction.io(GraphSONPartialIO.build()).readGraph(builder.graphsonLocation);
                     } else {
                         transaction.io(GraphSONPartialIO.build()).reader().create().readGraph(builder.seqInputStream,
-                            graph);
+                                graph);
                     }
                 } else {
                     if ((builder.graphsonLocation != null) && (builder.graphsonLocation.length() > 0)) {
@@ -76,7 +75,8 @@ public class InMemoryGraph {
             }
 
         } catch (Exception e) {
-            LOGGER.error(String.format("ERROR: Could not load datasnapshot to in memory graph. %n%s", LogFormatTools.getStackTop(e)));
+            LOGGER.error(String.format("ERROR: Could not load datasnapshot to in memory graph. %n%s",
+                    LogFormatTools.getStackTop(e)));
             throw new IllegalStateException("Could not load datasnapshot to in memory graph");
 
         }

@@ -58,8 +58,6 @@ public class AAIGraph {
     protected JanusGraph graph;
     private static boolean isInit = false;
 
-
-
     /**
      * Instantiates a new AAI graph.
      */
@@ -139,7 +137,8 @@ public class AAIGraph {
                     transaction.tx().commit();
                     logger.info("Snapshot loaded to inmemory graph.");
                 } catch (Exception e) {
-                    logger.info(String.format("ERROR: Could not load datasnapshot to in memory graph. %n%s", ExceptionUtils.getStackTrace(e)));
+                    logger.info(String.format("ERROR: Could not load datasnapshot to in memory graph. %n%s",
+                            ExceptionUtils.getStackTrace(e)));
                     throw new RuntimeException(e);
                 }
             }
@@ -151,7 +150,8 @@ public class AAIGraph {
         JanusGraphManagement graphMgt = graph.openManagement();
 
         logger.info("-- loading schema into JanusGraph");
-        if ("true".equals(SpringContextAware.getApplicationContext().getEnvironment().getProperty("history.enabled", "false"))) {
+        if ("true".equals(
+                SpringContextAware.getApplicationContext().getEnvironment().getProperty("history.enabled", "false"))) {
             SchemaGenerator4Hist.loadSchemaIntoJanusGraph(graphMgt, IN_MEMORY);
         } else {
             SchemaGenerator.loadSchemaIntoJanusGraph(graphMgt, IN_MEMORY);

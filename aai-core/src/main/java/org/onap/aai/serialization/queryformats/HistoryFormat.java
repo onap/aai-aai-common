@@ -20,12 +20,17 @@
 
 package org.onap.aai.serialization.queryformats;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.apache.tinkerpop.gremlin.structure.*;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.introspection.Loader;
@@ -36,12 +41,8 @@ import org.onap.aai.serialization.queryformats.params.EndTs;
 import org.onap.aai.serialization.queryformats.params.NodesOnly;
 import org.onap.aai.serialization.queryformats.params.StartTs;
 import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
-
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class HistoryFormat extends MultiFormatMapper {
 
@@ -69,8 +70,8 @@ public abstract class HistoryFormat extends MultiFormatMapper {
     protected long startTs;
     protected long endTs;
     protected static final Set<String> ignoredKeys =
-        Stream.of(AAIProperties.LAST_MOD_TS, AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, AAIProperties.CREATED_TS)
-        .collect(Collectors.toSet());
+            Stream.of(AAIProperties.LAST_MOD_TS, AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, AAIProperties.CREATED_TS)
+                    .collect(Collectors.toSet());
 
     protected HistoryFormat(Builder builder) {
         this.urlBuilder = builder.getUrlBuilder();
@@ -145,8 +146,6 @@ public abstract class HistoryFormat extends MultiFormatMapper {
 
     protected abstract JsonObject getRelatedObject(Edge e, Vertex related) throws AAIFormatVertexException;
 
-
-
     public static class Builder implements NodesOnly<Builder>, Depth<Builder>, StartTs<Builder>, EndTs<Builder> {
 
         protected final Loader loader;
@@ -197,7 +196,6 @@ public abstract class HistoryFormat extends MultiFormatMapper {
             return this;
         }
 
-
         public boolean isNodesOnly() {
             return this.nodesOnly;
         }
@@ -234,7 +232,7 @@ public abstract class HistoryFormat extends MultiFormatMapper {
 
         public HistoryFormat build(Format format) {
 
-            if(Format.state.equals(format)) {
+            if (Format.state.equals(format)) {
                 return new StateFormat(this);
             } else {
                 return new LifecycleFormat(this);

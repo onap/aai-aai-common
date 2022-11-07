@@ -17,6 +17,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.util;
 
 /**
@@ -31,11 +32,11 @@ package org.onap.aai.util;
 // TODO - Find an better name for this interface name
 public interface AAIConfigProxy {
 
-    default String get(String key, String defaultValue){
+    default String get(String key, String defaultValue) {
         return AAIConfig.get(key, defaultValue);
     }
 
-    default int getInt(String key, String defaultValue){
+    default int getInt(String key, String defaultValue) {
         return AAIConfig.getInt(key, defaultValue);
     }
 }

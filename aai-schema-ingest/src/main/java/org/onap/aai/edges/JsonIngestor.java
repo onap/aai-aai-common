@@ -20,8 +20,6 @@
 
 package org.onap.aai.edges;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 
@@ -35,6 +33,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.onap.aai.setup.SchemaVersion;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * JsonIngestor produces DocumentContexts from json files

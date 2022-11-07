@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.ws.rs.core.MultivaluedMap;
+
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.exceptions.AAIException;
@@ -39,8 +41,6 @@ import org.onap.aai.serialization.queryformats.params.AsTree;
 import org.onap.aai.serialization.queryformats.params.Depth;
 import org.onap.aai.serialization.queryformats.params.NodesOnly;
 import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
-
-import javax.ws.rs.core.MultivaluedMap;
 
 public final class PathedURL extends MultiFormatMapper {
 
@@ -91,7 +91,8 @@ public final class PathedURL extends MultiFormatMapper {
     }
 
     @Override
-    protected Optional<JsonObject> getJsonFromVertex(Vertex input, Map<String, List<String>> properties) throws AAIFormatVertexException {
+    protected Optional<JsonObject> getJsonFromVertex(Vertex input, Map<String, List<String>> properties)
+            throws AAIFormatVertexException {
         return Optional.empty();
     }
 
@@ -112,7 +113,8 @@ public final class PathedURL extends MultiFormatMapper {
             this.urlBuilder = urlBuilder;
         }
 
-        public Builder(Loader loader, DBSerializer serializer, UrlBuilder urlBuilder, MultivaluedMap<String, String> params) {
+        public Builder(Loader loader, DBSerializer serializer, UrlBuilder urlBuilder,
+                MultivaluedMap<String, String> params) {
             this.loader = loader;
             this.serializer = serializer;
             this.urlBuilder = urlBuilder;
@@ -131,7 +133,9 @@ public final class PathedURL extends MultiFormatMapper {
             return this.urlBuilder;
         }
 
-        protected MultivaluedMap<String, String> getParams() { return this.params; }
+        protected MultivaluedMap<String, String> getParams() {
+            return this.params;
+        }
 
         public boolean isSkipRelatedTo() {
             if (params != null) {
@@ -148,7 +152,9 @@ public final class PathedURL extends MultiFormatMapper {
             return true;
         }
 
-        protected boolean isTree() { return this.tree; }
+        protected boolean isTree() {
+            return this.tree;
+        }
 
         public Builder isTree(Boolean tree) {
             this.tree = tree;

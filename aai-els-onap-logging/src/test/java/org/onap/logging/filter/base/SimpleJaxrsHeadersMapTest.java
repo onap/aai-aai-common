@@ -21,8 +21,10 @@
 package org.onap.logging.filter.base;
 
 import static org.junit.Assert.assertEquals;
+
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
+
 import org.junit.Test;
 import org.onap.logging.ref.slf4j.ONAPLogConstants;
 

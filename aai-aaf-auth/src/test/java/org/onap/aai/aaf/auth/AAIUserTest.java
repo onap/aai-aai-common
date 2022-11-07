@@ -20,9 +20,9 @@
 
 package org.onap.aai.aaf.auth;
 
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
 
 public class AAIUserTest extends AAISetup {
 

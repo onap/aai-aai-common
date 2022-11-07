@@ -20,7 +20,15 @@
 
 package org.onap.aai.serialization.queryformats;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
+
 import com.google.gson.JsonObject;
+
+import java.util.Optional;
+
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.strategy.verification.ReadOnlyStrategy;
 import org.apache.tinkerpop.gremlin.structure.Graph;
@@ -46,13 +54,6 @@ import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
 import org.onap.aai.setup.SchemaVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
-
-import java.util.Optional;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class PathedURLTest extends AAISetup {
@@ -83,17 +84,11 @@ public class PathedURLTest extends AAISetup {
 
         graph = TinkerGraph.open();
 
-        Vertex pserver1 =
-            graph.addVertex(
-                T.label, "pserver",
-                T.id, "2",
-                "aai-node-type", "pserver",
-                "hostname", "hostname-1",
-                "resource-version", System.currentTimeMillis()
-            );
+        Vertex pserver1 = graph.addVertex(T.label, "pserver", T.id, "2", "aai-node-type", "pserver", "hostname",
+                "hostname-1", "resource-version", System.currentTimeMillis());
 
         Vertex complex1 = graph.addVertex(T.label, "complex", T.id, "3", "aai-node-type", "complex",
-            "physical-location-id", "physical-location-id-1", "country", "US");
+                "physical-location-id", "physical-location-id-1", "country", "US");
 
         GraphTraversalSource g = graph.traversal();
         rules.addEdge(g, pserver1, complex1);
@@ -120,7 +115,7 @@ public class PathedURLTest extends AAISetup {
             when(dbEngine.asAdmin()).thenReturn(spyAdmin);
 
             when(spyAdmin.getReadOnlyTraversalSource())
-                .thenReturn(graph.traversal().withStrategies(ReadOnlyStrategy.instance()));
+                    .thenReturn(graph.traversal().withStrategies(ReadOnlyStrategy.instance()));
             when(spyAdmin.getTraversalSource()).thenReturn(graph.traversal());
         }
     }
@@ -132,7 +127,7 @@ public class PathedURLTest extends AAISetup {
         when(urlBuilder.pathed(pserver)).thenReturn("/aai/v14/cloud-infrastructure/pservers/pserver/hostname-1");
         Optional<JsonObject> jsonObjectOptional = pathedURL.getJsonFromVertex(pserver);
 
-        if(!jsonObjectOptional.isPresent()){
+        if (!jsonObjectOptional.isPresent()) {
             fail("Expecting an json object returned from pathed url but returned none");
         }
 
@@ -141,18 +136,21 @@ public class PathedURLTest extends AAISetup {
         assertNotNull("Expecting the pserver object to contain resource type", pserverObject.get("resource-type"));
         assertThat(pserverObject.get("resource-type").getAsString(), CoreMatchers.is("pserver"));
         assertNotNull("Expecting the pserver object to contain resource link", pserverObject.get("resource-link"));
-        assertThat(pserverObject.get("resource-link").getAsString(), CoreMatchers.is("/aai/v14/cloud-infrastructure/pservers/pserver/hostname-1"));
-        assertNotNull("Expecting the pserver object to contain resource version", pserverObject.get("resource-version"));
+        assertThat(pserverObject.get("resource-link").getAsString(),
+                CoreMatchers.is("/aai/v14/cloud-infrastructure/pservers/pserver/hostname-1"));
+        assertNotNull("Expecting the pserver object to contain resource version",
+                pserverObject.get("resource-version"));
     }
 
     @Test
-    public void testPathedUrlReturnsResourceVersionWhenIncludeUrlIsNotSet() throws AAIFormatVertexException, AAIException {
+    public void testPathedUrlReturnsResourceVersionWhenIncludeUrlIsNotSet()
+            throws AAIFormatVertexException, AAIException {
 
         pathedURL = new PathedURL.Builder(loader, serializer, urlBuilder).build();
         when(urlBuilder.pathed(pserver)).thenReturn("/aai/v14/cloud-infrastructure/pservers/pserver/hostname-1");
         Optional<JsonObject> jsonObjectOptional = pathedURL.getJsonFromVertex(pserver);
 
-        if(!jsonObjectOptional.isPresent()){
+        if (!jsonObjectOptional.isPresent()) {
             fail("Expecting an json object returned from pathed url but returned none");
         }
 
@@ -161,7 +159,9 @@ public class PathedURLTest extends AAISetup {
         assertNotNull("Expecting the pserver object to contain resource type", pserverObject.get("resource-type"));
         assertThat(pserverObject.get("resource-type").getAsString(), CoreMatchers.is("pserver"));
         assertNotNull("Expecting the pserver object to contain resource link", pserverObject.get("resource-link"));
-        assertThat(pserverObject.get("resource-link").getAsString(), CoreMatchers.is("/aai/v14/cloud-infrastructure/pservers/pserver/hostname-1"));
-        assertNull("Expecting the pserver object to not contain resource version", pserverObject.get("resource-version"));
+        assertThat(pserverObject.get("resource-link").getAsString(),
+                CoreMatchers.is("/aai/v14/cloud-infrastructure/pservers/pserver/hostname-1"));
+        assertNull("Expecting the pserver object to not contain resource version",
+                pserverObject.get("resource-version"));
     }
 }

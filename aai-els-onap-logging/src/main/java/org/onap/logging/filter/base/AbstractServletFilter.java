@@ -21,6 +21,7 @@
 package org.onap.logging.filter.base;
 
 import java.util.Enumeration;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.HttpHeaders;

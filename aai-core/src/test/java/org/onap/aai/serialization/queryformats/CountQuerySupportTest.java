@@ -20,7 +20,15 @@
 
 package org.onap.aai.serialization.queryformats;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
+
 import com.google.gson.JsonObject;
+
+import java.util.Arrays;
+import java.util.List;
+
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.strategy.verification.ReadOnlyStrategy;
 import org.apache.tinkerpop.gremlin.structure.Graph;
@@ -45,15 +53,6 @@ import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexExcepti
 import org.onap.aai.setup.SchemaVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
-
-import java.util.Arrays;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
-
-
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 

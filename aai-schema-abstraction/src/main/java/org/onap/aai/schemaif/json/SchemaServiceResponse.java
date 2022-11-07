@@ -18,11 +18,13 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.schemaif.json;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
+
 import org.onap.aai.schemaif.SchemaProviderException;
 import org.onap.aai.schemaif.json.definitions.JsonSchema;
 

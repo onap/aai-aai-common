@@ -20,6 +20,14 @@
 
 package org.onap.aai.query.builder;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
@@ -31,14 +39,6 @@ import org.junit.Test;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.edges.enums.EdgeType;
 import org.onap.aai.exceptions.AAIException;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class TraversalQueryTest extends QueryBuilderTestAbstraction {
 
@@ -242,7 +242,8 @@ public class TraversalQueryTest extends QueryBuilderTestAbstraction {
     public void abstractEdgeToVertexMultiRuleInTraversalTest() throws AAIException {
 
         Vertex gvnf = this.addVHelper(g, "vertex", "aai-node-type", "generic-vnf", "vnf-id", "gvnf").next();
-        Vertex complex = this.addVHelper(g, "vertex", "aai-node-type", "complex", "physical-location-id", "a-name").next();
+        Vertex complex =
+                this.addVHelper(g, "vertex", "aai-node-type", "complex", "physical-location-id", "a-name").next();
 
         testEdgeSer.addEdge(g, gvnf, complex);
         testEdgeSer.addEdge(g, gvnf, complex, "complex-generic-vnf-B");

@@ -36,8 +36,6 @@ import org.onap.aai.edges.enums.AAIDirection;
 import org.onap.aai.edges.enums.MultiplicityRule;
 import org.onap.aai.edges.exceptions.AmbiguousRuleChoiceException;
 import org.onap.aai.edges.exceptions.EdgeRuleNotFoundException;
-import org.onap.aai.restclient.MockProvider;
-import org.onap.aai.setup.SchemaLocationsBean;
 import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.testutils.TestUtilConfigTranslator;
 import org.springframework.beans.factory.annotation.Autowired;

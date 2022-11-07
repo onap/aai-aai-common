@@ -41,7 +41,8 @@ public class Console implements FormatMapper {
     }
 
     @Override
-    public Optional<JsonObject> formatObject(Object o, Map<String, List<String>> properties) throws AAIFormatVertexException, AAIFormatQueryResultFormatNotSupported {
+    public Optional<JsonObject> formatObject(Object o, Map<String, List<String>> properties)
+            throws AAIFormatVertexException, AAIFormatQueryResultFormatNotSupported {
         JsonObject json = new JsonObject();
         json.addProperty("result", o.toString());
         return Optional.of(json);

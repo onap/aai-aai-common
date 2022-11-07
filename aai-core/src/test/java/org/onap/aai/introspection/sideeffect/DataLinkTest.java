@@ -20,6 +20,19 @@
 
 package org.onap.aai.introspection.sideeffect;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
+
+import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.UUID;
+
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
@@ -46,19 +59,6 @@ import org.onap.aai.serialization.db.DBSerializer;
 import org.onap.aai.serialization.engines.JanusGraphDBEngine;
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
-
-import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
 
 @RunWith(value = Parameterized.class)
 public class DataLinkTest extends DataLinkSetup {
@@ -88,128 +88,74 @@ public class DataLinkTest extends DataLinkSetup {
     public static void setup() {
         graph = JanusGraphFactory.build().set("storage.backend", "inmemory").open();
         JanusGraphManagement graphMgt = graph.openManagement();
-        graphMgt.makePropertyKey(AAIProperties.CREATED_TS).dataType(Long.class).cardinality(Cardinality.SINGLE)
-            .make();
-        graphMgt.makePropertyKey(AAIProperties.LAST_MOD_TS).dataType(Long.class).cardinality(Cardinality.SINGLE)
-            .make();
+        graphMgt.makePropertyKey(AAIProperties.CREATED_TS).dataType(Long.class).cardinality(Cardinality.SINGLE).make();
+        graphMgt.makePropertyKey(AAIProperties.LAST_MOD_TS).dataType(Long.class).cardinality(Cardinality.SINGLE).make();
         graphMgt.commit();
 
-        graph.traversal()
-            .addV()
-            .property("aai-node-type", "vpn-binding")
-            .property("vpn-id", "addKey")
-            .property(AAIProperties.AAI_URI, "/network/vpn-bindings/vpn-binding/addKey")
-            .property(AAIProperties.AAI_UUID, UUID.randomUUID().toString())
-            .property(AAIProperties.CREATED_TS, 123)
-            .property(AAIProperties.SOURCE_OF_TRUTH, "sot")
-            .property(AAIProperties.RESOURCE_VERSION, "123")
-            .property(AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot")
-            .property(AAIProperties.LAST_MOD_TS, 333)
-            .as("v1")
-            .addV()
-            .property("aai-node-type", "vpn-binding")
-            .property("vpn-id", "modifyKey")
-            .property(AAIProperties.AAI_URI, "/network/vpn-bindings/vpn-binding/modifyKey")
-            .property(AAIProperties.AAI_UUID, UUID.randomUUID().toString())
-            .property(AAIProperties.CREATED_TS, 123)
-            .property(AAIProperties.SOURCE_OF_TRUTH, "sot")
-            .property(AAIProperties.RESOURCE_VERSION, "123")
-            .property(AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot")
-            .property(AAIProperties.LAST_MOD_TS, 333)
-            .as("v2")
-            .addV()
-            .property("aai-node-type", "route-target")
-            .property("global-route-target", "modifyTargetKey")
-            .property("route-target-role", "modifyRoleKey")
-            .property("linked", true)
-            .property(AAIProperties.AAI_URI, "/network/vpn-bindings/vpn-binding/modifyKey/route-targets/route-target/modifyTargetKey/modifyRoleKey")
-            .property(AAIProperties.AAI_UUID, UUID.randomUUID().toString())
-            .property(AAIProperties.CREATED_TS, 123)
-            .property(AAIProperties.SOURCE_OF_TRUTH, "sot")
-            .property(AAIProperties.RESOURCE_VERSION, "123")
-            .property(AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot")
-            .property(AAIProperties.LAST_MOD_TS, 333)
-            .as("v3")
-            .addE("org.onap.relationships.inventory.BelongsTo").to("v2").from("v3")
-            .property(EdgeProperty.CONTAINS.toString(), true)
-            .addV()
-            .property("aai-node-type", "vpn-binding")
-            .property("vpn-id", "deleteKey")
-            .property(AAIProperties.AAI_URI, "/network/vpn-bindings/vpn-binding/deleteKey")
-            .property(AAIProperties.AAI_UUID, UUID.randomUUID().toString())
-            .property(AAIProperties.CREATED_TS, 123)
-            .property(AAIProperties.SOURCE_OF_TRUTH, "sot")
-            .property(AAIProperties.RESOURCE_VERSION, "123")
-            .property(AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot")
-            .property(AAIProperties.LAST_MOD_TS, 333)
-            .as("v4")
-            .addV()
-            .property("aai-node-type", "route-target")
-            .property("global-route-target", "deleteTargetKey")
-            .property("route-target-role", "deleteRoleKey")
-            .property("linked", true)
-            .property(AAIProperties.AAI_URI, "/network/vpn-bindings/vpn-binding/deleteKey/route-targets/route-target/deleteTargetKey/deleteRoleKey")
-            .property(AAIProperties.AAI_UUID, UUID.randomUUID().toString())
-            .property(AAIProperties.CREATED_TS, 123)
-            .property(AAIProperties.SOURCE_OF_TRUTH, "sot")
-            .property(AAIProperties.RESOURCE_VERSION, "123")
-            .property(AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot")
-            .property(AAIProperties.LAST_MOD_TS, 333)
-            .as("v5")
-            .addE("org.onap.relationships.inventory.BelongsTo").to("v4").from("v5")
-            .property(EdgeProperty.CONTAINS.toString(), true)
-            .addV()
-            .property("aai-node-type", "vpn-binding")
-            .property("vpn-id", "getKey")
-            .property(AAIProperties.AAI_URI, "/network/vpn-bindings/vpn-binding/getKey")
-            .property(AAIProperties.AAI_UUID, UUID.randomUUID().toString())
-            .property(AAIProperties.CREATED_TS, 123)
-            .property(AAIProperties.SOURCE_OF_TRUTH, "sot")
-            .property(AAIProperties.RESOURCE_VERSION, "123")
-            .property(AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot")
-            .property(AAIProperties.LAST_MOD_TS, 333)
-            .as("v6")
-            .addV()
-            .property("aai-node-type", "route-target")
-            .property("global-route-target", "getTargetKey")
-            .property("route-target-role", "getRoleKey")
-            .property("linked", true)
-            .property(AAIProperties.AAI_URI, "/network/vpn-bindings/vpn-binding/getKey/route-targets/route-target/getTargetKeyNoLink/getRoleKeyNoLink")
-            .property(AAIProperties.AAI_UUID, UUID.randomUUID().toString())
-            .property(AAIProperties.CREATED_TS, 123)
-            .property(AAIProperties.SOURCE_OF_TRUTH, "sot")
-            .property(AAIProperties.RESOURCE_VERSION, "123")
-            .property(AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot")
-            .property(AAIProperties.LAST_MOD_TS, 333)
-            .as("v7")
-            .addE("org.onap.relationships.inventory.BelongsTo").to("v6").from("v7")
-            .property(EdgeProperty.CONTAINS.toString(), true)
-            .addV()
-            .property("aai-node-type", "vpn-binding")
-            .property("vpn-id", "getKeyNoLink")
-            .property(AAIProperties.AAI_URI, "/network/vpn-bindings/vpn-binding/getKeyNoLink")
-            .property(AAIProperties.AAI_UUID, UUID.randomUUID().toString())
-            .property(AAIProperties.CREATED_TS, 123)
-            .property(AAIProperties.SOURCE_OF_TRUTH, "sot")
-            .property(AAIProperties.RESOURCE_VERSION, "123")
-            .property(AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot")
-            .property(AAIProperties.LAST_MOD_TS, 333)
-            .as("v8")
-            .addV()
-            .property("aai-node-type", "route-target")
-            .property("global-route-target", "getTargetKeyNoLink")
-            .property("route-target-role", "getRoleKeyNoLink")
-            .property(AAIProperties.AAI_URI, "/network/vpn-bindings/vpn-binding/getKeyNoLink/route-targets/route-target/getTargetKeyNoLink/getRoleKeyNoLink")
-            .property(AAIProperties.AAI_UUID, UUID.randomUUID().toString())
-            .property(AAIProperties.CREATED_TS, 123)
-            .property(AAIProperties.SOURCE_OF_TRUTH, "sot")
-            .property(AAIProperties.RESOURCE_VERSION, "123")
-            .property(AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot")
-            .property(AAIProperties.LAST_MOD_TS, 333)
-            .as("v9")
-            .addE("org.onap.relationships.inventory.BelongsTo").to("v8").from("v9")
-            .property(EdgeProperty.CONTAINS.toString(), true)
-                .next();
+        graph.traversal().addV().property("aai-node-type", "vpn-binding").property("vpn-id", "addKey")
+                .property(AAIProperties.AAI_URI, "/network/vpn-bindings/vpn-binding/addKey")
+                .property(AAIProperties.AAI_UUID, UUID.randomUUID().toString()).property(AAIProperties.CREATED_TS, 123)
+                .property(AAIProperties.SOURCE_OF_TRUTH, "sot").property(AAIProperties.RESOURCE_VERSION, "123")
+                .property(AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot").property(AAIProperties.LAST_MOD_TS, 333)
+                .as("v1").addV().property("aai-node-type", "vpn-binding").property("vpn-id", "modifyKey")
+                .property(AAIProperties.AAI_URI, "/network/vpn-bindings/vpn-binding/modifyKey")
+                .property(AAIProperties.AAI_UUID, UUID.randomUUID().toString()).property(AAIProperties.CREATED_TS, 123)
+                .property(AAIProperties.SOURCE_OF_TRUTH, "sot").property(AAIProperties.RESOURCE_VERSION, "123")
+                .property(AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot").property(AAIProperties.LAST_MOD_TS, 333)
+                .as("v2").addV().property("aai-node-type", "route-target")
+                .property("global-route-target", "modifyTargetKey").property("route-target-role", "modifyRoleKey")
+                .property("linked", true)
+                .property(AAIProperties.AAI_URI,
+                        "/network/vpn-bindings/vpn-binding/modifyKey/route-targets/route-target/modifyTargetKey/modifyRoleKey")
+                .property(AAIProperties.AAI_UUID, UUID.randomUUID().toString()).property(AAIProperties.CREATED_TS, 123)
+                .property(AAIProperties.SOURCE_OF_TRUTH, "sot").property(AAIProperties.RESOURCE_VERSION, "123")
+                .property(AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot").property(AAIProperties.LAST_MOD_TS, 333)
+                .as("v3").addE("org.onap.relationships.inventory.BelongsTo").to("v2").from("v3")
+                .property(EdgeProperty.CONTAINS.toString(), true).addV().property("aai-node-type", "vpn-binding")
+                .property("vpn-id", "deleteKey")
+                .property(AAIProperties.AAI_URI, "/network/vpn-bindings/vpn-binding/deleteKey")
+                .property(AAIProperties.AAI_UUID, UUID.randomUUID().toString()).property(AAIProperties.CREATED_TS, 123)
+                .property(AAIProperties.SOURCE_OF_TRUTH, "sot").property(AAIProperties.RESOURCE_VERSION, "123")
+                .property(AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot").property(AAIProperties.LAST_MOD_TS, 333)
+                .as("v4").addV().property("aai-node-type", "route-target")
+                .property("global-route-target", "deleteTargetKey").property("route-target-role", "deleteRoleKey")
+                .property("linked", true)
+                .property(AAIProperties.AAI_URI,
+                        "/network/vpn-bindings/vpn-binding/deleteKey/route-targets/route-target/deleteTargetKey/deleteRoleKey")
+                .property(AAIProperties.AAI_UUID, UUID.randomUUID().toString()).property(AAIProperties.CREATED_TS, 123)
+                .property(AAIProperties.SOURCE_OF_TRUTH, "sot").property(AAIProperties.RESOURCE_VERSION, "123")
+                .property(AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot").property(AAIProperties.LAST_MOD_TS, 333)
+                .as("v5").addE("org.onap.relationships.inventory.BelongsTo").to("v4").from("v5")
+                .property(EdgeProperty.CONTAINS.toString(), true).addV().property("aai-node-type", "vpn-binding")
+                .property("vpn-id", "getKey")
+                .property(AAIProperties.AAI_URI, "/network/vpn-bindings/vpn-binding/getKey")
+                .property(AAIProperties.AAI_UUID, UUID.randomUUID().toString()).property(AAIProperties.CREATED_TS, 123)
+                .property(AAIProperties.SOURCE_OF_TRUTH, "sot").property(AAIProperties.RESOURCE_VERSION, "123")
+                .property(AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot").property(AAIProperties.LAST_MOD_TS, 333)
+                .as("v6").addV().property("aai-node-type", "route-target")
+                .property("global-route-target", "getTargetKey").property("route-target-role", "getRoleKey")
+                .property("linked", true)
+                .property(AAIProperties.AAI_URI,
+                        "/network/vpn-bindings/vpn-binding/getKey/route-targets/route-target/getTargetKeyNoLink/getRoleKeyNoLink")
+                .property(AAIProperties.AAI_UUID, UUID.randomUUID().toString()).property(AAIProperties.CREATED_TS, 123)
+                .property(AAIProperties.SOURCE_OF_TRUTH, "sot").property(AAIProperties.RESOURCE_VERSION, "123")
+                .property(AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot").property(AAIProperties.LAST_MOD_TS, 333)
+                .as("v7").addE("org.onap.relationships.inventory.BelongsTo").to("v6").from("v7")
+                .property(EdgeProperty.CONTAINS.toString(), true).addV().property("aai-node-type", "vpn-binding")
+                .property("vpn-id", "getKeyNoLink")
+                .property(AAIProperties.AAI_URI, "/network/vpn-bindings/vpn-binding/getKeyNoLink")
+                .property(AAIProperties.AAI_UUID, UUID.randomUUID().toString()).property(AAIProperties.CREATED_TS, 123)
+                .property(AAIProperties.SOURCE_OF_TRUTH, "sot").property(AAIProperties.RESOURCE_VERSION, "123")
+                .property(AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot").property(AAIProperties.LAST_MOD_TS, 333)
+                .as("v8").addV().property("aai-node-type", "route-target")
+                .property("global-route-target", "getTargetKeyNoLink").property("route-target-role", "getRoleKeyNoLink")
+                .property(AAIProperties.AAI_URI,
+                        "/network/vpn-bindings/vpn-binding/getKeyNoLink/route-targets/route-target/getTargetKeyNoLink/getRoleKeyNoLink")
+                .property(AAIProperties.AAI_UUID, UUID.randomUUID().toString()).property(AAIProperties.CREATED_TS, 123)
+                .property(AAIProperties.SOURCE_OF_TRUTH, "sot").property(AAIProperties.RESOURCE_VERSION, "123")
+                .property(AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot").property(AAIProperties.LAST_MOD_TS, 333)
+                .as("v9").addE("org.onap.relationships.inventory.BelongsTo").to("v8").from("v9")
+                .property(EdgeProperty.CONTAINS.toString(), true).next();
         graph.tx().commit();
 
     }
@@ -228,8 +174,8 @@ public class DataLinkTest extends DataLinkSetup {
     }
 
     @Test
-    public void verifyCreationOfVertex() throws AAIException, UnsupportedEncodingException,
-            IllegalArgumentException, SecurityException {
+    public void verifyCreationOfVertex()
+            throws AAIException, UnsupportedEncodingException, IllegalArgumentException, SecurityException {
 
         final Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDepthVersion());
         final Introspector obj = loader.introspectorFromName("vpn-binding");
@@ -252,14 +198,15 @@ public class DataLinkTest extends DataLinkSetup {
 
         runner.execute(obj, self);
 
-        assertTrue("route-target vertex found", traversal.V().has(AAIProperties.NODE_TYPE, "route-target").has("global-route-target", "key1").has("route-target-role", "key2").has("linked", true).hasNext());
+        assertTrue("route-target vertex found", traversal.V().has(AAIProperties.NODE_TYPE, "route-target")
+                .has("global-route-target", "key1").has("route-target-role", "key2").has("linked", true).hasNext());
         g.tx().rollback();
 
     }
 
     @Test
-    public void verifyModificationOfVertex() throws AAIException, UnsupportedEncodingException,
-            IllegalArgumentException, SecurityException {
+    public void verifyModificationOfVertex()
+            throws AAIException, UnsupportedEncodingException, IllegalArgumentException, SecurityException {
 
         final Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDepthVersion());
         final Introspector obj = loader.introspectorFromName("vpn-binding");
@@ -326,7 +273,9 @@ public class DataLinkTest extends DataLinkSetup {
 
         runner.execute(obj, self);
 
-        assertFalse("route-target vertex not found", traversal.V().has(AAIProperties.NODE_TYPE, "route-target").has("global-route-target", "deleteTargetKey").has("route-target-role", "deleteRoleKey").has("linked", true).hasNext());
+        assertFalse("route-target vertex not found",
+                traversal.V().has(AAIProperties.NODE_TYPE, "route-target").has("global-route-target", "deleteTargetKey")
+                        .has("route-target-role", "deleteRoleKey").has("linked", true).hasNext());
 
         g.tx().rollback();
 
@@ -354,14 +303,16 @@ public class DataLinkTest extends DataLinkSetup {
 
         runner.execute(obj, self);
 
-        assertTrue("both properties have been populated in target object", obj.getValue("global-route-target").equals("getTargetKey") && obj.getValue("route-target-role").equals("getRoleKey"));
+        assertTrue("both properties have been populated in target object",
+                obj.getValue("global-route-target").equals("getTargetKey")
+                        && obj.getValue("route-target-role").equals("getRoleKey"));
         g.tx().rollback();
 
     }
 
     @Test
-    public void verifyPropertyPopulationWithV10OnlyPut() throws AAIException,
-            UnsupportedEncodingException, IllegalArgumentException, SecurityException {
+    public void verifyPropertyPopulationWithV10OnlyPut()
+            throws AAIException, UnsupportedEncodingException, IllegalArgumentException, SecurityException {
         final Introspector obj = loader.introspectorFromName("vpn-binding");
         obj.setValue("vpn-id", "getKeyNoLink");
         final Introspector routeTargets = loader.introspectorFromName("route-targets");

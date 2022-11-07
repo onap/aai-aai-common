@@ -17,6 +17,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.serialization.db;
 
 import java.util.List;
@@ -57,7 +58,7 @@ public class ImpliedDelete implements AAIConfigProxy {
     private TransactionalGraphEngine engine;
     private DBSerializer serializer;
 
-    public ImpliedDelete(TransactionalGraphEngine engine, DBSerializer serializer){
+    public ImpliedDelete(TransactionalGraphEngine engine, DBSerializer serializer) {
         this.engine = engine;
         this.serializer = serializer;
     }
@@ -83,22 +84,21 @@ public class ImpliedDelete implements AAIConfigProxy {
      * @param dependentVertexes - list of children vertexes
      * @throws AAIException if the user is not allowed to implicitly delete children
      */
-    public List<Vertex> execute(Object id, String sot, String objectType, List<Vertex> dependentVertexes) throws AAIException {
-        if(dependentVertexes != null && !dependentVertexes.isEmpty()){
+    public List<Vertex> execute(Object id, String sot, String objectType, List<Vertex> dependentVertexes)
+            throws AAIException {
+        if (dependentVertexes != null && !dependentVertexes.isEmpty()) {
             // Find all the deletable vertices from the dependent vertices that should be deleted
             // So for each of the following dependent vertices,
             // we will use the edge properties and do the cascade delete
             QueryEngine queryEngine = this.engine.getQueryEngine();
             List<Vertex> impliedDeleteVertices = queryEngine.findDeletable(dependentVertexes);
-            if(this.allow(sot, objectType)){
+            if (this.allow(sot, objectType)) {
 
                 int impliedDeleteCount = impliedDeleteVertices.size();
 
                 LOGGER.warn(
-                    "For the vertex with id {}, doing an implicit delete on update will delete total of {} vertexes",
-                    id,
-                    impliedDeleteCount
-                );
+                        "For the vertex with id {}, doing an implicit delete on update will delete total of {} vertexes",
+                        id, impliedDeleteCount);
 
                 String impliedDeleteLogEnabled = get(AAIConstants.AAI_IMPLIED_DELETE_LOG_ENABLED, "true");
 
@@ -120,8 +120,8 @@ public class ImpliedDelete implements AAIConfigProxy {
                             }
                         } catch (Exception ex) {
                             LOGGER.warn(
-                                "Encountered an exception during retrieval of vertex properties with vertex-id {} -> {}",
-                                id, LogFormatTools.getStackTop(ex));
+                                    "Encountered an exception during retrieval of vertex properties with vertex-id {} -> {}",
+                                    id, LogFormatTools.getStackTop(ex));
                         }
                     }
                 }
@@ -136,11 +136,11 @@ public class ImpliedDelete implements AAIConfigProxy {
         }
     }
 
-    public void delete(List<Vertex> vertices){
-       // After all the appropriate logging, calling the serializer delete to delete the affected vertices
-       if(vertices != null && !vertices.isEmpty()){
-           serializer.delete(vertices);
-       }
+    public void delete(List<Vertex> vertices) {
+        // After all the appropriate logging, calling the serializer delete to delete the affected vertices
+        if (vertices != null && !vertices.isEmpty()) {
+            serializer.delete(vertices);
+        }
     }
 
     /**
@@ -157,13 +157,13 @@ public class ImpliedDelete implements AAIConfigProxy {
      * So in the above code, the expectation is for any of the following user:
      *
      * <ul>
-     *     <li>SDC</li>
-     *     <li>SDc</li>
-     *     <li>Sdc</li>
-     *     <li>sDc</li>
-     *     <li>SdC</li>
-     *     <li>sdC</li>
-     *     <li>sdc</li>
+     * <li>SDC</li>
+     * <li>SDc</li>
+     * <li>Sdc</li>
+     * <li>sDc</li>
+     * <li>SdC</li>
+     * <li>sdC</li>
+     * <li>sdc</li>
      * </ul>
      *
      * They are allowed to delete the children of pserver and vserver by implicit delete
@@ -175,28 +175,28 @@ public class ImpliedDelete implements AAIConfigProxy {
      * or loading into an set which is unnecessary and it could potentially be done for every request
      *
      * @param sourceOfTruth - the original requester that the request is coming from,
-     *                        derived from HTTP Header X-FromAppId
+     *        derived from HTTP Header X-FromAppId
      * @param parentObjectType - parent object in which they are trying to do the implicit delete against
      *
-     * @return true  - if the requester is allowed to implicit delete against the object type
+     * @return true - if the requester is allowed to implicit delete against the object type
      *         false - if they are not allowed
      */
-    private boolean allow(String sourceOfTruth, String parentObjectType){
+    private boolean allow(String sourceOfTruth, String parentObjectType) {
         Objects.requireNonNull(sourceOfTruth);
         Objects.requireNonNull(parentObjectType);
 
         String propertyName = AAIConstants.AAI_IMPLIED_DELETE_WHITELIST + sourceOfTruth.toLowerCase();
         String whitelist = get(propertyName, StringUtils.EMPTY);
 
-        if(whitelist.isEmpty()){
+        if (whitelist.isEmpty()) {
             return false;
         }
 
-        if(STAR.equals(whitelist)){
+        if (STAR.equals(whitelist)) {
             return true;
         }
 
-        if(whitelist.contains("'" + parentObjectType + "'")){
+        if (whitelist.contains("'" + parentObjectType + "'")) {
             return true;
         }
 

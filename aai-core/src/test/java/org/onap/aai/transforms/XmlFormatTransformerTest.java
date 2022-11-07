@@ -17,18 +17,19 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.transforms;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+
+import java.io.IOException;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.onap.aai.PayloadUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
 
 public class XmlFormatTransformerTest {
 
@@ -37,7 +38,7 @@ public class XmlFormatTransformerTest {
     private XmlFormatTransformer xmlFormatTransformer;
 
     @Before
-    public void setup(){
+    public void setup() {
         this.xmlFormatTransformer = new XmlFormatTransformer();
     }
 

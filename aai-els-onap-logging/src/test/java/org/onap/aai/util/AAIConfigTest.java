@@ -19,13 +19,14 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.util;
+
+import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.onap.aai.exceptions.AAIException;
-
-import static org.junit.Assert.*;
 
 public class AAIConfigTest {
 
@@ -43,6 +44,7 @@ public class AAIConfigTest {
     public void getValueTest() throws AAIException {
         assertEquals("10", AAIConfig.get("aai.logging.maxStackTraceEntries"));
     }
+
     @Test
     public void getIntValueTest() throws AAIException {
         assertTrue(10 == AAIConfig.getInt("aai.logging.maxStackTraceEntries"));

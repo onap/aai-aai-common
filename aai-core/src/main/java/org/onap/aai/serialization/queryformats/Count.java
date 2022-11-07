@@ -52,7 +52,8 @@ public class Count implements FormatMapper {
     }
 
     @Override
-    public Optional<JsonObject> formatObject(Object o, Map<String, List<String>> properties) throws AAIFormatVertexException, AAIFormatQueryResultFormatNotSupported {
+    public Optional<JsonObject> formatObject(Object o, Map<String, List<String>> properties)
+            throws AAIFormatVertexException, AAIFormatQueryResultFormatNotSupported {
         return Optional.empty();
     }
 

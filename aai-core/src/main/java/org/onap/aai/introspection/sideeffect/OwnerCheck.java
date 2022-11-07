@@ -42,14 +42,13 @@ public class OwnerCheck extends SideEffect {
     }
 
     @Override
-    protected void processURI(Optional<String> completeUri, Entry<String, String> entry)
-        throws AAIException {
+    protected void processURI(Optional<String> completeUri, Entry<String, String> entry) throws AAIException {
         if (!isAuthorized(serializer.getGroups(), self)) {
 
             throw new AAIException("AAI_3304",
-                "Group(s) :" + serializer.getGroups() + " not authorized to perform function");
+                    "Group(s) :" + serializer.getGroups() + " not authorized to perform function");
 
-        } //else skip processing because no required properties were specified
+        } // else skip processing because no required properties were specified
 
     }
 
@@ -60,7 +59,7 @@ public class OwnerCheck extends SideEffect {
                 String dataOwner = dataOwnerProperty.toString();
                 String dataOwnerWithReadAccess = dataOwner + READ_ONLY_SUFFIX;
                 return groups.stream()
-                    .anyMatch(group -> group.equals(dataOwner) || group.equals(dataOwnerWithReadAccess));
+                        .anyMatch(group -> group.equals(dataOwner) || group.equals(dataOwnerWithReadAccess));
             }
         }
         return true;

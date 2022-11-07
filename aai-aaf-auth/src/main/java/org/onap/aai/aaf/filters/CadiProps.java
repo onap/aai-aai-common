@@ -17,7 +17,16 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.aaf.filters;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
+import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,20 +35,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
-
 // This component will be created if and only if any of the following profiles are active
 @Component
-@Profile({
-    AafProfiles.AAF_CERT_AUTHENTICATION,
-    AafProfiles.AAF_AUTHENTICATION,
-    AafProfiles.TWO_WAY_SSL
-})
+@Profile({AafProfiles.AAF_CERT_AUTHENTICATION, AafProfiles.AAF_AUTHENTICATION, AafProfiles.TWO_WAY_SSL})
 public class CadiProps {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CadiProps.class);
@@ -49,18 +47,19 @@ public class CadiProps {
     private Properties cadiProperties;
 
     @Autowired
-    public CadiProps(@Value("${aaf.cadi.file:./resources/cadi.properties}") String filename){
-        cadiFileName   = filename;
+    public CadiProps(@Value("${aaf.cadi.file:./resources/cadi.properties}") String filename) {
+        cadiFileName = filename;
         cadiProperties = new Properties();
     }
 
     @PostConstruct
     public void init() throws IOException {
 
-        File cadiFile  = new File(cadiFileName);
+        File cadiFile = new File(cadiFileName);
 
-        if(!cadiFile.exists()){
-            LOGGER.warn("Unable to find the cadi file in the given path {} so loading cadi.properties from classloader", cadiFileName);
+        if (!cadiFile.exists()) {
+            LOGGER.warn("Unable to find the cadi file in the given path {} so loading cadi.properties from classloader",
+                    cadiFileName);
             InputStream is = this.getClass().getClassLoader().getResourceAsStream("cadi.properties");
             cadiProperties.load(is);
         } else {
@@ -72,10 +71,12 @@ public class CadiProps {
 
         }
     }
+
     public String getCadiFileName() {
         return cadiFileName;
     }
-    public Properties getCadiProperties(){
+
+    public Properties getCadiProperties() {
         return cadiProperties;
     }
 }

@@ -21,6 +21,15 @@
 package org.onap.aai.introspection.sideeffect;
 
 import com.google.common.collect.Multimap;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.*;
+import java.util.Map.Entry;
+
+import javax.ws.rs.core.MultivaluedMap;
+
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
@@ -45,13 +54,6 @@ import org.onap.aai.serialization.db.DBSerializer;
 import org.onap.aai.serialization.db.EdgeSerializer;
 import org.onap.aai.serialization.db.exceptions.EdgeMultiplicityException;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
-
-import javax.ws.rs.core.MultivaluedMap;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.*;
-import java.util.Map.Entry;
 
 public class PrivateEdge extends SideEffect {
 
@@ -134,8 +136,8 @@ public class PrivateEdge extends SideEffect {
                                 break;
                         }
                     } else {
-                        edgeSerializer.addPrivateEdge(this.dbEngine.asAdmin().getTraversalSource(), self,
-                                otherVertex, edgeRule.getLabel());
+                        edgeSerializer.addPrivateEdge(this.dbEngine.asAdmin().getTraversalSource(), self, otherVertex,
+                                edgeRule.getLabel());
                     }
                 }
             } else {
@@ -143,7 +145,7 @@ public class PrivateEdge extends SideEffect {
                     throw new AAIException("AAI_6114", "object located at " + uri + " not found");
                 } else {
                     throw new AAIMultiplePropertiesException(
-                        "multiple values of " + entry.getKey() + " found when searching " + uri);
+                            "multiple values of " + entry.getKey() + " found when searching " + uri);
                 }
             }
         }

@@ -20,15 +20,14 @@
 
 package org.onap.aai.aailog.logs;
 
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+
 import org.onap.aai.logging.AaiElsErrorCode;
 import org.onap.logging.filter.base.MDCSetup;
 import org.onap.logging.ref.slf4j.ONAPLogConstants;
 import org.slf4j.*;
-
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.regex.PatternSyntaxException;
 
 public class AaiDmaapMetricLog extends MDCSetup {
 
@@ -37,15 +36,16 @@ public class AaiDmaapMetricLog extends MDCSetup {
     private static final String TARGET_ENTITY = "DMaaP";
 
     public AaiDmaapMetricLog() {
-    	if(MDC.get(ONAPLogConstants.MDCs.SERVER_FQDN) == null) {
-    		setServerFQDN();
-    	}
+        if (MDC.get(ONAPLogConstants.MDCs.SERVER_FQDN) == null) {
+            setServerFQDN();
+        }
     }
+
     public void pre(String targetServiceName, String event, String transactionId, String serviceName) {
 
         try {
             MDC.put(ONAPLogConstants.MDCs.INVOKE_TIMESTAMP,
-                ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT));
+                    ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT));
             setLogTimestamp();
             setElapsedTimeInvokeTimestamp();
             MDC.put(ONAPLogConstants.MDCs.TARGET_SERVICE_NAME, targetServiceName);
@@ -58,7 +58,7 @@ public class AaiDmaapMetricLog extends MDCSetup {
                 MDC.put(ONAPLogConstants.MDCs.SERVICE_NAME, serviceName);
             }
             setInvocationIdFromMDC();
-            logger.info(ONAPLogConstants.Markers.INVOKE, event );
+            logger.info(ONAPLogConstants.Markers.INVOKE, event);
 
         } catch (Exception e) {
             logger.warn("Error in AaiDmaapMetricLog pre", e.getMessage());
@@ -82,8 +82,7 @@ public class AaiDmaapMetricLog extends MDCSetup {
         String statusCode;
         if (AaiElsErrorCode.SUCCESS.equals(aaiElsErrorCode)) {
             statusCode = ONAPLogConstants.ResponseStatus.COMPLETE.toString();
-        }
-        else {
+        } else {
             statusCode = ONAPLogConstants.ResponseStatus.ERROR.toString();
             MDC.put(ONAPLogConstants.MDCs.ERROR_CODE, aaiElsErrorCode);
             MDC.put(ONAPLogConstants.MDCs.ERROR_DESC, errorDescription);

@@ -26,8 +26,6 @@ import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -49,8 +47,8 @@ import org.onap.aai.edges.exceptions.EdgeRuleNotFoundException;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.serialization.db.AAICorePrivateEdgeTestConfigTranslator;
 import org.onap.aai.serialization.db.EdgeSerializer;
-import org.onap.aai.setup.SchemaLocationsBean;
-import org.onap.aai.setup.SchemaVersions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;

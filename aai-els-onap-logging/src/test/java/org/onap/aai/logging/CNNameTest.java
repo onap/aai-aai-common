@@ -20,7 +20,15 @@
 
 package org.onap.aai.logging;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
+
 import ch.qos.logback.access.spi.IAccessEvent;
+
+import java.security.cert.X509Certificate;
+
+import javax.security.auth.x500.X500Principal;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,12 +37,6 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.mock.web.MockHttpServletRequest;
-
-import javax.security.auth.x500.X500Principal;
-import java.security.cert.X509Certificate;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CNNameTest {
@@ -52,8 +54,9 @@ public class CNNameTest {
     public void setup() {
         when(cnName.isStarted()).thenReturn(true);
     }
+
     @Test
-    public void basicAuthTest(){
+    public void basicAuthTest() {
 
         MockHttpServletRequest https = new MockHttpServletRequest();
         https.addHeader("Authorization", "Basic dXNlcjpwYXNzd29yZA==");
@@ -64,8 +67,9 @@ public class CNNameTest {
         assertEquals("user", cnName.convert(accessEvent));
 
     }
+
     @Test
-    public void incorrectHeaderBasicAuthTest(){
+    public void incorrectHeaderBasicAuthTest() {
 
         MockHttpServletRequest https = new MockHttpServletRequest();
 
@@ -77,8 +81,9 @@ public class CNNameTest {
         assertEquals("-", cnName.convert(accessEvent));
 
     }
+
     @Test
-    public void noCipherSuiteTest(){
+    public void noCipherSuiteTest() {
 
         MockHttpServletRequest https = new MockHttpServletRequest();
 
@@ -90,17 +95,18 @@ public class CNNameTest {
         assertEquals("-", cnName.convert(accessEvent));
 
     }
+
     @Test
-    public void certificateTest(){
+    public void certificateTest() {
         String testSubject = "CN=TestName, OU=TestOU, O=TestOrg, C=Country";
-        X509Certificate[] certChain = { cert };
+        X509Certificate[] certChain = {cert};
         MockHttpServletRequest https = new MockHttpServletRequest();
 
         https.setAttribute("javax.servlet.request.cipher_suite", "");
-        https.setAttribute("javax.servlet.request.X509Certificate", certChain );
+        https.setAttribute("javax.servlet.request.X509Certificate", certChain);
 
         when(accessEvent.getRequest()).thenReturn(https);
-        when(cert.getSubjectX500Principal()).thenReturn(new X500Principal(testSubject) );
+        when(cert.getSubjectX500Principal()).thenReturn(new X500Principal(testSubject));
 
         assertEquals(testSubject, cnName.convert(accessEvent));
     }

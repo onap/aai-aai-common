@@ -99,6 +99,7 @@
                             <importOrder>
                                 <order>com,java,javax,org</order>
                             </importOrder>
+                            <removeUnusedImports/>
                         </java>
                     </configuration>
                     <!-- https://github.com/diffplug/spotless/tree/master/plugin-maven

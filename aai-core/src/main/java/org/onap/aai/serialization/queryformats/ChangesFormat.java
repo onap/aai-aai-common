@@ -22,14 +22,15 @@ package org.onap.aai.serialization.queryformats;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.onap.aai.config.SpringContextAware;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
-
-import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 public class ChangesFormat extends MultiFormatMapper {
 
@@ -39,9 +40,11 @@ public class ChangesFormat extends MultiFormatMapper {
         /*
          * StartTs = truncate time
          */
-        if (startTime == null || startTime.isEmpty() || "now".equals(startTime) || "0".equals(startTime) || "-1".equals(startTime)){
-           String historyTruncateDays = SpringContextAware.getApplicationContext().getEnvironment().getProperty("history.truncate.window.days", "365");
-           this.startTs = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(Long.parseLong(historyTruncateDays));
+        if (startTime == null || startTime.isEmpty() || "now".equals(startTime) || "0".equals(startTime)
+                || "-1".equals(startTime)) {
+            String historyTruncateDays = SpringContextAware.getApplicationContext().getEnvironment()
+                    .getProperty("history.truncate.window.days", "365");
+            this.startTs = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(Long.parseLong(historyTruncateDays));
         } else {
             this.startTs = Long.parseLong(startTime);
         }
@@ -50,29 +53,28 @@ public class ChangesFormat extends MultiFormatMapper {
     @Override
     protected Optional<JsonObject> getJsonFromVertex(Vertex v) {
         JsonObject json = new JsonObject();
-        if (!v.properties(AAIProperties.RESOURCE_VERSION).hasNext() ||
-            !v.properties(AAIProperties.NODE_TYPE).hasNext() ||
-            !v.properties(AAIProperties.AAI_URI).hasNext()) {
+        if (!v.properties(AAIProperties.RESOURCE_VERSION).hasNext() || !v.properties(AAIProperties.NODE_TYPE).hasNext()
+                || !v.properties(AAIProperties.AAI_URI).hasNext()) {
             return Optional.empty();
         }
         json.addProperty("node-type", v.<String>value(AAIProperties.NODE_TYPE));
         json.addProperty("uri", v.<String>value(AAIProperties.AAI_URI));
 
         final Set<Long> changes = new HashSet<>();
-        v.properties(AAIProperties.RESOURCE_VERSION).forEachRemaining(o->
-            o.properties(AAIProperties.START_TS, AAIProperties.END_TS)
-            .forEachRemaining(p -> {
-                Long val = (Long) p.value();
-                if(val >= startTs) {
-                    changes.add(val);
-                }
-            }
-            ));
+        v.properties(AAIProperties.RESOURCE_VERSION).forEachRemaining(
+                o -> o.properties(AAIProperties.START_TS, AAIProperties.END_TS).forEachRemaining(p -> {
+                    Long val = (Long) p.value();
+                    if (val >= startTs) {
+                        changes.add(val);
+                    }
+                }));
         v.edges(Direction.BOTH).forEachRemaining(e -> {
-            if(e.property(AAIProperties.START_TS).isPresent() && (Long)e.property(AAIProperties.START_TS).value() >= startTs) {
+            if (e.property(AAIProperties.START_TS).isPresent()
+                    && (Long) e.property(AAIProperties.START_TS).value() >= startTs) {
                 changes.add((Long) e.property(AAIProperties.START_TS).value());
             }
-            if(e.property(AAIProperties.END_TS).isPresent() && (Long)e.property(AAIProperties.END_TS).value() >= startTs) {
+            if (e.property(AAIProperties.END_TS).isPresent()
+                    && (Long) e.property(AAIProperties.END_TS).value() >= startTs) {
                 changes.add((Long) e.property(AAIProperties.END_TS).value());
             }
         });
@@ -88,7 +90,8 @@ public class ChangesFormat extends MultiFormatMapper {
     }
 
     @Override
-    protected Optional<JsonObject> getJsonFromVertex(Vertex input, Map<String, List<String>> properties) throws AAIFormatVertexException {
+    protected Optional<JsonObject> getJsonFromVertex(Vertex input, Map<String, List<String>> properties)
+            throws AAIFormatVertexException {
         return Optional.empty();
     }
 

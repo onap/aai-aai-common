@@ -20,13 +20,23 @@
 
 package org.onap.aai.rest.db;
 
-import org.onap.aai.introspection.sideeffect.OwnerCheck;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import javax.ws.rs.core.*;
+import javax.ws.rs.core.Response.Status;
+
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.janusgraph.core.JanusGraphException;
 import org.javatuples.Pair;
@@ -35,6 +45,7 @@ import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.*;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
+import org.onap.aai.introspection.sideeffect.OwnerCheck;
 import org.onap.aai.logging.ErrorLogHelper;
 import org.onap.aai.nodes.NodeIngestor;
 import org.onap.aai.parsers.query.QueryParser;
@@ -56,20 +67,10 @@ import org.onap.aai.transforms.XmlFormatTransformer;
 import org.onap.aai.util.AAIConfig;
 import org.onap.aai.util.AAIConstants;
 import org.onap.aai.util.delta.DeltaEvents;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
-
-import javax.ws.rs.core.*;
-import javax.ws.rs.core.Response.Status;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * The Class HttpEntry.
@@ -187,7 +188,8 @@ public class HttpEntry {
         return this;
     }
 
-    public HttpEntry setHttpEntryProperties(SchemaVersion version, UEBNotification notification, int notificationDepth) {
+    public HttpEntry setHttpEntryProperties(SchemaVersion version, UEBNotification notification,
+            int notificationDepth) {
         this.version = version;
         this.loader = loaderFactory.createLoaderForVersion(introspectorFactoryType, version);
         this.dbEngine = new JanusGraphDBEngine(queryStyle, loader);
@@ -244,10 +246,8 @@ public class HttpEntry {
         return dbEngine;
     }
 
-    public Pair<Boolean, List<Pair<URI, Response>>> process(List<DBRequest> requests,
-        String sourceOfTruth,
-        Set<String> groups)
-        throws AAIException {
+    public Pair<Boolean, List<Pair<URI, Response>>> process(List<DBRequest> requests, String sourceOfTruth,
+            Set<String> groups) throws AAIException {
         return this.process(requests, sourceOfTruth, groups, true);
     }
 
@@ -347,21 +347,21 @@ public class HttpEntry {
      * @throws AAIException the AAI exception
      */
     public Pair<Boolean, List<Pair<URI, Response>>> process(List<DBRequest> requests, String sourceOfTruth,
-        boolean enableResourceVersion) throws AAIException {
+            boolean enableResourceVersion) throws AAIException {
         return this.process(requests, sourceOfTruth, Collections.EMPTY_SET, enableResourceVersion);
     }
 
-    private Pair<Boolean, List<Pair<URI, Response>>> process(List<DBRequest> requests,
-        String sourceOfTruth,
-        Set<String> groups,
-        boolean enableResourceVersion) throws AAIException {
+    private Pair<Boolean, List<Pair<URI, Response>>> process(List<DBRequest> requests, String sourceOfTruth,
+            Set<String> groups, boolean enableResourceVersion) throws AAIException {
 
         DBSerializer serializer = null;
 
-        if(serverBase != null){
-            serializer = new DBSerializer(version, dbEngine, introspectorFactoryType, sourceOfTruth, groups, notificationDepth, serverBase);
+        if (serverBase != null) {
+            serializer = new DBSerializer(version, dbEngine, introspectorFactoryType, sourceOfTruth, groups,
+                    notificationDepth, serverBase);
         } else {
-            serializer = new DBSerializer(version, dbEngine, introspectorFactoryType, sourceOfTruth, groups, notificationDepth);
+            serializer = new DBSerializer(version, dbEngine, introspectorFactoryType, sourceOfTruth, groups,
+                    notificationDepth);
         }
 
         Response response;
@@ -383,7 +383,7 @@ public class HttpEntry {
 
         String outputMediaType = null;
 
-        if(requests != null && !requests.isEmpty()){
+        if (requests != null && !requests.isEmpty()) {
             HttpHeaders headers = requests.get(0).getHeaders();
             outputMediaType = getMediaType(headers.getAcceptableMediaTypes());
         }
@@ -451,8 +451,8 @@ public class HttpEntry {
                         String resourceVersion = obj.getValue(AAIProperties.RESOURCE_VERSION);
                         if (vertices.isEmpty()) {
                             if (enableResourceVersion) {
-                                serializer.verifyResourceVersion("create", query.getResultType(), "",
-                                        resourceVersion, obj.getURI());
+                                serializer.verifyResourceVersion("create", query.getResultType(), "", resourceVersion,
+                                        obj.getURI());
                             }
                             isNewVertex = true;
                         } else {
@@ -477,10 +477,13 @@ public class HttpEntry {
                     }
 
                     /*
-                     * This skip-related-to query parameter is used to determine if the relationships object will omit the related-to-property
-                     * If a GET is sent to resources without a format, if format=resource, or if format=resource_and_url with this param set to false
+                     * This skip-related-to query parameter is used to determine if the relationships object will omit
+                     * the related-to-property
+                     * If a GET is sent to resources without a format, if format=resource, or if format=resource_and_url
+                     * with this param set to false
                      * then behavior will be keep the related-to properties. By default, set to true.
-                     * Otherwise, for any other case, when the skip-related-to parameter exists, has value=true, or some unfamiliar input (e.g. skip-related-to=bogusvalue), the value is true.
+                     * Otherwise, for any other case, when the skip-related-to parameter exists, has value=true, or some
+                     * unfamiliar input (e.g. skip-related-to=bogusvalue), the value is true.
                      */
                     boolean isSkipRelatedTo = true;
                     if (params.containsKey("skip-related-to")) {
@@ -498,27 +501,29 @@ public class HttpEntry {
                         case GET:
 
                             if (format == null) {
-                                obj = this.getObjectFromDb(vertices, serializer, query, obj, request.getUri(),
-                                        depth, isNodeOnly, cleanUp, isSkipRelatedTo);
+                                obj = this.getObjectFromDb(vertices, serializer, query, obj, request.getUri(), depth,
+                                        isNodeOnly, cleanUp, isSkipRelatedTo);
 
                                 if (obj != null) {
                                     status = Status.OK;
                                     MarshallerProperties properties;
-                                    Optional<MarshallerProperties> marshallerPropOpt = request.getMarshallerProperties();
+                                    Optional<MarshallerProperties> marshallerPropOpt =
+                                            request.getMarshallerProperties();
                                     if (marshallerPropOpt.isPresent()) {
                                         properties = marshallerPropOpt.get();
                                     } else {
                                         properties = new MarshallerProperties.Builder(
-                                            org.onap.aai.restcore.MediaType.getEnum(outputMediaType)).build();
+                                                org.onap.aai.restcore.MediaType.getEnum(outputMediaType)).build();
                                     }
                                     result = obj.marshal(properties);
                                 }
                             } else {
-                                FormatFactory ff =
-                                        new FormatFactory(loader, serializer, schemaVersions, basePath + "/", serverBase);
+                                FormatFactory ff = new FormatFactory(loader, serializer, schemaVersions, basePath + "/",
+                                        serverBase);
                                 Formatter formatter = ff.get(format, params);
-                                result = formatter.output(vertices.stream().map(vertex -> (Object) vertex)
-                                        .collect(Collectors.toList())).toString();
+                                result = formatter.output(
+                                        vertices.stream().map(vertex -> (Object) vertex).collect(Collectors.toList()))
+                                        .toString();
 
                                 if (outputMediaType == null) {
                                     outputMediaType = MediaType.APPLICATION_JSON;
@@ -547,16 +552,17 @@ public class HttpEntry {
                                     }
                                     result = obj.marshal(properties);
                                 } else {
-                                    String msg = createRelationshipNotFoundMessage(query.getResultType(),
-                                            request.getUri());
+                                    String msg =
+                                            createRelationshipNotFoundMessage(query.getResultType(), request.getUri());
                                     throw new AAIException("AAI_6149", msg);
                                 }
                             } else {
-                                FormatFactory ff =
-                                        new FormatFactory(loader, serializer, schemaVersions, basePath + "/", serverBase);
+                                FormatFactory ff = new FormatFactory(loader, serializer, schemaVersions, basePath + "/",
+                                        serverBase);
                                 Formatter formatter = ff.get(format, params);
-                                result = formatter.output(vertices.stream().map(vertex -> (Object) vertex)
-                                        .collect(Collectors.toList())).toString();
+                                result = formatter.output(
+                                        vertices.stream().map(vertex -> (Object) vertex).collect(Collectors.toList()))
+                                        .toString();
 
                                 if (outputMediaType == null) {
                                     outputMediaType = MediaType.APPLICATION_JSON;
@@ -580,16 +586,19 @@ public class HttpEntry {
 
                             mainVertexesToNotifyOn.add(v);
                             if (notificationDepth == AAIProperties.MINIMUM_DEPTH) {
-                                Map<String, Pair<Introspector, LinkedHashMap<String,Introspector>>> allImpliedDeleteObjs = serializer.getImpliedDeleteUriObjectPair();
+                                Map<String, Pair<Introspector, LinkedHashMap<String, Introspector>>> allImpliedDeleteObjs =
+                                        serializer.getImpliedDeleteUriObjectPair();
 
-                                for (Map.Entry<String, Pair<Introspector, LinkedHashMap<String,Introspector>>> entry: allImpliedDeleteObjs.entrySet()) {
+                                for (Map.Entry<String, Pair<Introspector, LinkedHashMap<String, Introspector>>> entry : allImpliedDeleteObjs
+                                        .entrySet()) {
                                     // The format is purposefully %s/%s%s due to the fact
                                     // that every aai-uri will have a slash at the beginning
                                     // If that assumption isn't true, then its best to change this code
-                                    String curUri = String.format("%s/%s%s", basePath , version , entry.getKey());
+                                    String curUri = String.format("%s/%s%s", basePath, version, entry.getKey());
                                     Introspector curObj = entry.getValue().getValue0();
                                     HashMap<String, Introspector> curObjRelated = entry.getValue().getValue1();
-                                    notification.createNotificationEvent(transactionId, sourceOfTruth, Status.NO_CONTENT, URI.create(curUri), curObj, curObjRelated, basePath);
+                                    notification.createNotificationEvent(transactionId, sourceOfTruth,
+                                            Status.NO_CONTENT, URI.create(curUri), curObj, curObjRelated, basePath);
                                 }
                             }
 
@@ -638,8 +647,7 @@ public class HttpEntry {
                             String resourceVersion = params.getFirst(AAIProperties.RESOURCE_VERSION);
                             obj = serializer.getLatestVersionView(v, notificationDepth);
                             if (query.isDependent()) {
-                                relatedObjects =
-                                        serializer.getRelatedObjects(queryEngine, v, obj, this.loader);
+                                relatedObjects = serializer.getRelatedObjects(queryEngine, v, obj, this.loader);
                             }
                             /*
                              * Find all Delete-other-vertex vertices and create structure for notify
@@ -664,8 +672,7 @@ public class HttpEntry {
                                 deleteObjects = this.buildIntrospectorObjects(serializer, deletableVertices);
 
                                 uriMap = this.buildURIMap(serializer, deleteObjects);
-                                deleteRelatedObjects =
-                                        this.buildRelatedObjects(serializer, queryEngine, deleteObjects);
+                                deleteRelatedObjects = this.buildRelatedObjects(serializer, queryEngine, deleteObjects);
                             }
 
                             serializer.delete(v, deletableVertices, resourceVersion, enableResourceVersion);
@@ -701,10 +708,8 @@ public class HttpEntry {
                      * to be able to use for testing the vertex id endpoint functionality
                      * since we presently have no other way of generating those id urls
                      */
-                    if (response == null && v != null
-                            && (method.equals(HttpMethod.PUT) || method.equals(HttpMethod.GET)
-                                    || method.equals(HttpMethod.MERGE_PATCH)
-                                    || method.equals(HttpMethod.GET_RELATIONSHIP))
+                    if (response == null && v != null && (method.equals(HttpMethod.PUT) || method.equals(HttpMethod.GET)
+                            || method.equals(HttpMethod.MERGE_PATCH) || method.equals(HttpMethod.GET_RELATIONSHIP))
 
                     ) {
                         String myvertid = v.id().toString();
@@ -734,10 +739,11 @@ public class HttpEntry {
                 templateVars.add(request.getUri().getPath());
                 templateVars.addAll(e.getTemplateVars());
                 ErrorLogHelper.logException(e);
-                response = Response.status(e.getErrorObject().getHTTPResponseCode()).entity(ErrorLogHelper
-                        .getRESTAPIErrorResponse(request.getHeaders().getAcceptableMediaTypes(), e, templateVars))
-                        .type(outputMediaType)
-                        .build();
+                response =
+                        Response.status(e.getErrorObject().getHTTPResponseCode())
+                                .entity(ErrorLogHelper.getRESTAPIErrorResponse(
+                                        request.getHeaders().getAcceptableMediaTypes(), e, templateVars))
+                                .type(outputMediaType).build();
                 Pair<URI, Response> pairedResp = Pair.with(request.getUri(), response);
                 responses.add(pairedResp);
             } catch (Exception e) {
@@ -747,23 +753,23 @@ public class HttpEntry {
                 templateVars.add(request.getMethod().toString()); // GET, PUT, etc
                 templateVars.add(request.getUri().getPath());
                 ErrorLogHelper.logException(ex);
-                response = Response.status(ex.getErrorObject().getHTTPResponseCode()).entity(ErrorLogHelper
-                        .getRESTAPIErrorResponse(request.getHeaders().getAcceptableMediaTypes(), ex, templateVars))
-                        .type(outputMediaType)
-                        .build();
+                response =
+                        Response.status(ex.getErrorObject().getHTTPResponseCode())
+                                .entity(ErrorLogHelper.getRESTAPIErrorResponse(
+                                        request.getHeaders().getAcceptableMediaTypes(), ex, templateVars))
+                                .type(outputMediaType).build();
                 Pair<URI, Response> pairedResp = Pair.with(request.getUri(), response);
                 responses.add(pairedResp);
-            }
-            finally {
+            } finally {
                 if (response != null) {
                     metricLog.post(request, response);
                 }
             }
         }
 
-       if (success) {
-           generateEvents(sourceOfTruth, serializer, transactionId, queryEngine, mainVertexesToNotifyOn);
-       } else {
+        if (success) {
+            generateEvents(sourceOfTruth, serializer, transactionId, queryEngine, mainVertexesToNotifyOn);
+        } else {
             notification.clearEvents();
         }
 
@@ -774,18 +780,19 @@ public class HttpEntry {
      * Generate notification events for the resulting db requests.
      */
     private void generateEvents(String sourceOfTruth, DBSerializer serializer, String transactionId,
-                                QueryEngine queryEngine, Set<Vertex> mainVertexesToNotifyOn)
-        throws AAIException {
+            QueryEngine queryEngine, Set<Vertex> mainVertexesToNotifyOn) throws AAIException {
         if (notificationDepth == AAIProperties.MINIMUM_DEPTH) {
-            serializer.getUpdatedVertexes().entrySet().stream().filter(Map.Entry::getValue)
-                .map(Map.Entry::getKey).forEach(mainVertexesToNotifyOn::add);
+            serializer.getUpdatedVertexes().entrySet().stream().filter(Map.Entry::getValue).map(Map.Entry::getKey)
+                    .forEach(mainVertexesToNotifyOn::add);
         }
         Set<Vertex> edgeVertexes = serializer.touchStandardVertexPropertiesForEdges().stream()
-            .filter(v -> !mainVertexesToNotifyOn.contains(v)).collect(Collectors.toSet());
+                .filter(v -> !mainVertexesToNotifyOn.contains(v)).collect(Collectors.toSet());
         try {
-            createNotificationEvents(mainVertexesToNotifyOn, sourceOfTruth, serializer, transactionId, queryEngine, notificationDepth);
-            if("true".equals(AAIConfig.get("aai.notification.both.sides.enabled", "true"))){
-                createNotificationEvents(edgeVertexes, sourceOfTruth, serializer, transactionId, queryEngine, AAIProperties.MINIMUM_DEPTH);
+            createNotificationEvents(mainVertexesToNotifyOn, sourceOfTruth, serializer, transactionId, queryEngine,
+                    notificationDepth);
+            if ("true".equals(AAIConfig.get("aai.notification.both.sides.enabled", "true"))) {
+                createNotificationEvents(edgeVertexes, sourceOfTruth, serializer, transactionId, queryEngine,
+                        AAIProperties.MINIMUM_DEPTH);
             }
         } catch (UnsupportedEncodingException e) {
             LOGGER.warn("Encountered exception generating events", e);
@@ -793,15 +800,14 @@ public class HttpEntry {
 
         // Since @Autowired required is set to false, we need to do a null check
         // for the existence of the validationService since its only enabled if profile is enabled
-        if (validationService != null){
+        if (validationService != null) {
             validationService.validate(notification.getEvents());
         }
         notification.triggerEvents();
         if (isDeltaEventsEnabled) {
             try {
                 DeltaEvents deltaEvents =
-                    new DeltaEvents(transactionId, sourceOfTruth, version.toString(),
-                        serializer.getObjectDeltas());
+                        new DeltaEvents(transactionId, sourceOfTruth, version.toString(), serializer.getObjectDeltas());
                 deltaEvents.triggerEvents();
             } catch (Exception e) {
                 LOGGER.error("Error sending Delta Events", e);
@@ -813,10 +819,12 @@ public class HttpEntry {
      * Generate notification events for provided set of vertexes at the specified depth
      */
     private void createNotificationEvents(Set<Vertex> vertexesToNotifyOn, String sourceOfTruth, DBSerializer serializer,
-                                          String transactionId, QueryEngine queryEngine, int eventDepth) throws AAIException, UnsupportedEncodingException {
+            String transactionId, QueryEngine queryEngine, int eventDepth)
+            throws AAIException, UnsupportedEncodingException {
         for (Vertex vertex : vertexesToNotifyOn) {
             if (canGenerateEvent(vertex)) {
-                boolean isCurVertexNew = vertex.value(AAIProperties.CREATED_TS).equals(vertex.value(AAIProperties.LAST_MOD_TS));
+                boolean isCurVertexNew =
+                        vertex.value(AAIProperties.CREATED_TS).equals(vertex.value(AAIProperties.LAST_MOD_TS));
                 Status curObjStatus = (isCurVertexNew) ? Status.CREATED : Status.OK;
 
                 Introspector curObj = serializer.getLatestVersionView(vertex, eventDepth);
@@ -826,14 +834,15 @@ public class HttpEntry {
                 if (!curObj.isTopLevel()) {
                     curRelatedObjs = serializer.getRelatedObjects(queryEngine, vertex, curObj, this.loader);
                 }
-                notification.createNotificationEvent(transactionId, sourceOfTruth, curObjStatus,
-                    URI.create(uri), curObj, curRelatedObjs, basePath);
+                notification.createNotificationEvent(transactionId, sourceOfTruth, curObjStatus, URI.create(uri),
+                        curObj, curRelatedObjs, basePath);
             }
         }
     }
 
     /**
      * Verifies that vertex has needed properties to generate on
+     * 
      * @param vertex Vertex to be verified
      * @return <code>true</code> if vertex has necessary properties and exists
      */
@@ -843,8 +852,8 @@ public class HttpEntry {
             if (!vertex.property(AAIProperties.AAI_URI).isPresent()) {
                 LOGGER.debug("Encountered an vertex {} with missing aai-uri", vertex.id());
                 canGenerate = false;
-            } else if (!vertex.property(AAIProperties.CREATED_TS).isPresent() ||
-                !vertex.property(AAIProperties.LAST_MOD_TS).isPresent()) {
+            } else if (!vertex.property(AAIProperties.CREATED_TS).isPresent()
+                    || !vertex.property(AAIProperties.LAST_MOD_TS).isPresent()) {
                 LOGGER.debug("Encountered an vertex {} with missing timestamp", vertex.id());
                 canGenerate = false;
             }
@@ -912,6 +921,7 @@ public class HttpEntry {
         return serializer.dbToObject(results, obj, depth, nodeOnly, cleanUp);
 
     }
+
     /**
      * Gets the object from db.
      *
@@ -971,8 +981,8 @@ public class HttpEntry {
      * @throws URISyntaxException
      */
     private Introspector getRelationshipObjectFromDb(List<Vertex> results, DBSerializer serializer, QueryParser query,
-            URI uri, boolean isSkipRelatedTo) throws AAIException, IllegalArgumentException, SecurityException, UnsupportedEncodingException,
-            AAIUnknownObjectException {
+            URI uri, boolean isSkipRelatedTo) throws AAIException, IllegalArgumentException, SecurityException,
+            UnsupportedEncodingException, AAIUnknownObjectException {
 
         // nothing found
         if (results.isEmpty()) {
@@ -996,7 +1006,7 @@ public class HttpEntry {
      * @return the string
      */
     private String createNotFoundMessage(String resultType, URI uri) {
-        return  "No Node of type " + resultType + " found at: " + uri.getPath();
+        return "No Node of type " + resultType + " found at: " + uri.getPath();
     }
 
     /**
@@ -1007,7 +1017,7 @@ public class HttpEntry {
      * @return the string
      */
     private String createRelationshipNotFoundMessage(String resultType, URI uri) {
-        return  "No relationship found of type " + resultType + " at the given URI: " + uri.getPath()
+        return "No relationship found of type " + resultType + " at the given URI: " + uri.getPath()
                 + "/relationship-list";
     }
 
@@ -1105,8 +1115,7 @@ public class HttpEntry {
                 if (null != entry.getValue()) {
                     relatedObjectsMap.put(entry.getValue().getObjectId(), relatedObjects);
                 }
-            } catch (IllegalArgumentException | SecurityException
-                    | UnsupportedEncodingException | AAIException e) {
+            } catch (IllegalArgumentException | SecurityException | UnsupportedEncodingException | AAIException e) {
                 LOGGER.warn("Unable to get realted Objects, Just continue");
             }
 
@@ -1153,14 +1162,16 @@ public class HttpEntry {
                     List<Object> vertexList = (List<Object>) aggregateVertexList.get(0);
                     this.setTotalsForPaging(vertexList.size(), this.getPaginationBucket());
                     int startIndex = (this.getPaginationIndex() - 1) * this.getPaginationBucket();
-                    int endIndex = Math.min((this.getPaginationBucket() * this.getPaginationIndex()), vertexList.size());
+                    int endIndex =
+                            Math.min((this.getPaginationBucket() * this.getPaginationIndex()), vertexList.size());
                     if (startIndex > endIndex) {
                         throw new AAIException("AAI_6150",
-                            " ResultIndex is not appropriate for the result set, Needs to be <= " + endIndex);
+                                " ResultIndex is not appropriate for the result set, Needs to be <= " + endIndex);
                     }
                     finalList.add(new ArrayList<Object>());
                     for (int i = startIndex; i < endIndex; i++) {
-                        ((ArrayList<Object>) finalList.get(0)).add(((ArrayList<Object>) aggregateVertexList.get(0)).get(i));
+                        ((ArrayList<Object>) finalList.get(0))
+                                .add(((ArrayList<Object>) aggregateVertexList.get(0)).get(i));
                     }
                     return finalList;
                 }

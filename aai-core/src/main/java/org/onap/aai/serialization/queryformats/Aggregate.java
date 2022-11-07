@@ -20,11 +20,13 @@
 
 package org.onap.aai.serialization.queryformats;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.google.gson.*;
-import org.apache.tinkerpop.gremlin.structure.Direction;
-import org.apache.tinkerpop.gremlin.structure.Edge;
+
+import java.io.UnsupportedEncodingException;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 import org.onap.aai.db.props.AAIProperties;
@@ -40,11 +42,8 @@ import org.onap.aai.serialization.queryformats.params.AsTree;
 import org.onap.aai.serialization.queryformats.params.Depth;
 import org.onap.aai.serialization.queryformats.params.NodesOnly;
 import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
-
-import java.io.UnsupportedEncodingException;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Aggregate extends MultiFormatMapper {
     private static final Logger LOGGER = LoggerFactory.getLogger(LifecycleFormat.class);
@@ -65,13 +64,14 @@ public class Aggregate extends MultiFormatMapper {
     }
 
     @Override
-    public Optional<JsonObject> getJsonFromVertex(Vertex v, Map<String, List<String>> selectedProps) throws AAIFormatVertexException{
+    public Optional<JsonObject> getJsonFromVertex(Vertex v, Map<String, List<String>> selectedProps)
+            throws AAIFormatVertexException {
         JsonObject json = new JsonObject();
         JsonObject outer = new JsonObject();
-        Optional<JsonObject> properties = this.createSelectedPropertiesObject(v,selectedProps);
+        Optional<JsonObject> properties = this.createSelectedPropertiesObject(v, selectedProps);
         if (properties.isPresent()) {
             json.add("properties", properties.get());
-            outer.add(this.urlBuilder.pathed(v),json.getAsJsonObject());
+            outer.add(this.urlBuilder.pathed(v), json.getAsJsonObject());
         } else {
             return Optional.empty();
         }
@@ -86,7 +86,7 @@ public class Aggregate extends MultiFormatMapper {
     public Optional<JsonObject> createPropertiesObject(Vertex v) throws AAIFormatVertexException {
         try {
             final Introspector obj =
-                loader.introspectorFromName(v.<String>property(AAIProperties.NODE_TYPE).orElse(null));
+                    loader.introspectorFromName(v.<String>property(AAIProperties.NODE_TYPE).orElse(null));
 
             final List<Vertex> wrapper = new ArrayList<>();
             wrapper.add(v);
@@ -95,7 +95,7 @@ public class Aggregate extends MultiFormatMapper {
                 serializer.dbToObject(wrapper, obj, 0, true, "false");
             } catch (AAIException | UnsupportedEncodingException e) {
                 throw new AAIFormatVertexException(
-                    "Failed to format vertex - error while serializing: " + e.getMessage(), e);
+                        "Failed to format vertex - error while serializing: " + e.getMessage(), e);
             }
 
             final String json = obj.marshal(false);
@@ -105,7 +105,8 @@ public class Aggregate extends MultiFormatMapper {
         }
     }
 
-    public Optional<JsonObject> createSelectedPropertiesObject(Vertex v, Map<String, List<String>> selectedProps) throws AAIFormatVertexException {
+    public Optional<JsonObject> createSelectedPropertiesObject(Vertex v, Map<String, List<String>> selectedProps)
+            throws AAIFormatVertexException {
         JsonObject json = new JsonObject();
         Set<String> propList = null;
         String nodeType = v.<String>value(AAIProperties.NODE_TYPE);
@@ -140,10 +141,9 @@ public class Aggregate extends MultiFormatMapper {
         return Optional.of(json);
     }
 
-    private Set<String> removeSingleQuotesForProperties(List<String> props){
+    private Set<String> removeSingleQuotesForProperties(List<String> props) {
         if (props != null && !props.isEmpty()) {
-            return props.stream().map(
-                e -> e.substring(1, e.length()-1)).collect(Collectors.toSet());
+            return props.stream().map(e -> e.substring(1, e.length() - 1)).collect(Collectors.toSet());
         } else {
             return Collections.emptySet();
         }
@@ -169,23 +169,21 @@ public class Aggregate extends MultiFormatMapper {
             }
 
             return Optional.<JsonObject>empty();
-        }).filter(Optional::isPresent)
-            .map(Optional::get)
-            .forEach(json -> {
-                if (isParallel) {
-                    synchronized (body) {
-                        body.add(json);
-                    }
-                } else {
+        }).filter(Optional::isPresent).map(Optional::get).forEach(json -> {
+            if (isParallel) {
+                synchronized (body) {
                     body.add(json);
                 }
-            });
+            } else {
+                body.add(json);
+            }
+        });
         return body;
     }
 
     @Override
     public Optional<JsonObject> formatObject(Object input, Map<String, List<String>> properties)
-        throws AAIFormatVertexException, AAIFormatQueryResultFormatNotSupported {
+            throws AAIFormatVertexException, AAIFormatQueryResultFormatNotSupported {
         JsonObject json = new JsonObject();
         if (input instanceof ArrayList) {
             Optional<JsonArray> ja = processInput(input, properties);
@@ -198,7 +196,7 @@ public class Aggregate extends MultiFormatMapper {
 
     private Optional<JsonArray> processInput(Object input, Map properties) throws AAIFormatVertexException {
         JsonArray json = new JsonArray();
-        for (Object l  : (ArrayList) input) {
+        for (Object l : (ArrayList) input) {
             if (l instanceof ArrayList) {
                 JsonArray inner = new JsonArray();
                 for (Vertex o : (ArrayList<Vertex>) l) {
@@ -213,8 +211,9 @@ public class Aggregate extends MultiFormatMapper {
                 }
                 json.add(inner);
             } else {
-                Optional<JsonObject> obj = this.getJsonFromVertex((Vertex)l, properties);
-                if(obj.isPresent()) json.add(obj.get());
+                Optional<JsonObject> obj = this.getJsonFromVertex((Vertex) l, properties);
+                if (obj.isPresent())
+                    json.add(obj.get());
             }
         }
         return Optional.of(json);
@@ -237,7 +236,9 @@ public class Aggregate extends MultiFormatMapper {
             this.urlBuilder = urlBuilder;
         }
 
-        protected boolean isTree() { return this.tree; }
+        protected boolean isTree() {
+            return this.tree;
+        }
 
         public Builder isTree(Boolean tree) {
             this.tree = tree;
@@ -293,7 +294,7 @@ public class Aggregate extends MultiFormatMapper {
         }
 
         public Aggregate build() {
-                return new Aggregate(this);
+            return new Aggregate(this);
         }
     }
 

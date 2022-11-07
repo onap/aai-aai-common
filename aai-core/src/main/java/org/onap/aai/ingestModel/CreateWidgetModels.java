@@ -30,7 +30,6 @@ import java.util.UUID;
 
 import javax.xml.transform.stream.StreamSource;
 
-import org.onap.aai.config.SpringContextAware;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.introspection.LoaderFactory;

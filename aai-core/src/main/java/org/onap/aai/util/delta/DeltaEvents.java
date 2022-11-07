@@ -20,26 +20,26 @@
 
 package org.onap.aai.util.delta;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.google.gson.*;
-import org.onap.aai.db.props.AAIProperties;
-import org.onap.aai.dmaap.AAIDmaapEventJMSProducer;
-import org.onap.aai.dmaap.MessageProducer;
-import org.onap.aai.util.AAIConfig;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
+import org.onap.aai.db.props.AAIProperties;
+import org.onap.aai.dmaap.AAIDmaapEventJMSProducer;
+import org.onap.aai.dmaap.MessageProducer;
+import org.onap.aai.util.AAIConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class DeltaEvents {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeltaEvents.class);
 
-    private static final Gson gson = new GsonBuilder()
-        .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_DASHES)
-        .create();
+    private static final Gson gson =
+            new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_DASHES).create();
 
     private String transId;
     private String sourceName;
@@ -53,7 +53,8 @@ public class DeltaEvents {
         this(transId, sourceName, schemaVersion, objectDeltas, new AAIDmaapEventJMSProducer());
     }
 
-    public DeltaEvents(String transId, String sourceName, String schemaVersion, Map<String, ObjectDelta> objectDeltas, MessageProducer messageProducer) {
+    public DeltaEvents(String transId, String sourceName, String schemaVersion, Map<String, ObjectDelta> objectDeltas,
+            MessageProducer messageProducer) {
         this.transId = transId;
         this.sourceName = sourceName;
         this.schemaVersion = schemaVersion;
@@ -125,11 +126,12 @@ public class DeltaEvents {
 
     /**
      * Given Long timestamp convert to format YYYYMMdd-HH:mm:ss:SSS
+     * 
      * @param timestamp milliseconds since epoc
      * @return long timestamp in format YYYYMMdd-HH:mm:ss:SSS
      */
     private String getTimeStamp(long timestamp) {
-        //SimpleDateFormat is not thread safe new instance needed
+        // SimpleDateFormat is not thread safe new instance needed
         DateFormat df = new SimpleDateFormat("yyyyMMdd-HH:mm:ss:SSS");
         return df.format(new Date(timestamp));
     }

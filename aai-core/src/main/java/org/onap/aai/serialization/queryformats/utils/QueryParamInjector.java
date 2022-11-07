@@ -20,23 +20,19 @@
 
 package org.onap.aai.serialization.queryformats.utils;
 
-import org.onap.aai.serialization.queryformats.exceptions.QueryParamInjectionException;
-import org.onap.aai.serialization.queryformats.params.*;
-
-import javax.ws.rs.core.MultivaluedMap;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import javax.ws.rs.core.MultivaluedMap;
+
+import org.onap.aai.serialization.queryformats.exceptions.QueryParamInjectionException;
+import org.onap.aai.serialization.queryformats.params.*;
+
 public class QueryParamInjector {
 
-    //TODO reimplement this using reflections.
-    private static final Class<?>[] PARAM_CLASSES = new Class[] {
-        AsTree.class,
-        Depth.class,
-        EndTs.class,
-        NodesOnly.class,
-        StartTs.class
-    };
+    // TODO reimplement this using reflections.
+    private static final Class<?>[] PARAM_CLASSES =
+            new Class[] {AsTree.class, Depth.class, EndTs.class, NodesOnly.class, StartTs.class};
 
     private static class Helper {
         private static final QueryParamInjector INSTANCE = new QueryParamInjector();

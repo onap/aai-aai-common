@@ -20,10 +20,10 @@
 
 package org.onap.aai.domain.model;
 
-import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
 
 public class AAIResources {
 

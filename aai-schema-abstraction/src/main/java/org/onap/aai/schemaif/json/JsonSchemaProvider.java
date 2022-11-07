@@ -18,6 +18,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.schemaif.json;
 
 import java.io.BufferedOutputStream;
@@ -50,13 +51,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-
 public class JsonSchemaProvider implements SchemaProvider {
     // Logger logger = LoggerFactory.getInstance().getLogger(JsonSchemaProvider.class.getName());
     Logger logger = LoggerFactory.getInstance().getLogger(SchemaProvider.class);
 
     private JsonSchemaProviderConfig config;
-    private Map<String,SchemaInstance> schemaCache = new ConcurrentHashMap<>();
+    private Map<String, SchemaInstance> schemaCache = new ConcurrentHashMap<>();
     private RestTemplate restTemplate = null;
 
     public JsonSchemaProvider(JsonSchemaProviderConfig config) {
@@ -140,7 +140,6 @@ public class JsonSchemaProvider implements SchemaProvider {
             return;
         }
 
-
         String url = config.getSchemaServiceBaseUrl() + "/" + version;
 
         HttpHeaders headers = new HttpHeaders();
@@ -148,30 +147,28 @@ public class JsonSchemaProvider implements SchemaProvider {
         headers.put("X-TransactionId", Arrays.asList(java.util.UUID.randomUUID().toString()));
         headers.setAccept(Arrays.asList(org.springframework.http.MediaType.APPLICATION_OCTET_STREAM));
 
-        HttpEntity <String> entity = new HttpEntity<>(headers);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
 
         ResponseEntity<byte[]> response = restTemplate.exchange(url, HttpMethod.GET, entity, byte[].class);
-
 
         if (response.getStatusCodeValue() == HttpStatus.NOT_FOUND.value()) {
             logger.warn(SchemaProviderMsgs.SCHEMA_LOAD_ERROR, "version " + version + " not found");
             throw new SchemaProviderException("Schema version " + version + " not found");
-        }
-        else if (response.getStatusCodeValue() != HttpStatus.OK.value()) {
-            logger.error(SchemaProviderMsgs.SCHEMA_LOAD_ERROR, "failed to load version " + version + ": " + response.getBody());
+        } else if (response.getStatusCodeValue() != HttpStatus.OK.value()) {
+            logger.error(SchemaProviderMsgs.SCHEMA_LOAD_ERROR,
+                    "failed to load version " + version + ": " + response.getBody());
             throw new SchemaProviderException("Error getting schema version " + version + ":" + response.getBody());
         }
 
         try {
             SchemaServiceResponse resp = SchemaServiceResponse.fromJson(unzipAndGetJSONString(response.getBody()));
             loadSchema(resp.getData().toJson(), version);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             StringWriter writer = new StringWriter();
             PrintWriter printWriter = new PrintWriter(writer);
             ex.printStackTrace(printWriter);
-            logger.error(SchemaProviderMsgs.SCHEMA_LOAD_ERROR, "failed to load version " + version + ": "
-                    + response.getBody() + "\n" + writer.toString());
+            logger.error(SchemaProviderMsgs.SCHEMA_LOAD_ERROR,
+                    "failed to load version " + version + ": " + response.getBody() + "\n" + writer.toString());
             throw new SchemaProviderException("Error loading schema version " + version + ":" + ex.getMessage());
 
         }
@@ -181,14 +178,15 @@ public class JsonSchemaProvider implements SchemaProvider {
 
     static final int BUFFER = 512;
     static final long TOOBIG = 0x6400000; // Max size of unzipped data, 100MB
-    static final int TOOMANY = 1024;      // Max number of files
+    static final int TOOMANY = 1024; // Max number of files
 
     protected String unzipAndGetJSONString(byte[] inputData) throws java.io.IOException {
         ZipEntry entry;
         String result = "";
         int entries = 0;
         long total = 0;
-        try (ByteArrayInputStream bis = new ByteArrayInputStream(inputData); ZipInputStream zis = new ZipInputStream(bis)) {
+        try (ByteArrayInputStream bis = new ByteArrayInputStream(inputData);
+                ZipInputStream zis = new ZipInputStream(bis)) {
             while ((entry = zis.getNextEntry()) != null) {
                 int count;
                 byte[] data = new byte[BUFFER];
@@ -218,7 +216,7 @@ public class JsonSchemaProvider implements SchemaProvider {
     }
 
     private SchemaInstance getSchemaVersion(String version) throws SchemaProviderException {
-        // TODO:  For now, we are only supporting a single version of the schema.  Load that
+        // TODO: For now, we are only supporting a single version of the schema. Load that
         // version regardless of what the client asks for.
         String versionToLoad = getLatestSchemaVersion();
         SchemaInstance inst = schemaCache.get(versionToLoad);
@@ -236,7 +234,7 @@ public class JsonSchemaProvider implements SchemaProvider {
 
     @Override
     public Map<String, VertexSchema> getVertexMap(String schemaVersion) throws SchemaProviderException {
-      return getSchemaVersion(schemaVersion).getVertexMap();
+        return getSchemaVersion(schemaVersion).getVertexMap();
     }
 
 }

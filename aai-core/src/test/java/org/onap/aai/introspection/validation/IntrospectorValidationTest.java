@@ -33,8 +33,6 @@ import org.onap.aai.introspection.*;
 import org.onap.aai.introspection.tools.IntrospectorValidator;
 import org.onap.aai.introspection.tools.Issue;
 import org.onap.aai.introspection.tools.IssueType;
-import org.onap.aai.serialization.queryformats.QueryFormatTestHelper;
-import org.onap.aai.util.AAIConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class IntrospectorValidationTest extends AAISetup {

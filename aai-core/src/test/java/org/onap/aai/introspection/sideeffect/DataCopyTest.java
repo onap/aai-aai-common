@@ -95,35 +95,22 @@ public class DataCopyTest extends AAISetup {
         System.setProperty("AJSC_HOME", ".");
         System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
 
-        graph.traversal()
-            .addV("model")
-            .property("aai-node-type", "model")
-            .property("model-invariant-id", "key1")
-            .property(AAIProperties.AAI_URI,"/service-design-and-creation/models/model/key1")
-            .as("v1")
-            .addV("model-ver")
-            .property("aai-node-type", "model-ver")
-            .property("model-ver", "myValue")
-            .property("model-version-id", "key2")
-            .property("model-version", "testValue")
-            .property(AAIProperties.AAI_URI, "/service-design-and-creation/models/model/key1/model-vers/model-ver/key2")
-            .as("v2")
-            .addE("org.onap.relationships.inventory.BelongsTo").to("v1").from("v2")
-            .property(EdgeProperty.CONTAINS.toString(), true)
-            .addV("model")
-            .property("aai-node-type", "model")
-            .property("model-invariant-id", "key3")
-            .property(AAIProperties.AAI_URI, "/service-design-and-creation/models/model/key3")
-            .as("v3")
-            .addV()
-            .property("aai-node-type", "model-ver")
-            .property("model-ver", "myValue")
-            .property("model-version-id", "key4")
-            .property(AAIProperties.AAI_URI, "/service-design-and-creation/models/model/key3/model-vers/model-ver/key4")
-            .as("v4")
-            .addE("org.onap.relationships.inventory.BelongsTo").to("v3").from("v4")
-            .property(EdgeProperty.CONTAINS.toString(), true)
-            .next();
+        graph.traversal().addV("model").property("aai-node-type", "model").property("model-invariant-id", "key1")
+                .property(AAIProperties.AAI_URI, "/service-design-and-creation/models/model/key1").as("v1")
+                .addV("model-ver").property("aai-node-type", "model-ver").property("model-ver", "myValue")
+                .property("model-version-id", "key2").property("model-version", "testValue")
+                .property(AAIProperties.AAI_URI,
+                        "/service-design-and-creation/models/model/key1/model-vers/model-ver/key2")
+                .as("v2").addE("org.onap.relationships.inventory.BelongsTo").to("v1").from("v2")
+                .property(EdgeProperty.CONTAINS.toString(), true).addV("model").property("aai-node-type", "model")
+                .property("model-invariant-id", "key3")
+                .property(AAIProperties.AAI_URI, "/service-design-and-creation/models/model/key3").as("v3").addV()
+                .property("aai-node-type", "model-ver").property("model-ver", "myValue")
+                .property("model-version-id", "key4")
+                .property(AAIProperties.AAI_URI,
+                        "/service-design-and-creation/models/model/key3/model-vers/model-ver/key4")
+                .as("v4").addE("org.onap.relationships.inventory.BelongsTo").to("v3").from("v4")
+                .property(EdgeProperty.CONTAINS.toString(), true).next();
         graph.tx().commit();
     }
 
@@ -141,8 +128,8 @@ public class DataCopyTest extends AAISetup {
     }
 
     @Test
-    public void runPopulatePersonaModelVer() throws AAIException, UnsupportedEncodingException,
-            IllegalArgumentException, SecurityException {
+    public void runPopulatePersonaModelVer()
+            throws AAIException, UnsupportedEncodingException, IllegalArgumentException, SecurityException {
 
         final Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
         final Introspector obj = loader.introspectorFromName("generic-vnf");

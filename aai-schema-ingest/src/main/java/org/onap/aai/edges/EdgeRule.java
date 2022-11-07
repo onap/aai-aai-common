@@ -20,11 +20,11 @@
 
 package org.onap.aai.edges;
 
-import org.apache.tinkerpop.gremlin.structure.Direction;
-import org.onap.aai.edges.enums.*;
-
 import java.util.EnumMap;
 import java.util.Map;
+
+import org.apache.tinkerpop.gremlin.structure.Direction;
+import org.onap.aai.edges.enums.*;
 
 /**
  * Container for A&AI edge rule information

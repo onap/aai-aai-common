@@ -20,7 +20,14 @@
 
 package org.onap.aai.serialization.queryformats;
 
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
+
 import com.google.gson.JsonObject;
+
+import java.util.*;
+
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.strategy.verification.ReadOnlyStrategy;
 import org.apache.tinkerpop.gremlin.structure.Graph;
@@ -45,12 +52,6 @@ import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
 import org.onap.aai.setup.SchemaVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
-
-import java.util.*;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class RawFormatTest extends AAISetup {
@@ -98,27 +99,27 @@ public class RawFormatTest extends AAISetup {
     }
 
     @Test
-    public void verifyPserverRelatedToHasEdgeLabel()
-            throws AAIFormatVertexException {
-        assertEquals("org.onap.relationships.inventory.LocatedIn", rawFormat.createRelationshipObject(pserver).get(0).getAsJsonObject().get("relationship-label").getAsString());
+    public void verifyPserverRelatedToHasEdgeLabel() throws AAIFormatVertexException {
+        assertEquals("org.onap.relationships.inventory.LocatedIn", rawFormat.createRelationshipObject(pserver).get(0)
+                .getAsJsonObject().get("relationship-label").getAsString());
     }
 
     @Test
-    public void verifyPserverRelatedToComplexLabel()
-            throws AAIFormatVertexException {
-        assertEquals("complex", rawFormat.createRelationshipObject(pserver).get(0).getAsJsonObject().get("node-type").getAsString());
+    public void verifyPserverRelatedToComplexLabel() throws AAIFormatVertexException {
+        assertEquals("complex",
+                rawFormat.createRelationshipObject(pserver).get(0).getAsJsonObject().get("node-type").getAsString());
     }
 
     @Test
-    public void verifyComplexRelatedToHasEdgeLabel()
-            throws AAIFormatVertexException {
-        assertEquals("org.onap.relationships.inventory.LocatedIn", rawFormat.createRelationshipObject(complex).get(0).getAsJsonObject().get("relationship-label").getAsString());
+    public void verifyComplexRelatedToHasEdgeLabel() throws AAIFormatVertexException {
+        assertEquals("org.onap.relationships.inventory.LocatedIn", rawFormat.createRelationshipObject(complex).get(0)
+                .getAsJsonObject().get("relationship-label").getAsString());
     }
 
     @Test
-    public void verifyComplexRelatedToPserverLabel()
-            throws AAIFormatVertexException {
-        assertEquals("pserver", rawFormat.createRelationshipObject(complex).get(0).getAsJsonObject().get("node-type").getAsString());
+    public void verifyComplexRelatedToPserverLabel() throws AAIFormatVertexException {
+        assertEquals("pserver",
+                rawFormat.createRelationshipObject(complex).get(0).getAsJsonObject().get("node-type").getAsString());
     }
 
     private void createLoaderEngineSetup() throws AAIException {
@@ -149,13 +150,12 @@ public class RawFormatTest extends AAISetup {
         json.entrySet().forEach((System.out::println));
         assertTrue(json.has("hostname"));
         Map<String, List<String>> propMap = new HashMap<>();
-        List<String> selectedProps = new ArrayList<String>( Arrays.asList("'physical-location-id'"));
-        propMap.put("complex",selectedProps);
+        List<String> selectedProps = new ArrayList<String>(Arrays.asList("'physical-location-id'"));
+        propMap.put("complex", selectedProps);
         JsonObject json1 = rawFormat.createSelectedPropertiesObject(complex, propMap).get();
         json1.entrySet().forEach((System.out::println));
         assertFalse(json1.has("aai-node-type"));
         assertTrue(json1.has("physical-location-id"));
     }
-
 
 }

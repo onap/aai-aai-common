@@ -17,10 +17,8 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
-package org.onap.aai.failover;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+package org.onap.aai.failover;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,6 +26,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 @Component
 public class FailoverMonitor {
@@ -43,9 +44,9 @@ public class FailoverMonitor {
 
         Path failoverPath = Paths.get(failoverPropertiesPath);
 
-        if(Files.exists(failoverPath)){
+        if (Files.exists(failoverPath)) {
             Properties properties = new Properties();
-            try (InputStream is = Files.newInputStream(failoverPath)){
+            try (InputStream is = Files.newInputStream(failoverPath)) {
                 properties.load(is);
                 // If the property is_primary is missing then it should proceed
                 return TRUE.equals(properties.getProperty(IS_PRIMARY, DEFAULT_FOR_PRIMARY));

@@ -75,6 +75,7 @@ public class ErrorObject {
 
     /**
      * Instantiates a new error object.
+     * 
      * @param severity the severity
      * @param errorCode the error code
      * @param errorText the error text
@@ -305,6 +306,7 @@ public class ErrorObject {
     public void setDetails(String details) {
         this.details = details == null ? "" : details;
     }
+
     /**
      * Sets the aai els error code.
      *
@@ -313,6 +315,7 @@ public class ErrorObject {
     public void setAaiElsErrorCode(String elsErrorCode) {
         aaiElsErrorCode = elsErrorCode;
     }
+
     /**
      * Gets the aai els error code.
      *
@@ -321,6 +324,7 @@ public class ErrorObject {
     public String getAaiElsErrorCode() {
         return (aaiElsErrorCode);
     }
+
     /**
      * Gets the error code string. This is also the string
      * configured in Nagios to alert on

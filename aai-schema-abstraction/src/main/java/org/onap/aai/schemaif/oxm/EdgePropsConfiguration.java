@@ -18,6 +18,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.schemaif.oxm;
 
 import org.springframework.beans.factory.annotation.Value;

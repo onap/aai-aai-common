@@ -20,8 +20,6 @@
 
 package org.onap.aai.introspection;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.google.common.base.CaseFormat;
 import com.google.common.collect.ImmutableMap;
 
@@ -49,6 +47,8 @@ import org.onap.aai.restcore.MediaType;
 import org.onap.aai.schema.enums.ObjectMetadata;
 import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.workarounds.NamingExceptions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MoxyLoader extends Loader {
 

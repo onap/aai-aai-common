@@ -21,6 +21,7 @@
 package org.onap.aai.query.builder;
 
 import java.util.Map;
+
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
@@ -39,12 +40,12 @@ public class HistoryTraversalURIOptimizedQuery<E> extends TraversalURIOptimizedQ
     }
 
     protected HistoryTraversalURIOptimizedQuery(GraphTraversal traversal, Loader loader, GraphTraversalSource source,
-                                                GraphTraversalBuilder gtb) {
+            GraphTraversalBuilder gtb) {
         super(traversal, loader, source, gtb);
     }
 
     protected HistoryTraversalURIOptimizedQuery(GraphTraversal traversal, Loader loader, GraphTraversalSource source,
-                                                GraphTraversalBuilder gtb, Map<Integer, String> stepToAaiUri) {
+            GraphTraversalBuilder gtb, Map<Integer, String> stepToAaiUri) {
         super(traversal, loader, source, gtb, stepToAaiUri);
     }
 

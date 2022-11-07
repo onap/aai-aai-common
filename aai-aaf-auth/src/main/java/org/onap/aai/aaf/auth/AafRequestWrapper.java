@@ -20,9 +20,10 @@
 
 package org.onap.aai.aaf.auth;
 
+import java.util.*;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
-import java.util.*;
 
 /**
  * The AafRequestWrapper sets the user in the principal name

@@ -21,23 +21,22 @@
 
 package org.onap.aai.schemaif.definitions.types;
 
-public class LongDataType extends DataType {    
+public class LongDataType extends DataType {
     public LongDataType() {
         super(Type.LONG);
     }
 
     @Override
     public Object validateValue(String value) {
-        // TODO:  In Tosca, you can impose constraints such as min/max value.
+        // TODO: In Tosca, you can impose constraints such as min/max value.
         // In future we can add this type of validation
         Long longInt;
         try {
             longInt = Long.parseLong(value);
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             return null;
         }
-        
+
         return longInt;
     }
 }

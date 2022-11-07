@@ -18,6 +18,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.schemaif.oxm;
 
 import java.io.IOException;
@@ -61,7 +62,8 @@ public class OxmSchemaLoader {
     private static org.onap.aai.cl.api.Logger logger =
             LoggerFactory.getInstance().getLogger(OxmSchemaLoader.class.getName());
 
-    private OxmSchemaLoader() {}
+    private OxmSchemaLoader() {
+    }
 
     /**
      * This constructor presents an awkward marrying of Spring bean creation and static method use. This
@@ -172,24 +174,24 @@ public class OxmSchemaLoader {
         }
         xmlElementLookup.put(version, types);
     }
-    
+
     private static void loadVertexLookupMap(String version, DynamicJAXBContext jaxbContext) {
 
-      @SuppressWarnings("rawtypes")
-      List<Descriptor> descriptorsList = jaxbContext.getXMLContext().getDescriptors();
-      HashMap<String, VertexSchema> vertexMap = new HashMap<String, VertexSchema>();
+        @SuppressWarnings("rawtypes")
+        List<Descriptor> descriptorsList = jaxbContext.getXMLContext().getDescriptors();
+        HashMap<String, VertexSchema> vertexMap = new HashMap<String, VertexSchema>();
 
-      for (@SuppressWarnings("rawtypes")
-      Descriptor desc : descriptorsList) {
-        try {
-          FromOxmVertexSchema vs = new FromOxmVertexSchema();
-          vs.fromOxm(desc.getDefaultRootElement(), jaxbContext, getXmlLookupMap(version));
-          vertexMap.put(vs.getName(), vs);
-        } catch (SchemaProviderException e) {
-          continue;
+        for (@SuppressWarnings("rawtypes")
+        Descriptor desc : descriptorsList) {
+            try {
+                FromOxmVertexSchema vs = new FromOxmVertexSchema();
+                vs.fromOxm(desc.getDefaultRootElement(), jaxbContext, getXmlLookupMap(version));
+                vertexMap.put(vs.getName(), vs);
+            } catch (SchemaProviderException e) {
+                continue;
+            }
         }
-      }
-      vertexLookup.put(version, vertexMap);
+        vertexLookup.put(version, vertexMap);
     }
 
     /**
@@ -223,14 +225,15 @@ public class OxmSchemaLoader {
         return xmlElementLookup.get(version);
     }
 
-    public static HashMap<String, VertexSchema> getVertexLookupForVersion(String version) throws SchemaProviderException {
-      // If we haven't already loaded in the available OXM models, then do so now.
-      if (vertexLookup == null || vertexLookup.isEmpty()) {
-          loadModels();
-      } else if (!vertexLookup.containsKey(version)) {
-          throw new SchemaProviderException("Error loading oxm model: " + version);
-      }
-      return vertexLookup.get(version);
+    public static HashMap<String, VertexSchema> getVertexLookupForVersion(String version)
+            throws SchemaProviderException {
+        // If we haven't already loaded in the available OXM models, then do so now.
+        if (vertexLookup == null || vertexLookup.isEmpty()) {
+            loadModels();
+        } else if (!vertexLookup.containsKey(version)) {
+            throw new SchemaProviderException("Error loading oxm model: " + version);
+        }
+        return vertexLookup.get(version);
     }
 
 }

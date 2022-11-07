@@ -22,11 +22,14 @@ package org.onap.logging.filter.base;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
+
 import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;

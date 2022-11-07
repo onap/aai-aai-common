@@ -20,11 +20,11 @@
 
 package org.onap.aai.logging;
 
-import org.junit.Test;
-import org.onap.aai.exceptions.AAIException;
-
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
+import org.onap.aai.exceptions.AAIException;
 
 public class LogFormatToolsTest {
 

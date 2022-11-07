@@ -20,19 +20,18 @@
 
 package org.onap.aai.restclient;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.annotation.PostConstruct;
+import javax.net.ssl.SSLContext;
+
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.onap.aai.aailog.filter.RestClientLoggingInterceptor;
-import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.client.RestTemplate;
-
-import javax.annotation.PostConstruct;
-import javax.net.ssl.SSLContext;
 
 public abstract class OneWaySSLRestClient extends RestClient {
 
@@ -61,12 +60,11 @@ public abstract class OneWaySSLRestClient extends RestClient {
 
         String trustStore = getTruststorePath();
 
-        SSLContext sslContext =
-            SSLContextBuilder.create()
+        SSLContext sslContext = SSLContextBuilder.create()
                 .loadTrustMaterial(ResourceUtils.getFile(trustStore), trustStorePassword).build();
 
         HttpClient client =
-            HttpClients.custom().setSSLContext(sslContext).setSSLHostnameVerifier((s, sslSession) -> true).build();
+                HttpClients.custom().setSSLContext(sslContext).setSSLHostnameVerifier((s, sslSession) -> true).build();
 
         return client;
     }

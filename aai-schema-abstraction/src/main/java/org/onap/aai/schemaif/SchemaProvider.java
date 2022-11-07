@@ -21,11 +21,11 @@
 
 package org.onap.aai.schemaif;
 
-import org.onap.aai.schemaif.definitions.EdgeSchema;
-import org.onap.aai.schemaif.definitions.VertexSchema;
-
 import java.util.Map;
 import java.util.Set;
+
+import org.onap.aai.schemaif.definitions.EdgeSchema;
+import org.onap.aai.schemaif.definitions.VertexSchema;
 
 public interface SchemaProvider {
 
@@ -61,7 +61,8 @@ public interface SchemaProvider {
      *
      * @return The edge schema definition
      */
-    EdgeSchema getEdgeSchema(String edgeType, String sourceVertex, String targetVertex, String version) throws SchemaProviderException;
+    EdgeSchema getEdgeSchema(String edgeType, String sourceVertex, String targetVertex, String version)
+            throws SchemaProviderException;
 
     /**
      * Get the list of edge definitions which are adjacent to the given vertex
@@ -82,7 +83,8 @@ public interface SchemaProvider {
      *
      * @return The list of edge schema definitions
      */
-    Set<EdgeSchema> getEdgeSchemaForSourceTarget(String sourceType, String targetType, String version) throws SchemaProviderException;
+    Set<EdgeSchema> getEdgeSchemaForSourceTarget(String sourceType, String targetType, String version)
+            throws SchemaProviderException;
 
     /**
      * Get vertex map for a schema version
@@ -92,4 +94,4 @@ public interface SchemaProvider {
      * @return The list of vertex types
      */
     Map<String, VertexSchema> getVertexMap(String schemaVersion) throws SchemaProviderException;
- }
+}

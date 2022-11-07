@@ -20,6 +20,14 @@
 
 package org.onap.aai.rest;
 
+import static junit.framework.TestCase.fail;
+import static org.junit.Assert.assertEquals;
+
+import java.util.Arrays;
+import java.util.Collection;
+
+import javax.ws.rs.core.Response;
+
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.janusgraph.core.JanusGraphTransaction;
 import org.junit.*;
@@ -34,13 +42,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.junit4.rules.SpringClassRule;
 import org.springframework.test.context.junit4.rules.SpringMethodRule;
-
-import javax.ws.rs.core.Response;
-import java.util.Arrays;
-import java.util.Collection;
-
-import static junit.framework.TestCase.fail;
-import static org.junit.Assert.assertEquals;
 
 @RunWith(value = Parameterized.class)
 public class VnfcRelationshipIssueTest extends AAISetup {

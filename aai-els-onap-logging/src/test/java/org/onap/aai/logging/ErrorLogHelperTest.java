@@ -20,6 +20,16 @@
 
 package org.onap.aai.logging;
 
+import static java.lang.Thread.sleep;
+import static org.junit.Assert.*;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.ws.rs.core.MediaType;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,15 +42,6 @@ import org.onap.aai.util.LogFile;
 import org.onap.aai.util.MapperUtil;
 import org.slf4j.MDC;
 
-import javax.ws.rs.core.MediaType;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import static java.lang.Thread.sleep;
-import static org.junit.Assert.*;
-
 public class ErrorLogHelperTest {
 
     private static final String ErrorLogFileName = "error.log";
@@ -50,14 +51,16 @@ public class ErrorLogHelperTest {
         System.setProperty("AJSC_HOME", ".");
 
     }
+
     @After
-    public void cleanup() throws IOException{
+    public void cleanup() throws IOException {
         MDC.clear();
         LogFile.deleteContents(ErrorLogFileName);
     }
+
     @Test
     public void logErrorTest() throws IOException, InterruptedException {
-        //||main|UNKNOWN||||ERROR|500|Node cannot be deleted:3100:Bad Request:|ERR.5.4.6110
+        // ||main|UNKNOWN||||ERROR|500|Node cannot be deleted:3100:Bad Request:|ERR.5.4.6110
         ErrorLogHelper.logError("AAI_6110");
         sleep(5000);
         String logContents = LogFile.getContents(ErrorLogFileName);
@@ -66,15 +69,15 @@ public class ErrorLogHelperTest {
 
         String logContentParts[] = logContents.split("\\|");
 
-        assertTrue(logContentParts.length >= 11 );
-        assertEquals ("ERROR", logContentParts[7]);
-        assertEquals (AaiElsErrorCode.BUSINESS_PROCESS_ERROR, logContentParts[8]);
-        assertTrue (logContentParts[10].startsWith("ERR.5.4.6110"));
+        assertTrue(logContentParts.length >= 11);
+        assertEquals("ERROR", logContentParts[7]);
+        assertEquals(AaiElsErrorCode.BUSINESS_PROCESS_ERROR, logContentParts[8]);
+        assertTrue(logContentParts[10].startsWith("ERR.5.4.6110"));
     }
 
     @Test
     public void logErrorWithMessageTest() throws IOException, InterruptedException {
-        //||main|UNKNOWN||||ERROR|500|Node cannot be deleted:3100:Bad Request:|ERR.5.4.6110 message
+        // ||main|UNKNOWN||||ERROR|500|Node cannot be deleted:3100:Bad Request:|ERR.5.4.6110 message
         String errorMessage = "Object is referenced by additional objects";
         ErrorLogHelper.logError("AAI_6110", errorMessage);
         sleep(5000);
@@ -84,14 +87,14 @@ public class ErrorLogHelperTest {
 
         String logContentParts[] = logContents.split("\\|");
 
-        assertTrue(logContentParts.length >= 11 );
-        assertTrue (logContentParts[9].contains(errorMessage));
-        assertTrue (logContentParts[10].startsWith("ERR.5.4.6110"));
+        assertTrue(logContentParts.length >= 11);
+        assertTrue(logContentParts[9].contains(errorMessage));
+        assertTrue(logContentParts[10].startsWith("ERR.5.4.6110"));
     }
 
     @Test
-    public void getRESTAPIPolicyErrorResponseTest() throws AAIException{
-        //AAI_3002=5:1:WARN:3002:400:3002:Error writing output performing %1 on %2:300
+    public void getRESTAPIPolicyErrorResponseTest() throws AAIException {
+        // AAI_3002=5:1:WARN:3002:400:3002:Error writing output performing %1 on %2:300
         ArrayList<MediaType> headers = new ArrayList<MediaType>(Arrays.asList(MediaType.APPLICATION_JSON_TYPE));
         ArrayList<String> args = new ArrayList<String>(Arrays.asList("PUT", "resource"));
 
@@ -110,9 +113,10 @@ public class ErrorLogHelperTest {
         assertTrue(vars.contains("PUT"));
         assertTrue(vars.contains("resource"));
     }
+
     @Test
-    public void getRESTAPIServiceErrorResponseTest() throws AAIException{
-        //AAI_3009=5:6:WARN:3009:400:3009:Malformed URL:300
+    public void getRESTAPIServiceErrorResponseTest() throws AAIException {
+        // AAI_3009=5:6:WARN:3009:400:3009:Malformed URL:300
         ArrayList<MediaType> headers = new ArrayList<MediaType>(Arrays.asList(MediaType.APPLICATION_JSON_TYPE));
         ArrayList<String> args = new ArrayList<String>();
 
@@ -120,7 +124,8 @@ public class ErrorLogHelperTest {
         String errorResponse = ErrorLogHelper.getRESTAPIErrorResponse(headers, aaie, args);
         assertNotNull(errorResponse);
 
-        org.onap.aai.domain.restServiceException.RESTResponse resp = MapperUtil.readAsObjectOf(org.onap.aai.domain.restServiceException.RESTResponse.class, errorResponse);
+        org.onap.aai.domain.restServiceException.RESTResponse resp =
+                MapperUtil.readAsObjectOf(org.onap.aai.domain.restServiceException.RESTResponse.class, errorResponse);
         org.onap.aai.domain.restServiceException.RequestError requestError = resp.getRequestError();
         assertNotNull(requestError);
         ServiceException serviceException = requestError.getServiceException();
@@ -128,9 +133,10 @@ public class ErrorLogHelperTest {
         assertEquals("SVC3009", serviceException.getMessageId());
 
     }
+
     @Test
-    public void getRESTAPIServiceErrorResponseWithLoggingTest() throws IOException, InterruptedException{
-        //AAI_3009=5:6:WARN:3009:400:3009:Malformed URL:300
+    public void getRESTAPIServiceErrorResponseWithLoggingTest() throws IOException, InterruptedException {
+        // AAI_3009=5:6:WARN:3009:400:3009:Malformed URL:300
         ArrayList<MediaType> headers = new ArrayList<MediaType>(Arrays.asList(MediaType.APPLICATION_JSON_TYPE));
         ArrayList<String> args = new ArrayList<String>();
 
@@ -143,8 +149,8 @@ public class ErrorLogHelperTest {
         assertNotNull(logContents);
         String logContentParts[] = logContents.split("\\|");
 
-        assertTrue(logContentParts.length >= 11 );
-        assertTrue (logContentParts[10].startsWith("ERR.5.6.3009"));
+        assertTrue(logContentParts.length >= 11);
+        assertTrue(logContentParts[10].startsWith("ERR.5.6.3009"));
 
     }
 

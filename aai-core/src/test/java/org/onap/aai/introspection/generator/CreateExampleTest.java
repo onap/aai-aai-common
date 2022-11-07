@@ -29,6 +29,7 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.onap.aai.AAISetup;
@@ -37,7 +38,6 @@ import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.introspection.ModelType;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
-import org.junit.Ignore;
 
 @Ignore
 public class CreateExampleTest extends AAISetup {

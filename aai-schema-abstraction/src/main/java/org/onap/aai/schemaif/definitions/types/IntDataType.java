@@ -23,28 +23,26 @@ package org.onap.aai.schemaif.definitions.types;
 
 import java.text.DecimalFormat;
 
-public class IntDataType extends DataType {    
+public class IntDataType extends DataType {
     public IntDataType() {
         super(Type.INT);
     }
 
     @Override
     public Object validateValue(String value) {
-        // TODO:  In Tosca, you can impose constraints such as min/max value.
+        // TODO: In Tosca, you can impose constraints such as min/max value.
         // In future we can add this type of validation
         Integer intValue;
         try {
             intValue = Integer.parseInt(value);
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             // There is an edge case where an int value is stored as "x.0" in champ.
             // In that case, we just want to drop the ".0" and treat it as a proper
             // integer
             try {
                 DecimalFormat decimalFormat = new DecimalFormat("0.#");
                 intValue = Integer.parseInt(decimalFormat.format(Double.valueOf(value)));
-            }
-            catch (Exception ex)  {
+            } catch (Exception ex) {
                 return null;
             }
         }

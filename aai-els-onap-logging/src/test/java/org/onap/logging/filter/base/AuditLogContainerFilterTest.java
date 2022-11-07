@@ -22,11 +22,13 @@ package org.onap.logging.filter.base;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
+
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
+
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -60,7 +62,6 @@ public class AuditLogContainerFilterTest {
     public void tearDown() {
         MDC.clear();
     }
-
 
     @Test
     public void filterTest() {

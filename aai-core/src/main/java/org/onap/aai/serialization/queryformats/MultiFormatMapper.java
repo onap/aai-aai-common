@@ -20,6 +20,10 @@
 
 package org.onap.aai.serialization.queryformats;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,10 +41,6 @@ import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexExcepti
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-
 public abstract class MultiFormatMapper implements FormatMapper {
 
     private static final Logger logger = LoggerFactory.getLogger(MultiFormatMapper.class);
@@ -50,11 +50,11 @@ public abstract class MultiFormatMapper implements FormatMapper {
     protected static final String NODE_TYPE_KEY = "node-type";
 
     protected static final String RETURNED_EMPTY_JSONARRAY_MSG =
-        "Returned empty JsonArray - Could not populate nested json objects for wrapper: {}";
+            "Returned empty JsonArray - Could not populate nested json objects for wrapper: {}";
 
     @Override
     public Optional<JsonObject> formatObject(Object input)
-        throws AAIFormatVertexException, AAIFormatQueryResultFormatNotSupported {
+            throws AAIFormatVertexException, AAIFormatQueryResultFormatNotSupported {
         if (input instanceof Vertex) {
             logger.debug("Formatting vertex object");
             return this.getJsonFromVertex((Vertex) input);
@@ -75,7 +75,7 @@ public abstract class MultiFormatMapper implements FormatMapper {
 
     @Override
     public Optional<JsonObject> formatObject(Object input, Map<String, List<String>> properties)
-        throws AAIFormatVertexException, AAIFormatQueryResultFormatNotSupported {
+            throws AAIFormatVertexException, AAIFormatQueryResultFormatNotSupported {
         if (input instanceof Vertex) {
             logger.debug("Formatting vertex object with properties map filter");
             return this.getJsonFromVertex((Vertex) input, properties);
@@ -95,7 +95,9 @@ public abstract class MultiFormatMapper implements FormatMapper {
     }
 
     protected abstract Optional<JsonObject> getJsonFromVertex(Vertex input) throws AAIFormatVertexException;
-    protected abstract Optional<JsonObject> getJsonFromVertex(Vertex input, Map<String, List<String>> properties) throws AAIFormatVertexException;
+
+    protected abstract Optional<JsonObject> getJsonFromVertex(Vertex input, Map<String, List<String>> properties)
+            throws AAIFormatVertexException;
 
     protected Optional<JsonObject> getJsonFromPath(Path input) throws AAIFormatVertexException {
         List<Object> path = input.objects();
@@ -116,6 +118,7 @@ public abstract class MultiFormatMapper implements FormatMapper {
 
     /**
      * Returns an Optional<JsonObject> object using "nodes" as a wrapper to encapsulate json objects
+     * 
      * @param tree
      * @return
      * @throws AAIFormatVertexException
@@ -140,12 +143,14 @@ public abstract class MultiFormatMapper implements FormatMapper {
     /**
      * Returns an Optional<JsonObject> object using "related-nodes" to encapsulate nested json objects.
      * Primarily intended to be utilized by the "as-tree" query parameter feature
+     * 
      * @param tree
      * @param properties
      * @return
      * @throws AAIFormatVertexException
      */
-    protected Optional<JsonObject> getRelatedNodesFromTree(Tree<?> tree, Map<String, List<String>> properties) throws AAIFormatVertexException {
+    protected Optional<JsonObject> getRelatedNodesFromTree(Tree<?> tree, Map<String, List<String>> properties)
+            throws AAIFormatVertexException {
         if (tree.isEmpty()) {
             return Optional.of(new JsonObject());
         }
@@ -168,13 +173,15 @@ public abstract class MultiFormatMapper implements FormatMapper {
 
     /**
      * Returns JsonArray Object populated with nested json wrapped by the nodeIdentifier parameter
+     * 
      * @param tree
      * @param filterPropertiesMap
      * @param nodeIdentifier
      * @return
      * @throws AAIFormatVertexException
      */
-    protected JsonArray getNodesArray(Tree<?> tree, Map<String, Set<String>> filterPropertiesMap, String nodeIdentifier) throws AAIFormatVertexException {
+    protected JsonArray getNodesArray(Tree<?> tree, Map<String, Set<String>> filterPropertiesMap, String nodeIdentifier)
+            throws AAIFormatVertexException {
         JsonArray nodes = new JsonArray();
         for (Map.Entry<?, ? extends Tree<?>> entry : tree.entrySet()) {
             JsonObject me = new JsonObject();
@@ -199,6 +206,7 @@ public abstract class MultiFormatMapper implements FormatMapper {
 
     /**
      * Returns a Map<String, Set<String>> object through converting given map parameter
+     * 
      * @param properties
      * @return
      */
@@ -206,19 +214,16 @@ public abstract class MultiFormatMapper implements FormatMapper {
         if (properties == null)
             return new HashMap<>();
 
-        return properties.entrySet().stream()
-            .map(entry -> {
-                    Set<String> newSet = entry.getValue().stream()
-                        .map(this::truncateApostrophes)
-                        .collect(Collectors.toSet());
+        return properties.entrySet().stream().map(entry -> {
+            Set<String> newSet = entry.getValue().stream().map(this::truncateApostrophes).collect(Collectors.toSet());
 
-                    return Pair.of(entry.getKey(), newSet);
-                }
-            ).collect(Collectors.toMap(Pair::getKey, Pair::getValue));
+            return Pair.of(entry.getKey(), newSet);
+        }).collect(Collectors.toMap(Pair::getKey, Pair::getValue));
     }
 
     /**
      * Returns a string with it's apostrophes truncated at the start and end.
+     * 
      * @param s
      * @return
      */
@@ -235,40 +240,39 @@ public abstract class MultiFormatMapper implements FormatMapper {
     /**
      * Filters the given Optional<JsonObject> with the properties under a properties field
      * or the properties under its respective node type.
+     * 
      * @param obj
      * @param filterPropertiesMap
      * @return
      */
     protected JsonObject getPropertyFilteredObject(Optional<JsonObject> obj,
-        Map<String, Set<String>> filterPropertiesMap) {
-        return obj.map(
-            jsonObj -> {
-                if (filterPropertiesMap == null || filterPropertiesMap.isEmpty()) {
-                    return jsonObj;
-                } else {
-                    ImmutableTriple<JsonObject, Optional<String>, Optional<JsonObject>> triple =
+            Map<String, Set<String>> filterPropertiesMap) {
+        return obj.map(jsonObj -> {
+            if (filterPropertiesMap == null || filterPropertiesMap.isEmpty()) {
+                return jsonObj;
+            } else {
+                ImmutableTriple<JsonObject, Optional<String>, Optional<JsonObject>> triple =
                         cloneObjectAndExtractNodeTypeAndProperties(jsonObj);
 
-                    JsonObject result = triple.left;
-                    Optional<String> nodeType = triple.middle;
-                    Optional<JsonObject> properties = triple.right;
+                JsonObject result = triple.left;
+                Optional<String> nodeType = triple.middle;
+                Optional<JsonObject> properties = triple.right;
 
-                    // Filter current object based on it containing fields: "node-type" and "properties"
-                    if (nodeType.isPresent() && properties.isPresent()) {
-                        filterByNodeTypeAndProperties(result, nodeType.get(), properties.get(), filterPropertiesMap);
-                    } else {
-                        // filter current object based on the: key - nodeType & value - JsonObject of nodes properties
-                        filterByJsonObj(result, jsonObj, filterPropertiesMap);
-                    }
-
-                    return result;
+                // Filter current object based on it containing fields: "node-type" and "properties"
+                if (nodeType.isPresent() && properties.isPresent()) {
+                    filterByNodeTypeAndProperties(result, nodeType.get(), properties.get(), filterPropertiesMap);
+                } else {
+                    // filter current object based on the: key - nodeType & value - JsonObject of nodes properties
+                    filterByJsonObj(result, jsonObj, filterPropertiesMap);
                 }
+
+                return result;
             }
-        ).orElseGet(JsonObject::new);
+        }).orElseGet(JsonObject::new);
     }
 
     private ImmutableTriple<JsonObject, Optional<String>, Optional<JsonObject>> cloneObjectAndExtractNodeTypeAndProperties(
-        JsonObject jsonObj) {
+            JsonObject jsonObj) {
         JsonObject result = new JsonObject();
         Optional<String> nodeType = Optional.empty();
         Optional<JsonObject> properties = Optional.empty();
@@ -293,20 +297,25 @@ public abstract class MultiFormatMapper implements FormatMapper {
     /**
      * Returns a JsonObject with filtered properties using "node-type" and "properties"
      * Used for formats with payloads similar to simple and raw
+     * 
      * @param result
      * @param nodeType
      * @param properties
      * @param filterPropertiesMap
      * @return
      */
-    private JsonObject filterByNodeTypeAndProperties(JsonObject result, String nodeType, JsonObject properties, Map<String, Set<String>> filterPropertiesMap) {
-        if (result == null || nodeType == null || nodeType.isEmpty() || properties == null || filterPropertiesMap == null) {
+    private JsonObject filterByNodeTypeAndProperties(JsonObject result, String nodeType, JsonObject properties,
+            Map<String, Set<String>> filterPropertiesMap) {
+        if (result == null || nodeType == null || nodeType.isEmpty() || properties == null
+                || filterPropertiesMap == null) {
             return result;
         }
-        if (filterPropertiesMap.containsKey(nodeType)) {    // filterPropertiesMap keys are nodeTypes - keys are obtained from the incoming query request
+        if (filterPropertiesMap.containsKey(nodeType)) { // filterPropertiesMap keys are nodeTypes - keys are obtained
+                                                         // from the incoming query request
             Set<String> filterSet = filterPropertiesMap.get(nodeType);
             JsonObject filteredProperties = new JsonObject();
-            for (String property : filterSet) {             // Each nodeType should have a set of properties to be retained in the response
+            for (String property : filterSet) { // Each nodeType should have a set of properties to be retained in the
+                                                // response
                 if (properties.get(property) != null) {
                     filteredProperties.add(property, properties.get(property));
                 }
@@ -319,12 +328,14 @@ public abstract class MultiFormatMapper implements FormatMapper {
 
     /**
      * Returns a JsonObject with its properties filtered
+     * 
      * @param result
      * @param jsonObj
      * @param filterPropertiesMap
      * @return
      */
-    private JsonObject filterByJsonObj(JsonObject result, JsonObject jsonObj, Map<String, Set<String>> filterPropertiesMap) {
+    private JsonObject filterByJsonObj(JsonObject result, JsonObject jsonObj,
+            Map<String, Set<String>> filterPropertiesMap) {
         if (result == null || jsonObj == null || filterPropertiesMap == null) {
             return result;
         }
@@ -350,12 +361,13 @@ public abstract class MultiFormatMapper implements FormatMapper {
 
     /**
      * Returns a filtered JsonObject with properties contained in the parameter filterPropertiesMap
+     * 
      * @param properties
      * @param filterPropertiesMap
      * @return
      */
     protected JsonObject filterProperties(Optional<JsonObject> properties, String nodeType,
-        Map<String, Set<String>> filterPropertiesMap) {
+            Map<String, Set<String>> filterPropertiesMap) {
         return properties.map(jo -> {
             if (filterPropertiesMap == null || filterPropertiesMap.isEmpty()) {
                 return properties.get();

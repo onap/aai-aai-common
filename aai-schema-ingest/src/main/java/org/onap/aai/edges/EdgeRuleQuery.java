@@ -22,6 +22,10 @@
 
 package org.onap.aai.edges;
 
+import com.jayway.jsonpath.Criteria;
+import com.jayway.jsonpath.Filter;
+import com.jayway.jsonpath.Predicate;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -33,10 +37,6 @@ import org.onap.aai.edges.enums.EdgeField;
 import org.onap.aai.edges.enums.EdgeProperty;
 import org.onap.aai.edges.enums.EdgeType;
 import org.onap.aai.setup.SchemaVersion;
-
-import com.jayway.jsonpath.Criteria;
-import com.jayway.jsonpath.Filter;
-import com.jayway.jsonpath.Predicate;
 
 /**
  * For querying the edge rules schema (not the database)
@@ -56,7 +56,6 @@ public class EdgeRuleQuery {
     private static final String FROM_ONLY = "FromOnly";
 
     public static class Builder {
-
 
         // required
         private String nodeA;
@@ -244,9 +243,11 @@ public class EdgeRuleQuery {
 
     private Predicate addDirection(AAIDirection direction) {
         if (direction == AAIDirection.OUT) {
-            return Criteria.where(EdgeField.DIRECTION.toString()).in(AAIDirection.OUT.toString(), AAIDirection.BOTH.toString());
+            return Criteria.where(EdgeField.DIRECTION.toString()).in(AAIDirection.OUT.toString(),
+                    AAIDirection.BOTH.toString());
         } else if (direction == AAIDirection.IN) {
-            return Criteria.where(EdgeField.DIRECTION.toString()).in(AAIDirection.IN.toString(), AAIDirection.BOTH.toString());
+            return Criteria.where(EdgeField.DIRECTION.toString()).in(AAIDirection.IN.toString(),
+                    AAIDirection.BOTH.toString());
         } else if (direction == AAIDirection.BOTH) {
             return Criteria.where(EdgeField.DIRECTION.toString()).is(AAIDirection.BOTH.toString());
         } else if (direction == AAIDirection.NONE) {
@@ -333,7 +334,7 @@ public class EdgeRuleQuery {
     @Override
     public int hashCode() {
         return v.map(schemaVersion -> Objects.hash(schemaVersion, nodeA, nodeB, label, direction, type, isPrivate))
-            .orElseGet(() -> Objects.hash(nodeA, nodeB, label, direction, type, isPrivate));
+                .orElseGet(() -> Objects.hash(nodeA, nodeB, label, direction, type, isPrivate));
     }
 
 }

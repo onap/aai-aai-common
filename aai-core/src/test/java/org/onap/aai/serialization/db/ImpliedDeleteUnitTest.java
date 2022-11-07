@@ -17,7 +17,12 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.serialization.db;
+
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
@@ -25,7 +30,6 @@ import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
@@ -33,12 +37,6 @@ import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 import org.onap.aai.serialization.engines.query.QueryEngine;
 import org.onap.aai.util.AAIConstants;
 import org.springframework.boot.test.rule.OutputCapture;
-
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.mockito.Matchers.eq;
 
 public class ImpliedDeleteUnitTest {
 
@@ -51,10 +49,10 @@ public class ImpliedDeleteUnitTest {
     public final OutputCapture outputCapture = new OutputCapture();
 
     @Before
-    public void setup(){
-        mockEngine     = Mockito.mock(TransactionalGraphEngine.class);
+    public void setup() {
+        mockEngine = Mockito.mock(TransactionalGraphEngine.class);
         mockSerializer = Mockito.mock(DBSerializer.class);
-        impliedDelete  = Mockito.spy(new ImpliedDelete(mockEngine, mockSerializer));
+        impliedDelete = Mockito.spy(new ImpliedDelete(mockEngine, mockSerializer));
     }
 
     // aai.implied.delete.whitelist.sdnc=*
@@ -63,10 +61,7 @@ public class ImpliedDeleteUnitTest {
 
         QueryEngine mockQueryEngine = Mockito.mock(QueryEngine.class);
 
-        Mockito
-            .doReturn("*")
-            .when(impliedDelete)
-            .get(AAIConstants.AAI_IMPLIED_DELETE_WHITELIST + "sdnc","");
+        Mockito.doReturn("*").when(impliedDelete).get(AAIConstants.AAI_IMPLIED_DELETE_WHITELIST + "sdnc", "");
 
         Mockito.when(mockEngine.getQueryEngine()).thenReturn(mockQueryEngine);
 
@@ -91,10 +86,7 @@ public class ImpliedDeleteUnitTest {
 
         QueryEngine mockQueryEngine = Mockito.mock(QueryEngine.class);
 
-        Mockito
-            .doReturn("'vserver'")
-            .when(impliedDelete)
-            .get(AAIConstants.AAI_IMPLIED_DELETE_WHITELIST + "sdnc","");
+        Mockito.doReturn("'vserver'").when(impliedDelete).get(AAIConstants.AAI_IMPLIED_DELETE_WHITELIST + "sdnc", "");
 
         Mockito.when(mockEngine.getQueryEngine()).thenReturn(mockQueryEngine);
 
@@ -118,10 +110,7 @@ public class ImpliedDeleteUnitTest {
 
         QueryEngine mockQueryEngine = Mockito.mock(QueryEngine.class);
 
-        Mockito
-            .doReturn("'vserver'")
-            .when(impliedDelete)
-            .get(AAIConstants.AAI_IMPLIED_DELETE_WHITELIST + "sdnc","");
+        Mockito.doReturn("'vserver'").when(impliedDelete).get(AAIConstants.AAI_IMPLIED_DELETE_WHITELIST + "sdnc", "");
 
         Mockito.when(mockEngine.getQueryEngine()).thenReturn(mockQueryEngine);
 
@@ -149,10 +138,8 @@ public class ImpliedDeleteUnitTest {
 
         QueryEngine mockQueryEngine = Mockito.mock(QueryEngine.class);
 
-        Mockito
-            .doReturn("'vce','pserver','vserver','cloud-region'")
-            .when(impliedDelete)
-            .get(AAIConstants.AAI_IMPLIED_DELETE_WHITELIST + "sdnc","");
+        Mockito.doReturn("'vce','pserver','vserver','cloud-region'").when(impliedDelete)
+                .get(AAIConstants.AAI_IMPLIED_DELETE_WHITELIST + "sdnc", "");
 
         Mockito.when(mockEngine.getQueryEngine()).thenReturn(mockQueryEngine);
 
@@ -173,17 +160,13 @@ public class ImpliedDeleteUnitTest {
     // aai.implied.delete.whitelist.sdnc='vserver','vce','pserver'
     @Test
     public void testImpliedDeleteWhenUserIsAllowedToInvokeMultipleMethodsAndDeletableReturnsMultipleVertexes()
-        throws AAIException, UnsupportedEncodingException {
+            throws AAIException, UnsupportedEncodingException {
 
         QueryEngine mockQueryEngine = Mockito.mock(QueryEngine.class);
 
         // On a spy the syntax should be doReturn => when => method to spy
         // On a mock the syntax should be when => thenReturn|thenAnswer
-        Mockito
-            .doReturn("'vserver'")
-            .when(impliedDelete)
-            .get(AAIConstants.AAI_IMPLIED_DELETE_WHITELIST + "sdnc","");
-
+        Mockito.doReturn("'vserver'").when(impliedDelete).get(AAIConstants.AAI_IMPLIED_DELETE_WHITELIST + "sdnc", "");
 
         Introspector mockIntrospector = Mockito.mock(Introspector.class);
 
@@ -213,20 +196,13 @@ public class ImpliedDeleteUnitTest {
         vertices.add(volume3);
         vertices.add(volume4);
 
-        Mockito
-            .when(mockQueryEngine.findDeletable(Mockito.anyList()))
-            .thenReturn(vertices);
+        Mockito.when(mockQueryEngine.findDeletable(Mockito.anyList())).thenReturn(vertices);
 
-        Mockito
-            .when(mockSerializer.getLatestVersionView(Mockito.anyObject()))
-            .thenReturn(mockIntrospector);
+        Mockito.when(mockSerializer.getLatestVersionView(Mockito.anyObject())).thenReturn(mockIntrospector);
 
-        Mockito
-            .when(mockIntrospector.marshal(false))
-            .thenReturn("{\"volume-id\":\"volume-1\"}")
-            .thenReturn("{\"volume-id\":\"volume-2\"}")
-            .thenReturn("{\"volume-id\":\"volume-3\"}")
-            .thenReturn("{\"volume-id\":\"volume-4\"}");
+        Mockito.when(mockIntrospector.marshal(false)).thenReturn("{\"volume-id\":\"volume-1\"}")
+                .thenReturn("{\"volume-id\":\"volume-2\"}").thenReturn("{\"volume-id\":\"volume-3\"}")
+                .thenReturn("{\"volume-id\":\"volume-4\"}");
 
         impliedDelete.execute(vserver.id(), "SDNC", "vserver", vertices);
     }
@@ -237,10 +213,7 @@ public class ImpliedDeleteUnitTest {
 
         QueryEngine mockQueryEngine = Mockito.mock(QueryEngine.class);
 
-        Mockito
-            .doReturn("")
-            .when(impliedDelete)
-            .get(AAIConstants.AAI_IMPLIED_DELETE_WHITELIST + "sdnc","");
+        Mockito.doReturn("").when(impliedDelete).get(AAIConstants.AAI_IMPLIED_DELETE_WHITELIST + "sdnc", "");
 
         Mockito.when(mockEngine.getQueryEngine()).thenReturn(mockQueryEngine);
 
@@ -260,14 +233,12 @@ public class ImpliedDeleteUnitTest {
 
     // aai.implied.delete.whitelist.sdnc='vce'
     @Test(expected = AAIException.class)
-    public void testImpliedDeleteWhenUserIsAllowedToDeleteVceChildrenButRequestedToDeleteVserverChildren() throws AAIException {
+    public void testImpliedDeleteWhenUserIsAllowedToDeleteVceChildrenButRequestedToDeleteVserverChildren()
+            throws AAIException {
 
         QueryEngine mockQueryEngine = Mockito.mock(QueryEngine.class);
 
-        Mockito
-            .doReturn("'vce'")
-            .when(impliedDelete)
-            .get(AAIConstants.AAI_IMPLIED_DELETE_WHITELIST + "sdnc","");
+        Mockito.doReturn("'vce'").when(impliedDelete).get(AAIConstants.AAI_IMPLIED_DELETE_WHITELIST + "sdnc", "");
 
         Mockito.when(mockEngine.getQueryEngine()).thenReturn(mockQueryEngine);
 
@@ -286,17 +257,14 @@ public class ImpliedDeleteUnitTest {
     }
 
     @Test
-    public void testImpliedDeleteWhenUserIsAllowedToDeleteAndPrintingDeletingVertexItThrowsExceptionVerifyLog() throws AAIException, UnsupportedEncodingException {
+    public void testImpliedDeleteWhenUserIsAllowedToDeleteAndPrintingDeletingVertexItThrowsExceptionVerifyLog()
+            throws AAIException, UnsupportedEncodingException {
 
         QueryEngine mockQueryEngine = Mockito.mock(QueryEngine.class);
 
         // On a spy the syntax should be doReturn => when => method to spy
         // On a mock the syntax should be when => thenReturn|thenAnswer
-        Mockito
-            .doReturn("'vserver'")
-            .when(impliedDelete)
-            .get(AAIConstants.AAI_IMPLIED_DELETE_WHITELIST + "sdnc","");
-
+        Mockito.doReturn("'vserver'").when(impliedDelete).get(AAIConstants.AAI_IMPLIED_DELETE_WHITELIST + "sdnc", "");
 
         Introspector mockIntrospector = Mockito.mock(Introspector.class);
 
@@ -314,18 +282,14 @@ public class ImpliedDeleteUnitTest {
 
         vertices.add(volume1);
 
-        Mockito
-            .when(mockQueryEngine.findDeletable(Mockito.anyList()))
-            .thenReturn(vertices);
+        Mockito.when(mockQueryEngine.findDeletable(Mockito.anyList())).thenReturn(vertices);
 
-        Mockito
-            .when(mockSerializer.getLatestVersionView(Mockito.anyObject()))
-            .thenThrow(new RuntimeException("Unable to find node"));
+        Mockito.when(mockSerializer.getLatestVersionView(Mockito.anyObject()))
+                .thenThrow(new RuntimeException("Unable to find node"));
 
         impliedDelete.execute(vserver.id(), "SDNC", "vserver", vertices);
 
-        outputCapture.expect(
-            CoreMatchers.containsString("Encountered an exception during retrieval of vertex properties with vertex-id " + vserver.id())
-        );
+        outputCapture.expect(CoreMatchers.containsString(
+                "Encountered an exception during retrieval of vertex properties with vertex-id " + vserver.id()));
     }
 }

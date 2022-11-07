@@ -17,28 +17,30 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.aaf.filters;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.onap.aai.aaf.auth.AAIAuthCore;
-import org.onap.aai.aaf.auth.CertUtil;
-import org.onap.aai.aaf.auth.ResponseFormatter;
-import org.onap.aai.exceptions.AAIException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.servlet.filter.OrderedRequestContextFilter;
-import org.springframework.context.annotation.Profile;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
+import java.io.IOException;
+import java.security.cert.X509Certificate;
+import java.util.*;
 
 import javax.security.auth.x500.X500Principal;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.security.cert.X509Certificate;
-import java.util.*;
+
+import org.onap.aai.aaf.auth.AAIAuthCore;
+import org.onap.aai.aaf.auth.CertUtil;
+import org.onap.aai.aaf.auth.ResponseFormatter;
+import org.onap.aai.exceptions.AAIException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.filter.OrderedRequestContextFilter;
+import org.springframework.context.annotation.Profile;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
 
 @Component
 @Profile("two-way-ssl")
@@ -59,12 +61,13 @@ public class TwoWaySslAuthorization extends OrderedRequestContextFilter {
     @Autowired
     private CadiProps cadiProps;
 
-    public TwoWaySslAuthorization(){
+    public TwoWaySslAuthorization() {
         this.setOrder(FilterPriority.TWO_WAY_SSL_AUTH.getPriority());
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws IOException, ServletException {
 
         String uri = request.getRequestURI();
         String httpMethod = getHttpMethod(request);
@@ -80,11 +83,11 @@ public class TwoWaySslAuthorization extends OrderedRequestContextFilter {
                 ResponseFormatter.errorResponse(aaie, request, response);
                 return;
             }
-            issuer = issuer.replaceAll("\\s+","").toUpperCase();
+            issuer = issuer.replaceAll("\\s+", "").toUpperCase();
 
             List<String> cadiConfiguredIssuers = CertUtil.getCadiCertIssuers(cadiProperties);
             boolean isAafAuthProfileActive = this.isAafAuthProfileActive();
-            if ((!isAafAuthProfileActive) || (!cadiConfiguredIssuers.contains(issuer))  ) {
+            if ((!isAafAuthProfileActive) || (!cadiConfiguredIssuers.contains(issuer))) {
                 try {
                     this.authorize(uri, httpMethod, authUser.get(), this.getHaProxyUser(request), issuer);
                 } catch (AAIException e) {
@@ -100,11 +103,9 @@ public class TwoWaySslAuthorization extends OrderedRequestContextFilter {
         filterChain.doFilter(request, response);
     }
 
-
     private String getHttpMethod(HttpServletRequest request) {
         String httpMethod = request.getMethod();
-        if ("POST".equalsIgnoreCase(httpMethod)
-            && "PATCH".equals(request.getHeader(HTTP_METHOD_OVERRIDE))) {
+        if ("POST".equalsIgnoreCase(httpMethod) && "PATCH".equals(request.getHeader(HTTP_METHOD_OVERRIDE))) {
             httpMethod = MERGE_PATCH;
         }
         if (httpMethod.equalsIgnoreCase(MERGE_PATCH) || "patch".equalsIgnoreCase(httpMethod)) {
@@ -148,26 +149,26 @@ public class TwoWaySslAuthorization extends OrderedRequestContextFilter {
 
     private String getHaProxyUser(HttpServletRequest hsr) {
         String haProxyUser;
-        if (Objects.isNull(hsr.getHeader("X-AAI-SSL-Client-CN"))
-            || Objects.isNull(hsr.getHeader("X-AAI-SSL-Client-OU"))
-            || Objects.isNull(hsr.getHeader("X-AAI-SSL-Client-O"))
-            || Objects.isNull(hsr.getHeader("X-AAI-SSL-Client-L"))
-            || Objects.isNull(hsr.getHeader("X-AAI-SSL-Client-ST"))
-            || Objects.isNull(hsr.getHeader("X-AAI-SSL-Client-C"))) {
+        if (Objects.isNull(hsr.getHeader("X-AAI-SSL-Client-CN")) || Objects.isNull(hsr.getHeader("X-AAI-SSL-Client-OU"))
+                || Objects.isNull(hsr.getHeader("X-AAI-SSL-Client-O"))
+                || Objects.isNull(hsr.getHeader("X-AAI-SSL-Client-L"))
+                || Objects.isNull(hsr.getHeader("X-AAI-SSL-Client-ST"))
+                || Objects.isNull(hsr.getHeader("X-AAI-SSL-Client-C"))) {
             haProxyUser = "";
         } else {
             haProxyUser = String.format("CN=%s, OU=%s, O=\"%s\", L=%s, ST=%s, C=%s",
-                Objects.toString(hsr.getHeader("X-AAI-SSL-Client-CN"), ""),
-                Objects.toString(hsr.getHeader("X-AAI-SSL-Client-OU"), ""),
-                Objects.toString(hsr.getHeader("X-AAI-SSL-Client-O"), ""),
-                Objects.toString(hsr.getHeader("X-AAI-SSL-Client-L"), ""),
-                Objects.toString(hsr.getHeader("X-AAI-SSL-Client-ST"), ""),
-                Objects.toString(hsr.getHeader("X-AAI-SSL-Client-C"), "")).toLowerCase();
+                    Objects.toString(hsr.getHeader("X-AAI-SSL-Client-CN"), ""),
+                    Objects.toString(hsr.getHeader("X-AAI-SSL-Client-OU"), ""),
+                    Objects.toString(hsr.getHeader("X-AAI-SSL-Client-O"), ""),
+                    Objects.toString(hsr.getHeader("X-AAI-SSL-Client-L"), ""),
+                    Objects.toString(hsr.getHeader("X-AAI-SSL-Client-ST"), ""),
+                    Objects.toString(hsr.getHeader("X-AAI-SSL-Client-C"), "")).toLowerCase();
         }
         return haProxyUser;
     }
 
-    private void authorize(String uri, String httpMethod, String authUser, String haProxyUser, String issuer) throws AAIException {
+    private void authorize(String uri, String httpMethod, String authUser, String haProxyUser, String issuer)
+            throws AAIException {
         if (!aaiAuthCore.authorize(authUser, uri, httpMethod, haProxyUser, issuer)) {
             throw new AAIException("AAI_9101", "Request on " + httpMethod + " " + uri + " status is not OK");
         }
@@ -176,8 +177,7 @@ public class TwoWaySslAuthorization extends OrderedRequestContextFilter {
     private boolean isAafAuthProfileActive() {
         String[] profiles = environment.getActiveProfiles();
         if (profiles != null) {
-            if (Arrays.stream(profiles).anyMatch(
-                env -> (env.equalsIgnoreCase(AafProfiles.AAF_CERT_AUTHENTICATION)))) {
+            if (Arrays.stream(profiles).anyMatch(env -> (env.equalsIgnoreCase(AafProfiles.AAF_CERT_AUTHENTICATION)))) {
                 return true;
             }
         }

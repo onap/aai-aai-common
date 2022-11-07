@@ -18,6 +18,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.schemaif.oxm;
 
 import java.util.HashMap;
@@ -37,7 +38,6 @@ import org.onap.aai.schemaif.definitions.types.IntDataType;
 import org.onap.aai.schemaif.definitions.types.LongDataType;
 import org.onap.aai.schemaif.definitions.types.StringDataType;
 
-
 public class FromOxmPropertySchema extends PropertySchema {
 
     // Handle vertex properties from OXM
@@ -55,8 +55,7 @@ public class FromOxmPropertySchema extends PropertySchema {
         if (isPrimaryKeyOxm(name, dynType)) {
             unique = true;
             required = true;
-        }
-        else {
+        } else {
             required = ((XMLField) field).isRequired();
             unique = false;
         }
@@ -82,13 +81,13 @@ public class FromOxmPropertySchema extends PropertySchema {
                 throw new SchemaProviderException("Invalid OXM property type: " + oxmType);
             }
         }
-        
+
         // Check annotations
-        annotations = new HashMap<String,String>();
+        annotations = new HashMap<String, String>();
         Map<String, Object> oxmProps = mapping.getProperties();
         for (Map.Entry<String, Object> entry : oxmProps.entrySet()) {
             if (entry.getValue() instanceof String) {
-                annotations.put(entry.getKey().toLowerCase(), (String)entry.getValue());
+                annotations.put(entry.getKey().toLowerCase(), (String) entry.getValue());
             }
         }
     }
@@ -99,8 +98,8 @@ public class FromOxmPropertySchema extends PropertySchema {
         required = false;
         defaultValue = "";
         unique = false;
-        annotations = new HashMap<String,String>();
-        
+        annotations = new HashMap<String, String>();
+
         switch (propDataType) {
             case STRING:
                 dataType = new StringDataType();
@@ -118,13 +117,13 @@ public class FromOxmPropertySchema extends PropertySchema {
                 dataType = new BooleanDataType();
                 break;
             default:
-                throw new SchemaProviderException("Invalid EdgeRule property type: " + propDataType);    
+                throw new SchemaProviderException("Invalid EdgeRule property type: " + propDataType);
         }
     }
-    
+
     private boolean isPrimaryKeyOxm(String propName, DynamicType dynType) {
         List<String> primaryKeyList = dynType.getDescriptor().getPrimaryKeyFieldNames();
-        if ( (primaryKeyList == null) || (primaryKeyList.size() == 0) ) {
+        if ((primaryKeyList == null) || (primaryKeyList.size() == 0)) {
             return false;
         }
 

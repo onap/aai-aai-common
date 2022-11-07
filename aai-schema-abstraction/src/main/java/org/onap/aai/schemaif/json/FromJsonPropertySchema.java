@@ -18,6 +18,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.schemaif.json;
 
 import java.util.ArrayList;
@@ -40,7 +41,8 @@ import org.onap.aai.schemaif.json.definitions.JsonPropertySchema;
 
 public class FromJsonPropertySchema extends PropertySchema {
 
-    public void fromJson(JsonPropertySchema pSchema, boolean reserved, List<DataTypeDefinition> dataTypes) throws SchemaProviderException {
+    public void fromJson(JsonPropertySchema pSchema, boolean reserved, List<DataTypeDefinition> dataTypes)
+            throws SchemaProviderException {
         name = pSchema.getName();
         defaultValue = pSchema.getDefaultValue() == null ? "" : pSchema.getDefaultValue();
         required = pSchema.getRequired() == null ? false : pSchema.getRequired();
@@ -49,68 +51,70 @@ public class FromJsonPropertySchema extends PropertySchema {
         dataType = resolveDataType(pSchema.getDataType(), dataTypes);
 
         // Populate annotations
-        annotations = new HashMap<String,String>();
+        annotations = new HashMap<String, String>();
         if (pSchema.getAnnotations() != null) {
-            for (Map.Entry<String,String> entry : pSchema.getAnnotations().entrySet()) {
+            for (Map.Entry<String, String> entry : pSchema.getAnnotations().entrySet()) {
                 annotations.put(entry.getKey().toLowerCase(), entry.getValue());
             }
         }
     }
-    
-    private DataType resolveDataType(String typeString, List<DataTypeDefinition> dataTypes) throws SchemaProviderException {
-        if (typeString.equalsIgnoreCase("string")) { 
+
+    private DataType resolveDataType(String typeString, List<DataTypeDefinition> dataTypes)
+            throws SchemaProviderException {
+        if (typeString.equalsIgnoreCase("string")) {
             return new StringDataType();
         }
-        
+
         if (typeString.equalsIgnoreCase("integer")) {
             return new IntDataType();
         }
 
         if (typeString.equalsIgnoreCase("long")) {
-          return new LongDataType();
+            return new LongDataType();
         }
-        
+
         if (typeString.equalsIgnoreCase("boolean")) {
             return new BooleanDataType();
         }
-        
+
         if (typeString.startsWith("list:")) {
             String segments[] = typeString.split(":");
             DataType subType = resolveDataType(segments[1], dataTypes);
             return new ListDataType(subType);
         }
-        
+
         if (typeString.startsWith("map:")) {
             String segments[] = typeString.split(":");
             DataType subType = resolveDataType(segments[1], dataTypes);
             return new MapDataType(subType);
         }
-        
+
         // Must be a complex type
         return resolveComplexDataType(typeString, dataTypes);
     }
-    
-    private DataType resolveComplexDataType(String typeString, List<DataTypeDefinition> dataTypes) throws SchemaProviderException {
+
+    private DataType resolveComplexDataType(String typeString, List<DataTypeDefinition> dataTypes)
+            throws SchemaProviderException {
         // It must be a custom/complex type.
         DataTypeDefinition dType = null;
         for (DataTypeDefinition d : dataTypes) {
-            if ( (d.getName().equals(typeString)) ) {
+            if ((d.getName().equals(typeString))) {
                 dType = d;
                 break;
             }
         }
-        
+
         if (dType == null) {
             throw new SchemaProviderException("Invalid data type: " + typeString);
         }
-        
+
         List<PropertySchema> propList = new ArrayList<PropertySchema>();
         for (JsonPropertySchema p : dType.getProperties()) {
             FromJsonPropertySchema pSchema = new FromJsonPropertySchema();
             pSchema.fromJson(p, false, dataTypes);
             propList.add(pSchema);
         }
-        
+
         return new ComplexDataType(propList);
     }
 }

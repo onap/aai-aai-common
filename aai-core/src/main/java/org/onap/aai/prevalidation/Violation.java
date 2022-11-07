@@ -94,14 +94,9 @@ public class Violation {
 
     @Override
     public String toString() {
-        return "Violation{" +
-            "violationId='" + violationId + '\'' +
-            ", modelName='" + modelName + '\'' +
-            ", category='" + category + '\'' +
-            ", severity='" + severity + '\'' +
-            ", violationType='" + violationType + '\'' +
-            ", errorMessage='" + errorMessage + '\'' +
-            '}';
+        return "Violation{" + "violationId='" + violationId + '\'' + ", modelName='" + modelName + '\'' + ", category='"
+                + category + '\'' + ", severity='" + severity + '\'' + ", violationType='" + violationType + '\''
+                + ", errorMessage='" + errorMessage + '\'' + '}';
     }
 
     @Override
@@ -113,12 +108,10 @@ public class Violation {
             return false;
         }
         Violation violation = (Violation) o;
-        return Objects.equals(violationId, violation.violationId) &&
-            Objects.equals(modelName, violation.modelName) &&
-            Objects.equals(category, violation.category) &&
-            Objects.equals(severity, violation.severity) &&
-            Objects.equals(violationType, violation.violationType) &&
-            Objects.equals(errorMessage, violation.errorMessage);
+        return Objects.equals(violationId, violation.violationId) && Objects.equals(modelName, violation.modelName)
+                && Objects.equals(category, violation.category) && Objects.equals(severity, violation.severity)
+                && Objects.equals(violationType, violation.violationType)
+                && Objects.equals(errorMessage, violation.errorMessage);
     }
 
     @Override

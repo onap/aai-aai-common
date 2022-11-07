@@ -25,9 +25,9 @@ import java.util.List;
 
 import org.onap.aai.schemaif.definitions.PropertySchema;
 
-public class ComplexDataType extends DataType {    
+public class ComplexDataType extends DataType {
     private List<PropertySchema> subProperties;
-    
+
     public ComplexDataType(List<PropertySchema> subProperties) {
         super(Type.COMPLEX);
         this.subProperties = subProperties;
@@ -36,23 +36,23 @@ public class ComplexDataType extends DataType {
     public List<PropertySchema> getSubProperties() {
         return subProperties;
     }
-    
+
     @Override
     public Object validateValue(String value) {
         // TODO: Validate the complex type against the subProperties
         return value;
     }
-    
+
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("COMPLEX[ ");
-        
+
         for (PropertySchema prop : getSubProperties()) {
             sb.append(prop.getDataType().toString() + " ");
         }
-        
+
         sb.append("]");
-        
+
         return sb.toString();
     }
 }

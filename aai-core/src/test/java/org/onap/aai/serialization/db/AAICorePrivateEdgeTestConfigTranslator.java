@@ -26,7 +26,6 @@ import org.onap.aai.AbstractConfigTranslator;
 import org.onap.aai.setup.SchemaConfigVersions;
 import org.onap.aai.setup.SchemaLocationsBean;
 import org.onap.aai.setup.SchemaVersion;
-import org.onap.aai.setup.SchemaVersions;
 
 /**
  * Quick and dirty access to the real schema files for updating core tests

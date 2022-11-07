@@ -43,12 +43,12 @@ public class IndexStressTest extends AAISetup {
     private static final Logger LOGGER = LoggerFactory.getLogger(IndexStressTest.class);
 
     @Before
-    public void setup(){
+    public void setup() {
         AAIGraph.getInstance().getGraph();
     }
 
     @Test
-    public void testIndexStress(){
+    public void testIndexStress() {
         JanusGraphTransaction tx = AAIGraph.getInstance().getGraph().newTransaction();
 
         GraphTraversalSource g = tx.traversal();
@@ -58,18 +58,15 @@ public class IndexStressTest extends AAISetup {
 
         int TOTAL_LINKS = 101000;
 
-        for(int i = 0; i <TOTAL_LINKS; i++){
+        for (int i = 0; i < TOTAL_LINKS; i++) {
 
             String linkName = generateName(linkNameSet);
             aaiUriSet.add("/network/logical-links/logical-link/" + linkName);
 
-            Vertex v = g.addV()
-                .property("aai-node-type", "logical-link")
-                .property("link-name", linkName)
-                .property("aai-uri", "/network/logical-links/logical-link/" + linkName)
-                .next();
+            Vertex v = g.addV().property("aai-node-type", "logical-link").property("link-name", linkName)
+                    .property("aai-uri", "/network/logical-links/logical-link/" + linkName).next();
 
-            if(i % 1000 == 0){
+            if (i % 1000 == 0) {
                 LOGGER.debug("Committing up to index {}", i);
                 tx.commit();
                 tx = AAIGraph.getInstance().getGraph().newTransaction();
@@ -82,29 +79,29 @@ public class IndexStressTest extends AAISetup {
         tx = AAIGraph.getInstance().getGraph().newTransaction();
         g = tx.traversal();
 
-        int totalLinks= 0;
+        int totalLinks = 0;
         int totalLinksWithNodeType = 0;
         int totalLinksUsingUri = 0;
 
         int index = 0;
         for (String linkName : linkNameSet) {
 
-            if(g.V().has("aai-node-type", "logical-link").has("link-name", linkName).hasNext()){
-               totalLinksWithNodeType++;
+            if (g.V().has("aai-node-type", "logical-link").has("link-name", linkName).hasNext()) {
+                totalLinksWithNodeType++;
             }
 
-            if(g.V().has("link-name", linkName).hasNext()){
+            if (g.V().has("link-name", linkName).hasNext()) {
                 totalLinks++;
             }
 
-            if(g.V().has("aai-uri", "/network/logical-links/logical-link/" + linkName).hasNext()){
+            if (g.V().has("aai-uri", "/network/logical-links/logical-link/" + linkName).hasNext()) {
                 totalLinksUsingUri++;
             }
 
             index++;
 
-            if(index%1000 == 0){
-                LOGGER.debug("Processed {} many queries and has {} many to go", index, (TOTAL_LINKS-index));
+            if (index % 1000 == 0) {
+                LOGGER.debug("Processed {} many queries and has {} many to go", index, (TOTAL_LINKS - index));
                 LOGGER.debug("Total links using linkname found: {}", totalLinks);
                 LOGGER.debug("Total links using nodetype and linkname found: {}", totalLinksWithNodeType);
                 LOGGER.debug("Total links using uri found: {}", totalLinksUsingUri);
@@ -118,11 +115,11 @@ public class IndexStressTest extends AAISetup {
         LOGGER.debug("Total links using uri found: {}", totalLinksUsingUri);
     }
 
-    String generateName(Set<String> uniqueKeys){
+    String generateName(Set<String> uniqueKeys) {
 
-        while(true) {
+        while (true) {
             String data = RandomStringUtils.randomAlphabetic(20);
-            if (!uniqueKeys.contains(data)){
+            if (!uniqueKeys.contains(data)) {
                 uniqueKeys.add(data);
                 return data;
             }

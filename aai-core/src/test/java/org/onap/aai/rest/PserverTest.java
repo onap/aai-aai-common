@@ -20,9 +20,21 @@
 
 package org.onap.aai.rest;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static junit.framework.TestCase.fail;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import com.jayway.jsonpath.JsonPath;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.ws.rs.core.Response;
+
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.janusgraph.core.JanusGraphTransaction;
 import org.junit.After;
@@ -39,19 +51,9 @@ import org.onap.aai.introspection.Loader;
 import org.onap.aai.introspection.ModelType;
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.skyscreamer.jsonassert.JSONAssert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.test.annotation.DirtiesContext;
-
-import javax.ws.rs.core.Response;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
-import static junit.framework.TestCase.fail;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 @RunWith(value = Parameterized.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
@@ -79,7 +81,8 @@ public class PserverTest extends AAISetup {
     public void testPutPserverCreateGetInXmlForFormats() throws Exception {
         httpTestUtil = new HttpTestUtil(queryStyle, "application/xml");
         String pserverUri = "/aai/v12/cloud-infrastructure/pservers/pserver/test-pserver-xml";
-        String cloudRegionUri = "/aai/v12/cloud-infrastructure/cloud-regions/cloud-region/cloud-region-random1/cloud-region-random1-region";
+        String cloudRegionUri =
+                "/aai/v12/cloud-infrastructure/cloud-regions/cloud-region/cloud-region-random1/cloud-region-random1-region";
 
         Response response = httpTestUtil.doGet(pserverUri);
         assertNotNull("Expected the response to be not null", response);
@@ -102,10 +105,11 @@ public class PserverTest extends AAISetup {
         assertNotNull("Expected the response to be not null", response);
         assertEquals("Expecting the cloud-region to pserver relationship to be created", 200, response.getStatus());
 
-        response = httpTestUtil.doGet(pserverUri , "0", "raw");
+        response = httpTestUtil.doGet(pserverUri, "0", "raw");
         assertNotNull("Expected the response to be not null", response);
         assertEquals("Expecting the pserver to be created", 200, response.getStatus());
-        assertThat(response.getEntity().toString(), containsString("<related-to><node><relationship-label>org.onap.relationships.inventory.LocatedIn</relationship-label><node-type>cloud-region</node-type>"));
+        assertThat(response.getEntity().toString(), containsString(
+                "<related-to><node><relationship-label>org.onap.relationships.inventory.LocatedIn</relationship-label><node-type>cloud-region</node-type>"));
     }
 
     @Test

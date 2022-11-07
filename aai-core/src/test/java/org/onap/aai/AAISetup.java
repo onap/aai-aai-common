@@ -20,6 +20,8 @@
 
 package org.onap.aai;
 
+import java.util.Map;
+
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -42,30 +44,14 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.rules.SpringClassRule;
 import org.springframework.test.context.junit4.rules.SpringMethodRule;
 
-import java.util.Map;
-
 @ContextConfiguration(
-    classes = {
-        ConfigConfiguration.class,
-        AAIConfigTranslator.class,
-        EdgeIngestor.class,
-        EdgeSerializer.class,
-        NodeIngestor.class,
-        SpringContextAware.class,
-        IntrospectionConfig.class,
-        RestBeanConfig.class,
-        XmlFormatTransformerConfiguration.class
-    }
-)
+        classes = {ConfigConfiguration.class, AAIConfigTranslator.class, EdgeIngestor.class, EdgeSerializer.class,
+                NodeIngestor.class, SpringContextAware.class, IntrospectionConfig.class, RestBeanConfig.class,
+                XmlFormatTransformerConfiguration.class})
 @TestPropertySource(
-    properties = {
-        "schema.uri.base.path = /aai",
-        "schema.xsd.maxoccurs = 5000",
-        "schema.translator.list=config",
-        "schema.nodes.location=src/test/resources/onap/oxm",
-        "schema.edges.location=src/test/resources/onap/dbedgerules"
-    }
-)
+        properties = {"schema.uri.base.path = /aai", "schema.xsd.maxoccurs = 5000", "schema.translator.list=config",
+                "schema.nodes.location=src/test/resources/onap/oxm",
+                "schema.edges.location=src/test/resources/onap/dbedgerules"})
 public abstract class AAISetup {
 
     @ClassRule

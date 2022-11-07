@@ -22,16 +22,16 @@
 
 package org.onap.aai.prevalidation;
 
+import java.util.Collections;
+import java.util.Map;
+import java.util.UUID;
+
 import org.onap.aai.restclient.TwoWaySSLRestClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.util.MultiValueMap;
-
-import java.util.Collections;
-import java.util.Map;
-import java.util.UUID;
 
 public class ValidationServiceRestClient extends TwoWaySSLRestClient {
 

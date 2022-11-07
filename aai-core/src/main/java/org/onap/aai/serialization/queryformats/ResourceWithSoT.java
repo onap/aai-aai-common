@@ -22,9 +22,11 @@ package org.onap.aai.serialization.queryformats;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.introspection.Loader;
@@ -92,7 +94,9 @@ public class ResourceWithSoT extends MultiFormatMapper {
             return this;
         }
 
-        protected boolean isTree() { return this.tree; }
+        protected boolean isTree() {
+            return this.tree;
+        }
 
         public Builder isTree(Boolean tree) {
             this.tree = tree;
@@ -185,7 +189,8 @@ public class ResourceWithSoT extends MultiFormatMapper {
     }
 
     @Override
-    protected Optional<JsonObject> getJsonFromVertex(Vertex input, Map<String, List<String>> properties) throws AAIFormatVertexException {
+    protected Optional<JsonObject> getJsonFromVertex(Vertex input, Map<String, List<String>> properties)
+            throws AAIFormatVertexException {
         return Optional.empty();
     }
 }

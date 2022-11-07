@@ -53,7 +53,7 @@ public class ScheduledTasks {
     // configuration properties files
     @Scheduled(fixedRate = PROPERTY_READ_INTERVAL)
     public void loadAAIProperties() {
-        auditLog.logBefore("LoadAaiPropertiesTask", ONAPComponents.AAI.toString() );
+        auditLog.logBefore("LoadAaiPropertiesTask", ONAPComponents.AAI.toString());
         String dir = FilenameUtils.getFullPathNoEndSeparator(GlobalPropFileName);
         if (dir == null || dir.length() < 3) {
             dir = "/opt/aai/etc";

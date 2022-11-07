@@ -52,7 +52,7 @@ public class URIParser {
     private URI originalURI = null;
 
     private MultivaluedMap<String, String> queryParams = null;
-  
+
     private static String aaiExceptionCode = "AAI_3001";
 
     /**

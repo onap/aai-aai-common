@@ -20,25 +20,21 @@
 
 package org.onap.aai.serialization.queryformats;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import org.json.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.onap.aai.logging.LogFormatTools;
-import org.onap.aai.serialization.queryformats.exceptions.AAIFormatQueryResultFormatNotSupported;
-import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
 
-import javax.ws.rs.core.MultivaluedMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
+
+import javax.ws.rs.core.MultivaluedMap;
+
+import org.onap.aai.logging.LogFormatTools;
+import org.onap.aai.serialization.queryformats.exceptions.AAIFormatQueryResultFormatNotSupported;
+import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Formatter {
 
@@ -94,7 +90,7 @@ public class Formatter {
 
             stream.map(o -> {
                 try {
-                    if (properties!= null && !properties.isEmpty()){
+                    if (properties != null && !properties.isEmpty()) {
                         return format.formatObject(o, properties);
                     } else {
                         return format.formatObject(o);
@@ -106,24 +102,21 @@ public class Formatter {
                 }
 
                 return Optional.<JsonObject>empty();
-            }).filter(Optional::isPresent)
-                .map(Optional::get)
-                .forEach(json -> {
-                    if (isParallel) {
-                        synchronized (body) {
-                            body.add(json);
-                        }
-                    } else {
+            }).filter(Optional::isPresent).map(Optional::get).forEach(json -> {
+                if (isParallel) {
+                    synchronized (body) {
                         body.add(json);
                     }
-                });
+                } else {
+                    body.add(json);
+                }
+            });
 
         }
 
-        if (params !=null && params.containsKey("as-tree")) {
+        if (params != null && params.containsKey("as-tree")) {
             String isAsTree = params.get("as-tree").get(0);
-            if (isAsTree != null && isAsTree.equalsIgnoreCase("true")
-                && body != null && body.size() != 0) {
+            if (isAsTree != null && isAsTree.equalsIgnoreCase("true") && body != null && body.size() != 0) {
                 JsonObject jsonObjectBody = body.get(0).getAsJsonObject();
                 if (jsonObjectBody != null && jsonObjectBody.size() > 0) {
                     return body.get(0).getAsJsonObject();

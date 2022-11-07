@@ -20,18 +20,10 @@
 
 package org.onap.aai.domain.translog;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.onap.aai.AAISetup;
-import org.onap.aai.domain.model.AAIResource;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class TransactionLogEntriesTest extends AAISetup {
     private TransactionLogEntries transactionLogEntries;

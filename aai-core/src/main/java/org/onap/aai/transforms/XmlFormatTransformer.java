@@ -17,16 +17,18 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.aai.transforms;
 
 import com.bazaarvoice.jolt.Chainr;
 import com.bazaarvoice.jolt.JsonUtils;
+
+import java.util.List;
+
 import org.json.JSONObject;
 import org.json.XML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 public class XmlFormatTransformer {
 
@@ -39,19 +41,19 @@ public class XmlFormatTransformer {
 
     public XmlFormatTransformer() {
         List<Object> spec = JsonUtils.classpathToList("/specs/transform-related-to-node.json");
-        this.chainr       = Chainr.fromSpec(spec);
+        this.chainr = Chainr.fromSpec(spec);
     }
 
     public String transform(String input) {
 
         Object transformedOutput;
 
-        if(!input.contains(RESULT_WITH_QUOTES)){
+        if (!input.contains(RESULT_WITH_QUOTES)) {
             Object inputMap = JsonUtils.jsonToMap(input);
             transformedOutput = chainr.transform(inputMap);
 
             JSONObject jsonObject;
-            if(transformedOutput == null){
+            if (transformedOutput == null) {
                 LOGGER.debug("For the input {}, unable to transform it so returning null", input);
                 jsonObject = new JSONObject();
             } else {

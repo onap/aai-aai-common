@@ -25,11 +25,9 @@ package org.onap.aaiutils.oxm;
 public class OxmModelLoaderConstants {
 
     public static final String AaiUtils_FILESEP =
-        (System.getProperty("file.separator") == null) ? "/" : System.getProperty("file.separator");
+            (System.getProperty("file.separator") == null) ? "/" : System.getProperty("file.separator");
 
-    public static final String AaiUtils_SPECIFIC_CONFIG =
-        System.getProperty("CONFIG_HOME") + AaiUtils_FILESEP;
+    public static final String AaiUtils_SPECIFIC_CONFIG = System.getProperty("CONFIG_HOME") + AaiUtils_FILESEP;
 
-    public static final String AaiUtils_HOME_MODEL =
-        AaiUtils_SPECIFIC_CONFIG + "model" + AaiUtils_FILESEP;
+    public static final String AaiUtils_HOME_MODEL = AaiUtils_SPECIFIC_CONFIG + "model" + AaiUtils_FILESEP;
 }

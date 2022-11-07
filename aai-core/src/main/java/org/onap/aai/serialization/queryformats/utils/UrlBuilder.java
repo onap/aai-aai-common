@@ -57,8 +57,8 @@ public class UrlBuilder {
             String basePath) throws AAIException {
         this.serializer = serializer;
         this.version = version;
-        if(serverBase == null){
-           this.serverBase = getServerBase();
+        if (serverBase == null) {
+            this.serverBase = getServerBase();
         } else {
             this.serverBase = serverBase;
         }
