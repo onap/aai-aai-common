@@ -7,7 +7,7 @@ vnf to esr-system-info Named Query
 
 **Example Request**
 
-POST https://127.0.0.1:8443/aai/search/named-query
+POST /aai/search/named-query
 
 {
 
