@@ -222,7 +222,7 @@ public class ValidationService {
         httpHeaders.put("Content-Type", "application/json");
 
         List<String> violations = new ArrayList<>();
-        ResponseEntity responseEntity;
+        ResponseEntity<String> responseEntity;
         try {
 
             responseEntity = validationRestClient.execute(VALIDATION_ENDPOINT, HttpMethod.POST, httpHeaders, body);
@@ -267,7 +267,7 @@ public class ValidationService {
         return violations;
     }
 
-    boolean isSuccess(ResponseEntity responseEntity) {
+    boolean isSuccess(ResponseEntity<String> responseEntity) {
         return responseEntity != null && responseEntity.getStatusCode().is2xxSuccessful();
     }
 

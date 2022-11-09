@@ -99,7 +99,7 @@ public class AafRequestFilter {
             return;
         }
         issuer = issuer.replaceAll("\\s+", "").toUpperCase();
-        Enumeration hdrs = request.getHeaders(CertUtil.AAF_USER_CHAIN_HDR);
+        Enumeration<String> hdrs = request.getHeaders(CertUtil.AAF_USER_CHAIN_HDR);
         while (hdrs.hasMoreElements()) {
             String headerValue = (String) hdrs.nextElement();
             LOGGER.debug("authorizationFilter user chain headerValue=" + headerValue);

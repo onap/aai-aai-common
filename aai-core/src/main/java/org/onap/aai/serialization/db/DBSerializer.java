@@ -723,7 +723,7 @@ public class DBSerializer {
             throws IllegalArgumentException, SecurityException, UnsupportedEncodingException, AAIException {
 
         HashMap<String, Introspector> relatedVertices = new HashMap<>();
-        VertexProperty aaiUriProperty = v.property(AAIProperties.AAI_URI);
+        VertexProperty<Object> aaiUriProperty = v.property(AAIProperties.AAI_URI);
 
         if (!aaiUriProperty.isPresent()) {
             if (LOGGER.isDebugEnabled()) {
@@ -1232,7 +1232,7 @@ public class DBSerializer {
             throw new AAIException("AAI_6136",
                     "query object mismatch: this object cannot hold multiple items." + obj.getDbName());
         } else if (obj.isContainer()) {
-            final List getList;
+            final List<Object> getList;
             String listProperty = null;
             for (String property : obj.getProperties()) {
                 if (obj.isListType(property) && obj.isComplexGenericType(property)) {
@@ -1565,7 +1565,7 @@ public class DBSerializer {
             throws UnsupportedEncodingException, AAIException {
 
         List<Object> relationshipObjList = obj.getValue(RELATIONSHIP);
-        VertexProperty nodeTypeProperty = v.property(AAIProperties.NODE_TYPE);
+        VertexProperty<Object> nodeTypeProperty = v.property(AAIProperties.NODE_TYPE);
 
         if (!nodeTypeProperty.isPresent()) {
             LOGGER.warn("Not processing the vertex {} because its missing required property aai-node-type", v.id());
@@ -1651,7 +1651,7 @@ public class DBSerializer {
     private Object processEdgeRelationship(Introspector relationshipObj, Vertex cousin, String cleanUp,
             String edgeLabel, boolean isSkipRelatedTo) throws UnsupportedEncodingException, AAIUnknownObjectException {
 
-        VertexProperty aaiUriProperty = cousin.property("aai-uri");
+        VertexProperty<Object> aaiUriProperty = cousin.property("aai-uri");
 
         if (!aaiUriProperty.isPresent()) {
             return null;
@@ -1670,7 +1670,7 @@ public class DBSerializer {
             return null;
         }
 
-        VertexProperty cousinVertexNodeType = cousin.property(AAIProperties.NODE_TYPE);
+        VertexProperty<Object> cousinVertexNodeType = cousin.property(AAIProperties.NODE_TYPE);
 
         if (cousinVertexNodeType.isPresent()) {
             String cousinType = cousinVertexNodeType.value().toString();

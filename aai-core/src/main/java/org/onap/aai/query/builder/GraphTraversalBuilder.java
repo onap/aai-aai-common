@@ -23,7 +23,12 @@ package org.onap.aai.query.builder;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
@@ -904,7 +909,7 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
 
     protected void executeQuery() {
 
-        Admin admin;
+        Admin<Vertex, Vertex> admin;
         if (start != null) {
             this.completeTraversal = traversal.asAdmin();
         } else {

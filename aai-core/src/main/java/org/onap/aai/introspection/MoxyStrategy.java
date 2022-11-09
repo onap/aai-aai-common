@@ -25,8 +25,15 @@ import com.google.common.base.Joiner;
 
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -170,12 +177,12 @@ public class MoxyStrategy extends Introspector {
         DatabaseMapping mapping = cd.getMappingForAttributeName(propName);
         Map<PropertyMetadata, String> result = new HashMap<>();
         if (mapping != null) {
-            Set<Entry> entrySet = mapping.getProperties().entrySet();
-            for (Entry<?, ?> entry : entrySet) {
+            Set<Map.Entry<String, String>> entrySet = mapping.getProperties().entrySet();
+            for (Entry<String, String> entry : entrySet) {
                 result.put(
-                        PropertyMetadata.valueOf(
-                                CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, (String) entry.getKey())),
-                        (String) entry.getValue());
+                        PropertyMetadata
+                                .valueOf(CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, entry.getKey())),
+                        entry.getValue());
             }
         }
 

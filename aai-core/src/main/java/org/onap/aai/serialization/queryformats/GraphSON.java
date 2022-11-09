@@ -105,7 +105,7 @@ public class GraphSON implements FormatMapper {
      */
     private void removePrivateEdges(JsonObject jsonObject, JsonObject edges, String edgeDirection) {
 
-        Iterator it = edges.entrySet().iterator();
+        Iterator<Map.Entry<String, JsonElement>> it = edges.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<String, JsonElement> outEntry = (Map.Entry<String, JsonElement>) it.next();
             JsonArray edgePropertiesArray = outEntry.getValue().getAsJsonArray();

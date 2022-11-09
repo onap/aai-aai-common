@@ -20,10 +20,19 @@
 
 package org.onap.aai.serialization.queryformats;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import java.io.UnsupportedEncodingException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -194,7 +203,8 @@ public class Aggregate extends MultiFormatMapper {
         return Optional.of(json);
     }
 
-    private Optional<JsonArray> processInput(Object input, Map properties) throws AAIFormatVertexException {
+    private Optional<JsonArray> processInput(Object input, Map<String, List<String>> properties)
+            throws AAIFormatVertexException {
         JsonArray json = new JsonArray();
         for (Object l : (ArrayList) input) {
             if (l instanceof ArrayList) {

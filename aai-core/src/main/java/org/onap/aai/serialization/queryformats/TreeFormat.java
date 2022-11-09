@@ -28,8 +28,11 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import java.io.UnsupportedEncodingException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.BulkSet;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.Tree;
@@ -181,9 +184,9 @@ public class TreeFormat extends MultiFormatMapper {
 
             // DSL Query
             if (o instanceof BulkSet) {
-                BulkSet bs = (BulkSet) o;
-                for (Object o1 : bs) {
-                    Optional<JsonObject> obj = this.getJsonFromVertex((Vertex) o1);
+                BulkSet<Vertex> bs = (BulkSet<Vertex>) o;
+                for (Vertex o1 : bs) {
+                    Optional<JsonObject> obj = this.getJsonFromVertex(o1);
                     if (obj.isPresent()) {
                         jsonObject = obj.get();
                         for (Map.Entry<String, JsonElement> mapEntry : jsonObject.entrySet()) {

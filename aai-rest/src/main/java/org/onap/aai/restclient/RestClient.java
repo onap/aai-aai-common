@@ -53,7 +53,7 @@ public abstract class RestClient {
      * @return response of request
      * @throws RestClientException on internal rest template exception or invalid url
      */
-    public ResponseEntity execute(String uri, HttpMethod method, Map<String, String> headers, String body)
+    public ResponseEntity<String> execute(String uri, HttpMethod method, Map<String, String> headers, String body)
             throws RestClientException {
 
         HttpEntity<String> httpEntity;
@@ -79,7 +79,7 @@ public abstract class RestClient {
             throw new RestClientException(e.getMessage());
         }
         log.debug("METHOD={}, URL={}, BODY={}", method, url, httpEntity.getBody());
-        ResponseEntity responseEntity = getRestTemplate().exchange(url, method, httpEntity, String.class);
+        ResponseEntity<String> responseEntity = getRestTemplate().exchange(url, method, httpEntity, String.class);
         log.trace("RESPONSE={}", responseEntity);
         return responseEntity;
     }
@@ -94,7 +94,7 @@ public abstract class RestClient {
      * @return response of request
      * @throws RestClientException on internal rest template exception or invalid url
      */
-    public ResponseEntity execute(String uri, String method, Map<String, String> headers, String body)
+    public ResponseEntity<String> execute(String uri, String method, Map<String, String> headers, String body)
             throws RestClientException {
         return execute(uri, HttpMethod.valueOf(method), headers, body);
     }
@@ -108,7 +108,7 @@ public abstract class RestClient {
      * @return response of request
      * @throws RestClientException on internal rest template exception or invalid url
      */
-    public ResponseEntity execute(String uri, HttpMethod method, Map<String, String> headers)
+    public ResponseEntity<String> execute(String uri, HttpMethod method, Map<String, String> headers)
             throws RestClientException {
         return execute(uri, method, headers, null);
     }
@@ -122,14 +122,15 @@ public abstract class RestClient {
      * @return response of request
      * @throws RestClientException on internal rest template exception or invalid url
      */
-    public ResponseEntity execute(String uri, String method, Map<String, String> headers) throws RestClientException {
+    public ResponseEntity<String> execute(String uri, String method, Map<String, String> headers)
+            throws RestClientException {
         return execute(uri, HttpMethod.valueOf(method), headers, null);
     }
 
-    public ResponseEntity executeResource(String uri, HttpMethod method, Map<String, String> headers, String body)
-            throws RestClientException {
+    public ResponseEntity<Resource> executeResource(String uri, HttpMethod method, Map<String, String> headers,
+            String body) throws RestClientException {
 
-        HttpEntity httpEntity;
+        HttpEntity<String> httpEntity;
         log.debug("Headers: " + headers.toString());
         if (body == null) {
             httpEntity = new HttpEntity(getHeaders(headers));
@@ -140,12 +141,12 @@ public abstract class RestClient {
         return getRestTemplate().exchange(url, method, httpEntity, Resource.class);
     }
 
-    public ResponseEntity getGetRequest(String content, String uri, Map<String, String> headersMap) {
+    public ResponseEntity<String> getGetRequest(String content, String uri, Map<String, String> headersMap) {
         return this.execute(uri, HttpMethod.GET, headersMap, content);
 
     }
 
-    public ResponseEntity getGetResource(String content, String uri, Map<String, String> headersMap) {
+    public ResponseEntity<Resource> getGetResource(String content, String uri, Map<String, String> headersMap) {
         return this.executeResource(uri, HttpMethod.GET, headersMap, content);
 
     }

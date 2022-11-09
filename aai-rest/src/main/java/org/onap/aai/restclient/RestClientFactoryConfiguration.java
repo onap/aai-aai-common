@@ -20,7 +20,6 @@
 
 package org.onap.aai.restclient;
 
-import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.config.ServiceLocatorFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,8 +27,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RestClientFactoryConfiguration {
 
+    // ServiceLocatorFactoryBean
     @Bean
-    public FactoryBean restClientFactoryBean() {
+    public ServiceLocatorFactoryBean restClientFactoryBean() {
         ServiceLocatorFactoryBean factoryBean = new ServiceLocatorFactoryBean();
         factoryBean.setServiceLocatorInterface(RestClientFactory.class);
         return factoryBean;

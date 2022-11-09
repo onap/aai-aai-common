@@ -191,7 +191,7 @@ public class MockRestClient extends RestClient {
     }
 
     @Override
-    public ResponseEntity execute(String uri, HttpMethod method, Map<String, String> headers, String body) {
+    public ResponseEntity<String> execute(String uri, HttpMethod method, Map<String, String> headers, String body) {
 
         String url = "https://localhost:8447/aai/v14/" + uri;
 
@@ -227,16 +227,17 @@ public class MockRestClient extends RestClient {
         headersMap.add("X-FromAppId", "JUNIT");
         headersMap.add("X-TransactionId", "JUNIT");
 
-        HttpEntity httpEntity = new HttpEntity(headers);
+        HttpEntity<String> httpEntity = new HttpEntity(headers);
 
-        ResponseEntity responseEntity = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
+        ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
 
         // mockRestServiceServer.verify();
         return responseEntity;
     }
 
     @Override
-    public ResponseEntity executeResource(String uri, HttpMethod method, Map<String, String> headers, String body) {
+    public ResponseEntity<Resource> executeResource(String uri, HttpMethod method, Map<String, String> headers,
+            String body) {
 
         String url = "https://localhost:8447/aai/v14/" + uri;
 
@@ -272,9 +273,10 @@ public class MockRestClient extends RestClient {
         headersMap.add("X-FromAppId", "JUNIT");
         headersMap.add("X-TransactionId", "JUNIT");
 
-        HttpEntity httpEntity = new HttpEntity(headers);
+        HttpEntity<String> httpEntity = new HttpEntity(headers);
 
-        ResponseEntity responseEntity = restTemplate.exchange(url, HttpMethod.GET, httpEntity, Resource.class);
+        ResponseEntity<Resource> responseEntity =
+                restTemplate.exchange(url, HttpMethod.GET, httpEntity, Resource.class);
 
         // mockRestServiceServer.verify();
         return responseEntity;

@@ -341,7 +341,7 @@ public class RESTAPI {
      * @return the response
      */
     public Response runner(String toe, String tba, String tdl, HttpHeaders headers, UriInfo info, HttpMethod httpMethod,
-            Callable c) {
+            Callable<Response> c) {
         Response response = null;
         Future<Response> handler = null;
         ExecutorService executor = null;
