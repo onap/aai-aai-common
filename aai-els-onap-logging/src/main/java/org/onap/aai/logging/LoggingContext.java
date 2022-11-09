@@ -41,7 +41,7 @@ public class LoggingContext {
     public static final String BUSINESS_PROCESS_ERROR = "500";
     public static final String UNKNOWN_ERROR = "900";
 
-    public static final Map<String, String> responseMap = new HashMap();
+    public static final Map<String, String> responseMap = new HashMap<>();
 
     // Specific Log Event Fields
     public static enum LoggingField {

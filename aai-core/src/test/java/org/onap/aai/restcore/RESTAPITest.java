@@ -27,7 +27,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import javax.ws.rs.core.*;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -38,7 +42,7 @@ import org.onap.aai.exceptions.AAIException;
 public class RESTAPITest extends AAISetup {
     private static RESTAPI restapi;
     private static HttpHeaders httpHeaders;
-    private static Callable callable;
+    private static Callable<Response> callable;
     private static UriInfo info;
     private static Response response;
 

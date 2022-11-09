@@ -31,7 +31,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.tinkerpop.gremlin.structure.*;
+import org.apache.tinkerpop.gremlin.structure.Direction;
+import org.apache.tinkerpop.gremlin.structure.Edge;
+import org.apache.tinkerpop.gremlin.structure.Property;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.serialization.db.DBSerializer;
@@ -90,10 +94,10 @@ public abstract class HistoryFormat extends MultiFormatMapper {
 
     protected JsonObject createMetaPropertiesObject(VertexProperty<Object> prop) {
         JsonObject json = new JsonObject();
-        Iterator iter = prop.properties();
+        Iterator<Property<Object>> iter = prop.properties();
 
         while (iter.hasNext()) {
-            Property<Object> metaProp = (Property) iter.next();
+            Property<Object> metaProp = iter.next();
             mapPropertyValues(json, metaProp.key(), metaProp.value());
         }
 
