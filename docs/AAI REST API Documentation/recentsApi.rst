@@ -21,7 +21,7 @@ Request
 The API can be accessed by using sending a GET request to the Recents
 API and sending a single node-type and a parameter to specify either
 timestamp to start the search or the number of hours to look back.
- 
+
 Querying with number of hours
 
 .. code::
@@ -45,7 +45,7 @@ object type, URI, and resource-version.
 
 Sample response:
 
-.. code-block:: json
+.. code::
 
   {
    "results": [
@@ -59,5 +59,5 @@ Sample response:
        "resource-link": "/aai/v16/network/pnfs/pnf/stack01"
        "resource-version": "1531413113612"
      },...]
-  
+
  }

@@ -16,14 +16,14 @@ Release Data
 ============
 
 Version: 11.0.0
---------------
+---------------
 
 :Release Date: 2022-11-10
 
 New Features
 ------------
 
-The R11 Kohn release of ONAP includes updates to the schema and edge rules of A&AI. AAI is serving v27 as the latest version of the REST APIs, and has support for v25.
+The R11 Kohn release of ONAP includes updates to the schema and edge rules. AAI is serving v27 as the latest version of the REST APIs, and has support for v25.
 
 - Model updates made on the following nodes for changes to attributes or indexing, present in v27
     * User Network Interfaces (uni)
@@ -94,7 +94,7 @@ For more information on the ONAP Honolulu release, please see:
 .. _`ONAP Release Downloads`: https://git.onap.org
 
 Version: 10.0.0
---------------
+---------------
 
 :Release Date: 2022-06-02
 
@@ -967,7 +967,7 @@ Source code of AAI is released under the following repositories at https://gerri
 
 **Known Issues**
 
-If the either the aai-resources or aai-traversal pod is deleted, haproxy will not automatically detect when the pod is re-instantiated.  As a temporary workaround, you can delete the haproxy pod (the one named "aai", for example, "dev-aai-8794fbff5-clx7d") and when the aai pod restarts the service should operate normally. A proposed fix is here: https://gerrit.onap.org/r/#/c/51075/1 if you want to see how to configure the haproxy service to auto-recover when the IP address of either the aai-resources or aai-traversal pod changes.
+If the either the aai-resources or aai-traversal pod is deleted, haproxy will not automatically detect when the pod is re-instantiated.  As a temporary workaround, you can delete the haproxy pod (the one named "aai", for example, "dev-aai-8794fbff5-clx7d") and when the aai pod restarts the service should operate normally. A proposed fix is `here <https://gerrit.onap.org/r/c/oom/+/51075/1>`_ if you want to see how to configure the haproxy service to auto-recover when the IP address of either the aai-resources or aai-traversal pod changes.
 
 **Security Notes**
 
@@ -1163,8 +1163,6 @@ Source code of AAI is released under the following repositories at https://gerri
 **Known Issues**
 
 - `AAI-61 <https://jira.onap.org/browse/AAI-61>`_ AAI cleaned up references to OpenECOMP but in order to keep the release stable for R1, the XML namespace still contains openecomp.
-
-Client systems should use http://org.openecomp.aai.inventory/v11 as the XML namespace for ONAP AAI R1.
 
 **Security Issues**
 

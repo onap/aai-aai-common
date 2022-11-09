@@ -33,7 +33,7 @@ For this exercise, I set up a new instance of Ubuntu in Virtualbox and gave it 1
    Running `nodetool statusthrift`... OK (returned exit status 0 and printed string "running").
    Forking Elasticsearch...
    Connecting to Elasticsearch (127.0.0.1:9200)...... OK (connected to 127.0.0.1:9200).
-   Forking Gremlin-Server... 
+   Forking Gremlin-Server...
    Connecting to Gremlin-Server (127.0.0.1:8182).... OK (connected to 127.0.0.1:8182).
    Run gremlin.sh to connect.
 
@@ -59,7 +59,7 @@ For this exercise, I set up a new instance of Ubuntu in Virtualbox and gave it 1
     1. $ sudo apt-get -y install haproxy
     2. $ <path-to-haproxy>/haproxy -v
 
- Response should be:       
+ Response should be:
 
  .. code-block:: bash
 
@@ -79,9 +79,9 @@ For this exercise, I set up a new instance of Ubuntu in Virtualbox and gave it 1
 
    $ sudo cp aai.pem /etc/ssl/private/aai.pem
    $ sudo chmod 640 /etc/ssl/private/aai.pem
-   $ sudo chown root:ssl-cert /etc/ssl/private/aai.pem 
+   $ sudo chown root:ssl-cert /etc/ssl/private/aai.pem
 
- Add these hostnames to the loopback interface in /etc/hosts: 
+ Add these hostnames to the loopback interface in /etc/hosts:
 
  127.0.0.1 localhost aai-traversal.api.simpledemo.openecomp.org aai-resources.api.simpledemo.openecomp.org aai-traversal.api.simpledemo.onap.org aai-resources.api.simpledemo.onap.org
 
@@ -100,12 +100,6 @@ For this exercise, I set up a new instance of Ubuntu in Virtualbox and gave it 1
    $ wget https://git.onap.org/oparent/plain/settings.xml
    $ mkdir ~/.m2
    $ cp settings.xml ~/.m2
-
- If you get an error on some of the repos saying that oparent is
- unresolvable, using the example settings.xml file should solve this
- problem: `Setting Up Your Development
- Environment#MavenExamplesettings.xml
- <https://wiki.onap.org/display/DW/Setting+Up+Your+Development+Environment#SettingUpYourDevelopmentEnvironment-MavenExamplesettings.xml>`__
 
 5. Set Up Repos
 ---------------
@@ -127,8 +121,8 @@ For this exercise, I set up a new instance of Ubuntu in Virtualbox and gave it 1
 
  Modify both janus-cached.properties and janus-realtime.properties to the following (for all MS’s that will connect to the local Cassandra backend)
 
- .. code:: 
-   
+ .. code::
+
    storage.backend=cassandra
    storage.hostname=localhost
    storage.cassandra.keyspace=onap # or different keyspace name of your choosing
@@ -183,7 +177,7 @@ For this exercise, I set up a new instance of Ubuntu in Virtualbox and gave it 1
 
 9. Janus setup (part 2)
 -----------------------
-   
+
  Run this on the local instance on your first time running AAI and whenever using new keyspace or after wiping the data.
 
  Install the schema
@@ -194,7 +188,7 @@ For this exercise, I set up a new instance of Ubuntu in Virtualbox and gave it 1
 
  You should see:
 
- .. code:: 
+ .. code::
 
    ---- NOTE --- about to open graph (takes a little while)--------;
    -- Loading new schema elements into JanusGraph --
@@ -271,10 +265,10 @@ For this exercise, I set up a new instance of Ubuntu in Virtualbox and gave it 1
     > PUT /aai/v16/cloud-infrastructure/complexes/complex/clli2 HTTP/1.1
     > GET /aai/v16/cloud-infrastructure/complexes/complex/clli2 HTTP/1.1
 
- With payload: 
+ With payload:
 
  .. code-block:: json
-  
+
    {
      "physical-location-id": "clli2",
      "data-center-code": "example-data-center-code-val-6667",
@@ -294,7 +288,7 @@ For this exercise, I set up a new instance of Ubuntu in Virtualbox and gave it 1
      "elevation": "example-elevation-val-28399",
      "lata": "example-lata-val-28399"
    }
-   
+
  And finishes with:
 
  .. code-block:: bash
@@ -303,7 +297,7 @@ For this exercise, I set up a new instance of Ubuntu in Virtualbox and gave it 1
     > GET /aai/v16/cloud-infrastructure/complexes HTTP/1.1
 
  With the following:
-  
+
  .. code-block:: json
 
      {
@@ -319,10 +313,10 @@ For this exercise, I set up a new instance of Ubuntu in Virtualbox and gave it 1
          ]
        }
      }
-   }	  
+   }
 
 12. Start the "traversal" microservice
---------------------------------------    
+--------------------------------------
 
  Traversal runs on port 8446.  Go to the traversal directory
 
@@ -331,7 +325,7 @@ For this exercise, I set up a new instance of Ubuntu in Virtualbox and gave it 1
     $ cd ~/src/aai/traversal
 
  Set the debug port to 9446
- 
+
     $ export MAVEN_OPTS="-Xms1024m -Xmx5120m -XX:PermSize=2024m -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,address=9446,server=y,suspend=n"
 
   Start the microservice - adjust your build version accordingly
