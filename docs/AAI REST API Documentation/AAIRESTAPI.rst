@@ -62,7 +62,7 @@ Casablanca (v14)
 
 - A new API called recents API is now available mostly intended for DCAE use.
 
-- A new and improved bulk api interface is also available now. 
+- A new and improved bulk api interface is also available now.
 
 - More details on the above APIs can be found in wiki pages referenced
   in sections below.
@@ -193,8 +193,7 @@ Event Specific:
 
 Relationship List
 
--  The related-link will be a URI and thus not contain
-   https://{serverroot} (impacts events)
+-  The related-link will be a URI and thus not contain the protocol prefixed
 
 -  The related-link will be used on a PUT as the "first choice" to
    identify the related resource. The relationship-data structure, which
@@ -333,17 +332,17 @@ To date, there are only five containers:
    resources. At the time of construction, the only data we had to
    denote service was the service-type from SO.  The vnf-type is the
    resource.
-   
+
 2. Service captures the service model instances and this will be
    deprecated in the future as things mature
-   
+
 3. Vnf-image captures information about the resource image needed for
    a VNF.  This was created due to there being no info available on
    the vservers that run on uCPE
-   
+
 4. Models captures model definitions (subgraph definitions using the
    AAI widgets)
-   
+
 5. named-queries capture subgraph definitions that allow different
    data to be retrieved for a given type of asset
 
@@ -364,7 +363,7 @@ Headers
 
 The following will be used for logging and interface diagnostic purposes.
 
- * X-FromAppId 	Unique Application ID assigned to the user of these APIs 
+ * X-FromAppId 	Unique Application ID assigned to the user of these APIs
  * X-TransactionId Unique ID that identifies an API request
 
 The X-FromAppId will be assigned to each application by the AAI team.
@@ -403,7 +402,7 @@ HTTP Codes:
 - 412 – Precondition failed (If the resource version doesn’t match AAI or arequired resource version isn't sent but should have been
 - 415 – Unsupported Media Type
 - 500 - Internal Server Error
-  
+
 Successful PUT responses shall return the following codes:
  * 200 (OK): used when an existing resource has been modified and
    there is a response buffer
@@ -431,7 +430,7 @@ Failures:
  * 400 Bad Request will be returned if headers are missing
  * 404 Not Found will be returned if an unknown URL is used
 
-In addition, the standard response buffer will be structured as follows unless otherwise specified.   
+In addition, the standard response buffer will be structured as follows unless otherwise specified.
 There are two types of requestErrors.
 
  * Service Exceptions – These exceptions occur when a service is
@@ -446,29 +445,29 @@ Italics are specific to the error returned, and generally described in the notes
 
 .. parsed-literal::
 
-  HTTP/1.1 405 *Method Not Allowed* 
-  Content-Type: application/json 
+  HTTP/1.1 405 *Method Not Allowed*
+  Content-Type: application/json
   Content-Length: nnnnn
-  Date: *Thu, 04 Jun 2009 02:51:59 GMT* 
+  Date: *Thu, 04 Jun 2009 02:51:59 GMT*
   {
-     “requestError”:{ 
-       “policyException”:{ 
-       “messageId”:"*POL8007*", 
-       “text”:”*The resource was invoked with an unsupported operation: %1.*”, 
+     “requestError”:{
+       “policyException”:{
+       “messageId”:"*POL8007*",
+       “text”:”*The resource was invoked with an unsupported operation: %1.*”,
        “variables”: [”*PUT*”]
      }
   }
 
-Notes: 
+Notes:
 
-a. On the first line, substitute the appropriate status response code. 
-   
-b. On the second line, substitute the appropriate content type. 
-   
+a. On the first line, substitute the appropriate status response code.
+
+b. On the second line, substitute the appropriate content type.
+
 c. Express the requestError structure in the required content type (e.g., either JSON or XML).   AAI will use JSON.
-   
-d. ‘requestError’ contains either a ‘policyException’ or a ‘serviceException’ structure. 
-   
+
+d. ‘requestError’ contains either a ‘policyException’ or a ‘serviceException’ structure.
+
 e. url is optional
 
 In 1512, AAI is introducing a response payload that is possible during a successful PUT.  This payload is used to inform the client that, while AAI completed the action requested, the result could be interpreted as a warning or request for additional action, as negotiated with the client.
@@ -524,21 +523,21 @@ true for AAI:
   are internal to how we store the data (i.e., it may look like one
   resource to our customers but it is expressed as more than one
   vertex in our graph)
-  
+
 * Vertices that are internal to AAI will be deleted when the parent
   vertex is deleted, if deletion of the parent leaves the child vertex
   orphaned
-  
+
 * Vertices that are exposed need to be managed using specific rules
   for each vertex.
-  
+
 * Vertices may have more than just parent/child relationships.  One
   example is a vserver, which will be owned by a tenant and used by a
-  VNF.  
+  VNF.
 
 
 URLs Sent To and Retrieved From A&AI
-------------------------------------  
+------------------------------------
 
 A&AI receives URLs from clients that point back to that client in
 order to get more details about the data sent to A&AI.  A&AI expects
@@ -551,7 +550,7 @@ relationship lists and search results.  Note that A&AI used to send
 URLs but, as reported in the 1707 impacts, these will now be URIs.
 
 A&AI expects space to be %20, and not plus(+).
-  
+
 The Relationship-List
 ---------------------
 
@@ -701,16 +700,16 @@ Successful JSON Response Payload
 AAI Resources CRUD APIs
 =======================
 
-The API structure is composed of: 
+The API structure is composed of:
 
-  * The HTTP command, which indicates the operation to perform 
-  * The HTTP URI, which defines what object this operation is related to 
-  * The HTTP version, which MUST be 1.1 
+  * The HTTP command, which indicates the operation to perform
+  * The HTTP URI, which defines what object this operation is related to
+  * The HTTP version, which MUST be 1.1
 
-Available HTTP commands are: 
+Available HTTP commands are:
 
-  * PUT: used to create or update an object 
-  * DELETE: used to delete an object or a set of objects 
+  * PUT: used to create or update an object
+  * DELETE: used to delete an object or a set of objects
   * GET : used to query an object or set of objects
   * PATCH :  used to update specific fields owned by the client doing the update
 
@@ -724,18 +723,13 @@ The HTTP URI is built according to this pattern:
 
 * {namespace} refers to the API namespace. Supported namespaces are cloud-infrastructure, business, service-design-and-creation, and network
 
-* {resource} refers to how the object is identified according to the namespace specifications. 
+* {resource} refers to how the object is identified according to the namespace specifications.
 
 Example GET Request
 
 .. code::
 
    GET https://aai.onap:8443/aai/v16/cloud-infrastructure/cloud-regions/cloud-region/{cloud-owner}/{cloud-region-id}
-
-Swagger and XSD:
-----------------
-
-`Offered APIs <../platform/offeredapis.html>`_
 
 Data Assumptions
 ----------------
@@ -927,7 +921,7 @@ Example:
    {
       "vnf-id": "cscf0001v", <-- This key needs to be here but you cannot modify the key
       "regional-resource-zone": null,
-      "ipv4-oam-address": "10.10.99.11"   
+      "ipv4-oam-address": "10.10.99.11"
    }
 
 This payload would result in the generic-vnf with the vnf-id =
@@ -975,7 +969,7 @@ Example
 
 These parameters may be used in combination with each other.
 
-Example 
+Example
 
 .. code::
 
@@ -996,8 +990,8 @@ demonstrate how the delete scope and edges are documented.
 The following table summarizes actions AAI will take upon deletion of a resource, i.e., its default delete scope:
 
 +-----------------------------+--------------------------------------------------------------------+
-| ERROR_IF_ANY_EDGES          | If the resource being deleted has any edges at all                 | 
-|                             | an error should be returned                                        | 
+| ERROR_IF_ANY_EDGES          | If the resource being deleted has any edges at all                 |
+|                             | an error should be returned                                        |
 +-----------------------------+--------------------------------------------------------------------+
 | ERROR_IF_ANY_IN_EDGES       | If the resource being deleted has any edges that point IN towards  |
 |                             | it, an error should be returned                                    |
@@ -1059,8 +1053,8 @@ Bulk APIs
 ---------
 
 The Bulk API allows clients to make multiple requests in a single
-transaction. Please look for additional details on the following wiki
-page: `Bulk API <bulkApi.html>`_
+transaction. Please look for additional details on the Bulk API link
+in the table on contents.
 
 Nodes API
 ---------
@@ -1075,7 +1069,7 @@ successfully perform that GET. The nodes API allows for more freedom
 in querying A&AI, allowing clients to circumvent the need to know
 every key in the hierarchy.
 
-See `Nodes API <nodesApi.html>`_ for more information.
+See Nodes API in the table of contents for more information.
 
 AAI Traversal APIs
 ==================
@@ -1094,7 +1088,7 @@ nodes to be searched based on certain properties of the nodes. It will
 allow search based on properties being set, not set or set to specific
 values.
 
-Please reference `Nodes Query <nodesQuery.html>`_ for details on the
+Please reference Nodes Query in the table of contents for details on the
 API and test queries.
 
 
@@ -1115,7 +1109,7 @@ AAI supports a search and delete capability that allows a client to
 retrieve or delete an instance of a service based on the model
 subgraph definition provided to AAI by ASDC.
 
-The instance filters must uniquely identify a service instance.  
+The instance filters must uniquely identify a service instance.
 
 The URL is as follows:
 
@@ -1230,8 +1224,8 @@ Example reponse
      ]
    }
 
-id 
-^^^ 
+id
+^^^
 
 Provides an array of objects containing resource-type (AAI's node
 type; i.e., pnf) and a URI using the vertex ID from AAI's graph.
@@ -1241,7 +1235,7 @@ type; i.e., pnf) and a URI using the vertex ID from AAI's graph.
    PUT /aai/v$/query?format=id
 
 Example Response
-   
+
 .. code-block:: json
 
    {
@@ -1268,7 +1262,7 @@ i.e., pnf) and a URI using the AAI REST API pathed URIs
    PUT /aai/v$/query?format=pathed
 
 Example Response
-   
+
 .. code-block:: json
 
    {
@@ -1693,7 +1687,7 @@ Example Response
        ]
    }
 
-   
+
 Optional Query Parameters
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -1704,7 +1698,7 @@ You can pass the depth query parameter to specify how many levels of
 children/grandchildren to return. The default depth is 1.
 
 .. code::
-  
+
    PUT /aai/v$/query?format={format}&depth=0
 
 nodesOnly
@@ -1713,7 +1707,7 @@ nodesOnly
 You can pass the nodesOnly query parameter to have the output only
 contain the object properties with no relationships.
 
-.. code:: 
+.. code::
 
    PUT /aai/v$/query?format={format}&nodesOnly=true
 
@@ -1764,14 +1758,11 @@ clients should set their timeouts accordingly.
 List of Queries and Payloads
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-For a full list of available custom queries, please refer to our
-`Custom Queries <customQueries.html>`_ document
+For a full list of available custom queries, please refer to our Custom Queries in the Table of Contents
 
 Recents API
 -----------
 
 The Recents API allows a client to get the list of objects that has
 been created or updated recently, up to a maximum of 1 week
-back.
-
-`Recents API <recentsApi.html>`_ 
+back. Please see the link in the table of contents.
