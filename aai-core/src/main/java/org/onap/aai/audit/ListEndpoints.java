@@ -46,6 +46,7 @@ import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.setup.SchemaVersions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 /**
@@ -68,21 +69,23 @@ public class ListEndpoints {
      */
     public static void main(String[] args) {
 
-        AnnotationConfigApplicationContext context =
-                new AnnotationConfigApplicationContext("org.onap.aai.config", "org.onap.aai.setup");
+        try (AnnotationConfigApplicationContext context =
+                new AnnotationConfigApplicationContext("org.onap.aai.config", "org.onap.aai.setup")) {
+            String schemaUriBasePath = context.getEnvironment().getProperty("schema.uri.base.path");
 
-        String schemaUriBasePath = context.getEnvironment().getProperty("schema.uri.base.path");
+            if (schemaUriBasePath == null) {
+                String errorMsg = "Unable to find the property schema.uri.base.path,"
+                        + " please check if specified in system property or in schema-ingest.properties";
+                LOGGER.error(errorMsg);
+            }
 
-        if (schemaUriBasePath == null) {
-            String errorMsg = "Unable to find the property schema.uri.base.path,"
-                    + " please check if specified in system property or in schema-ingest.properties";
-            LOGGER.error(errorMsg);
+            SchemaVersions schemaVersions = context.getBean(SchemaVersions.class);
+            ListEndpoints endPoints = new ListEndpoints(schemaUriBasePath, schemaVersions.getDefaultVersion());
+
+            LOGGER.info(endPoints.toString("relationship-list"));
+        } catch (BeansException e) {
+            LOGGER.warn("Unable to initialize AnnotationConfigApplicationContext ", LogFormatTools.getStackTop(e));
         }
-
-        SchemaVersions schemaVersions = context.getBean(SchemaVersions.class);
-        ListEndpoints endPoints = new ListEndpoints(schemaUriBasePath, schemaVersions.getDefaultVersion());
-
-        LOGGER.info(endPoints.toString("relationship-list"));
     }
 
     /**
