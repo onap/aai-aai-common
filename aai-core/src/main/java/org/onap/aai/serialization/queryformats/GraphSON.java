@@ -20,11 +20,6 @@
 
 package org.onap.aai.serialization.queryformats;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -43,6 +38,11 @@ import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexExcepti
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 public class GraphSON implements FormatMapper {
 
     private static final Logger logger = LoggerFactory.getLogger(GraphSON.class);
@@ -50,7 +50,6 @@ public class GraphSON implements FormatMapper {
     private final GraphSONMapper mapper =
             GraphSONMapper.build().addRegistry(JanusGraphIoRegistry.getInstance()).create();
     private final GraphSONWriter writer = GraphSONWriter.build().mapper(mapper).create();
-    protected JsonParser parser = new JsonParser();
 
     @Override
     public Optional<JsonObject> formatObject(Object v) {
@@ -64,7 +63,7 @@ public class GraphSON implements FormatMapper {
             logger.debug("GraphSON writeVertex error : {}", e.getMessage());
         }
 
-        JsonObject jsonObject = parser.parse(result).getAsJsonObject();
+        JsonObject jsonObject = JsonParser.parseString(result).getAsJsonObject();
 
         if (jsonObject != null) {
 

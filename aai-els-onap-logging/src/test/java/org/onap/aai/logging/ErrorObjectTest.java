@@ -31,7 +31,7 @@ public class ErrorObjectTest {
     private static final String ERROR_DISPOSITION = "5";
     private static final String ERROR_SEVERITY = "ERROR";
     private static final String ERROR_CATEGORY = "4";
-    private static final Integer ERROR_HTTP_RESPONSE_CODE = new Integer(401);
+    private static final Integer ERROR_HTTP_RESPONSE_CODE = Integer.valueOf(401);
     private static final String ERROR_REST_CODE = "3300";
     private static final String ERROR_CODE = "4000";
     private static final String ERROR_TEXT = "Test data error";

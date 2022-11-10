@@ -20,9 +20,6 @@
 
 package org.onap.aai.serialization.queryformats;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +33,10 @@ import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 public class SimpleFormat extends RawFormat {
 
@@ -67,7 +68,7 @@ public class SimpleFormat extends RawFormat {
             }
 
             final String json = obj.marshal(false);
-            return Optional.of(parser.parse(json).getAsJsonObject());
+            return Optional.of(JsonParser.parseString(json).getAsJsonObject());
         } catch (AAIUnknownObjectException e) {
             return Optional.empty();
         }

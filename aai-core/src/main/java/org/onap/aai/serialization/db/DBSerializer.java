@@ -20,8 +20,6 @@
 
 package org.onap.aai.serialization.db;
 
-import com.google.common.base.CaseFormat;
-
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
@@ -113,6 +111,8 @@ import org.onap.aai.workarounds.NamingExceptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
+
+import com.google.common.base.CaseFormat;
 
 public class DBSerializer {
 
@@ -575,7 +575,7 @@ public class DBSerializer {
                     if (value != null) {
                         if (!value.equals(oldValue)) {
                             if (propertyType.toLowerCase().contains(".long")) {
-                                v.property(dbProperty, new Integer(((Long) value).toString()));
+                                v.property(dbProperty, Integer.valueOf(((Long) value).toString()));
                             } else {
                                 v.property(dbProperty, value);
                             }

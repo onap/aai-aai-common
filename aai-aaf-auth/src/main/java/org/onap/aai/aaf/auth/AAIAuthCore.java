@@ -20,18 +20,24 @@
 
 package org.onap.aai.aaf.auth;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -43,6 +49,12 @@ import org.onap.aai.util.AAIConfig;
 import org.onap.aai.util.AAIConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 /**
  * The Class AAIAuthCore.
@@ -143,9 +155,8 @@ public final class AAIAuthCore {
         try {
             LOGGER.debug("Reading from " + globalAuthFileName);
             String authFile = new String(Files.readAllBytes(Paths.get(globalAuthFileName)));
-
-            JsonParser parser = new JsonParser();
-            JsonObject authObject = parser.parse(authFile).getAsJsonObject();
+            
+            JsonObject authObject = JsonParser.parseString(authFile).getAsJsonObject();
             if (authObject.has("roles")) {
                 JsonArray roles = authObject.getAsJsonArray("roles");
                 for (JsonElement role : roles) {

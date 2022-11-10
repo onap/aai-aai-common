@@ -24,18 +24,27 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.anyObject;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
-import javax.ws.rs.core.*;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
 
 import org.javatuples.Pair;
 import org.json.JSONArray;
@@ -60,6 +69,9 @@ import org.onap.aai.restcore.HttpMethod;
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 import org.onap.aai.util.AAIConfig;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 @RunWith(value = Parameterized.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -127,7 +139,7 @@ public class HttpEntryTest extends AAISetup {
         when(uriInfo.getQueryParameters(false)).thenReturn(queryParameters);
 
         // TODO - Check if this is valid since RemoveDME2QueryParameters seems to be very unreasonable
-        Mockito.doReturn(null).when(queryParameters).remove(anyObject());
+        Mockito.doReturn(null).when(queryParameters).remove(any());
 
         when(httpHeaders.getMediaType()).thenReturn(APPLICATION_JSON);
     }
@@ -276,7 +288,7 @@ public class HttpEntryTest extends AAISetup {
         Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri, content);
         dbEngine.commit();
         String msg = response.getEntity().toString();
-        JsonObject jsonObj = new JsonParser().parse(msg).getAsJsonObject();
+        JsonObject jsonObj = JsonParser.parseString(msg).getAsJsonObject();
         String resourceVersion = "";
         if (jsonObj.isJsonObject()) {
             resourceVersion = jsonObj.get("resource-version").getAsString();
@@ -298,7 +310,7 @@ public class HttpEntryTest extends AAISetup {
         Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri, content);
         dbEngine.commit();
         String msg = response.getEntity().toString();
-        JsonObject jsonObj = new JsonParser().parse(msg).getAsJsonObject();
+        JsonObject jsonObj = JsonParser.parseString(msg).getAsJsonObject();
         String resourceVersion = "";
         if (jsonObj.isJsonObject()) {
             resourceVersion = jsonObj.get("resource-version").getAsString();

@@ -20,16 +20,19 @@
 
 package org.onap.aai.rest;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.junit.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.core.Response;
 
@@ -56,6 +59,9 @@ import org.onap.aai.rest.ueb.UEBNotification;
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.test.annotation.DirtiesContext;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 @RunWith(value = Parameterized.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
@@ -848,11 +854,11 @@ public class NotificationDmaapEventTest extends AAISetup {
         UEBNotification notification = Mockito.spy(new UEBNotification(ModelType.MOXY, loaderFactory, schemaVersions));
         HttpTestUtil httpTestUtil = new HttpTestUtil(queryStyle);
 
-        JsonObject paylaods = new JsonParser().parse(PayloadUtil.getResourcePayload(
-                "customer_with_children_and_generic-vnf_with_children_and_edge_between_service-instance_vlan.json"))
-                .getAsJsonObject();
-        String gvnfPaylaod = paylaods.get("generic-vnf").toString();
-        String custPaylaod = paylaods.get("customer").toString();
+        String json = PayloadUtil.getResourcePayload(
+                "customer_with_children_and_generic-vnf_with_children_and_edge_between_service-instance_vlan.json");
+        JsonObject payloads = JsonParser.parseString(json).getAsJsonObject();
+        String gvnfPaylaod = payloads.get("generic-vnf").toString();
+        String custPaylaod = payloads.get("customer").toString();
         String gvnfUri = "/aai/v14/network/generic-vnfs/generic-vnf/gvnf";
         String custUri = "/aai/v14/business/customers/customer/cust";
         String vlanUri = "/aai/v14/network/generic-vnfs/generic-vnf/gvnf/l-interfaces/l-interface/lint/vlans/vlan/vlan";
@@ -909,10 +915,9 @@ public class NotificationDmaapEventTest extends AAISetup {
         UEBNotification notification = Mockito.spy(new UEBNotification(ModelType.MOXY, loaderFactory, schemaVersions));
         HttpTestUtil httpTestUtil = new HttpTestUtil(queryStyle, notification, AAIProperties.MAXIMUM_DEPTH);
 
-        JsonObject paylaods = new JsonParser()
-                .parse(PayloadUtil.getResourcePayload("complex_pserver_with_relation.json")).getAsJsonObject();
-        String complexPaylaod = paylaods.get("complex").toString();
-        String pserverPaylaod = paylaods.get("pserver").toString();
+        JsonObject payloads = JsonParser.parseString(PayloadUtil.getResourcePayload("complex_pserver_with_relation.json")).getAsJsonObject();
+        String complexPaylaod = payloads.get("complex").toString();
+        String pserverPaylaod = payloads.get("pserver").toString();
         String complexUri = "/aai/v14/cloud-infrastructure/complexes/complex/complex-1";
         String pserverUri = "/aai/v14/cloud-infrastructure/pservers/pserver/pserver-1";
 
@@ -955,11 +960,11 @@ public class NotificationDmaapEventTest extends AAISetup {
         UEBNotification notification = Mockito.spy(new UEBNotification(ModelType.MOXY, loaderFactory, schemaVersions));
         HttpTestUtil httpTestUtil = new HttpTestUtil(queryStyle);
 
-        JsonObject paylaods = new JsonParser().parse(PayloadUtil.getResourcePayload(
-                "customer_with_children_and_generic-vnf_with_children_and_edge_between_service-instance_vlan.json"))
-                .getAsJsonObject();
-        String gvnfPaylaod = paylaods.get("generic-vnf").toString();
-        String custPaylaod = paylaods.get("customer").toString();
+        String json = PayloadUtil.getResourcePayload(
+                "customer_with_children_and_generic-vnf_with_children_and_edge_between_service-instance_vlan.json");
+        JsonObject payloads = JsonParser.parseString(json).getAsJsonObject();
+        String gvnfPayload = payloads.get("generic-vnf").toString();
+        String custPayload = payloads.get("customer").toString();
         String custUri = "/aai/v14/business/customers/customer/cust";
         String ssUri = custUri + "/service-subscriptions/service-subscription/ss";
         String siUri = ssUri + "/service-instances/service-instance/si";
@@ -970,7 +975,7 @@ public class NotificationDmaapEventTest extends AAISetup {
         // Setup generic vnf
         Response response = httpTestUtil.doGet(gvnfUri);
         assertEquals("Expecting the generic-vnf to be not found", 404, response.getStatus());
-        response = httpTestUtil.doPut(gvnfUri, gvnfPaylaod);
+        response = httpTestUtil.doPut(gvnfUri, gvnfPayload);
         assertEquals("Expecting the generic-vnf to be created", 201, response.getStatus());
         response = httpTestUtil.doGet(gvnfUri, "all");
         assertEquals("Expecting the generic-vnf to be found", 200, response.getStatus());
@@ -981,7 +986,7 @@ public class NotificationDmaapEventTest extends AAISetup {
         // Setup customer with service instance relation to vlan
         response = httpTestUtil.doGet(custUri);
         assertEquals("Expecting the customer to be not found", 404, response.getStatus());
-        response = httpTestUtil.doPut(custUri, custPaylaod);
+        response = httpTestUtil.doPut(custUri, custPayload);
         assertEquals("Expecting the customer to be created", 201, response.getStatus());
         response = httpTestUtil.doGet(custUri, "all");
         assertEquals("Expecting the customer to be found", 200, response.getStatus());

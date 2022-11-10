@@ -20,11 +20,6 @@
 
 package org.onap.aai.serialization.queryformats;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,13 +45,17 @@ import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 public class Resource extends MultiFormatMapper {
 
     private static final Logger logger = LoggerFactory.getLogger(Resource.class);
 
     private final Loader loader;
     private final DBSerializer serializer;
-    private final JsonParser parser;
     private final UrlBuilder urlBuilder;
     private final boolean includeUrl;
     private final boolean nodesOnly;
@@ -64,7 +63,6 @@ public class Resource extends MultiFormatMapper {
     private final boolean isSkipRelatedTo;
 
     public Resource(Builder builder) {
-        this.parser = new JsonParser();
         this.loader = builder.getLoader();
         this.serializer = builder.getSerializer();
         this.urlBuilder = builder.getUrlBuilder();
@@ -190,7 +188,7 @@ public class Resource extends MultiFormatMapper {
 
             final String json = obj.marshal(false);
 
-            return Optional.of(getParser().parse(json).getAsJsonObject());
+            return Optional.of(JsonParser.parseString(json).getAsJsonObject());
         } catch (AAIUnknownObjectException e) {
             return Optional.empty();
         }
@@ -207,10 +205,6 @@ public class Resource extends MultiFormatMapper {
 
     private DBSerializer getSerializer() {
         return serializer;
-    }
-
-    private JsonParser getParser() {
-        return parser;
     }
 
     public static class Builder implements NodesOnly<Builder>, Depth<Builder>, AsTree<Builder> {

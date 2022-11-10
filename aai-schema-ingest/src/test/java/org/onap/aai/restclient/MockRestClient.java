@@ -26,10 +26,6 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -51,6 +47,10 @@ import org.springframework.test.web.client.ExpectedCount;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 @Component
 public class MockRestClient extends RestClient {
@@ -179,14 +179,11 @@ public class MockRestClient extends RestClient {
     public JsonObject getPayload(String filename) throws IOException {
         InputStream inputStream = getClass().getClassLoader().getResourceAsStream(filename);
 
-        // InputStream inputStream = new FileInputStream(filename);
-
         String result = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
         String message = String.format("Unable to find the %s in src/test/resources", filename);
         assertNotNull(message, inputStream);
 
-        JsonParser parser = new JsonParser();
-        JsonObject payload = parser.parse(result).getAsJsonObject();
+        JsonObject payload = JsonParser.parseString(result).getAsJsonObject();
         return payload;
     }
 

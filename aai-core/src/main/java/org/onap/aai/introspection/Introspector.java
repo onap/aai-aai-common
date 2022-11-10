@@ -20,8 +20,6 @@
 
 package org.onap.aai.introspection;
 
-import com.google.common.base.CaseFormat;
-
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -49,6 +47,8 @@ import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.workarounds.NamingExceptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.CaseFormat;
 
 public abstract class Introspector implements Cloneable {
 
@@ -103,9 +103,9 @@ public abstract class Introspector implements Cloneable {
         Class<?> clazz = this.getClass(name);
         if (this.isListType(name) && result == null) {
             try {
-                this.set(convertedName, clazz.newInstance());
+                this.set(convertedName, clazz.getDeclaredConstructor().newInstance());
                 result = this.get(convertedName);
-            } catch (DynamicException | InstantiationException | IllegalAccessException e) {
+            } catch (DynamicException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
                 LOGGER.warn(e.getMessage(), e);
             }
         }
@@ -127,9 +127,9 @@ public abstract class Introspector implements Cloneable {
         Class<?> clazz = this.getClass(name);
         if (this.isListType(name) && value == null) {
             try {
-                this.set(convertedName, clazz.newInstance());
+                this.set(convertedName, clazz.getDeclaredConstructor().newInstance());
                 value = this.get(convertedName);
-            } catch (DynamicException | InstantiationException | IllegalAccessException e) {
+            } catch (DynamicException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
                 LOGGER.warn(e.getMessage(), e);
             }
         }
@@ -159,9 +159,9 @@ public abstract class Introspector implements Cloneable {
         Class<?> clazz = this.getClass(name);
         if (isListType && value == null) {
             try {
-                this.set(convertedName, clazz.newInstance());
+                this.set(convertedName, clazz.getDeclaredConstructor().newInstance());
                 value = this.get(convertedName);
-            } catch (DynamicException | InstantiationException | IllegalAccessException e) {
+            } catch (DynamicException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
                 LOGGER.warn(e.getMessage(), e);
             }
         }

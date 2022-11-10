@@ -20,10 +20,14 @@
 
 package org.onap.aai.serialization.queryformats;
 
-import com.google.gson.*;
-
 import java.io.UnsupportedEncodingException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -45,9 +49,13 @@ import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 public class Aggregate extends MultiFormatMapper {
     private static final Logger LOGGER = LoggerFactory.getLogger(LifecycleFormat.class);
-    protected JsonParser parser = new JsonParser();
     protected final DBSerializer serializer;
     protected final Loader loader;
     protected final UrlBuilder urlBuilder;
@@ -99,7 +107,7 @@ public class Aggregate extends MultiFormatMapper {
             }
 
             final String json = obj.marshal(false);
-            return Optional.of(parser.parse(json).getAsJsonObject());
+            return Optional.of(JsonParser.parseString(json).getAsJsonObject());
         } catch (AAIUnknownObjectException e) {
             return Optional.empty();
         }

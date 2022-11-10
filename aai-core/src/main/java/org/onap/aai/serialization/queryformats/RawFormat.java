@@ -20,11 +20,6 @@
 
 package org.onap.aai.serialization.queryformats;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -46,8 +41,11 @@ import org.onap.aai.serialization.queryformats.params.Depth;
 import org.onap.aai.serialization.queryformats.params.NodesOnly;
 import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
 public class RawFormat extends MultiFormatMapper {
-    protected JsonParser parser = new JsonParser();
     protected final DBSerializer serializer;
     protected final Loader loader;
     protected final UrlBuilder urlBuilder;

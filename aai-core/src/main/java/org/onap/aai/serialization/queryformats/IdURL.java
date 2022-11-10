@@ -20,9 +20,6 @@
 
 package org.onap.aai.serialization.queryformats;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -42,21 +39,21 @@ import org.onap.aai.serialization.queryformats.params.Depth;
 import org.onap.aai.serialization.queryformats.params.NodesOnly;
 import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 public class IdURL extends MultiFormatMapper {
 
     private final UrlBuilder urlBuilder;
-    private final JsonParser parser;
     private final Loader loader;
 
     public IdURL(Loader loader, UrlBuilder urlBuilder) throws AAIException {
         this.urlBuilder = urlBuilder;
-        this.parser = new JsonParser();
         this.loader = loader;
     }
 
     public IdURL(Builder builder) throws AAIException {
         this.urlBuilder = builder.getUrlBuilder();
-        this.parser = new JsonParser();
         this.loader = builder.getLoader();
         this.isTree = builder.isTree();
     }
@@ -77,7 +74,7 @@ public class IdURL extends MultiFormatMapper {
 
             final String json = searchResult.marshal(false);
 
-            return Optional.of(parser.parse(json).getAsJsonObject());
+            return Optional.of(JsonParser.parseString(json).getAsJsonObject());
 
         } catch (AAIUnknownObjectException e) {
             throw new RuntimeException("Fatal error - result-data object does not exist!");
