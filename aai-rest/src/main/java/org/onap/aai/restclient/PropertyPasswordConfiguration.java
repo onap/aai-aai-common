@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -65,7 +66,7 @@ public class PropertyPasswordConfiguration implements ApplicationContextInitiali
                 if (passwordStream != null) {
                     String keystorePassword = null;
 
-                    keystorePassword = IOUtils.toString(passwordStream);
+                    keystorePassword = IOUtils.toString(passwordStream, Charset.defaultCharset());
                     if (keystorePassword != null) {
                         keystorePassword = keystorePassword.trim();
                     }

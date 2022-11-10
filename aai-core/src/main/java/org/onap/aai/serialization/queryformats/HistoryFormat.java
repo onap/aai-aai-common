@@ -23,7 +23,6 @@ package org.onap.aai.serialization.queryformats;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 import java.util.Iterator;
 import java.util.List;
@@ -31,7 +30,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.tinkerpop.gremlin.structure.*;
+import org.apache.tinkerpop.gremlin.structure.Direction;
+import org.apache.tinkerpop.gremlin.structure.Edge;
+import org.apache.tinkerpop.gremlin.structure.Property;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.serialization.db.DBSerializer;
@@ -61,7 +64,6 @@ public abstract class HistoryFormat extends MultiFormatMapper {
     protected static final String RELATED_TO = "related-to";
     protected static final String NODE_ACTIONS = "node-actions";
 
-    protected JsonParser parser = new JsonParser();
     protected final DBSerializer serializer;
     protected final Loader loader;
     protected final UrlBuilder urlBuilder;

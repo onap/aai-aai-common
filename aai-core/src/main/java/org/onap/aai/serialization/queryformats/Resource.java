@@ -56,7 +56,6 @@ public class Resource extends MultiFormatMapper {
 
     private final Loader loader;
     private final DBSerializer serializer;
-    private final JsonParser parser;
     private final UrlBuilder urlBuilder;
     private final boolean includeUrl;
     private final boolean nodesOnly;
@@ -64,7 +63,6 @@ public class Resource extends MultiFormatMapper {
     private final boolean isSkipRelatedTo;
 
     public Resource(Builder builder) {
-        this.parser = new JsonParser();
         this.loader = builder.getLoader();
         this.serializer = builder.getSerializer();
         this.urlBuilder = builder.getUrlBuilder();
@@ -190,7 +188,7 @@ public class Resource extends MultiFormatMapper {
 
             final String json = obj.marshal(false);
 
-            return Optional.of(getParser().parse(json).getAsJsonObject());
+            return Optional.of(JsonParser.parseString(json).getAsJsonObject());
         } catch (AAIUnknownObjectException e) {
             return Optional.empty();
         }
@@ -207,10 +205,6 @@ public class Resource extends MultiFormatMapper {
 
     private DBSerializer getSerializer() {
         return serializer;
-    }
-
-    private JsonParser getParser() {
-        return parser;
     }
 
     public static class Builder implements NodesOnly<Builder>, Depth<Builder>, AsTree<Builder> {

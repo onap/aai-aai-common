@@ -47,7 +47,7 @@ public class UrlBuilderTest extends AAISetup {
     private Vertex v;
 
     private static final String uri = "/test/uri";
-    private static final Object vId = new Long(123);
+    private static final Object vId = Long.valueOf(123);
     private static final String protocolAndHost = "http://localhost/aai/";
 
     @Before

@@ -21,7 +21,6 @@
 package org.onap.aai.serialization.queryformats;
 
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 import java.util.List;
 import java.util.Map;
@@ -39,7 +38,6 @@ import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
 import org.onap.aai.util.AAIConfig;
 
 public class ResourceWithSoT extends MultiFormatMapper {
-    protected JsonParser parser = new JsonParser();
     protected final DBSerializer serializer;
     protected final Loader loader;
     protected final UrlBuilder urlBuilder;

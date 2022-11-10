@@ -179,14 +179,11 @@ public class MockRestClient extends RestClient {
     public JsonObject getPayload(String filename) throws IOException {
         InputStream inputStream = getClass().getClassLoader().getResourceAsStream(filename);
 
-        // InputStream inputStream = new FileInputStream(filename);
-
         String result = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
         String message = String.format("Unable to find the %s in src/test/resources", filename);
         assertNotNull(message, inputStream);
 
-        JsonParser parser = new JsonParser();
-        JsonObject payload = parser.parse(result).getAsJsonObject();
+        JsonObject payload = JsonParser.parseString(result).getAsJsonObject();
         return payload;
     }
 

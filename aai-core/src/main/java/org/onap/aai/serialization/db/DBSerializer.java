@@ -575,7 +575,7 @@ public class DBSerializer {
                     if (value != null) {
                         if (!value.equals(oldValue)) {
                             if (propertyType.toLowerCase().contains(".long")) {
-                                v.property(dbProperty, new Integer(((Long) value).toString()));
+                                v.property(dbProperty, Integer.valueOf(((Long) value).toString()));
                             } else {
                                 v.property(dbProperty, value);
                             }

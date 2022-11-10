@@ -23,9 +23,9 @@ package org.onap.aai.serialization.queryformats;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyObject;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -160,7 +160,7 @@ public class SimpleFormatTest extends AAISetup {
 
         simpleFormat = new RawFormat.Builder(loader, serializer, urlBuilder).nodesOnly(true).depth(0).build();
 
-        when(serializer.dbToObject(anyObject(), anyObject(), anyInt(), anyBoolean(), anyString()))
+        when(serializer.dbToObject(any(), any(), anyInt(), anyBoolean(), anyString()))
                 .thenThrow(new AAIException("Test Exception"));
 
         simpleFormat.createPropertiesObject(vfModule);

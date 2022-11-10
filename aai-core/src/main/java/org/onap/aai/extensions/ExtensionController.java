@@ -63,7 +63,7 @@ public class ExtensionController {
             Method extension = clazz.getMethod(methodName, new Class[] {AAIExtensionMap.class});
             if (extension != null) {
 
-                Object ret = extension.invoke(clazz.newInstance(), aaiExtMap);
+                Object ret = extension.invoke(clazz.getDeclaredConstructor().newInstance(), aaiExtMap);
 
                 if (ret instanceof Integer) {
                     Exception e = null;
@@ -101,11 +101,12 @@ public class ExtensionController {
                             }
 
                             if (errorCallback != null) {
-                                errorCallback.invoke(clazz.newInstance(), aaiExtMap);
+                                errorCallback.invoke(clazz.getDeclaredConstructor().newInstance(), aaiExtMap);
                             } else {
                                 Method defaultErrorCallbackExtension =
                                         clazz.getMethod(defaultErrorCallback, new Class[] {AAIExtensionMap.class});
-                                defaultErrorCallbackExtension.invoke(clazz.newInstance(), aaiExtMap);
+                                defaultErrorCallbackExtension.invoke(clazz.getDeclaredConstructor().newInstance(),
+                                        aaiExtMap);
                             }
                         }
                     }
