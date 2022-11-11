@@ -78,7 +78,7 @@ public class SimpleFormat extends RawFormat {
     @Override
     protected void addEdge(Edge e, Vertex v, JsonArray array) throws AAIFormatVertexException {
 
-        Property property = e.property("private");
+        Property<Object> property = e.property("private");
 
         if (property.isPresent()) {
             if ("true".equals(e.property("private").value().toString())) {

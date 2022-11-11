@@ -115,7 +115,7 @@ public class ValidationServiceTest {
         String validationResponse =
                 PayloadUtil.getResourcePayload("prevalidation/success-response-with-empty-violations.json");
 
-        ResponseEntity responseEntity = Mockito.mock(ResponseEntity.class, Mockito.RETURNS_DEEP_STUBS);
+        ResponseEntity<String> responseEntity = Mockito.mock(ResponseEntity.class, Mockito.RETURNS_DEEP_STUBS);
 
         Mockito.when(restClient.execute(eq(ValidationService.VALIDATION_ENDPOINT), eq(HttpMethod.POST), any(),
                 eq(pserverRequest))).thenReturn(responseEntity);

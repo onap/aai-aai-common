@@ -257,7 +257,7 @@ public class RestController implements RestControllerInterface {
      * @return the list
      * @throws Exception the exception
      */
-    private <T> List<T> mapJsonToObjectList(T typeDef, String json, Class clazz) throws Exception {
+    private <T> List<T> mapJsonToObjectList(T typeDef, String json, Class<?> clazz) throws Exception {
         List<T> list;
         ObjectMapper mapper = new ObjectMapper();
         System.out.println(json);

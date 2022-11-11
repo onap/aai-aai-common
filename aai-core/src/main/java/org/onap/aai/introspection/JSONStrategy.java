@@ -151,7 +151,7 @@ public class JSONStrategy extends Introspector {
         Class<?> resultClass = null;
         Object resultObject = this.getValue(name);
         if (resultObject instanceof JSONArray) {
-            resultClass = ((List) resultObject).get(0).getClass();
+            resultClass = ((List<?>) resultObject).get(0).getClass();
         }
 
         return resultClass;

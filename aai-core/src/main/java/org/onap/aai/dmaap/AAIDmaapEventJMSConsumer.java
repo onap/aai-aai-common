@@ -119,7 +119,7 @@ public class AAIDmaapEventJMSConsumer implements MessageListener {
                 }
                 metricLog.pre(eventName, aaiEvent, transactionId, serviceName);
 
-                HttpEntity httpEntity = new HttpEntity(aaiEvent, httpHeaders);
+                HttpEntity<String> httpEntity = new HttpEntity<String>(aaiEvent, httpHeaders);
 
                 String transportType = environment.getProperty("dmaap.ribbon.transportType", "http");
                 String baseUrl = transportType + "://" + environment.getProperty("dmaap.ribbon.listOfServers");

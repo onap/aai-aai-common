@@ -909,7 +909,7 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
 
     protected void executeQuery() {
 
-        Admin admin;
+        Admin<Vertex, Vertex> admin;
         if (start != null) {
             this.completeTraversal = traversal.asAdmin();
         } else {

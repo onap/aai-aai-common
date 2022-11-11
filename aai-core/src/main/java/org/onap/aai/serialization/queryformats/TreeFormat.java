@@ -183,9 +183,9 @@ public class TreeFormat extends MultiFormatMapper {
 
             // DSL Query
             if (o instanceof BulkSet) {
-                BulkSet bs = (BulkSet) o;
-                for (Object o1 : bs) {
-                    Optional<JsonObject> obj = this.getJsonFromVertex((Vertex) o1);
+                BulkSet<Vertex> bs = (BulkSet<Vertex>) o;
+                for (Vertex o1 : bs) {
+                    Optional<JsonObject> obj = this.getJsonFromVertex(o1);
                     if (obj.isPresent()) {
                         jsonObject = obj.get();
                         for (Map.Entry<String, JsonElement> mapEntry : jsonObject.entrySet()) {

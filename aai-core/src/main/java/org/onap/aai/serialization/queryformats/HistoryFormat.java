@@ -92,10 +92,10 @@ public abstract class HistoryFormat extends MultiFormatMapper {
 
     protected JsonObject createMetaPropertiesObject(VertexProperty<Object> prop) {
         JsonObject json = new JsonObject();
-        Iterator iter = prop.properties();
+        Iterator<Property<Object>> iter = prop.properties();
 
         while (iter.hasNext()) {
-            Property<Object> metaProp = (Property) iter.next();
+            Property<Object> metaProp = iter.next();
             mapPropertyValues(json, metaProp.key(), metaProp.value());
         }
 

@@ -142,7 +142,7 @@ public class SimpleFormatTest extends AAISetup {
 
         FormatFactory ff =
                 new FormatFactory(loader, serializer, schemaVersions, basePath, "https://localhost:8447/aai/");
-        MultivaluedMap mvm = new MultivaluedHashMap();
+        MultivaluedMap<String, String> mvm = new MultivaluedHashMap<>();
         mvm.add("depth", "0");
         Formatter formatter = ff.get(Format.simple, mvm);
 

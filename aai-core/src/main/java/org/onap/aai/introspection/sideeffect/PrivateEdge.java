@@ -25,8 +25,12 @@ import com.google.common.collect.Multimap;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 import javax.ws.rs.core.MultivaluedMap;
 
@@ -92,7 +96,7 @@ public class PrivateEdge extends SideEffect {
             List<Vertex> results = uriQuery.getQueryBuilder().toList();
             if (results.size() == 1) {
                 Vertex otherVertex = results.get(0);
-                VertexProperty otherVProperty = otherVertex.property("aai-node-type");
+                VertexProperty<Object> otherVProperty = otherVertex.property("aai-node-type");
 
                 if (otherVProperty.isPresent()) {
 

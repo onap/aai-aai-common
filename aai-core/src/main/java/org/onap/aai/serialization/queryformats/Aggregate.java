@@ -202,7 +202,8 @@ public class Aggregate extends MultiFormatMapper {
         return Optional.of(json);
     }
 
-    private Optional<JsonArray> processInput(Object input, Map properties) throws AAIFormatVertexException {
+    private Optional<JsonArray> processInput(Object input, Map<String, List<String>> properties)
+            throws AAIFormatVertexException {
         JsonArray json = new JsonArray();
         for (Object l : (ArrayList) input) {
             if (l instanceof ArrayList) {

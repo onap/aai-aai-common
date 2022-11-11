@@ -50,7 +50,7 @@ public class SchemaRestClientTest {
 
     @Test
     public void testGetRequestToSchemaService() {
-        ResponseEntity aaiResponse;
+        ResponseEntity<String> aaiResponse;
         RestClient restClient = null;
 
         restClient = restClientFactory.getRestClient(SCHEMA_SERVICE);
