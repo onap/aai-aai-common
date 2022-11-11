@@ -69,8 +69,7 @@ public class IndexStressTest extends AAISetup {
             if (i % 1000 == 0) {
                 LOGGER.debug("Committing up to index {}", i);
                 tx.commit();
-                tx = AAIGraph.getInstance().getGraph().newTransaction();
-                g = tx.traversal();
+                g = AAIGraph.getInstance().getGraph().newTransaction().traversal();
             }
         }
 
