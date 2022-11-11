@@ -21,6 +21,7 @@
 package org.onap.aai.introspection;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -159,8 +160,9 @@ public class JSONStrategy extends Introspector {
     @Override
     public Object newInstanceOfProperty(String name) {
         try {
-            return this.getClass(name).newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
+            return this.getClass(name).getDeclaredConstructor().newInstance();
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+                | NoSuchMethodException | SecurityException e) {
             return null;
         }
     }
@@ -168,8 +170,9 @@ public class JSONStrategy extends Introspector {
     @Override
     public Object newInstanceOfNestedProperty(String name) {
         try {
-            return this.getGenericTypeClass(name).newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
+            return this.getGenericTypeClass(name).getDeclaredConstructor().newInstance();
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+                | NoSuchMethodException | SecurityException e) {
             return null;
         }
     }

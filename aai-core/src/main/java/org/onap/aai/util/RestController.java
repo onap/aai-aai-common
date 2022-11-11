@@ -27,6 +27,7 @@ import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.jersey.api.client.ClientResponse;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -480,9 +481,14 @@ public class RestController implements RestControllerInterface {
      * @return single instance of RestController
      * @throws IllegalAccessException the illegal access exception
      * @throws InstantiationException the instantiation exception
+     * @throws SecurityException
+     * @throws NoSuchMethodException
+     * @throws InvocationTargetException
+     * @throws IllegalArgumentException
      */
-    public <T> T getInstance(Class<T> clazz) throws IllegalAccessException, InstantiationException {
-        return clazz.newInstance();
+    public <T> T getInstance(Class<T> clazz) throws IllegalAccessException, InstantiationException,
+            IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+        return clazz.getDeclaredConstructor().newInstance();
     }
 
     /**

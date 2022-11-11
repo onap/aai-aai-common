@@ -634,7 +634,7 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
     protected Object correctObjectType(Object obj) {
 
         if (obj != null && obj.getClass().equals(Long.class)) {
-            return new Integer(obj.toString());
+            return Integer.valueOf(obj.toString());
         }
 
         return obj;

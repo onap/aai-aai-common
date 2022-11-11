@@ -20,6 +20,8 @@
 
 package org.onap.aai.util;
 
+import java.lang.reflect.InvocationTargetException;
+
 import org.onap.aai.exceptions.AAIException;
 
 public interface RestControllerInterface {
@@ -38,7 +40,8 @@ public interface RestControllerInterface {
 
     public void Delete(String sourceID, String transId, String path) throws AAIException;
 
-    public <T> T getInstance(Class<T> clazz) throws IllegalAccessException, InstantiationException;
+    public <T> T getInstance(Class<T> clazz) throws IllegalAccessException, InstantiationException,
+            IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException;
 
     public <T> T DoesResourceExist(String resourcePath, String resourceClassName, String fromAppId, String transId);
 }

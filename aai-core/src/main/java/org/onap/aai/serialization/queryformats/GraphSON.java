@@ -50,7 +50,6 @@ public class GraphSON implements FormatMapper {
     private final GraphSONMapper mapper =
             GraphSONMapper.build().addRegistry(JanusGraphIoRegistry.getInstance()).create();
     private final GraphSONWriter writer = GraphSONWriter.build().mapper(mapper).create();
-    protected JsonParser parser = new JsonParser();
 
     @Override
     public Optional<JsonObject> formatObject(Object v) {
@@ -64,7 +63,7 @@ public class GraphSON implements FormatMapper {
             logger.debug("GraphSON writeVertex error : {}", e.getMessage());
         }
 
-        JsonObject jsonObject = parser.parse(result).getAsJsonObject();
+        JsonObject jsonObject = JsonParser.parseString(result).getAsJsonObject();
 
         if (jsonObject != null) {
 

@@ -31,7 +31,19 @@ import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -144,8 +156,7 @@ public final class AAIAuthCore {
             LOGGER.debug("Reading from " + globalAuthFileName);
             String authFile = new String(Files.readAllBytes(Paths.get(globalAuthFileName)));
 
-            JsonParser parser = new JsonParser();
-            JsonObject authObject = parser.parse(authFile).getAsJsonObject();
+            JsonObject authObject = JsonParser.parseString(authFile).getAsJsonObject();
             if (authObject.has("roles")) {
                 JsonArray roles = authObject.getAsJsonArray("roles");
                 for (JsonElement role : roles) {

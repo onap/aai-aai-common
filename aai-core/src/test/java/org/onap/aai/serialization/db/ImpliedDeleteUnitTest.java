@@ -198,7 +198,7 @@ public class ImpliedDeleteUnitTest {
 
         Mockito.when(mockQueryEngine.findDeletable(Mockito.anyList())).thenReturn(vertices);
 
-        Mockito.when(mockSerializer.getLatestVersionView(Mockito.anyObject())).thenReturn(mockIntrospector);
+        Mockito.when(mockSerializer.getLatestVersionView(Mockito.any())).thenReturn(mockIntrospector);
 
         Mockito.when(mockIntrospector.marshal(false)).thenReturn("{\"volume-id\":\"volume-1\"}")
                 .thenReturn("{\"volume-id\":\"volume-2\"}").thenReturn("{\"volume-id\":\"volume-3\"}")
@@ -284,7 +284,7 @@ public class ImpliedDeleteUnitTest {
 
         Mockito.when(mockQueryEngine.findDeletable(Mockito.anyList())).thenReturn(vertices);
 
-        Mockito.when(mockSerializer.getLatestVersionView(Mockito.anyObject()))
+        Mockito.when(mockSerializer.getLatestVersionView(Mockito.any()))
                 .thenThrow(new RuntimeException("Unable to find node"));
 
         impliedDelete.execute(vserver.id(), "SDNC", "vserver", vertices);

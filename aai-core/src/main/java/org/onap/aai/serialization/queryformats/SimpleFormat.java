@@ -22,6 +22,7 @@ package org.onap.aai.serialization.queryformats;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -67,7 +68,7 @@ public class SimpleFormat extends RawFormat {
             }
 
             final String json = obj.marshal(false);
-            return Optional.of(parser.parse(json).getAsJsonObject());
+            return Optional.of(JsonParser.parseString(json).getAsJsonObject());
         } catch (AAIUnknownObjectException e) {
             return Optional.empty();
         }

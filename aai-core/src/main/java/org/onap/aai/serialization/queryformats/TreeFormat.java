@@ -28,8 +28,11 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import java.io.UnsupportedEncodingException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.BulkSet;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.Tree;
@@ -49,7 +52,6 @@ import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
 
 public class TreeFormat extends MultiFormatMapper {
     private static final EELFLogger TREE_FORMAT_LOGGER = EELFManager.getInstance().getLogger(TreeFormat.class);
-    protected JsonParser parser = new JsonParser();
     protected final DBSerializer serializer;
     protected final Loader loader;
     protected final UrlBuilder urlBuilder;
@@ -312,7 +314,7 @@ public class TreeFormat extends MultiFormatMapper {
 
             final String json = obj.marshal(false);
 
-            return Optional.of(getParser().parse(json).getAsJsonObject());
+            return Optional.of(JsonParser.parseString(json).getAsJsonObject());
         } catch (AAIUnknownObjectException e) {
             return Optional.empty();
         }
@@ -324,10 +326,6 @@ public class TreeFormat extends MultiFormatMapper {
 
     private DBSerializer getSerializer() {
         return serializer;
-    }
-
-    private JsonParser getParser() {
-        return parser;
     }
 
     @Override

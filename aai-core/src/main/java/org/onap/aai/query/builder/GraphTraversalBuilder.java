@@ -23,7 +23,12 @@ package org.onap.aai.query.builder;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
@@ -288,7 +293,7 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
             if (val != null) {
                 // this is because the index is registered as an Integer
                 if (val.getClass().equals(Long.class)) {
-                    this.vertexHas(key, new Integer(val.toString()));
+                    this.vertexHas(key, Integer.valueOf(val.toString()));
                 } else {
                     this.vertexHas(key, val);
                 }
@@ -321,7 +326,7 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
                     }
                     // this is because the index is registered as an Integer
                     if (val.getClass().equals(Long.class)) {
-                        this.vertexHas(prop, new Integer(val.toString()));
+                        this.vertexHas(prop, Integer.valueOf(val.toString()));
                     } else {
                         this.vertexHas(prop, val);
                     }
