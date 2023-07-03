@@ -1,0 +1,7 @@
+Verified+1: ONAP Jobbuilder <onap-jobbuilder@jenkins.onap.org>
+Code-Review+2: Thomas Kulik <thomas.kulik@telekom.de>
+Submitted-by: Thomas Kulik <thomas.kulik@telekom.de>
+Submitted-at: Mon, 03 Jul 2023 17:46:14 +0000
+Reviewed-on: https://gerrit.onap.org/r/c/aai/aai-common/+/135220
+Project: aai/aai-common
+Branch: refs/heads/london
