@@ -351,7 +351,7 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
             traversal.has(AAIProperties.NODE_TYPE, type);
         }
         stepIndex++;
-        markContainer();
+        markContainerIndex();
         return (QueryBuilder<Vertex>) this;
     }
 
@@ -838,17 +838,11 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
         return this;
     }
 
-    /**
-     * @{inheritDoc}
-     */
     @Override
     public <E2> E2 getQuery() {
         return (E2) this.traversal;
     }
 
-    /**
-     * @{inheritDoc}
-     */
     @Override
     public QueryBuilder<E> getParentQuery() {
 
@@ -865,22 +859,16 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
         }
     }
 
-    /**
-     * @{inheritDoc}
-     */
     @Override
     public void markParentBoundary() {
         parentStepIndex = stepIndex;
     }
 
     @Override
-    public void markContainer() {
+    public void markContainerIndex() {
         containerStepIndex = stepIndex;
     }
 
-    /**
-     * @{inheritDoc}
-     */
     @Override
     public Vertex getStart() {
         return this.start;
