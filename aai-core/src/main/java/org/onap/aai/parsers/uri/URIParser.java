@@ -131,10 +131,10 @@ public class URIParser {
                         throw new AAIException("AAI_3000",
                                 uri + " not a valid path. Cannot end in " + RestTokens.COUSIN);
                     }
-                    introspector = loader.introspectorFromName(parts[i + 1]);
                     if (null == previousObj) {
                         throw new AAIException(aaiExceptionCode);
                     }
+                    introspector = loader.introspectorFromName(parts[i + 1]);
                     if (previousObj.isContainer() && introspector.isContainer()) {
                         throw new AAIException("AAI_3000", uri + " not a valid path. Cannot chain plurals together");
                     }
