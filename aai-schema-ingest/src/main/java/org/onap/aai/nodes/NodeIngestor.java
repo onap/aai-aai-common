@@ -124,7 +124,7 @@ public class NodeIngestor {
 
         try {
             for (SchemaVersion version : schemaVersionList) {
-                LOGGER.debug("Version being processed" + version);
+                LOGGER.debug("Version being processed " + version);
                 List<InputStream> inputStreams = retrieveOXM(version, translator);
                 LOGGER.debug("Retrieved OXMs from SchemaService");
                 /*
