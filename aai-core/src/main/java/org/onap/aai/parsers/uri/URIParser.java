@@ -23,6 +23,7 @@ package org.onap.aai.parsers.uri;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Set;
 
 import javax.ws.rs.core.MultivaluedHashMap;
@@ -33,6 +34,7 @@ import org.onap.aai.edges.enums.EdgeType;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
+import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.onap.aai.parsers.exceptions.DoesNotStartWithValidNamespaceException;
 import org.onap.aai.rest.RestTokens;
 import org.onap.aai.schema.enums.ObjectMetadata;
@@ -44,15 +46,10 @@ import org.springframework.web.util.UriUtils;
 public class URIParser {
 
     private URI uri = null;
-
     protected Loader loader = null;
-
     protected Loader originalLoader = null;
-
     private URI originalURI = null;
-
     private MultivaluedMap<String, String> queryParams = null;
-
     private static String aaiExceptionCode = "AAI_3001";
 
     /**
@@ -63,10 +60,8 @@ public class URIParser {
      */
     public URIParser(Loader loader, URI uri) {
         this.uri = uri;
-
         this.originalLoader = loader;
         // Load the latest version because we need it for cloud region
-
         this.loader = loader;
     }
 
@@ -83,9 +78,7 @@ public class URIParser {
     }
 
     public Loader getLoader() {
-
         return this.loader;
-
     }
 
     /**
@@ -106,54 +99,26 @@ public class URIParser {
      */
     public void parse(Parsable p) throws UnsupportedEncodingException, AAIException {
         try {
-            boolean isRelative = false;
-            uri = this.trimURI(uri);
-            uri = handleCloudRegion(p.getCloudRegionTransform(), uri);
+            boolean isRelative = uri.getRawPath().startsWith("./");
+            uri = formatUri();
             if (p.useOriginalLoader()) {
                 this.loader = this.originalLoader;
             }
-            this.originalURI = UriBuilder.fromPath(uri.getRawPath()).build();
-            if (uri.getRawPath().startsWith("./")) {
-                uri = new URI(uri.getRawPath().replaceFirst("\\./", ""));
-                isRelative = true;
-            }
             String[] parts = uri.getRawPath().split("/");
             Introspector validNamespaces = loader.introspectorFromName("inventory");
-            Set<String> keys = null;
-            String part = "";
             Introspector previousObj = null;
             EdgeType type = EdgeType.TREE;
             for (int i = 0; i < parts.length;) {
-                part = parts[i];
+                String part = parts[i];
                 Introspector introspector = null;
                 if (part.equals(RestTokens.COUSIN.toString())) {
-                    if (i == parts.length - 1) {
+                    boolean isPathInvalid = i == parts.length - 1;
+                    if (isPathInvalid) {
                         throw new AAIException("AAI_3000",
                                 uri + " not a valid path. Cannot end in " + RestTokens.COUSIN);
                     }
-                    introspector = loader.introspectorFromName(parts[i + 1]);
-                    if (null == previousObj) {
-                        throw new AAIException(aaiExceptionCode);
-                    }
-                    if (previousObj.isContainer() && introspector.isContainer()) {
-                        throw new AAIException("AAI_3000", uri + " not a valid path. Cannot chain plurals together");
-                    }
-                    MultivaluedMap<String, String> uriKeys = new MultivaluedHashMap<>();
-                    if (i == parts.length - 2 && queryParams != null) {
-                        Set<String> queryKeys = queryParams.keySet();
-                        for (String key : queryKeys) {
-                            uriKeys.put(key, queryParams.get(key));
-
-                        }
-                    }
-                    if (introspector.isContainer()) {
-                        boolean isFinalContainer = i == parts.length - 2;
-                        /*
-                         * Related-to could be COUSIN OR TREE and in some cases BOTH. So Let EdgeRuleBuilder use all the
-                         * edgeTypes
-                         */
-                        p.processContainer(introspector, EdgeType.ALL, uriKeys, isFinalContainer);
-                    }
+                    boolean isFinalContainer = i == parts.length - 2;
+                    introspector = parseCousin(p, parts[i + 1], previousObj, isFinalContainer);
                     previousObj = introspector;
                     type = EdgeType.ALL;
                     i += 2;
@@ -162,38 +127,19 @@ public class URIParser {
                 introspector = loader.introspectorFromName(part);
                 if (introspector != null) {
 
-                    // previous has current as property
-                    if (previousObj != null && !previousObj.hasChild(introspector)
-                            && !previousObj.getDbName().equals("nodes")) {
-                        throw new AAIException(aaiExceptionCode, uri + " not a valid path. " + part + " not valid");
-                    } else if (previousObj == null) {
-                        String abstractType = introspector.getMetadata(ObjectMetadata.ABSTRACT);
-                        if (abstractType == null) {
-                            abstractType = "";
-                        }
-                        // first time through, make sure it starts from a namespace
-                        // ignore abstract types
-                        if (!isRelative && !abstractType.equals("true") && !validNamespaces.hasChild(introspector)) {
-                            throw new DoesNotStartWithValidNamespaceException(
-                                    uri + " not a valid path. It does not start from a valid namespace");
-                        }
-                    }
+                    validatePath(isRelative, validNamespaces, previousObj, part, introspector);
 
-                    keys = introspector.getKeys();
+                    Set<String> keys = introspector.getKeys();
                     if (keys.size() > 0) {
                         MultivaluedMap<String, String> uriKeys = new MultivaluedHashMap<>();
                         i++;
-                        if (i == parts.length && queryParams != null) {
-                            Set<String> queryKeys = queryParams.keySet();
-                            for (String key : queryKeys) {
-                                uriKeys.put(key, queryParams.get(key));
-                            }
+                        boolean isLastPart = i == parts.length;
+                        if (isLastPart && queryParams != null) {
+                            uriKeys = queryParams;
                         } else {
                             for (String key : keys) {
                                 part = UriUtils.decode(parts[i], "UTF-8");
-
                                 introspector.setValue(key, part);
-
                                 // skip this for further processing
                                 i++;
                             }
@@ -203,15 +149,10 @@ public class URIParser {
                         type = EdgeType.TREE;
                     } else if (introspector.isContainer()) {
                         boolean isFinalContainer = i == parts.length - 1;
-                        MultivaluedMap<String, String> uriKeys = new MultivaluedHashMap<>();
-
-                        if (isFinalContainer && queryParams != null) {
-                            Set<String> queryKeys = queryParams.keySet();
-                            for (String key : queryKeys) {
-                                uriKeys.put(key, queryParams.get(key));
-
-                            }
-                        }
+                        MultivaluedMap<String, String> uriKeys =
+                            isFinalContainer && queryParams != null
+                                ? queryParams
+                                : new MultivaluedHashMap<>();
                         p.processContainer(introspector, type, uriKeys, isFinalContainer);
                         i++;
                     } else {
@@ -233,22 +174,51 @@ public class URIParser {
         }
     }
 
+    private void validatePath(boolean isRelative, Introspector validNamespaces, Introspector previousObj,
+            String part, Introspector introspector) throws AAIException, DoesNotStartWithValidNamespaceException {
+        // previous has current as property
+        boolean isPathInvalid = previousObj != null && !previousObj.hasChild(introspector)
+                && !previousObj.getDbName().equals("nodes");
+        if (isPathInvalid) {
+            throw new AAIException(aaiExceptionCode, uri + " not a valid path. " + part + " not valid");
+        }
+        if (previousObj == null) {
+            String abstractType = introspector.getMetadata(ObjectMetadata.ABSTRACT);
+            // first time through, make sure it starts from a namespace
+            // ignore abstract types
+            if (!isRelative && !"true".equals(abstractType) && !validNamespaces.hasChild(introspector)) {
+                throw new DoesNotStartWithValidNamespaceException(
+                        uri + " not a valid path. It does not start from a valid namespace");
+            }
+        }
+    }
+
+    private Introspector parseCousin(Parsable p, String name, Introspector previousObj, boolean isFinalContainer) throws AAIException, AAIUnknownObjectException {
+        Introspector introspector;
+        if (null == previousObj) {
+            throw new AAIException(aaiExceptionCode);
+        }
+        introspector = loader.introspectorFromName(name);
+        if (previousObj.isContainer() && introspector.isContainer()) {
+            throw new AAIException("AAI_3000", uri + " not a valid path. Cannot chain plurals together");
+        }
+
+        if (introspector.isContainer()) {
+            MultivaluedMap<String, String> uriKeys = isFinalContainer && queryParams != null
+            ? queryParams
+            : new MultivaluedHashMap<>();
+            /*
+             * Related-to could be COUSIN OR TREE and in some cases BOTH. So Let EdgeRuleBuilder use all the
+             * edgeTypes
+             */
+            p.processContainer(introspector, EdgeType.ALL, uriKeys, isFinalContainer);
+        }
+        return introspector;
+    }
+
     public boolean validate() throws UnsupportedEncodingException, AAIException {
         this.parse(new URIValidate());
         return true;
-    }
-
-    /**
-     * Handle cloud region.
-     *
-     * @param action the action
-     * @param uri the uri
-     * @return the uri
-     */
-    protected URI handleCloudRegion(String action, URI uri) {
-
-        return uri;
-
     }
 
     /**
@@ -258,7 +228,6 @@ public class URIParser {
      * @return the uri
      */
     protected URI trimURI(URI uri) {
-
         String result = uri.getRawPath();
         if (result.startsWith("/")) {
             result = result.substring(1, result.length());
@@ -272,6 +241,16 @@ public class URIParser {
         result = result.replaceFirst("[a-z][a-z]*/v\\d+/", "");
 
         return UriBuilder.fromPath(result).build();
+    }
+
+    private URI formatUri() throws URISyntaxException {
+        uri = this.trimURI(uri);
+        this.originalURI = UriBuilder.fromPath(uri.getRawPath()).build();
+        boolean isRelative = uri.getRawPath().startsWith("./");
+        if (isRelative) {
+            uri = new URI(uri.getRawPath().replaceFirst("\\./", ""));
+        }
+        return uri;
     }
 
 }
