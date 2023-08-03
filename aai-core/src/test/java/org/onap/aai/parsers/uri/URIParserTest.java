@@ -22,9 +22,14 @@ package org.onap.aai.parsers.uri;
 
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.annotation.PostConstruct;
 import javax.ws.rs.core.UriBuilder;
@@ -111,5 +116,24 @@ public class URIParserTest extends AAISetup {
         thrown.expect(hasProperty("code", is("AAI_3000")));
 
         new URIToDBKey(loader, uri);
+    }
+
+    @Test
+    public void formatUrl() throws URISyntaxException {
+        URI uri = UriBuilder.fromPath("/cloud-infrastructure/cloud-regions/cloud-region/mycloudowner/mycloudregionid/tenants/tenant").build();
+        URIParser uriParser = new URIParser(loader, uri);
+
+        URI result = uriParser.formatUri();
+        assertEquals("cloud-infrastructure/cloud-regions/cloud-region/mycloudowner/mycloudregionid/tenants/tenant",result.toString());
+        assertEquals("cloud-infrastructure/cloud-regions/cloud-region/mycloudowner/mycloudregionid/tenants/tenant",uriParser.getOriginalURI().toString());
+    }
+    @Test
+    public void formatRelativeUrl() throws URISyntaxException {
+        URI uri = UriBuilder.fromPath("./route-targets").build();
+        URIParser uriParser = new URIParser(loader, uri);
+
+        URI result = uriParser.formatUri();
+        assertEquals("./route-targets",uriParser.getOriginalURI().toString());
+        assertEquals("route-targets",result.toString());
     }
 }

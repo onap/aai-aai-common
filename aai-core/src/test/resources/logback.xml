@@ -163,7 +163,7 @@
 			<pattern>${eelfTransLogPattern}</pattern>
 		</encoder>
 	</appender>
-	
+
 	<appender name="asynctranslog" class="ch.qos.logback.classic.AsyncAppender">
 		<queueSize>1000</queueSize>
 		<includeCallerData>true</includeCallerData>
@@ -231,7 +231,7 @@
 			<pattern>${eelfLogPattern}</pattern>
 		</encoder>
 	</appender>
-	<logger name="org.onap.aai" level="DEBUG" additivity="true">
+	<logger name="org.onap.aai" level="WARN" additivity="true">
 		<appender-ref ref="asyncDEBUG" />
 		<appender-ref ref="asyncERROR" />
 		<appender-ref ref="asyncMETRIC" />
@@ -255,7 +255,7 @@
 	<logger name="ajsc.UserDefinedBeansDefService" level="WARN" />
 	<logger name="ajsc.LoggingConfigurationService" level="WARN" />
 
-	<!-- AJSC related loggers (DME2 Registration, csi logging, restlet, servlet 
+	<!-- AJSC related loggers (DME2 Registration, csi logging, restlet, servlet
 		logging) -->
 	<logger name="org.codehaus.groovy" level="WARN" />
 	<logger name="com.att.scamper" level="WARN" />
@@ -279,7 +279,7 @@
 	<logger name="org.apache.coyote" level="WARN" />
 	<logger name="org.apache.jasper" level="WARN" />
 
-	<!-- Camel Related Loggers (including restlet/servlet/jaxrs/cxf logging. 
+	<!-- Camel Related Loggers (including restlet/servlet/jaxrs/cxf logging.
 		May aid in troubleshooting) -->
 	<logger name="org.apache.camel" level="WARN" />
 	<logger name="org.apache.cxf" level="WARN" />
@@ -382,7 +382,7 @@
 		<appender-ref ref="asyncMETRIC" />
 	</logger>
 
-	<root level="DEBUG">
+	<root level="WARN">
 		<appender-ref ref="external" />
 		<appender-ref ref="STDOUT" />
 	</root>
