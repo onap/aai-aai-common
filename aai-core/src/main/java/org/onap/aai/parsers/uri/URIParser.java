@@ -105,12 +105,10 @@ public class URIParser {
                 this.loader = this.originalLoader;
             }
             String[] parts = uri.getRawPath().split("/");
-            Introspector validNamespaces = loader.introspectorFromName("inventory");
             Introspector previousObj = null;
             EdgeType type = EdgeType.TREE;
             for (int i = 0; i < parts.length;) {
                 String part = parts[i];
-                Introspector introspector = null;
                 if (part.equals(RestTokens.COUSIN.toString())) {
                     boolean isPathInvalid = i == parts.length - 1;
                     if (isPathInvalid) {
@@ -118,54 +116,41 @@ public class URIParser {
                                 uri + " not a valid path. Cannot end in " + RestTokens.COUSIN);
                     }
                     boolean isFinalContainer = i == parts.length - 2;
-                    introspector = parseCousin(p, parts[i + 1], previousObj, isFinalContainer);
-                    previousObj = introspector;
+                    previousObj = parseCousin(p, parts[i + 1], previousObj, isFinalContainer);
                     type = EdgeType.ALL;
                     i += 2;
                     continue;
                 }
-                introspector = loader.introspectorFromName(part);
-                if (introspector != null) {
-
-                    validatePath(isRelative, validNamespaces, previousObj, part, introspector);
-
-                    Set<String> keys = introspector.getKeys();
-                    if (keys.size() > 0) {
-                        MultivaluedMap<String, String> uriKeys = new MultivaluedHashMap<>();
-                        i++;
-                        boolean isLastPart = i == parts.length;
-                        if (isLastPart && queryParams != null) {
-                            uriKeys = queryParams;
-                        } else {
-                            for (String key : keys) {
-                                part = UriUtils.decode(parts[i], "UTF-8");
-                                introspector.setValue(key, part);
-                                // skip this for further processing
-                                i++;
-                            }
-                        }
-
-                        p.processObject(introspector, type, uriKeys);
-                        type = EdgeType.TREE;
-                    } else if (introspector.isContainer()) {
-                        boolean isFinalContainer = i == parts.length - 1;
-                        MultivaluedMap<String, String> uriKeys =
-                            isFinalContainer && queryParams != null
-                                ? queryParams
-                                : new MultivaluedHashMap<>();
-                        p.processContainer(introspector, type, uriKeys, isFinalContainer);
-                        i++;
+                Introspector introspector = loader.introspectorFromName(part);
+                validatePath(isRelative, previousObj, part, introspector);
+                Set<String> keys = introspector.getKeys();
+                if (keys.size() > 0) {
+                    MultivaluedMap<String, String> uriKeys = new MultivaluedHashMap<>();
+                    boolean isLastPart = i+1 == parts.length;
+                    if (isLastPart && queryParams != null) {
+                        uriKeys = queryParams;
                     } else {
-                        p.processNamespace(introspector);
-                        // namespace case
-                        i++;
+                        for (String key : keys) {
+                            part = UriUtils.decode(parts[i+1], "UTF-8");
+                            introspector.setValue(key, part);
+                            // skip this for further processing
+                            i++;
+                        }
                     }
-                    previousObj = introspector;
+
+                    p.processObject(introspector, type, uriKeys);
+                    type = EdgeType.TREE;
+                } else if (introspector.isContainer()) {
+                    boolean isFinalContainer = i == parts.length - 1;
+                    MultivaluedMap<String, String> uriKeys = isFinalContainer && queryParams != null
+                            ? queryParams
+                            : new MultivaluedHashMap<>();
+                    p.processContainer(introspector, type, uriKeys, isFinalContainer);
                 } else {
-                    // invalid item found should log
-                    // original said bad path
-                    throw new AAIException(aaiExceptionCode, "invalid item found in path: " + part);
+                    p.processNamespace(introspector);
                 }
+                i++;
+                previousObj = introspector;
             }
         } catch (AAIException e) {
             throw e;
@@ -174,8 +159,11 @@ public class URIParser {
         }
     }
 
-    private void validatePath(boolean isRelative, Introspector validNamespaces, Introspector previousObj,
+    private void validatePath(boolean isRelative, Introspector previousObj,
             String part, Introspector introspector) throws AAIException, DoesNotStartWithValidNamespaceException {
+        if (introspector == null) {
+            throw new AAIException(aaiExceptionCode, "invalid item found in path: " + part);
+        }
         // previous has current as property
         boolean isPathInvalid = previousObj != null && !previousObj.hasChild(introspector)
                 && !previousObj.getDbName().equals("nodes");
@@ -183,9 +171,10 @@ public class URIParser {
             throw new AAIException(aaiExceptionCode, uri + " not a valid path. " + part + " not valid");
         }
         if (previousObj == null) {
-            String abstractType = introspector.getMetadata(ObjectMetadata.ABSTRACT);
-            // first time through, make sure it starts from a namespace
+            // first time through, make sure it starts from a valid namespace
             // ignore abstract types
+            String abstractType = introspector.getMetadata(ObjectMetadata.ABSTRACT);
+            Introspector validNamespaces = loader.introspectorFromName("inventory");
             if (!isRelative && !"true".equals(abstractType) && !validNamespaces.hasChild(introspector)) {
                 throw new DoesNotStartWithValidNamespaceException(
                         uri + " not a valid path. It does not start from a valid namespace");
@@ -193,7 +182,8 @@ public class URIParser {
         }
     }
 
-    private Introspector parseCousin(Parsable p, String name, Introspector previousObj, boolean isFinalContainer) throws AAIException, AAIUnknownObjectException {
+    private Introspector parseCousin(Parsable p, String name, Introspector previousObj, boolean isFinalContainer)
+            throws AAIException, AAIUnknownObjectException {
         Introspector introspector;
         if (null == previousObj) {
             throw new AAIException(aaiExceptionCode);
@@ -205,10 +195,11 @@ public class URIParser {
 
         if (introspector.isContainer()) {
             MultivaluedMap<String, String> uriKeys = isFinalContainer && queryParams != null
-            ? queryParams
-            : new MultivaluedHashMap<>();
+                    ? queryParams
+                    : new MultivaluedHashMap<>();
             /*
-             * Related-to could be COUSIN OR TREE and in some cases BOTH. So Let EdgeRuleBuilder use all the
+             * Related-to could be COUSIN OR TREE and in some cases BOTH. So Let
+             * EdgeRuleBuilder use all the
              * edgeTypes
              */
             p.processContainer(introspector, EdgeType.ALL, uriKeys, isFinalContainer);
