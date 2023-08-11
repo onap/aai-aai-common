@@ -321,7 +321,7 @@ public class DBSerializer {
 
     /**
      * Touch standard vertex properties.
-     * 
+     *
      * @param v the v
      * @param isNewVertex the is new vertex
      */
@@ -2213,29 +2213,24 @@ public class DBSerializer {
      */
     public boolean verifyResourceVersion(String action, String nodeType, String currentResourceVersion,
             String resourceVersion, String uri) throws AAIException {
-        String enabled = "";
-        String errorDetail = "";
-        String aaiExceptionCode = "";
-        boolean isDeleteResourceVersionOk = true;
-        if (currentResourceVersion == null) {
-            currentResourceVersion = "";
-        }
 
-        if (resourceVersion == null) {
-            resourceVersion = "";
-        }
+        currentResourceVersion = currentResourceVersion != null ? currentResourceVersion : "";
+        resourceVersion = resourceVersion != null ? resourceVersion : "";
+
+        String enabled = "";
         try {
             enabled = AAIConfig.get(AAIConstants.AAI_RESVERSION_ENABLEFLAG);
-
         } catch (AAIException e) {
             ErrorLogHelper.logException(e);
         }
-        if (enabled.equals("true")) {
-            if ("delete".equals(action)) {
-                isDeleteResourceVersionOk = verifyResourceVersionForDelete(currentResourceVersion, resourceVersion);
+
+        if ("true".equals(enabled)) {
+            if ("delete".equals(action) && verifyResourceVersionForDelete(currentResourceVersion, resourceVersion)) {
+                return true;
             }
-            if ((!isDeleteResourceVersionOk)
-                    || ((!"delete".equals(action)) && (!currentResourceVersion.equals(resourceVersion)))) {
+            if (!currentResourceVersion.equals(resourceVersion)) {
+                String errorDetail;
+                String aaiExceptionCode;
                 if ("create".equals(action) && !resourceVersion.equals("")) {
                     errorDetail = "resource-version passed for " + action + " of " + uri;
                     aaiExceptionCode = "AAI_6135";
@@ -2246,9 +2241,7 @@ public class DBSerializer {
                     errorDetail = "resource-version MISMATCH for " + action + " of " + uri;
                     aaiExceptionCode = "AAI_6131";
                 }
-
                 throw new AAIException(aaiExceptionCode, errorDetail);
-
             }
         }
         return true;
