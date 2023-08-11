@@ -230,6 +230,9 @@ public abstract class TransactionalGraphEngine {
         return currentTx;
     }
 
+    /**
+     * A {@code rollback} will end the <a href="https://en.wikipedia.org/wiki/Database_transaction">database transaction</a> by restoring the pre-transaction state of the db.
+     */
     public void rollback() {
         if (this.tx() != null) {
             this.tx().tx().rollback();
@@ -239,6 +242,9 @@ public abstract class TransactionalGraphEngine {
         }
     }
 
+    /**
+     * A {@code commit} will end the <a href="https://en.wikipedia.org/wiki/Database_transaction">database transaction</a> by writing it's operations to the db.
+     */
     public void commit() {
         if (this.tx() != null) {
             this.tx().tx().commit();

@@ -97,7 +97,7 @@ public class DbSerializerTest extends AAISetup {
     private Loader loader;
     private TransactionalGraphEngine dbEngine;
     private TransactionalGraphEngine engine; // for tests that aren't mocking the engine
-    private DBSerializer dbser;
+    private DBSerializer serializer;
     private TransactionalGraphEngine spy;
     private TransactionalGraphEngine.Admin adminSpy;
 
@@ -125,7 +125,7 @@ public class DbSerializerTest extends AAISetup {
         adminSpy = spy(dbEngine.asAdmin());
 
         engine = new JanusGraphDBEngine(queryStyle, loader);
-        dbser = new DBSerializer(version, engine, introspectorFactoryType, "AAI-TEST");
+        serializer = new DBSerializer(version, engine, introspectorFactoryType, "AAI-TEST");
     }
 
     @Test
@@ -215,13 +215,13 @@ public class DbSerializerTest extends AAISetup {
         edgeSer.addTreeEdge(g, subnet_5, l3network_6);
 
         l3interipv4addresslist_1.property(AAIProperties.AAI_URI,
-                dbser.getURIForVertex(l3interipv4addresslist_1).toString());
-        subnet_2.property(AAIProperties.AAI_URI, dbser.getURIForVertex(subnet_2).toString());
+                serializer.getURIForVertex(l3interipv4addresslist_1).toString());
+        subnet_2.property(AAIProperties.AAI_URI, serializer.getURIForVertex(subnet_2).toString());
         l3interipv6addresslist_3.property(AAIProperties.AAI_URI,
-                dbser.getURIForVertex(l3interipv6addresslist_3).toString());
-        subnet_4.property(AAIProperties.AAI_URI, dbser.getURIForVertex(subnet_4).toString());
-        subnet_5.property(AAIProperties.AAI_URI, dbser.getURIForVertex(subnet_5).toString());
-        l3network_6.property(AAIProperties.AAI_URI, dbser.getURIForVertex(l3network_6).toString());
+                serializer.getURIForVertex(l3interipv6addresslist_3).toString());
+        subnet_4.property(AAIProperties.AAI_URI, serializer.getURIForVertex(subnet_4).toString());
+        subnet_5.property(AAIProperties.AAI_URI, serializer.getURIForVertex(subnet_5).toString());
+        l3network_6.property(AAIProperties.AAI_URI, serializer.getURIForVertex(l3network_6).toString());
 
     }
 
@@ -265,12 +265,12 @@ public class DbSerializerTest extends AAISetup {
 
         edgeSer.addTreeEdge(g, subnet2, l3network2);
 
-        subnet1.property(AAIProperties.AAI_URI, dbser.getURIForVertex(subnet1).toString());
+        subnet1.property(AAIProperties.AAI_URI, serializer.getURIForVertex(subnet1).toString());
         l3interipv4addresslist_1.property(AAIProperties.AAI_URI,
-                dbser.getURIForVertex(l3interipv4addresslist_1).toString());
-        l3network1.property(AAIProperties.AAI_URI, dbser.getURIForVertex(l3network1).toString());
-        subnet2.property(AAIProperties.AAI_URI, dbser.getURIForVertex(subnet2).toString());
-        l3network2.property(AAIProperties.AAI_URI, dbser.getURIForVertex(l3network2).toString());
+                serializer.getURIForVertex(l3interipv4addresslist_1).toString());
+        l3network1.property(AAIProperties.AAI_URI, serializer.getURIForVertex(l3network1).toString());
+        subnet2.property(AAIProperties.AAI_URI, serializer.getURIForVertex(subnet2).toString());
+        l3network2.property(AAIProperties.AAI_URI, serializer.getURIForVertex(l3network2).toString());
 
     }
 
@@ -325,15 +325,15 @@ public class DbSerializerTest extends AAISetup {
         edgeSer.addEdge(g, lInterface1, logicalLink1);
         edgeSer.addEdge(g, lInterface2, logicalLink2);
 
-        vserver1.property(AAIProperties.AAI_URI, dbser.getURIForVertex(vserver1).toString());
-        lInterface1.property(AAIProperties.AAI_URI, dbser.getURIForVertex(lInterface1).toString());
-        lInterface2.property(AAIProperties.AAI_URI, dbser.getURIForVertex(lInterface2).toString());
+        vserver1.property(AAIProperties.AAI_URI, serializer.getURIForVertex(vserver1).toString());
+        lInterface1.property(AAIProperties.AAI_URI, serializer.getURIForVertex(lInterface1).toString());
+        lInterface2.property(AAIProperties.AAI_URI, serializer.getURIForVertex(lInterface2).toString());
         l3interipv4addresslist_1.property(AAIProperties.AAI_URI,
-                dbser.getURIForVertex(l3interipv4addresslist_1).toString());
+                serializer.getURIForVertex(l3interipv4addresslist_1).toString());
         l3interipv6addresslist_2.property(AAIProperties.AAI_URI,
-                dbser.getURIForVertex(l3interipv6addresslist_2).toString());
-        logicalLink1.property(AAIProperties.AAI_URI, dbser.getURIForVertex(logicalLink1).toString());
-        logicalLink2.property(AAIProperties.AAI_URI, dbser.getURIForVertex(logicalLink2).toString());
+                serializer.getURIForVertex(l3interipv6addresslist_2).toString());
+        logicalLink1.property(AAIProperties.AAI_URI, serializer.getURIForVertex(logicalLink1).toString());
+        logicalLink2.property(AAIProperties.AAI_URI, serializer.getURIForVertex(logicalLink2).toString());
     }
 
     @Test
@@ -409,7 +409,7 @@ public class DbSerializerTest extends AAISetup {
 
         Introspector testObj = loader.introspectorFromName("generic-vnf");
 
-        Vertex testVertex = dbser.createNewVertex(testObj);
+        Vertex testVertex = serializer.createNewVertex(testObj);
         Vertex fromGraph = engine.tx().traversal().V().has("aai-node-type", "generic-vnf").toList().get(0);
         assertEquals(testVertex.id(), fromGraph.id());
         assertEquals("AAI-TEST", fromGraph.property(AAIProperties.SOURCE_OF_TRUTH).value());
@@ -459,7 +459,7 @@ public class DbSerializerTest extends AAISetup {
         // Every REST transaction should create a new DBSerializer - thus a new currentTimeMillis is used at the time of
         // transaction.
         // Using an existing vertex, but treating it as new && using an older DBSerializer
-        dbser.touchStandardVertexProperties(vert, true);
+        serializer.touchStandardVertexProperties(vert, true);
         String resverStart = (String) vert.property(AAIProperties.RESOURCE_VERSION).value();
         String lastModTimeStart = String.valueOf(vert.property(AAIProperties.LAST_MOD_TS).value());
         createTS = String.valueOf(vert.property(AAIProperties.CREATED_TS).value());
@@ -488,7 +488,7 @@ public class DbSerializerTest extends AAISetup {
         Graph graph = TinkerGraph.open();
         Vertex v = graph.addVertex("aai-node-type", "generic-vnf");
 
-        dbser.touchStandardVertexProperties(v, true);
+        serializer.touchStandardVertexProperties(v, true);
 
         assertTrue(v.property(AAIProperties.AAI_UUID).isPresent());
         try {
@@ -499,57 +499,79 @@ public class DbSerializerTest extends AAISetup {
     }
 
     @Test
-    public void verifyResourceVersion_SunnyDayTest() throws AAIException {
+    public void thatDeleteWithMatchingResourceVersionsIsValid() throws AAIException {
         engine.startTransaction();
 
-        assertTrue(dbser.verifyResourceVersion("delete", "vnfc", "abc", "abc", "vnfcs/vnfc/vnfcId"));
+        assertTrue(serializer.verifyResourceVersion("delete", "vnfc", "abc", "abc", "vnfcs/vnfc/vnfcId"));
 
     }
 
     @Test
-    public void verifyResourceVersion_CreateWithRVTest() throws AAIException {
+    public void thatDeleteWithResourceVersionDisabledConstantUUIDIsValid() throws AAIException {
+        engine.startTransaction();
+
+        assertTrue(serializer.verifyResourceVersion("delete", "generic-vnf", "current-res-ver",
+                AAIConstants.AAI_RESVERSION_DISABLED_UUID_DEFAULT, "generic-vnfs/generic-vnf/myid"));
+    }
+
+    @Test
+    public void thatDeleteWithMismatchingResourceVersionsIsInvalid() throws AAIException {
+        engine.startTransaction();
+
+        thrown.expect(AAIException.class);
+        thrown.expectMessage("resource-version MISMATCH for delete of vnfcs/vnfc/vnfcId");
+        assertTrue(serializer.verifyResourceVersion("delete", "vnfc", "currentResourceVersion", "mismatchingResourceVersion", "vnfcs/vnfc/vnfcId"));
+
+    }
+
+    @Test
+    public void thatCreateWithoutResourceVersionsIsValid() throws AAIException {
+        engine.startTransaction();
+
+        assertTrue(serializer.verifyResourceVersion("create", "generic-vnf", null, null, "generic-vnfs/generic-vnf/myid"));
+    }
+
+    @Test
+    public void thatCreateWithResourceVersionIsInvalid() throws AAIException {
         engine.startTransaction();
 
         thrown.expect(AAIException.class);
         thrown.expectMessage("resource-version passed for create of generic-vnfs/generic-vnf/myid");
-        dbser.verifyResourceVersion("create", "generic-vnf", null, "old-res-ver", "generic-vnfs/generic-vnf/myid");
-
+        serializer.verifyResourceVersion("create", "generic-vnf", null, "old-res-ver", "generic-vnfs/generic-vnf/myid");
     }
 
     @Test
-    public void verifyResourceVersion_MissingRVTest() throws AAIException {
+    public void thatUpdateWithMatchingResourceVersionsIsValid() throws AAIException {
+        engine.startTransaction();
+
+        assertTrue(serializer.verifyResourceVersion("update", "generic-vnf", "current-res-ver", "current-res-ver", "generic-vnfs/generic-vnf/myid"));
+    }
+
+    @Test
+    public void thatUpdateWithoutResourceVersionIsInvalid() throws AAIException {
         engine.startTransaction();
 
         thrown.expect(AAIException.class);
         thrown.expectMessage("resource-version not passed for update of generic-vnfs/generic-vnf/myid");
-        dbser.verifyResourceVersion("update", "generic-vnf", "current-res-ver", null, "generic-vnfs/generic-vnf/myid");
+        serializer.verifyResourceVersion("update", "generic-vnf", "current-res-ver", null, "generic-vnfs/generic-vnf/myid");
 
     }
 
     @Test
-    public void verifyResourceVersion_MismatchRVTest() throws AAIException {
+    public void thatUpdateWithResourceVersionMismatchIsInvalid() throws AAIException {
         engine.startTransaction();
 
         thrown.expect(AAIException.class);
         thrown.expectMessage("resource-version MISMATCH for update of generic-vnfs/generic-vnf/myid");
-        dbser.verifyResourceVersion("update", "generic-vnf", "current-res-ver", "old-res-ver",
+        serializer.verifyResourceVersion("update", "generic-vnf", "current-res-ver", "old-res-ver",
                 "generic-vnfs/generic-vnf/myid");
 
     }
 
     @Test
-    public void verifyResourceVersion_DeleteTest() throws AAIException {
-        engine.startTransaction();
-
-        assertTrue(dbser.verifyResourceVersion("delete", "generic-vnf", "current-res-ver",
-                AAIConstants.AAI_RESVERSION_DISABLED_UUID_DEFAULT, "generic-vnfs/generic-vnf/myid"));
-
-    }
-
-    @Test
     public void trimClassNameTest() {
-        assertEquals("GenericVnf", dbser.trimClassName("GenericVnf"));
-        assertEquals("GenericVnf", dbser.trimClassName("org.onap.aai.GenericVnf"));
+        assertEquals("GenericVnf", serializer.trimClassName("GenericVnf"));
+        assertEquals("GenericVnf", serializer.trimClassName("org.onap.aai.GenericVnf"));
     }
 
     @Test
@@ -565,11 +587,11 @@ public class DbSerializerTest extends AAISetup {
         ten.property("aai-uri", "/cloud-infrastructure/cloud-regions/cloud-region/me/123/tenants/tenant/453");
 
         URI compare = new URI("/cloud-infrastructure/cloud-regions/cloud-region/me/123/tenants/tenant/453");
-        assertEquals(compare, dbser.getURIForVertex(ten));
+        assertEquals(compare, serializer.getURIForVertex(ten));
 
         URI compareFailure = new URI("/unknown-uri");
         ten.property("aai-uri").remove();
-        assertEquals(compareFailure, dbser.getURIForVertex(ten));
+        assertEquals(compareFailure, serializer.getURIForVertex(ten));
 
     }
 
@@ -588,7 +610,7 @@ public class DbSerializerTest extends AAISetup {
 
         edgeSer.addEdge(engine.tx().traversal(), gvnf, vnfc);
 
-        Introspector vnf = dbser.getVertexProperties(gvnf);
+        Introspector vnf = serializer.getVertexProperties(gvnf);
         assertEquals("generic-vnf", vnf.getDbName());
         assertEquals("myvnf", vnf.getValue("vnf-id"));
 
@@ -606,7 +628,7 @@ public class DbSerializerTest extends AAISetup {
 
         edgeSer.addTreeEdge(engine.tx().traversal(), cr, ten);
 
-        Edge e = dbser.getEdgeBetween(EdgeType.TREE, ten, cr, null);
+        Edge e = serializer.getEdgeBetween(EdgeType.TREE, ten, cr, null);
         assertEquals("org.onap.relationships.inventory.BelongsTo", e.label());
 
     }
@@ -634,7 +656,7 @@ public class DbSerializerTest extends AAISetup {
         relationship.setValue("related-link", "/network/vnfcs/vnfc/a-name");
         relationship.setValue("relationship-data", relData);
 
-        assertTrue(dbser.deleteEdge(relationship, gvnf).isPresent());
+        assertTrue(serializer.deleteEdge(relationship, gvnf).isPresent());
 
         assertFalse(engine.tx().traversal().V(gvnf).both("uses").hasNext());
         assertFalse(engine.tx().traversal().V(vnfc).both("uses").hasNext());
@@ -659,7 +681,7 @@ public class DbSerializerTest extends AAISetup {
         relationship.setValue("related-link", "/network/vnfcs/vnfc/a-name");
         relationship.setValue("relationship-data", relData);
 
-        assertNotNull(dbser.createEdge(relationship, gvnf));
+        assertNotNull(serializer.createEdge(relationship, gvnf));
         assertTrue(engine.tx().traversal().V(gvnf).both("org.onap.relationships.inventory.BelongsTo").hasNext());
         assertTrue(engine.tx().traversal().V(vnfc).both("org.onap.relationships.inventory.BelongsTo").hasNext());
 
@@ -679,12 +701,12 @@ public class DbSerializerTest extends AAISetup {
 
         Introspector relationship = loader.introspectorFromName("relationship");
         relationship.setValue("related-to", "vf-module");
-        relationship.setValue("related-link", dbser.getURIForVertex(vf).toString());
+        relationship.setValue("related-link", serializer.getURIForVertex(vf).toString());
         Introspector relationshipList = loader.introspectorFromName("relationship-list");
         relationshipList.setValue("relationship", Collections.singletonList(relationship.getUnderlyingObject()));
 
         Introspector gvnfObj = loader.introspectorFromName("generic-vnf");
-        Vertex gvnf2 = dbser.createNewVertex(gvnfObj);
+        Vertex gvnf2 = serializer.createNewVertex(gvnfObj);
         gvnfObj.setValue("relationship-list", relationshipList.getUnderlyingObject());
         gvnfObj.setValue("vnf-id", "myvnf-1");
 
@@ -692,7 +714,7 @@ public class DbSerializerTest extends AAISetup {
                 dbEngine.getQueryBuilder().createQueryFromURI(new URI("/network/generic-vnfs/generic-vnf/myvnf-1"));
 
         try {
-            dbser.serializeToDb(gvnfObj, gvnf2, uriQuery, null, "test");
+            serializer.serializeToDb(gvnfObj, gvnf2, uriQuery, null, "test");
         } catch (AAIException e) {
             assertEquals("AAI_6145", e.getCode());
         }
@@ -716,7 +738,7 @@ public class DbSerializerTest extends AAISetup {
 
         thrown.expect(AAIException.class);
         thrown.expectMessage("Node of type vnfc. Could not find object at: /network/vnfcs/vnfc/b-name");
-        dbser.createEdge(relationship, gvnf);
+        serializer.createEdge(relationship, gvnf);
 
     }
 
@@ -725,11 +747,11 @@ public class DbSerializerTest extends AAISetup {
         engine.startTransaction();
 
         Introspector gvnf = loader.introspectorFromName("generic-vnf");
-        Vertex gvnfVert = dbser.createNewVertex(gvnf);
+        Vertex gvnfVert = serializer.createNewVertex(gvnf);
 
         gvnf.setValue("vnf-id", "myvnf");
         gvnf.setValue("vnf-type", "typo");
-        dbser.serializeSingleVertex(gvnfVert, gvnf, "test");
+        serializer.serializeSingleVertex(gvnfVert, gvnf, "test");
         assertTrue(engine.tx().traversal().V().has("aai-node-type", "generic-vnf").has("vnf-id", "myvnf").hasNext());
     }
 
@@ -740,7 +762,7 @@ public class DbSerializerTest extends AAISetup {
         Vertex cr = engine.tx().addVertex("aai-node-type", "cloud-region", "cloud-owner", "me", "cloud-region-id",
                 "123", "aai-uri", "/cloud-infrastructure/cloud-regions/cloud-region/me/123");
         Introspector tenIn = loader.introspectorFromName("tenant");
-        Vertex ten = dbser.createNewVertex(tenIn);
+        Vertex ten = serializer.createNewVertex(tenIn);
         ten.property("aai-uri", cr.property("aai-uri").value().toString() + "/tenants/tenant/453");
 
         edgeSer.addTreeEdge(engine.tx().traversal(), cr, ten);
@@ -748,7 +770,7 @@ public class DbSerializerTest extends AAISetup {
         tenIn.setValue("tenant-id", "453");
         tenIn.setValue("tenant-name", "mytenant");
 
-        dbser.serializeSingleVertex(ten, tenIn, "test");
+        serializer.serializeSingleVertex(ten, tenIn, "test");
 
         assertTrue(engine.tx().traversal().V().has("aai-node-type", "tenant").has("tenant-id", "453")
                 .has("tenant-name", "mytenant").hasNext());
@@ -767,7 +789,7 @@ public class DbSerializerTest extends AAISetup {
         edgeSer.addEdge(engine.tx().traversal(), gvnf, vnfc);
 
         Introspector obj = loader.introspectorFromName("generic-vnf");
-        obj = this.dbser.dbToObject(Collections.singletonList(gvnf), obj, AAIProperties.MAXIMUM_DEPTH, false, "false");
+        obj = this.serializer.dbToObject(Collections.singletonList(gvnf), obj, AAIProperties.MAXIMUM_DEPTH, false, "false");
 
         assertEquals("edge label between generic-vnf and vnfs is uses", "org.onap.relationships.inventory.BelongsTo",
                 obj.getWrappedValue("relationship-list").getWrappedListValue("relationship").get(0)
@@ -823,7 +845,7 @@ public class DbSerializerTest extends AAISetup {
         thrown.expect(AAIException.class);
         thrown.expectMessage("No rule found");
         thrown.expectMessage("node type: generic-vnf, node type: vnfc, label: NA, type: COUSIN");
-        dbser.createEdge(relationship, gvnf);
+        serializer.createEdge(relationship, gvnf);
 
     }
 
@@ -848,7 +870,7 @@ public class DbSerializerTest extends AAISetup {
 
         assertEquals("/network/vnfcs/vnfc/a-name", relationship.getValue("related-link"));
 
-        dbser.createEdge(relationship, gvnf);
+        serializer.createEdge(relationship, gvnf);
     }
 
     @Test

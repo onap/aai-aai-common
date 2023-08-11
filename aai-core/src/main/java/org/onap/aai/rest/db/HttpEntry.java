@@ -451,14 +451,16 @@ public class HttpEntry {
                         String resourceVersion = obj.getValue(AAIProperties.RESOURCE_VERSION);
                         if (vertices.isEmpty()) {
                             if (enableResourceVersion) {
-                                serializer.verifyResourceVersion("create", query.getResultType(), "", resourceVersion,
+                                String currentResourceVersion = "";
+                                serializer.verifyResourceVersion("create", query.getResultType(), currentResourceVersion, resourceVersion,
                                         obj.getURI());
                             }
                             isNewVertex = true;
                         } else {
                             if (enableResourceVersion) {
+                                String currentResourceVersion = vertices.get(0).<String>property(AAIProperties.RESOURCE_VERSION).orElse(null);
                                 serializer.verifyResourceVersion("update", query.getResultType(),
-                                        vertices.get(0).<String>property(AAIProperties.RESOURCE_VERSION).orElse(null),
+                                        currentResourceVersion,
                                         resourceVersion, obj.getURI());
                             }
                             isNewVertex = false;
@@ -842,7 +844,7 @@ public class HttpEntry {
 
     /**
      * Verifies that vertex has needed properties to generate on
-     * 
+     *
      * @param vertex Vertex to be verified
      * @return <code>true</code> if vertex has necessary properties and exists
      */
