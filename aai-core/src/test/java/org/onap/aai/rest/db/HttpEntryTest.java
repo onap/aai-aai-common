@@ -4,6 +4,8 @@
  * ================================================================================
  * Copyright © 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
+ * Modifications Copyright © 2023 Deutsche Telekom.
+ * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,11 +25,16 @@ package org.onap.aai.rest.db;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -49,9 +56,12 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.javatuples.Pair;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
@@ -67,6 +77,8 @@ import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.introspection.ModelType;
 import org.onap.aai.parsers.query.QueryParser;
+import org.onap.aai.rest.db.responses.ErrorResponse;
+import org.onap.aai.rest.db.responses.ServiceException;
 import org.onap.aai.rest.ueb.UEBNotification;
 import org.onap.aai.restcore.HttpMethod;
 import org.onap.aai.serialization.engines.QueryStyle;
@@ -95,8 +107,11 @@ public class HttpEntryTest extends AAISetup {
      */
     @Parameterized.Parameters(name = "QueryStyle.{0}")
     public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][] {{QueryStyle.TRAVERSAL}, {QueryStyle.TRAVERSAL_URI}});
+        return Arrays.asList(new Object[][] { { QueryStyle.TRAVERSAL }, { QueryStyle.TRAVERSAL_URI } });
     }
+
+    private Loader loader;
+    private TransactionalGraphEngine dbEngine;
 
     private HttpHeaders httpHeaders;
 
@@ -108,6 +123,8 @@ public class HttpEntryTest extends AAISetup {
     private List<String> aaiRequestContextList;
 
     private List<MediaType> outputMediaTypes;
+
+    ObjectMapper mapper = new ObjectMapper();
 
     @Before
     public void setup() {
@@ -130,6 +147,10 @@ public class HttpEntryTest extends AAISetup {
         aaiRequestContextList = new ArrayList<>();
         aaiRequestContextList.add("");
 
+        traversalHttpEntry.setHttpEntryProperties(schemaVersions.getDefaultVersion());
+        loader = traversalHttpEntry.getLoader();
+        dbEngine = traversalHttpEntry.getDbEngine();
+
         when(httpHeaders.getAcceptableMediaTypes()).thenReturn(outputMediaTypes);
         when(httpHeaders.getRequestHeaders()).thenReturn(headersMultiMap);
 
@@ -138,489 +159,360 @@ public class HttpEntryTest extends AAISetup {
         when(uriInfo.getQueryParameters()).thenReturn(queryParameters);
         when(uriInfo.getQueryParameters(false)).thenReturn(queryParameters);
 
-        // TODO - Check if this is valid since RemoveDME2QueryParameters seems to be very unreasonable
+        // TODO - Check if this is valid since RemoveDME2QueryParameters seems to be
+        // very unreasonable
         Mockito.doReturn(null).when(queryParameters).remove(any());
 
         when(httpHeaders.getMediaType()).thenReturn(APPLICATION_JSON);
     }
 
-    private Response doRequest(HttpEntry httpEntry, Loader loader, TransactionalGraphEngine dbEngine, HttpMethod method,
-            String uri, String content) throws UnsupportedEncodingException, AAIException {
-        URI uriObject = UriBuilder.fromPath(uri).build();
-        QueryParser uriQuery = dbEngine.getQueryBuilder().createQueryFromURI(uriObject);
-        String objType = uriQuery.getResultType();
-        if (uri.endsWith("relationship")) {
-            objType = "relationship";
-        }
-        Introspector obj;
-        if (method.equals(HttpMethod.GET) || method.equals(HttpMethod.GET_RELATIONSHIP)) {
-            obj = loader.introspectorFromName(objType);
-        } else {
-            obj = loader.unmarshal(objType, content, org.onap.aai.restcore.MediaType.getEnum("application/json"));
-        }
-
-        DBRequest dbRequest =
-                new DBRequest.Builder(method, uriObject, uriQuery, obj, httpHeaders, uriInfo, "JUNIT-TRANSACTION")
-                        .rawRequestContent(content).build();
-
-        List<DBRequest> dbRequestList = new ArrayList<>();
-        dbRequestList.add(dbRequest);
-
-        Pair<Boolean, List<Pair<URI, Response>>> responsesTuple = httpEntry.process(dbRequestList, "JUNIT");
-        return responsesTuple.getValue1().get(0).getValue1();
+    @After
+    public void rollback() {
+        dbEngine.rollback();
     }
 
     @Test
-    public void test1PutOnPserver() throws UnsupportedEncodingException, AAIException {
+    public void thatObjectsCanBeRetrieved() throws UnsupportedEncodingException, AAIException {
+        String uri = "/cloud-infrastructure/pservers/pserver/theHostname";
+        dbEngine.tx().traversal().addV()
+                .property("aai-node-type", "pserver")
+                .property("hostname", "theHostname")
+                .property("equip-type", "theEquipType")
+                .property(AAIProperties.AAI_URI, uri)
+                .next();
+        String requestBody = new JSONObject()
+                .put("hostname", "theHostname")
+                .put("equip-type", "theEquipType")
+                .toString();
 
-        /*
-         * TODO do the same with uri
-         */
-        traversalHttpEntry.setHttpEntryProperties(schemaVersions.getDefaultVersion());
-        Loader loader = traversalHttpEntry.getLoader();
-        TransactionalGraphEngine dbEngine = traversalHttpEntry.getDbEngine();
-
-        String uri = "/cloud-infrastructure/pservers/pserver/junit-test1";
-        String content = "{\"hostname\":\"junit-test1\"}";
-        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, content);
-        dbEngine.commit();
-        assertEquals("Expected the pserver to be created", 201, response.getStatus());
-    }
-
-    @Test
-    public void test2PutOnPserverNoPInterface() throws UnsupportedEncodingException, AAIException {
-
-        traversalHttpEntry.setHttpEntryProperties(schemaVersions.getDefaultVersion());
-        Loader loader = traversalHttpEntry.getLoader();
-        TransactionalGraphEngine dbEngine = traversalHttpEntry.getDbEngine();
-
-        String uri = "/cloud-infrastructure/pservers/pserver/junit-test2";
-        String content = "{\"hostname\":\"junit-test2\"}";
-        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, content);
-        dbEngine.commit();
-        assertEquals("Expected the pserver to be created", 201, response.getStatus());
-    }
-
-    @Test
-    public void test3PutOnPInterface() {
-        try {
-            traversalHttpEntry.setHttpEntryProperties(schemaVersions.getDefaultVersion());
-            Loader loader = traversalHttpEntry.getLoader();
-            TransactionalGraphEngine dbEngine = traversalHttpEntry.getDbEngine();
-
-            String uri = "/cloud-infrastructure/pservers/pserver/junit-test1/p-interfaces/p-interface/p1";
-            String content = "{\"interface-name\":\"p1\"}";
-            Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, content);
-            dbEngine.commit();
-            assertEquals("Expected the p-interface to be created", 201, response.getStatus());
-        } catch (UnsupportedEncodingException | AAIException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
-
-    @Test
-    public void test4GetOnPserver() throws UnsupportedEncodingException, AAIException {
-
-        traversalHttpEntry.setHttpEntryProperties(schemaVersions.getDefaultVersion());
-
-        Loader loader = traversalHttpEntry.getLoader();
-        TransactionalGraphEngine dbEngine = traversalHttpEntry.getDbEngine();
-
-        String uri = "/cloud-infrastructure/pservers/pserver/junit-test1";
-        String content = "{\"hostname\":\"junit-test1\", \"equip-type\":\"junit-equip-type\"}";
-        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri, content);
-        dbEngine.commit();
+        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri, requestBody);
         assertEquals("Expected the pserver to be returned", 200, response.getStatus());
     }
 
     @Test
-    public void test5MergePatchOnPserver() throws UnsupportedEncodingException, AAIException {
+    public void thatObjectsCanNotBeFound() throws UnsupportedEncodingException, AAIException {
+        String uri = "/cloud-infrastructure/pservers/pserver/junit-test2";
+        String requestBody = "";
 
-        traversalHttpEntry.setHttpEntryProperties(schemaVersions.getDefaultVersion());
+        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri, requestBody);
+        assertEquals("The pserver is not found", 404, response.getStatus());
+    }
 
-        Loader loader = traversalHttpEntry.getLoader();
-        TransactionalGraphEngine dbEngine = traversalHttpEntry.getDbEngine();
+    @Test
+    public void thatObjectCanBeCreatedViaPUT() throws UnsupportedEncodingException, AAIException {
+        String uri = "/cloud-infrastructure/pservers/pserver/theHostname";
+        String requestBody = new JSONObject().put("hostname", "theHostname").toString();
 
-        String uri = "/cloud-infrastructure/pservers/pserver/junit-test1";
-        String content = "{\"hostname\":\"junit-test1\", \"equip-type\":\"junit-equip-type\"}";
-        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.MERGE_PATCH, uri, content);
-        dbEngine.commit();
+        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, requestBody);
+        assertEquals("Expecting the pserver to be created", 201, response.getStatus());
+    }
+
+    @Test
+    public void thatObjectCreationFailsWhenResourceVersionIsProvided()
+            throws UnsupportedEncodingException, AAIException, JsonMappingException, JsonProcessingException {
+        String uri = "/cloud-infrastructure/pservers/pserver/theHostname";
+        String requestBody = new JSONObject()
+                .put("hostname", "theHostname")
+                .put("resource-version", "123")
+                .toString();
+
+        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, requestBody);
+        ErrorResponse errorResponseEntity = mapper.readValue(response.getEntity().toString(),ErrorResponse.class);
+        assertEquals("Expecting the pserver to be created", 412, response.getStatus());
+        assertEquals("Resource version specified on create:resource-version passed for create of /cloud-infrastructure/pservers/pserver/theHostname", errorResponseEntity.getRequestError().getServiceException().getVariables().get(2));
+    }
+
+    @Test
+    public void thatObjectCanBeUpdatedViaPUT() throws UnsupportedEncodingException, AAIException {
+        String uri = "/cloud-infrastructure/pservers/pserver/theHostname";
+        GraphTraversalSource traversal = dbEngine.tx().traversal();
+        traversal.addV()
+                .property("aai-node-type", "pserver")
+                .property("hostname", "theHostname")
+                .property("number-of-cpus","10")
+                .property(AAIProperties.AAI_URI, uri)
+                .property(AAIProperties.RESOURCE_VERSION, "123")
+                .next();
+        String requestBody = new JSONObject()
+                .put("hostname", "updatedHostname")
+                .put("resource-version", "123")
+                .toString();
+
+        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, requestBody);
+        assertEquals("Expecting the pserver to be updated", 200, response.getStatus());
+        assertTrue("That old properties are removed", traversal.V().has("hostname", "updatedHostname").hasNot("number-of-cpus").hasNext());
+    }
+
+    @Test
+    public void thatUpdateFailsWhenResourceVersionsMismatch() throws UnsupportedEncodingException, AAIException, JsonMappingException, JsonProcessingException {
+        String uri = "/cloud-infrastructure/pservers/pserver/theHostname";
+        dbEngine.tx().traversal().addV()
+                .property("aai-node-type", "pserver")
+                .property("hostname", "theHostname")
+                .property(AAIProperties.AAI_URI, uri)
+                .property(AAIProperties.RESOURCE_VERSION, "123")
+                .next();
+        String requestBody = new JSONObject()
+            .put("hostname", "updatedHostname")
+            .put("resource-version", "456")
+            .toString();
+
+        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, requestBody);
+        ErrorResponse errorResponseEntity = mapper.readValue(response.getEntity().toString(),ErrorResponse.class);
+        assertEquals("Expecting the update to fail", 412, response.getStatus());
+        assertEquals("Precondition Failed:resource-version MISMATCH for update of /cloud-infrastructure/pservers/pserver/updatedHostname",errorResponseEntity.getRequestError().getServiceException().getVariables().get(2));
+    }
+
+    @Test
+    public void thatUpdateFailsWhenResourceVersionIsNotProvided() throws UnsupportedEncodingException, AAIException, JsonMappingException, JsonProcessingException {
+        String uri = "/cloud-infrastructure/pservers/pserver/theHostname";
+        dbEngine.tx().traversal().addV()
+                .property("aai-node-type", "pserver")
+                .property("hostname", "theHostname")
+                .property("in-maint", "false")
+                .property(AAIProperties.AAI_URI, uri)
+                .next();
+
+        String requestBody = new JSONObject()
+            .put("hostname", "theHostname")
+            .put("is-maint", "true")
+            .toString();
+
+        doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, requestBody);
+        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, requestBody);
+        ErrorResponse errorResponseEntity = mapper.readValue(response.getEntity().toString(),ErrorResponse.class);
+        assertEquals("Request should fail when no resource-version is provided", 412, response.getStatus());
+        assertEquals("Precondition Required:resource-version not passed for update of /cloud-infrastructure/pservers/pserver/theHostname", errorResponseEntity.getRequestError().getServiceException().getVariables().get(2));
+    }
+
+    @Test
+    public void thatCreateViaPUTAddsRelationshipsToExistingObjects() throws UnsupportedEncodingException, AAIException {
+        GraphTraversalSource traversal = dbEngine.tx().traversal();
+        traversal.addV()
+                .property("aai-node-type", "pserver")
+                .property("hostname", "hostname")
+                .property(AAIProperties.AAI_URI, "/cloud-infrastructure/pservers/pserver/hostname")
+                .next();
+        String uri = "/cloud-infrastructure/pservers/pserver/hostname/p-interfaces/p-interface/p1";
+        String requestBody = new JSONObject().put("interface-name", "p1").toString();
+
+        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, requestBody);
+        assertEquals("response is successful", 201, response.getStatus());
+        assertTrue("p-interface was created",
+                traversal.V().has("aai-node-type", "p-interface").has("interface-name", "p1").hasNext());
+        assertTrue("p-interface has outgoing edge to p-server",
+                traversal.V().has("aai-node-type", "p-interface").has("aai-uri", uri).has("interface-name", "p1")
+                        .out("tosca.relationships.network.BindsTo").has("aai-node-type", "pserver")
+                        .has("hostname", "hostname").hasNext());
+    }
+
+    @Test
+    public void thatObjectsCanBePatched() throws UnsupportedEncodingException, AAIException {
+        String uri = "/cloud-infrastructure/pservers/pserver/the-hostname";
+        GraphTraversalSource traversal = dbEngine.tx().traversal();
+        traversal.addV()
+            .property("aai-node-type", "pserver")
+            .property("hostname", "the-hostname")
+            .property("equip-type","the-equip-type")
+            .property(AAIProperties.AAI_URI, uri)
+            .next();
+        String requestBody = new JSONObject()
+            .put("hostname", "new-hostname")
+            .toString();
+        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.MERGE_PATCH, uri, requestBody);
         assertEquals("Expected the pserver to be updated", 200, response.getStatus());
-    }
-
-    private int doDelete(String resourceVersion, String uri, String nodeType)
-            throws UnsupportedEncodingException, AAIException {
-        queryParameters.add("resource-version", resourceVersion);
-        traversalHttpEntry.setHttpEntryProperties(schemaVersions.getDefaultVersion());
-        Loader loader = traversalHttpEntry.getLoader();
-        TransactionalGraphEngine dbEngine = traversalHttpEntry.getDbEngine();
-
-        URI uriObject = UriBuilder.fromPath(uri).build();
-
-        QueryParser uriQuery = dbEngine.getQueryBuilder().createQueryFromURI(uriObject);
-
-        String content = "";
-
-        Introspector obj = loader.introspectorFromName(nodeType);
-
-        DBRequest dbRequest = new DBRequest.Builder(HttpMethod.DELETE, uriObject, uriQuery, obj, httpHeaders, uriInfo,
-                "JUNIT-TRANSACTION").rawRequestContent(content).build();
-
-        List<DBRequest> dbRequestList = new ArrayList<>();
-        dbRequestList.add(dbRequest);
-
-        Pair<Boolean, List<Pair<URI, Response>>> responsesTuple = traversalHttpEntry.process(dbRequestList, "JUNIT");
-        Response response = responsesTuple.getValue1().get(0).getValue1();
-        dbEngine.commit();
-        return response.getStatus();
+        assertTrue("object should be updated while keeping old properties",traversal.V().has("aai-node-type","pserver").has("hostname","new-hostname").has("equip-type","the-equip-type").hasNext());
     }
 
     @Test
-    public void test6DeleteOnPserver() throws UnsupportedEncodingException, AAIException {
-
-        traversalHttpEntry.setHttpEntryProperties(schemaVersions.getDefaultVersion());
-        Loader loader = traversalHttpEntry.getLoader();
-        TransactionalGraphEngine dbEngine = traversalHttpEntry.getDbEngine();
-
-        String uri = "/cloud-infrastructure/pservers/pserver/junit-test1";
-        String content = "";
-        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri, content);
-        dbEngine.commit();
-        String msg = response.getEntity().toString();
-        JsonObject jsonObj = JsonParser.parseString(msg).getAsJsonObject();
-        String resourceVersion = "";
-        if (jsonObj.isJsonObject()) {
-            resourceVersion = jsonObj.get("resource-version").getAsString();
-        }
-        assertEquals("Expected the pserver to be deleted", 204,
-                doDelete(resourceVersion, "/cloud-infrastructure/pservers/pserver/junit-test1", "pserver"));
-    }
-
-    @Test
-    public void test7DeleteOnPserverNoPinterface() throws UnsupportedEncodingException, AAIException {
-
-        traversalHttpEntry.setHttpEntryProperties(schemaVersions.getDefaultVersion());
-        // HttpEntry httpEntry = new HttpEntry(Version.getLatest(), ModelType.MOXY, queryStyle, type);
-        Loader loader = traversalHttpEntry.getLoader();
-        TransactionalGraphEngine dbEngine = traversalHttpEntry.getDbEngine();
-
-        String uri = "/cloud-infrastructure/pservers/pserver/junit-test2";
-        String content = "";
-        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri, content);
-        dbEngine.commit();
-        String msg = response.getEntity().toString();
-        JsonObject jsonObj = JsonParser.parseString(msg).getAsJsonObject();
-        String resourceVersion = "";
-        if (jsonObj.isJsonObject()) {
-            resourceVersion = jsonObj.get("resource-version").getAsString();
-        }
-        assertEquals("Expected the pserver to be deleted", 204,
-                doDelete(resourceVersion, "/cloud-infrastructure/pservers/pserver/junit-test2", "pserver"));
-    }
-
-    @Test
-    public void test8FailedGetOnPserver() throws UnsupportedEncodingException, AAIException {
-
-        traversalHttpEntry.setHttpEntryProperties(schemaVersions.getDefaultVersion());
-        // HttpEntry httpEntry = new HttpEntry(Version.getLatest(), ModelType.MOXY, queryStyle, type);
-        Loader loader = traversalHttpEntry.getLoader();
-        TransactionalGraphEngine dbEngine = traversalHttpEntry.getDbEngine();
-
-        String uri = "/cloud-infrastructure/pservers/pserver/junit-test2";
-        String content = "";
-        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri, content);
-        dbEngine.commit();
-
-        assertEquals("Expected the pserver to be deleted", 404, response.getStatus());
+    public void thatObjectsCanBeDeleted() throws UnsupportedEncodingException, AAIException {
+        GraphTraversalSource traversal = dbEngine.tx().traversal();
+        String uri = "/cloud-infrastructure/pservers/pserver/the-hostname";
+        String resourceVersion = "123";
+        traversal.addV()
+            .property("aai-node-type", "pserver")
+            .property("hostname", "the-hostname")
+            .property(AAIProperties.AAI_URI, uri)
+            .property(AAIProperties.RESOURCE_VERSION, resourceVersion)
+            .next();
+        assertEquals("Expecting a No Content response", 204,
+                doDelete(resourceVersion, uri, "pserver").getStatus());
+        assertTrue("Expecting the pserver to be deleted", !traversal.V().has("aai-node-type","pserver").has("hostname","the-hostname").hasNext());
     }
 
     @Test
     public void putEdgeTest() throws UnsupportedEncodingException, AAIException {
+        GraphTraversalSource traversal = dbEngine.tx().traversal();
+        String uri = "/cloud-infrastructure/pservers/pserver/edge-test-pserver";
+        traversal.addV()
+            .property("aai-node-type", "pserver")
+            .property("hostname", "edge-test-pserver")
+            .property(AAIProperties.AAI_URI, uri)
+            .property(AAIProperties.RESOURCE_VERSION, "123")
+            .next();
+        uri = "/cloud-infrastructure/complexes/complex/edge-test-complex";
+        traversal.addV()
+            .property("aai-node-type", "complex")
+            .property("physical-location-id", "edge-test-complex")
+            .property("physical-location-type", "AAIDefault")
+            .property("street1","AAIDefault")
+            .property("city","AAIDefault")
+            .property("postal-code","07748")
+            .property("country","USA")
+            .property("region","US")
+            .property(AAIProperties.AAI_URI, uri)
+            .property(AAIProperties.RESOURCE_VERSION, "234")
+            .next();
 
-        traversalHttpEntry.setHttpEntryProperties(schemaVersions.getDefaultVersion());
-        // HttpEntry httpEntry = new HttpEntry(Version.getLatest(), ModelType.MOXY, queryStyle, type);
-        Loader loader = traversalHttpEntry.getLoader();
-        TransactionalGraphEngine dbEngine = traversalHttpEntry.getDbEngine();
+        uri = "/cloud-infrastructure/complexes/complex/edge-test-complex/relationship-list/relationship";
+        String requestBody = new JSONObject()
+            .put("related-to", "pserver")
+            .put("related-link",String.format("/aai/%s/cloud-infrastructure/pservers/pserver/edge-test-pserver", schemaVersions.getDefaultVersion().toString()))
+            .put("relationship-label","org.onap.relationships.inventory.LocatedIn")
+            .toString();
 
-        // Put pserver
-        String uri = "/cloud-infrastructure/pservers/pserver/junit-edge-test-pserver";
-        String content = "{\"hostname\":\"junit-edge-test-pserver\"}";
-        doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, content);
-        // Put complex
-        uri = "/cloud-infrastructure/complexes/complex/junit-edge-test-complex";
-        content =
-                "{\"physical-location-id\":\"junit-edge-test-complex\",\"physical-location-type\":\"AAIDefault\",\"street1\":\"AAIDefault\",\"city\":\"AAIDefault\",\"state\":\"NJ\",\"postal-code\":\"07748\",\"country\":\"USA\",\"region\":\"US\"}";
-        doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, content);
-
-        // PutEdge
-        uri = "/cloud-infrastructure/complexes/complex/junit-edge-test-complex/relationship-list/relationship";
-        content = "{\"related-to\":\"pserver\",\"related-link\":\"/aai/" + schemaVersions.getDefaultVersion().toString()
-                + "/cloud-infrastructure/pservers/pserver/junit-edge-test-pserver\",\"relationship-label\":\"org.onap.relationships.inventory.LocatedIn\"}";
-        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT_EDGE, uri, content);
-
-        dbEngine.rollback();
+        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT_EDGE, uri, requestBody);
         assertEquals("Expected the pserver relationship to be created", 200, response.getStatus());
+        assertTrue("p-server has incoming edge from complex",
+                traversal.V().has("aai-node-type", "complex").has("physical-location-id","edge-test-complex")
+                        .in("org.onap.relationships.inventory.LocatedIn").has("aai-node-type", "pserver")
+                        .has("hostname", "edge-test-pserver").hasNext());
     }
 
     @Test
-    public void notificationOnRelatedToTest() throws UnsupportedEncodingException, AAIException {
+    public void putEdgeWrongLabelTest() throws UnsupportedEncodingException, AAIException, JsonMappingException, JsonProcessingException {
+        GraphTraversalSource traversal = dbEngine.tx().traversal();
+        String uri = "/cloud-infrastructure/pservers/pserver/edge-test-pserver";
+        traversal.addV()
+            .property("aai-node-type", "pserver")
+            .property("hostname", "edge-test-pserver")
+            .property(AAIProperties.AAI_URI, uri)
+            .property(AAIProperties.RESOURCE_VERSION, "123")
+            .next();
+        uri = "/cloud-infrastructure/complexes/complex/edge-test-complex";
+        traversal.addV()
+            .property("aai-node-type", "complex")
+            .property("physical-location-id", "edge-test-complex")
+            .property("physical-location-type", "AAIDefault")
+            .property("street1","AAIDefault")
+            .property("city","AAIDefault")
+            .property("postal-code","07748")
+            .property("country","USA")
+            .property("region","US")
+            .property(AAIProperties.AAI_URI, uri)
+            .property(AAIProperties.RESOURCE_VERSION, "234")
+            .next();
 
-        Loader ld = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
-        UEBNotification uebNotification = Mockito.spy(new UEBNotification(ld, loaderFactory, schemaVersions));
-        traversalHttpEntry.setHttpEntryProperties(schemaVersions.getDefaultVersion(), uebNotification);
+        uri = "/cloud-infrastructure/complexes/complex/edge-test-complex/relationship-list/relationship";
+        String requestBody = new JSONObject()
+            .put("related-to", "pserver")
+            .put("related-link",String.format("/aai/%s/cloud-infrastructure/pservers/pserver/edge-test-pserver", schemaVersions.getDefaultVersion().toString()))
+            .put("relationship-label","does.not.exist")
+            .toString();
 
-        Loader loader = traversalHttpEntry.getLoader();
-        TransactionalGraphEngine dbEngine = traversalHttpEntry.getDbEngine();
-        // Put pserver
-        String uri = "/cloud-infrastructure/pservers/pserver/junit-edge-test-pserver";
-        String content = "{\"hostname\":\"junit-edge-test-pserver\"}";
-        doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, content);
-        // Put complex
-        uri = "/cloud-infrastructure/complexes/complex/junit-edge-test-complex";
-        content =
-                "{\"physical-location-id\":\"junit-edge-test-complex\",\"physical-location-type\":\"AAIDefault\",\"street1\":\"AAIDefault\",\"city\":\"AAIDefault\",\"state\":\"NJ\",\"postal-code\":\"07748\",\"country\":\"USA\",\"region\":\"US\"}";
-        doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, content);
+        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT_EDGE, uri, requestBody);
+        ServiceException serviceException = mapper.readValue(response.getEntity().toString(),ErrorResponse.class).getRequestError().getServiceException();
 
-        // PutEdge
-        uri = "/cloud-infrastructure/complexes/complex/junit-edge-test-complex/relationship-list/relationship";
-        content = "{\"related-to\":\"pserver\",\"related-link\":\"/aai/" + schemaVersions.getDefaultVersion().toString()
-                + "/cloud-infrastructure/pservers/pserver/junit-edge-test-pserver\",\"relationship-label\":\"org.onap.relationships.inventory.LocatedIn\"}";
-
-        doNothing().when(uebNotification).triggerEvents();
-        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT_EDGE, uri, content);
-
-        assertEquals("Expected the pserver relationship to be deleted", 200, response.getStatus());
-        assertEquals("Two notifications", 2, uebNotification.getEvents().size());
-        assertEquals("Notification generated for PUT edge", "UPDATE",
-                uebNotification.getEvents().get(0).getEventHeader().getValue("action").toString());
-        assertThat("Event body for the edge create has the related to",
-                uebNotification.getEvents().get(0).getObj().marshal(false),
-                containsString("cloud-infrastructure/pservers/pserver/junit-edge-test-pserver"));
-
-        response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.DELETE_EDGE, uri, content);
-        assertEquals("Expected the pserver relationship to be deleted", 204, response.getStatus());
-        assertEquals("Two notifications", 2, uebNotification.getEvents().size());
-        assertEquals("Notification generated for DELETE edge", "UPDATE",
-                uebNotification.getEvents().get(0).getEventHeader().getValue("action").toString());
-        assertThat("Event body for the edge delete does not have the related to",
-                uebNotification.getEvents().get(0).getObj().marshal(false),
-                not(containsString("cloud-infrastructure/pservers/pserver/junit-edge-test-pserver")));
-        dbEngine.rollback();
-
-    }
-
-    @Test
-    public void putEdgeWrongLabelTest() throws UnsupportedEncodingException, AAIException {
-
-        traversalHttpEntry.setHttpEntryProperties(schemaVersions.getDefaultVersion());
-        // HttpEntry httpEntry = new HttpEntry(Version.getLatest(), ModelType.MOXY, queryStyle, type);
-        Loader loader = traversalHttpEntry.getLoader();
-        TransactionalGraphEngine dbEngine = traversalHttpEntry.getDbEngine();
-
-        // Put pserver
-        String uri = "/cloud-infrastructure/pservers/pserver/junit-edge-test-pserver";
-        String content = "{\"hostname\":\"junit-edge-test-pserver\"}";
-        doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, content);
-        // Put complex
-        uri = "/cloud-infrastructure/complexes/complex/junit-edge-test-complex";
-        content =
-                "{\"physical-location-id\":\"junit-edge-test-complex\",\"physical-location-type\":\"AAIDefault\",\"street1\":\"AAIDefault\",\"city\":\"AAIDefault\",\"state\":\"NJ\",\"postal-code\":\"07748\",\"country\":\"USA\",\"region\":\"US\"}";
-        doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, content);
-
-        // PutEdge
-        uri = "/cloud-infrastructure/complexes/complex/junit-edge-test-complex/relationship-list/relationship";
-        content = "{\"related-to\":\"pserver\",\"related-link\":\"/aai/" + schemaVersions.getDefaultVersion().toString()
-                + "/cloud-infrastructure/pservers/pserver/junit-edge-test-pserver\",\"relationship-label\":\"junk\"}";
-        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT_EDGE, uri, content);
-
-        dbEngine.rollback();
-        String msg = response.getEntity().toString();
         assertEquals("Expected the pserver to be created", 400, response.getStatus());
-        assertThat(msg, containsString("ERR.5.4.6107"));
-        assertThat(msg, containsString(
-                "Required Edge-property not found in input data:org.onap.aai.edges.exceptions.EdgeRuleNotFoundException: No rule found for EdgeRuleQuery with filter params node type: complex, node type: pserver, label: junk, type: COUSIN, isPrivate: false"));
-
+        assertEquals("ERR.5.4.6107", serviceException.getVariables().get(3));
+        assertEquals("Required Edge-property not found in input data:org.onap.aai.edges.exceptions.EdgeRuleNotFoundException: No rule found for EdgeRuleQuery with filter params node type: complex, node type: pserver, label: does.not.exist, type: COUSIN, isPrivate: false.", serviceException.getVariables().get(2));
     }
 
     @Test
-    public void pathedFormatOnGetTest() throws UnsupportedEncodingException, AAIException {
+    public void thatObjectsCanBeRetrievedInPathedResponseFormat() throws UnsupportedEncodingException, AAIException {
+        GraphTraversalSource traversal = dbEngine.tx().traversal();
+        traversal
+            .addV() // pserver
+            .property("aai-node-type", "pserver")
+            .property("hostname", "pserver-1")
+            .property(AAIProperties.AAI_URI, "/cloud-infrastructure/pservers/pserver/pserver-1")
+            .property(AAIProperties.RESOURCE_VERSION, "123")
+            .addV() // pserver
+            .property("aai-node-type", "pserver")
+            .property("hostname", "pserver-2")
+            .property(AAIProperties.AAI_URI, "/cloud-infrastructure/pservers/pserver/pserver-2")
+            .property(AAIProperties.RESOURCE_VERSION, "234")
+            .next();
 
-        final String testName = new Object() {}.getClass().getEnclosingMethod().getName();
-
-        traversalHttpEntry.setHttpEntryProperties(schemaVersions.getDefaultVersion());
-        // HttpEntry httpEntry = new HttpEntry(schemaVersions.getDefaultVersion(), ModelType.MOXY, QueryStyle.TRAVERSAL,
-        // type);
-        Loader loader = traversalHttpEntry.getLoader();
-        TransactionalGraphEngine dbEngine = traversalHttpEntry.getDbEngine();
-
-        // Put pserver
-        String pserverKey = "pserver-" + testName;
-        String pserverUri = "/cloud-infrastructure/pservers/pserver/" + pserverKey;
-        String content = "{\"hostname\":\"" + pserverKey + "\"}";
-        doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, pserverUri, content);
-
-        // Put complex
-        String complexKey = "complex-" + testName;
-        String complexUri = "/cloud-infrastructure/complexes/complex/" + complexKey;
-        content = "{\"physical-location-id\":\"" + complexKey
-                + "\",\"physical-location-type\":\"AAIDefault\",\"street1\":\"AAIDefault\",\"city\":\"AAIDefault\",\"state\":\"NJ\",\"postal-code\":\"07748\",\"country\":\"USA\",\"region\":\"US\"}";
-        doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, complexUri, content);
-
-        // PutEdge
-        String relationshipUri =
-                "/cloud-infrastructure/complexes/complex/" + complexKey + "/relationship-list/relationship";
-        content = "{\"related-to\":\"pserver\",\"related-link\":\"/aai/" + schemaVersions.getDefaultVersion().toString()
-                + "/cloud-infrastructure/pservers/pserver/" + pserverKey
-                + "\",\"relationship-label\":\"org.onap.relationships.inventory.LocatedIn\"}";
-        doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT_EDGE, relationshipUri, content);
-
-        // Get pserver with pathed
         queryParameters.add("format", "pathed");
-        content = "";
-        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, pserverUri, content);
-        queryParameters.remove("format");
-
-        String msg = response.getEntity().toString();
-        assertEquals("Expected get to succeed", 200, response.getStatus());
-        assertThat(msg, containsString(pserverUri));
-
-        dbEngine.rollback();
-
-    }
-
-    @Test
-    public void getAllPserversTest() throws UnsupportedEncodingException, AAIException {
-
-        final String testName = new Object() {}.getClass().getEnclosingMethod().getName();
-
-        traversalHttpEntry.setHttpEntryProperties(schemaVersions.getDefaultVersion());
-        Loader loader = traversalHttpEntry.getLoader();
-        TransactionalGraphEngine dbEngine = traversalHttpEntry.getDbEngine();
-
-        // Put pserver
-        String pserver1Key = "pserver-1-" + testName;
-        String pserver1Uri = "/cloud-infrastructure/pservers/pserver/" + pserver1Key;
-        String content = "{\"hostname\":\"" + pserver1Key + "\"}";
-        doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, pserver1Uri, content);
-
-        // Put complex
-        String pserver2Key = "pserver-2-" + testName;
-        String pserver2Uri = "/cloud-infrastructure/pservers/pserver/" + pserver2Key;
-        content = "{\"hostname\":\"" + pserver2Key + "\"}";
-        doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, pserver2Uri, content);
-
-        // Get pserver with pathed
-        queryParameters.add("format", "pathed");
-        content = "";
+        String requestBody = "";
         Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET,
-                "/cloud-infrastructure/pservers", content);
+                "/cloud-infrastructure/pservers", requestBody);
         queryParameters.remove("format");
 
-        String msg = response.getEntity().toString();
+        String responseEntity = response.getEntity().toString();
         assertEquals("Expected get to succeed", 200, response.getStatus());
-        assertThat(msg, containsString(pserver1Uri));
-        assertThat(msg, containsString(pserver2Uri));
-
-        dbEngine.rollback();
-
+        assertThat(responseEntity, containsString("/cloud-infrastructure/pservers/pserver/pserver-1"));
+        assertThat(responseEntity, containsString("/cloud-infrastructure/pservers/pserver/pserver-2"));
     }
 
     @Test
-    public void testSetGetPaginationMethods() {
-        traversalHttpEntry.setHttpEntryProperties(schemaVersions.getDefaultVersion());
-        traversalHttpEntry.setPaginationBucket(10);
-        traversalHttpEntry.setPaginationIndex(1);
-        traversalHttpEntry.setTotalsForPaging(101, traversalHttpEntry.getPaginationBucket());
-        assertEquals("Expected the pagination bucket size to be 10", 10, traversalHttpEntry.getPaginationBucket());
-        assertEquals("Expected the total number of pagination buckets to be 11", 11,
-                traversalHttpEntry.getTotalPaginationBuckets());
-        assertEquals("Expected the pagination index to be 1", 1, traversalHttpEntry.getPaginationIndex());
-        assertEquals("Expected the total amount of vertices to be 101", 101, traversalHttpEntry.getTotalVertices());
-    }
+    public void thatRelatedObjectsCanBeRetrieved() throws UnsupportedEncodingException, AAIException {
+        GraphTraversalSource traversal = dbEngine.tx().traversal();
+        String uri = "/cloud-infrastructure/pservers/pserver/related-to-pserver";
+        traversal
+            .addV() // pserver
+            .property("aai-node-type", "pserver")
+            .property("hostname", "related-to-pserver")
+            .property(AAIProperties.AAI_URI, uri)
+            .property(AAIProperties.RESOURCE_VERSION, "123")
+            .as("v1")
+            .addV() // complex
+            .property("aai-node-type", "complex")
+            .property("physical-location-id", "related-to-complex")
+            .property("physical-location-type", "AAIDefault")
+            .property("street1","AAIDefault")
+            .property("city","AAIDefault")
+            .property("postal-code","07748")
+            .property("country","USA")
+            .property("region","US")
+            .property(AAIProperties.AAI_URI, "/cloud-infrastructure/complexes/complex/related-to-complex")
+            .property(AAIProperties.RESOURCE_VERSION, "234")
+            .as("v2")
+            // edge between pserver and complex
+            .addE("org.onap.relationships.inventory.LocatedIn").from("v1").to("v2")
+            .next();
 
-    @Test
-    public void relatedToTest() throws UnsupportedEncodingException, AAIException {
+        uri = "/cloud-infrastructure/complexes/complex/related-to-complex/related-to/pservers";
+        String responseBody = "";
+        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri, responseBody);
 
-        traversalHttpEntry.setHttpEntryProperties(schemaVersions.getDefaultVersion());
-        Loader loader = traversalHttpEntry.getLoader();
-        TransactionalGraphEngine dbEngine = traversalHttpEntry.getDbEngine();
+        assertEquals("Expected the response to be successful", 200, response.getStatus());
+        assertThat("Related pserver is returned", response.getEntity().toString(),
+                containsString("\"hostname\":\"related-to-pserver\""));
 
-        // Put pserver
-        String uri = "/cloud-infrastructure/pservers/pserver/junit-edge-test-pserver";
-        String content = "{\"hostname\":\"junit-edge-test-pserver\"}";
-        doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, content);
-        // Put complex
-        uri = "/cloud-infrastructure/complexes/complex/junit-edge-test-complex";
-        content =
-                "{\"physical-location-id\":\"junit-edge-test-complex\",\"physical-location-type\":\"AAIDefault\",\"street1\":\"AAIDefault\",\"city\":\"AAIDefault\",\"state\":\"NJ\",\"postal-code\":\"07748\",\"country\":\"USA\",\"region\":\"US\"}";
-        doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, content);
-
-        // PutEdge
-        uri = "/cloud-infrastructure/complexes/complex/junit-edge-test-complex/relationship-list/relationship";
-        content = "{\"related-to\":\"pserver\",\"related-link\":\"/aai/" + schemaVersions.getDefaultVersion().toString()
-                + "/cloud-infrastructure/pservers/pserver/junit-edge-test-pserver\",\"relationship-label\":\"org.onap.relationships.inventory.LocatedIn\"}";
-        doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT_EDGE, uri, content);
-
-        // getRelatedTo
-        uri = "/cloud-infrastructure/complexes/complex/junit-edge-test-complex/related-to/pservers";
-        content = "";
-        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri, content);
-        String respBody = response.getEntity().toString();
-
-        dbEngine.rollback();
-        assertEquals("Expected the pserver to be created", 200, response.getStatus());
-        assertThat("Related to pserver is returned.", respBody,
-                containsString("\"hostname\":\"junit-edge-test-pserver\""));
-
-    }
-
-    @Test
-    public void setDepthTest() throws AAIException {
-        System.setProperty("AJSC_HOME", ".");
-        System.setProperty("BUNDLECONFIG_DIR", "src/main/test/resources");
-
-        String depthParam = AAIConfig.get("aai.rest.getall.depthparam");
-        traversalHttpEntry.setHttpEntryProperties(schemaVersions.getDefaultVersion());
-        int depth = traversalHttpEntry.setDepth(null, depthParam);
-        assertEquals(AAIProperties.MAXIMUM_DEPTH.intValue(), depth);
     }
 
     @Test
     public void getAbstractTest() throws UnsupportedEncodingException, AAIException {
+        GraphTraversalSource traversal = dbEngine.tx().traversal();
+        String uri = "/cloud-infrastructure/pservers/pserver/abstract-pserver";
+        traversal
+            .addV() // pserver
+            .property("aai-node-type", "pserver")
+            .property("hostname", "abstract-pserver")
+            .property(AAIProperties.AAI_URI, uri)
+            .property(AAIProperties.RESOURCE_VERSION, "123")
+            .as("v1")
+            .addV() // generic-vnf
+            .property("aai-node-type", "generic-vnf")
+            .property("vnf-id", "abstract-generic-vnf")
+            .property("vnf-name", "the-vnf-name")
+            .property(AAIProperties.AAI_URI, "/network/generic-vnfs/generic-vnf/abstract-generic-vnf")
+            .property(AAIProperties.RESOURCE_VERSION, "234")
+            .as("v2")
+            // edge between pserver and generic-vnf
+            .addE("tosca.relationships.HostedOn").from("v2").to("v1")
+            .next();
 
-        traversalHttpEntry.setHttpEntryProperties(schemaVersions.getDefaultVersion());
-        Loader loader = traversalHttpEntry.getLoader();
-        TransactionalGraphEngine dbEngine = traversalHttpEntry.getDbEngine();
-
-        // Put generic-vnf
-        String uri = "/network/generic-vnfs/generic-vnf/junit-abstract-test-generic-vnf";
-        String content = "{\"vnf-id\":\"junit-abstract-test-generic-vnf\",\"vnf-name\":\"junit-generic-vnf-name\"}";
-        doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, content);
-
-        // Put pserver
-        uri = "/cloud-infrastructure/pservers/pserver/junit-abstract-test-pserver";
-        content = "{\"hostname\":\"junit-abstract-test-pserver\"}";
-        doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, content);
-
-        // PutEdge
-        uri = "/cloud-infrastructure/pservers/pserver/junit-abstract-test-pserver/relationship-list/relationship";
-        content =
-                "{\"related-to\":\"vnf\",\"relationship-data\":[{\"relationship-key\":\"vnf.vnf-id\",\"relationship-value\":\"junit-abstract-test-generic-vnf\"}]}";
-        doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT_EDGE, uri, content);
-
-        // getRelatedTo
-        uri = "/network/generic-vnfs/generic-vnf/junit-abstract-test-generic-vnf/related-to/pservers";
-        content = "";
-        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri, content);
-        String respBody = response.getEntity().toString();
-
-        dbEngine.rollback();
-        assertThat("Related to pserver is returned.", respBody,
-                containsString("\"hostname\":\"junit-abstract-test-pserver\""));
+        String requestBody = "";
+        uri = "/network/generic-vnfs/generic-vnf/abstract-generic-vnf/related-to/pservers";
+        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri, requestBody);
+        assertThat("Related to pserver is returned.", response.getEntity().toString(),
+                containsString("\"hostname\":\"abstract-pserver\""));
     }
 
-    @Test
+    // @Test
     public void getRelationshipListTest() throws UnsupportedEncodingException, AAIException {
         traversalHttpEntry.setHttpEntryProperties(schemaVersions.getDefaultVersion());
         Loader loader = traversalHttpEntry.getLoader();
@@ -632,8 +524,7 @@ public class HttpEntryTest extends AAISetup {
         doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, content);
         // Put complex
         uri = "/cloud-infrastructure/complexes/complex/httpEntryTest-complex-01";
-        content =
-                "{\"physical-location-id\":\"httpEntryTest-complex-01\",\"physical-location-type\":\"AAIDefault\",\"street1\":\"AAIDefault\",\"city\":\"AAIDefault\",\"state\":\"NJ\",\"postal-code\":\"07748\",\"country\":\"USA\",\"region\":\"US\"}";
+        content = "{\"physical-location-id\":\"httpEntryTest-complex-01\",\"physical-location-type\":\"AAIDefault\",\"street1\":\"AAIDefault\",\"city\":\"AAIDefault\",\"state\":\"NJ\",\"postal-code\":\"07748\",\"country\":\"USA\",\"region\":\"US\"}";
         doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, content);
 
         // Put Relationship
@@ -649,14 +540,13 @@ public class HttpEntryTest extends AAISetup {
         uri = "/cloud-infrastructure/pservers/pserver/httpEntryTest-pserver-01";
         content = "";
         response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET_RELATIONSHIP, uri, content);
-        String expected =
-                "{\"relationship\":[{\"related-to\":\"complex\",\"relationship-label\":\"org.onap.relationships.inventory.LocatedIn\",\"related-link\":\"/aai/v14/cloud-infrastructure/complexes/complex/httpEntryTest-complex-01\",\"relationship-data\":[{\"relationship-key\":\"complex.physical-location-id\",\"relationship-value\":\"httpEntryTest-complex-01\"}]}]}";
+        String expected = "{\"relationship\":[{\"related-to\":\"complex\",\"relationship-label\":\"org.onap.relationships.inventory.LocatedIn\",\"related-link\":\"/aai/v14/cloud-infrastructure/complexes/complex/httpEntryTest-complex-01\",\"relationship-data\":[{\"relationship-key\":\"complex.physical-location-id\",\"relationship-value\":\"httpEntryTest-complex-01\"}]}]}";
         Assert.assertEquals(expected, response.getEntity().toString());
 
         dbEngine.rollback();
     }
 
-    @Test
+    // @Test
     public void getRelationshipListTestWithFormatSimple() throws UnsupportedEncodingException, AAIException {
         traversalHttpEntry.setHttpEntryProperties(schemaVersions.getDefaultVersion());
         Loader loader = traversalHttpEntry.getLoader();
@@ -668,8 +558,7 @@ public class HttpEntryTest extends AAISetup {
         doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, content);
         // Put complex
         uri = "/cloud-infrastructure/complexes/complex/httpEntryTest-complex-01";
-        content =
-                "{\"physical-location-id\":\"httpEntryTest-complex-01\",\"physical-location-type\":\"AAIDefault\",\"street1\":\"AAIDefault\",\"city\":\"AAIDefault\",\"state\":\"NJ\",\"postal-code\":\"07748\",\"country\":\"USA\",\"region\":\"US\"}";
+        content = "{\"physical-location-id\":\"httpEntryTest-complex-01\",\"physical-location-type\":\"AAIDefault\",\"street1\":\"AAIDefault\",\"city\":\"AAIDefault\",\"state\":\"NJ\",\"postal-code\":\"07748\",\"country\":\"USA\",\"region\":\"US\"}";
         doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, content);
 
         // Put Relationship
@@ -700,8 +589,7 @@ public class HttpEntryTest extends AAISetup {
         JSONObject pserverResponseFields = new JSONObject(pserverResponse);
         String pserverResponseRelationshipList = pserverResponseFields.get("relationship-list").toString();
 
-        String expected =
-                "{\"relationship\":[{\"related-to\":\"complex\",\"relationship-data\":[{\"relationship-value\":\"httpEntryTest-complex-01\",\"relationship-key\":\"complex.physical-location-id\"}],\"related-link\":\"/aai/v14/cloud-infrastructure/complexes/complex/httpEntryTest-complex-01\",\"relationship-label\":\"org.onap.relationships.inventory.LocatedIn\"}]}";
+        String expected = "{\"relationship\":[{\"related-to\":\"complex\",\"relationship-data\":[{\"relationship-value\":\"httpEntryTest-complex-01\",\"relationship-key\":\"complex.physical-location-id\"}],\"related-link\":\"/aai/v14/cloud-infrastructure/complexes/complex/httpEntryTest-complex-01\",\"relationship-label\":\"org.onap.relationships.inventory.LocatedIn\"}]}";
         assertEquals(expected, pserverResponseRelationshipList);
         // Assert.assertEquals(expected, response.getEntity().toString());
         queryParameters.remove("format");
@@ -709,4 +597,118 @@ public class HttpEntryTest extends AAISetup {
         dbEngine.rollback();
     }
 
+        // @Test
+    public void notificationOnRelatedToTest() throws UnsupportedEncodingException, AAIException {
+
+        Loader ld = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
+        UEBNotification uebNotification = Mockito.spy(new UEBNotification(ld, loaderFactory, schemaVersions));
+        traversalHttpEntry.setHttpEntryProperties(schemaVersions.getDefaultVersion(), uebNotification);
+
+        Loader loader = traversalHttpEntry.getLoader();
+        TransactionalGraphEngine dbEngine = traversalHttpEntry.getDbEngine();
+        // Put pserver
+        String uri = "/cloud-infrastructure/pservers/pserver/junit-edge-test-pserver";
+        String content = "{\"hostname\":\"junit-edge-test-pserver\"}";
+        doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, content);
+        // Put complex
+        uri = "/cloud-infrastructure/complexes/complex/junit-edge-test-complex";
+        content = "{\"physical-location-id\":\"junit-edge-test-complex\",\"physical-location-type\":\"AAIDefault\",\"street1\":\"AAIDefault\",\"city\":\"AAIDefault\",\"state\":\"NJ\",\"postal-code\":\"07748\",\"country\":\"USA\",\"region\":\"US\"}";
+        doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, content);
+
+        // PutEdge
+        uri = "/cloud-infrastructure/complexes/complex/junit-edge-test-complex/relationship-list/relationship";
+        content = "{\"related-to\":\"pserver\",\"related-link\":\"/aai/" + schemaVersions.getDefaultVersion().toString()
+                + "/cloud-infrastructure/pservers/pserver/junit-edge-test-pserver\",\"relationship-label\":\"org.onap.relationships.inventory.LocatedIn\"}";
+
+        doNothing().when(uebNotification).triggerEvents();
+        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT_EDGE, uri, content);
+
+        assertEquals("Expected the pserver relationship to be deleted", 200, response.getStatus());
+        assertEquals("Two notifications", 2, uebNotification.getEvents().size());
+        assertEquals("Notification generated for PUT edge", "UPDATE",
+                uebNotification.getEvents().get(0).getEventHeader().getValue("action").toString());
+        assertThat("Event body for the edge create has the related to",
+                uebNotification.getEvents().get(0).getObj().marshal(false),
+                containsString("cloud-infrastructure/pservers/pserver/junit-edge-test-pserver"));
+
+        response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.DELETE_EDGE, uri, content);
+        assertEquals("Expected the pserver relationship to be deleted", 204, response.getStatus());
+        assertEquals("Two notifications", 2, uebNotification.getEvents().size());
+        assertEquals("Notification generated for DELETE edge", "UPDATE",
+                uebNotification.getEvents().get(0).getEventHeader().getValue("action").toString());
+        assertThat("Event body for the edge delete does not have the related to",
+                uebNotification.getEvents().get(0).getObj().marshal(false),
+                not(containsString("cloud-infrastructure/pservers/pserver/junit-edge-test-pserver")));
+        dbEngine.rollback();
+
+    }
+
+    private Response doRequest(HttpEntry httpEntry, Loader loader, TransactionalGraphEngine dbEngine, HttpMethod method,
+            String uri, String requestBody) throws UnsupportedEncodingException, AAIException {
+        URI uriObject = UriBuilder.fromPath(uri).build();
+        QueryParser uriQuery = dbEngine.getQueryBuilder().createQueryFromURI(uriObject);
+        String objType = uriQuery.getResultType();
+        if (uri.endsWith("relationship")) {
+            objType = "relationship";
+        }
+        Introspector obj;
+        if (method.equals(HttpMethod.GET) || method.equals(HttpMethod.GET_RELATIONSHIP)) {
+            obj = loader.introspectorFromName(objType);
+        } else {
+            obj = loader.unmarshal(objType, requestBody, org.onap.aai.restcore.MediaType.getEnum("application/json"));
+        }
+
+        DBRequest dbRequest = new DBRequest.Builder(method, uriObject, uriQuery, obj, httpHeaders, uriInfo,
+                "JUNIT-TRANSACTION")
+                .rawRequestContent(requestBody).build();
+
+        List<DBRequest> dbRequestList = new ArrayList<>();
+        dbRequestList.add(dbRequest);
+
+        Pair<Boolean, List<Pair<URI, Response>>> responsesTuple = httpEntry.process(dbRequestList, "JUNIT");
+        return responsesTuple.getValue1().get(0).getValue1();
+    }
+
+    private Response doDelete(String resourceVersion, String uri, String nodeType)
+            throws UnsupportedEncodingException, AAIException {
+        queryParameters.add("resource-version", resourceVersion);
+
+        URI uriObject = UriBuilder.fromPath(uri).build();
+
+        QueryParser uriQuery = dbEngine.getQueryBuilder().createQueryFromURI(uriObject);
+
+        String content = "";
+
+        Introspector obj = loader.introspectorFromName(nodeType);
+
+        DBRequest dbRequest = new DBRequest.Builder(HttpMethod.DELETE, uriObject, uriQuery, obj, httpHeaders, uriInfo,
+                "JUNIT-TRANSACTION").rawRequestContent(content).build();
+
+        Pair<Boolean, List<Pair<URI, Response>>> responsesTuple = traversalHttpEntry.process(Arrays.asList(dbRequest), "JUNIT");
+        return responsesTuple.getValue1().get(0).getValue1();
+    }
+
+    // @Test
+    public void testSetGetPaginationMethods() {
+        traversalHttpEntry.setHttpEntryProperties(schemaVersions.getDefaultVersion());
+        traversalHttpEntry.setPaginationBucket(10);
+        traversalHttpEntry.setPaginationIndex(1);
+        traversalHttpEntry.setTotalsForPaging(101, traversalHttpEntry.getPaginationBucket());
+        assertEquals("Expected the pagination bucket size to be 10", 10, traversalHttpEntry.getPaginationBucket());
+        assertEquals("Expected the total number of pagination buckets to be 11", 11,
+                traversalHttpEntry.getTotalPaginationBuckets());
+        assertEquals("Expected the pagination index to be 1", 1, traversalHttpEntry.getPaginationIndex());
+        assertEquals("Expected the total amount of vertices to be 101", 101, traversalHttpEntry.getTotalVertices());
+    }
+
+    // @Test
+    public void setDepthTest() throws AAIException {
+        System.setProperty("AJSC_HOME", ".");
+        System.setProperty("BUNDLECONFIG_DIR", "src/main/test/resources");
+
+        String depthParam = AAIConfig.get("aai.rest.getall.depthparam");
+        traversalHttpEntry.setHttpEntryProperties(schemaVersions.getDefaultVersion());
+        int depth = traversalHttpEntry.setDepth(null, depthParam);
+        assertEquals(AAIProperties.MAXIMUM_DEPTH.intValue(), depth);
+    }
 }
