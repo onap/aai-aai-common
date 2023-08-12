@@ -207,15 +207,9 @@ public class EdgeSerializer {
      * @param rule the rule
      */
     public void addProperties(Edge edge, EdgeRule rule) {
-        Map<EdgeProperty, String> propMap = new EnumMap<>(EdgeProperty.class);
-        propMap.put(EdgeProperty.CONTAINS, rule.getContains());
-        propMap.put(EdgeProperty.DELETE_OTHER_V, rule.getDeleteOtherV());
-        propMap.put(EdgeProperty.PREVENT_DELETE, rule.getPreventDelete());
-
-        for (Entry<EdgeProperty, String> entry : propMap.entrySet()) {
-            edge.property(entry.getKey().toString(), entry.getValue());
-        }
-
+        edge.property(EdgeProperty.CONTAINS.toString(), rule.getContains());
+        edge.property(EdgeProperty.DELETE_OTHER_V.toString(), rule.getDeleteOtherV());
+        edge.property(EdgeProperty.PREVENT_DELETE.toString(), rule.getPreventDelete());
         edge.property(EdgeField.PRIVATE.toString(), rule.isPrivateEdge());
         edge.property(AAIProperties.AAI_UUID, UUID.randomUUID().toString());
     }
