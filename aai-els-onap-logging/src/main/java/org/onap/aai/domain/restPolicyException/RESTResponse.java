@@ -25,12 +25,15 @@ import com.fasterxml.jackson.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.Generated;
-
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({"requestError"})
 public class RESTResponse {
+
+    public RESTResponse() {}
+
+    public RESTResponse(RequestError requestError) {
+        this.requestError = requestError;
+    }
 
     @JsonProperty("requestError")
     private RequestError requestError;
