@@ -91,6 +91,12 @@ public class Info {
 
     protected ResponseMessages responseMessages;
 
+    public Info() {}
+
+    public Info(ResponseMessages responseMessages) {
+        this.responseMessages = responseMessages;
+    }
+
     /**
      * Gets the value of the responseMessages property.
      *
@@ -192,6 +198,14 @@ public class Info {
                 responseMessage = new ArrayList<>();
             }
             return this.responseMessage;
+        }
+
+        public ResponseMessages() {
+            this(new ArrayList<>());
+        }
+
+        public ResponseMessages(List<ResponseMessage> responseMessageList) {
+            responseMessage = responseMessageList;
         }
 
         /**
