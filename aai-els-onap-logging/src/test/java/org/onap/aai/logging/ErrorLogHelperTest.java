@@ -42,9 +42,14 @@ import org.onap.aai.util.LogFile;
 import org.onap.aai.util.MapperUtil;
 import org.slf4j.MDC;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class ErrorLogHelperTest {
 
     private static final String ErrorLogFileName = "error.log";
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     @Before
     public void init() {
@@ -93,25 +98,24 @@ public class ErrorLogHelperTest {
     }
 
     @Test
-    public void getRESTAPIPolicyErrorResponseTest() throws AAIException {
+    public void getRESTAPIPolicyErrorResponseTest() throws AAIException, JsonMappingException, JsonProcessingException {
         // AAI_3002=5:1:WARN:3002:400:3002:Error writing output performing %1 on %2:300
         ArrayList<MediaType> headers = new ArrayList<MediaType>(Arrays.asList(MediaType.APPLICATION_JSON_TYPE));
         ArrayList<String> args = new ArrayList<String>(Arrays.asList("PUT", "resource"));
 
-        AAIException aaie = new AAIException("AAI_3002");
-        String errorResponse = ErrorLogHelper.getRESTAPIErrorResponse(headers, aaie, args);
+        AAIException aaiException = new AAIException("AAI_3002");
+        String errorResponse = ErrorLogHelper.getRESTAPIErrorResponse(headers, aaiException, args);
         assertNotNull(errorResponse);
 
-        RESTResponse resp = MapperUtil.readAsObjectOf(RESTResponse.class, errorResponse);
-        RequestError requestError = resp.getRequestError();
-        assertNotNull(requestError);
-        PolicyException policyException = requestError.getPolicyException();
-        assertNotNull(policyException);
-        assertEquals("POL3002", policyException.getMessageId());
+        RESTResponse restResponse = objectMapper.readValue(errorResponse, RESTResponse.class);
+        RequestError requestError = restResponse.getRequestError();
+        assertEquals("POL3002", requestError.getPolicyException().getMessageId());
 
-        List<String> vars = policyException.getVariables();
-        assertTrue(vars.contains("PUT"));
-        assertTrue(vars.contains("resource"));
+        List<String> variables = requestError.getPolicyException().getVariables();
+        assertEquals("PUT", variables.get(0));
+        assertEquals("resource", variables.get(1));
+        assertEquals("Error writing output performing %1 on %2", variables.get(2));
+        assertEquals("ERR.5.1.3002", variables.get(3));
     }
 
     @Test
