@@ -3,6 +3,7 @@
  * org.onap.aai
  * ================================================================================
  * Copyright © 2017-2018 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2023 Deutsche Telekom SA.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,12 +34,12 @@ import com.google.gson.JsonParser;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.boot.web.client.RestTemplateCustomizer;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -46,6 +47,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.client.ExpectedCount;
 import org.springframework.test.web.client.MockRestServiceServer;
@@ -55,28 +57,21 @@ import org.springframework.web.client.RestTemplate;
 @Component
 public class MockRestClient extends RestClient {
 
-    private RestTemplate restTemplate;
-    private MockRestServiceServer mockRestServiceServer;
-
-    String fileName = "mockrequests";
+    private final RestTemplate restTemplate;
+    private final MockRestServiceServer mockRestServiceServer;
 
     public MockRestClient(String fileName) {
-        /*
-         * List<MockRestServiceServer> mockedAAIRequests = new ArrayList<>(aaiRequests.size());
-         */
-        List<MockRestServiceServer> mockedAAIRequests = new ArrayList<>();
-
-        restTemplate = new RestTemplate();
-        /*
-         * MockRestServiceServer server = MockRestServiceServer
-         * .bindTo(restClientFactory.getRestClient(ClientType.SchemaService).getRestTemplate())
-         * .build();
-         * server.expect(MockRestRequestMatchers.requestTo(url))
-         * .andRespond(withSuccess("{}", MediaType.APPLICATION_JSON));
-         */
-
-        // RestTemplateBuilder mockBuilder = mock(RestTemplateBuilder.class);
-        // when(mockBuilder.build()).thenReturn(restTemplate);
+        // When jackson-dataformat-xml is on the classpath, the default Content-Type changes
+        // from application/json to application/xml
+        RestTemplateBuilder restTemplateBuilder = new RestTemplateBuilder(new RestTemplateCustomizer() {
+            @Override
+            public void customize(RestTemplate restTemplate) {
+                restTemplate.getMessageConverters()
+                    .removeIf(converter -> MappingJackson2XmlHttpMessageConverter.class.isAssignableFrom(converter.getClass()));
+            }
+        });
+        restTemplate = restTemplateBuilder.build();
+        mockRestServiceServer = MockRestServiceServer.createServer(restTemplate);
 
         JsonObject payload = null;
         try {
@@ -84,89 +79,37 @@ public class MockRestClient extends RestClient {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         JsonArray mockUris = payload.getAsJsonArray("mock-uri");
-
-        mockRestServiceServer = MockRestServiceServer.createServer(restTemplate);
+        
         String url = "https://localhost:8447/aai/v14";
-        /*
-         * mockRestServiceServer.expect(requestTo(url))
-         * .andRespond(withSuccess("{}", MediaType.APPLICATION_JSON));
-         */
 
         for (int i = 0; i < mockUris.size(); i++) {
-            String responseFile = mockUris.get(i).getAsJsonObject().get("response-file").getAsString();
-            String contentTypeValue = mockUris.get(i).getAsJsonObject().get("content").getAsString();
-
-            String uri = mockUris.get(i).getAsJsonObject().get("aai-uri").getAsString();
-
-            InputStream inputStream = getClass().getClassLoader().getResourceAsStream(responseFile);
-            String responseBody = null;
-            try {
-                responseBody = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            mockRestServiceServer.expect(ExpectedCount.manyTimes(), requestTo(url + uri))
-                    .andExpect(method(HttpMethod.GET)).andExpect(content().contentType(contentTypeValue))
-                    .andRespond(withStatus(HttpStatus.OK).body(responseBody.toString())
-                            .contentType(MediaType.valueOf(contentTypeValue)));
-
+            registerRequestStub(mockUris, url, i);
         }
     }
 
-    public MockRestClient() {
+    private void registerRequestStub(JsonArray mockUris, String url, int i) {
+        JsonObject jsonObject = mockUris.get(i).getAsJsonObject();
+        String responseFile = jsonObject.get("response-file").getAsString();
+        String contentTypeValue = jsonObject.get("content").getAsString();
+        String uri = jsonObject.get("aai-uri").getAsString();
 
-        restTemplate = new RestTemplate();
-        /*
-         * MockRestServiceServer server = MockRestServiceServer
-         * .bindTo(restClientFactory.getRestClient(ClientType.SchemaService).getRestTemplate())
-         * .build();
-         * server.expect(MockRestRequestMatchers.requestTo(url))
-         * .andRespond(withSuccess("{}", MediaType.APPLICATION_JSON));
-         */
-
-        // RestTemplateBuilder mockBuilder = mock(RestTemplateBuilder.class);
-        // when(mockBuilder.build()).thenReturn(restTemplate);
-
-        JsonObject payload = null;
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(responseFile);
+        String responseBody = null;
         try {
-            payload = getPayload(fileName + ".json");
+            responseBody = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        JsonArray mockUris = payload.getAsJsonArray("mock-uri");
+        mockRestServiceServer.expect(ExpectedCount.manyTimes(), requestTo(url + uri))
+                .andExpect(method(HttpMethod.GET)).andExpect(content().contentType(contentTypeValue))
+                .andRespond(withStatus(HttpStatus.OK).body(responseBody.toString())
+                        .contentType(MediaType.valueOf(contentTypeValue)));
+    }
 
-        mockRestServiceServer = MockRestServiceServer.createServer(restTemplate);
-        String url = "https://localhost:8447/aai/v14";
-        /*
-         * mockRestServiceServer.expect(requestTo(url))
-         * .andRespond(withSuccess("{}", MediaType.APPLICATION_JSON));
-         */
-
-        for (int i = 0; i < mockUris.size(); i++) {
-            String responseFile = mockUris.get(i).getAsJsonObject().get("response-file").getAsString();
-            String contentTypeValue = mockUris.get(i).getAsJsonObject().get("content").getAsString();
-
-            String uri = mockUris.get(i).getAsJsonObject().get("aai-uri").getAsString();
-
-            InputStream inputStream = getClass().getClassLoader().getResourceAsStream(responseFile);
-            String responseBody = null;
-            try {
-                responseBody = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            mockRestServiceServer.expect(ExpectedCount.manyTimes(), requestTo(url + uri))
-                    .andExpect(method(HttpMethod.GET)).andExpect(content().contentType(contentTypeValue))
-                    .andRespond(withStatus(HttpStatus.OK).body(responseBody.toString())
-                            .contentType(MediaType.valueOf(contentTypeValue)));
-
-        }
-
+    public MockRestClient() {
+        this("mockrequests");
     }
 
     public JsonObject getTestDetails(String fileName) throws IOException {
@@ -192,30 +135,6 @@ public class MockRestClient extends RestClient {
 
         String url = "https://localhost:8447/aai/v14/" + uri;
 
-        /*
-         * MockRestServiceServer server = MockRestServiceServer
-         * .bindTo(restClientFactory.getRestClient(ClientType.SchemaService).getRestTemplate())
-         * .build();
-         * server.expect(MockRestRequestMatchers.requestTo(url))
-         * .andRespond(withSuccess("{}", MediaType.APPLICATION_JSON));
-         */
-
-        // RestTemplateBuilder mockBuilder = mock(RestTemplateBuilder.class);
-        // when(mockBuilder.build()).thenReturn(restTemplate);
-
-        /*
-         * MockRestServiceServer server = MockRestServiceServer.createServer(restTemplate);
-         * server.expect(requestTo(url))
-         * .andRespond(withSuccess("{}", MediaType.APPLICATION_JSON));
-         * return new ResponseEntity("blah", HttpStatus.OK);
-         * server.expect(ExpectedCount.manyTimes(), requestTo(Matchers.startsWith(aaiBaseUrl +
-         * aaiRequests.get(i).get("aai-uri").asText())))
-         * .andExpect(method(HttpMethod.GET))
-         * .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-         * .andRespond(withStatus(HttpStatus.OK).body(aaiResponses.get(i).toString()).contentType(MediaType.
-         * APPLICATION_JSON));
-         */
-
         HttpHeaders headersMap = new HttpHeaders();
 
         headersMap.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
@@ -228,7 +147,6 @@ public class MockRestClient extends RestClient {
 
         ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
 
-        // mockRestServiceServer.verify();
         return responseEntity;
     }
 
@@ -237,30 +155,6 @@ public class MockRestClient extends RestClient {
             String body) {
 
         String url = "https://localhost:8447/aai/v14/" + uri;
-
-        /*
-         * MockRestServiceServer server = MockRestServiceServer
-         * .bindTo(restClientFactory.getRestClient(ClientType.SchemaService).getRestTemplate())
-         * .build();
-         * server.expect(MockRestRequestMatchers.requestTo(url))
-         * .andRespond(withSuccess("{}", MediaType.APPLICATION_JSON));
-         */
-
-        // RestTemplateBuilder mockBuilder = mock(RestTemplateBuilder.class);
-        // when(mockBuilder.build()).thenReturn(restTemplate);
-
-        /*
-         * MockRestServiceServer server = MockRestServiceServer.createServer(restTemplate);
-         * server.expect(requestTo(url))
-         * .andRespond(withSuccess("{}", MediaType.APPLICATION_JSON));
-         * return new ResponseEntity("blah", HttpStatus.OK);
-         * server.expect(ExpectedCount.manyTimes(), requestTo(Matchers.startsWith(aaiBaseUrl +
-         * aaiRequests.get(i).get("aai-uri").asText())))
-         * .andExpect(method(HttpMethod.GET))
-         * .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-         * .andRespond(withStatus(HttpStatus.OK).body(aaiResponses.get(i).toString()).contentType(MediaType.
-         * APPLICATION_JSON));
-         */
 
         HttpHeaders headersMap = new HttpHeaders();
 
