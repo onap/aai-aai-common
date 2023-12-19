@@ -32,6 +32,12 @@ import javax.annotation.Generated;
 @JsonPropertyOrder({"requestError"})
 public class RESTResponse {
 
+    public RESTResponse() {}
+    
+    public RESTResponse(RequestError requestError) {
+        this.requestError = requestError;
+    }
+
     @JsonProperty("requestError")
     private RequestError requestError;
     @JsonIgnore

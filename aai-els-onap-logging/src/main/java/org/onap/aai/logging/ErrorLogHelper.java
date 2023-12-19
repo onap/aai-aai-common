@@ -36,6 +36,10 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 
 import org.apache.commons.lang3.StringUtils;
+import org.onap.aai.domain.errorResponse.AAIErrorResponse;
+import org.onap.aai.domain.errorResponse.RequestError;
+import org.onap.aai.domain.errorResponse.ServiceException;
+import org.onap.aai.domain.restPolicyException.RESTResponse;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.util.AAIConstants;
 import org.onap.aai.util.MapperUtil;
@@ -158,6 +162,15 @@ public class ErrorLogHelper {
         return getRESTAPIErrorResponse(acceptHeaders, are, variables);
     }
 
+    public static AAIErrorResponse getAaiErrorResponse(AAIException aaiException) {
+        ServiceException serviceException = ServiceException.builder()
+            .messageId(null)
+            .text(null)
+            .variables(null)
+            .build();
+        return new AAIErrorResponse(new RequestError(serviceException));
+    }
+
     /**
      * Determines whether category is policy or not. If policy (1), this is a POL error, else it's a SVC error.
      * The AAIRESTException may contain a different ErrorObject than that created with the REST error key.
@@ -165,46 +178,33 @@ public class ErrorLogHelper {
      * If no error object is embedded in the AAIException, one will be created using the error object from the
      * AAIException.
      *
-     * @param acceptHeadersOrig the accept headers orig
-     * @param are must have a restError value whose numeric value must match what should be returned in the REST API
+     * @param acceptHeaders the accept headers orig
+     * @param aaiException must have a restError value whose numeric value must match what should be returned in the REST API
      * @param variables optional list of variables to flesh out text in error string
      * @return appropriately formatted JSON response per the REST API spec.
      */
-    public static String getRESTAPIErrorResponse(List<MediaType> acceptHeadersOrig, AAIException are,
+    public static String getRESTAPIErrorResponse(List<MediaType> acceptHeaders, AAIException aaiException,
             ArrayList<String> variables) {
 
-        StringBuilder text = new StringBuilder();
-        String response = null;
-
-        List<MediaType> acceptHeaders = new ArrayList<MediaType>();
+        List<MediaType> validAcceptHeaders = new ArrayList<MediaType>();
         // we might have an exception but no accept header, so we'll set default to JSON
         boolean foundValidAcceptHeader = false;
-        for (MediaType mt : acceptHeadersOrig) {
-            if (MediaType.APPLICATION_XML_TYPE.isCompatible(mt) || MediaType.APPLICATION_JSON_TYPE.isCompatible(mt)) {
-                acceptHeaders.add(mt);
+        for (MediaType mediaType : acceptHeaders) {
+            if (MediaType.APPLICATION_XML_TYPE.isCompatible(mediaType) || MediaType.APPLICATION_JSON_TYPE.isCompatible(mediaType)) {
+                validAcceptHeaders.add(mediaType);
                 foundValidAcceptHeader = true;
             }
         }
         if (foundValidAcceptHeader == false) {
             // override the exception, client needs to set an appropriate Accept header
-            are = new AAIException("AAI_4014");
-            acceptHeaders.add(MediaType.APPLICATION_JSON_TYPE);
+            aaiException = new AAIException("AAI_4014");
+            validAcceptHeaders.add(MediaType.APPLICATION_JSON_TYPE);
         }
 
-        final ErrorObject eo = are.getErrorObject();
+        final ErrorObject errorObject = aaiException.getErrorObject();
+        ErrorObject restErrorObject = parseErrorObject(errorObject);
 
-        int restErrorCode = Integer.parseInt(eo.getRESTErrorCode());
-
-        ErrorObject restErrorObject;
-
-        try {
-            restErrorObject = ErrorLogHelper.getErrorObject("AAI_" + restErrorCode);
-        } catch (ErrorObjectNotFoundException e) {
-            LOGGER.warn("Failed to find related error object AAI_" + restErrorCode + " for error object "
-                    + eo.getErrorCode() + "; using AAI_" + restErrorCode);
-            restErrorObject = eo;
-        }
-
+        final StringBuilder text = new StringBuilder();
         text.append(restErrorObject.getErrorText());
 
         // We want to always append the (msg=%n) (ec=%n+1) to the text, but have to find value of n
@@ -213,30 +213,14 @@ public class ErrorLogHelper {
         int localDataIndex = StringUtils.countMatches(restErrorObject.getErrorText(), "%");
         text.append(" (msg=%").append(localDataIndex + 1).append(") (ec=%").append(localDataIndex + 2).append(")");
 
-        if (variables == null) {
-            variables = new ArrayList<String>();
-        }
+        variables = checkAndEnrichVariables(aaiException, variables, errorObject, localDataIndex);
 
-        if (variables.size() < localDataIndex) {
-            ErrorLogHelper.logError("AAI_4011", "data missing for rest error");
-            while (variables.size() < localDataIndex) {
-                variables.add("null");
-            }
-        }
-
-        // This will put the error code and error text into the right positions
-        if (are.getMessage() == null || are.getMessage().length() == 0) {
-            variables.add(localDataIndex++, eo.getErrorText());
-        } else {
-            variables.add(localDataIndex++, eo.getErrorText() + ":" + are.getMessage());
-        }
-        variables.add(localDataIndex, eo.getErrorCodeString());
-
-        for (MediaType mediaType : acceptHeaders) {
+        String response = null;
+        for (MediaType mediaType : validAcceptHeaders) {
             if (MediaType.APPLICATION_XML_TYPE.isCompatible(mediaType)) {
                 JAXBContext context = null;
                 try {
-                    if (eo.getCategory().equals("1")) {
+                    if (errorObject.getCategory().equals("1")) {
 
                         context = JAXBContext.newInstance(org.onap.aai.domain.restPolicyException.Fault.class);
                         Marshaller m = context.createMarshaller();
@@ -253,7 +237,7 @@ public class ErrorLogHelper {
                         org.onap.aai.domain.restPolicyException.Fault.RequestError.PolicyException.Variables polvariables =
                                 factory.createFaultRequestErrorPolicyExceptionVariables();
 
-                        policyException.setMessageId("POL" + eo.getRESTErrorCode());
+                        policyException.setMessageId("POL" + errorObject.getRESTErrorCode());
                         policyException.setText(text.toString());
                         for (int i = 0; i < variables.size(); i++) {
                             polvariables.getVariable().add(variables.get(i));
@@ -270,32 +254,32 @@ public class ErrorLogHelper {
                     } else {
 
                         context = JAXBContext.newInstance(org.onap.aai.domain.restServiceException.Fault.class);
-                        Marshaller m = context.createMarshaller();
-                        m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-                        m.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+                        Marshaller marshaller = context.createMarshaller();
+                        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+                        marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
 
-                        org.onap.aai.domain.restServiceException.ObjectFactory factory =
+                        org.onap.aai.domain.restServiceException.ObjectFactory objectFactory =
                                 new org.onap.aai.domain.restServiceException.ObjectFactory();
-                        org.onap.aai.domain.restServiceException.Fault fault = factory.createFault();
+                        org.onap.aai.domain.restServiceException.Fault fault = objectFactory.createFault();
                         org.onap.aai.domain.restServiceException.Fault.RequestError requestError =
-                                factory.createFaultRequestError();
+                                objectFactory.createFaultRequestError();
                         org.onap.aai.domain.restServiceException.Fault.RequestError.ServiceException serviceException =
-                                factory.createFaultRequestErrorServiceException();
-                        org.onap.aai.domain.restServiceException.Fault.RequestError.ServiceException.Variables svcvariables =
-                                factory.createFaultRequestErrorServiceExceptionVariables();
-                        serviceException.setMessageId("SVC" + eo.getRESTErrorCode());
+                                objectFactory.createFaultRequestErrorServiceException();
+                        org.onap.aai.domain.restServiceException.Fault.RequestError.ServiceException.Variables serviceVariables =
+                                objectFactory.createFaultRequestErrorServiceExceptionVariables();
+                        serviceException.setMessageId("SVC" + errorObject.getRESTErrorCode());
                         serviceException.setText(text.toString());
                         for (int i = 0; i < variables.size(); i++) {
-                            svcvariables.getVariable().add(variables.get(i));
+                            serviceVariables.getVariable().add(variables.get(i));
                         }
-                        serviceException.setVariables(svcvariables);
+                        serviceException.setVariables(serviceVariables);
                         requestError.setServiceException(serviceException);
                         fault.setRequestError(requestError);
 
-                        StringWriter sw = new StringWriter();
-                        m.marshal(fault, sw);
+                        StringWriter stringWriter = new StringWriter();
+                        marshaller.marshal(fault, stringWriter);
 
-                        response = sw.toString();
+                        response = stringWriter.toString();
 
                     }
                 } catch (Exception ex) {
@@ -305,33 +289,13 @@ public class ErrorLogHelper {
                 }
             } else {
                 try {
-                    if (eo.getCategory().equals("1")) {
-                        org.onap.aai.domain.restPolicyException.RESTResponse restresp =
-                                new org.onap.aai.domain.restPolicyException.RESTResponse();
-                        org.onap.aai.domain.restPolicyException.RequestError reqerr =
-                                new org.onap.aai.domain.restPolicyException.RequestError();
-                        org.onap.aai.domain.restPolicyException.PolicyException polexc =
-                                new org.onap.aai.domain.restPolicyException.PolicyException();
-                        polexc.setMessageId("POL" + eo.getRESTErrorCode());
-                        polexc.setText(text.toString());
-                        polexc.setVariables(variables);
-                        reqerr.setPolicyException(polexc);
-                        restresp.setRequestError(reqerr);
-                        response = (MapperUtil.writeAsJSONString((Object) restresp));
+                    if (errorObject.getCategory().equals("1")) {
+                        RESTResponse policyRestResponse = createPolicyRESTResponse(variables, text, errorObject);
+                        response = (MapperUtil.writeAsJSONString((Object) policyRestResponse));
 
                     } else {
-                        org.onap.aai.domain.restServiceException.RESTResponse restresp =
-                                new org.onap.aai.domain.restServiceException.RESTResponse();
-                        org.onap.aai.domain.restServiceException.RequestError reqerr =
-                                new org.onap.aai.domain.restServiceException.RequestError();
-                        org.onap.aai.domain.restServiceException.ServiceException svcexc =
-                                new org.onap.aai.domain.restServiceException.ServiceException();
-                        svcexc.setMessageId("SVC" + eo.getRESTErrorCode());
-                        svcexc.setText(text.toString());
-                        svcexc.setVariables(variables);
-                        reqerr.setServiceException(svcexc);
-                        restresp.setRequestError(reqerr);
-                        response = (MapperUtil.writeAsJSONString((Object) restresp));
+                        org.onap.aai.domain.restServiceException.RESTResponse serviceRESTResponse = createServiceErrorResponse(variables, text, errorObject);
+                        response = (MapperUtil.writeAsJSONString((Object) serviceRESTResponse));
                     }
                 } catch (Exception ex) {
                     LOGGER.error(
@@ -342,6 +306,66 @@ public class ErrorLogHelper {
         }
 
         return response;
+    }
+
+    private static ErrorObject parseErrorObject(final ErrorObject errorObject) {
+        final int restErrorCode = Integer.parseInt(errorObject.getRESTErrorCode());
+        try {
+            return ErrorLogHelper.getErrorObject("AAI_" + restErrorCode);
+        } catch (ErrorObjectNotFoundException e) {
+            LOGGER.warn("Failed to find related error object AAI_" + restErrorCode + " for error object "
+                    + errorObject.getErrorCode() + "; using AAI_" + restErrorCode);
+            return errorObject;
+        }
+    }
+
+    private static org.onap.aai.domain.restServiceException.RESTResponse createServiceErrorResponse(ArrayList<String> variables, StringBuilder text, ErrorObject errorObject)
+            throws AAIException {
+        org.onap.aai.domain.restServiceException.RequestError serviceRequestError =
+                new org.onap.aai.domain.restServiceException.RequestError();
+        org.onap.aai.domain.restServiceException.ServiceException serviceException =
+                new org.onap.aai.domain.restServiceException.ServiceException();
+        serviceException.setMessageId("SVC" + errorObject.getRESTErrorCode());
+        serviceException.setText(text.toString());
+        serviceException.setVariables(variables);
+        serviceRequestError.setServiceException(serviceException);
+        return new org.onap.aai.domain.restServiceException.RESTResponse(serviceRequestError);
+    }
+
+    private static RESTResponse createPolicyRESTResponse(List<String> variables, StringBuilder text, ErrorObject errorObject)
+            throws AAIException {
+        org.onap.aai.domain.restPolicyException.RequestError policyRequestError =
+        new org.onap.aai.domain.restPolicyException.RequestError();
+        org.onap.aai.domain.restPolicyException.PolicyException policyException =
+        new org.onap.aai.domain.restPolicyException.PolicyException();
+        policyException.setMessageId("POL" + errorObject.getRESTErrorCode());
+        policyException.setText(text.toString());
+        policyException.setVariables(variables);
+        policyRequestError.setPolicyException(policyException);
+        return new RESTResponse(policyRequestError);
+    }
+
+    private static ArrayList<String> checkAndEnrichVariables(AAIException aaiException, ArrayList<String> variables, ErrorObject errorObject,
+            int localDataIndex) {
+        if (variables == null) {
+            variables = new ArrayList<String>();
+        }
+
+        if (variables.size() < localDataIndex) {
+            ErrorLogHelper.logError("AAI_4011", "data missing for rest error");
+            while (variables.size() < localDataIndex) {
+                variables.add("null");
+            }
+        }
+
+        // This will put the error code and error text into the right positions
+        if (aaiException.getMessage() == null || aaiException.getMessage().length() == 0) {
+            variables.add(localDataIndex++, errorObject.getErrorText());
+        } else {
+            variables.add(localDataIndex++, errorObject.getErrorText() + ":" + aaiException.getMessage());
+        }
+        variables.add(localDataIndex, errorObject.getErrorCodeString());
+        return variables;
     }
 
     /**
@@ -365,7 +389,7 @@ public class ErrorLogHelper {
      * @param areList the are list
      * @return the RESTAPI info response
      */
-    public static Object getRESTAPIInfoResponse(List<MediaType> acceptHeaders,
+    public static Object getRESTAPIInfoResponse(ArrayList<MediaType> acceptHeaders,
             HashMap<AAIException, ArrayList<String>> areList) {
 
         Object respObj = null;
