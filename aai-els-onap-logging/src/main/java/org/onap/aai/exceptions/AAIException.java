@@ -31,10 +31,6 @@ import org.onap.aai.logging.ErrorObjectNotFoundException;
 
 public class AAIException extends Exception {
 
-    private static final String UPDATE_ERROR_PROPERTIES_BEFORE_USING_THIS_EXCEPTION_CODE =
-            " - update error.properties before using this exception code";
-    private static final String FAILED_TO_INSTANTIATE_AAI_EXCEPTION_WITH_CODE =
-            "Failed to instantiate AAIException with code=";
     public static final String DEFAULT_EXCEPTION_CODE = "AAI_4000";
     private static final long serialVersionUID = 1L;
 
@@ -50,12 +46,7 @@ public class AAIException extends Exception {
         this.code = DEFAULT_EXCEPTION_CODE;
         this.templateVars = new LinkedList<>();
 
-        try {
-            this.errorObject = ErrorLogHelper.getErrorObject(getCode());
-        } catch (ErrorObjectNotFoundException e) {
-            throw new RuntimeException(FAILED_TO_INSTANTIATE_AAI_EXCEPTION_WITH_CODE + getCode()
-                    + UPDATE_ERROR_PROPERTIES_BEFORE_USING_THIS_EXCEPTION_CODE);
-        }
+        this.errorObject = ErrorLogHelper.getErrorObject(getCode());
     }
 
     /**
@@ -68,13 +59,7 @@ public class AAIException extends Exception {
 
         this.code = code;
         this.templateVars = new LinkedList<>();
-
-        try {
-            this.errorObject = ErrorLogHelper.getErrorObject(getCode());
-        } catch (ErrorObjectNotFoundException e) {
-            throw new RuntimeException(FAILED_TO_INSTANTIATE_AAI_EXCEPTION_WITH_CODE + getCode()
-                    + UPDATE_ERROR_PROPERTIES_BEFORE_USING_THIS_EXCEPTION_CODE);
-        }
+        this.errorObject = ErrorLogHelper.getErrorObject(getCode());
     }
 
     /**
@@ -88,14 +73,8 @@ public class AAIException extends Exception {
 
         this.code = code;
         this.templateVars = new LinkedList<>();
-
-        try {
-            this.errorObject = ErrorLogHelper.getErrorObject(getCode());
-            errorObject.setDetails(details);
-        } catch (ErrorObjectNotFoundException e) {
-            throw new RuntimeException(FAILED_TO_INSTANTIATE_AAI_EXCEPTION_WITH_CODE + getCode()
-                    + UPDATE_ERROR_PROPERTIES_BEFORE_USING_THIS_EXCEPTION_CODE);
-        }
+        this.errorObject = ErrorLogHelper.getErrorObject(getCode());
+        errorObject.setDetails(details);
     }
 
     /**
@@ -109,13 +88,7 @@ public class AAIException extends Exception {
 
         this.code = code;
         this.templateVars = new LinkedList<>();
-
-        try {
-            this.errorObject = ErrorLogHelper.getErrorObject(getCode());
-        } catch (ErrorObjectNotFoundException e) {
-            throw new RuntimeException(FAILED_TO_INSTANTIATE_AAI_EXCEPTION_WITH_CODE + getCode()
-                    + UPDATE_ERROR_PROPERTIES_BEFORE_USING_THIS_EXCEPTION_CODE);
-        }
+        this.errorObject = ErrorLogHelper.getErrorObject(getCode());
     }
 
     /**
@@ -130,13 +103,7 @@ public class AAIException extends Exception {
 
         this.code = code;
         this.templateVars = new LinkedList<>();
-
-        try {
-            this.errorObject = ErrorLogHelper.getErrorObject(getCode());
-        } catch (ErrorObjectNotFoundException e) {
-            throw new RuntimeException(FAILED_TO_INSTANTIATE_AAI_EXCEPTION_WITH_CODE + getCode()
-                    + UPDATE_ERROR_PROPERTIES_BEFORE_USING_THIS_EXCEPTION_CODE);
-        }
+        this.errorObject = ErrorLogHelper.getErrorObject(getCode());
     }
 
     public String getCode() {
