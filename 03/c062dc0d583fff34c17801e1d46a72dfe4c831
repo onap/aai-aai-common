@@ -1,0 +1,8 @@
+Verified+1: ONAP Required GHA <releng+onap.required.gha@linuxfoundation.org>
+Code-Review+2: Lukasz Rajewski <lukasz.rajewski@t-mobile.pl>
+Verified+1: ONAP Jobbuilder <onap-jobbuilder@jenkins.onap.org>
+Submitted-by: Lukasz Rajewski <lukasz.rajewski@t-mobile.pl>
+Submitted-at: Thu, 28 Dec 2023 08:46:57 +0000
+Reviewed-on: https://gerrit.onap.org/r/c/aai/aai-common/+/136861
+Project: aai/aai-common
+Branch: refs/heads/master
