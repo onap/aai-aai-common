@@ -28,13 +28,17 @@ import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 /**
  * Tests for {@link ONAPLogConstants}.
  */
 public class ONAPLogConstantsTest {
+
+    @Rule
+    public ExpectedException exceptionRule = ExpectedException.none();
 
     @Test
     public void testConstructors() throws Exception {
@@ -46,14 +50,11 @@ public class ONAPLogConstantsTest {
 
     @Test
     public void testConstructorUnsupported() throws Exception {
-        try {
-            Constructor<?> c = ONAPLogConstants.class.getDeclaredConstructors()[0];
-            c.setAccessible(true);
-            c.newInstance();
-            Assert.fail("Should fail for hidden constructor.");
-        } catch (final InvocationTargetException e) {
-            assertThat(e.getCause(), instanceOf(UnsupportedOperationException.class));
-        }
+        exceptionRule.expect(InvocationTargetException.class);
+        exceptionRule.expectCause(instanceOf(UnsupportedOperationException.class));
+        Constructor<?> c = ONAPLogConstants.class.getDeclaredConstructors()[0];
+        c.setAccessible(true);
+        c.newInstance();
     }
 
     @Test
@@ -108,21 +109,17 @@ public class ONAPLogConstantsTest {
 
     }
 
-    static void assertInaccessibleConstructor(final Class<?> c) throws Exception {
-        try {
-            c.getDeclaredConstructors()[0].newInstance();
-            Assert.fail("Should fail for hidden constructor.");
-        } catch (final IllegalAccessException e) {
+    
+    void assertInaccessibleConstructor(final Class<?> c) throws Exception {
+        exceptionRule.expect(IllegalAccessException.class);
+        // Should fail for hidden constructor.
+        c.getDeclaredConstructors()[0].newInstance();
 
-        }
 
-        try {
-            final Constructor<?> constructor = c.getDeclaredConstructors()[0];
-            constructor.setAccessible(true);
-            constructor.newInstance();
-            Assert.fail("Should fail even when invoked.");
-        } catch (final InvocationTargetException e) {
-            assertThat(e.getCause(), instanceOf(UnsupportedOperationException.class));
-        }
+        exceptionRule.expect(InvocationTargetException.class);
+        exceptionRule.expectCause(instanceOf(UnsupportedOperationException.class));
+        final Constructor<?> constructor = c.getDeclaredConstructors()[0];
+        constructor.setAccessible(true);
+        constructor.newInstance();
     }
 }

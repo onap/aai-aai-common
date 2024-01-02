@@ -36,14 +36,13 @@ import java.util.UUID;
 
 import javax.xml.bind.DatatypeConverter;
 
+import org.junit.After;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.slf4j.event.Level;
 import org.springframework.mock.web.MockHttpServletRequest;
-import org.testng.Assert;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.Test;
 
 /**
  * Tests for {@link ONAPLogAdapter}.
@@ -53,7 +52,7 @@ public class ONAPLogAdapterTest {
     /**
      * Ensure that MDCs are cleared after each testcase.
      */
-    @AfterMethod
+    @After
     public void resetMDCs() {
         MDC.clear();
     }
@@ -61,17 +60,10 @@ public class ONAPLogAdapterTest {
     /**
      * Test nullcheck.
      */
-    @Test
+    @Test(expected = NullPointerException.class)
     public void testCheckNotNull() {
 
-        ONAPLogAdapter.checkNotNull("");
-
-        try {
-            ONAPLogAdapter.checkNotNull(null);
-            Assert.fail("Should throw NullPointerException");
-        } catch (final NullPointerException e) {
-
-        }
+        ONAPLogAdapter.checkNotNull(null);
     }
 
     /**
