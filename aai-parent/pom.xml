@@ -27,7 +27,7 @@ limitations under the License.
   <parent>
     <groupId>org.onap.aai.aai-common</groupId>
     <artifactId>aai-common</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>1.13.1-SNAPSHOT</version>
   </parent>
   <artifactId>aai-parent</artifactId>
   <name>aai-parent</name>
@@ -92,7 +92,7 @@ limitations under the License.
         Please don't upgrade to 2.3.0 or above for nexus iq or security scans
         as it could potentially break our code
       -->
-    <spring.boot.version>2.2.13.RELEASE</spring.boot.version>
+    <spring.boot.version>2.3.12.RELEASE</spring.boot.version>
     <spring.version>5.2.12.RELEASE</spring.version>
     <spring.jms.version>5.2.25.RELEASE</spring.jms.version>
     <spring.test.version>${spring.version}</spring.test.version>
@@ -879,6 +879,11 @@ limitations under the License.
           <groupId>org.sonarsource.scanner.maven</groupId>
           <artifactId>sonar-maven-plugin</artifactId>
           <version>${sonar.scanner.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-checkstyle-plugin</artifactId>
+          <version>3.0.0</version>
         </plugin>
 
       </plugins>

@@ -36,7 +36,7 @@ import org.onap.aai.introspection.Introspector;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 import org.onap.aai.serialization.engines.query.QueryEngine;
 import org.onap.aai.util.AAIConstants;
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.test.system.OutputCaptureRule;
 
 public class ImpliedDeleteUnitTest {
 
@@ -46,7 +46,7 @@ public class ImpliedDeleteUnitTest {
     private ImpliedDelete impliedDelete;
 
     @Rule
-    public final OutputCapture outputCapture = new OutputCapture();
+    public final OutputCaptureRule outputCapture = new OutputCaptureRule();
 
     @Before
     public void setup() {

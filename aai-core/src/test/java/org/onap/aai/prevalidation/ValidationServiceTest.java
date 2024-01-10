@@ -42,7 +42,7 @@ import org.mockito.Mockito;
 import org.onap.aai.PayloadUtil;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.restclient.RestClient;
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.test.system.OutputCaptureRule;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 
@@ -53,7 +53,7 @@ public class ValidationServiceTest {
     private ValidationService validationService;
 
     @Rule
-    public OutputCapture capture = new OutputCapture();
+    public OutputCaptureRule capture = new OutputCaptureRule();
 
     private Gson gson;
 
