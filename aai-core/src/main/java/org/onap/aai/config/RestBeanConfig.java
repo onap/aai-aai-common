@@ -5,6 +5,7 @@
  * Copyright © 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
  * Modifications Copyright © 2018 IBM.
+ * Modifications Copyright © 2024 DEUTSCHE TELEKOM AG.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,21 +26,20 @@ package org.onap.aai.config;
 import org.onap.aai.introspection.ModelType;
 import org.onap.aai.rest.db.HttpEntry;
 import org.onap.aai.serialization.engines.QueryStyle;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
+import org.springframework.web.context.annotation.RequestScope;
 
 @Configuration
 public class RestBeanConfig {
+    @RequestScope
     @Bean(name = "traversalUriHttpEntry")
-    @Scope(scopeName = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public HttpEntry traversalUriHttpEntry() {
         return new HttpEntry(ModelType.MOXY, QueryStyle.TRAVERSAL_URI);
     }
 
+    @RequestScope
     @Bean(name = "traversalHttpEntry")
-    @Scope(scopeName = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public HttpEntry traversalHttpEntry() {
         return new HttpEntry(ModelType.MOXY, QueryStyle.TRAVERSAL);
     }

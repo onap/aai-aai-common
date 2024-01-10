@@ -43,7 +43,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.rules.SpringClassRule;
 import org.springframework.test.context.junit4.rules.SpringMethodRule;
+import org.springframework.test.context.web.WebAppConfiguration;
 
+@WebAppConfiguration
 @ContextConfiguration(
         classes = {ConfigConfiguration.class, AAIConfigTranslator.class, EdgeIngestor.class, EdgeSerializer.class,
                 NodeIngestor.class, SpringContextAware.class, IntrospectionConfig.class, RestBeanConfig.class,
