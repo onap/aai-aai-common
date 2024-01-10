@@ -104,7 +104,7 @@ public class StateFormat extends HistoryFormat {
             json.addProperty("uri", "NA");
         }
         json.addProperty(TIMESTAMP,
-                e.property(AAIProperties.START_TS).isPresent() ? e.value(AAIProperties.START_TS) : 0);
+                e.property(AAIProperties.START_TS).isPresent() ? (String) e.value(AAIProperties.START_TS) : String.valueOf(0));
         json.addProperty(SOT,
                 e.property(AAIProperties.SOURCE_OF_TRUTH).isPresent() ? e.value(AAIProperties.SOURCE_OF_TRUTH) : "");
         json.addProperty(TX_ID,

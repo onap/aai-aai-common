@@ -91,7 +91,11 @@ limitations under the License.
         and would take some time to refactor
         Please don't upgrade to 2.3.0 or above for nexus iq or security scans
         as it could potentially break our code
-    -->
+      -->
+    <spring.boot.version>2.2.13.RELEASE</spring.boot.version>
+    <spring.version>5.2.12.RELEASE</spring.version>
+    <spring.jms.version>5.2.25.RELEASE</spring.jms.version>
+    <spring.test.version>${spring.version}</spring.test.version>
     <json.path.version>2.2.0</json.path.version>
     <json.version>20190722</json.version>
     <junit.version>4.12</junit.version>
@@ -110,7 +114,6 @@ limitations under the License.
     <reflections.version>0.9.10</reflections.version>
     <snakeyaml.version>1.29</snakeyaml.version>
 
-    <spring.boot.version>2.1.12.RELEASE</spring.boot.version>
     <javax.servlet.version>3.1.0</javax.servlet.version>
     <javax.annotation.version>1.2</javax.annotation.version>
 
@@ -129,9 +132,6 @@ limitations under the License.
 
     <sonar.scanner.version>3.7.0.1746</sonar.scanner.version>
 
-    <spring.version>5.1.13.RELEASE</spring.version>
-    <spring.jms.version>5.1.13.RELEASE</spring.jms.version>
-    <spring.test.version>5.1.13.RELEASE</spring.test.version>
     <spring.security.rsa.version>1.0.8.RELEASE</spring.security.rsa.version>
     <json.simple.version>1.1.1</json.simple.version>
     <powermock.api.mockito2.version>2.0.4</powermock.api.mockito2.version>
@@ -139,23 +139,49 @@ limitations under the License.
     <logging.analytics.version>1.5.1</logging.analytics.version>
   </properties>
 
-  <profiles>
-    <profile>
-      <id>spring-boot-2-1</id>
-      <properties>
-        <spring.boot.version>2.1.12.RELEASE</spring.boot.version>
-      </properties>
-    </profile>
-    <profile>
-      <id>spring-boot-1-5</id>
-      <properties>
-        <spring.boot.version>1.5.22.RELEASE</spring.boot.version>
-      </properties>
-    </profile>
-  </profiles>
-
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>com.fasterxml.jackson</groupId>
+        <artifactId>jackson-bom</artifactId>
+        <version>${jackson.bom.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>${spring.boot.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-framework-bom</artifactId>
+        <version>${spring.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>${spring.boot.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <!-- TODO: check if this can be updated to something > 1.0.8 -->
+      <dependency>
+        <groupId>org.springframework.security</groupId>
+        <artifactId>spring-security-rsa</artifactId>
+        <version>${spring.security.rsa.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-jms</artifactId>
+        <version>${spring.jms.version}</version>
+      </dependency>
+
+
 
       <dependency>
         <groupId>com.googlecode.json-simple</groupId>
@@ -197,49 +223,6 @@ limitations under the License.
         <groupId>org.onap.aai.aai-common</groupId>
         <artifactId>aai-rest</artifactId>
         <version>${aai.release.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>com.fasterxml.jackson</groupId>
-        <artifactId>jackson-bom</artifactId>
-        <version>${jackson.bom.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-
-      <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-web</artifactId>
-        <version>${spring.boot.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>${spring.boot.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-
-      <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-dependencies</artifactId>
-        <version>${spring.boot.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-
-      <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-test</artifactId>
-        <scope>test</scope>
-        <version>${spring.boot.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-test</artifactId>
-        <version>${spring.test.version}</version>
       </dependency>
 
       <dependency>
@@ -618,59 +601,7 @@ limitations under the License.
         <version>${commons.io.version}</version>
       </dependency>
 
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-web</artifactId>
-        <version>${spring.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-context</artifactId>
-        <version>${spring.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-core</artifactId>
-        <version>${spring.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-orm</artifactId>
-        <version>${spring.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-oxm</artifactId>
-        <version>${spring.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-aspects</artifactId>
-        <version>${spring.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-tx</artifactId>
-        <version>${spring.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-webmvc</artifactId>
-        <version>${spring.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.springframework.security</groupId>
-        <artifactId>spring-security-rsa</artifactId>
-        <version>${spring.security.rsa.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-jms</artifactId>
-        <version>${spring.jms.version}</version>
-      </dependency>
-
+      
       <dependency>
         <groupId>org.onap.aai.logging-service</groupId>
         <artifactId>common-logging</artifactId>
