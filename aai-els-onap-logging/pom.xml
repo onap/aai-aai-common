@@ -72,6 +72,12 @@
         <dependency>
             <groupId>org.onap.logging-analytics</groupId>
             <artifactId>logging-slf4j</artifactId>
+            <exclusions>
+                <exclusion>
+                  <groupId>org.powermock</groupId>
+                  <artifactId>powermock-module-junit4</artifactId>
+                </exclusion>
+              </exclusions>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>

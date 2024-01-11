@@ -77,7 +77,7 @@ public class RawFormatTest extends AAISetup {
 
         version = schemaVersions.getDefaultVersion();
 
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
 
         graph = TinkerGraph.open();
 
