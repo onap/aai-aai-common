@@ -123,7 +123,7 @@ public class DataCopyTest extends AAISetup {
     @Before
     public void initMock() {
         loader = loaderFactory.createLoaderForVersion(introspectorFactoryType, schemaVersions.getDefaultVersion());
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         dbEngine = new JanusGraphDBEngine(queryStyle, loader);
     }
 
