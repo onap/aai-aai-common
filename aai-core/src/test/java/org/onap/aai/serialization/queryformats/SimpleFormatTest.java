@@ -80,7 +80,7 @@ public class SimpleFormatTest extends AAISetup {
     @Before
     public void setUp() throws Exception {
 
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
 
         graph = TinkerGraph.open();
 

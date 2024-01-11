@@ -138,9 +138,21 @@ limitations under the License.
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<!-- TODO: Migrate tests to junit 5 and remove this dependency -->
+		<dependency>
+			<groupId>org.junit.vintage</groupId>
+			<artifactId>junit-vintage-engine</artifactId>
+			<scope>test</scope>
+			<exclusions>
+					<exclusion>
+							<groupId>org.hamcrest</groupId>
+							<artifactId>hamcrest-core</artifactId>
+					</exclusion>
+			</exclusions>
+		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
-			<artifactId>mockito-all</artifactId>
+			<artifactId>mockito-core</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

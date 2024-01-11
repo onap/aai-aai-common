@@ -80,7 +80,7 @@ public class CountQuerySupportTest extends AAISetup {
     public void setUp() throws Exception {
 
         version = schemaVersions.getDefaultVersion();
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
 
         graph = TinkerGraph.open();
 
