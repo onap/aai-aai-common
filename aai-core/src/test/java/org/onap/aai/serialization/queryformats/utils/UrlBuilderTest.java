@@ -52,7 +52,7 @@ public class UrlBuilderTest extends AAISetup {
 
     @Before
     public void before() throws UnsupportedEncodingException, URISyntaxException {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         when(serializer.getURIForVertex(any(Vertex.class))).thenReturn(new URI(uri));
         when(v.id()).thenReturn(vId);
     }

@@ -94,7 +94,7 @@ public class MultiFormatTest extends AAISetup {
     public void setUp() throws Exception {
 
         version = schemaVersions.getAppRootVersion();
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
 
         graph = TinkerGraph.open();
 

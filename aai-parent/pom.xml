@@ -92,8 +92,8 @@ limitations under the License.
         Please don't upgrade to 2.3.0 or above for nexus iq or security scans
         as it could potentially break our code
       -->
-    <spring.boot.version>2.3.12.RELEASE</spring.boot.version>
-    <spring.version>5.2.12.RELEASE</spring.version>
+    <spring.boot.version>2.4.13</spring.boot.version>
+    <spring.version>5.3.13</spring.version>
     <spring.jms.version>5.2.25.RELEASE</spring.jms.version>
     <spring.test.version>${spring.version}</spring.test.version>
     <json.path.version>2.2.0</json.path.version>
@@ -104,12 +104,12 @@ limitations under the License.
     <logback.version>1.2.7</logback.version>
     <slf4j.version>1.7.25</slf4j.version>
     <log4j.version>2.17.1</log4j.version>
-    <mockito.all.version>1.10.19</mockito.all.version>
-    <mockito.core.version>1.10.19</mockito.core.version>
+    <mockito.all.version>3.4.0</mockito.all.version>
+    <mockito.core.version>3.4.0</mockito.core.version>
     <netty.handler.version>4.1.63.Final</netty.handler.version>
     <netty.version>4.1.63.Final</netty.version>
     <opencsv.version>3.1</opencsv.version>
-    <powermock.version>1.6.6</powermock.version>
+    <powermock.version>2.0.9</powermock.version>
     <plexus.utils.version>3.1.1</plexus.utils.version>
     <reflections.version>0.9.10</reflections.version>
     <snakeyaml.version>1.29</snakeyaml.version>
@@ -178,7 +178,7 @@ limitations under the License.
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-jms</artifactId>
-        <version>${spring.jms.version}</version>
+        <version>5.3.31</version>
       </dependency>
 
 

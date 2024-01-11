@@ -29,7 +29,7 @@ import java.util.Set;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.onap.aai.schemaif.SchemaProviderException;
 import org.onap.aai.schemaif.definitions.EdgeSchema;
 import org.onap.aai.schemaif.definitions.PropertySchema;

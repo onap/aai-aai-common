@@ -47,7 +47,7 @@ public class QueryParamInjectorTest {
 
     @Test
     public void test() throws AAIException {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         QueryParamInjector injector = QueryParamInjector.getInstance();
 
         MultivaluedMap<String, String> params = new MultivaluedHashMap<>();
