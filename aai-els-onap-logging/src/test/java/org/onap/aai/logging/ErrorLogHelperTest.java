@@ -91,7 +91,8 @@ public class ErrorLogHelperTest {
         // ||main|UNKNOWN||||ERROR|500|Node cannot be deleted:3100:Bad Request:|ERR.5.4.6110 message
         String errorMessage = "Object is referenced by additional objects";
         ErrorLogHelper.logError("AAI_6110", errorMessage);
-        sleep(3000);
+        // TODO: Add a dynamic wait mechanism here
+        sleep(5000); // reducing the wait leads to test flakiness in pipeline
         String logContents = LogFile.getContents(errorLogFileName);
 
         assertNotNull(logContents);
