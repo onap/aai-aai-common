@@ -26,21 +26,45 @@ package org.onap.aai.config;
 import org.onap.aai.introspection.ModelType;
 import org.onap.aai.rest.db.HttpEntry;
 import org.onap.aai.serialization.engines.QueryStyle;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 import org.springframework.web.context.annotation.RequestScope;
 
 @Configuration
 public class RestBeanConfig {
-    @RequestScope
     @Bean(name = "traversalUriHttpEntry")
+    @Scope(scopeName = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public HttpEntry traversalUriHttpEntry() {
         return new HttpEntry(ModelType.MOXY, QueryStyle.TRAVERSAL_URI);
     }
 
-    @RequestScope
     @Bean(name = "traversalHttpEntry")
+    @Scope(scopeName = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public HttpEntry traversalHttpEntry() {
+        return new HttpEntry(ModelType.MOXY, QueryStyle.TRAVERSAL);
+    }
+
+    /**
+     * The HttpEntry class is not thread-safe due to the contained JanusGraphDBEngine.
+     * As such, assure that a new instance is returned for every injection by making it
+     * request scoped.
+     */
+    @RequestScope
+    @Bean(name = "requestScopedTraversalUriHttpEntry")
+    public HttpEntry requestScopedTraversalUriHttpEntry() {
+        return new HttpEntry(ModelType.MOXY, QueryStyle.TRAVERSAL_URI);
+    }
+
+    /**
+     * The HttpEntry class is not thread-safe due to the contained JanusGraphDBEngine.
+     * As such, assure that a new instance is returned for every injection by making it
+     * request scoped.
+     */
+    @RequestScope
+    @Bean(name = "requestScopedTraversalHttpEntry")
+    public HttpEntry requestScopedTraversalHttpEntry() {
         return new HttpEntry(ModelType.MOXY, QueryStyle.TRAVERSAL);
     }
 
