@@ -92,122 +92,70 @@ public class DataLinkTest extends DataLinkSetup {
         graphMgt.makePropertyKey(AAIProperties.LAST_MOD_TS).dataType(Long.class).cardinality(Cardinality.SINGLE).make();
         graphMgt.commit();
 
-        graph.traversal()
-            .addV()
-            .property("aai-node-type", "vpn-binding")
-            .property("vpn-id", "addKey")
-            .property(AAIProperties.AAI_URI, "/network/vpn-bindings/vpn-binding/addKey")
-            .property(AAIProperties.AAI_UUID, UUID.randomUUID().toString())
-            .property(AAIProperties.CREATED_TS, 123)
-            .property(AAIProperties.SOURCE_OF_TRUTH, "sot")
-            .property(AAIProperties.RESOURCE_VERSION, "123")
-            .property(AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot")
-            .property(AAIProperties.LAST_MOD_TS, 333)
-            .as("v1")
-            .addV()
-            .property("aai-node-type", "vpn-binding")
-            .property("vpn-id", "modifyKey")
-            .property(AAIProperties.AAI_URI, "/network/vpn-bindings/vpn-binding/modifyKey")
-            .property(AAIProperties.AAI_UUID, UUID.randomUUID().toString())
-            .property(AAIProperties.CREATED_TS, 123)
-            .property(AAIProperties.SOURCE_OF_TRUTH, "sot")
-            .property(AAIProperties.RESOURCE_VERSION, "123")
-            .property(AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot")
-            .property(AAIProperties.LAST_MOD_TS, 333)
-            .as("v2")
-            .addV()
-            .property("aai-node-type", "route-target")
-            .property("global-route-target", "modifyTargetKey")
-            .property("route-target-role", "modifyRoleKey")
-            .property("linked", true)
-            .property(AAIProperties.AAI_URI, "/network/vpn-bindings/vpn-binding/modifyKey/route-targets/route-target/modifyTargetKey/modifyRoleKey")
-            .property(AAIProperties.AAI_UUID, UUID.randomUUID().toString())
-            .property(AAIProperties.CREATED_TS, 123)
-            .property(AAIProperties.SOURCE_OF_TRUTH, "sot")
-            .property(AAIProperties.RESOURCE_VERSION, "123")
-            .property(AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot")
-            .property(AAIProperties.LAST_MOD_TS, 333)
-            .as("v3")
-            .addE("org.onap.relationships.inventory.BelongsTo").to("v2").from("v3")
-            .property(EdgeProperty.CONTAINS.toString(), true)
-            .addV()
-            .property("aai-node-type", "vpn-binding")
-            .property("vpn-id", "deleteKey")
-            .property(AAIProperties.AAI_URI, "/network/vpn-bindings/vpn-binding/deleteKey")
-            .property(AAIProperties.AAI_UUID, UUID.randomUUID().toString())
-            .property(AAIProperties.CREATED_TS, 123)
-            .property(AAIProperties.SOURCE_OF_TRUTH, "sot")
-            .property(AAIProperties.RESOURCE_VERSION, "123")
-            .property(AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot")
-            .property(AAIProperties.LAST_MOD_TS, 333)
-            .as("v4")
-            .addV()
-            .property("aai-node-type", "route-target")
-            .property("global-route-target", "deleteTargetKey")
-            .property("route-target-role", "deleteRoleKey")
-            .property("linked", true)
-            .property(AAIProperties.AAI_URI, "/network/vpn-bindings/vpn-binding/deleteKey/route-targets/route-target/deleteTargetKey/deleteRoleKey")
-            .property(AAIProperties.AAI_UUID, UUID.randomUUID().toString())
-            .property(AAIProperties.CREATED_TS, 123)
-            .property(AAIProperties.SOURCE_OF_TRUTH, "sot")
-            .property(AAIProperties.RESOURCE_VERSION, "123")
-            .property(AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot")
-            .property(AAIProperties.LAST_MOD_TS, 333)
-            .as("v5")
-            .addE("org.onap.relationships.inventory.BelongsTo").to("v4").from("v5")
-            .property(EdgeProperty.CONTAINS.toString(), true)
-            .addV()
-            .property("aai-node-type", "vpn-binding")
-            .property("vpn-id", "getKey")
-            .property(AAIProperties.AAI_URI, "/network/vpn-bindings/vpn-binding/getKey")
-            .property(AAIProperties.AAI_UUID, UUID.randomUUID().toString())
-            .property(AAIProperties.CREATED_TS, 123)
-            .property(AAIProperties.SOURCE_OF_TRUTH, "sot")
-            .property(AAIProperties.RESOURCE_VERSION, "123")
-            .property(AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot")
-            .property(AAIProperties.LAST_MOD_TS, 333)
-            .as("v6")
-            .addV()
-            .property("aai-node-type", "route-target")
-            .property("global-route-target", "getTargetKey")
-            .property("route-target-role", "getRoleKey")
-            .property("linked", true)
-            .property(AAIProperties.AAI_URI, "/network/vpn-bindings/vpn-binding/getKey/route-targets/route-target/getTargetKeyNoLink/getRoleKeyNoLink")
-            .property(AAIProperties.AAI_UUID, UUID.randomUUID().toString())
-            .property(AAIProperties.CREATED_TS, 123)
-            .property(AAIProperties.SOURCE_OF_TRUTH, "sot")
-            .property(AAIProperties.RESOURCE_VERSION, "123")
-            .property(AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot")
-            .property(AAIProperties.LAST_MOD_TS, 333)
-            .as("v7")
-            .addE("org.onap.relationships.inventory.BelongsTo").to("v6").from("v7")
-            .property(EdgeProperty.CONTAINS.toString(), true)
-            .addV()
-            .property("aai-node-type", "vpn-binding")
-            .property("vpn-id", "getKeyNoLink")
-            .property(AAIProperties.AAI_URI, "/network/vpn-bindings/vpn-binding/getKeyNoLink")
-            .property(AAIProperties.AAI_UUID, UUID.randomUUID().toString())
-            .property(AAIProperties.CREATED_TS, 123)
-            .property(AAIProperties.SOURCE_OF_TRUTH, "sot")
-            .property(AAIProperties.RESOURCE_VERSION, "123")
-            .property(AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot")
-            .property(AAIProperties.LAST_MOD_TS, 333)
-            .as("v8")
-            .addV()
-            .property("aai-node-type", "route-target")
-            .property("global-route-target", "getTargetKeyNoLink")
-            .property("route-target-role", "getRoleKeyNoLink")
-            .property(AAIProperties.AAI_URI, "/network/vpn-bindings/vpn-binding/getKeyNoLink/route-targets/route-target/getTargetKeyNoLink/getRoleKeyNoLink")
-            .property(AAIProperties.AAI_UUID, UUID.randomUUID().toString())
-            .property(AAIProperties.CREATED_TS, 123)
-            .property(AAIProperties.SOURCE_OF_TRUTH, "sot")
-            .property(AAIProperties.RESOURCE_VERSION, "123")
-            .property(AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot")
-            .property(AAIProperties.LAST_MOD_TS, 333)
-            .as("v9")
-            .addE("org.onap.relationships.inventory.BelongsTo").to("v8").from("v9")
-            .property(EdgeProperty.CONTAINS.toString(), true)
-                .next();
+        graph.traversal().addV().property("aai-node-type", "vpn-binding").property("vpn-id", "addKey")
+                .property(AAIProperties.AAI_URI, "/network/vpn-bindings/vpn-binding/addKey")
+                .property(AAIProperties.AAI_UUID, UUID.randomUUID().toString()).property(AAIProperties.CREATED_TS, 123)
+                .property(AAIProperties.SOURCE_OF_TRUTH, "sot").property(AAIProperties.RESOURCE_VERSION, "123")
+                .property(AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot").property(AAIProperties.LAST_MOD_TS, 333)
+                .as("v1").addV().property("aai-node-type", "vpn-binding").property("vpn-id", "modifyKey")
+                .property(AAIProperties.AAI_URI, "/network/vpn-bindings/vpn-binding/modifyKey")
+                .property(AAIProperties.AAI_UUID, UUID.randomUUID().toString()).property(AAIProperties.CREATED_TS, 123)
+                .property(AAIProperties.SOURCE_OF_TRUTH, "sot").property(AAIProperties.RESOURCE_VERSION, "123")
+                .property(AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot").property(AAIProperties.LAST_MOD_TS, 333)
+                .as("v2").addV().property("aai-node-type", "route-target")
+                .property("global-route-target", "modifyTargetKey").property("route-target-role", "modifyRoleKey")
+                .property("linked", true)
+                .property(AAIProperties.AAI_URI,
+                        "/network/vpn-bindings/vpn-binding/modifyKey/route-targets/route-target/modifyTargetKey/modifyRoleKey")
+                .property(AAIProperties.AAI_UUID, UUID.randomUUID().toString()).property(AAIProperties.CREATED_TS, 123)
+                .property(AAIProperties.SOURCE_OF_TRUTH, "sot").property(AAIProperties.RESOURCE_VERSION, "123")
+                .property(AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot").property(AAIProperties.LAST_MOD_TS, 333)
+                .as("v3").addE("org.onap.relationships.inventory.BelongsTo").to("v2").from("v3")
+                .property(EdgeProperty.CONTAINS.toString(), true).addV().property("aai-node-type", "vpn-binding")
+                .property("vpn-id", "deleteKey")
+                .property(AAIProperties.AAI_URI, "/network/vpn-bindings/vpn-binding/deleteKey")
+                .property(AAIProperties.AAI_UUID, UUID.randomUUID().toString()).property(AAIProperties.CREATED_TS, 123)
+                .property(AAIProperties.SOURCE_OF_TRUTH, "sot").property(AAIProperties.RESOURCE_VERSION, "123")
+                .property(AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot").property(AAIProperties.LAST_MOD_TS, 333)
+                .as("v4").addV().property("aai-node-type", "route-target")
+                .property("global-route-target", "deleteTargetKey").property("route-target-role", "deleteRoleKey")
+                .property("linked", true)
+                .property(AAIProperties.AAI_URI,
+                        "/network/vpn-bindings/vpn-binding/deleteKey/route-targets/route-target/deleteTargetKey/deleteRoleKey")
+                .property(AAIProperties.AAI_UUID, UUID.randomUUID().toString()).property(AAIProperties.CREATED_TS, 123)
+                .property(AAIProperties.SOURCE_OF_TRUTH, "sot").property(AAIProperties.RESOURCE_VERSION, "123")
+                .property(AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot").property(AAIProperties.LAST_MOD_TS, 333)
+                .as("v5").addE("org.onap.relationships.inventory.BelongsTo").to("v4").from("v5")
+                .property(EdgeProperty.CONTAINS.toString(), true).addV().property("aai-node-type", "vpn-binding")
+                .property("vpn-id", "getKey")
+                .property(AAIProperties.AAI_URI, "/network/vpn-bindings/vpn-binding/getKey")
+                .property(AAIProperties.AAI_UUID, UUID.randomUUID().toString()).property(AAIProperties.CREATED_TS, 123)
+                .property(AAIProperties.SOURCE_OF_TRUTH, "sot").property(AAIProperties.RESOURCE_VERSION, "123")
+                .property(AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot").property(AAIProperties.LAST_MOD_TS, 333)
+                .as("v6").addV().property("aai-node-type", "route-target")
+                .property("global-route-target", "getTargetKey").property("route-target-role", "getRoleKey")
+                .property("linked", true)
+                .property(AAIProperties.AAI_URI,
+                        "/network/vpn-bindings/vpn-binding/getKey/route-targets/route-target/getTargetKeyNoLink/getRoleKeyNoLink")
+                .property(AAIProperties.AAI_UUID, UUID.randomUUID().toString()).property(AAIProperties.CREATED_TS, 123)
+                .property(AAIProperties.SOURCE_OF_TRUTH, "sot").property(AAIProperties.RESOURCE_VERSION, "123")
+                .property(AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot").property(AAIProperties.LAST_MOD_TS, 333)
+                .as("v7").addE("org.onap.relationships.inventory.BelongsTo").to("v6").from("v7")
+                .property(EdgeProperty.CONTAINS.toString(), true).addV().property("aai-node-type", "vpn-binding")
+                .property("vpn-id", "getKeyNoLink")
+                .property(AAIProperties.AAI_URI, "/network/vpn-bindings/vpn-binding/getKeyNoLink")
+                .property(AAIProperties.AAI_UUID, UUID.randomUUID().toString()).property(AAIProperties.CREATED_TS, 123)
+                .property(AAIProperties.SOURCE_OF_TRUTH, "sot").property(AAIProperties.RESOURCE_VERSION, "123")
+                .property(AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot").property(AAIProperties.LAST_MOD_TS, 333)
+                .as("v8").addV().property("aai-node-type", "route-target")
+                .property("global-route-target", "getTargetKeyNoLink").property("route-target-role", "getRoleKeyNoLink")
+                .property(AAIProperties.AAI_URI,
+                        "/network/vpn-bindings/vpn-binding/getKeyNoLink/route-targets/route-target/getTargetKeyNoLink/getRoleKeyNoLink")
+                .property(AAIProperties.AAI_UUID, UUID.randomUUID().toString()).property(AAIProperties.CREATED_TS, 123)
+                .property(AAIProperties.SOURCE_OF_TRUTH, "sot").property(AAIProperties.RESOURCE_VERSION, "123")
+                .property(AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, "lmsot").property(AAIProperties.LAST_MOD_TS, 333)
+                .as("v9").addE("org.onap.relationships.inventory.BelongsTo").to("v8").from("v9")
+                .property(EdgeProperty.CONTAINS.toString(), true).next();
         graph.tx().commit();
 
     }
@@ -282,41 +230,21 @@ public class DataLinkTest extends DataLinkSetup {
         runner.execute(obj, self);
 
         assertThat("new route-target vertex found with/or without link",
-                traversal.V()
-                        .has(AAIProperties.NODE_TYPE, "route-target")
-                        .has("global-route-target", "modifyTargetKey2")
-                        .has("route-target-role", "modifyRoleKey2")
+                traversal.V().has(AAIProperties.NODE_TYPE, "route-target")
+                        .has("global-route-target", "modifyTargetKey2").has("route-target-role", "modifyRoleKey2")
                         .hasNext(),
                 is(true));
-        assertThat("new route-target vertex has link",
-                traversal.V()
-                        .has(AAIProperties.NODE_TYPE, "route-target")
-                        .has("global-route-target", "modifyTargetKey2")
-                        .has("route-target-role", "modifyRoleKey2")
-                        .has("linked", true)
-                        .hasNext(),
+        assertThat("new route-target vertex found",
+                traversal.V().has(AAIProperties.NODE_TYPE, "route-target")
+                        .has("global-route-target", "modifyTargetKey2").has("route-target-role", "modifyRoleKey2")
+                        .has("linked", true).hasNext(),
                 is(true));
-        assertThat("previous vertex still exists",
-                traversal.V()
-                        .has(AAIProperties.NODE_TYPE, "route-target")
-                        .has("global-route-target", "modifyTargetKey")
-                        .has("route-target-role", "modifyRoleKey")
-                        .hasNext(),
-                is(true));
-        assertThat("link of previous vert removed",
-                traversal.V()
-                        .has(AAIProperties.NODE_TYPE, "route-target")
-                        .has("global-route-target", "modifyTargetKey")
-                        .has("route-target-role", "modifyRoleKey")
-                        .has("linked")
-                        .hasNext(),
+        assertThat("previous link removed",
+                traversal.V().has(AAIProperties.NODE_TYPE, "route-target").has("global-route-target", "modifyTargetKey")
+                        .has("route-target-role", "modifyRoleKey").has("linked").hasNext(),
                 is(not(true)));
-        assertThat("previous vertex still exists",
-                traversal.V()
-                        .has(AAIProperties.NODE_TYPE, "route-target")
-                        .has("global-route-target", "modifyTargetKey")
-                        .has("route-target-role", "modifyRoleKey")
-                        .hasNext(),
+        assertThat("previous vertex still exists", traversal.V().has(AAIProperties.NODE_TYPE, "route-target")
+                .has("global-route-target", "modifyTargetKey").has("route-target-role", "modifyRoleKey").hasNext(),
                 is(true));
         g.tx().rollback();
 
@@ -346,14 +274,11 @@ public class DataLinkTest extends DataLinkSetup {
         runner.execute(obj, self);
 
         assertFalse("route-target vertex not found",
-            traversal.V()
-                .has(AAIProperties.NODE_TYPE, "route-target")
-                .has("global-route-target", "deleteTargetKey")
-                .has("route-target-role", "deleteRoleKey")
-                .has("linked", true)
-                .hasNext());
+                traversal.V().has(AAIProperties.NODE_TYPE, "route-target").has("global-route-target", "deleteTargetKey")
+                        .has("route-target-role", "deleteRoleKey").has("linked", true).hasNext());
 
         g.tx().rollback();
+
     }
 
     @Test
@@ -382,6 +307,7 @@ public class DataLinkTest extends DataLinkSetup {
                 obj.getValue("global-route-target").equals("getTargetKey")
                         && obj.getValue("route-target-role").equals("getRoleKey"));
         g.tx().rollback();
+
     }
 
     @Test
@@ -424,5 +350,6 @@ public class DataLinkTest extends DataLinkSetup {
                 routeTargetTwoV.property(AAIProperties.LINKED).orElse(false));
 
         g.tx().rollback();
+
     }
 }
