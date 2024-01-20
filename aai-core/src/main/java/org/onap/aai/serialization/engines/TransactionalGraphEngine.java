@@ -20,10 +20,13 @@
 
 package org.onap.aai.serialization.engines;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.apache.tinkerpop.gremlin.process.traversal.strategy.optimization.InlineFilterStrategy;
+import org.apache.tinkerpop.gremlin.process.traversal.strategy.optimization.LazyBarrierStrategy;
 import org.apache.tinkerpop.gremlin.process.traversal.strategy.verification.ReadOnlyStrategy;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
@@ -149,16 +152,17 @@ public abstract class TransactionalGraphEngine {
     }
 
     public QueryBuilder<Vertex> getQueryBuilder(QueryStyle style, Loader loader) {
+        GraphTraversalSource source = this.asAdmin().getTraversalSource();
         if (style.equals(QueryStyle.GREMLIN_TRAVERSAL)) {
-            return new GremlinTraversal<>(loader, this.asAdmin().getTraversalSource());
+            return new GremlinTraversal<>(loader, source);
         } else if (style.equals(QueryStyle.GREMLIN_UNIQUE)) {
-            return new GremlinUnique<>(loader, this.asAdmin().getTraversalSource());
+            return new GremlinUnique<>(loader, source);
         } else if (style.equals(QueryStyle.GREMLINPIPELINE_TRAVERSAL)) {
             // return new GremlinPipelineTraversal(loader);
         } else if (style.equals(QueryStyle.TRAVERSAL)) {
-            return new TraversalQuery<>(loader, this.asAdmin().getTraversalSource());
+            return new TraversalQuery<>(loader, source != null ? source.withoutStrategies(InlineFilterStrategy.class) : source);
         } else if (style.equals(QueryStyle.TRAVERSAL_URI)) {
-            return new TraversalURIOptimizedQuery<>(loader, this.asAdmin().getTraversalSource());
+            return new TraversalURIOptimizedQuery<>(loader, source != null ? source.withoutStrategies(InlineFilterStrategy.class) : source);
         } else if (style.equals(QueryStyle.HISTORY_TRAVERSAL)) {
             throw new IllegalArgumentException("History Traversal needs history traversal source");
         } else if (style.equals(QueryStyle.HISTORY_GREMLIN_TRAVERSAL)) {
