@@ -574,7 +574,7 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
             list.add(".has('aai-node-type', '" + type + "')");
         }
         stepIndex++;
-        this.markContainerIndex();
+        this.markContainer();
         return (QueryBuilder<Vertex>) this;
     }
 
@@ -879,7 +879,7 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
     }
 
     @Override
-    public void markContainerIndex() {
+    public void markContainer() {
         this.containerStepIndex = stepIndex;
     }
 

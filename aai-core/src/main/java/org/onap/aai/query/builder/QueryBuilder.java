@@ -487,7 +487,7 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
      * This is necessary in cases such as "if the Optional Property 1 is sent,
      * find all Nodes of type A with edges to Nodes of type B with property 1,
      * otherwise, simply find all nodes of type A".
-     *
+     * 
      * @param type
      * @param outNodeType
      * @param inNodeType
@@ -506,7 +506,7 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
      * This is necessary in cases such as "if the Optional Property 1 is sent,
      * find all Nodes of type A with edges to Nodes of type B with property 1,
      * otherwise, simply find all nodes of type A".
-     *
+     * 
      * @param type
      * @param outNodeType
      * @param inNodeType
@@ -603,7 +603,7 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
     public abstract <E2> E2 getQuery();
 
     /**
-     * Marks the current step index as the boundary to the parent.
+     * Form boundary.
      */
     public abstract void markParentBoundary();
 
@@ -721,10 +721,7 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
      */
     public abstract QueryBuilder<Path> path();
 
-    /**
-     * Marks the current step index as the container step.
-     */
-    public abstract void markContainerIndex();
+    public abstract void markContainer();
 
     public abstract QueryBuilder<E> getContainerQuery();
 

@@ -4,8 +4,6 @@
  * ================================================================================
  * Copyright © 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
- * Modifications Copyright © 2023 Deutsche Telekom.
- * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -63,9 +61,6 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
 
     protected GraphTraversal<Vertex, E> traversal = null;
     protected Admin<Vertex, E> completeTraversal = null;
-
-    protected QueryBuilder<E> containerQuery;
-    protected QueryBuilder<E> parentQuery;
 
     /**
      * Instantiates a new graph traversal builder.
@@ -356,7 +351,7 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
             traversal.has(AAIProperties.NODE_TYPE, type);
         }
         stepIndex++;
-        markContainerIndex();
+        markContainer();
         return (QueryBuilder<Vertex>) this;
     }
 
@@ -843,16 +838,21 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
         return this;
     }
 
+    /**
+     * @{inheritDoc}
+     */
     @Override
     public <E2> E2 getQuery() {
         return (E2) this.traversal;
     }
 
+    /**
+     * @{inheritDoc}
+     */
     @Override
     public QueryBuilder<E> getParentQuery() {
-        return this.parentQuery != null
-            ? this.parentQuery
-            : cloneQueryAtStep(parentStepIndex);
+
+        return cloneQueryAtStep(parentStepIndex);
     }
 
     @Override
@@ -861,22 +861,26 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
         if (this.parentStepIndex == 0) {
             return removeQueryStepsBetween(0, containerStepIndex);
         } else {
-            return this.containerQuery;
+            return cloneQueryAtStep(containerStepIndex);
         }
     }
 
+    /**
+     * @{inheritDoc}
+     */
     @Override
     public void markParentBoundary() {
-        this.parentQuery = cloneQueryAtStep(stepIndex);
         parentStepIndex = stepIndex;
     }
 
     @Override
-    public void markContainerIndex() {
-        this.containerQuery = cloneQueryAtStep(stepIndex);
+    public void markContainer() {
         containerStepIndex = stepIndex;
     }
 
+    /**
+     * @{inheritDoc}
+     */
     @Override
     public Vertex getStart() {
         return this.start;
@@ -941,9 +945,7 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
         if (this.completeTraversal == null) {
             executeQuery();
         }
-        // clone is necessary since toList would optimize traversal steps
-        // which messes with the indeces that are registered while parsing
-        return this.completeTraversal.clone().toList();
+        return this.completeTraversal.toList();
     }
 
     protected QueryBuilder<Edge> has(String key, String value) {
