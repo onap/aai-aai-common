@@ -90,6 +90,11 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
         this.loader = loader;
     }
 
+    /**
+     * Creates a new {@link QueryBuilder} that contains the traversal up to the provided index.
+     * @param index
+     * @return
+     */
     protected abstract QueryBuilder<E> cloneQueryAtStep(int index);
 
     /**
@@ -266,9 +271,15 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
     public abstract QueryBuilder<Vertex> createKeyQuery(Introspector obj);
 
     /**
-     * Creates the container query.
+     * Creates the container query.<br>
+     * A container query is a query that will return a collection of objects:
+     * <pre>
+     * /cloud-infrastructure/complexes/complex/key1
+     *           ↑              ↑        ↑
+     *       namespace      container  object
      *
-     * @param obj the obj
+     * </pre>
+     * @param obj the Introspector into the db schema
      * @return the query builder
      */
     public abstract QueryBuilder<Vertex> createContainerQuery(Introspector obj);

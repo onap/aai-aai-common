@@ -30,16 +30,26 @@ import java.util.List;
 
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.Tree;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.janusgraph.core.JanusGraph;
+import org.janusgraph.core.JanusGraphFactory;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.onap.aai.TinkerpopUpgrade;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.edges.enums.EdgeType;
 import org.onap.aai.exceptions.AAIException;
+import org.onap.aai.introspection.Introspector;
+import org.onap.aai.introspection.Loader;
+import org.onap.aai.introspection.LoaderUtil;
+import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 
+@Category(TinkerpopUpgrade.class)
 public class TraversalQueryTest extends QueryBuilderTestAbstraction {
 
     @Override
@@ -256,6 +266,25 @@ public class TraversalQueryTest extends QueryBuilderTestAbstraction {
         assertEquals("Has 2 vertexes ", 2, list.size());
         assertTrue("result has pserver ", list.contains(complex));
 
+    }
+
+    // @Test
+    public void createDBQueryTest() throws AAIUnknownObjectException {
+        JanusGraph graph = JanusGraphFactory.build().set("storage.backend", "inmemory").open();
+        GraphTraversalSource source = graph.newTransaction().traversal();
+        final Loader loader = LoaderUtil.getLatestVersion();
+        GraphTraversal<Vertex, Vertex> traversal = __.<Vertex>start();
+        TraversalQuery traversalQuery = new TraversalQuery<>(loader, source, traversal);
+        Introspector obj = loader.introspectorFromName("vpn-binding");
+        obj.setValue("vpn-id", "modifyKey");
+
+        traversalQuery.createKeyQuery(obj);
+        assertEquals(1, traversal.asAdmin().getSteps().size());
+        assertEquals("HasStep([vpn-id.eq(modifyKey)])", traversal.asAdmin().getSteps().get(0).toString());
+        traversalQuery.createContainerQuery(obj);
+        assertEquals(2, traversal.asAdmin().getSteps().size());
+        assertEquals("HasStep([vpn-id.eq(modifyKey)])", traversal.asAdmin().getSteps().get(0).toString());
+        assertEquals("HasStep([aai-node-type.eq(vpn-binding)])", traversal.asAdmin().getSteps().get(1).toString());
     }
 
 }

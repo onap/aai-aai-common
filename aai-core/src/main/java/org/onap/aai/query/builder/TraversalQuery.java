@@ -23,12 +23,15 @@ package org.onap.aai.query.builder;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.apache.tinkerpop.gremlin.process.traversal.Step;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.apache.tinkerpop.gremlin.process.traversal.step.filter.HasStep;
+import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
@@ -49,6 +52,11 @@ public class TraversalQuery<E> extends GraphTraversalBuilder<E> {
 
     public TraversalQuery(Loader loader, GraphTraversalSource source) {
         super(loader, source);
+        this.factory = new TraversalStrategy(this.loader, this);
+    }
+
+    public TraversalQuery(Loader loader, GraphTraversalSource source, GraphTraversal<Vertex, E> traversal) {
+        super(loader, source, traversal);
         this.factory = new TraversalStrategy(this.loader, this);
     }
 
@@ -157,13 +165,58 @@ public class TraversalQuery<E> extends GraphTraversalBuilder<E> {
         return cloneAdmin;
     }
 
-    @Override
-    protected QueryBuilder<E> removeQueryStepsBetween(int start, int end) {
+    // @Override
+    protected QueryBuilder<E> removeQueryStepsBetweens(int start, int end) {
         GraphTraversal<Vertex, E> clone = this.traversal.asAdmin().clone();
         GraphTraversal.Admin<Vertex, E> cloneAdmin = clone.asAdmin();
 
         for (int i = end - 2; i >= start; i--) {
             cloneAdmin.removeStep(i);
+        }
+        return new TraversalQuery<>(cloneAdmin, loader, source, this);
+    }
+
+    @Override
+    protected QueryBuilder<E> removeQueryStepsBetween(int start, int end) {
+        GraphTraversal<Vertex, E> clone = this.traversal.asAdmin().clone();
+        GraphTraversal.Admin<Vertex, E> cloneAdmin = clone.asAdmin();
+
+        List<Step> steps = cloneAdmin.getSteps();
+        for (int i = end - 2; i >= start; i--) {
+            
+            Step step = steps.get(i);
+            if(step instanceof HasStep) {
+                List<HasContainer> hasContainers = ((HasStep)step).getHasContainers();
+                int hasContainerSize = hasContainers.size();
+                if(hasContainers.size() >= (end - i)) {
+                    // there are more has'ses than the containerIndex
+                    // function can exit after
+                    // remove has's from list and insert updated step
+                    List<HasContainer> newContainers = hasContainers.stream()
+                        .skip(end - 1 - i)
+                        .collect(Collectors.toList());
+                    // for (int j = end - i - 1; j < hasContainerSize; j++) {
+                    //     hasContainers.remove(0);
+                    // }
+                    // steps.remove(i);
+                    int replaceIndex = i;
+                    cloneAdmin.removeStep(replaceIndex);
+                    for(HasContainer hasContainer: newContainers) {
+                        cloneAdmin.addStep(replaceIndex, new HasStep<>(cloneAdmin, hasContainer));
+                        // steps.add(i, (Step) hasContainer);
+                        replaceIndex++;
+                        i--;
+                    }
+                    // steps.add(i, new HasStep<>(cloneAdmin, hasContainers.get(0)));
+                } else {
+                    // containerIndex is greater than i+hasContainerSize
+                    // step can be removed and i incremented by the amount of has's removed
+                    steps.remove(i);
+                    i += hasContainerSize;
+                }
+            } else {
+                cloneAdmin.removeStep(i);
+            }
         }
         return new TraversalQuery<>(cloneAdmin, loader, source, this);
     }
