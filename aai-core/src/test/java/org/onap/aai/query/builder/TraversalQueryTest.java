@@ -4,6 +4,8 @@
  * ================================================================================
  * Copyright © 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
+ * Modifications Copyright © 2024 DEUTSCHE TELEKOM AG.
+ * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -30,16 +32,26 @@ import java.util.List;
 
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.Tree;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.janusgraph.core.JanusGraph;
+import org.janusgraph.core.JanusGraphFactory;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.onap.aai.TinkerpopUpgrade;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.edges.enums.EdgeType;
 import org.onap.aai.exceptions.AAIException;
+import org.onap.aai.introspection.Introspector;
+import org.onap.aai.introspection.Loader;
+import org.onap.aai.introspection.LoaderUtil;
+import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 
+@Category(TinkerpopUpgrade.class)
 public class TraversalQueryTest extends QueryBuilderTestAbstraction {
 
     @Override
@@ -256,6 +268,93 @@ public class TraversalQueryTest extends QueryBuilderTestAbstraction {
         assertEquals("Has 2 vertexes ", 2, list.size());
         assertTrue("result has pserver ", list.contains(complex));
 
+    }
+
+    @Test
+    public void createDBQueryTest() throws AAIUnknownObjectException {
+        JanusGraph graph = JanusGraphFactory.build().set("storage.backend", "inmemory").open();
+        GraphTraversalSource source = graph.newTransaction().traversal();
+        final Loader loader = LoaderUtil.getLatestVersion();
+        GraphTraversal<Vertex, Vertex> traversal = __.<Vertex>start();
+        TraversalQuery traversalQuery = new TraversalQuery<>(loader, source, traversal);
+        Introspector obj = loader.introspectorFromName("vpn-binding");
+        obj.setValue("vpn-id", "modifyKey");
+
+        traversalQuery.createKeyQuery(obj);
+        assertEquals(1, traversal.asAdmin().getSteps().size());
+        assertEquals("HasStep([vpn-id.eq(modifyKey)])", traversal.asAdmin().getSteps().get(0).toString());
+        traversalQuery.createContainerQuery(obj);
+        assertEquals(1, traversal.asAdmin().getSteps().size());
+        assertEquals("HasStep([vpn-id.eq(modifyKey), aai-node-type.eq(vpn-binding)])", traversal.asAdmin().getSteps().get(0).toString());
+    }
+
+    @Test
+    public void removeQueryStepsBetweenTest() throws AAIUnknownObjectException {
+        JanusGraph graph = JanusGraphFactory.build().set("storage.backend", "inmemory").open();
+        GraphTraversalSource source = graph.newTransaction().traversal();
+        final Loader loader = LoaderUtil.getLatestVersion();
+        TraversalQuery traversalQuery = new TraversalQuery<>(loader, source);
+        traversalQuery.has("propertyKey", "value");
+
+        QueryBuilder clonedQuery = traversalQuery.removeQueryStepsBetween(0, 1);
+        String query = clonedQuery.getQuery().toString();
+        assertEquals("[HasStep([propertyKey.eq(value)])]", query);
+    }
+
+    @Test
+    public void removeQueryStepsBetweenTest02() throws AAIUnknownObjectException {
+        JanusGraph graph = JanusGraphFactory.build().set("storage.backend", "inmemory").open();
+        GraphTraversalSource source = graph.newTransaction().traversal();
+        final Loader loader = LoaderUtil.getLatestVersion();
+        TraversalQuery traversalQuery = new TraversalQuery<>(loader, source);
+        traversalQuery.has("propertyKey", "value");
+
+        QueryBuilder clonedQuery = traversalQuery.removeQueryStepsBetween(0, 2);
+        String query = clonedQuery.getQuery().toString();
+        assertEquals("[]", query);
+    }
+    
+    @Test
+    public void removeQueryStepsBetweenTest07() throws AAIUnknownObjectException {
+        JanusGraph graph = JanusGraphFactory.build().set("storage.backend", "inmemory").open();
+        GraphTraversalSource source = graph.newTransaction().traversal();
+        final Loader loader = LoaderUtil.getLatestVersion();
+        TraversalQuery traversalQuery = new TraversalQuery<>(loader, source);
+        traversalQuery.limit(1);
+        traversalQuery.has("propertyKey", "value");
+        traversalQuery.has("propertyKey2", "value2");
+        traversalQuery.limit(2);
+        traversalQuery.has("propertyKey3", "value3");
+        traversalQuery.has("propertyKey4", "value4");
+        traversalQuery.has("propertyKey5", "value5");
+        traversalQuery.limit(3);
+        traversalQuery.limit(4);
+
+        QueryBuilder clonedQuery = traversalQuery.removeQueryStepsBetween(0, 7);
+        String query = clonedQuery.getQuery().toString();
+        assertEquals("[HasStep([propertyKey5.eq(value5)]), RangeGlobalStep(0,3), RangeGlobalStep(0,4)]", query);
+    }
+
+    @Test
+    @Ignore("Enable once removeQueryStepsBetween supports a start index > 0")
+    public void removeQueryStepsBetweenTest27() throws AAIUnknownObjectException {
+        JanusGraph graph = JanusGraphFactory.build().set("storage.backend", "inmemory").open();
+        GraphTraversalSource source = graph.newTransaction().traversal();
+        final Loader loader = LoaderUtil.getLatestVersion();
+        TraversalQuery traversalQuery = new TraversalQuery<>(loader, source);
+        traversalQuery.limit(1);
+        traversalQuery.has("propertyKey", "value");
+        traversalQuery.has("propertyKey2", "value2");
+        traversalQuery.limit(2);
+        traversalQuery.has("propertyKey3", "value3");
+        traversalQuery.has("propertyKey4", "value4");
+        traversalQuery.has("propertyKey5", "value5");
+        traversalQuery.limit(3);
+        traversalQuery.limit(4);
+
+        QueryBuilder clonedQuery = traversalQuery.removeQueryStepsBetween(2, 7);
+        String query = clonedQuery.getQuery().toString();
+        assertEquals("[RangeGlobalStep(0,1), HasStep([propertyKey.eq(value)]), HasStep([propertyKey5.eq(value5)]), RangeGlobalStep(0,3), RangeGlobalStep(0,4)]", query);
     }
 
 }

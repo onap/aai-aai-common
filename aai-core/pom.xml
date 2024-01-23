@@ -36,7 +36,7 @@ limitations under the License.
 		<springframework.version>4.3.24.RELEASE</springframework.version>
 
 		<jacoco.line.coverage.limit>0.50</jacoco.line.coverage.limit>
-		<gremlin.version>3.2.2</gremlin.version>
+		<gremlin.version>3.2.4</gremlin.version>
 		<groovy.version>2.5.15</groovy.version>
 		<mockito.core.version>3.4.0</mockito.core.version>
 		<!-- Start of Default ONAP Schema Properties -->

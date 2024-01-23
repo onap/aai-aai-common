@@ -43,10 +43,12 @@ import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.onap.aai.DataLinkSetup;
+import org.onap.aai.TinkerpopUpgrade;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.ModelType;
@@ -56,6 +58,7 @@ import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 import org.springframework.test.annotation.DirtiesContext;
 
+@Category(TinkerpopUpgrade.class)
 @RunWith(value = Parameterized.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class GraphTraversalTest extends DataLinkSetup {
