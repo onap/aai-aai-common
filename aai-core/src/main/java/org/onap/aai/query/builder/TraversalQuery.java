@@ -52,6 +52,11 @@ public class TraversalQuery<E> extends GraphTraversalBuilder<E> {
         this.factory = new TraversalStrategy(this.loader, this);
     }
 
+    public TraversalQuery(Loader loader, GraphTraversalSource source, GraphTraversal<Vertex, E> traversal) {
+        super(loader, source, traversal);
+        this.factory = new TraversalStrategy(this.loader, this);
+    }
+
     /**
      * Instantiates a new traversal query.
      *
