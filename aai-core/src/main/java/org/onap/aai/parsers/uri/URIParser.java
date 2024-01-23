@@ -131,8 +131,8 @@ public class URIParser {
                         uriKeys = queryParams;
                     } else {
                         for (String key : keys) {
-                            part = UriUtils.decode(parts[i+1], "UTF-8");
-                            introspector.setValue(key, part);
+                            String value = UriUtils.decode(parts[i+1], "UTF-8");
+                            introspector.setValue(key, value);
                             // skip this for further processing
                             i++;
                         }
