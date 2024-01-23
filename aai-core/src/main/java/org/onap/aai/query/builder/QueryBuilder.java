@@ -4,6 +4,8 @@
  * ================================================================================
  * Copyright © 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
+ * Modifications Copyright © 2024 DEUTSCHE TELEKOM AG.
+ * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -90,6 +92,11 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
         this.loader = loader;
     }
 
+    /**
+     * Creates a new {@link QueryBuilder} that contains the traversal up to the provided index.
+     * @param index
+     * @return
+     */
     protected abstract QueryBuilder<E> cloneQueryAtStep(int index);
 
     /**
@@ -266,9 +273,15 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
     public abstract QueryBuilder<Vertex> createKeyQuery(Introspector obj);
 
     /**
-     * Creates the container query.
+     * Creates the container query.<br>
+     * A container query is a query that will return a collection of objects:
+     * <pre>
+     * /cloud-infrastructure/complexes/complex/key1
+     *           ↑              ↑        ↑
+     *       namespace      container  object
      *
-     * @param obj the obj
+     * </pre>
+     * @param obj the Introspector into the db schema
      * @return the query builder
      */
     public abstract QueryBuilder<Vertex> createContainerQuery(Introspector obj);

@@ -4,6 +4,8 @@
  * ================================================================================
  * Copyright © 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
+ *  * Modifications Copyright © 2024 DEUTSCHE TELEKOM AG.
+ * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -32,6 +34,7 @@ import java.util.Set;
 
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
+import org.apache.tinkerpop.gremlin.process.traversal.Step;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal.Admin;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
@@ -62,6 +65,9 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
     protected GraphTraversal<Vertex, E> traversal = null;
     protected Admin<Vertex, E> completeTraversal = null;
 
+    protected QueryBuilder<E> containerQuery;
+    protected QueryBuilder<E> parentQuery;
+
     /**
      * Instantiates a new graph traversal builder.
      *
@@ -70,6 +76,12 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
     public GraphTraversalBuilder(Loader loader, GraphTraversalSource source) {
         super(loader, source);
         traversal = (GraphTraversal<Vertex, E>) __.<E>start();
+
+    }
+
+    public GraphTraversalBuilder(Loader loader, GraphTraversalSource source, GraphTraversal<Vertex, E> traversal) {
+        super(loader, source);
+        this.traversal = traversal;
 
     }
 
@@ -336,11 +348,7 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
         }
     }
 
-    /**
-     * @{inheritDoc}
-     */
     @Override
-
     public QueryBuilder<Vertex> createContainerQuery(Introspector obj) {
         String type = obj.getChildDBName();
         String abstractType = obj.getMetadata(ObjectMetadata.ABSTRACT);
@@ -851,17 +859,18 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
      */
     @Override
     public QueryBuilder<E> getParentQuery() {
-
-        return cloneQueryAtStep(parentStepIndex);
+        return this.parentQuery != null
+            ? this.parentQuery
+            : cloneQueryAtStep(parentStepIndex);
     }
 
     @Override
     public QueryBuilder<E> getContainerQuery() {
-
+        
         if (this.parentStepIndex == 0) {
             return removeQueryStepsBetween(0, containerStepIndex);
         } else {
-            return cloneQueryAtStep(containerStepIndex);
+            return this.containerQuery;
         }
     }
 
@@ -870,11 +879,13 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
      */
     @Override
     public void markParentBoundary() {
+        this.parentQuery = cloneQueryAtStep(stepIndex);
         parentStepIndex = stepIndex;
     }
 
     @Override
     public void markContainer() {
+        this.containerQuery = cloneQueryAtStep(stepIndex);
         containerStepIndex = stepIndex;
     }
 
