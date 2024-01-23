@@ -73,6 +73,12 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
 
     }
 
+    public GraphTraversalBuilder(Loader loader, GraphTraversalSource source, GraphTraversal<Vertex, E> traversal) {
+        super(loader, source);
+        this.traversal = traversal;
+
+    }
+
     /**
      * Instantiates a new graph traversal builder.
      *

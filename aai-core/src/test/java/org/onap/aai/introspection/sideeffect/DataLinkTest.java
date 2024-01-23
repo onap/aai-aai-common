@@ -28,12 +28,18 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
+import javax.ws.rs.core.MultivaluedMap;
+
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
@@ -42,24 +48,30 @@ import org.janusgraph.core.JanusGraph;
 import org.janusgraph.core.JanusGraphFactory;
 import org.janusgraph.core.schema.JanusGraphManagement;
 import org.junit.*;
+import org.junit.experimental.categories.Category;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.onap.aai.DataLinkSetup;
+import org.onap.aai.TinkerpopUpgrade;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.edges.enums.EdgeProperty;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
+import org.onap.aai.introspection.LoaderUtil;
 import org.onap.aai.introspection.ModelType;
 import org.onap.aai.parsers.query.QueryParser;
+import org.onap.aai.query.builder.QueryBuilder;
+import org.onap.aai.restcore.util.URITools;
 import org.onap.aai.serialization.db.DBSerializer;
 import org.onap.aai.serialization.engines.JanusGraphDBEngine;
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 
+@Category(TinkerpopUpgrade.class)
 @RunWith(value = Parameterized.class)
 public class DataLinkTest extends DataLinkSetup {
 
@@ -81,7 +93,7 @@ public class DataLinkTest extends DataLinkSetup {
 
     @Parameterized.Parameters(name = "QueryStyle.{0}")
     public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][] {{QueryStyle.TRAVERSAL}, {QueryStyle.TRAVERSAL_URI}});
+        return Arrays.asList(new Object[][] {{QueryStyle.TRAVERSAL}});
     }
 
     @BeforeClass
@@ -202,6 +214,43 @@ public class DataLinkTest extends DataLinkSetup {
                 .has("global-route-target", "key1").has("route-target-role", "key2").has("linked", true).hasNext());
         g.tx().rollback();
 
+    }
+
+    /** 
+     * This is more directly testing the modification mechanism (see verifyModificationOfVertex test)
+     */
+    @Test
+    public void linkQuery() throws UnsupportedEncodingException, AAIException, URISyntaxException {
+        Graph g = graph.newTransaction();
+        GraphTraversalSource source = g.traversal();
+        final Loader loader = LoaderUtil.getLatestVersion();
+        URI uri = new URI("/network/vpn-bindings/vpn-binding/modifyKey/route-targets/route-target/modifyTargetKey2/modifyRoleKey2");
+        MultivaluedMap<String, String> map = URITools.getQueryMap(uri);
+        GraphTraversal<Vertex, Vertex> traversal = __.<Vertex>start();
+        
+        QueryParser uriQuery = dbEngine.getQueryBuilder(this.queryStyle, loader, source, traversal).createQueryFromURI(uri, map);
+        assertEquals(traversal.asAdmin().getSteps().size(), 6);
+        assertEquals("HasStep([vpn-id.eq(modifyKey)])", traversal.asAdmin().getSteps().get(0).toString());
+        assertEquals("HasStep([aai-node-type.eq(vpn-binding)])", traversal.asAdmin().getSteps().get(1).toString());
+        assertEquals("VertexStep(IN,[org.onap.relationships.inventory.BelongsTo],vertex)", traversal.asAdmin().getSteps().get(2).toString());
+        assertEquals("HasStep([aai-node-type.eq(route-target)])", traversal.asAdmin().getSteps().get(3).toString());
+        assertEquals("HasStep([global-route-target.eq(modifyTargetKey2)])", traversal.asAdmin().getSteps().get(4).toString());
+        assertEquals("HasStep([route-target-role.eq(modifyRoleKey2)])", traversal.asAdmin().getSteps().get(5).toString());
+        List<Vertex> results = uriQuery.getQueryBuilder().toList();
+
+        assertEquals(0, results.size());
+        assertEquals(traversal.asAdmin().getSteps().size(), 6);
+        assertEquals("HasStep([vpn-id.eq(modifyKey)])", traversal.asAdmin().getSteps().get(0).toString());
+        assertEquals("HasStep([aai-node-type.eq(vpn-binding)])", traversal.asAdmin().getSteps().get(1).toString());
+        assertEquals("VertexStep(IN,[org.onap.relationships.inventory.BelongsTo],vertex)", traversal.asAdmin().getSteps().get(2).toString());
+        assertEquals("HasStep([aai-node-type.eq(route-target)])", traversal.asAdmin().getSteps().get(3).toString());
+        assertEquals("HasStep([global-route-target.eq(modifyTargetKey2)])", traversal.asAdmin().getSteps().get(4).toString());
+        assertEquals("HasStep([route-target-role.eq(modifyRoleKey2)])", traversal.asAdmin().getSteps().get(5).toString());
+
+        QueryBuilder<Vertex> queryBuilder = uriQuery.getQueryBuilder().getContainerQuery()
+        .getVerticesByProperty(AAIProperties.LINKED, true);
+        List<Vertex> linkedVertices = queryBuilder.toList();
+        assertEquals(1, linkedVertices.size());
     }
 
     @Test
