@@ -15,6 +15,25 @@ This document provides release notes for the Active and Available Inventory Proj
 Release Data
 ============
 
+Version: 13.0.0
+---------------
+
+New Features
+------------
+
+- Spring Boot update in aai-common, resources and traversal from 2.1 to 2.4
+- Tracing support in resources and traversal
+- Optionally enable `database level caching for JanusGraph <https://docs.janusgraph.org/operations/cache/#database-level-caching>`_
+- Change default logging to write to stdout instead of files
+- Reduce log noise by not logging happy pass for liveness probes
+
+Fixes
+-----
+
+- Fix metrics monitoring via Prometheus
+
+:Release Date: 2022-11-10
+
 Version: 11.0.0
 ---------------
 
