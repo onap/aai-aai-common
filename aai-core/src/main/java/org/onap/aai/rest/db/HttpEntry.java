@@ -337,20 +337,89 @@ public class HttpEntry {
         return this.totalVertices;
     }
 
-    /**
-     * Process.
-     *
-     * @param requests the requests
-     * @param sourceOfTruth the source of truth
-     *
-     * @return the pair
-     * @throws AAIException the AAI exception
-     */
     public Pair<Boolean, List<Pair<URI, Response>>> process(List<DBRequest> requests, String sourceOfTruth,
             boolean enableResourceVersion) throws AAIException {
-        return this.process(requests, sourceOfTruth, Collections.EMPTY_SET, enableResourceVersion);
+        return this.process(requests, sourceOfTruth, Collections.emptySet(), enableResourceVersion);
     }
 
+    public Pair<Boolean, Pair<URI, Response>> process(DBRequest request, String sourceOfTruth) throws AAIException {
+        return this.process(request, sourceOfTruth, Collections.emptySet(), true);
+    }
+
+    public Pair<Boolean, Pair<URI, Response>> process(DBRequest request, String sourceOfTruth,
+            boolean enableResourceVersion) throws AAIException {
+        return this.process(request, sourceOfTruth, Collections.emptySet(), enableResourceVersion);
+    }
+
+    private Pair<Boolean, Pair<URI, Response>> process(DBRequest request, String sourceOfTruth,
+            Set<String> groups, boolean enableResourceVersion) throws AAIException {
+        DBSerializer serializer = null;
+
+        if (serverBase != null) {
+            serializer = new DBSerializer(version, dbEngine, introspectorFactoryType, sourceOfTruth, groups,
+                    notificationDepth, serverBase);
+        } else {
+            serializer = new DBSerializer(version, dbEngine, introspectorFactoryType, sourceOfTruth, groups,
+                    notificationDepth);
+        }
+
+        String transactionId = request.getTransactionId();
+        
+        QueryEngine queryEngine = dbEngine.getQueryEngine();
+        Set<Vertex> mainVerticesToNotifyOn = new LinkedHashSet<>();
+
+        AaiDBMetricLog metricLog = new AaiDBMetricLog(AAIConstants.AAI_RESOURCES_MS);
+        String outputMediaType = getMediaType(request.getHeaders().getAcceptableMediaTypes());
+
+        Pair<URI, Response> pairedResponse = null;
+        boolean success = true;
+        try {
+            try {
+                Response response = processRequest(request, metricLog, serializer, queryEngine, groups, mainVerticesToNotifyOn, sourceOfTruth, enableResourceVersion);
+                pairedResponse = Pair.with(request.getUri(), response);
+            } catch (JanusGraphException e) {
+                this.dbEngine.rollback();
+                throw new AAIException("AAI_6134", e);
+            }
+        } catch (AAIException e) {
+            ArrayList<String> templateVars = new ArrayList<>();
+            templateVars.add(request.getMethod().toString()); // GET, PUT, etc
+            templateVars.add(request.getUri().getPath());
+            templateVars.addAll(e.getTemplateVars());
+            ErrorLogHelper.logException(e);
+            Response errorResponse =
+                    Response.status(e.getErrorObject().getHTTPResponseCode())
+                            .entity(ErrorLogHelper.getRESTAPIErrorResponse(
+                                    request.getHeaders().getAcceptableMediaTypes(), e, templateVars))
+                            .type(outputMediaType).build();
+            success = false;
+            pairedResponse = Pair.with(request.getUri(), errorResponse);
+        } catch (Exception e) {
+            AAIException ex = new AAIException("AAI_4000", e);
+            ArrayList<String> templateVars = new ArrayList<>();
+            templateVars.add(request.getMethod().toString()); // GET, PUT, etc
+            templateVars.add(request.getUri().getPath());
+            ErrorLogHelper.logException(ex);
+            Response errorResponse =
+                    Response.status(ex.getErrorObject().getHTTPResponseCode())
+                            .entity(ErrorLogHelper.getRESTAPIErrorResponse(
+                                    request.getHeaders().getAcceptableMediaTypes(), ex, templateVars))
+                            .type(outputMediaType).build();
+            success = false;
+            pairedResponse = Pair.with(request.getUri(), errorResponse);
+        } finally {
+            metricLog.post(request, pairedResponse.getValue1());
+        }
+
+        if (success) {
+            generateEvents(sourceOfTruth, serializer, transactionId, queryEngine, mainVerticesToNotifyOn);
+        } else {
+            notification.clearEvents();
+        }
+
+        return Pair.with(success, pairedResponse);
+    }
+    
     private Pair<Boolean, List<Pair<URI, Response>>> process(List<DBRequest> requests, String sourceOfTruth,
             Set<String> groups, boolean enableResourceVersion) throws AAIException {
 
@@ -364,17 +433,9 @@ public class HttpEntry {
                     notificationDepth);
         }
 
-        Response response;
-        Introspector obj;
-        QueryParser query;
-        URI uri;
         String transactionId = null;
-        int depth;
-        Format format = null;
+        
         List<Pair<URI, Response>> responses = new ArrayList<>();
-        MultivaluedMap<String, String> params;
-        HttpMethod method;
-        String uriTemp;
         boolean success = true;
         QueryEngine queryEngine = dbEngine.getQueryEngine();
         Set<Vertex> mainVertexesToNotifyOn = new LinkedHashSet<>();
@@ -389,343 +450,10 @@ public class HttpEntry {
         }
 
         for (DBRequest request : requests) {
-            response = null;
-            Status status = Status.NOT_FOUND;
-            method = request.getMethod();
-            metricLog.pre(request);
             try {
                 try {
-
-                    obj = request.getIntrospector();
-                    query = request.getParser();
-                    transactionId = request.getTransactionId();
-                    uriTemp = request.getUri().getRawPath().replaceFirst("^v\\d+/", "");
-                    uri = UriBuilder.fromPath(uriTemp).build();
-
-                    boolean groupsAvailable = serializer.getGroups() != null && !serializer.getGroups().isEmpty();
-                    List<Vertex> queryResult = query.getQueryBuilder().toList();
-                    List<Vertex> vertices;
-                    if (this.isPaginated()) {
-                        List<Vertex> vertTemp = groupsAvailable ? queryResult.stream().filter((vx) -> {
-                            return OwnerCheck.isAuthorized(groups, vx);
-                        }).collect(Collectors.toList()) : queryResult;
-                        this.setTotalsForPaging(vertTemp.size(), this.paginationBucket);
-                        vertices = vertTemp.subList(((this.paginationIndex - 1) * this.paginationBucket),
-                                Math.min((this.paginationBucket * this.paginationIndex), vertTemp.size()));
-                    } else {
-                        vertices = groupsAvailable && queryResult.size() > 1 ? queryResult.stream().filter((vx) -> {
-                            return OwnerCheck.isAuthorized(groups, vx);
-                        }).collect(Collectors.toList()) : queryResult;
-
-                    }
-
-                    boolean isNewVertex;
-                    HttpHeaders headers = request.getHeaders();
-                    outputMediaType = getMediaType(headers.getAcceptableMediaTypes());
-                    String result = null;
-                    params = request.getInfo().getQueryParameters(false);
-                    depth = setDepth(obj, params.getFirst("depth"));
-                    if (params.containsKey("format")) {
-                        format = Format.getFormat(params.getFirst("format"));
-                    }
-                    String cleanUp = params.getFirst("cleanup");
-                    String requestContext = "";
-                    List<String> requestContextList = request.getHeaders().getRequestHeader("aai-request-context");
-                    if (requestContextList != null) {
-                        requestContext = requestContextList.get(0);
-                    }
-
-                    if (cleanUp == null) {
-                        cleanUp = "false";
-                    }
-                    if (vertices.size() > 1 && processSingle
-                            && !(method.equals(HttpMethod.GET) || method.equals(HttpMethod.GET_RELATIONSHIP))) {
-                        if (method.equals(HttpMethod.DELETE)) {
-
-                            throw new AAIException("AAI_6138");
-                        } else {
-                            throw new AAIException("AAI_6137");
-                        }
-                    }
-                    if (method.equals(HttpMethod.PUT)) {
-                        String resourceVersion = obj.getValue(AAIProperties.RESOURCE_VERSION);
-                        if (vertices.isEmpty()) {
-                            if (enableResourceVersion) {
-                                serializer.verifyResourceVersion("create", query.getResultType(), "", resourceVersion,
-                                        obj.getURI());
-                            }
-                            isNewVertex = true;
-                        } else {
-                            if (enableResourceVersion) {
-                                serializer.verifyResourceVersion("update", query.getResultType(),
-                                        vertices.get(0).<String>property(AAIProperties.RESOURCE_VERSION).orElse(null),
-                                        resourceVersion, obj.getURI());
-                            }
-                            isNewVertex = false;
-                        }
-                    } else {
-                        if (vertices.isEmpty()) {
-                            String msg = createNotFoundMessage(query.getResultType(), request.getUri());
-                            throw new AAIException("AAI_6114", msg);
-                        } else {
-                            isNewVertex = false;
-                        }
-                    }
-                    Vertex v = null;
-                    if (!isNewVertex) {
-                        v = vertices.get(0);
-                    }
-
-                    /*
-                     * This skip-related-to query parameter is used to determine if the relationships object will omit
-                     * the related-to-property
-                     * If a GET is sent to resources without a format, if format=resource, or if format=resource_and_url
-                     * with this param set to false
-                     * then behavior will be keep the related-to properties. By default, set to true.
-                     * Otherwise, for any other case, when the skip-related-to parameter exists, has value=true, or some
-                     * unfamiliar input (e.g. skip-related-to=bogusvalue), the value is true.
-                     */
-                    boolean isSkipRelatedTo = true;
-                    if (params.containsKey("skip-related-to")) {
-                        String skipRelatedTo = params.getFirst("skip-related-to");
-                        isSkipRelatedTo = !(skipRelatedTo != null && skipRelatedTo.equals("false"));
-                    } else {
-                        // if skip-related-to param is missing, then default it to false;
-                        isSkipRelatedTo = false;
-                    }
-
-                    HashMap<String, Introspector> relatedObjects = new HashMap<>();
-                    String nodeOnly = params.getFirst("nodes-only");
-                    boolean isNodeOnly = nodeOnly != null;
-                    switch (method) {
-                        case GET:
-
-                            if (format == null) {
-                                obj = this.getObjectFromDb(vertices, serializer, query, obj, request.getUri(), depth,
-                                        isNodeOnly, cleanUp, isSkipRelatedTo);
-
-                                if (obj != null) {
-                                    status = Status.OK;
-                                    MarshallerProperties properties;
-                                    Optional<MarshallerProperties> marshallerPropOpt =
-                                            request.getMarshallerProperties();
-                                    if (marshallerPropOpt.isPresent()) {
-                                        properties = marshallerPropOpt.get();
-                                    } else {
-                                        properties = new MarshallerProperties.Builder(
-                                                org.onap.aai.restcore.MediaType.getEnum(outputMediaType)).build();
-                                    }
-                                    result = obj.marshal(properties);
-                                }
-                            } else {
-                                FormatFactory ff = new FormatFactory(loader, serializer, schemaVersions, basePath + "/",
-                                        serverBase);
-                                Formatter formatter = ff.get(format, params);
-                                result = formatter.output(
-                                        vertices.stream().map(vertex -> (Object) vertex).collect(Collectors.toList()))
-                                        .toString();
-
-                                if (outputMediaType == null) {
-                                    outputMediaType = MediaType.APPLICATION_JSON;
-                                }
-
-                                if (MediaType.APPLICATION_XML_TYPE.isCompatible(MediaType.valueOf(outputMediaType))) {
-                                    result = xmlFormatTransformer.transform(result);
-                                }
-                                status = Status.OK;
-                            }
-
-                            break;
-                        case GET_RELATIONSHIP:
-                            if (format == null) {
-                                obj = this.getRelationshipObjectFromDb(vertices, serializer, query,
-                                        request.getInfo().getRequestUri(), isSkipRelatedTo);
-
-                                if (obj != null) {
-                                    status = Status.OK;
-                                    MarshallerProperties properties;
-                                    if (!request.getMarshallerProperties().isPresent()) {
-                                        properties = new MarshallerProperties.Builder(
-                                                org.onap.aai.restcore.MediaType.getEnum(outputMediaType)).build();
-                                    } else {
-                                        properties = request.getMarshallerProperties().get();
-                                    }
-                                    result = obj.marshal(properties);
-                                } else {
-                                    String msg =
-                                            createRelationshipNotFoundMessage(query.getResultType(), request.getUri());
-                                    throw new AAIException("AAI_6149", msg);
-                                }
-                            } else {
-                                FormatFactory ff = new FormatFactory(loader, serializer, schemaVersions, basePath + "/",
-                                        serverBase);
-                                Formatter formatter = ff.get(format, params);
-                                result = formatter.output(
-                                        vertices.stream().map(vertex -> (Object) vertex).collect(Collectors.toList()))
-                                        .toString();
-
-                                if (outputMediaType == null) {
-                                    outputMediaType = MediaType.APPLICATION_JSON;
-                                }
-
-                                if (MediaType.APPLICATION_XML_TYPE.isCompatible(MediaType.valueOf(outputMediaType))) {
-                                    result = xmlFormatTransformer.transform(result);
-                                }
-                                status = Status.OK;
-                            }
-                            break;
-                        case PUT:
-                            if (isNewVertex) {
-                                v = serializer.createNewVertex(obj);
-                            }
-                            serializer.serializeToDb(obj, v, query, uri.getRawPath(), requestContext);
-                            status = Status.OK;
-                            if (isNewVertex) {
-                                status = Status.CREATED;
-                            }
-
-                            mainVertexesToNotifyOn.add(v);
-                            if (notificationDepth == AAIProperties.MINIMUM_DEPTH) {
-                                Map<String, Pair<Introspector, LinkedHashMap<String, Introspector>>> allImpliedDeleteObjs =
-                                        serializer.getImpliedDeleteUriObjectPair();
-
-                                for (Map.Entry<String, Pair<Introspector, LinkedHashMap<String, Introspector>>> entry : allImpliedDeleteObjs
-                                        .entrySet()) {
-                                    // The format is purposefully %s/%s%s due to the fact
-                                    // that every aai-uri will have a slash at the beginning
-                                    // If that assumption isn't true, then its best to change this code
-                                    String curUri = String.format("%s/%s%s", basePath, version, entry.getKey());
-                                    Introspector curObj = entry.getValue().getValue0();
-                                    HashMap<String, Introspector> curObjRelated = entry.getValue().getValue1();
-                                    notification.createNotificationEvent(transactionId, sourceOfTruth,
-                                            Status.NO_CONTENT, URI.create(curUri), curObj, curObjRelated, basePath);
-                                }
-                            }
-
-                            break;
-                        case PUT_EDGE:
-                            serializer.touchStandardVertexProperties(v, false);
-                            Vertex relatedVertex = serializer.createEdge(obj, v);
-                            status = Status.OK;
-
-                            mainVertexesToNotifyOn.add(v);
-                            serializer.addVertexToEdgeVertexes(relatedVertex);
-                            break;
-                        case MERGE_PATCH:
-                            Introspector existingObj = loader.introspectorFromName(obj.getDbName());
-                            existingObj = this.getObjectFromDb(vertices, serializer, query, existingObj,
-                                    request.getUri(), 0, false, cleanUp);
-                            String existingJson = existingObj.marshal(false);
-                            String newJson;
-
-                            if (request.getRawRequestContent().isPresent()) {
-                                newJson = request.getRawRequestContent().get();
-                            } else {
-                                newJson = "";
-                            }
-                            Object relationshipList = request.getIntrospector().getValue("relationship-list");
-                            ObjectMapper mapper = new ObjectMapper();
-                            try {
-                                JsonNode existingNode = mapper.readTree(existingJson);
-                                JsonNode newNode = mapper.readTree(newJson);
-                                JsonMergePatch patch = JsonMergePatch.fromJson(newNode);
-                                JsonNode completed = patch.apply(existingNode);
-                                String patched = mapper.writeValueAsString(completed);
-                                Introspector patchedObj = loader.unmarshal(existingObj.getName(), patched);
-                                if (relationshipList == null && patchedObj.hasProperty("relationship-list")) {
-                                    // if the caller didn't touch the relationship-list, we shouldn't either
-                                    patchedObj.setValue("relationship-list", null);
-                                }
-                                serializer.serializeToDb(patchedObj, v, query, uri.getRawPath(), requestContext);
-                                status = Status.OK;
-                                mainVertexesToNotifyOn.add(v);
-                            } catch (IOException | JsonPatchException e) {
-                                throw new AAIException("AAI_3000", "could not perform patch operation");
-                            }
-                            break;
-                        case DELETE:
-                            String resourceVersion = params.getFirst(AAIProperties.RESOURCE_VERSION);
-                            obj = serializer.getLatestVersionView(v, notificationDepth);
-                            if (query.isDependent()) {
-                                relatedObjects = serializer.getRelatedObjects(queryEngine, v, obj, this.loader);
-                            }
-                            /*
-                             * Find all Delete-other-vertex vertices and create structure for notify
-                             * findDeleatble also returns the startVertex v and we dont want to create
-                             * duplicate notification events for the same
-                             * So remove the startvertex first
-                             */
-
-                            List<Vertex> deletableVertices = dbEngine.getQueryEngine().findDeletable(v);
-                            Object vId = v.id();
-
-                            /*
-                             * I am assuming vertexId cant be null
-                             */
-                            deletableVertices.removeIf(s -> vId.equals(s.id()));
-                            boolean isDelVerticesPresent = !deletableVertices.isEmpty();
-                            Map<Vertex, Introspector> deleteObjects = new HashMap<>();
-                            Map<String, URI> uriMap = new HashMap<>();
-                            Map<String, HashMap<String, Introspector>> deleteRelatedObjects = new HashMap<>();
-
-                            if (isDelVerticesPresent) {
-                                deleteObjects = this.buildIntrospectorObjects(serializer, deletableVertices);
-
-                                uriMap = this.buildURIMap(serializer, deleteObjects);
-                                deleteRelatedObjects = this.buildRelatedObjects(serializer, queryEngine, deleteObjects);
-                            }
-
-                            serializer.delete(v, deletableVertices, resourceVersion, enableResourceVersion);
-                            status = Status.NO_CONTENT;
-                            notification.createNotificationEvent(transactionId, sourceOfTruth, status, uri, obj,
-                                    relatedObjects, basePath);
-
-                            /*
-                             * Notify delete-other-v candidates
-                             */
-
-                            if (isDelVerticesPresent) {
-                                this.buildNotificationEvent(sourceOfTruth, status, transactionId, notification,
-                                        deleteObjects, uriMap, deleteRelatedObjects, basePath);
-                            }
-                            break;
-                        case DELETE_EDGE:
-                            serializer.touchStandardVertexProperties(v, false);
-                            Optional<Vertex> otherV = serializer.deleteEdge(obj, v);
-
-                            status = Status.NO_CONTENT;
-                            if (otherV.isPresent()) {
-                                mainVertexesToNotifyOn.add(v);
-                                serializer.addVertexToEdgeVertexes(otherV.get());
-                            }
-                            break;
-                        default:
-                            break;
-                    }
-
-                    /*
-                     * temporarily adding vertex id to the headers
-                     * to be able to use for testing the vertex id endpoint functionality
-                     * since we presently have no other way of generating those id urls
-                     */
-                    if (response == null && v != null && (method.equals(HttpMethod.PUT) || method.equals(HttpMethod.GET)
-                            || method.equals(HttpMethod.MERGE_PATCH) || method.equals(HttpMethod.GET_RELATIONSHIP))
-
-                    ) {
-                        String myvertid = v.id().toString();
-                        if (this.isPaginated()) {
-                            response = Response.status(status).header("vertex-id", myvertid)
-                                    .header("total-results", this.getTotalVertices())
-                                    .header("total-pages", this.getTotalPaginationBuckets()).entity(result)
-                                    .type(outputMediaType).build();
-                        } else {
-                            response = Response.status(status).header("vertex-id", myvertid).entity(result)
-                                    .type(outputMediaType).build();
-                        }
-                    } else if (response == null) {
-                        response = Response.status(status).type(outputMediaType).build();
-                    } // else, response already set to something
-
+                    Response response = processRequest(request, metricLog, serializer, queryEngine, groups, mainVertexesToNotifyOn, sourceOfTruth, enableResourceVersion);
+    
                     Pair<URI, Response> pairedResp = Pair.with(request.getUri(), response);
                     responses.add(pairedResp);
                 } catch (JanusGraphException e) {
@@ -739,12 +467,12 @@ public class HttpEntry {
                 templateVars.add(request.getUri().getPath());
                 templateVars.addAll(e.getTemplateVars());
                 ErrorLogHelper.logException(e);
-                response =
+                Response errorResponse =
                         Response.status(e.getErrorObject().getHTTPResponseCode())
                                 .entity(ErrorLogHelper.getRESTAPIErrorResponse(
                                         request.getHeaders().getAcceptableMediaTypes(), e, templateVars))
                                 .type(outputMediaType).build();
-                Pair<URI, Response> pairedResp = Pair.with(request.getUri(), response);
+                Pair<URI, Response> pairedResp = Pair.with(request.getUri(), errorResponse);
                 responses.add(pairedResp);
             } catch (Exception e) {
                 success = false;
@@ -753,17 +481,15 @@ public class HttpEntry {
                 templateVars.add(request.getMethod().toString()); // GET, PUT, etc
                 templateVars.add(request.getUri().getPath());
                 ErrorLogHelper.logException(ex);
-                response =
+                Response errorResponse =
                         Response.status(ex.getErrorObject().getHTTPResponseCode())
                                 .entity(ErrorLogHelper.getRESTAPIErrorResponse(
                                         request.getHeaders().getAcceptableMediaTypes(), ex, templateVars))
                                 .type(outputMediaType).build();
-                Pair<URI, Response> pairedResp = Pair.with(request.getUri(), response);
+                Pair<URI, Response> pairedResp = Pair.with(request.getUri(), errorResponse);
                 responses.add(pairedResp);
             } finally {
-                if (response != null) {
-                    metricLog.post(request, response);
-                }
+                metricLog.post(request, responses.get(responses.size() - 1).getValue1());
             }
         }
 
@@ -774,6 +500,344 @@ public class HttpEntry {
         }
 
         return Pair.with(success, responses);
+    }
+
+    public Response processRequest(DBRequest request, AaiDBMetricLog metricLog, DBSerializer serializer, QueryEngine queryEngine, Set<String> groups, Set<Vertex> mainVertexesToNotifyOn, String sourceOfTruth, boolean enableResourceVersion) throws AAIException, UnsupportedEncodingException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, SecurityException, InstantiationException, NoSuchMethodException, URISyntaxException {
+        Status status = Status.NOT_FOUND;
+        HttpMethod method = request.getMethod();
+        metricLog.pre(request);
+        
+        Introspector obj = request.getIntrospector();
+        QueryParser query = request.getParser();
+        String transactionId = request.getTransactionId();
+        String uriTemp = request.getUri().getRawPath().replaceFirst("^v\\d+/", "");
+        URI uri = UriBuilder.fromPath(uriTemp).build();
+
+        boolean groupsAvailable = serializer.getGroups() != null && !serializer.getGroups().isEmpty();
+        List<Vertex> queryResult = query.getQueryBuilder().toList();
+        List<Vertex> vertices;
+        if (this.isPaginated()) {
+            List<Vertex> vertTemp = groupsAvailable ? queryResult.stream().filter((vx) -> {
+                return OwnerCheck.isAuthorized(groups, vx);
+            }).collect(Collectors.toList()) : queryResult;
+            this.setTotalsForPaging(vertTemp.size(), this.paginationBucket);
+            vertices = vertTemp.subList(((this.paginationIndex - 1) * this.paginationBucket),
+                    Math.min((this.paginationBucket * this.paginationIndex), vertTemp.size()));
+        } else {
+            vertices = groupsAvailable && queryResult.size() > 1 ? queryResult.stream().filter((vx) -> {
+                return OwnerCheck.isAuthorized(groups, vx);
+            }).collect(Collectors.toList()) : queryResult;
+
+        }
+
+        boolean isNewVertex;
+        HttpHeaders headers = request.getHeaders();
+        String outputMediaType = getMediaType(headers.getAcceptableMediaTypes());
+        String result = null;
+        MultivaluedMap<String, String> params = request.getInfo().getQueryParameters(false);
+        int depth = setDepth(obj, params.getFirst("depth"));
+        Format format = params.containsKey("format")
+            ? Format.getFormat(params.getFirst("format"))
+            : null;
+
+        String cleanUp = params.getFirst("cleanup");
+        String requestContext = "";
+        List<String> requestContextList = request.getHeaders().getRequestHeader("aai-request-context");
+        if (requestContextList != null) {
+            requestContext = requestContextList.get(0);
+        }
+
+        if (cleanUp == null) {
+            cleanUp = "false";
+        }
+        if (vertices.size() > 1 && processSingle
+                && !(method.equals(HttpMethod.GET) || method.equals(HttpMethod.GET_RELATIONSHIP))) {
+            if (method.equals(HttpMethod.DELETE)) {
+
+                throw new AAIException("AAI_6138");
+            } else {
+                throw new AAIException("AAI_6137");
+            }
+        }
+        if (method.equals(HttpMethod.PUT)) {
+            String resourceVersion = obj.getValue(AAIProperties.RESOURCE_VERSION);
+            if (vertices.isEmpty()) {
+                if (enableResourceVersion) {
+                    serializer.verifyResourceVersion("create", query.getResultType(), "", resourceVersion,
+                            obj.getURI());
+                }
+                isNewVertex = true;
+            } else {
+                if (enableResourceVersion) {
+                    serializer.verifyResourceVersion("update", query.getResultType(),
+                            vertices.get(0).<String>property(AAIProperties.RESOURCE_VERSION).orElse(null),
+                            resourceVersion, obj.getURI());
+                }
+                isNewVertex = false;
+            }
+        } else {
+            if (vertices.isEmpty()) {
+                String msg = createNotFoundMessage(query.getResultType(), request.getUri());
+                throw new AAIException("AAI_6114", msg);
+            } else {
+                isNewVertex = false;
+            }
+        }
+        Vertex v = null;
+        if (!isNewVertex) {
+            v = vertices.get(0);
+        }
+
+        /*
+            * This skip-related-to query parameter is used to determine if the relationships object will omit
+            * the related-to-property
+            * If a GET is sent to resources without a format, if format=resource, or if format=resource_and_url
+            * with this param set to false
+            * then behavior will be keep the related-to properties. By default, set to true.
+            * Otherwise, for any other case, when the skip-related-to parameter exists, has value=true, or some
+            * unfamiliar input (e.g. skip-related-to=bogusvalue), the value is true.
+            */
+        boolean isSkipRelatedTo = true;
+        if (params.containsKey("skip-related-to")) {
+            String skipRelatedTo = params.getFirst("skip-related-to");
+            isSkipRelatedTo = !(skipRelatedTo != null && skipRelatedTo.equals("false"));
+        } else {
+            // if skip-related-to param is missing, then default it to false;
+            isSkipRelatedTo = false;
+        }
+
+        HashMap<String, Introspector> relatedObjects = new HashMap<>();
+        String nodeOnly = params.getFirst("nodes-only");
+        boolean isNodeOnly = nodeOnly != null;
+        switch (method) {
+            case GET:
+                if (format == null) {
+                    obj = this.getObjectFromDb(vertices, serializer, query, obj, request.getUri(), depth,
+                            isNodeOnly, cleanUp, isSkipRelatedTo);
+
+                    if (obj != null) {
+                        status = Status.OK;
+                        MarshallerProperties properties;
+                        Optional<MarshallerProperties> marshallerPropOpt =
+                                request.getMarshallerProperties();
+                        if (marshallerPropOpt.isPresent()) {
+                            properties = marshallerPropOpt.get();
+                        } else {
+                            properties = new MarshallerProperties.Builder(
+                                    org.onap.aai.restcore.MediaType.getEnum(outputMediaType)).build();
+                        }
+                        result = obj.marshal(properties);
+                    }
+                } else {
+                    FormatFactory ff = new FormatFactory(loader, serializer, schemaVersions, basePath + "/",
+                            serverBase);
+                    Formatter formatter = ff.get(format, params);
+                    result = formatter.output(
+                            vertices.stream().map(vertex -> (Object) vertex).collect(Collectors.toList()))
+                            .toString();
+
+                    if (outputMediaType == null) {
+                        outputMediaType = MediaType.APPLICATION_JSON;
+                    }
+
+                    if (MediaType.APPLICATION_XML_TYPE.isCompatible(MediaType.valueOf(outputMediaType))) {
+                        result = xmlFormatTransformer.transform(result);
+                    }
+                    status = Status.OK;
+                }
+
+                break;
+            case GET_RELATIONSHIP:
+                if (format == null) {
+                    obj = this.getRelationshipObjectFromDb(vertices, serializer, query,
+                            request.getInfo().getRequestUri(), isSkipRelatedTo);
+
+                    if (obj != null) {
+                        status = Status.OK;
+                        MarshallerProperties properties;
+                        if (!request.getMarshallerProperties().isPresent()) {
+                            properties = new MarshallerProperties.Builder(
+                                    org.onap.aai.restcore.MediaType.getEnum(outputMediaType)).build();
+                        } else {
+                            properties = request.getMarshallerProperties().get();
+                        }
+                        result = obj.marshal(properties);
+                    } else {
+                        String msg =
+                                createRelationshipNotFoundMessage(query.getResultType(), request.getUri());
+                        throw new AAIException("AAI_6149", msg);
+                    }
+                } else {
+                    FormatFactory ff = new FormatFactory(loader, serializer, schemaVersions, basePath + "/",
+                            serverBase);
+                    Formatter formatter = ff.get(format, params);
+                    result = formatter.output(
+                            vertices.stream().map(vertex -> (Object) vertex).collect(Collectors.toList()))
+                            .toString();
+
+                    if (outputMediaType == null) {
+                        outputMediaType = MediaType.APPLICATION_JSON;
+                    }
+
+                    if (MediaType.APPLICATION_XML_TYPE.isCompatible(MediaType.valueOf(outputMediaType))) {
+                        result = xmlFormatTransformer.transform(result);
+                    }
+                    status = Status.OK;
+                }
+                break;
+            case PUT:
+                if (isNewVertex) {
+                    v = serializer.createNewVertex(obj);
+                }
+                serializer.serializeToDb(obj, v, query, uri.getRawPath(), requestContext);
+                status = Status.OK;
+                if (isNewVertex) {
+                    status = Status.CREATED;
+                }
+
+                mainVertexesToNotifyOn.add(v);
+                if (notificationDepth == AAIProperties.MINIMUM_DEPTH) {
+                    Map<String, Pair<Introspector, LinkedHashMap<String, Introspector>>> allImpliedDeleteObjs =
+                            serializer.getImpliedDeleteUriObjectPair();
+
+                    for (Map.Entry<String, Pair<Introspector, LinkedHashMap<String, Introspector>>> entry : allImpliedDeleteObjs
+                            .entrySet()) {
+                        // The format is purposefully %s/%s%s due to the fact
+                        // that every aai-uri will have a slash at the beginning
+                        // If that assumption isn't true, then its best to change this code
+                        String curUri = String.format("%s/%s%s", basePath, version, entry.getKey());
+                        Introspector curObj = entry.getValue().getValue0();
+                        HashMap<String, Introspector> curObjRelated = entry.getValue().getValue1();
+                        notification.createNotificationEvent(transactionId, sourceOfTruth,
+                                Status.NO_CONTENT, URI.create(curUri), curObj, curObjRelated, basePath);
+                    }
+                }
+
+                break;
+            case PUT_EDGE:
+                serializer.touchStandardVertexProperties(v, false);
+                Vertex relatedVertex = serializer.createEdge(obj, v);
+                status = Status.OK;
+
+                mainVertexesToNotifyOn.add(v);
+                serializer.addVertexToEdgeVertexes(relatedVertex);
+                break;
+            case MERGE_PATCH:
+                Introspector existingObj = loader.introspectorFromName(obj.getDbName());
+                existingObj = this.getObjectFromDb(vertices, serializer, query, existingObj,
+                        request.getUri(), 0, false, cleanUp);
+                String existingJson = existingObj.marshal(false);
+                String newJson;
+
+                if (request.getRawRequestContent().isPresent()) {
+                    newJson = request.getRawRequestContent().get();
+                } else {
+                    newJson = "";
+                }
+                Object relationshipList = request.getIntrospector().getValue("relationship-list");
+                ObjectMapper mapper = new ObjectMapper();
+                try {
+                    JsonNode existingNode = mapper.readTree(existingJson);
+                    JsonNode newNode = mapper.readTree(newJson);
+                    JsonMergePatch patch = JsonMergePatch.fromJson(newNode);
+                    JsonNode completed = patch.apply(existingNode);
+                    String patched = mapper.writeValueAsString(completed);
+                    Introspector patchedObj = loader.unmarshal(existingObj.getName(), patched);
+                    if (relationshipList == null && patchedObj.hasProperty("relationship-list")) {
+                        // if the caller didn't touch the relationship-list, we shouldn't either
+                        patchedObj.setValue("relationship-list", null);
+                    }
+                    serializer.serializeToDb(patchedObj, v, query, uri.getRawPath(), requestContext);
+                    status = Status.OK;
+                    mainVertexesToNotifyOn.add(v);
+                } catch (IOException | JsonPatchException e) {
+                    throw new AAIException("AAI_3000", "could not perform patch operation");
+                }
+                break;
+            case DELETE:
+                String resourceVersion = params.getFirst(AAIProperties.RESOURCE_VERSION);
+                obj = serializer.getLatestVersionView(v, notificationDepth);
+                if (query.isDependent()) {
+                    relatedObjects = serializer.getRelatedObjects(queryEngine, v, obj, this.loader);
+                }
+                /*
+                    * Find all Delete-other-vertex vertices and create structure for notify
+                    * findDeleatble also returns the startVertex v and we dont want to create
+                    * duplicate notification events for the same
+                    * So remove the startvertex first
+                    */
+
+                List<Vertex> deletableVertices = dbEngine.getQueryEngine().findDeletable(v);
+                Object vId = v.id();
+
+                /*
+                    * I am assuming vertexId cant be null
+                    */
+                deletableVertices.removeIf(s -> vId.equals(s.id()));
+                boolean isDelVerticesPresent = !deletableVertices.isEmpty();
+                Map<Vertex, Introspector> deleteObjects = new HashMap<>();
+                Map<String, URI> uriMap = new HashMap<>();
+                Map<String, HashMap<String, Introspector>> deleteRelatedObjects = new HashMap<>();
+
+                if (isDelVerticesPresent) {
+                    deleteObjects = this.buildIntrospectorObjects(serializer, deletableVertices);
+
+                    uriMap = this.buildURIMap(serializer, deleteObjects);
+                    deleteRelatedObjects = this.buildRelatedObjects(serializer, queryEngine, deleteObjects);
+                }
+
+                serializer.delete(v, deletableVertices, resourceVersion, enableResourceVersion);
+                status = Status.NO_CONTENT;
+                notification.createNotificationEvent(transactionId, sourceOfTruth, status, uri, obj,
+                        relatedObjects, basePath);
+
+                /*
+                    * Notify delete-other-v candidates
+                    */
+
+                if (isDelVerticesPresent) {
+                    this.buildNotificationEvent(sourceOfTruth, status, transactionId, notification,
+                            deleteObjects, uriMap, deleteRelatedObjects, basePath);
+                }
+                break;
+            case DELETE_EDGE:
+                serializer.touchStandardVertexProperties(v, false);
+                Optional<Vertex> otherV = serializer.deleteEdge(obj, v);
+
+                status = Status.NO_CONTENT;
+                if (otherV.isPresent()) {
+                    mainVertexesToNotifyOn.add(v);
+                    serializer.addVertexToEdgeVertexes(otherV.get());
+                }
+                break;
+            default:
+                break;
+        }
+
+        Response response = null;
+        /*
+            * temporarily adding vertex id to the headers
+            * to be able to use for testing the vertex id endpoint functionality
+            * since we presently have no other way of generating those id urls
+            */
+        if (response == null && v != null && (method.equals(HttpMethod.PUT) || method.equals(HttpMethod.GET)
+                || method.equals(HttpMethod.MERGE_PATCH) || method.equals(HttpMethod.GET_RELATIONSHIP))
+
+        ) {
+            String myvertid = v.id().toString();
+            if (this.isPaginated()) {
+                response = Response.status(status).header("vertex-id", myvertid)
+                        .header("total-results", this.getTotalVertices())
+                        .header("total-pages", this.getTotalPaginationBuckets()).entity(result)
+                        .type(outputMediaType).build();
+            } else {
+                response = Response.status(status).header("vertex-id", myvertid).entity(result)
+                        .type(outputMediaType).build();
+            }
+        } else if (response == null) {
+            response = Response.status(status).type(outputMediaType).build();
+        }
+        return response;
     }
 
     /**
