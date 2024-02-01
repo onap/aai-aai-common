@@ -26,7 +26,6 @@ import static org.onap.aai.edges.enums.AAIDirection.NONE;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -36,8 +35,6 @@ import static org.mockito.Mockito.when;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -65,7 +62,6 @@ import org.javatuples.Pair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -81,6 +77,8 @@ import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.introspection.ModelType;
+import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
+import org.onap.aai.introspection.exceptions.AAIUnmarshallingException;
 import org.onap.aai.parsers.query.QueryParser;
 import org.onap.aai.rest.db.responses.ErrorResponse;
 import org.onap.aai.rest.db.responses.Relationship;
@@ -90,7 +88,6 @@ import org.onap.aai.rest.ueb.UEBNotification;
 import org.onap.aai.restcore.HttpMethod;
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
-import org.onap.aai.util.AAIConfig;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 
@@ -196,8 +193,50 @@ public class HttpEntryTest extends AAISetup {
                 .put("equip-type", "theEquipType")
                 .toString();
 
+        JSONObject expectedResponseBody = new JSONObject()
+                .put("hostname", "theHostname")
+                .put("equip-type", "theEquipType");
+
         Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri, requestBody);
+        JSONObject actualResponseBody = new JSONObject(response.getEntity().toString());
+
+        JSONAssert.assertEquals(expectedResponseBody, actualResponseBody, JSONCompareMode.NON_EXTENSIBLE);
         assertEquals("Expected the pserver to be returned", 200, response.getStatus());
+
+        response = doSingleRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri, requestBody);
+        actualResponseBody = new JSONObject(response.getEntity().toString());
+
+        JSONAssert.assertEquals(expectedResponseBody, actualResponseBody, JSONCompareMode.NON_EXTENSIBLE);
+        assertEquals("Expected the pserver to be returned", 200, response.getStatus());
+    }
+
+    @Test
+    public void thatPaginatedListCanBeRetrieved() throws UnsupportedEncodingException, AAIException {
+        String uri = "/cloud-infrastructure/pservers/pserver/theHostname";
+        traversal.addV()
+                .property("aai-node-type", "pserver")
+                .property("hostname", "theHostname")
+                .property("equip-type", "theEquipType")
+                .property(AAIProperties.AAI_URI, uri)
+                .next();
+        uri = "/cloud-infrastructure/pservers/pserver/theHostname2";
+        traversal
+                .addV()
+                .property("aai-node-type", "pserver")
+                .property("hostname", "theHostname2")
+                .property("equip-type", "theEquipType2")
+                .property(AAIProperties.AAI_URI, uri)
+                .next();
+        String requestBody = "";
+        uri = "/cloud-infrastructure/pservers";
+        traversalHttpEntry.setPaginationParameters("1", "1");
+        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri, requestBody);
+        assertEquals("2", response.getHeaderString("total-results"));
+        assertEquals("2", response.getHeaderString("total-pages"));
+        
+        response = doSingleRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri, requestBody);
+        assertEquals("2", response.getHeaderString("total-results"));
+        assertEquals("2", response.getHeaderString("total-pages"));
     }
 
     @Test
@@ -206,6 +245,9 @@ public class HttpEntryTest extends AAISetup {
         String requestBody = "";
 
         Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri, requestBody);
+        assertEquals("The pserver is not found", 404, response.getStatus());
+        
+        response = doSingleRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri, requestBody);
         assertEquals("The pserver is not found", 404, response.getStatus());
     }
 
@@ -672,8 +714,6 @@ public class HttpEntryTest extends AAISetup {
         Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET_RELATIONSHIP, uri,
                 requestBody);
 
-        JSONObject actualResponseBody = new JSONObject(response.getEntity().toString());
-
         // Define the expected response
         JSONObject relationshipData = new JSONObject().put("relationship-key", "complex.physical-location-id")
                 .put("relationship-value", "related-to-complex");
@@ -690,6 +730,8 @@ public class HttpEntryTest extends AAISetup {
                 .put("relationship-list", new JSONObject().put("relationship", new JSONArray().put(relationship)));
         JSONObject expectedResponseBody = new JSONObject()
                 .put("results", new JSONArray().put(new JSONObject().put("pserver", pserver)));
+
+        JSONObject actualResponseBody = new JSONObject(response.getEntity().toString());
 
         JSONAssert.assertEquals(expectedResponseBody, actualResponseBody, JSONCompareMode.NON_EXTENSIBLE);
         queryParameters.remove("format");
@@ -743,6 +785,26 @@ public class HttpEntryTest extends AAISetup {
 
     private Response doRequest(HttpEntry httpEntry, Loader loader, TransactionalGraphEngine dbEngine, HttpMethod method,
             String uri, String requestBody) throws UnsupportedEncodingException, AAIException {
+        DBRequest dbRequest = createDBRequest(loader, dbEngine, method, uri, requestBody);
+
+        List<DBRequest> dbRequestList = new ArrayList<>();
+        dbRequestList.add(dbRequest);
+
+        Pair<Boolean, List<Pair<URI, Response>>> responsesTuple = httpEntry.process(dbRequestList, "JUNIT");
+        return responsesTuple.getValue1().get(0).getValue1();
+    }
+
+    private Response doSingleRequest(HttpEntry httpEntry, Loader loader, TransactionalGraphEngine dbEngine, HttpMethod method,
+            String uri, String requestBody) throws UnsupportedEncodingException, AAIException {
+        DBRequest dbRequest = createDBRequest(loader, dbEngine, method, uri, requestBody);
+
+        Pair<Boolean, Pair<URI, Response>> responsesTuple = httpEntry.process(dbRequest, "JUNIT");
+        return responsesTuple.getValue1().getValue1();
+    }
+
+    private DBRequest createDBRequest(Loader loader, TransactionalGraphEngine dbEngine, HttpMethod method, String uri,
+            String requestBody) throws UnsupportedEncodingException, AAIException, AAIUnknownObjectException,
+            AAIUnmarshallingException {
         URI uriObject = UriBuilder.fromPath(uri).build();
         QueryParser uriQuery = dbEngine.getQueryBuilder().createQueryFromURI(uriObject);
         String objType = uriQuery.getResultType();
@@ -759,12 +821,7 @@ public class HttpEntryTest extends AAISetup {
         DBRequest dbRequest = new DBRequest.Builder(method, uriObject, uriQuery, obj, httpHeaders, uriInfo,
                 "JUNIT-TRANSACTION")
                 .rawRequestContent(requestBody).build();
-
-        List<DBRequest> dbRequestList = new ArrayList<>();
-        dbRequestList.add(dbRequest);
-
-        Pair<Boolean, List<Pair<URI, Response>>> responsesTuple = httpEntry.process(dbRequestList, "JUNIT");
-        return responsesTuple.getValue1().get(0).getValue1();
+        return dbRequest;
     }
 
     private Response doDelete(String resourceVersion, String uri, String nodeType)
@@ -801,13 +858,21 @@ public class HttpEntryTest extends AAISetup {
     }
 
     @Test
-    public void setDepthTest() throws AAIException {
-        System.setProperty("AJSC_HOME", ".");
-        System.setProperty("BUNDLECONFIG_DIR", "src/main/test/resources");
+    public void getPaginatedVertexList() throws AAIException {
+        traversalHttpEntry.setPaginationBucket(2);
+        traversalHttpEntry.setPaginationIndex(0);
+        List<Object> result = traversalHttpEntry
+                .getPaginatedVertexList(Arrays.asList(new Object(), new Object(), new Object()));
+        assertTrue(result.size() == 2);
+    }
 
-        String depthParam = AAIConfig.get("aai.rest.getall.depthparam");
-        traversalHttpEntry.setHttpEntryProperties(schemaVersions.getDefaultVersion());
-        int depth = traversalHttpEntry.setDepth(null, depthParam);
-        assertEquals(AAIProperties.MAXIMUM_DEPTH.intValue(), depth);
+    @Test
+    public void getPaginatedVertexListForAggregateFormatOriginalListReturned() throws AAIException {
+        traversalHttpEntry.setPaginationBucket(2);
+        traversalHttpEntry.setPaginationIndex(0);
+        List<Object> aggregateVertexList = Arrays.asList(Arrays.asList(new Object()), Arrays.asList(new Object()),
+                Arrays.asList(new Object()));
+        List<Object> result = traversalHttpEntry.getPaginatedVertexListForAggregateFormat(aggregateVertexList);
+        assertTrue(result.size() == 3);
     }
 }
