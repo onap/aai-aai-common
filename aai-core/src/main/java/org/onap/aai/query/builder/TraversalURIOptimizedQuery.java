@@ -4,6 +4,8 @@
  * ================================================================================
  * Copyright © 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
+ * Modifications Copyright © 2024 Deutsche Telekom.
+ * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,16 +22,20 @@
 
 package org.onap.aai.query.builder;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.tinkerpop.gremlin.process.traversal.Step;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.apache.tinkerpop.gremlin.process.traversal.step.filter.HasStep;
+import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
 import org.apache.tinkerpop.gremlin.process.traversal.util.TraversalHelper;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.onap.aai.db.props.AAIProperties;
@@ -37,11 +43,17 @@ import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.schema.enums.ObjectMetadata;
 
-public class TraversalURIOptimizedQuery<E> extends TraversalQuery {
+public class TraversalURIOptimizedQuery<E> extends TraversalQuery<E> {
 
     protected Map<Integer, String> stepToAaiUri = new HashMap<>();
 
     public TraversalURIOptimizedQuery(Loader loader, GraphTraversalSource source) {
+        super(loader, source);
+        optimize = true;
+    }
+
+    public TraversalURIOptimizedQuery(Loader loader, GraphTraversalSource source,
+            GraphTraversal<Vertex, Vertex> traversal) {
         super(loader, source);
         optimize = true;
     }
@@ -52,15 +64,15 @@ public class TraversalURIOptimizedQuery<E> extends TraversalQuery {
     }
 
     protected TraversalURIOptimizedQuery(GraphTraversal traversal, Loader loader, GraphTraversalSource source,
-            GraphTraversalBuilder gtb) {
-        super(traversal, loader, source, gtb);
+            GraphTraversalBuilder graphTraversalBuilder) {
+        super(traversal, loader, source, graphTraversalBuilder);
         optimize = true;
     }
 
     protected TraversalURIOptimizedQuery(GraphTraversal traversal, Loader loader, GraphTraversalSource source,
-            GraphTraversalBuilder gtb, Map<Integer, String> stepToAaiUri) {
-        super(traversal, loader, source, gtb);
-        optimize = gtb.optimize;
+            GraphTraversalBuilder graphTraversalBuilder, Map<Integer, String> stepToAaiUri) {
+        super(traversal, loader, source, graphTraversalBuilder);
+        optimize = graphTraversalBuilder.optimize;
         this.stepToAaiUri = stepToAaiUri;
     }
 
@@ -74,7 +86,7 @@ public class TraversalURIOptimizedQuery<E> extends TraversalQuery {
         }
 
         if (start == null) {
-            Traversal.Admin admin = source.V().asAdmin();
+            Traversal.Admin<Vertex, Vertex> admin = source.V().asAdmin();
             TraversalHelper.insertTraversal(admin.getEndStep(), completeTraversal, admin);
 
             this.completeTraversal = (Traversal.Admin<Vertex, E>) admin;
@@ -84,29 +96,72 @@ public class TraversalURIOptimizedQuery<E> extends TraversalQuery {
     }
 
     private Traversal.Admin<Vertex, E> pivotTraversal(Traversal.Admin<Vertex, E> traversalAdmin) {
-
-        List<Step> steps = traversalAdmin.getSteps();
-
-        Traversal.Admin<Vertex, E> traversalAdminStart = traversalAdmin.clone();
-
         // if we do not have an index or other conditions do no optimization
         if (stepToAaiUri.isEmpty()) {
             return traversalAdmin;
         }
 
-        int lastURIStepKey = getLastURIStepKey();
+        Traversal.Admin<Vertex, E> traversalAdminStart = traversalAdmin.clone();
 
+        List<Step> steps = traversalAdmin.getSteps();
         // clean up traversal steps
         for (int i = 0; i < steps.size(); i++) {
             traversalAdminStart.removeStep(0);
         }
 
-        ((GraphTraversal<Vertex, E>) traversalAdminStart).has(AAIProperties.AAI_URI, stepToAaiUri.get(lastURIStepKey));
-        for (int i = lastURIStepKey; i < steps.size(); i++) {
+        int lastURIStepIndex = getLastURIStepIndex();
+        ((GraphTraversal<Vertex, E>) traversalAdminStart).has(AAIProperties.AAI_URI,
+                stepToAaiUri.get(lastURIStepIndex));
+
+        ImmutablePair<Integer, Integer> indexAndStepCountTuple = getHasContainerAdjustedIndexAndSplitPosition(steps,
+                lastURIStepIndex);
+        int adjustedIndex = indexAndStepCountTuple.getKey();
+        for (int i = adjustedIndex; i < steps.size(); i++) {
+            Step step = steps.get(i);
+            boolean isFirstStep = i == adjustedIndex;
+            if (isFirstStep && step instanceof HasStep) {
+                int splitPosition = indexAndStepCountTuple.getValue();
+                List<HasContainer> newContainers = ((HasStep<?>) step).getHasContainers().stream()
+                        .skip(splitPosition)
+                        .collect(Collectors.toList());
+                traversalAdminStart
+                        .addStep(new HasStep<Vertex>(traversalAdminStart, newContainers.toArray(new HasContainer[0])));
+                i++;
+            }
             traversalAdminStart.addStep(steps.get(i));
         }
 
         return traversalAdminStart;
+    }
+
+    /**
+     * Adjust lastURIStepIndex by the number of steps that are in hasContainers.
+     * A HasContainer can contain multiple steps, which skews the original index.
+     * Returns the step index and split position inside the hasContainer
+     * 
+     * @param steps            the list of steps to go through
+     * @param lastURIStepIndex the list index to adjust
+     * @return a Tuple<Integer, Integer> of the form (index, splitPosition)
+     */
+    private ImmutablePair<Integer, Integer> getHasContainerAdjustedIndexAndSplitPosition(List<Step> steps,
+            int lastURIStepIndex) {
+        int stepCount = 0;
+        for (int j = 0; j <= lastURIStepIndex; j++) {
+            Step step = steps.get(j);
+            if (step instanceof HasStep) {
+                stepCount += ((HasStep<?>) step).getHasContainers().size();
+            } else {
+                stepCount++;
+            }
+            if (stepCount == lastURIStepIndex) {
+                int splitPosition = stepCount + 1 - lastURIStepIndex;
+                return new ImmutablePair<>(j + 1, splitPosition);
+            } else if (stepCount > lastURIStepIndex) {
+                int splitPosition = stepCount + 1 - lastURIStepIndex;
+                return new ImmutablePair<>(j, splitPosition);
+            }
+        }
+        return new ImmutablePair<>(lastURIStepIndex, lastURIStepIndex);
     }
 
     @Override
@@ -159,14 +214,14 @@ public class TraversalURIOptimizedQuery<E> extends TraversalQuery {
         }
 
         if (!stepToAaiUri.isEmpty()) {
-            uri = stepToAaiUri.get(getLastURIStepKey()) + uri;
+            uri = stepToAaiUri.get(getLastURIStepIndex()) + uri;
         }
 
         return Optional.of(uri);
     }
 
-    protected int getLastURIStepKey() {
-        return stepToAaiUri.keySet().stream().mapToInt(Integer::intValue).max().getAsInt();
+    protected int getLastURIStepIndex() {
+        return Collections.max(stepToAaiUri.keySet());
     }
 
     private Map<Integer, String> getStepToAaiUriWithoutStepGreaterThan(final int index) {
