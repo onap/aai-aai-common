@@ -27,17 +27,25 @@ import org.junit.runners.Suite.SuiteClasses;
 import org.onap.aai.introspection.sideeffect.DataLinkTest;
 import org.onap.aai.parsers.query.GraphTraversalTest;
 import org.onap.aai.query.builder.TraversalQueryTest;
+import org.onap.aai.query.builder.TraversalURIOptimizedQueryTest;
 
 /**
- * Collection of tests that are likely affected by a Tinkerpop update
- * This is to more targedly run these tests during development:
+ * Collection of tests that are likely affected by a Tinkerpop update.
+ * This is done to more directly run these tests during development:
+ * 
+ * <pre>
+ * <code>
  * mvn test -Dcheckstyle.skip -Dtest=TinkerpopUpgradeTests
+ * </code>
+ * </pre>
  */
 @RunWith(Categories.class)
 @IncludeCategory(TinkerpopUpgrade.class)
-@SuiteClasses({ 
-  DataLinkTest.class,
-  GraphTraversalTest.class,
-  TraversalQueryTest.class
+@SuiteClasses({
+    DataLinkTest.class,
+    GraphTraversalTest.class,
+    TraversalQueryTest.class,
+    TraversalURIOptimizedQueryTest.class
 })
-public class TinkerpopUpgradeTests {}
+public class TinkerpopUpgradeTests {
+}

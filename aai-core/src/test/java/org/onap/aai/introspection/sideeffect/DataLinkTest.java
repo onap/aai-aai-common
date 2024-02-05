@@ -4,6 +4,8 @@
  * ================================================================================
  * Copyright © 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
+ * Modifications Copyright © 2024 Deutsche Telekom.
+ * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -63,10 +65,8 @@ import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.introspection.LoaderUtil;
 import org.onap.aai.introspection.ModelType;
-import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.onap.aai.parsers.query.QueryParser;
 import org.onap.aai.query.builder.QueryBuilder;
-import org.onap.aai.query.builder.TraversalQuery;
 import org.onap.aai.restcore.util.URITools;
 import org.onap.aai.serialization.db.DBSerializer;
 import org.onap.aai.serialization.engines.JanusGraphDBEngine;
@@ -95,7 +95,7 @@ public class DataLinkTest extends DataLinkSetup {
 
     @Parameterized.Parameters(name = "QueryStyle.{0}")
     public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][] {{QueryStyle.TRAVERSAL}});
+        return Arrays.asList(new Object[][] {{QueryStyle.TRAVERSAL},{QueryStyle.TRAVERSAL_URI}});
     }
 
     @BeforeClass
@@ -231,23 +231,9 @@ public class DataLinkTest extends DataLinkSetup {
         GraphTraversal<Vertex, Vertex> traversal = __.<Vertex>start();
         
         QueryParser uriQuery = dbEngine.getQueryBuilder(this.queryStyle, loader, source, traversal).createQueryFromURI(uri, map);
-        // assertEquals(6, traversal.asAdmin().getSteps().size());
-        // assertEquals("HasStep([vpn-id.eq(modifyKey)])", traversal.asAdmin().getSteps().get(0).toString());
-        // assertEquals("HasStep([aai-node-type.eq(vpn-binding)])", traversal.asAdmin().getSteps().get(1).toString());
-        // assertEquals("VertexStep(IN,[org.onap.relationships.inventory.BelongsTo],vertex)", traversal.asAdmin().getSteps().get(2).toString());
-        // assertEquals("HasStep([aai-node-type.eq(route-target)])", traversal.asAdmin().getSteps().get(3).toString());
-        // assertEquals("HasStep([global-route-target.eq(modifyTargetKey2)])", traversal.asAdmin().getSteps().get(4).toString());
-        // assertEquals("HasStep([route-target-role.eq(modifyRoleKey2)])", traversal.asAdmin().getSteps().get(5).toString());
         List<Vertex> results = uriQuery.getQueryBuilder().toList();
 
         assertEquals(0, results.size());
-        // assertEquals(traversal.asAdmin().getSteps().size(), 6);
-        // assertEquals("HasStep([vpn-id.eq(modifyKey)])", traversal.asAdmin().getSteps().get(0).toString());
-        // assertEquals("HasStep([aai-node-type.eq(vpn-binding)])", traversal.asAdmin().getSteps().get(1).toString());
-        // assertEquals("VertexStep(IN,[org.onap.relationships.inventory.BelongsTo],vertex)", traversal.asAdmin().getSteps().get(2).toString());
-        // assertEquals("HasStep([aai-node-type.eq(route-target)])", traversal.asAdmin().getSteps().get(3).toString());
-        // assertEquals("HasStep([global-route-target.eq(modifyTargetKey2)])", traversal.asAdmin().getSteps().get(4).toString());
-        // assertEquals("HasStep([route-target-role.eq(modifyRoleKey2)])", traversal.asAdmin().getSteps().get(5).toString());
 
         QueryBuilder<Vertex> queryBuilder = uriQuery.getQueryBuilder().getContainerQuery()
         .getVerticesByProperty(AAIProperties.LINKED, true);
@@ -403,4 +389,5 @@ public class DataLinkTest extends DataLinkSetup {
         g.tx().rollback();
 
     }
-}
+ }
+ 
