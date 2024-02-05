@@ -4,6 +4,8 @@
  * ================================================================================
  * Copyright © 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
+ * Modifications Copyright © 2024 Deutsche Telekom.
+ * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -63,10 +65,8 @@ import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.introspection.LoaderUtil;
 import org.onap.aai.introspection.ModelType;
-import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.onap.aai.parsers.query.QueryParser;
 import org.onap.aai.query.builder.QueryBuilder;
-import org.onap.aai.query.builder.TraversalQuery;
 import org.onap.aai.restcore.util.URITools;
 import org.onap.aai.serialization.db.DBSerializer;
 import org.onap.aai.serialization.engines.JanusGraphDBEngine;
@@ -76,7 +76,7 @@ import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 @Category(TinkerpopUpgrade.class)
 @RunWith(value = Parameterized.class)
 public class DataLinkTest extends DataLinkSetup {
-
+ 
     private static JanusGraph graph;
     private final static ModelType introspectorFactoryType = ModelType.MOXY;
     private static Loader loader;
@@ -89,15 +89,15 @@ public class DataLinkTest extends DataLinkSetup {
     private VertexProperty<String> prop;
     @Rule
     public ExpectedException thrown = ExpectedException.none();
-
+ 
     @Parameterized.Parameter
     public QueryStyle queryStyle;
-
+ 
     @Parameterized.Parameters(name = "QueryStyle.{0}")
     public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][] {{QueryStyle.TRAVERSAL}});
+        return Arrays.asList(new Object[][] {{QueryStyle.TRAVERSAL},{QueryStyle.TRAVERSAL_URI}});
     }
-
+ 
     @BeforeClass
     public static void setup() {
         graph = JanusGraphFactory.build().set("storage.backend", "inmemory").open();
@@ -105,7 +105,7 @@ public class DataLinkTest extends DataLinkSetup {
         graphMgt.makePropertyKey(AAIProperties.CREATED_TS).dataType(Long.class).cardinality(Cardinality.SINGLE).make();
         graphMgt.makePropertyKey(AAIProperties.LAST_MOD_TS).dataType(Long.class).cardinality(Cardinality.SINGLE).make();
         graphMgt.commit();
-
+ 
         graph.traversal().addV().property("aai-node-type", "vpn-binding").property("vpn-id", "addKey")
                 .property(AAIProperties.AAI_URI, "/network/vpn-bindings/vpn-binding/addKey")
                 .property(AAIProperties.AAI_UUID, UUID.randomUUID().toString()).property(AAIProperties.CREATED_TS, 123)
@@ -171,26 +171,26 @@ public class DataLinkTest extends DataLinkSetup {
                 .as("v9").addE("org.onap.relationships.inventory.BelongsTo").to("v8").from("v9")
                 .property(EdgeProperty.CONTAINS.toString(), true).next();
         graph.tx().commit();
-
+ 
     }
-
+ 
     @AfterClass
     public static void tearDown() {
         graph.tx().rollback();
         graph.close();
     }
-
+ 
     @Before
     public void initMock() {
         loader = loaderFactory.createLoaderForVersion(introspectorFactoryType, schemaVersions.getDefaultVersion());
         MockitoAnnotations.openMocks(this);
         dbEngine = new JanusGraphDBEngine(queryStyle, loader);
     }
-
+ 
     @Test
     public void verifyCreationOfVertex()
             throws AAIException, UnsupportedEncodingException, IllegalArgumentException, SecurityException {
-
+ 
         final Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDepthVersion());
         final Introspector obj = loader.introspectorFromName("vpn-binding");
         obj.setValue("vpn-id", "addKey");
@@ -209,15 +209,15 @@ public class DataLinkTest extends DataLinkSetup {
                 new DBSerializer(schemaVersions.getDefaultVersion(), spy, introspectorFactoryType, "AAI_TEST");
         SideEffectRunner runner =
                 new SideEffectRunner.Builder(spy, serializer).addSideEffect(DataLinkWriter.class).build();
-
+ 
         runner.execute(obj, self);
-
+ 
         assertTrue("route-target vertex found", traversal.V().has(AAIProperties.NODE_TYPE, "route-target")
                 .has("global-route-target", "key1").has("route-target-role", "key2").has("linked", true).hasNext());
         g.tx().rollback();
-
+ 
     }
-
+ 
     /** 
      * This is more directly testing the modification mechanism (see verifyModificationOfVertex test)
      */
@@ -231,34 +231,20 @@ public class DataLinkTest extends DataLinkSetup {
         GraphTraversal<Vertex, Vertex> traversal = __.<Vertex>start();
         
         QueryParser uriQuery = dbEngine.getQueryBuilder(this.queryStyle, loader, source, traversal).createQueryFromURI(uri, map);
-        // assertEquals(6, traversal.asAdmin().getSteps().size());
-        // assertEquals("HasStep([vpn-id.eq(modifyKey)])", traversal.asAdmin().getSteps().get(0).toString());
-        // assertEquals("HasStep([aai-node-type.eq(vpn-binding)])", traversal.asAdmin().getSteps().get(1).toString());
-        // assertEquals("VertexStep(IN,[org.onap.relationships.inventory.BelongsTo],vertex)", traversal.asAdmin().getSteps().get(2).toString());
-        // assertEquals("HasStep([aai-node-type.eq(route-target)])", traversal.asAdmin().getSteps().get(3).toString());
-        // assertEquals("HasStep([global-route-target.eq(modifyTargetKey2)])", traversal.asAdmin().getSteps().get(4).toString());
-        // assertEquals("HasStep([route-target-role.eq(modifyRoleKey2)])", traversal.asAdmin().getSteps().get(5).toString());
         List<Vertex> results = uriQuery.getQueryBuilder().toList();
-
+ 
         assertEquals(0, results.size());
-        // assertEquals(traversal.asAdmin().getSteps().size(), 6);
-        // assertEquals("HasStep([vpn-id.eq(modifyKey)])", traversal.asAdmin().getSteps().get(0).toString());
-        // assertEquals("HasStep([aai-node-type.eq(vpn-binding)])", traversal.asAdmin().getSteps().get(1).toString());
-        // assertEquals("VertexStep(IN,[org.onap.relationships.inventory.BelongsTo],vertex)", traversal.asAdmin().getSteps().get(2).toString());
-        // assertEquals("HasStep([aai-node-type.eq(route-target)])", traversal.asAdmin().getSteps().get(3).toString());
-        // assertEquals("HasStep([global-route-target.eq(modifyTargetKey2)])", traversal.asAdmin().getSteps().get(4).toString());
-        // assertEquals("HasStep([route-target-role.eq(modifyRoleKey2)])", traversal.asAdmin().getSteps().get(5).toString());
-
+ 
         QueryBuilder<Vertex> queryBuilder = uriQuery.getQueryBuilder().getContainerQuery()
         .getVerticesByProperty(AAIProperties.LINKED, true);
         List<Vertex> linkedVertices = queryBuilder.toList();
         assertEquals(1, linkedVertices.size());
     }
-
+ 
     @Test
     public void verifyModificationOfVertex()
             throws AAIException, UnsupportedEncodingException, IllegalArgumentException, SecurityException {
-
+ 
         final Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDepthVersion());
         final Introspector obj = loader.introspectorFromName("vpn-binding");
         obj.setValue("vpn-id", "modifyKey");
@@ -268,7 +254,7 @@ public class DataLinkTest extends DataLinkSetup {
         TransactionalGraphEngine.Admin adminSpy = spy(dbEngine.asAdmin());
         Graph g = graph.newTransaction();
         GraphTraversalSource traversal = g.traversal();
-
+ 
         when(spy.asAdmin()).thenReturn(adminSpy);
         when(adminSpy.getTraversalSource()).thenReturn(traversal);
         when(spy.tx()).thenReturn(g);
@@ -279,7 +265,7 @@ public class DataLinkTest extends DataLinkSetup {
         SideEffectRunner runner =
                 new SideEffectRunner.Builder(spy, serializer).addSideEffect(DataLinkWriter.class).build();
         runner.execute(obj, self);
-
+ 
         assertThat("new route-target vertex found with/or without link",
                 traversal.V().has(AAIProperties.NODE_TYPE, "route-target")
                         .has("global-route-target", "modifyTargetKey2").has("route-target-role", "modifyRoleKey2")
@@ -298,12 +284,12 @@ public class DataLinkTest extends DataLinkSetup {
                 .has("global-route-target", "modifyTargetKey").has("route-target-role", "modifyRoleKey").hasNext(),
                 is(true));
         g.tx().rollback();
-
+ 
     }
-
+ 
     @Test
     public void verifyDeleteOfVertex() throws Exception {
-
+ 
         final Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDepthVersion());
         final Introspector obj = loader.introspectorFromName("vpn-binding");
         obj.setValue("vpn-id", "deleteKey");
@@ -321,20 +307,20 @@ public class DataLinkTest extends DataLinkSetup {
                 new DBSerializer(schemaVersions.getDefaultVersion(), spy, introspectorFactoryType, "AAI_TEST");
         SideEffectRunner runner =
                 new SideEffectRunner.Builder(spy, serializer).addSideEffect(DataLinkWriter.class).build();
-
+ 
         runner.execute(obj, self);
-
+ 
         assertFalse("route-target vertex not found",
                 traversal.V().has(AAIProperties.NODE_TYPE, "route-target").has("global-route-target", "deleteTargetKey")
                         .has("route-target-role", "deleteRoleKey").has("linked", true).hasNext());
-
+ 
         g.tx().rollback();
-
+ 
     }
-
+ 
     @Test
     public void verifyPropertyPopulation() throws Exception {
-
+ 
         final Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDepthVersion());
         final Introspector obj = loader.introspectorFromName("vpn-binding");
         obj.setValue("vpn-id", "getKey");
@@ -351,16 +337,16 @@ public class DataLinkTest extends DataLinkSetup {
                 new DBSerializer(schemaVersions.getDefaultVersion(), spy, introspectorFactoryType, "AAI_TEST");
         SideEffectRunner runner =
                 new SideEffectRunner.Builder(spy, serializer).addSideEffect(DataLinkReader.class).build();
-
+ 
         runner.execute(obj, self);
-
+ 
         assertTrue("both properties have been populated in target object",
                 obj.getValue("global-route-target").equals("getTargetKey")
                         && obj.getValue("route-target-role").equals("getRoleKey"));
         g.tx().rollback();
-
+ 
     }
-
+ 
     @Test
     public void verifyPropertyPopulationWithV10OnlyPut()
             throws AAIException, UnsupportedEncodingException, IllegalArgumentException, SecurityException {
@@ -394,13 +380,14 @@ public class DataLinkTest extends DataLinkSetup {
         serializer.serializeToDb(obj, v, parser, obj.getURI(), "testing");
         Vertex routeTargetOneV = traversal.V().has("global-route-target", "getTargetKeyNoLink").next();
         Vertex routeTargetTwoV = traversal.V().has("global-route-target", "getTargetKeyNoLink2").next();
-
+ 
         assertEquals("first route target put has linked", true,
                 routeTargetOneV.property(AAIProperties.LINKED).orElse(false));
         assertEquals("second route target put does not have linked", false,
                 routeTargetTwoV.property(AAIProperties.LINKED).orElse(false));
-
+ 
         g.tx().rollback();
-
+ 
     }
-}
+ }
+ 
