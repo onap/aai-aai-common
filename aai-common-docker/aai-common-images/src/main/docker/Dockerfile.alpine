@@ -1,4 +1,4 @@
-FROM adoptopenjdk/openjdk11:jre-11.0.9_11-alpine
+FROM eclipse-temurin:8-jre-alpine
 
 # For building the image in a proxy environment if necessary
 ARG HTTP_PROXY
