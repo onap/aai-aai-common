@@ -23,6 +23,7 @@ package org.onap.aai.setup;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,15 +49,12 @@ public class SchemaServiceTranslator extends Translator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SchemaServiceTranslator.class);
 
-    private static final String SchemaServiceClientType = "schema.service";
-
     @Value("${schema.service.nodes.endpoint}")
     private String nodeSchemaUri;
 
     @Value("${schema.service.edges.endpoint}")
     private String edgeSchemaUri;
 
-    @Qualifier("restClient")
     @Autowired
     private RestClient restClient;
 
@@ -73,21 +71,20 @@ public class SchemaServiceTranslator extends Translator {
     @Override
     public List<InputStream> getVersionNodeStream(SchemaVersion version) throws IOException {
 
-        List<InputStream> inputStreams = new ArrayList<>();
-        String content = "";
-        String uri = nodeSchemaUri + version.toString();
-        Map<String, String> headersMap = new HashMap<>();
-
+        final Map<String, String> headersMap = new HashMap<>();
         headersMap.put(HttpHeaders.ACCEPT, MediaType.APPLICATION_XML.toString());
         headersMap.put(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_XML.toString());
+        final String content = "";
+        final String uri = nodeSchemaUri + version.toString();
         ResponseEntity<Resource> schemaResponse = restClient.getGetResource(content, uri, headersMap);
+
         verifySchemaServiceResponse(schemaResponse.getStatusCode());
         LOGGER.debug("SchemaResponse Status code" + schemaResponse.getStatusCode());
+        
         Resource resultBody = schemaResponse.getBody();
-        if (resultBody != null) {
-            inputStreams.add(resultBody.getInputStream());
-        }
-        return inputStreams;
+        return resultBody != null
+            ? Collections.singletonList(resultBody.getInputStream())
+            : Collections.emptyList();
     }
 
     @Override
@@ -95,16 +92,14 @@ public class SchemaServiceTranslator extends Translator {
         /*
          * Call Schema MS to get versions using RestTemplate
          */
-        List<String> inputStreams = new ArrayList<>();
-        String content = "";
-        String uri = edgeSchemaUri + version.toString();
-        Map<String, String> headersMap = new HashMap<>();
+        final String content = "";
+        final String uri = edgeSchemaUri + version.toString();
+        final Map<String, String> headersMap = new HashMap<>();
 
         ResponseEntity<String> schemaResponse = restClient.getGetRequest(content, uri, headersMap);
         verifySchemaServiceResponse(schemaResponse.getStatusCode());
         LOGGER.debug("SchemaResponse Status code" + schemaResponse.getStatusCode());
-        inputStreams.add(schemaResponse.getBody());
-        return inputStreams;
+        return Collections.singletonList(schemaResponse.getBody());
 
     }
 

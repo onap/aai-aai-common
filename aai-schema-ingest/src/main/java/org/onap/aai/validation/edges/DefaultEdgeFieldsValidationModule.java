@@ -29,12 +29,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.onap.aai.edges.enums.EdgeField;
+import org.springframework.stereotype.Component;
 
 /**
  * Default core A&AI edge field validation
  * All fields in EdgeField enum are required EXCEPT description
  *
  */
+@Component
 public class DefaultEdgeFieldsValidationModule implements EdgeFieldsValidationModule {
 
     /*

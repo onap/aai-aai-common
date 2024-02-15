@@ -28,12 +28,14 @@ import java.util.Map;
 
 import org.onap.aai.edges.EdgeRuleQuery;
 import org.onap.aai.edges.enums.EdgeType;
+import org.springframework.stereotype.Component;
 
 /**
  * Validates that the given node type pair has at most one containment relationship
  * in their edge rules.
  * 
  */
+@Component
 public class SingleContainmentValidationModule {
 
     /**

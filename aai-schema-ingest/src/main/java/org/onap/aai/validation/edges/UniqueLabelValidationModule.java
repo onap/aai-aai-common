@@ -27,11 +27,13 @@ import java.util.*;
 import org.onap.aai.edges.EdgeRuleQuery;
 import org.onap.aai.edges.EdgeRuleQuery.Builder;
 import org.onap.aai.edges.enums.EdgeField;
+import org.springframework.stereotype.Component;
 
 /**
  * Applies label validation rules
  *
  */
+@Component
 public class UniqueLabelValidationModule {
 
     /**

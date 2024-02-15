@@ -28,11 +28,13 @@ import org.onap.aai.edges.EdgeRuleQuery;
 import org.onap.aai.edges.EdgeRuleQuery.Builder;
 import org.onap.aai.edges.enums.EdgeField;
 import org.onap.aai.edges.enums.EdgeType;
+import org.springframework.stereotype.Component;
 
 /**
  * Validates that in the collection of cousin rules between a given node type pair,
  * there is exactly 1 set default=true.
  */
+@Component
 public class CousinDefaultingValidationModule {
 
     /**
