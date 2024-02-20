@@ -1,0 +1,8 @@
+Verified+1: ONAP Jobbuilder <onap-jobbuilder@jenkins.onap.org>
+Verified+1: ONAP Required GHA <releng+onap.required.gha@linuxfoundation.org>
+Code-Review+2: Fiete Ostkamp <fiete.ostkamp@telekom.de>
+Submitted-by: Fiete Ostkamp <fiete.ostkamp@telekom.de>
+Submitted-at: Tue, 20 Feb 2024 15:50:56 +0000
+Reviewed-on: https://gerrit.onap.org/r/c/aai/aai-common/+/137288
+Project: aai/aai-common
+Branch: refs/heads/master
