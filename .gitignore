@@ -16,3 +16,4 @@ bundleconfig-local/etc/logback.xml
 .devcontainer/
 *.log
 aai-core/logs/
+.classpath

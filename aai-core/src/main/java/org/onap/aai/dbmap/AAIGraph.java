@@ -147,14 +147,14 @@ public class AAIGraph {
 
     private void loadSchema(JanusGraph graph) {
         // Load the propertyKeys, indexes and edge-Labels into the DB
-        JanusGraphManagement graphMgt = graph.openManagement();
-
+        boolean dbNotEmpty = graph.traversal().V().limit(1).hasNext();
         logger.info("-- loading schema into JanusGraph");
         if ("true".equals(
-                SpringContextAware.getApplicationContext().getEnvironment().getProperty("history.enabled", "false"))) {
+            SpringContextAware.getApplicationContext().getEnvironment().getProperty("history.enabled", "false"))) {
+            JanusGraphManagement graphMgt = graph.openManagement();
             SchemaGenerator4Hist.loadSchemaIntoJanusGraph(graphMgt, IN_MEMORY);
         } else {
-            SchemaGenerator.loadSchemaIntoJanusGraph(graphMgt, IN_MEMORY);
+            SchemaGenerator.loadSchemaIntoJanusGraph(graph, IN_MEMORY, dbNotEmpty);
         }
     }
 
