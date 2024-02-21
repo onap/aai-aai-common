@@ -47,7 +47,10 @@ import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatVertexException;
 import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
 import org.onap.aai.setup.SchemaVersion;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 
+@DirtiesContext(classMode=ClassMode.BEFORE_CLASS)
 public class ResourceWithSoTTest extends AAISetup {
     @Mock
     private UrlBuilder urlBuilder;
@@ -78,7 +81,7 @@ public class ResourceWithSoTTest extends AAISetup {
         graph = TinkerGraph.open();
 
         long currentTimeMs = System.currentTimeMillis();
-        String timeNowInMs = Long.toString(currentTimeMs);
+        final String timeNowInMs = Long.toString(currentTimeMs);
 
         // PUT / CREATE
         jsonPutObj.addProperty("aai-created-ts", timeNowInMs);
@@ -114,6 +117,24 @@ public class ResourceWithSoTTest extends AAISetup {
         createLoaderEngineSetup();
     }
 
+    public void createLoaderEngineSetup() throws AAIException {
+
+        loader = loaderFactory.createLoaderForVersion(factoryType, version);
+
+        dbEngine = spy(new JanusGraphDBEngine(QueryStyle.TRAVERSAL, loader));
+        serializer = new DBSerializer(version, dbEngine, factoryType, "Junit");
+        resourceWithSoT = new ResourceWithSoT.Builder(loader, serializer, urlBuilder).build();
+
+        TransactionalGraphEngine.Admin spyAdmin = spy(dbEngine.asAdmin());
+
+        when(dbEngine.tx()).thenReturn(graph);
+        when(dbEngine.asAdmin()).thenReturn(spyAdmin);
+
+        when(spyAdmin.getReadOnlyTraversalSource())
+                .thenReturn(graph.traversal().withStrategies(ReadOnlyStrategy.instance()));
+        when(spyAdmin.getTraversalSource()).thenReturn(graph.traversal());
+    }
+
     // This test is to simulate a PUT request
     @Test
     public void testGetJsonFromVertexWithCreateVertex() throws AAIFormatVertexException, AAIException {
@@ -147,25 +168,5 @@ public class ResourceWithSoTTest extends AAISetup {
         // Null check, will return not present Optional.
         Optional<JsonObject> result = resourceWithSoT.getJsonFromVertex(null);
         assertFalse(result.isPresent());
-    }
-
-    public void createLoaderEngineSetup() throws AAIException {
-
-        if (loader == null) {
-            loader = loaderFactory.createLoaderForVersion(factoryType, version);
-            // loader = LoaderFactory.createLoaderForVersion(factoryType, version);
-            dbEngine = spy(new JanusGraphDBEngine(QueryStyle.TRAVERSAL, loader));
-            serializer = new DBSerializer(version, dbEngine, factoryType, "Junit");
-            resourceWithSoT = new ResourceWithSoT.Builder(loader, serializer, urlBuilder).build();
-
-            TransactionalGraphEngine.Admin spyAdmin = spy(dbEngine.asAdmin());
-
-            when(dbEngine.tx()).thenReturn(graph);
-            when(dbEngine.asAdmin()).thenReturn(spyAdmin);
-
-            when(spyAdmin.getReadOnlyTraversalSource())
-                    .thenReturn(graph.traversal().withStrategies(ReadOnlyStrategy.instance()));
-            when(spyAdmin.getTraversalSource()).thenReturn(graph.traversal());
-        }
     }
 }
