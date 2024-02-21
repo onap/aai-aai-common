@@ -50,10 +50,9 @@ public class InMemoryGraph {
 
             Properties graphProps = new Properties();
             graphProps.load(is);
-            JanusGraphManagement graphMgt = graph.openManagement();
             if (builder.isSchemaEnabled) {
                 LOGGER.info("Schema Enabled");
-                SchemaGenerator.loadSchemaIntoJanusGraph(graphMgt, graphProps.getProperty("storage.backend"));
+                SchemaGenerator.loadSchemaIntoJanusGraph(graph, graphProps.getProperty("storage.backend"), false);
             }
             try (JanusGraphTransaction transaction = graph.newTransaction()) {
                 LOGGER.info("Loading snapshot");
