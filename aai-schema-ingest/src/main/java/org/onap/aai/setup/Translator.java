@@ -45,9 +45,9 @@ public abstract class Translator {
      *         ingested for that version
      */
 
-    public abstract List<InputStream> getVersionNodeStream(SchemaVersion version) throws IOException;
+    public abstract List<InputStream> getVersionNodeStream(SchemaVersion schemaVersion) throws IOException;
 
-    public abstract List<String> getJsonPayload(SchemaVersion version) throws IOException;
+    public abstract List<String> getJsonPayload(SchemaVersion schemaVersion) throws IOException;
 
     /**
      * Translates the contents of the schema config file

@@ -1,5 +1,4 @@
-/** 
- * ============LICENSE_START=======================================================
+/**  ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
  * Copyright © 2017-18 AT&T Intellectual Property. All rights reserved.
@@ -16,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  * ============LICENSE_END=========================================================
- */
+*/
 
 package org.onap.aai.setup;
 
@@ -45,12 +44,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 public abstract class ConfigTranslator extends Translator {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigTranslator.class);
 
-    protected SchemaLocationsBean bean;
+    protected SchemaLocationsBean schemaLocationsBean;
 
     @Autowired
-    public ConfigTranslator(SchemaLocationsBean schemaLocationbean, SchemaConfigVersions schemaVersions) {
-        super(schemaVersions);
-        this.bean = schemaLocationbean;
+    public ConfigTranslator(SchemaLocationsBean schemaLocationsBean, SchemaConfigVersions schemaConfigVersions) {
+        super(schemaConfigVersions);
+        this.schemaLocationsBean = schemaLocationsBean;
 
     }
 

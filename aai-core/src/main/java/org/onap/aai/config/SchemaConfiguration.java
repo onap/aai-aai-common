@@ -66,13 +66,6 @@ public class SchemaConfiguration {
         return nodesConfiguration.nodeIngestor();
     }
 
-    @Bean(name = "configTranslator")
-    @ConditionalOnProperty(name = "schema.translator.list", havingValue = "config", matchIfMissing = true)
-    public ConfigTranslator configTranslator(SchemaLocationsBean schemaLocationsBean,
-            SchemaConfigVersions schemaVersions) {
-        return new AAIConfigTranslator(schemaLocationsBean, schemaVersions);
-    }
-
     @Bean
     @ConditionalOnProperty(name = "schema.translator.list", havingValue = "config", matchIfMissing = true)
     public SchemaErrorStrategy schemaErrorStrategy() {

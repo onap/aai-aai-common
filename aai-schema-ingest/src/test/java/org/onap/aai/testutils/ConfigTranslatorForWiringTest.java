@@ -32,14 +32,14 @@ import org.onap.aai.setup.SchemaVersion;
 
 public class ConfigTranslatorForWiringTest extends ConfigTranslator {
 
-    public ConfigTranslatorForWiringTest(SchemaLocationsBean bean, SchemaConfigVersions schemaVersions) {
-        super(bean, schemaVersions);
+    public ConfigTranslatorForWiringTest(SchemaLocationsBean schemaLocationsBean, SchemaConfigVersions schemaVersions) {
+        super(schemaLocationsBean, schemaVersions);
     }
 
     @Override
     public Map<SchemaVersion, List<String>> getNodeFiles() {
 
-        String f = bean.getNodeDirectory() + "test_business_v10.xml";
+        String f = schemaLocationsBean.getNodeDirectory() + "test_business_v10.xml";
         List<String> files = new ArrayList<>();
         files.add(f);
         Map<SchemaVersion, List<String>> mp = new TreeMap<>();
@@ -49,7 +49,7 @@ public class ConfigTranslatorForWiringTest extends ConfigTranslator {
 
     @Override
     public Map<SchemaVersion, List<String>> getEdgeFiles() {
-        String f = bean.getEdgeDirectory() + "test.json";
+        String f = schemaLocationsBean.getEdgeDirectory() + "test.json";
         List<String> files = new ArrayList<>();
         files.add(f);
         Map<SchemaVersion, List<String>> mp = new TreeMap<>();

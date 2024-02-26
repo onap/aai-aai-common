@@ -45,7 +45,7 @@ public abstract class AbstractConfigTranslator extends ConfigTranslator {
      */
     @Override
     public Map<SchemaVersion, List<String>> getNodeFiles() {
-        String prefix = bean.getNodeDirectory() + AAIConstants.AAI_FILESEP;
+        String prefix = schemaLocationsBean.getNodeDirectory() + AAIConstants.AAI_FILESEP;
 
         String suffix = ".xml";
 
@@ -65,7 +65,7 @@ public abstract class AbstractConfigTranslator extends ConfigTranslator {
 
         List<String> container = new ArrayList<>();
         String directoryName =
-                bean.getNodeDirectory() + AAIConstants.AAI_FILESEP + v.toString() + AAIConstants.AAI_FILESEP;
+                schemaLocationsBean.getNodeDirectory() + AAIConstants.AAI_FILESEP + v.toString() + AAIConstants.AAI_FILESEP;
 
         File[] files = new File(directoryName).listFiles();
         for (File f : files) {
