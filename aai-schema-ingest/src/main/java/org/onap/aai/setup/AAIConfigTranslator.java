@@ -4,6 +4,8 @@
  * ================================================================================
  * Copyright © 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
+ * Modifications Copyright © 2024 DEUTSCHE TELEKOM AG.
+ * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -24,23 +26,24 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.springframework.stereotype.Component;
 
 /**
  * <b>AAIConfigTranslator</b> is responsible for looking at the
  * schema files and edge files based on the available versions
  * Also has the ability to exclude them based on the node.exclusion.pattern
  */
+@Component
 public class AAIConfigTranslator extends ConfigTranslator {
 
-    private static final String FILESEP =
-            (System.getProperty("file.separator") == null) ? "/" : System.getProperty("file.separator");
-
-    public AAIConfigTranslator(SchemaLocationsBean bean, SchemaConfigVersions schemaVersions) {
-        super(bean, schemaVersions);
+    public AAIConfigTranslator(SchemaLocationsBean schemaLocationsBean, SchemaConfigVersions schemaConfigVersions) {
+        super(schemaLocationsBean, schemaConfigVersions);
     }
 
     /*
@@ -61,8 +64,8 @@ public class AAIConfigTranslator extends ConfigTranslator {
     }
 
     private List<String> getVersionNodeFiles(SchemaVersion v) {
-        return getVersionFiles(bean.getNodeDirectory(), v, () -> bean.getNodesInclusionPattern().stream(),
-                () -> bean.getNodesExclusionPattern().stream());
+        return getVersionFiles(schemaLocationsBean.getNodeDirectory(), v, () -> schemaLocationsBean.getNodesInclusionPattern().stream(),
+                () -> schemaLocationsBean.getNodesExclusionPattern().stream());
     }
 
     /*
@@ -84,18 +87,25 @@ public class AAIConfigTranslator extends ConfigTranslator {
 
     private List<String> getVersionEdgeFiles(SchemaVersion v) {
 
-        return getVersionFiles(bean.getEdgeDirectory(), v, () -> bean.getEdgesInclusionPattern().stream(),
-                () -> bean.getEdgesExclusionPattern().stream());
+        return getVersionFiles(schemaLocationsBean.getEdgeDirectory(), v, () -> schemaLocationsBean.getEdgesInclusionPattern().stream(),
+                () -> schemaLocationsBean.getEdgesExclusionPattern().stream());
     }
 
     private List<String> getVersionFiles(String startDirectory, SchemaVersion schemaVersion,
-            Supplier<Stream<String>> inclusionPattern, Supplier<Stream<String>> exclusionPattern) {
+           Supplier<Stream<String>> inclusionPattern, Supplier<Stream<String>> exclusionPattern) {
 
-        List<String> container;
-        final String directoryName = startDirectory + FILESEP + schemaVersion.toString() + FILESEP;
-        container = Arrays.stream(new File(directoryName).listFiles()).map(File::getName)
-                .filter(name -> inclusionPattern.get().anyMatch(name::matches)).map(name -> directoryName + name)
-                .filter(name -> exclusionPattern.get().noneMatch(name::matches)).collect(Collectors.toList());
+       final File versionDirectory = new File(startDirectory + "/" + schemaVersion.toString());
+       final List<String> container = Arrays.stream(versionDirectory.listFiles())
+           .filter(Objects::nonNull)    
+           .map(File::getName)
+           .filter(versionFileName -> inclusionPattern
+               .get()
+               .anyMatch(versionFileName::matches))
+           .map(versionFileName -> versionDirectory.getAbsolutePath() + "/" + versionFileName)
+           .filter(versionFilePath -> exclusionPattern
+               .get()
+               .noneMatch(versionFilePath::matches))
+           .collect(Collectors.toList());
 
         return container;
     }

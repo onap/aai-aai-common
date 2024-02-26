@@ -22,7 +22,6 @@ package org.onap.aai.setup;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -32,19 +31,22 @@ import org.onap.aai.restclient.RestClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 
 /**
  * <b>AAIConfigTranslator</b> is responsible for looking at the schema files and
  * edge files based on the available versions Also has the ability to exclude
  * them based on the node.exclusion.pattern
  */
+@Component
+@ConditionalOnProperty(name = "schema.translator.list", havingValue = "schema-service", matchIfMissing = false)
 public class SchemaServiceTranslator extends Translator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SchemaServiceTranslator.class);

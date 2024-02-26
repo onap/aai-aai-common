@@ -26,12 +26,16 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
 
 @Component(value = ClientType.AAI)
+@ConditionalOnExpression("${aai-rest-client.enabled:false}")
 public class AAIRestClient extends TwoWaySSLRestClient {
 
     private static Logger logger = LoggerFactory.getLogger(AAIRestClient.class);
