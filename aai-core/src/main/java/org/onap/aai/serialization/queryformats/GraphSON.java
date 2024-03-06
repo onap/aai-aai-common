@@ -36,6 +36,7 @@ import java.util.Optional;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.io.graphson.GraphSONMapper;
+import org.apache.tinkerpop.gremlin.structure.io.graphson.GraphSONVersion;
 import org.apache.tinkerpop.gremlin.structure.io.graphson.GraphSONWriter;
 import org.janusgraph.graphdb.tinkerpop.JanusGraphIoRegistry;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatQueryResultFormatNotSupported;
@@ -47,8 +48,13 @@ public class GraphSON implements FormatMapper {
 
     private static final Logger logger = LoggerFactory.getLogger(GraphSON.class);
 
+    // TODO: Use v2 or v3 here
+    // v2 is the default starting from Janusgraph 0.3.0
+    // Further reference: https://tinkerpop.apache.org/docs/3.3.0/dev/io/#graphson
+    private static final GraphSONVersion version = GraphSONVersion.V1_0;
+
     private final GraphSONMapper mapper =
-            GraphSONMapper.build().addRegistry(JanusGraphIoRegistry.getInstance()).create();
+            GraphSONMapper.build().version(version).addRegistry(JanusGraphIoRegistry.getInstance()).create();
     private final GraphSONWriter writer = GraphSONWriter.build().mapper(mapper).create();
 
     @Override
