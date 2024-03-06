@@ -31,6 +31,7 @@ import java.util.Map;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
+import org.apache.tinkerpop.gremlin.process.traversal.Pop;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.Tree;
 import org.apache.tinkerpop.gremlin.structure.Edge;
@@ -703,6 +704,8 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
     public abstract QueryBuilder<E> as(String name);
 
     public abstract QueryBuilder<E> select(String name);
+
+    public abstract QueryBuilder<E> select(Pop pop, String name);
 
     public abstract QueryBuilder<E> select(String... names);
 

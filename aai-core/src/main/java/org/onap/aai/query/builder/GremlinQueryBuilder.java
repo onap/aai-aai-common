@@ -29,6 +29,7 @@ import com.google.common.collect.Multimap;
 import java.util.*;
 
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
+import org.apache.tinkerpop.gremlin.process.traversal.Pop;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.Tree;
@@ -822,6 +823,14 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
     @Override
     public QueryBuilder<E> select(String name) {
         this.list.add(".select('" + name + "')");
+        stepIndex++;
+
+        return this;
+    }
+
+    @Override
+    public QueryBuilder<E> select(Pop pop, String name) {
+        this.list.add(".select(Pop." + pop.toString() + ",'" + name + "')");
         stepIndex++;
 
         return this;

@@ -140,6 +140,7 @@ public class NodeIngestor {
                 schemaPerVersion.put(version, createCombinedSchema(inputStreams, version, retrieveLocalSchema));
             }
         } catch (JAXBException | ParserConfigurationException | SAXException | IOException e) {
+            LOGGER.error("Schema ingestion failed", e);
             throw new ExceptionInInitializerError(e);
         }
     }

@@ -59,7 +59,7 @@ public abstract class AAIAbstractGroovyShell {
                 "org.apache.tinkerpop.gremlin.process.traversal.Order");
         imports.addImports("org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__",
                 "org.apache.tinkerpop.gremlin.structure.T", "org.apache.tinkerpop.gremlin.process.traversal.P",
-                "org.onap.aai.edges.enums.EdgeType", "java.util.Map.Entry");
+                "org.onap.aai.edges.enums.EdgeType", "java.util.Map.Entry","org.apache.tinkerpop.gremlin.process.traversal.Pop");
         imports.addStarImports("java.util");
         CompilerConfiguration config = new CompilerConfiguration();
         config.addCompilationCustomizers(custom, imports);
