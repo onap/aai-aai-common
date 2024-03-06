@@ -36,6 +36,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 import org.janusgraph.core.JanusGraphFactory;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -44,10 +45,12 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.onap.aai.AAISetup;
+import org.onap.aai.TinkerpopUpgrade;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
@@ -62,6 +65,7 @@ import org.onap.aai.setup.SchemaVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 
+@Category(TinkerpopUpgrade.class)
 @RunWith(value = Parameterized.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class DbMethHelperTest extends AAISetup {
@@ -127,12 +131,10 @@ public class DbMethHelperTest extends AAISetup {
         map.put("pserver.hostname", "testSearchVertexByIdentityMap-pserver-hostname-01");
 
         Optional<Vertex> optionalVertex;
-        try {
-            optionalVertex = dbMethHelper.searchVertexByIdentityMap(type, map);
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
-        Assert.assertEquals("vp[hostname->testSearchVertexById]", optionalVertex.get().property("hostname").toString());
+        optionalVertex = dbMethHelper.searchVertexByIdentityMap(type, map);
+
+        String hostname = (String) optionalVertex.get().property("hostname").value();
+        Assert.assertEquals("testSearchVertexByIdentityMap-pserver-hostname-01", hostname);
     }
 
     @Test(expected = AmbiguousMapAAIException.class)
