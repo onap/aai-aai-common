@@ -129,16 +129,6 @@ public final class GraphSONPartialIO
             this.version = version;
         }
 
-        /**
-         * @deprecated As of release 3.2.2, replaced by {@link #onMapper(Consumer)}.
-         */
-        @Deprecated
-        @Override
-        public Io.Builder<GraphSONPartialIO> registry(final IoRegistry registry) {
-            this.registry = registry;
-            return this;
-        }
-
         @Override
         public Io.Builder<? extends Io> onMapper(final Consumer<Mapper.Builder> onMapper) {
             this.onMapper = onMapper;

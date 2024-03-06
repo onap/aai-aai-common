@@ -24,6 +24,7 @@ import org.junit.experimental.categories.Categories;
 import org.junit.experimental.categories.Categories.IncludeCategory;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
+import org.onap.aai.db.DbMethHelperTest;
 import org.onap.aai.introspection.sideeffect.DataLinkTest;
 import org.onap.aai.parsers.query.GraphTraversalTest;
 import org.onap.aai.query.builder.TraversalQueryTest;
@@ -45,7 +46,8 @@ import org.onap.aai.query.builder.TraversalURIOptimizedQueryTest;
     DataLinkTest.class,
     GraphTraversalTest.class,
     TraversalQueryTest.class,
-    TraversalURIOptimizedQueryTest.class
+    TraversalURIOptimizedQueryTest.class,
+    DbMethHelperTest.class
 })
 public class TinkerpopUpgradeTests {
 }
