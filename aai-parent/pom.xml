@@ -27,7 +27,7 @@ limitations under the License.
   <parent>
     <groupId>org.onap.aai.aai-common</groupId>
     <artifactId>aai-common</artifactId>
-    <version>1.13.6-SNAPSHOT</version>
+    <version>1.14.0-SNAPSHOT</version>
   </parent>
   <artifactId>aai-parent</artifactId>
   <name>aai-parent</name>
@@ -62,13 +62,13 @@ limitations under the License.
     <eelf.core.version>2.0.0-oss</eelf.core.version>
     <freemarker.version>2.3.31</freemarker.version>
     <google.guava.version>31.1-jre</google.guava.version>
-    <gremlin.version>3.2.11</gremlin.version>
+    <gremlin.version>3.3.0</gremlin.version>
+    <janusgraph.version>0.3.0</janusgraph.version>
     <groovy.version>2.5.15</groovy.version>
     <gson.version>2.9.1</gson.version>
     <hamcrest.junit.version>2.0.0.0</hamcrest.junit.version>
     <hamcrest.core.version>2.2</hamcrest.core.version>
     <jackson.bom.version>2.11.4</jackson.bom.version>
-    <janusgraph.version>0.2.3</janusgraph.version>
     <javatuples.version>1.2</javatuples.version>
     <jaxb.version>2.3.1</jaxb.version>
     <old.jaxb.version>2.3.0.1</old.jaxb.version>
