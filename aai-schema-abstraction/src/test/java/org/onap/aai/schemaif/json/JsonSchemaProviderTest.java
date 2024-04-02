@@ -21,12 +21,7 @@
 
 package org.onap.aai.schemaif.json;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -39,8 +34,8 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.onap.aai.schemaif.SchemaProviderException;
 import org.onap.aai.schemaif.definitions.EdgeSchema;
 import org.onap.aai.schemaif.definitions.PropertySchema;
@@ -59,7 +54,7 @@ public class JsonSchemaProviderTest {
 
     JsonSchemaProviderConfig config = new JsonSchemaProviderConfig();
 
-    @Before
+    @BeforeEach
     public void init() {
         config.setSchemaServiceBaseUrl("https://testurl.com:8443");
         config.setSchemaServiceCertFile("/c/certfile");
@@ -528,66 +523,74 @@ public class JsonSchemaProviderTest {
         }
     }
 
-    @Test(expected = SchemaProviderException.class)
+    @Test
     public void testSchemaValidateBadEdge() throws SchemaProviderException {
-        SchemaServiceResponse schema;
+        assertThrows(SchemaProviderException.class, () -> {
+            SchemaServiceResponse schema;
 
-        try {
-            String testSchema = readFile("src/test/resources/json/badEdgeSchema.json");
-            schema = SchemaServiceResponse.fromJson(testSchema);
-        } catch (Exception ex) {
-            fail();
-            return;
-        }
+            try {
+                String testSchema = readFile("src/test/resources/json/badEdgeSchema.json");
+                schema = SchemaServiceResponse.fromJson(testSchema);
+            } catch (Exception ex) {
+                fail();
+                return;
+            }
 
-        schema.getData().validate();
+            schema.getData().validate();
+        });
     }
 
-    @Test(expected = SchemaProviderException.class)
+    @Test
     public void testSchemaValidateBadVertex() throws SchemaProviderException {
-        SchemaServiceResponse schema;
+        assertThrows(SchemaProviderException.class, () -> {
+            SchemaServiceResponse schema;
 
-        try {
-            String testSchema = readFile("src/test/resources/json/badVertexSchema.json");
-            schema = SchemaServiceResponse.fromJson(testSchema);
-        } catch (Exception ex) {
-            fail();
-            return;
-        }
+            try {
+                String testSchema = readFile("src/test/resources/json/badVertexSchema.json");
+                schema = SchemaServiceResponse.fromJson(testSchema);
+            } catch (Exception ex) {
+                fail();
+                return;
+            }
 
-        System.out.println("Validate");
-        schema.getData().validate();
-        System.out.println("Validate done");
+            System.out.println("Validate");
+            schema.getData().validate();
+            System.out.println("Validate done");
+        });
     }
 
-    @Test(expected = SchemaProviderException.class)
+    @Test
     public void testSchemaValidateBadType() throws SchemaProviderException {
-        SchemaServiceResponse schema;
+        assertThrows(SchemaProviderException.class, () -> {
+            SchemaServiceResponse schema;
 
-        try {
-            String testSchema = readFile("src/test/resources/json/badTypeSchema.json");
-            schema = SchemaServiceResponse.fromJson(testSchema);
-        } catch (Exception ex) {
-            fail();
-            return;
-        }
+            try {
+                String testSchema = readFile("src/test/resources/json/badTypeSchema.json");
+                schema = SchemaServiceResponse.fromJson(testSchema);
+            } catch (Exception ex) {
+                fail();
+                return;
+            }
 
-        schema.getData().validate();
+            schema.getData().validate();
+        });
     }
 
-    @Test(expected = SchemaProviderException.class)
+    @Test
     public void testSchemaValidateBadProp() throws SchemaProviderException {
-        SchemaServiceResponse schema;
+        assertThrows(SchemaProviderException.class, () -> {
+            SchemaServiceResponse schema;
 
-        try {
-            String testSchema = readFile("src/test/resources/json/badPropSchema.json");
-            schema = SchemaServiceResponse.fromJson(testSchema);
-        } catch (Exception ex) {
-            fail();
-            return;
-        }
+            try {
+                String testSchema = readFile("src/test/resources/json/badPropSchema.json");
+                schema = SchemaServiceResponse.fromJson(testSchema);
+            } catch (Exception ex) {
+                fail();
+                return;
+            }
 
-        schema.getData().validate();
+            schema.getData().validate();
+        });
     }
 
     static String readFile(String path) throws IOException {

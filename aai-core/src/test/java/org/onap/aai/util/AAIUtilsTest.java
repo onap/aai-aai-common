@@ -20,10 +20,7 @@
 
 package org.onap.aai.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -35,7 +32,7 @@ import java.util.List;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class AAIUtilsTest {
 
@@ -43,7 +40,7 @@ public class AAIUtilsTest {
     public void testNullCheckWithNull() {
         List<String> newList = null;
         Iterable<String> res = AAIUtils.nullCheck(newList);
-        assertNotNull("nullCheck() should return empty list", res);
+        assertNotNull(res, "nullCheck() should return empty list");
         assertEquals(Collections.<String>emptyList(), res);
     }
 
@@ -54,7 +51,7 @@ public class AAIUtilsTest {
 
         Iterable<String> res = AAIUtils.nullCheck(newList);
 
-        assertNotNull("nullCheck() should return back list", res);
+        assertNotNull(res, "nullCheck() should return back list");
         assertEquals(newList, res);
     }
 
@@ -83,8 +80,8 @@ public class AAIUtilsTest {
 
         Date d3 = new Date();
 
-        assertTrue("Generated date is not after a past date", d2.after(d1));
-        assertTrue("Generated date is not before a future date", d2.before(d3));
+        assertTrue(d2.after(d1), "Generated date is not after a past date");
+        assertTrue(d2.before(d3), "Generated date is not before a future date");
     }
 
 }

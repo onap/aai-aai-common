@@ -20,11 +20,11 @@
 
 package org.onap.aai.introspection.tools;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.onap.aai.AAISetup;
 import org.onap.aai.introspection.*;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
@@ -38,7 +38,7 @@ public class CreateUUIDTest extends AAISetup {
     private Loader loader;
     private Issue issue;
 
-    @Before
+    @BeforeEach
     public void setup() {
         createUUID = new CreateUUID();
         loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());

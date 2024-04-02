@@ -22,8 +22,8 @@ package org.onap.aai.prevalidation;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
@@ -35,29 +35,28 @@ import java.net.SocketTimeoutException;
 import java.util.List;
 
 import org.apache.http.conn.ConnectTimeoutException;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.onap.aai.PayloadUtil;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.restclient.RestClient;
-import org.springframework.boot.test.system.OutputCaptureRule;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 
+@ExtendWith(OutputCaptureExtension.class)
 public class ValidationServiceTest {
 
     private RestClient restClient;
 
     private ValidationService validationService;
 
-    @Rule
-    public OutputCaptureRule capture = new OutputCaptureRule();
-
     private Gson gson;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         gson = new Gson();
         restClient = Mockito.mock(RestClient.class);
@@ -77,7 +76,7 @@ public class ValidationServiceTest {
     }
 
     @Test
-    public void testPreValidateWithSuccessRequestAndServiceIsDownAndShouldErrorWithConnectionRefused()
+    public void testPreValidateWithSuccessRequestAndServiceIsDownAndShouldErrorWithConnectionRefused(CapturedOutput capture)
             throws IOException, AAIException {
 
         String pserverRequest = PayloadUtil.getResourcePayload("prevalidation/success-request-with-no-violations.json");
@@ -92,7 +91,7 @@ public class ValidationServiceTest {
     }
 
     @Test
-    public void testPreValidateWithSuccessRequestAndServiceIsUnreachableAndShouldErrorWithConnectionTimeout()
+    public void testPreValidateWithSuccessRequestAndServiceIsUnreachableAndShouldErrorWithConnectionTimeout(CapturedOutput capture)
             throws IOException, AAIException {
 
         String pserverRequest = PayloadUtil.getResourcePayload("prevalidation/success-request-with-no-violations.json");
@@ -126,12 +125,12 @@ public class ValidationServiceTest {
         Mockito.doReturn(true).when(validationService).isSuccess(responseEntity);
 
         List<String> errorMessages = validationService.preValidate(pserverRequest);
-        assertNotNull("Expected the error messages to be not null", errorMessages);
+        assertNotNull(errorMessages, "Expected the error messages to be not null");
         assertThat(errorMessages.size(), is(0));
     }
 
     @Test
-    public void testPreValidateWithSuccessRequestAndServiceIsAvailableAndRequestIsTakingTooLongAndClientShouldTimeout()
+    public void testPreValidateWithSuccessRequestAndServiceIsAvailableAndRequestIsTakingTooLongAndClientShouldTimeout(CapturedOutput capture)
             throws IOException, AAIException {
 
         String pserverRequest = PayloadUtil.getResourcePayload("prevalidation/success-request-with-no-violations.json");
@@ -154,7 +153,7 @@ public class ValidationServiceTest {
 
         Validation validation = gson.fromJson(genericVnfRequest, Validation.class);
         List<String> errorMessages = validationService.extractViolations(validation);
-        assertNotNull("Expected the error messages to be not null", errorMessages);
+        assertNotNull(errorMessages, "Expected the error messages to be not null");
         assertThat(errorMessages.size(), is(1));
         assertThat(errorMessages.get(0),
                 is("Invalid nf values, check nf-type, nf-role, nf-function, and nf-naming-code"));
@@ -168,7 +167,7 @@ public class ValidationServiceTest {
 
         Validation validation = gson.fromJson(genericVnfRequest, Validation.class);
         List<String> errorMessages = validationService.extractViolations(validation);
-        assertNotNull("Expected the error messages to be not null", errorMessages);
+        assertNotNull(errorMessages, "Expected the error messages to be not null");
         assertThat(errorMessages.size(), is(0));
     }
 
@@ -180,7 +179,7 @@ public class ValidationServiceTest {
 
         Validation validation = gson.fromJson(genericVnfRequest, Validation.class);
         List<String> errorMessages = validationService.extractViolations(validation);
-        assertNotNull("Expected the error messages to be not null", errorMessages);
+        assertNotNull(errorMessages, "Expected the error messages to be not null");
         assertThat(errorMessages.size(), is(0));
     }
 }

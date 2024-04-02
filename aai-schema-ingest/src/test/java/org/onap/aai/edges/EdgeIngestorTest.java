@@ -20,17 +20,14 @@
 
 package org.onap.aai.edges;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.google.common.collect.Multimap;
 
 import java.util.Collection;
 
 import org.apache.tinkerpop.gremlin.structure.Direction;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.onap.aai.config.EdgesConfiguration;
 import org.onap.aai.edges.enums.AAIDirection;
 import org.onap.aai.edges.enums.MultiplicityRule;
@@ -43,9 +40,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-@RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {MockProvider.class, EdgesConfiguration.class})
 @TestPropertySource(
         properties = {"schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-wiring-test.properties",
@@ -55,9 +50,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class EdgeIngestorTest {
     @Autowired
     EdgeIngestor edgeIngestor;
-
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
 
     @Test
     public void getRulesTest1() throws EdgeRuleNotFoundException {
@@ -162,10 +154,11 @@ public class EdgeIngestorTest {
 
     @Test
     public void getRulesNoneFound() throws EdgeRuleNotFoundException {
-        thrown.expect(EdgeRuleNotFoundException.class);
-        thrown.expectMessage("No rules found for");
-        EdgeRuleQuery q = new EdgeRuleQuery.Builder("bogus-value").build();
-        edgeIngestor.getRules(q);
+        Throwable exception = assertThrows(EdgeRuleNotFoundException.class, () -> {
+            EdgeRuleQuery q = new EdgeRuleQuery.Builder("bogus-value").build();
+            edgeIngestor.getRules(q);
+        });
+        assertTrue(exception.getMessage().contains("No rules found for"));
     }
 
     @Test
@@ -238,34 +231,38 @@ public class EdgeIngestorTest {
 
     @Test
     public void getRuleNoneFoundTest() throws EdgeRuleNotFoundException, AmbiguousRuleChoiceException {
-        thrown.expect(EdgeRuleNotFoundException.class);
-        thrown.expectMessage("No rule found for");
-        EdgeRuleQuery q = new EdgeRuleQuery.Builder("l-interface", "nonexistent").build();
-        edgeIngestor.getRule(q);
+        Throwable exception = assertThrows(EdgeRuleNotFoundException.class, () -> {
+            EdgeRuleQuery q = new EdgeRuleQuery.Builder("l-interface", "nonexistent").build();
+            edgeIngestor.getRule(q);
+        });
+        assertTrue(exception.getMessage().contains("No rule found for"));
     }
 
     @Test
     public void getRuleTooManyPairsTest() throws EdgeRuleNotFoundException, AmbiguousRuleChoiceException {
-        thrown.expect(AmbiguousRuleChoiceException.class);
-        thrown.expectMessage("No way to select single rule from these pairs:");
-        EdgeRuleQuery q = new EdgeRuleQuery.Builder("foo").build();
-        edgeIngestor.getRule(q);
+        Throwable exception = assertThrows(AmbiguousRuleChoiceException.class, () -> {
+            EdgeRuleQuery q = new EdgeRuleQuery.Builder("foo").build();
+            edgeIngestor.getRule(q);
+        });
+        assertTrue(exception.getMessage().contains("No way to select single rule from these pairs:"));
     }
 
     @Test
     public void getRuleAmbiguousDefaultTest() throws EdgeRuleNotFoundException, AmbiguousRuleChoiceException {
-        thrown.expect(AmbiguousRuleChoiceException.class);
-        thrown.expectMessage("Multiple defaults found.");
-        EdgeRuleQuery q = new EdgeRuleQuery.Builder("seed", "plant").version(new SchemaVersion("v11")).build();
-        edgeIngestor.getRule(q);
+        Throwable exception = assertThrows(AmbiguousRuleChoiceException.class, () -> {
+            EdgeRuleQuery q = new EdgeRuleQuery.Builder("seed", "plant").version(new SchemaVersion("v11")).build();
+            edgeIngestor.getRule(q);
+        });
+        assertTrue(exception.getMessage().contains("Multiple defaults found."));
     }
 
     @Test
     public void getRuleNoDefaultTest() throws EdgeRuleNotFoundException, AmbiguousRuleChoiceException {
-        thrown.expect(AmbiguousRuleChoiceException.class);
-        thrown.expectMessage("No default found.");
-        EdgeRuleQuery q = new EdgeRuleQuery.Builder("apple", "orange").version(new SchemaVersion("v11")).build();
-        edgeIngestor.getRule(q);
+        Throwable exception = assertThrows(AmbiguousRuleChoiceException.class, () -> {
+            EdgeRuleQuery q = new EdgeRuleQuery.Builder("apple", "orange").version(new SchemaVersion("v11")).build();
+            edgeIngestor.getRule(q);
+        });
+        assertTrue(exception.getMessage().contains("No default found."));
     }
 
     @Test
@@ -383,15 +380,15 @@ public class EdgeIngestorTest {
 
     @Test
     public void getAllRulesTest() throws EdgeRuleNotFoundException {
-        Multimap<String, EdgeRule> res = edgeIngestor.getAllRules(new SchemaVersion("v10"));
-        assertTrue(res.size() == 4);
-        assertTrue(res.containsKey("bar|foo"));
-        assertTrue(res.get("bar|foo").size() == 2);
-        assertTrue(res.containsKey("baz|foo"));
-        assertTrue(res.containsKey("foo|quux"));
-
-        thrown.expect(EdgeRuleNotFoundException.class);
-        thrown.expectMessage("No rules found for version v9.");
-        edgeIngestor.getAllRules(new SchemaVersion("v9"));
+        Throwable exception = assertThrows(EdgeRuleNotFoundException.class, () -> {
+            Multimap<String, EdgeRule> res = edgeIngestor.getAllRules(new SchemaVersion("v10"));
+            assertTrue(res.size() == 4);
+            assertTrue(res.containsKey("bar|foo"));
+            assertTrue(res.get("bar|foo").size() == 2);
+            assertTrue(res.containsKey("baz|foo"));
+            assertTrue(res.containsKey("foo|quux"));
+            edgeIngestor.getAllRules(new SchemaVersion("v9"));
+        });
+        assertTrue(exception.getMessage().contains("No rules found for version v9."));
     }
 }

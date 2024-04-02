@@ -20,17 +20,13 @@
 
 package org.onap.aai.introspection.tools;
 
-import static junit.framework.TestCase.assertNotNull;
 import static org.eclipse.persistence.jpa.jpql.Assert.fail;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.onap.aai.AAISetup;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
@@ -47,7 +43,7 @@ public class IntrospectorValidatorTest extends AAISetup {
     private IntrospectorValidator.Builder b;
     private IntrospectorValidator iv;
 
-    @Before
+    @BeforeEach
     public void setup() {
         loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
         issue = new Issue();
@@ -80,21 +76,21 @@ public class IntrospectorValidatorTest extends AAISetup {
     public void testIntrospectorValidatorMaxDepth() throws AAIUnknownObjectException {
         setupIssue("Some message", IssueType.MISSING_REQUIRED_PROP, "hostname", introspector);
         b.restrictDepth(4);
-        assertEquals("Maximum Depth should be 4", 4, b.getMaximumDepth());
+        assertEquals(4, b.getMaximumDepth(), "Maximum Depth should be 4");
     }
 
     @Test
     public void testIntrospectorValidatorValidationRequired() throws AAIUnknownObjectException {
         setupIssue("Some message", IssueType.MISSING_REQUIRED_PROP, "hostname", introspector);
         b.validateRequired(true);
-        assertTrue("Validation should be required", b.getValidateRequired());
+        assertTrue(b.getValidateRequired(), "Validation should be required");
     }
 
     @Test
     public void testIntrospectorValidatorValidatedFalse() throws AAIUnknownObjectException {
         setupIssue("Some message", IssueType.MISSING_REQUIRED_PROP, "hostname", introspector);
         try {
-            assertFalse("Not currently validated", iv.validate(introspector));
+            assertFalse(iv.validate(introspector), "Not currently validated");
         } catch (Exception e) {
             fail("Introspector validate call threw an exception " + e);
         }
@@ -103,14 +99,14 @@ public class IntrospectorValidatorTest extends AAISetup {
     @Test
     public void testIntrospectorValidatorResolveIssues() throws AAIUnknownObjectException {
         setupIssue("Some message", IssueType.MISSING_REQUIRED_PROP, "hostname", introspector);
-        assertTrue("Introspector call to resolve issues should return true", iv.resolveIssues());
+        assertTrue(iv.resolveIssues(), "Introspector call to resolve issues should return true");
     }
 
     @Test
     public void testIntrospectorValidatorGetIssues() throws AAIUnknownObjectException {
         setupIssue("Some message", IssueType.MISSING_REQUIRED_PROP, "hostname", introspector);
         List<Issue> result = iv.getIssues();
-        Assert.assertNotNull(result);
+        assertNotNull(result);
 
     }
 
@@ -118,20 +114,21 @@ public class IntrospectorValidatorTest extends AAISetup {
     public void testIntrospectorValidatorProcessComplexObject() throws AAIUnknownObjectException {
         setupIssue("Some message", IssueType.MISSING_REQUIRED_PROP, "hostname", introspector);
         iv.processComplexObj(introspector);
-        Assert.assertNotNull(introspector);
+        assertNotNull(introspector);
     }
 
     @Test
     public void testIntrospectorValidatorCreateComplexListSize() throws AAIUnknownObjectException {
         setupIssue("Some message", IssueType.MISSING_REQUIRED_PROP, "hostname", introspector);
-        assertEquals("create complex list size should return 0", 0,
-                iv.createComplexListSize(introspector, introspector));
+        assertEquals(0,
+                iv.createComplexListSize(introspector, introspector),
+                "create complex list size should return 0");
     }
 
     @Test
     public void testIntrospectorValidatorGetResolvers() throws AAIUnknownObjectException {
         setupIssue("Some message", IssueType.MISSING_REQUIRED_PROP, "hostname", introspector);
-        assertNotNull("Get resolvers should not be null", b.getResolvers());
+        assertNotNull(b.getResolvers(), "Get resolvers should not be null");
     }
 
 }

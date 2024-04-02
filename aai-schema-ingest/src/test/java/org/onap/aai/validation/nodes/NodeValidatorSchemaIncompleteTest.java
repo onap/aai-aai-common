@@ -20,6 +20,8 @@
 
 package org.onap.aai.validation.nodes;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -32,11 +34,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.onap.aai.config.NodesConfiguration;
 import org.onap.aai.nodes.NodeIngestor;
 import org.onap.aai.setup.SchemaVersion;
@@ -45,34 +44,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.w3c.dom.Document;
 
-@RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {SchemaIncompleteTranslator.class, NodesConfiguration.class})
 
 @TestPropertySource(
         properties = {
                 "schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-wiring-test-local.properties"})
 @SpringBootTest
-@Ignore
+@Disabled
 public class NodeValidatorSchemaIncompleteTest {
     @Autowired
     NodeIngestor ni;
 
-    // set thrown.expect to whatever a specific test needs
-    // this establishes a default of expecting no exceptions to be thrown
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
-
     // Throws a NullPointerException because a JavaType is referenced, but not defined
     @Test
     public void testIncompleteCombinedSchema() throws TransformerException, IOException, IllegalStateException {
-        thrown.expect(NullPointerException.class);
+        assertThrows(NullPointerException.class, () -> {
 
-        // TODO Change for Exception
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        printDocument(ni.getSchema(new SchemaVersion("v12")), buffer);
+            // TODO Change for Exception
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+            printDocument(ni.getSchema(new SchemaVersion("v12")), buffer);
+        });
     }
 
     public static void printDocument(Document doc, OutputStream out) throws IOException, TransformerException {

@@ -20,16 +20,16 @@
 
 package org.onap.aai.util;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class KeyValueListTest {
     KeyValueList kv;
     KeyValueList kv1;
 
-    @Before
+    @BeforeEach
     public void setup() {
         String key = "key";
         String value = "value";
@@ -50,13 +50,13 @@ public class KeyValueListTest {
 
     @Test
     public void additionalPropertyTest() {
-        assertEquals("Additional properties added", "val1", kv.getAdditionalProperties().get("name1"));
+        assertEquals("val1", kv.getAdditionalProperties().get("name1"), "Additional properties added");
     }
 
     @Test
     public void hashCodeTest() {
-        assertEquals("Hashing function returns the same code", kv.hashCode(), kv.hashCode());
-        assertNotEquals("Hashing function returns different code for different objects", kv.hashCode(), kv1.hashCode());
+        assertEquals(kv.hashCode(), kv.hashCode(), "Hashing function returns the same code");
+        assertNotEquals(kv.hashCode(), kv1.hashCode(), "Hashing function returns different code for different objects");
     }
 
     @Test
@@ -65,12 +65,12 @@ public class KeyValueListTest {
         kv2.setKey("key");
         kv2.setValue("value");
         kv2.setAdditionalProperty("name1", "val1");
-        assertTrue("Equal KeyValueList objects", kv.equals(kv2));
-        assertFalse("Non-equal KeyValueList objects", kv.equals(kv1));
+        assertTrue(kv.equals(kv2), "Equal KeyValueList objects");
+        assertFalse(kv.equals(kv1), "Non-equal KeyValueList objects");
     }
 
     @Test
     public void toStringTest() {
-        assertNotEquals("Different objects should return different strings", kv.toString(), kv1.toString());
+        assertNotEquals(kv.toString(), kv1.toString(), "Different objects should return different strings");
     }
 }

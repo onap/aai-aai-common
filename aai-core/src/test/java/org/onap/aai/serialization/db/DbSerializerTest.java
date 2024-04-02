@@ -21,13 +21,8 @@
 package org.onap.aai.serialization.db;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
@@ -50,15 +45,12 @@ import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
 import org.janusgraph.core.JanusGraphFactory;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.onap.aai.AAISetup;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.edges.EdgeIngestor;
@@ -76,14 +68,8 @@ import org.onap.aai.util.AAIConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 
-@RunWith(value = Parameterized.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class DbSerializerTest extends AAISetup {
-
-    // to use, set thrown.expect to whatever your test needs
-    // this line establishes default of expecting no exception to be thrown
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
 
     protected static Graph graph;
 
@@ -100,22 +86,19 @@ public class DbSerializerTest extends AAISetup {
     private DBSerializer serializer;
     private TransactionalGraphEngine spy;
     private TransactionalGraphEngine.Admin adminSpy;
-
-    @Parameterized.Parameter
     public QueryStyle queryStyle;
 
-    @Parameterized.Parameters(name = "QueryStyle.{0}")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {{QueryStyle.TRAVERSAL}, {QueryStyle.TRAVERSAL_URI}});
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         graph = JanusGraphFactory.build().set("storage.backend", "inmemory").open();
 
     }
 
-    @Before
+    @BeforeEach
     public void setup() throws Exception {
         // createGraph();
         version = schemaVersions.getDefaultVersion();
@@ -128,8 +111,11 @@ public class DbSerializerTest extends AAISetup {
         serializer = new DBSerializer(version, engine, introspectorFactoryType, "AAI-TEST");
     }
 
-    @Test
-    public void testFindDeletableDoesNotReturnDuplicates() throws AAIException {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void testFindDeletableDoesNotReturnDuplicates(QueryStyle queryStyle) throws AAIException {
+
+        initDbSerializerTest(queryStyle);
 
         Vertex genericVnf1 = graph.addVertex("aai-node-type", "generic-vnf", "vnf-id", "vnf1", "vnf-name", "vnfName1");
 
@@ -166,12 +152,12 @@ public class DbSerializerTest extends AAISetup {
         }
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         engine.rollback();
     }
 
-    @AfterClass
+    @AfterAll
     public static void destroy() throws Exception {
         graph.close();
     }
@@ -336,8 +322,10 @@ public class DbSerializerTest extends AAISetup {
         logicalLink2.property(AAIProperties.AAI_URI, serializer.getURIForVertex(logicalLink2).toString());
     }
 
-    @Test
-    public void subnetDelWithInEdgesIpv4Test() throws AAIException, UnsupportedEncodingException {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void subnetDelWithInEdgesIpv4Test(QueryStyle queryStyle) throws AAIException, UnsupportedEncodingException {
+        initDbSerializerTest(queryStyle);
         subnetSetup();
         String expected_message =
                 "Object is being reference by additional objects preventing it from being deleted. Please clean up references from the following types [l3-interface-ipv4-address-list]";
@@ -352,8 +340,10 @@ public class DbSerializerTest extends AAISetup {
 
     }
 
-    @Test
-    public void subnetDelWithInEdgesIpv6Test() throws AAIException, UnsupportedEncodingException {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void subnetDelWithInEdgesIpv6Test(QueryStyle queryStyle) throws AAIException, UnsupportedEncodingException {
+        initDbSerializerTest(queryStyle);
         subnetSetup();
         String expected_message =
                 "Object is being reference by additional objects preventing it from being deleted. Please clean up references from the following types [l3-interface-ipv6-address-list]";
@@ -367,8 +357,10 @@ public class DbSerializerTest extends AAISetup {
 
     }
 
-    @Test
-    public void subnetDelWithInEdgesL3network() throws AAIException, UnsupportedEncodingException {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void subnetDelWithInEdgesL3network(QueryStyle queryStyle) throws AAIException, UnsupportedEncodingException {
+        initDbSerializerTest(queryStyle);
         subnetSetup();
         String expected_message = "";
 
@@ -403,8 +395,10 @@ public class DbSerializerTest extends AAISetup {
 
     }
 
-    @Test
-    public void createNewVertexTest() throws AAIException {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void createNewVertexTest(QueryStyle queryStyle) throws AAIException {
+        initDbSerializerTest(queryStyle);
         engine.startTransaction();
 
         Introspector testObj = loader.introspectorFromName("generic-vnf");
@@ -416,8 +410,10 @@ public class DbSerializerTest extends AAISetup {
 
     }
 
-    @Test
-    public void touchStandardVertexPropertiesTest() throws AAIException, InterruptedException {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void touchStandardVertexPropertiesTest(QueryStyle queryStyle) throws AAIException, InterruptedException {
+        initDbSerializerTest(queryStyle);
         engine.startTransaction();
 
         // if this test runs through too fast the value may not change, causing the test to fail. sleeping ensures a
@@ -481,8 +477,10 @@ public class DbSerializerTest extends AAISetup {
         assertEquals("AAI-TEST-2", lastModSoT);
     }
 
-    @Test
-    public void touchStandardVertexPropertiesAAIUUIDTest() {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void touchStandardVertexPropertiesAAIUUIDTest(QueryStyle queryStyle) {
+        initDbSerializerTest(queryStyle);
         engine.startTransaction();
 
         Graph graph = TinkerGraph.open();
@@ -498,84 +496,107 @@ public class DbSerializerTest extends AAISetup {
         }
     }
 
-    @Test
-    public void thatDeleteWithMatchingResourceVersionsIsValid() throws AAIException {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void thatDeleteWithMatchingResourceVersionsIsValid(QueryStyle queryStyle) throws AAIException {
+        initDbSerializerTest(queryStyle);
         engine.startTransaction();
 
         assertTrue(serializer.verifyResourceVersion("delete", "vnfc", "abc", "abc", "vnfcs/vnfc/vnfcId"));
 
     }
 
-    @Test
-    public void thatDeleteWithResourceVersionDisabledConstantUUIDIsValid() throws AAIException {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void thatDeleteWithResourceVersionDisabledConstantUUIDIsValid(QueryStyle queryStyle) throws AAIException {
+        initDbSerializerTest(queryStyle);
         engine.startTransaction();
 
         assertTrue(serializer.verifyResourceVersion("delete", "generic-vnf", "current-res-ver",
                 AAIConstants.AAI_RESVERSION_DISABLED_UUID_DEFAULT, "generic-vnfs/generic-vnf/myid"));
     }
 
-    @Test
-    public void thatDeleteWithMismatchingResourceVersionsIsInvalid() throws AAIException {
-        engine.startTransaction();
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void thatDeleteWithMismatchingResourceVersionsIsInvalid(QueryStyle queryStyle) throws AAIException {
+        Throwable exception = assertThrows(AAIException.class, () -> {
+            initDbSerializerTest(queryStyle);
+            engine.startTransaction();
+            assertTrue(serializer.verifyResourceVersion("delete", "vnfc", "currentResourceVersion", "mismatchingResourceVersion", "vnfcs/vnfc/vnfcId"));
 
-        thrown.expect(AAIException.class);
-        thrown.expectMessage("resource-version MISMATCH for delete of vnfcs/vnfc/vnfcId");
-        assertTrue(serializer.verifyResourceVersion("delete", "vnfc", "currentResourceVersion", "mismatchingResourceVersion", "vnfcs/vnfc/vnfcId"));
+        });
+        assertTrue(exception.getMessage().contains("resource-version MISMATCH for delete of vnfcs/vnfc/vnfcId"));
 
     }
 
-    @Test
-    public void thatCreateWithoutResourceVersionsIsValid() throws AAIException {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void thatCreateWithoutResourceVersionsIsValid(QueryStyle queryStyle) throws AAIException {
+        initDbSerializerTest(queryStyle);
         engine.startTransaction();
 
         assertTrue(serializer.verifyResourceVersion("create", "generic-vnf", null, null, "generic-vnfs/generic-vnf/myid"));
     }
 
-    @Test
-    public void thatCreateWithResourceVersionIsInvalid() throws AAIException {
-        engine.startTransaction();
-
-        thrown.expect(AAIException.class);
-        thrown.expectMessage("resource-version passed for create of generic-vnfs/generic-vnf/myid");
-        serializer.verifyResourceVersion("create", "generic-vnf", null, "old-res-ver", "generic-vnfs/generic-vnf/myid");
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void thatCreateWithResourceVersionIsInvalid(QueryStyle queryStyle) throws AAIException {
+        Throwable exception = assertThrows(AAIException.class, () -> {
+            initDbSerializerTest(queryStyle);
+            engine.startTransaction();
+            serializer.verifyResourceVersion("create", "generic-vnf", null, "old-res-ver", "generic-vnfs/generic-vnf/myid");
+        });
+        assertTrue(exception.getMessage().contains("resource-version passed for create of generic-vnfs/generic-vnf/myid"));
     }
 
-    @Test
-    public void thatUpdateWithMatchingResourceVersionsIsValid() throws AAIException {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void thatUpdateWithMatchingResourceVersionsIsValid(QueryStyle queryStyle) throws AAIException {
+        initDbSerializerTest(queryStyle);
         engine.startTransaction();
 
         assertTrue(serializer.verifyResourceVersion("update", "generic-vnf", "current-res-ver", "current-res-ver", "generic-vnfs/generic-vnf/myid"));
     }
 
-    @Test
-    public void thatUpdateWithoutResourceVersionIsInvalid() throws AAIException {
-        engine.startTransaction();
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void thatUpdateWithoutResourceVersionIsInvalid(QueryStyle queryStyle) throws AAIException {
+        Throwable exception = assertThrows(AAIException.class, () -> {
+            initDbSerializerTest(queryStyle);
+            engine.startTransaction();
+            serializer.verifyResourceVersion("update", "generic-vnf", "current-res-ver", null, "generic-vnfs/generic-vnf/myid");
 
-        thrown.expect(AAIException.class);
-        thrown.expectMessage("resource-version not passed for update of generic-vnfs/generic-vnf/myid");
-        serializer.verifyResourceVersion("update", "generic-vnf", "current-res-ver", null, "generic-vnfs/generic-vnf/myid");
-
-    }
-
-    @Test
-    public void thatUpdateWithResourceVersionMismatchIsInvalid() throws AAIException {
-        engine.startTransaction();
-
-        thrown.expect(AAIException.class);
-        thrown.expectMessage("resource-version MISMATCH for update of generic-vnfs/generic-vnf/myid");
-        serializer.verifyResourceVersion("update", "generic-vnf", "current-res-ver", "old-res-ver",
-                "generic-vnfs/generic-vnf/myid");
+        });
+        assertTrue(exception.getMessage().contains("resource-version not passed for update of generic-vnfs/generic-vnf/myid"));
 
     }
 
-    @Test
-    public void trimClassNameTest() {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void thatUpdateWithResourceVersionMismatchIsInvalid(QueryStyle queryStyle) throws AAIException {
+        Throwable exception = assertThrows(AAIException.class, () -> {
+            initDbSerializerTest(queryStyle);
+            engine.startTransaction();
+            serializer.verifyResourceVersion("update", "generic-vnf", "current-res-ver", "old-res-ver",
+                    "generic-vnfs/generic-vnf/myid");
+
+        });
+        assertTrue(exception.getMessage().contains("resource-version MISMATCH for update of generic-vnfs/generic-vnf/myid"));
+
+    }
+
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void trimClassNameTest(QueryStyle queryStyle) {
+        initDbSerializerTest(queryStyle);
         assertEquals("GenericVnf", serializer.trimClassName("GenericVnf"));
         assertEquals("GenericVnf", serializer.trimClassName("org.onap.aai.GenericVnf"));
     }
 
-    @Test
-    public void getURIForVertexTest() throws AAIException, URISyntaxException, UnsupportedEncodingException {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void getURIForVertexTest(QueryStyle queryStyle) throws AAIException, URISyntaxException, UnsupportedEncodingException {
+        initDbSerializerTest(queryStyle);
         engine.startTransaction();
 
         Vertex cr = engine.tx().addVertex("aai-node-type", "cloud-region", "cloud-owner", "me", "cloud-region-id",
@@ -595,8 +616,10 @@ public class DbSerializerTest extends AAISetup {
 
     }
 
-    @Test
-    public void getVertexPropertiesTest() throws AAIException, UnsupportedEncodingException {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void getVertexPropertiesTest(QueryStyle queryStyle) throws AAIException, UnsupportedEncodingException {
+        initDbSerializerTest(queryStyle);
         engine.startTransaction();
 
         Vertex gvnf = engine.tx().addVertex("aai-node-type", "generic-vnf", "vnf-id", "myvnf", "aai-uri",
@@ -618,8 +641,10 @@ public class DbSerializerTest extends AAISetup {
 
     }
 
-    @Test
-    public void getEdgeBetweenTest() throws AAIException {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void getEdgeBetweenTest(QueryStyle queryStyle) throws AAIException {
+        initDbSerializerTest(queryStyle);
         engine.startTransaction();
 
         Vertex cr =
@@ -633,8 +658,10 @@ public class DbSerializerTest extends AAISetup {
 
     }
 
-    @Test
-    public void deleteEdgeTest() throws AAIException, UnsupportedEncodingException {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void deleteEdgeTest(QueryStyle queryStyle) throws AAIException, UnsupportedEncodingException {
+        initDbSerializerTest(queryStyle);
         engine.startTransaction();
 
         Vertex gvnf = engine.tx().addVertex("aai-node-type", "generic-vnf", "vnf-id", "myvnf", "aai-uri",
@@ -663,8 +690,10 @@ public class DbSerializerTest extends AAISetup {
 
     }
 
-    @Test
-    public void createEdgeTest() throws AAIException, UnsupportedEncodingException {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void createEdgeTest(QueryStyle queryStyle) throws AAIException, UnsupportedEncodingException {
+        initDbSerializerTest(queryStyle);
         engine.startTransaction();
 
         Vertex gvnf = engine.tx().addVertex("aai-node-type", "generic-vnf", "vnf-id", "myvnf", "aai-uri",
@@ -687,9 +716,11 @@ public class DbSerializerTest extends AAISetup {
 
     }
 
-    @Test
-    public void createCousinEdgeThatShouldBeTreeTest()
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void createCousinEdgeThatShouldBeTreeTest(QueryStyle queryStyle)
             throws AAIException, UnsupportedEncodingException, URISyntaxException {
+        initDbSerializerTest(queryStyle);
         engine.startTransaction();
 
         Vertex gvnf = engine.tx().addVertex("aai-node-type", "generic-vnf", "vnf-id", "myvnf", "aai-uri",
@@ -720,30 +751,35 @@ public class DbSerializerTest extends AAISetup {
         }
     }
 
-    @Test
-    public void createEdgeNodeDoesNotExistExceptionTest() throws AAIException, UnsupportedEncodingException {
-        engine.startTransaction();
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void createEdgeNodeDoesNotExistExceptionTest(QueryStyle queryStyle) throws AAIException, UnsupportedEncodingException {
+        Throwable exception = assertThrows(AAIException.class, () -> {
+            initDbSerializerTest(queryStyle);
+            engine.startTransaction();
 
-        Vertex gvnf = engine.tx().addVertex("aai-node-type", "generic-vnf", "vnf-id", "myvnf", "aai-uri",
-                "/network/generic-vnfs/generic-vnf/myvnf");
+            Vertex gvnf = engine.tx().addVertex("aai-node-type", "generic-vnf", "vnf-id", "myvnf", "aai-uri",
+                    "/network/generic-vnfs/generic-vnf/myvnf");
 
-        // rainy day case, edge to non-existent object
-        Introspector relData = loader.introspectorFromName("relationship-data");
-        relData.setValue("relationship-key", "vnfc.vnfc-name");
-        relData.setValue("relationship-value", "b-name");
-        Introspector relationship = loader.introspectorFromName("relationship");
-        relationship.setValue("related-to", "vnfc");
-        relationship.setValue("related-link", "/network/vnfcs/vnfc/b-name");
-        relationship.setValue("relationship-data", relData);
+            // rainy day case, edge to non-existent object
+            Introspector relData = loader.introspectorFromName("relationship-data");
+            relData.setValue("relationship-key", "vnfc.vnfc-name");
+            relData.setValue("relationship-value", "b-name");
+            Introspector relationship = loader.introspectorFromName("relationship");
+            relationship.setValue("related-to", "vnfc");
+            relationship.setValue("related-link", "/network/vnfcs/vnfc/b-name");
+            relationship.setValue("relationship-data", relData);
+            serializer.createEdge(relationship, gvnf);
 
-        thrown.expect(AAIException.class);
-        thrown.expectMessage("Node of type vnfc. Could not find object at: /network/vnfcs/vnfc/b-name");
-        serializer.createEdge(relationship, gvnf);
+        });
+        assertTrue(exception.getMessage().contains("Node of type vnfc. Could not find object at: /network/vnfcs/vnfc/b-name"));
 
     }
 
-    @Test
-    public void serializeSingleVertexTopLevelTest() throws AAIException, UnsupportedEncodingException {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void serializeSingleVertexTopLevelTest(QueryStyle queryStyle) throws AAIException, UnsupportedEncodingException {
+        initDbSerializerTest(queryStyle);
         engine.startTransaction();
 
         Introspector gvnf = loader.introspectorFromName("generic-vnf");
@@ -755,8 +791,10 @@ public class DbSerializerTest extends AAISetup {
         assertTrue(engine.tx().traversal().V().has("aai-node-type", "generic-vnf").has("vnf-id", "myvnf").hasNext());
     }
 
-    @Test
-    public void serializeSingleVertexChildTest() throws AAIException, UnsupportedEncodingException {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void serializeSingleVertexChildTest(QueryStyle queryStyle) throws AAIException, UnsupportedEncodingException {
+        initDbSerializerTest(queryStyle);
         engine.startTransaction();
 
         Vertex cr = engine.tx().addVertex("aai-node-type", "cloud-region", "cloud-owner", "me", "cloud-region-id",
@@ -777,8 +815,10 @@ public class DbSerializerTest extends AAISetup {
 
     }
 
-    @Test
-    public void getVertexPropertiesRelationshipHasLabelTest() throws AAIException, UnsupportedEncodingException {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void getVertexPropertiesRelationshipHasLabelTest(QueryStyle queryStyle) throws AAIException, UnsupportedEncodingException {
+        initDbSerializerTest(queryStyle);
         engine.startTransaction();
 
         Vertex gvnf = engine.tx().addVertex("aai-node-type", "generic-vnf", "vnf-id", "vnf-123", "aai-uri",
@@ -791,15 +831,19 @@ public class DbSerializerTest extends AAISetup {
         Introspector obj = loader.introspectorFromName("generic-vnf");
         obj = this.serializer.dbToObject(Collections.singletonList(gvnf), obj, AAIProperties.MAXIMUM_DEPTH, false, "false");
 
-        assertEquals("edge label between generic-vnf and vnfs is uses", "org.onap.relationships.inventory.BelongsTo",
+        assertEquals("org.onap.relationships.inventory.BelongsTo",
                 obj.getWrappedValue("relationship-list").getWrappedListValue("relationship").get(0)
-                        .getValue("relationship-label"));
+                        .getValue("relationship-label"),
+                "edge label between generic-vnf and vnfs is uses");
 
     }
 
-    @Test
-    public void getVertexPropertiesRelationshipOldVersionNoEdgeLabelTest()
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void getVertexPropertiesRelationshipOldVersionNoEdgeLabelTest(QueryStyle queryStyle)
             throws AAIException, UnsupportedEncodingException {
+
+        initDbSerializerTest(queryStyle);
 
         SchemaVersion version = schemaVersions.getAppRootVersion();
         DBSerializer dbser = new DBSerializer(version, engine, introspectorFactoryType, "AAI-TEST");
@@ -817,41 +861,47 @@ public class DbSerializerTest extends AAISetup {
         Introspector obj = loader.introspectorFromName("generic-vnf");
         obj = dbser.dbToObject(Collections.singletonList(gvnf), obj, AAIProperties.MAXIMUM_DEPTH, false, "false");
 
-        assertFalse("Relationship does not contain edge-property", obj.getWrappedValue("relationship-list")
-                .getWrappedListValue("relationship").get(0).hasProperty("relationship-label"));
+        assertFalse(obj.getWrappedValue("relationship-list")
+                .getWrappedListValue("relationship").get(0).hasProperty("relationship-label"), "Relationship does not contain edge-property");
 
     }
 
-    @Test
-    public void createEdgeWithInvalidLabelTest()
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void createEdgeWithInvalidLabelTest(QueryStyle queryStyle)
             throws AAIException, UnsupportedEncodingException, SecurityException, IllegalArgumentException {
+        Throwable exception = assertThrows(AAIException.class, () -> {
 
-        engine.startTransaction();
+            initDbSerializerTest(queryStyle);
 
-        Vertex gvnf = engine.tx().addVertex("aai-node-type", "generic-vnf", "vnf-id", "myvnf", "aai-uri",
-                "/network/generic-vnfs/generic-vnf/myvnf", "aai-uuid", "a");
-        engine.tx().addVertex("aai-node-type", "vnfc", "vnfc-name", "a-name", "aai-uri", "/network/vnfcs/vnfc/a-name",
-                "aai-uuid", "b");
+            engine.startTransaction();
 
-        Introspector relData = loader.introspectorFromName("relationship-data");
-        relData.setValue("relationship-key", "vnfc.vnfc-name");
-        relData.setValue("relationship-value", "a-name");
-        Introspector relationship = loader.introspectorFromName("relationship");
-        relationship.setValue("related-to", "vnfc");
-        relationship.setValue("related-link", "/network/vnfcs/vnfc/a-name");
-        relationship.setValue("relationship-data", relData);
-        relationship.setValue("relationship-label", "NA");
+            Vertex gvnf = engine.tx().addVertex("aai-node-type", "generic-vnf", "vnf-id", "myvnf", "aai-uri",
+                    "/network/generic-vnfs/generic-vnf/myvnf", "aai-uuid", "a");
+            engine.tx().addVertex("aai-node-type", "vnfc", "vnfc-name", "a-name", "aai-uri", "/network/vnfcs/vnfc/a-name",
+                    "aai-uuid", "b");
 
-        thrown.expect(AAIException.class);
-        thrown.expectMessage("No rule found");
-        thrown.expectMessage("node type: generic-vnf, node type: vnfc, label: NA, type: COUSIN");
-        serializer.createEdge(relationship, gvnf);
+            Introspector relData = loader.introspectorFromName("relationship-data");
+            relData.setValue("relationship-key", "vnfc.vnfc-name");
+            relData.setValue("relationship-value", "a-name");
+            Introspector relationship = loader.introspectorFromName("relationship");
+            relationship.setValue("related-to", "vnfc");
+            relationship.setValue("related-link", "/network/vnfcs/vnfc/a-name");
+            relationship.setValue("relationship-data", relData);
+            relationship.setValue("relationship-label", "NA");
+            serializer.createEdge(relationship, gvnf);
+
+        });
+        assertTrue(exception.getMessage().contains("node type: generic-vnf, node type: vnfc, label: NA, type: COUSIN"));
 
     }
 
-    @Test
-    public void createEdgeUsingIntrospectorTest()
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void createEdgeUsingIntrospectorTest(QueryStyle queryStyle)
             throws AAIException, UnsupportedEncodingException, SecurityException, IllegalArgumentException {
+
+        initDbSerializerTest(queryStyle);
 
         engine.startTransaction();
 
@@ -873,8 +923,10 @@ public class DbSerializerTest extends AAISetup {
         serializer.createEdge(relationship, gvnf);
     }
 
-    @Test
-    public void addRelatedToPropertyTest() throws AAIException {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void addRelatedToPropertyTest(QueryStyle queryStyle) throws AAIException {
+        initDbSerializerTest(queryStyle);
         engine.startTransaction();
 
         Vertex gvnf = engine.tx().addVertex("aai-node-type", "generic-vnf", "vnf-id", "myname", "vnf-name", "myname",
@@ -894,25 +946,29 @@ public class DbSerializerTest extends AAISetup {
         assertThat(relToProp.getValue("property-value"), is("myname"));
     }
 
-    @Test
-    public void dbToObjectContainerMismatchTest() throws AAIException, UnsupportedEncodingException {
-        DBSerializer dbser = new DBSerializer(schemaVersions.getAppRootVersion(), dbEngine, ModelType.MOXY, "AAI-TEST");
-        Graph vertexMaker = TinkerGraph.open();
-        Vertex a = vertexMaker.addVertex(T.id, "0");
-        Vertex b = vertexMaker.addVertex(T.id, "1");
-        List<Vertex> vertices = Arrays.asList(a, b);
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void dbToObjectContainerMismatchTest(QueryStyle queryStyle) throws AAIException, UnsupportedEncodingException {
+        Throwable exception = assertThrows(AAIException.class, () -> {
+            initDbSerializerTest(queryStyle);
+            DBSerializer dbser = new DBSerializer(schemaVersions.getAppRootVersion(), dbEngine, ModelType.MOXY, "AAI-TEST");
+            Graph vertexMaker = TinkerGraph.open();
+            Vertex a = vertexMaker.addVertex(T.id, "0");
+            Vertex b = vertexMaker.addVertex(T.id, "1");
+            List<Vertex> vertices = Arrays.asList(a, b);
 
-        Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getAppRootVersion());
-        Introspector intro = loader.introspectorFromName("image"); // just need any non-container object
+            Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getAppRootVersion());
+            Introspector intro = loader.introspectorFromName("image");
 
-        thrown.expect(AAIException.class);
-        thrown.expectMessage("query object mismatch: this object cannot hold multiple items.");
-
-        dbser.dbToObject(vertices, intro, Integer.MAX_VALUE, true, "doesn't matter");
+            dbser.dbToObject(vertices, intro, Integer.MAX_VALUE, true, "doesn't matter");
+        });
+        assertTrue(exception.getMessage().contains("query object mismatch: this object cannot hold multiple items."));
     }
 
-    @Test
-    public void dbToObjectTest() throws AAIException, UnsupportedEncodingException {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void dbToObjectTest(QueryStyle queryStyle) throws AAIException, UnsupportedEncodingException {
+        initDbSerializerTest(queryStyle);
         engine.startTransaction();
 
         DBSerializer dbser = new DBSerializer(version, engine, ModelType.MOXY, "AAI-TEST");
@@ -933,8 +989,10 @@ public class DbSerializerTest extends AAISetup {
 
     }
 
-    @Test
-    public void getEdgeBetweenNoLabelTest() throws AAIException {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void getEdgeBetweenNoLabelTest(QueryStyle queryStyle) throws AAIException {
+        initDbSerializerTest(queryStyle);
         DBSerializer dbser = new DBSerializer(version, engine, ModelType.MOXY, "AAI-TEST");
         engine.startTransaction();
         Vertex gv = engine.tx().addVertex("aai-node-type", "generic-vnf", "vnf-id", "id1");
@@ -946,8 +1004,10 @@ public class DbSerializerTest extends AAISetup {
 
     }
 
-    @Test
-    public void deleteItemsWithTraversal() throws AAIException {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void deleteItemsWithTraversal(QueryStyle queryStyle) throws AAIException {
+        initDbSerializerTest(queryStyle);
         DBSerializer dbser = new DBSerializer(version, engine, ModelType.MOXY, "AAI-TEST");
         engine.startTransaction();
         Vertex gv = engine.tx().addVertex("aai-node-type", "generic-vnf", "vnf-id", "id1", AAIProperties.AAI_URI,
@@ -971,8 +1031,10 @@ public class DbSerializerTest extends AAISetup {
 
     }
 
-    @Test
-    public void serializeToDbWithParentTest() throws AAIException, UnsupportedEncodingException, URISyntaxException {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void serializeToDbWithParentTest(QueryStyle queryStyle) throws AAIException, UnsupportedEncodingException, URISyntaxException {
+        initDbSerializerTest(queryStyle);
         DBSerializer dbser = new DBSerializer(version, engine, ModelType.MOXY, "AAI-TEST");
         engine.startTransaction();
         Vertex gv = engine.tx().addVertex("aai-node-type", "generic-vnf", "vnf-id", "id1", "aai-uri",
@@ -995,8 +1057,10 @@ public class DbSerializerTest extends AAISetup {
 
     }
 
-    @Test
-    public void getLatestVersionViewTest() throws AAIException, UnsupportedEncodingException {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void getLatestVersionViewTest(QueryStyle queryStyle) throws AAIException, UnsupportedEncodingException {
+        initDbSerializerTest(queryStyle);
         DBSerializer dbser = new DBSerializer(version, engine, ModelType.MOXY, "AAI-TEST");
         engine.startTransaction();
         Vertex phys = engine.tx().addVertex("aai-node-type", "physical-link", "link-name", "zaldo", "speed-value",
@@ -1008,8 +1072,10 @@ public class DbSerializerTest extends AAISetup {
         assertEquals("things", res.getValue("service-provider-bandwidth-up-units"));
     }
 
-    @Test
-    public void cascadeVserverDeleteTest() throws AAIException, UnsupportedEncodingException {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void cascadeVserverDeleteTest(QueryStyle queryStyle) throws AAIException, UnsupportedEncodingException {
+        initDbSerializerTest(queryStyle);
         vserverSetup();
         String expected_message = "";
 
@@ -1024,8 +1090,10 @@ public class DbSerializerTest extends AAISetup {
 
     }
 
-    @Test
-    public void cascadeL3NetworkPreventDeleteTest() throws AAIException, UnsupportedEncodingException {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void cascadeL3NetworkPreventDeleteTest(QueryStyle queryStyle) throws AAIException, UnsupportedEncodingException {
+        initDbSerializerTest(queryStyle);
         l3NetworkSetup();
         ArrayList<String> expected_messages = new ArrayList<>();
         expected_messages.add(
@@ -1045,8 +1113,10 @@ public class DbSerializerTest extends AAISetup {
 
     }
 
-    @Test
-    public void cascadeL3NetworkDeleteTest() throws AAIException, UnsupportedEncodingException {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void cascadeL3NetworkDeleteTest(QueryStyle queryStyle) throws AAIException, UnsupportedEncodingException {
+        initDbSerializerTest(queryStyle);
         l3NetworkSetup();
         String expected_message = "";
 
@@ -1060,6 +1130,10 @@ public class DbSerializerTest extends AAISetup {
         String exceptionMessage = testCascadeDelete(l3network);
         assertEquals(expected_message, exceptionMessage);
 
+    }
+
+    public void initDbSerializerTest(QueryStyle queryStyle) {
+        this.queryStyle = queryStyle;
     }
 
 }

@@ -20,15 +20,15 @@
 
 package org.onap.aai.domain.translog;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.onap.aai.AAISetup;
 
 public class TransactionLogEntryTest extends AAISetup {
     private TransactionLogEntry transactionLogEntry;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         transactionLogEntry = new TransactionLogEntry();
     }
@@ -37,104 +37,104 @@ public class TransactionLogEntryTest extends AAISetup {
     public void testGetterSetterTransactionLogEntryId() {
         String testTransactionLogEntryId = "testTransactionLogEntryId";
         transactionLogEntry.setTransactionLogEntryId(testTransactionLogEntryId);
-        Assert.assertEquals(testTransactionLogEntryId, transactionLogEntry.getTransactionLogEntryId());
+        Assertions.assertEquals(testTransactionLogEntryId, transactionLogEntry.getTransactionLogEntryId());
     }
 
     @Test
     public void testGetterSetterStatus() {
         String testStatus = "testStatus";
         transactionLogEntry.setStatus(testStatus);
-        Assert.assertEquals(testStatus, transactionLogEntry.getStatus());
+        Assertions.assertEquals(testStatus, transactionLogEntry.getStatus());
     }
 
     @Test
     public void testGetterSetterRqstDate() {
         String testRqstDate = "testRqstDate";
         transactionLogEntry.setRqstDate(testRqstDate);
-        Assert.assertEquals(testRqstDate, transactionLogEntry.getRqstDate());
+        Assertions.assertEquals(testRqstDate, transactionLogEntry.getRqstDate());
     }
 
     @Test
     public void testGetterSetterRespDate() {
         String testRespDate = "testRespDate";
         transactionLogEntry.setRespDate(testRespDate);
-        Assert.assertEquals(testRespDate, transactionLogEntry.getRespDate());
+        Assertions.assertEquals(testRespDate, transactionLogEntry.getRespDate());
     }
 
     @Test
     public void testGetterSetterSourceId() {
         String testSourceId = "testSourceId";
         transactionLogEntry.setSourceId(testSourceId);
-        Assert.assertEquals(testSourceId, transactionLogEntry.getSourceId());
+        Assertions.assertEquals(testSourceId, transactionLogEntry.getSourceId());
     }
 
     @Test
     public void testGetterSetterResourceId() {
         String testResourceId = "testResourceId";
         transactionLogEntry.setResourceId(testResourceId);
-        Assert.assertEquals(testResourceId, transactionLogEntry.getResourceId());
+        Assertions.assertEquals(testResourceId, transactionLogEntry.getResourceId());
     }
 
     @Test
     public void testGetterSetterResourceType() {
         String testResourceType = "testResourceType";
         transactionLogEntry.setResourceType(testResourceType);
-        Assert.assertEquals(testResourceType, transactionLogEntry.getResourceType());
+        Assertions.assertEquals(testResourceType, transactionLogEntry.getResourceType());
     }
 
     @Test
     public void testGetterSetterRqstBuf() {
         String testRqstBuf = "testRqstBuf";
         transactionLogEntry.setRqstBuf(testRqstBuf);
-        Assert.assertEquals(testRqstBuf, transactionLogEntry.getRqstBuf());
+        Assertions.assertEquals(testRqstBuf, transactionLogEntry.getRqstBuf());
     }
 
     @Test
     public void testGetterSetterRespBuf() {
         String testRespBuf = "testRespBuf";
         transactionLogEntry.setrespBuf(testRespBuf);
-        Assert.assertEquals(testRespBuf, transactionLogEntry.getrespBuf());
+        Assertions.assertEquals(testRespBuf, transactionLogEntry.getrespBuf());
     }
 
     @Test
     public void testGetterSetterNotificationPayload() {
         String testNotificationPayload = "testNotificationPayload";
         transactionLogEntry.setNotificationPayload(testNotificationPayload);
-        Assert.assertEquals(testNotificationPayload, transactionLogEntry.getNotificationPayload());
+        Assertions.assertEquals(testNotificationPayload, transactionLogEntry.getNotificationPayload());
     }
 
     @Test
     public void testGetterSetterNotificationId() {
         String testNotificationId = "testNotificationId";
         transactionLogEntry.setNotificationId(testNotificationId);
-        Assert.assertEquals(testNotificationId, transactionLogEntry.getNotificationId());
+        Assertions.assertEquals(testNotificationId, transactionLogEntry.getNotificationId());
     }
 
     @Test
     public void testGetterSetterNotificationStatus() {
         String testNotificationStatus = "testNotificationStatus";
         transactionLogEntry.setNotificationStatus(testNotificationStatus);
-        Assert.assertEquals(testNotificationStatus, transactionLogEntry.getNotificationStatus());
+        Assertions.assertEquals(testNotificationStatus, transactionLogEntry.getNotificationStatus());
     }
 
     @Test
     public void testGetterSetterNotificationTopic() {
         String testNotificationTopic = "testNotificationTopic";
         transactionLogEntry.setNotificationTopic(testNotificationTopic);
-        Assert.assertEquals(testNotificationTopic, transactionLogEntry.getNotificationTopic());
+        Assertions.assertEquals(testNotificationTopic, transactionLogEntry.getNotificationTopic());
     }
 
     @Test
     public void testGetterSetterNotificationEntityLink() {
         String testNotificationEntityLink = "testNotificationEntityLink";
         transactionLogEntry.setNotificationEntityLink(testNotificationEntityLink);
-        Assert.assertEquals(testNotificationEntityLink, transactionLogEntry.getNotificationEntityLink());
+        Assertions.assertEquals(testNotificationEntityLink, transactionLogEntry.getNotificationEntityLink());
     }
 
     @Test
     public void testGetterSetterNotificationAction() {
         String testNotificationAction = "testNotificationAction";
         transactionLogEntry.setNotificationAction(testNotificationAction);
-        Assert.assertEquals(testNotificationAction, transactionLogEntry.getNotificationAction());
+        Assertions.assertEquals(testNotificationAction, transactionLogEntry.getNotificationAction());
     }
 }

@@ -20,8 +20,8 @@
 
 package org.onap.aai.introspection;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.springframework.test.annotation.DirtiesContext;
 
@@ -35,11 +35,11 @@ public class MoxyEngineTest extends IntrospectorTestSpec {
         Introspector introspector = loader.introspectorFromName("pserver");
         Object test1 = "name1";
         Object result = introspector.castValueAccordingToSchema("hostname", test1);
-        Assert.assertTrue(result instanceof java.lang.String);
+        Assertions.assertTrue(result instanceof java.lang.String);
 
         Object test2 = "4";
         Object result2 = introspector.castValueAccordingToSchema("number-of-cpus", test2);
-        Assert.assertTrue(result2 instanceof java.lang.Integer);
+        Assertions.assertTrue(result2 instanceof java.lang.Integer);
     }
 
     /**
@@ -53,15 +53,15 @@ public class MoxyEngineTest extends IntrospectorTestSpec {
         Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDepthVersion());
         Introspector obj = loader.introspectorFromName("port-groups");
         this.containerTestSet(obj);
-        Assert.assertTrue(true);
+        Assertions.assertTrue(true);
     }
 
     @Test
     public void testDslStartNodeProps() throws AAIUnknownObjectException {
         Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDepthVersion());
         Introspector obj = loader.introspectorFromName("pserver");
-        Assert.assertFalse(obj.getDslStartNodeProperties().contains("in-maint"));
-        Assert.assertTrue(obj.getDslStartNodeProperties().contains("pserver-name2"));
+        Assertions.assertFalse(obj.getDslStartNodeProperties().contains("in-maint"));
+        Assertions.assertTrue(obj.getDslStartNodeProperties().contains("pserver-name2"));
 
     }
 
@@ -72,7 +72,7 @@ public class MoxyEngineTest extends IntrospectorTestSpec {
          */
         Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDepthVersion());
         Introspector obj = loader.introspectorFromName("vserver");
-        Assert.assertTrue(obj.getDslStartNodeProperties().contains("in-maint"));
+        Assertions.assertTrue(obj.getDslStartNodeProperties().contains("in-maint"));
     }
 
 }

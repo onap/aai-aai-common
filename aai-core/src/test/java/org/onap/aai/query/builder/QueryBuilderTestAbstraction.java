@@ -21,8 +21,9 @@
 package org.onap.aai.query.builder;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,8 +39,7 @@ import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.janusgraph.core.JanusGraphFactory;
-import org.junit.*;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.*;
 import org.onap.aai.config.ConfigConfiguration;
 import org.onap.aai.config.IntrospectionConfig;
 import org.onap.aai.config.SpringContextAware;
@@ -59,12 +59,10 @@ import org.onap.aai.setup.SchemaVersions;
 import org.onap.aai.util.AAIConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(
+@SpringJUnitConfig(
         classes = {ConfigConfiguration.class, QueryTestsConfigTranslator.class, NodeIngestor.class, EdgeIngestor.class,
                 EdgeSerializer.class, SpringContextAware.class, IntrospectionConfig.class,
                 XmlFormatTransformerConfiguration.class})
@@ -87,7 +85,7 @@ public abstract class QueryBuilderTestAbstraction {
     @Autowired
     protected LoaderFactory loaderFactory;
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() throws Exception {
         System.setProperty("AJSC_HOME", ".");
         System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
@@ -96,19 +94,19 @@ public abstract class QueryBuilderTestAbstraction {
         graph = JanusGraphFactory.build().set("storage.backend", "inmemory").open();
     }
 
-    @Before
+    @BeforeEach
     public void configure() {
         loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
 
         g = graph.traversal();
     }
 
-    @After
+    @AfterEach
     public void deConfigure() {
         g.tx().rollback();
     }
 
-    @AfterClass
+    @AfterAll
     public static void teardown() throws Exception {
         graph.close();
     }
@@ -274,8 +272,8 @@ public abstract class QueryBuilderTestAbstraction {
 
         List<Vertex> list = tQ.toList();
 
-        assertEquals("Has 1 vertexes ", 1, list.size());
-        assertTrue("Has vertex on the default edge ", list.contains(vnfc1));
+        assertEquals(1, list.size(), "Has 1 vertexes ");
+        assertTrue(list.contains(vnfc1), "Has vertex on the default edge ");
 
     }
 
@@ -296,10 +294,10 @@ public abstract class QueryBuilderTestAbstraction {
         List<Vertex> list1 = tQ1.toList();
         List<Vertex> list2 = tQ2.toList();
 
-        assertEquals("1 - Has 1 vertexes ", 1, list1.size());
-        assertTrue("1 - traversal results in vnfc ", list1.contains(vnfc1));
-        assertEquals("2 - Has 1 vertexes ", 1, list2.size());
-        assertTrue("2 - traversal results in vce ", list2.contains(vce));
+        assertEquals(1, list1.size(), "1 - Has 1 vertexes ");
+        assertTrue(list1.contains(vnfc1), "1 - traversal results in vnfc ");
+        assertEquals(1, list2.size(), "2 - Has 1 vertexes ");
+        assertTrue(list2.contains(vce), "2 - traversal results in vce ");
 
     }
 
@@ -316,8 +314,8 @@ public abstract class QueryBuilderTestAbstraction {
 
         List<Vertex> list = tQ1.toList();
 
-        assertEquals("1 - Has 1 vertexes ", 1, list.size());
-        assertTrue("1 - traversal results in vnfc ", list.contains(pserver));
+        assertEquals(1, list.size(), "1 - Has 1 vertexes ");
+        assertTrue(list.contains(pserver), "1 - traversal results in vnfc ");
 
     }
 
@@ -336,9 +334,9 @@ public abstract class QueryBuilderTestAbstraction {
 
         List<Vertex> list = tQ.toList();
 
-        assertEquals("Has 2 vertexes ", 2, list.size());
-        assertTrue("Has vertex on the default edge ", list.contains(vnfc1));
-        assertTrue("Has vertex on the re-uses edge ", list.contains(vnfc2));
+        assertEquals(2, list.size(), "Has 2 vertexes ");
+        assertTrue(list.contains(vnfc1), "Has vertex on the default edge ");
+        assertTrue(list.contains(vnfc2), "Has vertex on the re-uses edge ");
 
     }
 
@@ -357,8 +355,8 @@ public abstract class QueryBuilderTestAbstraction {
 
         List<Vertex> list = tQ.toList();
 
-        assertEquals("Has 1 vertexes ", 1, list.size());
-        assertTrue("Only returns the generic vnf vertex", list.contains(gvnf));
+        assertEquals(1, list.size(), "Has 1 vertexes ");
+        assertTrue(list.contains(gvnf), "Only returns the generic vnf vertex");
 
     }
 
@@ -373,7 +371,7 @@ public abstract class QueryBuilderTestAbstraction {
 
         List<Vertex> list = tQ.toList();
 
-        assertEquals("Has 1 vertexes ", 1, list.size());
+        assertEquals(1, list.size(), "Has 1 vertexes ");
 
     }
 
@@ -388,7 +386,7 @@ public abstract class QueryBuilderTestAbstraction {
 
         List<Vertex> list = tQ.toList();
 
-        assertEquals("Has 2 vertexes ", 2, list.size());
+        assertEquals(2, list.size(), "Has 2 vertexes ");
 
     }
 
@@ -403,7 +401,7 @@ public abstract class QueryBuilderTestAbstraction {
 
         List<Vertex> list = tQ.toList();
 
-        assertEquals("Has 2 vertexes ", 2, list.size());
+        assertEquals(2, list.size(), "Has 2 vertexes ");
     }
 
     @Test
@@ -417,7 +415,7 @@ public abstract class QueryBuilderTestAbstraction {
 
         List<Vertex> list = tQ.toList();
 
-        assertEquals("Has 2 vertexes ", 2, list.size());
+        assertEquals(2, list.size(), "Has 2 vertexes ");
     }
 
     @Test
@@ -434,8 +432,8 @@ public abstract class QueryBuilderTestAbstraction {
 
         List<Vertex> list = tQ.toList();
 
-        assertEquals("Has 2 vertexes ", 1, list.size());
-        assertTrue("result has pserver ", list.contains(pserver));
+        assertEquals(1, list.size(), "Has 2 vertexes ");
+        assertTrue(list.contains(pserver), "result has pserver ");
 
     }
 
@@ -453,8 +451,8 @@ public abstract class QueryBuilderTestAbstraction {
 
         List<BulkSet<Vertex>> list = tQ.toList();
 
-        assertEquals("Has 2 vertexes ", 1, list.size());
-        assertEquals("result has pserver ", pserver, list.get(0).iterator().next());
+        assertEquals(1, list.size(), "Has 2 vertexes ");
+        assertEquals(pserver, list.get(0).iterator().next(), "result has pserver ");
 
     }
 
@@ -472,8 +470,8 @@ public abstract class QueryBuilderTestAbstraction {
 
         List<Vertex> list = tQ.toList();
 
-        assertEquals("Has 2 vertexes ", 2, list.size());
-        assertTrue("result has pserver ", list.contains(pserver));
+        assertEquals(2, list.size(), "Has 2 vertexes ");
+        assertTrue(list.contains(pserver), "result has pserver ");
 
     }
 
@@ -488,12 +486,12 @@ public abstract class QueryBuilderTestAbstraction {
 
         List<Vertex> list = new ArrayList<>();
 
-        assertTrue("Has next 1 ", tQ.hasNext());
+        assertTrue(tQ.hasNext(), "Has next 1 ");
         list.add(tQ.next());
-        assertTrue("Has next 2 ", tQ.hasNext());
+        assertTrue(tQ.hasNext(), "Has next 2 ");
         list.add(tQ.next());
-        assertFalse("Has next 3 ", tQ.hasNext());
-        assertTrue("Has all the vertexes", list.contains(v1) && list.remove(v2));
+        assertFalse(tQ.hasNext(), "Has next 3 ");
+        assertTrue(list.contains(v1) && list.remove(v2), "Has all the vertexes");
 
     }
 
@@ -511,8 +509,8 @@ public abstract class QueryBuilderTestAbstraction {
 
         List<Vertex> list = tQ.toList();
 
-        assertEquals("Has 2 vertexes ", 2, list.size());
-        assertTrue("result has pserver ", list.contains(pserver));
+        assertEquals(2, list.size(), "Has 2 vertexes ");
+        assertTrue(list.contains(pserver), "result has pserver ");
 
     }
 
@@ -531,8 +529,8 @@ public abstract class QueryBuilderTestAbstraction {
 
         List<Vertex> list = tQ.toList();
 
-        assertEquals("Has 2 vertexes ", 2, list.size());
-        assertTrue("result has pserver ", list.contains(complex));
+        assertEquals(2, list.size(), "Has 2 vertexes ");
+        assertTrue(list.contains(complex), "result has pserver ");
 
     }
 
@@ -549,8 +547,8 @@ public abstract class QueryBuilderTestAbstraction {
 
         List<Edge> list = tQ1.toList();
 
-        assertEquals("1 - Has 1 edge ", 1, list.size());
-        assertTrue("1 - traversal results in edge ", list.contains(e));
+        assertEquals(1, list.size(), "1 - Has 1 edge ");
+        assertTrue(list.contains(e), "1 - traversal results in edge ");
 
     }
 
@@ -567,8 +565,8 @@ public abstract class QueryBuilderTestAbstraction {
 
         List<Edge> list1 = tQ1.toList();
 
-        assertEquals("1 - Has 1 edge ", 1, list1.size());
-        assertTrue("1 - traversal results in edge ", list1.contains(e));
+        assertEquals(1, list1.size(), "1 - Has 1 edge ");
+        assertTrue(list1.contains(e), "1 - traversal results in edge ");
 
     }
 
@@ -586,9 +584,9 @@ public abstract class QueryBuilderTestAbstraction {
 
         List<Edge> list = tQ.toList();
 
-        assertEquals("Has 2 edges ", 2, list.size());
-        assertTrue("result has default edge ", list.contains(e1));
-        assertTrue("result has other edge ", list.contains(e2));
+        assertEquals(2, list.size(), "Has 2 edges ");
+        assertTrue(list.contains(e1), "result has default edge ");
+        assertTrue(list.contains(e2), "result has other edge ");
 
     }
 
@@ -607,9 +605,9 @@ public abstract class QueryBuilderTestAbstraction {
 
         List<Edge> list = tQ.toList();
 
-        assertEquals("Has 2 edges ", 2, list.size());
-        assertTrue("result has default edge ", list.contains(e1));
-        assertTrue("result has other edge ", list.contains(e2));
+        assertEquals(2, list.size(), "Has 2 edges ");
+        assertTrue(list.contains(e1), "result has default edge ");
+        assertTrue(list.contains(e2), "result has other edge ");
 
     }
 
@@ -628,24 +626,27 @@ public abstract class QueryBuilderTestAbstraction {
 
         List<Edge> list = tQ.toList();
 
-        assertEquals("Has 2 edges ", 2, list.size());
-        assertTrue("result has default edge ", list.contains(e1));
-        assertTrue("result has other edge ", list.contains(e2));
+        assertEquals(2, list.size(), "Has 2 edges ");
+        assertTrue(list.contains(e1), "result has default edge ");
+        assertTrue(list.contains(e2), "result has other edge ");
 
     }
 
-    @Ignore("This test is failing for TraversalQueryTest and Optimized but it passes for GremlinQueryTest")
-    @Test(expected = NoEdgeRuleFoundException.class)
+    @Disabled("This test is failing for TraversalQueryTest and Optimized but it passes for GremlinQueryTest")
+    @Test
     public void getEdgesBetweenWithLabelsEmptyListTest() throws AAIException {
+        assertThrows(NoEdgeRuleFoundException.class, () -> {
 
-        Vertex gvnf = this.addVHelper(g, "vertex", "aai-node-type", "generic-vnf", "vnf-id", "gvnf").next();
-        Vertex pserver = this.addVHelper(g, "vertex", "aai-node-type", "pserver", "hostname", "a-name").next();
+            Vertex gvnf = this.addVHelper(g, "vertex", "aai-node-type", "generic-vnf", "vnf-id", "gvnf").next();
+            Vertex pserver = this.addVHelper(g, "vertex", "aai-node-type", "pserver", "hostname", "a-name").next();
 
-        testEdgeSer.addEdge(g, gvnf, pserver);
-        testEdgeSer.addEdge(g, gvnf, pserver, "generic-vnf-pserver-B");
+            testEdgeSer.addEdge(g, gvnf, pserver);
+            testEdgeSer.addEdge(g, gvnf, pserver, "generic-vnf-pserver-B");
 
-        QueryBuilder<Edge> tQ = getNewEdgeTraversalWithTestEdgeRules(gvnf);
-        tQ.getEdgesBetweenWithLabels(EdgeType.COUSIN, "generic-vnf", "pserver", Collections.emptyList());
+            QueryBuilder<Edge> tQ = getNewEdgeTraversalWithTestEdgeRules(gvnf);
+            tQ.getEdgesBetweenWithLabels(EdgeType.COUSIN, "generic-vnf", "pserver", Collections.emptyList());
+
+        });
 
     }
 
@@ -664,9 +665,9 @@ public abstract class QueryBuilderTestAbstraction {
 
         List<Edge> list = tQ.toList();
 
-        assertEquals("Has 1 edges ", 1, list.size());
-        assertFalse("result does not have default edge ", list.contains(e1));
-        assertTrue("result has other edge ", list.contains(e2));
+        assertEquals(1, list.size(), "Has 1 edges ");
+        assertFalse(list.contains(e1), "result does not have default edge ");
+        assertTrue(list.contains(e2), "result has other edge ");
 
     }
 
@@ -685,22 +686,25 @@ public abstract class QueryBuilderTestAbstraction {
 
         List<Edge> list = tQ.toList();
 
-        assertEquals("Has 2 edges ", 2, list.size());
-        assertTrue("result has generic-vnf-pserver-A edge ", list.contains(e1));
-        assertTrue("result has generic-vnf-pserver-B edge ", list.contains(e2));
+        assertEquals(2, list.size(), "Has 2 edges ");
+        assertTrue(list.contains(e1), "result has generic-vnf-pserver-A edge ");
+        assertTrue(list.contains(e2), "result has generic-vnf-pserver-B edge ");
 
     }
 
-    @Ignore("This test is failing for TraversalQueryTest and Optimized but it passes for GremlinQueryTest")
-    @Test(expected = NoEdgeRuleFoundException.class)
+    @Disabled("This test is failing for TraversalQueryTest and Optimized but it passes for GremlinQueryTest")
+    @Test
     public void createEdgeTraversalWithLabelsEmptyListTest() throws AAIException {
+        assertThrows(NoEdgeRuleFoundException.class, () -> {
 
-        Vertex gvnf = getVertex();
+            Vertex gvnf = getVertex();
 
-        QueryBuilder<Edge> tQ = getNewEdgeTraversalWithTestEdgeRules(gvnf);
-        tQ.getEdgesBetweenWithLabels(EdgeType.COUSIN, "generic-vnf", "pserver", Collections.emptyList());
+            QueryBuilder<Edge> tQ = getNewEdgeTraversalWithTestEdgeRules(gvnf);
+            tQ.getEdgesBetweenWithLabels(EdgeType.COUSIN, "generic-vnf", "pserver", Collections.emptyList());
 
-        tQ.toList();
+            tQ.toList();
+
+        });
 
     }
 
@@ -728,9 +732,9 @@ public abstract class QueryBuilderTestAbstraction {
 
         List<Edge> list = tQ.toList();
 
-        assertEquals("Has 1 edges ", 1, list.size());
-        assertFalse("result does not have default edge ", list.contains(e1));
-        assertTrue("result has other edge ", list.contains(e2));
+        assertEquals(1, list.size(), "Has 1 edges ");
+        assertFalse(list.contains(e1), "result does not have default edge ");
+        assertTrue(list.contains(e2), "result has other edge ");
 
     }
 
@@ -749,9 +753,9 @@ public abstract class QueryBuilderTestAbstraction {
 
         List<Edge> list = tQ.toList();
 
-        assertEquals("Has 2 edges ", 2, list.size());
-        assertTrue("result has generic-vnf-pserver-A edge ", list.contains(e1));
-        assertTrue("result has generic-vnf-pserver-B edge ", list.contains(e2));
+        assertEquals(2, list.size(), "Has 2 edges ");
+        assertTrue(list.contains(e1), "result has generic-vnf-pserver-A edge ");
+        assertTrue(list.contains(e2), "result has generic-vnf-pserver-B edge ");
 
     }
 
@@ -772,8 +776,8 @@ public abstract class QueryBuilderTestAbstraction {
 
         List<Vertex> list =
                 tQ.createEdgeTraversalIfParameterIsPresent(EdgeType.COUSIN, "pserver", "vce", "optional").toList();
-        assertEquals("Has 1 vertex ", 1, list.size());
-        assertTrue("result has optional-vce vertex ", list.contains(optionalVce));
+        assertEquals(1, list.size(), "Has 1 vertex ");
+        assertTrue(list.contains(optionalVce), "result has optional-vce vertex ");
     }
 
     @Test
@@ -794,10 +798,10 @@ public abstract class QueryBuilderTestAbstraction {
 
         List<Vertex> list = tQ
                 .createEdgeTraversalIfParameterIsPresent(EdgeType.COUSIN, "pserver", "vce", missingParameter).toList();
-        assertEquals("Has 2 vertices ", 2, list.size());
-        assertTrue("result has pserver-1 vertex ", list.contains(pserver1));
-        assertTrue("result has pserver-2 vertex ", list.contains(pserver2));
-        assertTrue("result does not have optional-vce vertex ", !list.contains(optionalVce));
+        assertEquals(2, list.size(), "Has 2 vertices ");
+        assertTrue(list.contains(pserver1), "result has pserver-1 vertex ");
+        assertTrue(list.contains(pserver2), "result has pserver-2 vertex ");
+        assertTrue(!list.contains(optionalVce), "result does not have optional-vce vertex ");
     }
 
     protected abstract QueryBuilder<Edge> getNewEdgeTraversalWithTestEdgeRules(Vertex v);

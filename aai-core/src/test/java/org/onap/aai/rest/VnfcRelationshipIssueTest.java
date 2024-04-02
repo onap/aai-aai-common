@@ -20,8 +20,8 @@
 
 package org.onap.aai.rest;
 
-import static junit.framework.TestCase.fail;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -30,9 +30,12 @@ import javax.ws.rs.core.Response;
 
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.janusgraph.core.JanusGraphTransaction;
-import org.junit.*;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.ClassRule;
+import org.junit.Rule;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.onap.aai.AAISetup;
 import org.onap.aai.HttpTestUtil;
 import org.onap.aai.PayloadUtil;
@@ -43,7 +46,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.test.context.junit4.rules.SpringClassRule;
 import org.springframework.test.context.junit4.rules.SpringMethodRule;
 
-@RunWith(value = Parameterized.class)
 public class VnfcRelationshipIssueTest extends AAISetup {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(VnfcRelationshipIssueTest.class);
@@ -54,37 +56,37 @@ public class VnfcRelationshipIssueTest extends AAISetup {
 
     @Rule
     public final SpringMethodRule springMethodRule = new SpringMethodRule();
-
-    @Parameterized.Parameter(value = 0)
     public QueryStyle queryStyle;
 
-    @Parameterized.Parameters(name = "QueryStyle.{0}")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {{QueryStyle.TRAVERSAL}, {QueryStyle.TRAVERSAL_URI}});
     }
 
-    @Before
+    @BeforeEach
     public void setUp() {
         httpTestUtil = new HttpTestUtil(queryStyle);
     }
 
-    @Test
-    public void testCreateVnfWithVfModuleAndCreateVnfcRelatedToVfModule() throws Exception {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void testCreateVnfWithVfModuleAndCreateVnfcRelatedToVfModule(QueryStyle queryStyle) throws Exception {
+
+        initVnfcRelationshipIssueTest(queryStyle);
 
         String genericVnfUri = "/aai/v14/network/generic-vnfs/generic-vnf/test-vnf11";
         String genericVnfPayload = PayloadUtil.getResourcePayload("generic-vnf-with-vf-module.json");
 
         Response response = httpTestUtil.doPut(genericVnfUri, genericVnfPayload);
-        assertEquals("Expected the generic vnf to be created", 201, response.getStatus());
+        assertEquals(201, response.getStatus(), "Expected the generic vnf to be created");
 
         String vnfcUri = "/aai/v14/network/vnfcs/vnfc/test-vnfc11";
         String vnfcPaylaod = PayloadUtil.getResourcePayload("vnfc-related-to-vf-module.json");
 
         response = httpTestUtil.doPut(vnfcUri, vnfcPaylaod);
-        assertEquals("Expected the generic vnf to be created", 201, response.getStatus());
+        assertEquals(201, response.getStatus(), "Expected the generic vnf to be created");
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
 
         JanusGraphTransaction transaction = AAIGraph.getInstance().getGraph().newTransaction();
@@ -108,5 +110,9 @@ public class VnfcRelationshipIssueTest extends AAISetup {
             }
         }
 
+    }
+
+    public void initVnfcRelationshipIssueTest(QueryStyle queryStyle) {
+        this.queryStyle = queryStyle;
     }
 }

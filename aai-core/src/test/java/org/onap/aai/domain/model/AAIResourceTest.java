@@ -25,15 +25,15 @@ import com.google.common.collect.Multimap;
 
 import java.util.*;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.onap.aai.AAISetup;
 
 public class AAIResourceTest extends AAISetup {
     private AAIResource aaiResource;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         aaiResource = new AAIResource();
     }
@@ -42,188 +42,188 @@ public class AAIResourceTest extends AAISetup {
     public void testGetterSetterParent() {
         AAIResource aaiResourceParent = new AAIResource();
         aaiResource.setParent(aaiResourceParent);
-        Assert.assertEquals(aaiResource.getParent(), aaiResourceParent);
+        Assertions.assertEquals(aaiResource.getParent(), aaiResourceParent);
     }
 
     @Test
     public void testGetChildren() {
-        Assert.assertNotNull(aaiResource.getChildren());
+        Assertions.assertNotNull(aaiResource.getChildren());
     }
 
     @Test
     public void testGetAaiResourceKeys() {
-        Assert.assertNotNull(aaiResource.getAaiResourceKeys());
+        Assertions.assertNotNull(aaiResource.getAaiResourceKeys());
     }
 
     @Test
     public void testGetterSetterNamespace() {
         String testNamespace = "testNamespace";
         aaiResource.setNamespace(testNamespace);
-        Assert.assertEquals(testNamespace, aaiResource.getNamespace());
+        Assertions.assertEquals(testNamespace, aaiResource.getNamespace());
     }
 
     @Test
     public void testGetterSetterResourceType() {
         String testResourceType = "testResourceType";
         aaiResource.setResourceType(testResourceType);
-        Assert.assertEquals(testResourceType, aaiResource.getResourceType());
+        Assertions.assertEquals(testResourceType, aaiResource.getResourceType());
     }
 
     @Test
     public void testGetterSetterSimpleName() {
         String testSimpleName = "testSimpleName";
         aaiResource.setSimpleName(testSimpleName);
-        Assert.assertEquals(testSimpleName, aaiResource.getSimpleName());
+        Assertions.assertEquals(testSimpleName, aaiResource.getSimpleName());
     }
 
     @Test
     public void testGetterSetterFullName() {
         String testFullName = "testFullName";
         aaiResource.setFullName(testFullName);
-        Assert.assertEquals(testFullName, aaiResource.getFullName());
+        Assertions.assertEquals(testFullName, aaiResource.getFullName());
     }
 
     @Test
     public void testGetterSetterUri() {
         String testUri = "testUri";
         aaiResource.setUri(testUri);
-        Assert.assertEquals(testUri, aaiResource.getUri());
+        Assertions.assertEquals(testUri, aaiResource.getUri());
     }
 
     @Test
     public void testGetterSetterResourceClassName() {
         String testResourceClassName = "testResourceClassName";
         aaiResource.setResourceClassName(testResourceClassName);
-        Assert.assertEquals(testResourceClassName, aaiResource.getResourceClassName());
+        Assertions.assertEquals(testResourceClassName, aaiResource.getResourceClassName());
     }
 
     @Test
     public void testGetterSetterPropertyDataTypeMap() {
         Map<String, String> propertyDataTypeMap = new HashMap<>();
         aaiResource.setPropertyDataTypeMap(propertyDataTypeMap);
-        Assert.assertEquals(propertyDataTypeMap, aaiResource.getPropertyDataTypeMap());
+        Assertions.assertEquals(propertyDataTypeMap, aaiResource.getPropertyDataTypeMap());
     }
 
     @Test
     public void testGetterSetterNodeMapIndexedProps() {
         Multimap<String, String> nodeMapIndexedProps = ArrayListMultimap.create();
         aaiResource.setNodeMapIndexedProps(nodeMapIndexedProps);
-        Assert.assertEquals(nodeMapIndexedProps, aaiResource.getNodeMapIndexedProps());
+        Assertions.assertEquals(nodeMapIndexedProps, aaiResource.getNodeMapIndexedProps());
     }
 
     @Test
     public void testGetterSetterNodeKeyProps() {
         Multimap<String, String> nodeKeyProps = ArrayListMultimap.create();
         aaiResource.setNodeKeyProps(nodeKeyProps);
-        Assert.assertEquals(nodeKeyProps, aaiResource.getNodeKeyProps());
+        Assertions.assertEquals(nodeKeyProps, aaiResource.getNodeKeyProps());
     }
 
     @Test
     public void testGetterSetterNodeNameProps() {
         Multimap<String, String> nodeNameProps = ArrayListMultimap.create();
         aaiResource.setNodeNameProps(nodeNameProps);
-        Assert.assertEquals(nodeNameProps, aaiResource.getNodeNameProps());
+        Assertions.assertEquals(nodeNameProps, aaiResource.getNodeNameProps());
     }
 
     @Test
     public void testGetterSetterNodeUniqueProps() {
         Multimap<String, String> nodeUniqueProps = ArrayListMultimap.create();
         aaiResource.setNodeUniqueProps(nodeUniqueProps);
-        Assert.assertEquals(nodeUniqueProps, aaiResource.getNodeUniqueProps());
+        Assertions.assertEquals(nodeUniqueProps, aaiResource.getNodeUniqueProps());
     }
 
     @Test
     public void testGetterSetterNodeReqProps() {
         Multimap<String, String> nodeReqProps = ArrayListMultimap.create();
         aaiResource.setNodeReqProps(nodeReqProps);
-        Assert.assertEquals(nodeReqProps, aaiResource.getNodeReqProps());
+        Assertions.assertEquals(nodeReqProps, aaiResource.getNodeReqProps());
     }
 
     @Test
     public void testGetterSetterApiVersion() {
         String testApiVersion = "testApiVersion";
         aaiResource.setApiVersion(testApiVersion);
-        Assert.assertEquals(testApiVersion, aaiResource.getApiVersion());
+        Assertions.assertEquals(testApiVersion, aaiResource.getApiVersion());
     }
 
     @Test
     public void testGetterSetterRelationshipClass() {
         String testRelationshipClass = "testRelationshipClass";
         aaiResource.setRelationshipListClass(testRelationshipClass);
-        Assert.assertEquals(testRelationshipClass, aaiResource.getRelationshipListClass());
+        Assertions.assertEquals(testRelationshipClass, aaiResource.getRelationshipListClass());
     }
 
     @Test
     public void testGetterSetterRelationshipUtils() {
         String testRelationshipUtils = "testRelationshipUtils";
         aaiResource.setRelationshipUtils(testRelationshipUtils);
-        Assert.assertEquals(testRelationshipUtils, aaiResource.getRelationshipUtils());
+        Assertions.assertEquals(testRelationshipUtils, aaiResource.getRelationshipUtils());
     }
 
     @Test
     public void testGetterSetterStringFields() {
-        Assert.assertNotNull(aaiResource.getStringFields());
+        Assertions.assertNotNull(aaiResource.getStringFields());
         ArrayList<String> stringFields = new ArrayList<>();
         aaiResource.setStringFields(stringFields);
-        Assert.assertEquals(stringFields, aaiResource.getStringFields());
+        Assertions.assertEquals(stringFields, aaiResource.getStringFields());
     }
 
     @Test
     public void testGetterSetterStringListFields() {
-        Assert.assertNotNull(aaiResource.getStringListFields());
+        Assertions.assertNotNull(aaiResource.getStringListFields());
         ArrayList<String> stringListFields = new ArrayList<>();
         aaiResource.setStringListFields(stringListFields);
-        Assert.assertEquals(stringListFields, aaiResource.getStringListFields());
+        Assertions.assertEquals(stringListFields, aaiResource.getStringListFields());
     }
 
     @Test
     public void testGetterSetterLongFields() {
-        Assert.assertNotNull(aaiResource.getLongFields());
+        Assertions.assertNotNull(aaiResource.getLongFields());
         ArrayList<String> longFields = new ArrayList<>();
         aaiResource.setLongFields(longFields);
-        Assert.assertEquals(longFields, aaiResource.getLongFields());
+        Assertions.assertEquals(longFields, aaiResource.getLongFields());
     }
 
     @Test
     public void testGetterSetterIntFields() {
-        Assert.assertNotNull(aaiResource.getIntFields());
+        Assertions.assertNotNull(aaiResource.getIntFields());
         ArrayList<String> intFields = new ArrayList<>();
         aaiResource.setIntFields(intFields);
-        Assert.assertEquals(intFields, aaiResource.getIntFields());
+        Assertions.assertEquals(intFields, aaiResource.getIntFields());
     }
 
     @Test
     public void testGetterSetterShortFields() {
-        Assert.assertNotNull(aaiResource.getShortFields());
+        Assertions.assertNotNull(aaiResource.getShortFields());
         ArrayList<String> shortFields = new ArrayList<>();
         aaiResource.setShortFields(shortFields);
-        Assert.assertEquals(shortFields, aaiResource.getShortFields());
+        Assertions.assertEquals(shortFields, aaiResource.getShortFields());
     }
 
     @Test
     public void testGetterSetterBooleanFields() {
-        Assert.assertNotNull(aaiResource.getBooleanFields());
+        Assertions.assertNotNull(aaiResource.getBooleanFields());
         ArrayList<String> booleanFields = new ArrayList<>();
         aaiResource.setBooleanFields(booleanFields);
-        Assert.assertEquals(booleanFields, aaiResource.getBooleanFields());
+        Assertions.assertEquals(booleanFields, aaiResource.getBooleanFields());
     }
 
     @Test
     public void testGetterSetterRequiredFields() {
-        Assert.assertNotNull(aaiResource.getRequiredFields());
+        Assertions.assertNotNull(aaiResource.getRequiredFields());
         ArrayList<String> requiredFields = new ArrayList<>();
         aaiResource.setRequiredFields(requiredFields);
-        Assert.assertEquals(requiredFields, aaiResource.getRequiredFields());
+        Assertions.assertEquals(requiredFields, aaiResource.getRequiredFields());
     }
 
     @Test
     public void testGetOrderedFields() {
-        Assert.assertNotNull(aaiResource.getOrderedFields());
+        Assertions.assertNotNull(aaiResource.getOrderedFields());
     }
 
     @Test
     public void testGetAllFields() {
-        Assert.assertNotNull(aaiResource.getAllFields());
+        Assertions.assertNotNull(aaiResource.getAllFields());
     }
 
     @Test
@@ -231,25 +231,25 @@ public class AAIResourceTest extends AAISetup {
         AAIResource ar = new AAIResource();
         ar.setSimpleName("List");
         String pluralName = ar.getPluralName();
-        Assert.assertEquals("", pluralName);
+        Assertions.assertEquals("", pluralName);
         ar.setFullName("Some/FullName/ExpectedValue/Here");
         ar.setSimpleName("bogusValue");
         pluralName = ar.getPluralName();
-        Assert.assertEquals("ExpectedValue", pluralName);
+        Assertions.assertEquals("ExpectedValue", pluralName);
     }
 
     @Test
     public void testGetterSetterNodeAltKey1Props() {
         Multimap<String, String> nodeAltKey1Props = ArrayListMultimap.create();
         aaiResource.setNodeAltKey1Props(nodeAltKey1Props);
-        Assert.assertEquals(nodeAltKey1Props, aaiResource.getNodeAltKey1Props());
+        Assertions.assertEquals(nodeAltKey1Props, aaiResource.getNodeAltKey1Props());
     }
 
     @Test
     public void testGetterSetterNodeDependencies() {
         Multimap<String, String> _dbRulesNodeDependencies = ArrayListMultimap.create();
         aaiResource.setNodeDependencies(_dbRulesNodeDependencies);
-        Assert.assertEquals(_dbRulesNodeDependencies, aaiResource.getNodeDependencies());
+        Assertions.assertEquals(_dbRulesNodeDependencies, aaiResource.getNodeDependencies());
     }
 
     @Test
@@ -257,24 +257,24 @@ public class AAIResourceTest extends AAISetup {
         AAIResource recurseToResource = new AAIResource();
         recurseToResource.setFullName("FullNameTest");
         aaiResource.setRecurseToResource(recurseToResource);
-        Assert.assertEquals(recurseToResource, aaiResource.getRecurseToResource());
+        Assertions.assertEquals(recurseToResource, aaiResource.getRecurseToResource());
     }
 
     @Test
     public void testGetterSetterAllowDirectWrite() {
         aaiResource.setAllowDirectWrite(true);
-        Assert.assertTrue(aaiResource.isAllowDirectWrite());
+        Assertions.assertTrue(aaiResource.isAllowDirectWrite());
     }
 
     @Test
     public void testGetterSetterAllowDirectRead() {
         aaiResource.setAllowDirectRead(true);
-        Assert.assertTrue(aaiResource.isAllowDirectRead());
+        Assertions.assertTrue(aaiResource.isAllowDirectRead());
     }
 
     @Test
     public void testGetAutoGenUuidFields() {
-        Assert.assertNotNull(aaiResource.getAutoGenUuidFields());
+        Assertions.assertNotNull(aaiResource.getAutoGenUuidFields());
     }
 
 }

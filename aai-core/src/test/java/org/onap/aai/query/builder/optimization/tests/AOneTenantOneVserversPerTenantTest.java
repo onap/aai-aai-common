@@ -20,18 +20,18 @@
 
 package org.onap.aai.query.builder.optimization.tests;
 
-import org.junit.BeforeClass;
-import org.junit.Ignore;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.onap.aai.query.builder.optimization.AbstractGraphTraversalBuilderTestQueryiesToRun;
 
-@Ignore
+@Disabled
 public class AOneTenantOneVserversPerTenantTest extends AbstractGraphTraversalBuilderTestQueryiesToRun {
 
     private static int tenantNum = 1;
     private static int vserverPerTenantNum = 1;
     private static String prefix = AOneTenantOneVserversPerTenantTest.class.getSimpleName() + "-";
 
-    @BeforeClass
+    @BeforeAll
     public void setup() throws Exception {
         setupData(tenantNum, vserverPerTenantNum, prefix);
     }

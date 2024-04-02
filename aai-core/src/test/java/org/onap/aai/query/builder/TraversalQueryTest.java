@@ -22,8 +22,8 @@
 
 package org.onap.aai.query.builder;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -39,10 +39,9 @@ import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.janusgraph.core.JanusGraph;
 import org.janusgraph.core.JanusGraphFactory;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.onap.aai.TinkerpopUpgrade;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.edges.enums.EdgeType;
 import org.onap.aai.exceptions.AAIException;
@@ -51,7 +50,7 @@ import org.onap.aai.introspection.Loader;
 import org.onap.aai.introspection.LoaderUtil;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 
-@Category(TinkerpopUpgrade.class)
+@Tag("TinkerpopUpgrade")
 public class TraversalQueryTest extends QueryBuilderTestAbstraction {
 
     @Override
@@ -108,7 +107,7 @@ public class TraversalQueryTest extends QueryBuilderTestAbstraction {
         GraphTraversal<Vertex, Vertex> expected =
                 __.<Vertex>start().union(__.has("test1", "value1"), __.has("test2", "value2"));
 
-        assertEquals("they are equal", expected, tQ.getQuery());
+        assertEquals(expected, tQ.getQuery(), "they are equal");
 
     }
 
@@ -121,16 +120,17 @@ public class TraversalQueryTest extends QueryBuilderTestAbstraction {
                 __.<Vertex>start().has("vnf-id", "key1").has("aai-node-type", "generic-vnf");
         GraphTraversal<Vertex, Vertex> containerExpected = __.<Vertex>start().has("aai-node-type", "generic-vnf");
 
-        assertEquals("query object", expected.toString(), builder.getQuery().toString());
-        assertEquals("container query object", containerExpected.toString(),
-                builder.getContainerQuery().getQuery().toString());
+        assertEquals(expected.toString(), builder.getQuery().toString(), "query object");
+        assertEquals(containerExpected.toString(),
+                builder.getContainerQuery().getQuery().toString(),
+                "container query object");
 
     }
 
     // TODO - Identify why this unit test is failing and if this
     // is going to cause any problems
     @Test
-    @Ignore("Not working ever since the change to using model driven development")
+    @Disabled("Not working ever since the change to using model driven development")
     public void nestedTraversalClones() throws UnsupportedEncodingException, AAIException, URISyntaxException {
 
         QueryBuilder<Vertex> tQ = getNewVertexTraversal();
@@ -144,9 +144,10 @@ public class TraversalQueryTest extends QueryBuilderTestAbstraction {
                 __.<Vertex>start().has("vnf-id", "key1").has("aai-node-type", "generic-vnf")
                         .in("org.onap.relationships.inventory.BelongsTo").has(AAIProperties.NODE_TYPE, "l-interface");
 
-        assertEquals("query object", expected.toString(), builder.getQuery().toString());
-        assertEquals("container query object", containerExpected.toString(),
-                builder.getContainerQuery().getQuery().toString());
+        assertEquals(expected.toString(), builder.getQuery().toString(), "query object");
+        assertEquals(containerExpected.toString(),
+                builder.getContainerQuery().getQuery().toString(),
+                "container query object");
 
     }
 
@@ -163,8 +164,8 @@ public class TraversalQueryTest extends QueryBuilderTestAbstraction {
 
         List<Vertex> list = tQ.toList();
 
-        assertEquals("Has 1 vertexes ", 1, list.size());
-        assertTrue("Has vertex on the default edge ", list.contains(vnfc1));
+        assertEquals(1, list.size(), "Has 1 vertexes ");
+        assertTrue(list.contains(vnfc1), "Has vertex on the default edge ");
 
     }
 
@@ -185,10 +186,10 @@ public class TraversalQueryTest extends QueryBuilderTestAbstraction {
         List<Vertex> list1 = tQ1.toList();
         List<Vertex> list2 = tQ2.toList();
 
-        assertEquals("1 - Has 1 vertexes ", 1, list1.size());
-        assertTrue("1 - traversal results in vnfc ", list1.contains(vnfc1));
-        assertEquals("2 - Has 1 vertexes ", 1, list2.size());
-        assertTrue("2 - traversal results in vce ", list2.contains(vce));
+        assertEquals(1, list1.size(), "1 - Has 1 vertexes ");
+        assertTrue(list1.contains(vnfc1), "1 - traversal results in vnfc ");
+        assertEquals(1, list2.size(), "2 - Has 1 vertexes ");
+        assertTrue(list2.contains(vce), "2 - traversal results in vce ");
 
     }
 
@@ -205,8 +206,8 @@ public class TraversalQueryTest extends QueryBuilderTestAbstraction {
 
         List<Vertex> list = tQ1.toList();
 
-        assertEquals("1 - Has 1 vertexes ", 1, list.size());
-        assertTrue("1 - traversal results in vnfc ", list.contains(pserver));
+        assertEquals(1, list.size(), "1 - Has 1 vertexes ");
+        assertTrue(list.contains(pserver), "1 - traversal results in vnfc ");
 
     }
 
@@ -225,9 +226,9 @@ public class TraversalQueryTest extends QueryBuilderTestAbstraction {
 
         List<Vertex> list = tQ.toList();
 
-        assertEquals("Has 2 vertexes ", 2, list.size());
-        assertTrue("Has vertex on the default edge ", list.contains(vnfc1));
-        assertTrue("Has vertex on the re-uses edge ", list.contains(vnfc2));
+        assertEquals(2, list.size(), "Has 2 vertexes ");
+        assertTrue(list.contains(vnfc1), "Has vertex on the default edge ");
+        assertTrue(list.contains(vnfc2), "Has vertex on the re-uses edge ");
 
     }
 
@@ -245,8 +246,8 @@ public class TraversalQueryTest extends QueryBuilderTestAbstraction {
 
         List<Vertex> list = tQ.toList();
 
-        assertEquals("Has 2 vertexes ", 2, list.size());
-        assertTrue("result has pserver ", list.contains(pserver));
+        assertEquals(2, list.size(), "Has 2 vertexes ");
+        assertTrue(list.contains(pserver), "result has pserver ");
 
     }
 
@@ -265,8 +266,8 @@ public class TraversalQueryTest extends QueryBuilderTestAbstraction {
 
         List<Vertex> list = tQ.toList();
 
-        assertEquals("Has 2 vertexes ", 2, list.size());
-        assertTrue("result has pserver ", list.contains(complex));
+        assertEquals(2, list.size(), "Has 2 vertexes ");
+        assertTrue(list.contains(complex), "result has pserver ");
 
     }
 
@@ -336,7 +337,7 @@ public class TraversalQueryTest extends QueryBuilderTestAbstraction {
     }
 
     @Test
-    @Ignore("Enable once removeQueryStepsBetween supports a start index > 0")
+    @Disabled("Enable once removeQueryStepsBetween supports a start index > 0")
     public void removeQueryStepsBetweenTest27() throws AAIUnknownObjectException {
         JanusGraph graph = JanusGraphFactory.build().set("storage.backend", "inmemory").open();
         GraphTraversalSource source = graph.newTransaction().traversal();

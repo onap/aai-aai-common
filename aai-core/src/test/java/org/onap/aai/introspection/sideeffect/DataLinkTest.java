@@ -25,7 +25,7 @@ package org.onap.aai.introspection.sideeffect;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
@@ -49,15 +49,15 @@ import org.janusgraph.core.Cardinality;
 import org.janusgraph.core.JanusGraph;
 import org.janusgraph.core.JanusGraphFactory;
 import org.janusgraph.core.schema.JanusGraphManagement;
-import org.junit.*;
-import org.junit.experimental.categories.Category;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.onap.aai.DataLinkSetup;
-import org.onap.aai.TinkerpopUpgrade;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.edges.enums.EdgeProperty;
 import org.onap.aai.exceptions.AAIException;
@@ -73,8 +73,7 @@ import org.onap.aai.serialization.engines.JanusGraphDBEngine;
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 
-@Category(TinkerpopUpgrade.class)
-@RunWith(value = Parameterized.class)
+@Tag("TinkerpopUpgrade")
 public class DataLinkTest extends DataLinkSetup {
 
     private static JanusGraph graph;
@@ -87,18 +86,13 @@ public class DataLinkTest extends DataLinkSetup {
     private Vertex self;
     @Mock
     private VertexProperty<String> prop;
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
-
-    @Parameterized.Parameter
     public QueryStyle queryStyle;
 
-    @Parameterized.Parameters(name = "QueryStyle.{0}")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {{QueryStyle.TRAVERSAL},{QueryStyle.TRAVERSAL_URI}});
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() {
         graph = JanusGraphFactory.build().set("storage.backend", "inmemory").open();
         JanusGraphManagement graphMgt = graph.openManagement();
@@ -174,22 +168,25 @@ public class DataLinkTest extends DataLinkSetup {
 
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDown() {
         graph.tx().rollback();
         graph.close();
     }
 
-    @Before
+    @BeforeEach
     public void initMock() {
         loader = loaderFactory.createLoaderForVersion(introspectorFactoryType, schemaVersions.getDefaultVersion());
         MockitoAnnotations.openMocks(this);
         dbEngine = new JanusGraphDBEngine(queryStyle, loader);
     }
 
-    @Test
-    public void verifyCreationOfVertex()
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void verifyCreationOfVertex(QueryStyle queryStyle)
             throws AAIException, UnsupportedEncodingException, IllegalArgumentException, SecurityException {
+
+        initDataLinkTest(queryStyle);
 
         final Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDepthVersion());
         final Introspector obj = loader.introspectorFromName("vpn-binding");
@@ -212,8 +209,8 @@ public class DataLinkTest extends DataLinkSetup {
 
         runner.execute(obj, self);
 
-        assertTrue("route-target vertex found", traversal.V().has(AAIProperties.NODE_TYPE, "route-target")
-                .has("global-route-target", "key1").has("route-target-role", "key2").has("linked", true).hasNext());
+        assertTrue(traversal.V().has(AAIProperties.NODE_TYPE, "route-target")
+                .has("global-route-target", "key1").has("route-target-role", "key2").has("linked", true).hasNext(), "route-target vertex found");
         g.tx().rollback();
 
     }
@@ -221,8 +218,10 @@ public class DataLinkTest extends DataLinkSetup {
     /** 
      * This is more directly testing the modification mechanism (see verifyModificationOfVertex test)
      */
-    @Test
-    public void linkQuery() throws UnsupportedEncodingException, AAIException, URISyntaxException {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void linkQuery(QueryStyle queryStyle) throws UnsupportedEncodingException, AAIException, URISyntaxException {
+        initDataLinkTest(queryStyle);
         Graph g = graph.newTransaction();
         GraphTraversalSource source = g.traversal();
         final Loader loader = LoaderUtil.getLatestVersion();
@@ -241,9 +240,12 @@ public class DataLinkTest extends DataLinkSetup {
         assertEquals(1, linkedVertices.size());
     }
 
-    @Test
-    public void verifyModificationOfVertex()
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void verifyModificationOfVertex(QueryStyle queryStyle)
             throws AAIException, UnsupportedEncodingException, IllegalArgumentException, SecurityException {
+
+        initDataLinkTest(queryStyle);
 
         final Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDepthVersion());
         final Introspector obj = loader.introspectorFromName("vpn-binding");
@@ -287,8 +289,11 @@ public class DataLinkTest extends DataLinkSetup {
 
     }
 
-    @Test
-    public void verifyDeleteOfVertex() throws Exception {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void verifyDeleteOfVertex(QueryStyle queryStyle) throws Exception {
+
+        initDataLinkTest(queryStyle);
 
         final Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDepthVersion());
         final Introspector obj = loader.introspectorFromName("vpn-binding");
@@ -310,16 +315,19 @@ public class DataLinkTest extends DataLinkSetup {
 
         runner.execute(obj, self);
 
-        assertFalse("route-target vertex not found",
-                traversal.V().has(AAIProperties.NODE_TYPE, "route-target").has("global-route-target", "deleteTargetKey")
-                        .has("route-target-role", "deleteRoleKey").has("linked", true).hasNext());
+        assertFalse(traversal.V().has(AAIProperties.NODE_TYPE, "route-target").has("global-route-target", "deleteTargetKey")
+                        .has("route-target-role", "deleteRoleKey").has("linked", true).hasNext(),
+                "route-target vertex not found");
 
         g.tx().rollback();
 
     }
 
-    @Test
-    public void verifyPropertyPopulation() throws Exception {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void verifyPropertyPopulation(QueryStyle queryStyle) throws Exception {
+
+        initDataLinkTest(queryStyle);
 
         final Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDepthVersion());
         final Introspector obj = loader.introspectorFromName("vpn-binding");
@@ -340,16 +348,18 @@ public class DataLinkTest extends DataLinkSetup {
 
         runner.execute(obj, self);
 
-        assertTrue("both properties have been populated in target object",
-                obj.getValue("global-route-target").equals("getTargetKey")
-                        && obj.getValue("route-target-role").equals("getRoleKey"));
+        assertTrue(obj.getValue("global-route-target").equals("getTargetKey")
+                        && obj.getValue("route-target-role").equals("getRoleKey"),
+                "both properties have been populated in target object");
         g.tx().rollback();
 
     }
 
-    @Test
-    public void verifyPropertyPopulationWithV10OnlyPut()
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void verifyPropertyPopulationWithV10OnlyPut(QueryStyle queryStyle)
             throws AAIException, UnsupportedEncodingException, IllegalArgumentException, SecurityException {
+        initDataLinkTest(queryStyle);
         final Introspector obj = loader.introspectorFromName("vpn-binding");
         obj.setValue("vpn-id", "getKeyNoLink");
         final Introspector routeTargets = loader.introspectorFromName("route-targets");
@@ -381,13 +391,19 @@ public class DataLinkTest extends DataLinkSetup {
         Vertex routeTargetOneV = traversal.V().has("global-route-target", "getTargetKeyNoLink").next();
         Vertex routeTargetTwoV = traversal.V().has("global-route-target", "getTargetKeyNoLink2").next();
 
-        assertEquals("first route target put has linked", true,
-                routeTargetOneV.property(AAIProperties.LINKED).orElse(false));
-        assertEquals("second route target put does not have linked", false,
-                routeTargetTwoV.property(AAIProperties.LINKED).orElse(false));
+        assertEquals(true,
+                routeTargetOneV.property(AAIProperties.LINKED).orElse(false),
+                "first route target put has linked");
+        assertEquals(false,
+                routeTargetTwoV.property(AAIProperties.LINKED).orElse(false),
+                "second route target put does not have linked");
 
         g.tx().rollback();
 
+    }
+
+    public void initDataLinkTest(QueryStyle queryStyle) {
+        this.queryStyle = queryStyle;
     }
  }
  

@@ -20,6 +20,7 @@
 
 package org.onap.aai.restcore;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -33,9 +34,9 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.onap.aai.AAISetup;
 import org.onap.aai.exceptions.AAIException;
 
@@ -50,7 +51,7 @@ public class RESTAPITest extends AAISetup {
     public static final String AAI_TIMEOUT_BY_APP = "aai.timeout.by.app";
     public static final String AAI_TIMEOUT_DEFAULT_LIMIT = "aai.timeout.default.limit";
 
-    @BeforeClass
+    @BeforeAll
     public static void setUp() {
         restapi = new RESTAPI();
         httpHeaders = mock(HttpHeaders.class);
@@ -66,13 +67,15 @@ public class RESTAPITest extends AAISetup {
         when(httpHeaders.getRequestHeader("X-FromAppId")).thenReturn(fromAppIdList);
 
         String fromAppId = restapi.getFromAppId(httpHeaders);
-        Assert.assertEquals("from-app-id-01", fromAppId);
+        Assertions.assertEquals("from-app-id-01", fromAppId);
     }
 
-    @Test(expected = AAIException.class)
+    @Test
     public void testGetFromAppId_throwAAIException() throws AAIException {
-        when(httpHeaders.getRequestHeader("X-FromAppId")).thenReturn(null);
-        restapi.getFromAppId(httpHeaders);
+        assertThrows(AAIException.class, () -> {
+            when(httpHeaders.getRequestHeader("X-FromAppId")).thenReturn(null);
+            restapi.getFromAppId(httpHeaders);
+        });
     }
 
     @Test
@@ -82,13 +85,15 @@ public class RESTAPITest extends AAISetup {
         when(httpHeaders.getRequestHeader("X-TransactionId")).thenReturn(transactionIdList);
 
         String transId = restapi.getTransId(httpHeaders);
-        Assert.assertEquals("transaction-id-01", transId);
+        Assertions.assertEquals("transaction-id-01", transId);
     }
 
-    @Test(expected = AAIException.class)
+    @Test
     public void testGetTransId_throwAAIException() throws AAIException {
-        when(httpHeaders.getRequestHeader("X-TransactionId")).thenReturn(null);
-        String transId = restapi.getTransId(httpHeaders);
+        assertThrows(AAIException.class, () -> {
+            when(httpHeaders.getRequestHeader("X-TransactionId")).thenReturn(null);
+            String transId = restapi.getTransId(httpHeaders);
+        });
     }
 
     @Test
@@ -101,6 +106,6 @@ public class RESTAPITest extends AAISetup {
 
         Response resp = restapi.runner(AAI_TIMEOUT_ENABLED, AAI_TIMEOUT_BY_APP, AAI_TIMEOUT_DEFAULT_LIMIT, httpHeaders,
                 info, HttpMethod.GET, callable);
-        Assert.assertNotNull(resp);
+        Assertions.assertNotNull(resp);
     }
 }

@@ -20,7 +20,7 @@
 
 package org.onap.aai.rest.ueb;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -30,8 +30,8 @@ import java.util.UUID;
 
 import javax.ws.rs.core.Response;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.onap.aai.AAISetup;
 import org.onap.aai.edges.EdgeIngestor;
 import org.onap.aai.exceptions.AAIException;
@@ -59,7 +59,7 @@ public class UEBNotificationTest extends AAISetup {
 
     public QueryStyle queryStyle = QueryStyle.TRAVERSAL_URI;
 
-    @Before
+    @BeforeEach
     public void setup() throws Exception {
         version = schemaVersions.getDefaultVersion();
         loader = loaderFactory.createLoaderForVersion(introspectorFactoryType, version);
@@ -75,10 +75,10 @@ public class UEBNotificationTest extends AAISetup {
         uebNotification.createNotificationEvent(UUID.randomUUID().toString(), "JUNIT-SOT", Response.Status.CREATED, uri,
                 pserver, new HashMap<>(), BASE_PATH);
 
-        assertEquals("One event created", 1, uebNotification.getEvents().size());
-        assertEquals("Uri is correct",
-                BASE_PATH + "/" + schemaVersions.getDefaultVersion() + "/cloud-infrastructure/pservers/pserver/hn",
-                uebNotification.getEvents().get(0).getEventHeader().getValue("entity-link").toString());
+        assertEquals(1, uebNotification.getEvents().size(), "One event created");
+        assertEquals(BASE_PATH + "/" + schemaVersions.getDefaultVersion() + "/cloud-infrastructure/pservers/pserver/hn",
+                uebNotification.getEvents().get(0).getEventHeader().getValue("entity-link").toString(),
+                "Uri is correct");
     }
 
     @Test
@@ -91,9 +91,9 @@ public class UEBNotificationTest extends AAISetup {
         uebNotification.createNotificationEvent(UUID.randomUUID().toString(), "JUNIT-SOT", Response.Status.CREATED, uri,
                 pserver, new HashMap<>(), BASE_PATH);
 
-        assertEquals("One event created", 1, uebNotification.getEvents().size());
-        assertEquals("Uri is correct",
-                BASE_PATH + "/" + schemaVersions.getDefaultVersion() + "/cloud-infrastructure/pservers/pserver/hn",
-                uebNotification.getEvents().get(0).getEventHeader().getValue("entity-link").toString());
+        assertEquals(1, uebNotification.getEvents().size(), "One event created");
+        assertEquals(BASE_PATH + "/" + schemaVersions.getDefaultVersion() + "/cloud-infrastructure/pservers/pserver/hn",
+                uebNotification.getEvents().get(0).getEventHeader().getValue("entity-link").toString(),
+                "Uri is correct");
     }
 }

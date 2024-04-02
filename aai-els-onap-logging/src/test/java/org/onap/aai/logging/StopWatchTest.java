@@ -21,15 +21,15 @@
 package org.onap.aai.logging;
 
 import static java.lang.Thread.sleep;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.MDC;
 
 public class StopWatchTest {
 
-    @After
+    @AfterEach
     public void cleanup() {
         MDC.clear();
     }

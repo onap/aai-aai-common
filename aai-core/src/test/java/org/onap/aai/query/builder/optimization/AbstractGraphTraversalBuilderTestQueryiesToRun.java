@@ -27,8 +27,8 @@ import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.onap.aai.query.builder.QueryBuilder;
 import org.onap.aai.query.builder.TraversalQuery;
 import org.onap.aai.query.builder.TraversalURIOptimizedQuery;
@@ -43,7 +43,7 @@ public abstract class AbstractGraphTraversalBuilderTestQueryiesToRun
     protected String vserverName;
     protected String randomFromList;
 
-    @Before
+    @BeforeEach
     public void config() throws Exception {
         int tenantNum = rand.nextInt(getTenantNum());
         tenantId = getPrefix() + "tenant-id-" + tenantNum;

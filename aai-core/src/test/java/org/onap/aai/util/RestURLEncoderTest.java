@@ -20,11 +20,9 @@
 
 package org.onap.aai.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class RestURLEncoderTest {
 
@@ -54,7 +52,7 @@ public class RestURLEncoderTest {
         try {
             String encodeResult = RestURLEncoder.encodeURL("");
 
-            assertNotNull("Result is not null", encodeResult);
+            assertNotNull(encodeResult, "Result is not null");
         } catch (Exception e) {
             fail();
         }

@@ -20,22 +20,19 @@
 
 package org.onap.aai.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.onap.aai.AAISetup;
 import org.onap.aai.exceptions.AAIException;
 
 public class AAIConfigTest extends AAISetup {
 
-    @BeforeClass
+    @BeforeAll
     public static void setUp() throws AAIException {
         AAIConfig.init();
     }
@@ -61,14 +58,18 @@ public class AAIConfigTest extends AAISetup {
         assertEquals("result", res);
     }
 
-    @Test(expected = AAIException.class)
+    @Test
     public void testGetStringInvalidKey() throws AAIException {
-        AAIConfig.get("key");
+        assertThrows(AAIException.class, () -> {
+            AAIConfig.get("key");
+        });
     }
 
-    @Test(expected = AAIException.class)
+    @Test
     public void testGetStringEmptyResponse() throws AAIException {
-        AAIConfig.get("aai.response.null");
+        assertThrows(AAIException.class, () -> {
+            AAIConfig.get("aai.response.null");
+        });
     }
 
     @Test
@@ -85,9 +86,11 @@ public class AAIConfigTest extends AAISetup {
         assertEquals("changeit", res);
     }
 
-    @Test(expected = NumberFormatException.class)
+    @Test
     public void testGetIntInvalidInput() throws AAIException {
-        AAIConfig.getInt("aai.example.string");
+        assertThrows(NumberFormatException.class, () -> {
+            AAIConfig.getInt("aai.example.string");
+        });
     }
 
     @Test

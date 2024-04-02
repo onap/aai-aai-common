@@ -20,11 +20,11 @@
 
 package org.onap.aai.serialization.db;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class EdgePropertyMapTest {
 
@@ -36,8 +36,8 @@ public class EdgePropertyMapTest {
         map.put("isParent", "${direction}");
         map.put("SVC-INFRA", "!${direction}");
 
-        assertEquals("normal retrieval", "hello", map.get("test"));
-        assertEquals("variable retrieval", "OUT", map.get("isParent"));
-        assertEquals("negate variable retrieval", "IN", map.get("SVC-INFRA"));
+        assertEquals("hello", map.get("test"), "normal retrieval");
+        assertEquals("OUT", map.get("isParent"), "variable retrieval");
+        assertEquals("IN", map.get("SVC-INFRA"), "negate variable retrieval");
     }
 }

@@ -20,7 +20,7 @@
 
 package org.onap.aai.query.builder.optimization;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.google.common.base.CaseFormat;
 
@@ -33,8 +33,8 @@ import java.util.Random;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.junit.After;
-import org.junit.AfterClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.onap.aai.AAISetup;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.dbmap.AAIGraph;
@@ -139,11 +139,11 @@ public abstract class AbstractGraphTraversalBuilderOptmizationTest extends AAISe
 
     }
 
-    @After
+    @AfterEach
     public void deConfigure() throws Exception {
     }
 
-    @AfterClass
+    @AfterAll
     public static void teardown() throws Exception {
         dbEngine.rollback();
         System.out.println("Done");
@@ -193,8 +193,7 @@ public abstract class AbstractGraphTraversalBuilderOptmizationTest extends AAISe
         // }
         // System.out.println("Result size: " + result.size());
         if (numResultsExpected != Integer.MIN_VALUE) {
-            assertEquals(optimized.toString() + " optimized" + " query results in " + numResultsExpected + " vserver ",
-                    numResultsExpected, result.size());
+            assertEquals(numResultsExpected, result.size(), optimized.toString() + " optimized" + " query results in " + numResultsExpected + " vserver ");
         }
 
         return endTime - startTime;

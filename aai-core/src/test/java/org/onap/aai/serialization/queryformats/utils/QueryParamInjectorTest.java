@@ -20,22 +20,22 @@
 
 package org.onap.aai.serialization.queryformats.utils;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.serialization.db.DBSerializer;
 import org.onap.aai.serialization.queryformats.Resource.Builder;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class QueryParamInjectorTest {
 
     @Mock
@@ -57,7 +57,7 @@ public class QueryParamInjectorTest {
         Builder b = new Builder(loader, serializer, urlBuilder, params);
         injector.injectParams(b, params);
 
-        assertEquals("is nodes only", true, b.isNodesOnly());
-        assertEquals("is depth 10", 10, b.getDepth());
+        assertEquals(true, b.isNodesOnly(), "is nodes only");
+        assertEquals(10, b.getDepth(), "is depth 10");
     }
 }

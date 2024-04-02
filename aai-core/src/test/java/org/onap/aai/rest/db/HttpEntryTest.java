@@ -23,12 +23,11 @@
 package org.onap.aai.rest.db;
 
 import static org.onap.aai.edges.enums.AAIDirection.NONE;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -64,14 +63,12 @@ import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.javatuples.Pair;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.MethodSorters;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer.MethodName;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
 import org.onap.aai.AAISetup;
 import org.onap.aai.db.props.AAIProperties;
@@ -94,8 +91,7 @@ import org.onap.aai.util.AAIConfig;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 
-@RunWith(value = Parameterized.class)
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+@TestMethodOrder(MethodName.class)
 public class HttpEntryTest extends AAISetup {
 
     protected static final MediaType APPLICATION_JSON = MediaType.valueOf("application/json");
@@ -107,14 +103,11 @@ public class HttpEntryTest extends AAISetup {
         VALID_HTTP_STATUS_CODES.add(201);
         VALID_HTTP_STATUS_CODES.add(204);
     }
-
-    @Parameterized.Parameter(value = 0)
     public QueryStyle queryStyle;
 
     /*
      * TODO Change the HttpEntry instances accoringly
      */
-    @Parameterized.Parameters(name = "QueryStyle.{0}")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] { { QueryStyle.TRAVERSAL }, { QueryStyle.TRAVERSAL_URI } });
     }
@@ -136,7 +129,7 @@ public class HttpEntryTest extends AAISetup {
 
     ObjectMapper mapper = new ObjectMapper();
 
-    @Before
+    @BeforeEach
     public void setup() {
 
         httpHeaders = Mockito.mock(HttpHeaders.class);
@@ -177,13 +170,15 @@ public class HttpEntryTest extends AAISetup {
         when(httpHeaders.getMediaType()).thenReturn(APPLICATION_JSON);
     }
 
-    @After
+    @AfterEach
     public void rollback() {
         dbEngine.rollback();
     }
 
-    @Test
-    public void thatObjectsCanBeRetrieved() throws UnsupportedEncodingException, AAIException {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void thatObjectsCanBeRetrieved(QueryStyle queryStyle) throws UnsupportedEncodingException, AAIException {
+        initHttpEntryTest(queryStyle);
         String uri = "/cloud-infrastructure/pservers/pserver/theHostname";
         traversal.addV()
                 .property("aai-node-type", "pserver")
@@ -197,30 +192,36 @@ public class HttpEntryTest extends AAISetup {
                 .toString();
 
         Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri, requestBody);
-        assertEquals("Expected the pserver to be returned", 200, response.getStatus());
+        assertEquals(200, response.getStatus(), "Expected the pserver to be returned");
     }
 
-    @Test
-    public void thatObjectsCanNotBeFound() throws UnsupportedEncodingException, AAIException {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void thatObjectsCanNotBeFound(QueryStyle queryStyle) throws UnsupportedEncodingException, AAIException {
+        initHttpEntryTest(queryStyle);
         String uri = "/cloud-infrastructure/pservers/pserver/junit-test2";
         String requestBody = "";
 
         Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri, requestBody);
-        assertEquals("The pserver is not found", 404, response.getStatus());
+        assertEquals(404, response.getStatus(), "The pserver is not found");
     }
 
-    @Test
-    public void thatObjectCanBeCreatedViaPUT() throws UnsupportedEncodingException, AAIException {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void thatObjectCanBeCreatedViaPUT(QueryStyle queryStyle) throws UnsupportedEncodingException, AAIException {
+        initHttpEntryTest(queryStyle);
         String uri = "/cloud-infrastructure/pservers/pserver/theHostname";
         String requestBody = new JSONObject().put("hostname", "theHostname").toString();
 
         Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, requestBody);
-        assertEquals("Expecting the pserver to be created", 201, response.getStatus());
+        assertEquals(201, response.getStatus(), "Expecting the pserver to be created");
     }
 
-    @Test
-    public void thatObjectCreationFailsWhenResourceVersionIsProvided()
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void thatObjectCreationFailsWhenResourceVersionIsProvided(QueryStyle queryStyle)
             throws UnsupportedEncodingException, AAIException, JsonMappingException, JsonProcessingException {
+        initHttpEntryTest(queryStyle);
         String uri = "/cloud-infrastructure/pservers/pserver/theHostname";
         String requestBody = new JSONObject()
                 .put("hostname", "theHostname")
@@ -229,14 +230,16 @@ public class HttpEntryTest extends AAISetup {
 
         Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, requestBody);
         ErrorResponse errorResponseEntity = mapper.readValue(response.getEntity().toString(), ErrorResponse.class);
-        assertEquals("Expecting the pserver to be created", 412, response.getStatus());
+        assertEquals(412, response.getStatus(), "Expecting the pserver to be created");
         assertEquals(
                 "Resource version specified on create:resource-version passed for create of /cloud-infrastructure/pservers/pserver/theHostname",
                 errorResponseEntity.getRequestError().getServiceException().getVariables().get(2));
     }
 
-    @Test
-    public void thatObjectCanBeUpdatedViaPUT() throws UnsupportedEncodingException, AAIException {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void thatObjectCanBeUpdatedViaPUT(QueryStyle queryStyle) throws UnsupportedEncodingException, AAIException {
+        initHttpEntryTest(queryStyle);
         String uri = "/cloud-infrastructure/pservers/pserver/theHostname";
         traversal.addV()
                 .property("aai-node-type", "pserver")
@@ -251,14 +254,16 @@ public class HttpEntryTest extends AAISetup {
                 .toString();
 
         Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, requestBody);
-        assertEquals("Expecting the pserver to be updated", 200, response.getStatus());
-        assertTrue("That old properties are removed",
-                traversal.V().has("hostname", "updatedHostname").hasNot("number-of-cpus").hasNext());
+        assertEquals(200, response.getStatus(), "Expecting the pserver to be updated");
+        assertTrue(traversal.V().has("hostname", "updatedHostname").hasNot("number-of-cpus").hasNext(),
+                "That old properties are removed");
     }
 
-    @Test
-    public void thatUpdateFailsWhenResourceVersionsMismatch()
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void thatUpdateFailsWhenResourceVersionsMismatch(QueryStyle queryStyle)
             throws UnsupportedEncodingException, AAIException, JsonMappingException, JsonProcessingException {
+        initHttpEntryTest(queryStyle);
         String uri = "/cloud-infrastructure/pservers/pserver/theHostname";
         traversal.addV()
                 .property("aai-node-type", "pserver")
@@ -273,15 +278,17 @@ public class HttpEntryTest extends AAISetup {
 
         Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, requestBody);
         ErrorResponse errorResponseEntity = mapper.readValue(response.getEntity().toString(), ErrorResponse.class);
-        assertEquals("Expecting the update to fail", 412, response.getStatus());
+        assertEquals(412, response.getStatus(), "Expecting the update to fail");
         assertEquals(
                 "Precondition Failed:resource-version MISMATCH for update of /cloud-infrastructure/pservers/pserver/updatedHostname",
                 errorResponseEntity.getRequestError().getServiceException().getVariables().get(2));
     }
 
-    @Test
-    public void thatUpdateFailsWhenResourceVersionIsNotProvided()
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void thatUpdateFailsWhenResourceVersionIsNotProvided(QueryStyle queryStyle)
             throws UnsupportedEncodingException, AAIException, JsonMappingException, JsonProcessingException {
+        initHttpEntryTest(queryStyle);
         String uri = "/cloud-infrastructure/pservers/pserver/theHostname";
         traversal.addV()
                 .property("aai-node-type", "pserver")
@@ -298,14 +305,16 @@ public class HttpEntryTest extends AAISetup {
         doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, requestBody);
         Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, requestBody);
         ErrorResponse errorResponseEntity = mapper.readValue(response.getEntity().toString(), ErrorResponse.class);
-        assertEquals("Request should fail when no resource-version is provided", 412, response.getStatus());
+        assertEquals(412, response.getStatus(), "Request should fail when no resource-version is provided");
         assertEquals(
                 "Precondition Required:resource-version not passed for update of /cloud-infrastructure/pservers/pserver/theHostname",
                 errorResponseEntity.getRequestError().getServiceException().getVariables().get(2));
     }
 
-    @Test
-    public void thatCreateViaPUTAddsRelationshipsToExistingObjects() throws UnsupportedEncodingException, AAIException {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void thatCreateViaPUTAddsRelationshipsToExistingObjects(QueryStyle queryStyle) throws UnsupportedEncodingException, AAIException {
+        initHttpEntryTest(queryStyle);
         traversal.addV()
                 .property("aai-node-type", "pserver")
                 .property("hostname", "hostname")
@@ -315,17 +324,19 @@ public class HttpEntryTest extends AAISetup {
         String requestBody = new JSONObject().put("interface-name", "p1").toString();
 
         Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, requestBody);
-        assertEquals("response is successful", 201, response.getStatus());
-        assertTrue("p-interface was created",
-                traversal.V().has("aai-node-type", "p-interface").has("interface-name", "p1").hasNext());
-        assertTrue("p-interface has outgoing edge to p-server",
-                traversal.V().has("aai-node-type", "p-interface").has("aai-uri", uri).has("interface-name", "p1")
+        assertEquals(201, response.getStatus(), "response is successful");
+        assertTrue(traversal.V().has("aai-node-type", "p-interface").has("interface-name", "p1").hasNext(),
+                "p-interface was created");
+        assertTrue(traversal.V().has("aai-node-type", "p-interface").has("aai-uri", uri).has("interface-name", "p1")
                         .out("tosca.relationships.network.BindsTo").has("aai-node-type", "pserver")
-                        .has("hostname", "hostname").hasNext());
+                        .has("hostname", "hostname").hasNext(),
+                "p-interface has outgoing edge to p-server");
     }
 
-    @Test
-    public void thatObjectsCanBePatched() throws UnsupportedEncodingException, AAIException {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void thatObjectsCanBePatched(QueryStyle queryStyle) throws UnsupportedEncodingException, AAIException {
+        initHttpEntryTest(queryStyle);
         String uri = "/cloud-infrastructure/pservers/pserver/the-hostname";
         traversal.addV()
                 .property("aai-node-type", "pserver")
@@ -337,14 +348,16 @@ public class HttpEntryTest extends AAISetup {
                 .put("hostname", "new-hostname")
                 .toString();
         Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.MERGE_PATCH, uri, requestBody);
-        assertEquals("Expected the pserver to be updated", 200, response.getStatus());
-        assertTrue("object should be updated while keeping old properties",
-                traversal.V().has("aai-node-type", "pserver").has("hostname", "new-hostname")
-                        .has("equip-type", "the-equip-type").hasNext());
+        assertEquals(200, response.getStatus(), "Expected the pserver to be updated");
+        assertTrue(traversal.V().has("aai-node-type", "pserver").has("hostname", "new-hostname")
+                        .has("equip-type", "the-equip-type").hasNext(),
+                "object should be updated while keeping old properties");
     }
 
-    @Test
-    public void thatObjectsCanBeDeleted() throws UnsupportedEncodingException, AAIException {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void thatObjectsCanBeDeleted(QueryStyle queryStyle) throws UnsupportedEncodingException, AAIException {
+        initHttpEntryTest(queryStyle);
         String uri = "/cloud-infrastructure/pservers/pserver/the-hostname";
         String resourceVersion = "123";
         traversal.addV()
@@ -353,14 +366,17 @@ public class HttpEntryTest extends AAISetup {
                 .property(AAIProperties.AAI_URI, uri)
                 .property(AAIProperties.RESOURCE_VERSION, resourceVersion)
                 .next();
-        assertEquals("Expecting a No Content response", 204,
-                doDelete(resourceVersion, uri, "pserver").getStatus());
-        assertTrue("Expecting the pserver to be deleted",
-                !traversal.V().has("aai-node-type", "pserver").has("hostname", "the-hostname").hasNext());
+        assertEquals(204,
+                doDelete(resourceVersion, uri, "pserver").getStatus(),
+                "Expecting a No Content response");
+        assertTrue(!traversal.V().has("aai-node-type", "pserver").has("hostname", "the-hostname").hasNext(),
+                "Expecting the pserver to be deleted");
     }
 
-    @Test
-    public void thatRelationshipCanBeCreated() throws UnsupportedEncodingException, AAIException {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void thatRelationshipCanBeCreated(QueryStyle queryStyle) throws UnsupportedEncodingException, AAIException {
+        initHttpEntryTest(queryStyle);
         String uri = "/cloud-infrastructure/pservers/pserver/edge-test-pserver";
         traversal.addV()
                 .property("aai-node-type", "pserver")
@@ -392,7 +408,7 @@ public class HttpEntryTest extends AAISetup {
                 .toString();
 
         Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT_EDGE, uri, requestBody);
-        assertEquals("Expected the pserver relationship to be created", 200, response.getStatus());
+        assertEquals(200, response.getStatus(), "Expected the pserver relationship to be created");
         GraphTraversal<Vertex, Vertex> vertexQuery = traversal.V()
                 .has("aai-node-type", "complex")
                 .has("physical-location-id", "edge-test-complex")
@@ -404,13 +420,15 @@ public class HttpEntryTest extends AAISetup {
                 .has(EdgeProperty.CONTAINS.toString(), NONE.toString())
                 .has(EdgeProperty.DELETE_OTHER_V.toString(), NONE.toString())
                 .has(EdgeProperty.PREVENT_DELETE.toString(), "IN");
-        assertTrue("p-server has incoming edge from complex", vertexQuery.hasNext());
-        assertTrue("Created Edge has expected properties", edgeQuery.hasNext());
+        assertTrue(vertexQuery.hasNext(), "p-server has incoming edge from complex");
+        assertTrue(edgeQuery.hasNext(), "Created Edge has expected properties");
     }
 
-    @Test
-    public void thatRelationshipCanNotBeCreatedEdgeMultiplicity()
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void thatRelationshipCanNotBeCreatedEdgeMultiplicity(QueryStyle queryStyle)
             throws UnsupportedEncodingException, AAIException, JsonMappingException, JsonProcessingException {
+        initHttpEntryTest(queryStyle);
         String uri = "/cloud-infrastructure/pservers/pserver/httpEntryTest-pserver-01";
         traversal
                 .addV() // pserver
@@ -448,16 +466,18 @@ public class HttpEntryTest extends AAISetup {
         ServiceException serviceException = mapper.readValue(response.getEntity().toString(), ErrorResponse.class)
                 .getRequestError().getServiceException();
 
-        assertEquals("Expected the response code to be Bad Request", 400, response.getStatus());
+        assertEquals(400, response.getStatus(), "Expected the response code to be Bad Request");
         assertEquals("ERR.5.4.6140", serviceException.getVariables().get(3));
         assertEquals(
                 "Edge multiplicity violated:multiplicity rule violated: only one edge can exist with label: org.onap.relationships.inventory.LocatedIn between pserver and complex",
                 serviceException.getVariables().get(2));
     }
 
-    @Test
-    public void putEdgeWrongLabelTest()
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void putEdgeWrongLabelTest(QueryStyle queryStyle)
             throws UnsupportedEncodingException, AAIException, JsonMappingException, JsonProcessingException {
+        initHttpEntryTest(queryStyle);
         String uri = "/cloud-infrastructure/pservers/pserver/edge-test-pserver";
         traversal.addV()
                 .property("aai-node-type", "pserver")
@@ -492,15 +512,17 @@ public class HttpEntryTest extends AAISetup {
         ServiceException serviceException = mapper.readValue(response.getEntity().toString(), ErrorResponse.class)
                 .getRequestError().getServiceException();
 
-        assertEquals("Expected the pserver to be created", 400, response.getStatus());
+        assertEquals(400, response.getStatus(), "Expected the pserver to be created");
         assertEquals("ERR.5.4.6107", serviceException.getVariables().get(3));
         assertEquals(
                 "Required Edge-property not found in input data:org.onap.aai.edges.exceptions.EdgeRuleNotFoundException: No rule found for EdgeRuleQuery with filter params node type: complex, node type: pserver, label: does.not.exist, type: COUSIN, isPrivate: false.",
                 serviceException.getVariables().get(2));
     }
 
-    @Test
-    public void thatObjectsCanBeRetrievedInPathedResponseFormat() throws UnsupportedEncodingException, AAIException {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void thatObjectsCanBeRetrievedInPathedResponseFormat(QueryStyle queryStyle) throws UnsupportedEncodingException, AAIException {
+        initHttpEntryTest(queryStyle);
         traversal
                 .addV() // pserver
                 .property("aai-node-type", "pserver")
@@ -521,13 +543,15 @@ public class HttpEntryTest extends AAISetup {
         queryParameters.remove("format");
 
         String responseEntity = response.getEntity().toString();
-        assertEquals("Expected get to succeed", 200, response.getStatus());
+        assertEquals(200, response.getStatus(), "Expected get to succeed");
         assertThat(responseEntity, containsString("/cloud-infrastructure/pservers/pserver/pserver-1"));
         assertThat(responseEntity, containsString("/cloud-infrastructure/pservers/pserver/pserver-2"));
     }
 
-    @Test
-    public void thatRelatedObjectsCanBeRetrieved() throws UnsupportedEncodingException, AAIException {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void thatRelatedObjectsCanBeRetrieved(QueryStyle queryStyle) throws UnsupportedEncodingException, AAIException {
+        initHttpEntryTest(queryStyle);
         String uri = "/cloud-infrastructure/pservers/pserver/related-to-pserver";
         traversal
                 .addV() // pserver
@@ -556,14 +580,16 @@ public class HttpEntryTest extends AAISetup {
         String responseBody = "";
         Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri, responseBody);
 
-        assertEquals("Expected the response to be successful", 200, response.getStatus());
+        assertEquals(200, response.getStatus(), "Expected the response to be successful");
         assertThat("Related pserver is returned", response.getEntity().toString(),
                 containsString("\"hostname\":\"related-to-pserver\""));
 
     }
 
-    @Test
-    public void getAbstractTest() throws UnsupportedEncodingException, AAIException {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void getAbstractTest(QueryStyle queryStyle) throws UnsupportedEncodingException, AAIException {
+        initHttpEntryTest(queryStyle);
         String uri = "/cloud-infrastructure/pservers/pserver/abstract-pserver";
         traversal
                 .addV() // pserver
@@ -590,9 +616,11 @@ public class HttpEntryTest extends AAISetup {
                 containsString("\"hostname\":\"abstract-pserver\""));
     }
 
-    @Test
-    public void getRelationshipListTest()
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void getRelationshipListTest(QueryStyle queryStyle)
             throws UnsupportedEncodingException, AAIException, JsonMappingException, JsonProcessingException {
+        initHttpEntryTest(queryStyle);
         String uri = "/cloud-infrastructure/pservers/pserver/related-to-pserver";
         traversal
                 .addV() // pserver
@@ -636,8 +664,10 @@ public class HttpEntryTest extends AAISetup {
         assertEquals("related-to-complex", relationships[0].getRelationshipData()[0].getRelationshipValue());
     }
 
-    @Test
-    public void getRelationshipListTestWithFormatSimple() throws UnsupportedEncodingException, AAIException {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void getRelationshipListTestWithFormatSimple(QueryStyle queryStyle) throws UnsupportedEncodingException, AAIException {
+        initHttpEntryTest(queryStyle);
         String uri = "/cloud-infrastructure/pservers/pserver/related-to-pserver";
         traversal
                 .addV() // pserver
@@ -695,8 +725,11 @@ public class HttpEntryTest extends AAISetup {
         queryParameters.remove("format");
     }
 
-    @Test
-    public void notificationOnRelatedToTest() throws UnsupportedEncodingException, AAIException {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void notificationOnRelatedToTest(QueryStyle queryStyle) throws UnsupportedEncodingException, AAIException {
+
+        initHttpEntryTest(queryStyle);
 
         Loader ld = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
         UEBNotification uebNotification = Mockito.spy(new UEBNotification(ld, loaderFactory, schemaVersions));
@@ -721,19 +754,21 @@ public class HttpEntryTest extends AAISetup {
         doNothing().when(uebNotification).triggerEvents();
         Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT_EDGE, uri, content);
 
-        assertEquals("Expected the pserver relationship to be deleted", 200, response.getStatus());
-        assertEquals("Two notifications", 2, uebNotification.getEvents().size());
-        assertEquals("Notification generated for PUT edge", "UPDATE",
-                uebNotification.getEvents().get(0).getEventHeader().getValue("action").toString());
+        assertEquals(200, response.getStatus(), "Expected the pserver relationship to be deleted");
+        assertEquals(2, uebNotification.getEvents().size(), "Two notifications");
+        assertEquals("UPDATE",
+                uebNotification.getEvents().get(0).getEventHeader().getValue("action").toString(),
+                "Notification generated for PUT edge");
         assertThat("Event body for the edge create has the related to",
                 uebNotification.getEvents().get(0).getObj().marshal(false),
                 containsString("cloud-infrastructure/pservers/pserver/junit-edge-test-pserver"));
 
         response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.DELETE_EDGE, uri, content);
-        assertEquals("Expected the pserver relationship to be deleted", 204, response.getStatus());
-        assertEquals("Two notifications", 2, uebNotification.getEvents().size());
-        assertEquals("Notification generated for DELETE edge", "UPDATE",
-                uebNotification.getEvents().get(0).getEventHeader().getValue("action").toString());
+        assertEquals(204, response.getStatus(), "Expected the pserver relationship to be deleted");
+        assertEquals(2, uebNotification.getEvents().size(), "Two notifications");
+        assertEquals("UPDATE",
+                uebNotification.getEvents().get(0).getEventHeader().getValue("action").toString(),
+                "Notification generated for DELETE edge");
         assertThat("Event body for the edge delete does not have the related to",
                 uebNotification.getEvents().get(0).getObj().marshal(false),
                 not(containsString("cloud-infrastructure/pservers/pserver/junit-edge-test-pserver")));
@@ -787,21 +822,26 @@ public class HttpEntryTest extends AAISetup {
         return responsesTuple.getValue1().get(0).getValue1();
     }
 
-    @Test
-    public void testSetGetPaginationMethods() {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void testSetGetPaginationMethods(QueryStyle queryStyle) {
+        initHttpEntryTest(queryStyle);
         traversalHttpEntry.setHttpEntryProperties(schemaVersions.getDefaultVersion());
         traversalHttpEntry.setPaginationBucket(10);
         traversalHttpEntry.setPaginationIndex(1);
         traversalHttpEntry.setTotalsForPaging(101, traversalHttpEntry.getPaginationBucket());
-        assertEquals("Expected the pagination bucket size to be 10", 10, traversalHttpEntry.getPaginationBucket());
-        assertEquals("Expected the total number of pagination buckets to be 11", 11,
-                traversalHttpEntry.getTotalPaginationBuckets());
-        assertEquals("Expected the pagination index to be 1", 1, traversalHttpEntry.getPaginationIndex());
-        assertEquals("Expected the total amount of vertices to be 101", 101, traversalHttpEntry.getTotalVertices());
+        assertEquals(10, traversalHttpEntry.getPaginationBucket(), "Expected the pagination bucket size to be 10");
+        assertEquals(11,
+                traversalHttpEntry.getTotalPaginationBuckets(),
+                "Expected the total number of pagination buckets to be 11");
+        assertEquals(1, traversalHttpEntry.getPaginationIndex(), "Expected the pagination index to be 1");
+        assertEquals(101, traversalHttpEntry.getTotalVertices(), "Expected the total amount of vertices to be 101");
     }
 
-    @Test
-    public void setDepthTest() throws AAIException {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void setDepthTest(QueryStyle queryStyle) throws AAIException {
+        initHttpEntryTest(queryStyle);
         System.setProperty("AJSC_HOME", ".");
         System.setProperty("BUNDLECONFIG_DIR", "src/main/test/resources");
 
@@ -809,5 +849,9 @@ public class HttpEntryTest extends AAISetup {
         traversalHttpEntry.setHttpEntryProperties(schemaVersions.getDefaultVersion());
         int depth = traversalHttpEntry.setDepth(null, depthParam);
         assertEquals(AAIProperties.MAXIMUM_DEPTH.intValue(), depth);
+    }
+
+    public void initHttpEntryTest(QueryStyle queryStyle) {
+        this.queryStyle = queryStyle;
     }
 }

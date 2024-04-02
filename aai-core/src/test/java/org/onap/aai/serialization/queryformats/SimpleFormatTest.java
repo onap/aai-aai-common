@@ -20,9 +20,7 @@
 
 package org.onap.aai.serialization.queryformats;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -44,9 +42,9 @@ import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.onap.aai.AAISetup;
@@ -77,7 +75,7 @@ public class SimpleFormatTest extends AAISetup {
     private Vertex unknown;
     private final ModelType factoryType = ModelType.MOXY;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
 
         MockitoAnnotations.openMocks(this);
@@ -150,35 +148,39 @@ public class SimpleFormatTest extends AAISetup {
 
     }
 
-    @Ignore
-    @Test(expected = AAIFormatVertexException.class)
+    @Disabled
+    @Test
     public void testCreatePropertiesObjectThrowsExceptionIfSerializationFails()
             throws AAIFormatVertexException, AAIException, UnsupportedEncodingException {
+        assertThrows(AAIFormatVertexException.class, () -> {
 
-        serializer = mock(DBSerializer.class);
-        loader = mock(Loader.class);
+            serializer = mock(DBSerializer.class);
+            loader = mock(Loader.class);
 
-        simpleFormat = new RawFormat.Builder(loader, serializer, urlBuilder).nodesOnly(true).depth(0).build();
+            simpleFormat = new RawFormat.Builder(loader, serializer, urlBuilder).nodesOnly(true).depth(0).build();
 
-        when(serializer.dbToObject(any(), any(), anyInt(), anyBoolean(), anyString()))
-                .thenThrow(new AAIException("Test Exception"));
+            when(serializer.dbToObject(any(), any(), anyInt(), anyBoolean(), anyString()))
+                    .thenThrow(new AAIException("Test Exception"));
 
-        simpleFormat.createPropertiesObject(vfModule);
+            simpleFormat.createPropertiesObject(vfModule);
+        });
     }
 
-    @Ignore
-    @Test(expected = AAIFormatVertexException.class)
+    @Disabled
+    @Test
     public void testCreatePropertiesObjectThrowsExceptionIfUnknownObject()
             throws AAIFormatVertexException, AAIException, UnsupportedEncodingException {
+        assertThrows(AAIFormatVertexException.class, () -> {
 
-        loader = mock(Loader.class);
-        serializer = mock(DBSerializer.class);
+            loader = mock(Loader.class);
+            serializer = mock(DBSerializer.class);
 
-        simpleFormat = new RawFormat.Builder(loader, serializer, urlBuilder).nodesOnly(true).depth(0).build();
+            simpleFormat = new RawFormat.Builder(loader, serializer, urlBuilder).nodesOnly(true).depth(0).build();
 
-        when(loader.introspectorFromName(anyString())).thenThrow(new AAIUnknownObjectException("Test Exception"));
+            when(loader.introspectorFromName(anyString())).thenThrow(new AAIUnknownObjectException("Test Exception"));
 
-        simpleFormat.createPropertiesObject(vfModule);
+            simpleFormat.createPropertiesObject(vfModule);
+        });
     }
 
     public void createLoaderEngineSetup() {

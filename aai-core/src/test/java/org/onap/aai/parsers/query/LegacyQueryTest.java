@@ -20,7 +20,7 @@
 
 package org.onap.aai.parsers.query;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -28,8 +28,8 @@ import java.net.URI;
 import javax.ws.rs.core.UriBuilder;
 import javax.xml.bind.JAXBException;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.onap.aai.AAISetup;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.ModelType;
@@ -38,7 +38,7 @@ import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 import org.onap.aai.setup.SchemaVersion;
 
-@Ignore
+@Disabled
 public class LegacyQueryTest extends AAISetup {
 
     private TransactionalGraphEngine dbEngine;
@@ -65,10 +65,11 @@ public class LegacyQueryTest extends AAISetup {
         QueryParser query = dbEngine.getQueryBuilder().createQueryFromURI(uri);
 
         String expected = ".has('hostname', 'key1').has('aai-node-type', 'pserver')";
-        assertEquals("gremlin query should be " + expected, expected, query.getQueryBuilder().getQuery());
-        assertEquals("parent gremlin query should be equal to normal query", expected,
-                query.getQueryBuilder().getParentQuery().getQuery());
-        assertEquals("result type should be pserver", "pserver", query.getResultType());
+        assertEquals(expected, query.getQueryBuilder().getQuery(), "gremlin query should be " + expected);
+        assertEquals(expected,
+                query.getQueryBuilder().getParentQuery().getQuery(),
+                "parent gremlin query should be equal to normal query");
+        assertEquals("pserver", query.getResultType(), "result type should be pserver");
 
     }
 
@@ -88,10 +89,11 @@ public class LegacyQueryTest extends AAISetup {
         String expected = ".has('hostname', 'key1').has('aai-node-type', 'pserver')"
                 + ".out('hasLAGInterface').has('aai-node-type', 'lag-interface')" + ".has('interface-name', 'key2')";
         String parentExpected = ".has('hostname', 'key1').has('aai-node-type', 'pserver')";
-        assertEquals("gremlin query should be for node", expected, query.getQueryBuilder().getQuery());
-        assertEquals("parent gremlin query should be for parent", parentExpected,
-                query.getQueryBuilder().getParentQuery().getQuery());
-        assertEquals("result type should be lag-interface", "lag-interface", query.getResultType());
+        assertEquals(expected, query.getQueryBuilder().getQuery(), "gremlin query should be for node");
+        assertEquals(parentExpected,
+                query.getQueryBuilder().getParentQuery().getQuery(),
+                "parent gremlin query should be for parent");
+        assertEquals("lag-interface", query.getResultType(), "result type should be lag-interface");
     }
 
     /**
@@ -115,10 +117,11 @@ public class LegacyQueryTest extends AAISetup {
         String expectedParent = ".has('vnf-id', 'key1').has('aai-node-type', 'vce')"
                 + ".in('org.onap.relationships.inventory.BelongsTo').has('aai-node-type', 'port-group')"
                 + ".has('interface-id', 'key2')";
-        assertEquals("gremlin query should be " + expected, expected, query.getQueryBuilder().getQuery());
-        assertEquals("parent gremlin query should be equal the query for port group", expectedParent,
-                query.getQueryBuilder().getParentQuery().getQuery());
-        assertEquals("result type should be cvlan-tag", "cvlan-tag", query.getResultType());
+        assertEquals(expected, query.getQueryBuilder().getQuery(), "gremlin query should be " + expected);
+        assertEquals(expectedParent,
+                query.getQueryBuilder().getParentQuery().getQuery(),
+                "parent gremlin query should be equal the query for port group");
+        assertEquals("cvlan-tag", query.getResultType(), "result type should be cvlan-tag");
 
     }
 

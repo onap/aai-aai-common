@@ -21,7 +21,8 @@
 package org.onap.aai.serialization.db;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
@@ -35,13 +36,10 @@ import java.util.*;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.janusgraph.core.JanusGraphFactory;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.onap.aai.AAISetup;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.edges.EdgeIngestor;
@@ -59,15 +57,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 
-@RunWith(value = Parameterized.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 @TestPropertySource(properties = {"delta.events.enabled=true",})
 public class DbSerializerDeltasTest extends AAISetup {
-
-    // to use, set thrown.expect to whatever your test needs
-    // this line establishes default of expecting no exception to be thrown
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
 
     protected static Graph graph;
 
@@ -80,23 +72,20 @@ public class DbSerializerDeltasTest extends AAISetup {
     private final ModelType introspectorFactoryType = ModelType.MOXY;
     private Loader loader;
     private TransactionalGraphEngine dbEngine;
-    private TransactionalGraphEngine engine; // for tests that aren't mocking the engine
-
-    @Parameterized.Parameter(value = 0)
+    private TransactionalGraphEngine engine;
     public QueryStyle queryStyle;
 
-    @Parameterized.Parameters(name = "QueryStyle.{0}")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {{QueryStyle.TRAVERSAL}, {QueryStyle.TRAVERSAL_URI}});
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void init() throws Exception {
         graph = JanusGraphFactory.build().set("storage.backend", "inmemory").open();
 
     }
 
-    @Before
+    @BeforeEach
     public void setup() throws Exception {
         // createGraph();
         version = schemaVersions.getDefaultVersion();
@@ -105,8 +94,10 @@ public class DbSerializerDeltasTest extends AAISetup {
         engine = new JanusGraphDBEngine(queryStyle, loader);
     }
 
-    @Test
-    public void createTopLevelThenUpdateTest() throws AAIException, UnsupportedEncodingException, URISyntaxException {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void createTopLevelThenUpdateTest(QueryStyle queryStyle) throws AAIException, UnsupportedEncodingException, URISyntaxException {
+        initDbSerializerDeltasTest(queryStyle);
         engine.startTransaction();
 
         DBSerializer dbserLocal =
@@ -119,8 +110,8 @@ public class DbSerializerDeltasTest extends AAISetup {
         gvnf.setValue("vnf-id", "myvnf");
         gvnf.setValue("vnf-type", "typo");
         dbserLocal.serializeToDb(gvnf, gvnfVert, uriQuery, "generic-vnf", gvnf.marshal(false));
-        assertTrue("Original created vertex exists", engine.tx().traversal().V().has("aai-node-type", "generic-vnf")
-                .has("vnf-id", "myvnf").has("vnf-type", "typo").hasNext());
+        assertTrue(engine.tx().traversal().V().has("aai-node-type", "generic-vnf")
+                .has("vnf-id", "myvnf").has("vnf-type", "typo").hasNext(), "Original created vertex exists");
 
         assertEquals(DeltaAction.CREATE,
                 dbserLocal.getObjectDeltas().get("/network/generic-vnfs/generic-vnf/myvnf").getAction());
@@ -143,8 +134,8 @@ public class DbSerializerDeltasTest extends AAISetup {
         dbserLocal =
                 new DBSerializer(version, engine, introspectorFactoryType, "AAI-TEST", AAIProperties.MINIMUM_DEPTH);
         dbserLocal.serializeToDb(gvnf, gvnfVert, uriQuery, "generic-vnf", gvnf.marshal(false));
-        assertTrue("Vertex is updated", engine.tx().traversal().V().has("aai-node-type", "generic-vnf")
-                .has("vnf-id", "myvnf").has("vnf-type", "new-typo").hasNext());
+        assertTrue(engine.tx().traversal().V().has("aai-node-type", "generic-vnf")
+                .has("vnf-id", "myvnf").has("vnf-type", "new-typo").hasNext(), "Vertex is updated");
 
         assertEquals(DeltaAction.UPDATE,
                 dbserLocal.getObjectDeltas().get("/network/generic-vnfs/generic-vnf/myvnf").getAction());
@@ -163,9 +154,11 @@ public class DbSerializerDeltasTest extends AAISetup {
         });
     }
 
-    @Test
-    public void createTopLevelThenCreateChildTest()
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void createTopLevelThenCreateChildTest(QueryStyle queryStyle)
             throws AAIException, UnsupportedEncodingException, URISyntaxException {
+        initDbSerializerDeltasTest(queryStyle);
         engine.startTransaction();
 
         DBSerializer dbserLocal =
@@ -178,8 +171,8 @@ public class DbSerializerDeltasTest extends AAISetup {
         gvnf.setValue("vnf-id", "myvnf");
         gvnf.setValue("vnf-type", "typo");
         dbserLocal.serializeToDb(gvnf, gvnfVert, uriQuery, "generic-vnf", gvnf.marshal(false));
-        assertTrue("Original created vertex exists", engine.tx().traversal().V().has("aai-node-type", "generic-vnf")
-                .has("vnf-id", "myvnf").has("vnf-type", "typo").hasNext());
+        assertTrue(engine.tx().traversal().V().has("aai-node-type", "generic-vnf")
+                .has("vnf-id", "myvnf").has("vnf-type", "typo").hasNext(), "Original created vertex exists");
 
         assertEquals(DeltaAction.CREATE, dbserLocal.getObjectDeltas().get(vnfUri).getAction());
         assertEquals(4L, dbserLocal.getObjectDeltas().get(vnfUri).getPropertyDeltas().values().stream()
@@ -205,11 +198,11 @@ public class DbSerializerDeltasTest extends AAISetup {
 
         vf.setValue("vf-module-id", "myvf");
         dbserLocal.serializeToDb(vf, vfVertex, uriQuery, "vf-module", vf.marshal(false));
-        assertTrue("Vertex is creted",
-                engine.tx().traversal().V().has("aai-node-type", "vf-module").has("vf-module-id", "myvf").hasNext());
-        assertTrue("Vf module has edge to gvnf",
-                engine.tx().traversal().V().has("aai-node-type", "vf-module").has("vf-module-id", "myvf").both()
-                        .has("aai-node-type", "generic-vnf").has("vnf-id", "myvnf").hasNext());
+        assertTrue(engine.tx().traversal().V().has("aai-node-type", "vf-module").has("vf-module-id", "myvf").hasNext(),
+                "Vertex is creted");
+        assertTrue(engine.tx().traversal().V().has("aai-node-type", "vf-module").has("vf-module-id", "myvf").both()
+                        .has("aai-node-type", "generic-vnf").has("vnf-id", "myvnf").hasNext(),
+                "Vf module has edge to gvnf");
 
         assertEquals(DeltaAction.CREATE, dbserLocal.getObjectDeltas().get(vfUri).getAction());
         assertEquals(4L, dbserLocal.getObjectDeltas().get(vfUri).getPropertyDeltas().values().stream()
@@ -227,9 +220,11 @@ public class DbSerializerDeltasTest extends AAISetup {
         });
     }
 
-    @Test
-    public void createTopWithChildThenDeleteTopTest()
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void createTopWithChildThenDeleteTopTest(QueryStyle queryStyle)
             throws AAIException, UnsupportedEncodingException, URISyntaxException {
+        initDbSerializerDeltasTest(queryStyle);
         engine.startTransaction();
 
         DBSerializer dbserLocal =
@@ -255,13 +250,13 @@ public class DbSerializerDeltasTest extends AAISetup {
         Gson gson = new GsonBuilder().create();
         System.out.println(gson.toJsonTree(dbserLocal.getObjectDeltas().values()));
 
-        assertTrue("Original created vertex exists", engine.tx().traversal().V().has("aai-node-type", "generic-vnf")
-                .has("vnf-id", "myvnf").has("vnf-type", "typo").hasNext());
-        assertTrue("Vertex is creted",
-                engine.tx().traversal().V().has("aai-node-type", "vf-module").has("vf-module-id", "myvf").hasNext());
-        assertTrue("Vf module has edge to gvnf",
-                engine.tx().traversal().V().has("aai-node-type", "vf-module").has("vf-module-id", "myvf").both()
-                        .has("aai-node-type", "generic-vnf").has("vnf-id", "myvnf").hasNext());
+        assertTrue(engine.tx().traversal().V().has("aai-node-type", "generic-vnf")
+                .has("vnf-id", "myvnf").has("vnf-type", "typo").hasNext(), "Original created vertex exists");
+        assertTrue(engine.tx().traversal().V().has("aai-node-type", "vf-module").has("vf-module-id", "myvf").hasNext(),
+                "Vertex is creted");
+        assertTrue(engine.tx().traversal().V().has("aai-node-type", "vf-module").has("vf-module-id", "myvf").both()
+                        .has("aai-node-type", "generic-vnf").has("vnf-id", "myvnf").hasNext(),
+                "Vf module has edge to gvnf");
 
         assertEquals(DeltaAction.CREATE, dbserLocal.getObjectDeltas().get(vnfUri).getAction());
         assertEquals(4L, dbserLocal.getObjectDeltas().get(vnfUri).getPropertyDeltas().values().stream()
@@ -292,10 +287,10 @@ public class DbSerializerDeltasTest extends AAISetup {
         dbserLocal.delete(engine.tx().traversal().V(gvnfVert).next(), rv, true);
         System.out.println(gson.toJsonTree(dbserLocal.getObjectDeltas().values()));
 
-        assertFalse("generic-vnf no longer exists",
-                engine.tx().traversal().V().has("aai-node-type", "generic-vnf").hasNext());
-        assertFalse("vf-module no longer exists",
-                engine.tx().traversal().V().has("aai-node-type", "vf-module").hasNext());
+        assertFalse(engine.tx().traversal().V().has("aai-node-type", "generic-vnf").hasNext(),
+                "generic-vnf no longer exists");
+        assertFalse(engine.tx().traversal().V().has("aai-node-type", "vf-module").hasNext(),
+                "vf-module no longer exists");
 
         assertEquals(DeltaAction.DELETE, dbserLocal.getObjectDeltas().get(vnfUri).getAction());
         assertEquals(12L, dbserLocal.getObjectDeltas().get(vnfUri).getPropertyDeltas().values().stream()
@@ -305,9 +300,11 @@ public class DbSerializerDeltasTest extends AAISetup {
                 .filter(d -> d.getAction().equals(DeltaAction.DELETE)).count());
     }
 
-    @Test
-    public void createComplexPserverWithRelDeleteRel()
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void createComplexPserverWithRelDeleteRel(QueryStyle queryStyle)
             throws AAIException, UnsupportedEncodingException, URISyntaxException {
+        initDbSerializerDeltasTest(queryStyle);
         engine.startTransaction();
 
         DBSerializer dbserLocal =
@@ -325,8 +322,8 @@ public class DbSerializerDeltasTest extends AAISetup {
         complex.setValue("country", "abc");
         complex.setValue("region", "ef");
         dbserLocal.serializeToDb(complex, complexV, uriQuery, "complex", complex.marshal(false));
-        assertTrue("Complex created", engine.tx().traversal().V().has("aai-node-type", "complex")
-                .has("physical-location-id", "c-id").hasNext());
+        assertTrue(engine.tx().traversal().V().has("aai-node-type", "complex")
+                .has("physical-location-id", "c-id").hasNext(), "Complex created");
 
         assertEquals(DeltaAction.CREATE, dbserLocal.getObjectDeltas().get(complexUri).getAction());
         assertEquals(4L, dbserLocal.getObjectDeltas().get(complexUri).getPropertyDeltas().values().stream()
@@ -362,10 +359,10 @@ public class DbSerializerDeltasTest extends AAISetup {
         System.out.println(pserver.marshal(true));
 
         dbserLocal.serializeToDb(pserver, pserverV, uriQuery, "pserver", pserver.marshal(false));
-        assertTrue("Pserver created",
-                engine.tx().traversal().V().has("aai-node-type", "pserver").has("hostname", "ps").hasNext());
-        assertTrue("Pserver has edge to complex", engine.tx().traversal().V().has("aai-node-type", "pserver")
-                .has("hostname", "ps").bothE().otherV().has("aai-node-type", "complex").hasNext());
+        assertTrue(engine.tx().traversal().V().has("aai-node-type", "pserver").has("hostname", "ps").hasNext(),
+                "Pserver created");
+        assertTrue(engine.tx().traversal().V().has("aai-node-type", "pserver")
+                .has("hostname", "ps").bothE().otherV().has("aai-node-type", "complex").hasNext(), "Pserver has edge to complex");
 
         assertEquals(DeltaAction.CREATE, dbserLocal.getObjectDeltas().get(pserverUri).getAction());
         assertEquals(4L, dbserLocal.getObjectDeltas().get(pserverUri).getPropertyDeltas().values().stream()
@@ -388,8 +385,8 @@ public class DbSerializerDeltasTest extends AAISetup {
                 new DBSerializer(version, engine, introspectorFactoryType, "AAI-TEST", AAIProperties.MINIMUM_DEPTH);
         dbserLocal.touchStandardVertexProperties(pserverV, false);
         dbserLocal.deleteEdge(relationship, pserverV);
-        assertFalse("Pserver no longer has edge to complex", engine.tx().traversal().V().has("aai-node-type", "pserver")
-                .has("hostname", "ps").bothE().otherV().has("aai-node-type", "complex").hasNext());
+        assertFalse(engine.tx().traversal().V().has("aai-node-type", "pserver")
+                .has("hostname", "ps").bothE().otherV().has("aai-node-type", "complex").hasNext(), "Pserver no longer has edge to complex");
 
         assertEquals(DeltaAction.UPDATE, dbserLocal.getObjectDeltas().get(pserverUri).getAction());
         assertEquals(4L, dbserLocal.getObjectDeltas().get(pserverUri).getPropertyDeltas().values().stream()
@@ -409,9 +406,11 @@ public class DbSerializerDeltasTest extends AAISetup {
         });
     }
 
-    @Test
-    public void createComplexPserverWithRelUpdatePserverToDeleteRelAddPinterfaceThenDeleteComplex()
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void createComplexPserverWithRelUpdatePserverToDeleteRelAddPinterfaceThenDeleteComplex(QueryStyle queryStyle)
             throws AAIException, UnsupportedEncodingException, URISyntaxException {
+        initDbSerializerDeltasTest(queryStyle);
         engine.startTransaction();
 
         Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_DASHES).create();
@@ -435,8 +434,8 @@ public class DbSerializerDeltasTest extends AAISetup {
         System.out.println("Create Complex");
         System.out.println(gson.toJsonTree(dbserLocal.getObjectDeltas().values()));
 
-        assertTrue("Complex created", engine.tx().traversal().V().has("aai-node-type", "complex")
-                .has("physical-location-id", "c-id-b").hasNext());
+        assertTrue(engine.tx().traversal().V().has("aai-node-type", "complex")
+                .has("physical-location-id", "c-id-b").hasNext(), "Complex created");
         assertEquals(DeltaAction.CREATE, dbserLocal.getObjectDeltas().get(complexUri).getAction());
         assertEquals(4L, dbserLocal.getObjectDeltas().get(complexUri).getPropertyDeltas().values().stream()
                 .filter(d -> d.getAction().equals(DeltaAction.STATIC)).count());
@@ -482,12 +481,12 @@ public class DbSerializerDeltasTest extends AAISetup {
         System.out.println("Create Pserver with pinterface and relationship to complex ");
         System.out.println(gson.toJsonTree(dbserLocal.getObjectDeltas().values()));
 
-        assertTrue("Pserver created",
-                engine.tx().traversal().V().has("aai-node-type", "pserver").has("hostname", "ps-b").hasNext());
-        assertTrue("Pserver has edge to complex", engine.tx().traversal().V().has("aai-node-type", "pserver")
-                .has("hostname", "ps-b").bothE().otherV().has("aai-node-type", "complex").hasNext());
-        assertTrue("Pserver has edge to pinterface", engine.tx().traversal().V().has("aai-node-type", "pserver")
-                .has("hostname", "ps-b").bothE().otherV().has("aai-node-type", "p-interface").hasNext());
+        assertTrue(engine.tx().traversal().V().has("aai-node-type", "pserver").has("hostname", "ps-b").hasNext(),
+                "Pserver created");
+        assertTrue(engine.tx().traversal().V().has("aai-node-type", "pserver")
+                .has("hostname", "ps-b").bothE().otherV().has("aai-node-type", "complex").hasNext(), "Pserver has edge to complex");
+        assertTrue(engine.tx().traversal().V().has("aai-node-type", "pserver")
+                .has("hostname", "ps-b").bothE().otherV().has("aai-node-type", "p-interface").hasNext(), "Pserver has edge to pinterface");
 
         assertEquals(DeltaAction.CREATE, dbserLocal.getObjectDeltas().get(pserverUri).getAction());
         assertEquals(4L, dbserLocal.getObjectDeltas().get(pserverUri).getPropertyDeltas().values().stream()
@@ -527,8 +526,8 @@ public class DbSerializerDeltasTest extends AAISetup {
         System.out.println("Update pserver removing relationship to complex");
         System.out.println(gson.toJsonTree(dbserLocal.getObjectDeltas().values()));
 
-        assertFalse("Pserver no longer has edge to complex", engine.tx().traversal().V().has("aai-node-type", "pserver")
-                .has("hostname", "ps-b").bothE().otherV().has("aai-node-type", "complex").hasNext());
+        assertFalse(engine.tx().traversal().V().has("aai-node-type", "pserver")
+                .has("hostname", "ps-b").bothE().otherV().has("aai-node-type", "complex").hasNext(), "Pserver no longer has edge to complex");
 
         assertEquals(DeltaAction.UPDATE, dbserLocal.getObjectDeltas().get(pserverUri).getAction());
         assertEquals(4L, dbserLocal.getObjectDeltas().get(pserverUri).getPropertyDeltas().values().stream()
@@ -557,7 +556,7 @@ public class DbSerializerDeltasTest extends AAISetup {
         System.out.println("Delete pserver");
         System.out.println(gson.toJsonTree(dbserLocal.getObjectDeltas().values()));
 
-        assertFalse("pserver no longer exists", engine.tx().traversal().V().has("aai-node-type", "pserver").hasNext());
+        assertFalse(engine.tx().traversal().V().has("aai-node-type", "pserver").hasNext(), "pserver no longer exists");
 
         assertEquals(DeltaAction.DELETE, dbserLocal.getObjectDeltas().get(pserverUri).getAction());
         assertEquals(12L, dbserLocal.getObjectDeltas().get(pserverUri).getPropertyDeltas().values().stream()
@@ -578,8 +577,10 @@ public class DbSerializerDeltasTest extends AAISetup {
 
     // /network/ipsec-configurations/ipsec-configuration/{ipsec-configuration-id}/vig-servers/vig-server/{vig-address-type}
     // ipaddress-v4-vig
-    @Test
-    public void createNodeWithListTest() throws AAIException, UnsupportedEncodingException, URISyntaxException {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void createNodeWithListTest(QueryStyle queryStyle) throws AAIException, UnsupportedEncodingException, URISyntaxException {
+        initDbSerializerDeltasTest(queryStyle);
         Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_DASHES).create();
 
         engine.startTransaction();
@@ -596,8 +597,8 @@ public class DbSerializerDeltasTest extends AAISetup {
 
         ipsec.setValue("ipsec-configuration-id", "ipsec");
         dbserLocal.serializeToDb(ipsec, ipsecVert, uriQuery, "generic-vnf", ipsec.marshal(false));
-        assertTrue("Original created vertex exists", engine.tx().traversal().V()
-                .has("aai-node-type", "ipsec-configuration").has("ipsec-configuration-id", "ipsec").hasNext());
+        assertTrue(engine.tx().traversal().V()
+                .has("aai-node-type", "ipsec-configuration").has("ipsec-configuration-id", "ipsec").hasNext(), "Original created vertex exists");
 
         System.out.println(gson.toJsonTree(dbserLocal.getObjectDeltas().values()));
         assertEquals(DeltaAction.CREATE, dbserLocal.getObjectDeltas().get(ipsecUri).getAction());
@@ -631,11 +632,11 @@ public class DbSerializerDeltasTest extends AAISetup {
         list.add("address-2");
         vig.setValue("ipaddress-v4-vig", list);
         dbserLocal.serializeToDb(vig, vigVertex, uriQuery, "vf-module", vig.marshal(false));
-        assertTrue("Vertex is creted", engine.tx().traversal().V().has("aai-node-type", "vig-server")
-                .has("vig-address-type", "vig").hasNext());
-        assertTrue("Vf module has edge to gvnf",
-                engine.tx().traversal().V().has("aai-node-type", "vig-server").has("vig-address-type", "vig").both()
-                        .has("aai-node-type", "ipsec-configuration").has("ipsec-configuration-id", "ipsec").hasNext());
+        assertTrue(engine.tx().traversal().V().has("aai-node-type", "vig-server")
+                .has("vig-address-type", "vig").hasNext(), "Vertex is creted");
+        assertTrue(engine.tx().traversal().V().has("aai-node-type", "vig-server").has("vig-address-type", "vig").both()
+                        .has("aai-node-type", "ipsec-configuration").has("ipsec-configuration-id", "ipsec").hasNext(),
+                "Vf module has edge to gvnf");
 
         System.out.println(gson.toJsonTree(dbserLocal.getObjectDeltas().values()));
         assertEquals(DeltaAction.CREATE, dbserLocal.getObjectDeltas().get(vigUri).getAction());
@@ -668,11 +669,11 @@ public class DbSerializerDeltasTest extends AAISetup {
         list.add("address-4");
         vig.setValue("ipaddress-v4-vig", list);
         dbserLocal.serializeToDb(vig, vigVertex, uriQuery, "vf-module", vig.marshal(false));
-        assertTrue("Vertex is still there", engine.tx().traversal().V().has("aai-node-type", "vig-server")
-                .has("vig-address-type", "vig").hasNext());
-        assertTrue("Vf module has edge to gvnf",
-                engine.tx().traversal().V().has("aai-node-type", "vig-server").has("vig-address-type", "vig").both()
-                        .has("aai-node-type", "ipsec-configuration").has("ipsec-configuration-id", "ipsec").hasNext());
+        assertTrue(engine.tx().traversal().V().has("aai-node-type", "vig-server")
+                .has("vig-address-type", "vig").hasNext(), "Vertex is still there");
+        assertTrue(engine.tx().traversal().V().has("aai-node-type", "vig-server").has("vig-address-type", "vig").both()
+                        .has("aai-node-type", "ipsec-configuration").has("ipsec-configuration-id", "ipsec").hasNext(),
+                "Vf module has edge to gvnf");
 
         System.out.println(gson.toJsonTree(dbserLocal.getObjectDeltas().values()));
         assertEquals(DeltaAction.UPDATE, dbserLocal.getObjectDeltas().get(vigUri).getAction());
@@ -703,10 +704,10 @@ public class DbSerializerDeltasTest extends AAISetup {
         dbserLocal.delete(engine.tx().traversal().V(ipsecVert).next(), rv, true);
         System.out.println(gson.toJsonTree(dbserLocal.getObjectDeltas().values()));
 
-        assertFalse("ipsec-configuration no longer exists",
-                engine.tx().traversal().V().has("aai-node-type", "ipsec-configuration").hasNext());
-        assertFalse("vig-server no longer exists",
-                engine.tx().traversal().V().has("aai-node-type", "vig-server").hasNext());
+        assertFalse(engine.tx().traversal().V().has("aai-node-type", "ipsec-configuration").hasNext(),
+                "ipsec-configuration no longer exists");
+        assertFalse(engine.tx().traversal().V().has("aai-node-type", "vig-server").hasNext(),
+                "vig-server no longer exists");
 
         assertEquals(DeltaAction.DELETE, dbserLocal.getObjectDeltas().get(ipsecUri).getAction());
         assertEquals(9L, dbserLocal.getObjectDeltas().get(ipsecUri).getPropertyDeltas().values().stream()
@@ -723,6 +724,10 @@ public class DbSerializerDeltasTest extends AAISetup {
                 fail(od.getUri() + " " + AAIProperties.AAI_UUID + " value is null");
             }
         });
+    }
+
+    public void initDbSerializerDeltasTest(QueryStyle queryStyle) {
+        this.queryStyle = queryStyle;
     }
 
 }

@@ -22,8 +22,8 @@
 
 package org.onap.aai.query.builder;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Collections;
 import java.util.List;
@@ -39,15 +39,14 @@ import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.janusgraph.core.JanusGraph;
 import org.janusgraph.core.JanusGraphFactory;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.onap.aai.TinkerpopUpgrade;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.introspection.LoaderUtil;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 
-@Category(TinkerpopUpgrade.class)
+@Tag("TinkerpopUpgrade")
 public class TraversalURIOptimizedQueryTest extends TraversalQueryTest {
 
     @Override

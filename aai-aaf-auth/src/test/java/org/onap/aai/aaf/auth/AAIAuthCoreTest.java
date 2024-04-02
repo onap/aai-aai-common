@@ -20,19 +20,17 @@
 
 package org.onap.aai.aaf.auth;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.onap.aai.aaf.auth.exceptions.AAIUnrecognizedFunctionException;
 
 public class AAIAuthCoreTest extends AAISetup {
 
     private AAIAuthCore authCore;
 
-    @Before
+    @BeforeEach
     public void setup() {
         authCore = new AAIAuthCore("/aai");
     }
@@ -41,28 +39,28 @@ public class AAIAuthCoreTest extends AAISetup {
     public void getAuthPolicyFunctionNameTest() {
 
         String uri = "/aai/v3/search/edge-tag-query";
-        assertEquals("Get aai function name from " + uri, "search", authCore.getAuthPolicyFunctName(uri));
+        assertEquals("search", authCore.getAuthPolicyFunctName(uri), "Get aai function name from " + uri);
 
         uri = "/aai/v10/search/edge-tag-query";
-        assertEquals("Get aai function name from " + uri, "search", authCore.getAuthPolicyFunctName(uri));
+        assertEquals("search", authCore.getAuthPolicyFunctName(uri), "Get aai function name from " + uri);
 
         uri = "/aai/search/model";
-        assertEquals("Get aai function name from " + uri, "search", authCore.getAuthPolicyFunctName(uri));
+        assertEquals("search", authCore.getAuthPolicyFunctName(uri), "Get aai function name from " + uri);
 
         uri = "/aai/v9/cloud-infrastructure/cloud-regions/cloud-region/somecloudregion/some-cloud-owner";
-        assertEquals("Get aai function name from " + uri, "cloud-infrastructure", authCore.getAuthPolicyFunctName(uri));
+        assertEquals("cloud-infrastructure", authCore.getAuthPolicyFunctName(uri), "Get aai function name from " + uri);
 
         uri = "/aai/v8/network/pnfs/pnf/ff4ca01orc/p-interfaces";
-        assertEquals("Get aai function name from " + uri, "network", authCore.getAuthPolicyFunctName(uri));
+        assertEquals("network", authCore.getAuthPolicyFunctName(uri), "Get aai function name from " + uri);
 
         uri = "/aai/util/echo";
-        assertEquals("Get aai function name from " + uri, "util", authCore.getAuthPolicyFunctName(uri));
+        assertEquals("util", authCore.getAuthPolicyFunctName(uri), "Get aai function name from " + uri);
 
         uri = "/aai/tools";
-        assertEquals("Get aai function name from " + uri, "tools", authCore.getAuthPolicyFunctName(uri));
+        assertEquals("tools", authCore.getAuthPolicyFunctName(uri), "Get aai function name from " + uri);
 
         uri = "/aai/v12/bulk/single-transaction";
-        assertEquals("Get aai function name from " + uri, "bulk", authCore.getAuthPolicyFunctName(uri));
+        assertEquals("bulk", authCore.getAuthPolicyFunctName(uri), "Get aai function name from " + uri);
 
     }
 
@@ -76,9 +74,11 @@ public class AAIAuthCoreTest extends AAISetup {
         assertFalse(authCore.authorize("testUser".toLowerCase(), "/aai/v0/testFunction/someUri", "POST", ""));
     }
 
-    @Test(expected = AAIUnrecognizedFunctionException.class)
+    @Test
     public void validUsernameInvalidFunctionInURIAuthTest() throws AAIUnrecognizedFunctionException {
-        authCore.authorize("testUser".toLowerCase(), "/aai/v0/badFunction/someUri", "PUT", "");
+        assertThrows(AAIUnrecognizedFunctionException.class, () -> {
+            authCore.authorize("testUser".toLowerCase(), "/aai/v0/badFunction/someUri", "PUT", "");
+        });
     }
 
     @Test
@@ -131,10 +131,12 @@ public class AAIAuthCoreTest extends AAISetup {
                 "testUser".toLowerCase()));
     }
 
-    @Test(expected = AAIUnrecognizedFunctionException.class)
+    @Test
     public void validUsernameInvalidFunctionInURIViaHaProxyAuthTest() throws AAIUnrecognizedFunctionException {
-        authCore.authorize("ha-proxy-user".toLowerCase(), "/aai/v0/badFunction/someUri", "PUT",
-                "testUser".toLowerCase());
+        assertThrows(AAIUnrecognizedFunctionException.class, () -> {
+            authCore.authorize("ha-proxy-user".toLowerCase(), "/aai/v0/badFunction/someUri", "PUT",
+                    "testUser".toLowerCase());
+        });
     }
 
     @Test
@@ -191,11 +193,13 @@ public class AAIAuthCoreTest extends AAISetup {
                 "/aai/v0/testFunction/someUri", "POST", "testUser".toLowerCase()));
     }
 
-    @Test(expected = AAIUnrecognizedFunctionException.class)
+    @Test
     public void validUsernameInvalidFunctionInURIViaHaProxyWildcardIdAuthTest()
             throws AAIUnrecognizedFunctionException {
-        authCore.authorize("cn=blah, ha-proxy-wildcard-id, O=".toLowerCase(), "/aai/v0/badFunction/someUri", "PUT",
-                "testUser".toLowerCase());
+        assertThrows(AAIUnrecognizedFunctionException.class, () -> {
+            authCore.authorize("cn=blah, ha-proxy-wildcard-id, O=".toLowerCase(), "/aai/v0/badFunction/someUri", "PUT",
+                    "testUser".toLowerCase());
+        });
     }
 
     @Test

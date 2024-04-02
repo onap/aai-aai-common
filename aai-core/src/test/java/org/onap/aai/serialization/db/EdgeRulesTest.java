@@ -22,17 +22,15 @@
 
 package org.onap.aai.serialization.db;
 
-import static junit.framework.TestCase.fail;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import com.google.common.collect.Multimap;
 
 import java.util.*;
 
 import org.apache.tinkerpop.gremlin.structure.Direction;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 import org.onap.aai.AAISetup;
 import org.onap.aai.edges.EdgeIngestor;
 import org.onap.aai.edges.EdgeRule;
@@ -45,11 +43,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class EdgeRulesTest extends AAISetup {
 
-    // set thrown.expect to whatever a specific test needs
-    // this establishes a default of expecting no exceptions to be thrown
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
-
     @Autowired
     private EdgeIngestor edgeIngestor;
 
@@ -60,7 +53,7 @@ public class EdgeRulesTest extends AAISetup {
 
         EdgeRule rule = edgeIngestor.getRule(ruleQuery);
 
-        assertEquals("out direction", rule.getDirection(), Direction.IN);
+        assertEquals(rule.getDirection(), Direction.IN, "out direction");
     }
 
     @Test
@@ -70,7 +63,7 @@ public class EdgeRulesTest extends AAISetup {
 
         EdgeRule rule = edgeIngestor.getRule(ruleQuery);
 
-        assertEquals("in direction", rule.getDirection(), Direction.OUT);
+        assertEquals(rule.getDirection(), Direction.OUT, "in direction");
     }
 
     @Test
@@ -82,7 +75,7 @@ public class EdgeRulesTest extends AAISetup {
         Multimap<String, EdgeRule> ruleMap = edgeIngestor.getRules(ruleQuery);
 
         for (EdgeRule edgeRule : ruleMap.get("model|model-ver")) {
-            assertEquals("has isA rule", "org.onap.relationships.inventory.IsA", edgeRule.getLabel());
+            assertEquals("org.onap.relationships.inventory.IsA", edgeRule.getLabel(), "has isA rule");
         }
 
     }

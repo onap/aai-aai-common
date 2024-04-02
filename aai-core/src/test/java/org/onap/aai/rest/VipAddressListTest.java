@@ -20,20 +20,19 @@
 
 package org.onap.aai.rest;
 
-import static org.junit.Assert.assertEquals;
-
 import com.jayway.jsonpath.JsonPath;
 
 import java.io.IOException;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Arrays;
 import java.util.Collection;
 
 import javax.ws.rs.core.Response;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.onap.aai.AAISetup;
 import org.onap.aai.HttpTestUtil;
 import org.onap.aai.PayloadUtil;
@@ -41,36 +40,35 @@ import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.skyscreamer.jsonassert.JSONAssert;
 
-@RunWith(value = Parameterized.class)
 public class VipAddressListTest extends AAISetup {
 
     private HttpTestUtil httpTestUtil;
-
-    @Parameterized.Parameter(value = 0)
     public QueryStyle queryStyle;
 
-    @Parameterized.Parameters(name = "QueryStyle.{0}")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {{QueryStyle.TRAVERSAL_URI}});
     }
 
-    @Before
+    @BeforeEach
     public void setUp() {
         httpTestUtil = new HttpTestUtil(queryStyle);
     }
 
-    @Test
-    public void testPutWithAllCloudRegionChildrenNodesAndCheckIfDeleteIsSuccessful() throws IOException, AAIException {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void testPutWithAllCloudRegionChildrenNodesAndCheckIfDeleteIsSuccessful(QueryStyle queryStyle) throws IOException, AAIException {
+
+        initVipAddressListTest(queryStyle);
 
         String cloudRegionPayload = PayloadUtil.getResourcePayload("cloud-region.json");
         String cloudRegionUri =
                 "/aai/v14/cloud-infrastructure/cloud-regions/cloud-region/cloud-region-owner-with-vip-ipv4/cloud-region-id-with-vip-ipv4";
 
         Response response = httpTestUtil.doPut(cloudRegionUri, cloudRegionPayload);
-        assertEquals("Expected the cloud region to be created", 201, response.getStatus());
+        assertEquals(201, response.getStatus(), "Expected the cloud region to be created");
 
         response = httpTestUtil.doGet(cloudRegionUri);
-        assertEquals("Expected the cloud region to be found", 200, response.getStatus());
+        assertEquals(200, response.getStatus(), "Expected the cloud region to be found");
         String jsonResponse = response.getEntity().toString();
 
         JSONAssert.assertEquals(cloudRegionPayload, jsonResponse, false);
@@ -79,22 +77,26 @@ public class VipAddressListTest extends AAISetup {
         String vipIpv4Payload = PayloadUtil.getResourcePayload("vip-ipv4-address-list.json");
 
         response = httpTestUtil.doPut(vipIpv4Uri, vipIpv4Payload);
-        assertEquals("Expected the ipv4 address list to be created", 201, response.getStatus());
+        assertEquals(201, response.getStatus(), "Expected the ipv4 address list to be created");
 
         response = httpTestUtil.doGet(vipIpv4Uri);
-        assertEquals("Expected the ipv4 address list to be found", 200, response.getStatus());
+        assertEquals(200, response.getStatus(), "Expected the ipv4 address list to be found");
 
         jsonResponse = response.getEntity().toString();
         String resourceVersion = JsonPath.read(jsonResponse, "$.resource-version");
 
         response = httpTestUtil.doDelete(vipIpv4Uri, resourceVersion);
-        assertEquals("Expected the ipv4 address list to be deleted", 204, response.getStatus());
+        assertEquals(204, response.getStatus(), "Expected the ipv4 address list to be deleted");
 
         response = httpTestUtil.doGet(cloudRegionUri);
         jsonResponse = response.getEntity().toString();
         resourceVersion = JsonPath.read(jsonResponse, "$.resource-version");
 
         response = httpTestUtil.doDelete(cloudRegionUri, resourceVersion);
-        assertEquals("Expected the cloud region to be deleted", 204, response.getStatus());
+        assertEquals(204, response.getStatus(), "Expected the cloud region to be deleted");
+    }
+
+    public void initVipAddressListTest(QueryStyle queryStyle) {
+        this.queryStyle = queryStyle;
     }
 }

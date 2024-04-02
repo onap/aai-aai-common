@@ -20,7 +20,7 @@
 
 package org.onap.aai.query.builder;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
@@ -29,8 +29,8 @@ import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.onap.aai.AAISetup;
 import org.onap.aai.edges.enums.EdgeType;
 import org.onap.aai.exceptions.AAIException;
@@ -48,7 +48,7 @@ public class SimplePathTest extends AAISetup {
     @Autowired
     EdgeSerializer edgeSer;
 
-    @Before
+    @BeforeEach
     public void setup() throws Exception {
         loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
     }
@@ -105,7 +105,7 @@ public class SimplePathTest extends AAISetup {
         GremlinTraversal<Vertex> qb = new GremlinTraversal<>(loader, g, start);
         QueryBuilder<Vertex> q = buildTestQuery(qb);
         List<Vertex> results = q.toList();
-        assertTrue("results match", expected.containsAll(results) && results.containsAll(expected));
+        assertTrue(expected.containsAll(results) && results.containsAll(expected), "results match");
     }
 
     @Test
@@ -117,6 +117,6 @@ public class SimplePathTest extends AAISetup {
         TraversalQuery<Vertex> qb = new TraversalQuery<>(loader, g, start);
         QueryBuilder<Vertex> q = buildTestQuery(qb);
         List<Vertex> results = q.toList();
-        assertTrue("results match", expected.containsAll(results) && results.containsAll(expected));
+        assertTrue(expected.containsAll(results) && results.containsAll(expected), "results match");
     }
 }

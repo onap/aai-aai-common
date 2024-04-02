@@ -21,9 +21,11 @@
 package org.onap.aai.rest;
 
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -35,10 +37,9 @@ import javax.ws.rs.core.Response;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.janusgraph.core.JanusGraphTransaction;
 import org.json.JSONObject;
-import org.junit.After;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
 import org.onap.aai.AAISetup;
 import org.onap.aai.HttpTestUtil;
@@ -54,22 +55,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.annotation.DirtiesContext;
 
-@RunWith(value = Parameterized.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class ImpliedDeleteIntegrationTest extends AAISetup {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ImpliedDeleteIntegrationTest.class);
-
-    @Parameterized.Parameter(value = 0)
     public QueryStyle queryStyle;
 
-    @Parameterized.Parameters(name = "QueryStyle.{0}")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {{QueryStyle.TRAVERSAL}, {QueryStyle.TRAVERSAL_URI}});
     }
 
-    @Test
-    public void testPutPserverWithMultiplePInterfaceChildrenAndDoPutWithZeroChildren() throws Exception {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void testPutPserverWithMultiplePInterfaceChildrenAndDoPutWithZeroChildren(QueryStyle queryStyle) throws Exception {
+
+        initImpliedDeleteIntegrationTest(queryStyle);
 
         String uri = "/aai/v12/cloud-infrastructure/pservers/pserver/test-pserver-implied-delete";
 
@@ -79,13 +79,13 @@ public class ImpliedDeleteIntegrationTest extends AAISetup {
         String resource = PayloadUtil.getResourcePayload("pserver-implied-delete.json");
 
         Response response = httpTestUtil.doGet(uri);
-        assertEquals("Expecting the pserver to be not found", 404, response.getStatus());
+        assertEquals(404, response.getStatus(), "Expecting the pserver to be not found");
 
         response = httpTestUtil.doPut(uri, resource);
-        assertEquals("Expecting the pserver to be created", 201, response.getStatus());
+        assertEquals(201, response.getStatus(), "Expecting the pserver to be created");
 
         response = httpTestUtil.doGet(uri);
-        assertEquals("Expecting the pserver to be found", 200, response.getStatus());
+        assertEquals(200, response.getStatus(), "Expecting the pserver to be found");
 
         JSONObject jsonObject = new JSONObject(response.getEntity().toString());
         JSONAssert.assertEquals(resource, response.getEntity().toString(), false);
@@ -95,7 +95,7 @@ public class ImpliedDeleteIntegrationTest extends AAISetup {
         httpTestUtil = new HttpTestUtil(queryStyle, notification, AAIProperties.MINIMUM_DEPTH);
 
         response = httpTestUtil.doPut(uri, jsonObject.toString());
-        assertEquals("Expecting the pserver to be updated and delete children", 200, response.getStatus());
+        assertEquals(200, response.getStatus(), "Expecting the pserver to be updated and delete children");
 
         List<NotificationEvent> notificationEvents = notification.getEvents();
         assertThat(notificationEvents.size(), is(5));
@@ -111,8 +111,11 @@ public class ImpliedDeleteIntegrationTest extends AAISetup {
         assertThat(response.getEntity().toString(), not(containsString("p-interface")));
     }
 
-    @Test
-    public void testPutGenericVnf() throws Exception {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void testPutGenericVnf(QueryStyle queryStyle) throws Exception {
+
+        initImpliedDeleteIntegrationTest(queryStyle);
 
         String uri = "/aai/v12/network/generic-vnfs/generic-vnf/generic-vnf-implied-delete";
         HttpTestUtil httpTestUtil = new HttpTestUtil(queryStyle);
@@ -120,24 +123,24 @@ public class ImpliedDeleteIntegrationTest extends AAISetup {
         String resource = PayloadUtil.getResourcePayload("generic-vnf-implied-delete.json");
 
         Response response = httpTestUtil.doGet(uri);
-        assertEquals("Expecting the generic-vnf to be not found", 404, response.getStatus());
+        assertEquals(404, response.getStatus(), "Expecting the generic-vnf to be not found");
 
         response = httpTestUtil.doPut(uri, resource);
-        assertEquals("Expecting the generic-vnf to be created", 201, response.getStatus());
+        assertEquals(201, response.getStatus(), "Expecting the generic-vnf to be created");
 
         response = httpTestUtil.doGet(uri);
-        assertEquals("Expecting the generic-vnf to be found", 200, response.getStatus());
+        assertEquals(200, response.getStatus(), "Expecting the generic-vnf to be found");
 
         JSONObject jsonObject = new JSONObject(response.getEntity().toString());
         JSONAssert.assertEquals(resource, response.getEntity().toString(), false);
         jsonObject.getJSONObject("vf-modules").remove("vf-module");
 
         response = httpTestUtil.doPut(uri, jsonObject.toString());
-        assertEquals("Expecting the generic-vnf to be not deleted and fail with 403", 403, response.getStatus());
+        assertEquals(403, response.getStatus(), "Expecting the generic-vnf to be not deleted and fail with 403");
         assertThat(response.getEntity().toString(), containsString("User is not allowed to perform implicit delete"));
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
 
         JanusGraphTransaction transaction = AAIGraph.getInstance().getGraph().newTransaction();
@@ -160,6 +163,10 @@ public class ImpliedDeleteIntegrationTest extends AAISetup {
                 fail("Unable to teardown the graph");
             }
         }
+    }
+
+    public void initImpliedDeleteIntegrationTest(QueryStyle queryStyle) {
+        this.queryStyle = queryStyle;
     }
 
 }

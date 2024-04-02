@@ -21,7 +21,7 @@
 package org.onap.aai.aaf.auth;
 
 import static org.easymock.EasyMock.*;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -31,7 +31,7 @@ import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * The Class CertUtilTest
@@ -45,10 +45,10 @@ public class CertUtilTest extends AAISetup {
         cadiProperties.load(new FileInputStream(new File(propFile)));
 
         List<String> issuersList = CertUtil.getCadiCertIssuers(cadiProperties);
-        assertTrue("issuersList isn't populated", !issuersList.isEmpty());
+        assertTrue(!issuersList.isEmpty(), "issuersList isn't populated");
 
         int x = issuersList.get(0).indexOf(" ");
-        assertTrue("issuer contains spaces", x < 0);
+        assertTrue(x < 0, "issuer contains spaces");
     }
 
     @Test
@@ -64,12 +64,12 @@ public class CertUtilTest extends AAISetup {
 
         replay(mockRequest);
         String ou = CertUtil.getAaiSslClientOuHeader(mockRequest);
-        assertTrue("OU Header value is not as expected", ou.equals("m55555@org.onap.com:TEST"));
+        assertTrue(ou.equals("m55555@org.onap.com:TEST"), "OU Header value is not as expected");
 
-        assertTrue("Unexpected isHaProxy() return value", CertUtil.isHaProxy(mockRequest));
+        assertTrue(CertUtil.isHaProxy(mockRequest), "Unexpected isHaProxy() return value");
 
         String mechId = CertUtil.getMechId(mockRequest);
-        assertTrue("mechid value is not as expected", mechId.equals("m55555@org.onap.com"));
+        assertTrue(mechId.equals("m55555@org.onap.com"), "mechid value is not as expected");
 
     }
 
@@ -81,7 +81,7 @@ public class CertUtilTest extends AAISetup {
         String mechid = "m11111@onap.org";
         String result = CertUtil.buildUserChainHeader(mechid, aafUserChainPattern);
 
-        assertTrue("user chain value is not as expected", "m11111@onap.org:org.onap.haproxy:X509:AS".equals(result));
+        assertTrue("m11111@onap.org:org.onap.haproxy:X509:AS".equals(result), "user chain value is not as expected");
 
     }
 }

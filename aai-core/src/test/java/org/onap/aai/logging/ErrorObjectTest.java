@@ -20,12 +20,11 @@
 
 package org.onap.aai.logging;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 import javax.ws.rs.core.Response.Status;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ErrorObjectTest {
 
@@ -115,14 +114,18 @@ public class ErrorObjectTest {
         assertEquals(newErrorObject.getHTTPResponseCode(), Status.CREATED);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void invalidHttpCodeTest() {
-        newErrorObject.setHTTPResponseCode(6281723);
+        assertThrows(IllegalArgumentException.class, () -> {
+            newErrorObject.setHTTPResponseCode(6281723);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void invalidHttpCodeTest2() {
-        newErrorObject.setHTTPResponseCode("82901");
+        assertThrows(IllegalArgumentException.class, () -> {
+            newErrorObject.setHTTPResponseCode("82901");
+        });
     }
 
     // Rest Error Code Tests

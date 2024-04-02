@@ -20,22 +20,21 @@
 
 package org.onap.aai.rest;
 
-import static org.junit.Assert.assertEquals;
-
 import com.jayway.jsonpath.JsonPath;
 
 import java.io.IOException;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.Collection;
 
 import javax.ws.rs.core.Response;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.onap.aai.AAISetup;
 import org.onap.aai.HttpTestUtil;
 import org.onap.aai.PayloadUtil;
@@ -44,54 +43,56 @@ import org.onap.aai.serialization.engines.QueryStyle;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.test.annotation.DirtiesContext;
 
-@RunWith(value = Parameterized.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class EntitlementTest extends AAISetup {
 
     private HttpTestUtil httpTestUtil;
-
-    @Parameterized.Parameter(value = 0)
     public QueryStyle queryStyle;
 
     private String vnfPayload;
 
     private String vnfUri;
 
-    @Parameterized.Parameters(name = "QueryStyle.{0}")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {{QueryStyle.TRAVERSAL_URI}});
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         httpTestUtil = new HttpTestUtil(queryStyle);
         vnfPayload = PayloadUtil.getResourcePayload("vnf.json");
         vnfUri = "/aai/v14/network/generic-vnfs/generic-vnf/vnf1";
     }
 
-    @Test
-    public void testPutGenericVnfAndThenInsertEntitlement() throws IOException, AAIException {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void testPutGenericVnfAndThenInsertEntitlement(QueryStyle queryStyle) throws IOException, AAIException {
+        initEntitlementTest(queryStyle);
         String entitlementPayload = PayloadUtil.getResourcePayload("entitlement.json");
         String entitlementUri = "/aai/v14/network/generic-vnfs/generic-vnf/vnf1/entitlements/entitlement/g1/r1";
         Response response = httpTestUtil.doPut(vnfUri, vnfPayload);
-        assertEquals("Expected the Generic Vnf to be created", 201, response.getStatus());
+        assertEquals(201, response.getStatus(), "Expected the Generic Vnf to be created");
 
         response = httpTestUtil.doGet(vnfUri);
-        assertEquals("Expected the Generic Vnf to be found", 200, response.getStatus());
+        assertEquals(200, response.getStatus(), "Expected the Generic Vnf to be found");
         String jsonResponse = response.getEntity().toString();
         JSONAssert.assertEquals(vnfPayload, jsonResponse, false);
 
         response = httpTestUtil.doPut(entitlementUri, entitlementPayload);
-        assertEquals("Expected the Entitlement to be created", 201, response.getStatus());
+        assertEquals(201, response.getStatus(), "Expected the Entitlement to be created");
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws UnsupportedEncodingException, AAIException {
         Response response = httpTestUtil.doGet(vnfUri);
-        assertEquals("Expected the Generic Vnf to be found", 200, response.getStatus());
+        assertEquals(200, response.getStatus(), "Expected the Generic Vnf to be found");
         String jsonResponse = response.getEntity().toString();
         String resourceVersion = JsonPath.read(jsonResponse, "$.resource-version");
         response = httpTestUtil.doDelete(vnfUri, resourceVersion);
-        assertEquals("Expected the cloud region to be deleted", 204, response.getStatus());
+        assertEquals(204, response.getStatus(), "Expected the cloud region to be deleted");
+    }
+
+    public void initEntitlementTest(QueryStyle queryStyle) {
+        this.queryStyle = queryStyle;
     }
 }

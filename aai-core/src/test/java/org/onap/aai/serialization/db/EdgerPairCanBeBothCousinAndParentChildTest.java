@@ -21,9 +21,9 @@
 package org.onap.aai.serialization.db;
 
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -33,8 +33,10 @@ import java.util.Collections;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.janusgraph.core.JanusGraphFactory;
-import org.junit.*;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.onap.aai.AAISetup;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.edges.EdgeIngestor;
@@ -52,11 +54,6 @@ import org.springframework.test.annotation.DirtiesContext;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class EdgerPairCanBeBothCousinAndParentChildTest extends AAISetup {
-
-    // to use, set thrown.expect to whatever your test needs
-    // this line establishes default of expecting no exception to be thrown
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
 
     protected static Graph graph;
 
@@ -80,13 +77,13 @@ public class EdgerPairCanBeBothCousinAndParentChildTest extends AAISetup {
     private static final String gvnfBUri = "/network/generic-vnfs/generic-vnf/gvnf-b" + SOURCE_OF_TRUTH;
     private static final String lagIntBUri = gvnfBUri + "/lag-interfaces/lag-interface/lagint-b";
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         graph = JanusGraphFactory.build().set("storage.backend", "inmemory").open();
 
     }
 
-    @Before
+    @BeforeEach
     public void setup() throws UnsupportedEncodingException, AAIException, URISyntaxException {
         version = schemaVersions.getDefaultVersion();
         loader = loaderFactory.createLoaderForVersion(introspectorFactoryType, version);
@@ -94,7 +91,7 @@ public class EdgerPairCanBeBothCousinAndParentChildTest extends AAISetup {
         initData();
     }
 
-    @After
+    @AfterEach
     public void cleanup() {
         engine.rollback();
     }
@@ -131,9 +128,9 @@ public class EdgerPairCanBeBothCousinAndParentChildTest extends AAISetup {
         QueryParser uriQuery = engine.getQueryBuilder().createQueryFromURI(new URI(gvnfAUri));
         serializer.serializeToDb(gvnf, gvnfV, uriQuery, "generic-vnf", gvnf.marshal(false));
 
-        assertTrue("generic-vnf-a created", engine.tx().traversal().V().has(AAIProperties.AAI_URI, gvnfAUri).hasNext());
-        assertTrue("lag-int-a created", engine.tx().traversal().V().has(AAIProperties.AAI_URI, lagIntAUri).hasNext());
-        assertTrue("l-int created", engine.tx().traversal().V().has(AAIProperties.AAI_URI, lintUri).hasNext());
+        assertTrue(engine.tx().traversal().V().has(AAIProperties.AAI_URI, gvnfAUri).hasNext(), "generic-vnf-a created");
+        assertTrue(engine.tx().traversal().V().has(AAIProperties.AAI_URI, lagIntAUri).hasNext(), "lag-int-a created");
+        assertTrue(engine.tx().traversal().V().has(AAIProperties.AAI_URI, lintUri).hasNext(), "l-int created");
 
         gvnf = loader.introspectorFromName("generic-vnf");
         gvnf.setValue("vnf-id", "gvnf-b" + SOURCE_OF_TRUTH);
@@ -156,10 +153,10 @@ public class EdgerPairCanBeBothCousinAndParentChildTest extends AAISetup {
         serializer.serializeToDb(gvnf, gvnfV, uriQuery, "generic-vnf", gvnf.marshal(false));
 
         engine.tx().traversal().V().forEachRemaining(v -> System.out.println(v.<String>value(AAIProperties.AAI_URI)));
-        assertTrue("generic-vnf-b created", engine.tx().traversal().V().has(AAIProperties.AAI_URI, gvnfBUri).hasNext());
-        assertTrue("lag-int-b created", engine.tx().traversal().V().has(AAIProperties.AAI_URI, lagIntBUri).hasNext());
-        assertTrue("lag-interface relationship l-interface created", engine.tx().traversal().V()
-                .has(AAIProperties.AAI_URI, lagIntBUri).both().has(AAIProperties.AAI_URI, lintUri).hasNext());
+        assertTrue(engine.tx().traversal().V().has(AAIProperties.AAI_URI, gvnfBUri).hasNext(), "generic-vnf-b created");
+        assertTrue(engine.tx().traversal().V().has(AAIProperties.AAI_URI, lagIntBUri).hasNext(), "lag-int-b created");
+        assertTrue(engine.tx().traversal().V()
+                .has(AAIProperties.AAI_URI, lagIntBUri).both().has(AAIProperties.AAI_URI, lintUri).hasNext(), "lag-interface relationship l-interface created");
     }
 
     @Test

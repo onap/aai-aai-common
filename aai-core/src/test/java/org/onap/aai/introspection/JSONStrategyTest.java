@@ -20,24 +20,26 @@
 
 package org.onap.aai.introspection;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.util.HashSet;
 import java.util.Set;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.onap.aai.AAISetup;
 
-@Ignore("Not a used/flushed out feature")
+@Disabled("Not a used/flushed out feature")
 public class JSONStrategyTest extends AAISetup {
     private JSONStrategy jsonStrategy;
     private JSONStrategy jsonStrategyContainer;
     private JSONStrategy jsonStrategyComplex;
 
-    @Before
+    @BeforeEach
     public void setup() {
         try {
             JSONObject pserver = new JSONObject();
@@ -64,19 +66,19 @@ public class JSONStrategyTest extends AAISetup {
     @Test
     public void getSetTest() {
         jsonStrategy.setValue("ramInMegabytes", 1024);
-        Assert.assertEquals("value1", jsonStrategy.getValue("hostname"));
-        Assert.assertEquals(4, jsonStrategy.getValue("numberofCpus"));
-        Assert.assertEquals(1024, jsonStrategy.getValue("ramInMegabytes"));
+        Assertions.assertEquals("value1", jsonStrategy.getValue("hostname"));
+        Assertions.assertEquals(4, jsonStrategy.getValue("numberofCpus"));
+        Assertions.assertEquals(1024, jsonStrategy.getValue("ramInMegabytes"));
 
     }
 
     @Test
     public void testGetMethods() {
-        Assert.assertEquals("pserver-type", jsonStrategy.getName());
-        Assert.assertEquals("pserver-type", jsonStrategy.getDbName());
-        Assert.assertEquals("", jsonStrategy.getGenericURI());
-        Assert.assertNull(jsonStrategy.getChildName());
-        Assert.assertEquals("key", jsonStrategy.preProcessKey("key"));
+        Assertions.assertEquals("pserver-type", jsonStrategy.getName());
+        Assertions.assertEquals("pserver-type", jsonStrategy.getDbName());
+        Assertions.assertEquals("", jsonStrategy.getGenericURI());
+        Assertions.assertNull(jsonStrategy.getChildName());
+        Assertions.assertEquals("key", jsonStrategy.preProcessKey("key"));
     }
 
     @Test
@@ -84,68 +86,72 @@ public class JSONStrategyTest extends AAISetup {
         Set<String> expected = new HashSet<>();
         expected.add("hostname");
         expected.add("numberofCpus");
-        Assert.assertEquals(expected, jsonStrategy.getProperties());
+        Assertions.assertEquals(expected, jsonStrategy.getProperties());
     }
 
     @Test
     public void getGenericTypeTest() {
         // If the values of this object are arrays, return the type within the array
-        Assert.assertEquals("class org.json.simple.JSONObject",
+        Assertions.assertEquals("class org.json.simple.JSONObject",
                 jsonStrategyContainer.getGenericTypeClass("pservers").toString());
     }
 
     @Test
     public void getJavaClassNameTest() {
-        Assert.assertEquals("org.json.simple.JSONObject", jsonStrategy.getJavaClassName());
-        Assert.assertEquals("org.json.simple.JSONObject", jsonStrategyContainer.getJavaClassName());
+        Assertions.assertEquals("org.json.simple.JSONObject", jsonStrategy.getJavaClassName());
+        Assertions.assertEquals("org.json.simple.JSONObject", jsonStrategyContainer.getJavaClassName());
     }
 
     @Test
     public void getTypeTest() {
-        Assert.assertEquals("java.lang.String", jsonStrategy.getType("hostname"));
-        Assert.assertEquals("java.lang.Integer", jsonStrategy.getType("numberofCpus"));
+        Assertions.assertEquals("java.lang.String", jsonStrategy.getType("hostname"));
+        Assertions.assertEquals("java.lang.Integer", jsonStrategy.getType("numberofCpus"));
     }
 
     @Test
     public void isContainerTest() {
-        Assert.assertTrue(jsonStrategyContainer.isContainer());
+        Assertions.assertTrue(jsonStrategyContainer.isContainer());
     }
 
     @Test
     public void newInstanceOfPropertyTest() {
-        Assert.assertEquals("class org.json.simple.JSONArray",
+        Assertions.assertEquals("class org.json.simple.JSONArray",
                 jsonStrategyContainer.newInstanceOfProperty("pservers").getClass().toString());
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void newInvalidInstanceOfPropertyTest() {
-        Assert.assertEquals(null, jsonStrategyContainer.newInstanceOfProperty("invalid").getClass().toString());
+        assertThrows(NullPointerException.class, () -> {
+            Assertions.assertEquals(null, jsonStrategyContainer.newInstanceOfProperty("invalid").getClass().toString());
+        });
     }
 
     @Test
     public void newInstanceOfNestedPropertyTest() {
-        Assert.assertEquals("class org.json.simple.JSONObject",
+        Assertions.assertEquals("class org.json.simple.JSONObject",
                 jsonStrategyContainer.newInstanceOfNestedProperty("pservers").getClass().toString());
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void newInvalidInstanceOfNestedPropertyTest() {
-        jsonStrategyContainer.newInstanceOfNestedProperty("invalid").getClass().toString();
+        assertThrows(NullPointerException.class, () -> {
+            jsonStrategyContainer.newInstanceOfNestedProperty("invalid").getClass().toString();
+        });
     }
 
     @Test
     public void isComplexTypeTest() {
         // Complex: The value of this key contains a JSONObject
-        Assert.assertTrue(jsonStrategyComplex.isComplexType("pserver"));
-        Assert.assertFalse(jsonStrategyContainer.isComplexType("pservers"));
-        Assert.assertFalse(jsonStrategy.isComplexType("hostname"));
+        Assertions.assertTrue(jsonStrategyComplex.isComplexType("pserver"));
+        Assertions.assertFalse(jsonStrategyContainer.isComplexType("pservers"));
+        Assertions.assertFalse(jsonStrategy.isComplexType("hostname"));
     }
 
     @Test
     public void isComplexGenericTypeTest() {
         // Complex Generic: The value of this key contains an array of JSONObjects
-        Assert.assertTrue(jsonStrategyContainer.isComplexGenericType("pservers"));
-        Assert.assertFalse(jsonStrategyComplex.isComplexGenericType("pserver"));
-        Assert.assertFalse(jsonStrategy.isComplexGenericType("hostname"));
+        Assertions.assertTrue(jsonStrategyContainer.isComplexGenericType("pservers"));
+        Assertions.assertFalse(jsonStrategyComplex.isComplexGenericType("pserver"));
+        Assertions.assertFalse(jsonStrategy.isComplexGenericType("hostname"));
     }
 }

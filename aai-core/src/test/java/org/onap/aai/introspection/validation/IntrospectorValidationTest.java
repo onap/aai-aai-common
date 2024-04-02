@@ -20,13 +20,13 @@
 
 package org.onap.aai.introspection.validation;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.onap.aai.AAISetup;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.*;
@@ -43,7 +43,7 @@ public class IntrospectorValidationTest extends AAISetup {
     @Autowired
     private LoaderFactory loaderFactory;
 
-    @Before
+    @BeforeEach
     public void createValidator() throws Exception {
         System.setProperty("AJSC_HOME", ".");
         System.setProperty("BUNDLECONFIG_DIR", "bundleconfig-local");
@@ -51,17 +51,17 @@ public class IntrospectorValidationTest extends AAISetup {
         validator = new IntrospectorValidator.Builder().validateRequired(false).restrictDepth(10000).build();
     }
 
-    @Ignore
+    @Disabled
     @Test
     public void verifySuccessWhenEmpty() throws AAIException {
         Introspector obj = loader.introspectorFromName("generic-vnf");
         obj.setValue("vnf-id", "key1");
         validator.validate(obj);
         List<Issue> issues = validator.getIssues();
-        assertEquals("no issues found", true, issues.isEmpty());
+        assertEquals(true, issues.isEmpty(), "no issues found");
     }
 
-    @Ignore
+    @Disabled
     @Test
     public void verifyRequiresSingleFieldFailure() throws AAIException {
         Introspector obj = loader.introspectorFromName("generic-vnf");
@@ -69,12 +69,12 @@ public class IntrospectorValidationTest extends AAISetup {
         obj.setValue("model-invariant-id", "id1");
         validator.validate(obj);
         List<Issue> issues = validator.getIssues();
-        assertEquals("issues found", true, issues.size() == 1);
+        assertEquals(true, issues.size() == 1, "issues found");
         Issue issue = issues.get(0);
-        assertEquals("found expected issue", IssueType.DEPENDENT_PROP_NOT_FOUND, issue.getType());
+        assertEquals(IssueType.DEPENDENT_PROP_NOT_FOUND, issue.getType(), "found expected issue");
     }
 
-    @Ignore
+    @Disabled
     @Test
     public void verifyRequiresSuccess() throws AAIException {
         Introspector obj = loader.introspectorFromName("generic-vnf");
@@ -83,6 +83,6 @@ public class IntrospectorValidationTest extends AAISetup {
         obj.setValue("model-version-id", "version-id1");
         validator.validate(obj);
         List<Issue> issues = validator.getIssues();
-        assertEquals("no issues found", true, issues.isEmpty());
+        assertEquals(true, issues.isEmpty(), "no issues found");
     }
 }

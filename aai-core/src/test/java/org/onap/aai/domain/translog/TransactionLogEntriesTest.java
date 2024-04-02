@@ -20,22 +20,22 @@
 
 package org.onap.aai.domain.translog;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.onap.aai.AAISetup;
 
 public class TransactionLogEntriesTest extends AAISetup {
     private TransactionLogEntries transactionLogEntries;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         transactionLogEntries = new TransactionLogEntries();
     }
 
     @Test
     public void testGetterSetterParent() {
-        Assert.assertNotNull(transactionLogEntries.getTransactionLogEntries());
+        Assertions.assertNotNull(transactionLogEntries.getTransactionLogEntries());
     }
 
 }

@@ -20,14 +20,14 @@
 
 package org.onap.aai.introspection;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
 
 import java.util.Set;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.onap.aai.AAISetup;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.springframework.test.annotation.DirtiesContext;
@@ -39,7 +39,7 @@ public class PropertyPredicatesTest extends AAISetup {
     private ModelType introspectorFactoryType = ModelType.MOXY;
     private Introspector obj;
 
-    @Before
+    @BeforeEach
     public void setup() throws Exception {
         loader = loaderFactory.createLoaderForVersion(introspectorFactoryType, schemaVersions.getDefaultVersion());
         obj = loader.introspectorFromName("generic-vnf");

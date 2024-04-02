@@ -20,7 +20,7 @@
 
 package org.onap.aai.introspection;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.onap.aai.AAISetup;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
@@ -35,12 +35,13 @@ public abstract class IntrospectorTestSpec extends AAISetup {
      */
     protected void containerTestSet(Introspector wrappedPortGroups) throws AAIUnknownObjectException {
 
-        assertEquals("isContainer", true, wrappedPortGroups.isContainer());
+        assertEquals(true, wrappedPortGroups.isContainer(), "isContainer");
 
-        assertEquals("newInstanceOfNestedProperty", "PortGroup",
-                wrappedPortGroups.newInstanceOfNestedProperty("port-group").getClass().getSimpleName());
+        assertEquals("PortGroup",
+                wrappedPortGroups.newInstanceOfNestedProperty("port-group").getClass().getSimpleName(),
+                "newInstanceOfNestedProperty");
 
-        assertEquals("isComplexGenericType", true, wrappedPortGroups.isComplexGenericType("port-group"));
+        assertEquals(true, wrappedPortGroups.isComplexGenericType("port-group"), "isComplexGenericType");
 
     }
 

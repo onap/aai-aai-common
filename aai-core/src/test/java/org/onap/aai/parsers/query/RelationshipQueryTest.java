@@ -20,7 +20,7 @@
 
 package org.onap.aai.parsers.query;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
@@ -32,9 +32,9 @@ import javax.xml.transform.stream.StreamSource;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.onap.aai.AAISetup;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.*;
@@ -43,14 +43,14 @@ import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 import org.onap.aai.setup.SchemaVersion;
 
-@Ignore
+@Disabled
 public class RelationshipQueryTest extends AAISetup {
 
     private TransactionalGraphEngine dbEngine;
     private SchemaVersion version;
     private DynamicJAXBContext context = nodeIngestor.getContextForVersion(version);
 
-    @Before
+    @BeforeEach
     public void setup() {
         version = new SchemaVersion("v10");
         dbEngine = new JanusGraphDBEngine(QueryStyle.GREMLIN_TRAVERSAL,
@@ -83,10 +83,11 @@ public class RelationshipQueryTest extends AAISetup {
         QueryParser query = dbEngine.getQueryBuilder().createQueryFromRelationship(wrappedObj);
 
         String expected = ".has('hostname', 'key1').has('aai-node-type', 'pserver')";
-        assertEquals("gremlin query should be " + expected, expected, query.getQueryBuilder().getQuery());
-        assertEquals("parent gremlin query should be equal to normal query", expected,
-                query.getQueryBuilder().getParentQuery().getQuery());
-        assertEquals("result type should be pserver", "pserver", query.getResultType());
+        assertEquals(expected, query.getQueryBuilder().getQuery(), "gremlin query should be " + expected);
+        assertEquals(expected,
+                query.getQueryBuilder().getParentQuery().getQuery(),
+                "parent gremlin query should be equal to normal query");
+        assertEquals("pserver", query.getResultType(), "result type should be pserver");
 
     }
 
@@ -97,7 +98,7 @@ public class RelationshipQueryTest extends AAISetup {
      * @throws UnsupportedEncodingException the unsupported encoding exception
      * @throws AAIException the AAI exception
      */
-    @Ignore
+    @Disabled
     @Test
     public void childQuery() throws JAXBException, UnsupportedEncodingException, AAIException {
         String content = "{" + "\"related-to\" : \"lag-interface\"," + "\"relationship-data\" : [{"
@@ -120,10 +121,11 @@ public class RelationshipQueryTest extends AAISetup {
                 ".has('hostname', 'key1').has('aai-node-type', 'pserver').out('hasLAGInterface').has('aai-node-type', 'lag-interface')"
                         + ".has('interface-name', 'key2')";
         String parentExpected = ".has('hostname', 'key1').has('aai-node-type', 'pserver')";
-        assertEquals("gremlin query should be for node", expected, query.getQueryBuilder().getQuery());
-        assertEquals("parent gremlin query should be for parent", parentExpected,
-                query.getQueryBuilder().getParentQuery().getQuery());
-        assertEquals("result type should be lag-interface", "lag-interface", query.getResultType());
+        assertEquals(expected, query.getQueryBuilder().getQuery(), "gremlin query should be for node");
+        assertEquals(parentExpected,
+                query.getQueryBuilder().getParentQuery().getQuery(),
+                "parent gremlin query should be for parent");
+        assertEquals("lag-interface", query.getResultType(), "result type should be lag-interface");
     }
 
     /**
@@ -133,7 +135,7 @@ public class RelationshipQueryTest extends AAISetup {
      * @throws UnsupportedEncodingException the unsupported encoding exception
      * @throws AAIException the AAI exception
      */
-    @Ignore
+    @Disabled
     @Test
     public void namingExceptions() throws JAXBException, UnsupportedEncodingException, AAIException {
         String content = "{" + "\"related-to\" : \"cvlan-tag\"," + "\"relationship-data\" : [{"
@@ -160,10 +162,11 @@ public class RelationshipQueryTest extends AAISetup {
                 ".has('vnf-id', 'key1').has('aai-node-type', 'vce').in('org.onap.relationships.inventory.BelongsTo')"
                         + ".has('aai-node-type', 'port-group').has('interface-id', 'key2')";
 
-        assertEquals("gremlin query should be " + expected, expected, query.getQueryBuilder().getQuery());
-        assertEquals("parent gremlin query should be equal the query for port group", expectedParent,
-                query.getQueryBuilder().getParentQuery().getQuery());
-        assertEquals("result type should be cvlan-tag", "cvlan-tag", query.getResultType());
+        assertEquals(expected, query.getQueryBuilder().getQuery(), "gremlin query should be " + expected);
+        assertEquals(expectedParent,
+                query.getQueryBuilder().getParentQuery().getQuery(),
+                "parent gremlin query should be equal the query for port group");
+        assertEquals("cvlan-tag", query.getResultType(), "result type should be cvlan-tag");
 
     }
 
@@ -174,7 +177,7 @@ public class RelationshipQueryTest extends AAISetup {
      * @throws UnsupportedEncodingException the unsupported encoding exception
      * @throws AAIException the AAI exception
      */
-    @Ignore
+    @Disabled
     @Test
     public void doubleKey() throws JAXBException, UnsupportedEncodingException, AAIException {
         String content = "{" + "\"related-to\" : \"ctag-pool\"," + "\"relationship-data\" : [{"
@@ -200,10 +203,11 @@ public class RelationshipQueryTest extends AAISetup {
                 + ".has('target-pe', 'key2')" + ".has('availability-zone-name', 'key3')";
         String expectedParent = ".has('physical-location-id', 'key1').has('aai-node-type', 'complex')";
 
-        assertEquals("gremlin query should be " + expected, expected, query.getQueryBuilder().getQuery());
-        assertEquals("parent gremlin query should be equal the query for port group", expectedParent,
-                query.getQueryBuilder().getParentQuery().getQuery());
-        assertEquals("result type should be ctag-pool", "ctag-pool", query.getResultType());
+        assertEquals(expected, query.getQueryBuilder().getQuery(), "gremlin query should be " + expected);
+        assertEquals(expectedParent,
+                query.getQueryBuilder().getParentQuery().getQuery(),
+                "parent gremlin query should be equal the query for port group");
+        assertEquals("ctag-pool", query.getResultType(), "result type should be ctag-pool");
 
     }
 

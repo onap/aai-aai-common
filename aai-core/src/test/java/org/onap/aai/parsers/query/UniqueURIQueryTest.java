@@ -20,7 +20,7 @@
 
 package org.onap.aai.parsers.query;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -31,8 +31,8 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.onap.aai.AAISetup;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.ModelType;
@@ -41,7 +41,7 @@ import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 import org.onap.aai.setup.SchemaVersion;
 
-@Ignore
+@Disabled
 public class UniqueURIQueryTest extends AAISetup {
 
     private TransactionalGraphEngine dbEngine;
@@ -173,11 +173,12 @@ public class UniqueURIQueryTest extends AAISetup {
     public void testSet(QueryParser query, GraphTraversal<Vertex, Vertex> expected,
             GraphTraversal<Vertex, Vertex> parentExpected, String parentResultType, String resultType,
             String containerType) {
-        assertEquals("gremlin query should be " + expected, expected, query.getQueryBuilder().getQuery());
-        assertEquals("parent gremlin query should be " + parentExpected, parentExpected,
-                query.getQueryBuilder().getParentQuery().getQuery());
-        assertEquals("parent result type should be " + parentResultType, parentResultType, query.getParentResultType());
-        assertEquals("result type should be " + resultType, resultType, query.getResultType());
-        assertEquals("container type should be " + containerType, containerType, query.getContainerType());
+        assertEquals(expected, query.getQueryBuilder().getQuery(), "gremlin query should be " + expected);
+        assertEquals(parentExpected,
+                query.getQueryBuilder().getParentQuery().getQuery(),
+                "parent gremlin query should be " + parentExpected);
+        assertEquals(parentResultType, query.getParentResultType(), "parent result type should be " + parentResultType);
+        assertEquals(resultType, query.getResultType(), "result type should be " + resultType);
+        assertEquals(containerType, query.getContainerType(), "container type should be " + containerType);
     }
 }

@@ -20,13 +20,13 @@
 
 package org.onap.aai.util;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.security.Permission;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.onap.aai.AAISetup;
 
 public class AAIConfigCommandLinePropGetterTest extends AAISetup {
@@ -34,14 +34,14 @@ public class AAIConfigCommandLinePropGetterTest extends AAISetup {
     private SecurityManager m;
     private TestSecurityManager sm;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         m = System.getSecurityManager();
         sm = new TestSecurityManager();
         System.setSecurityManager(sm);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         System.setSecurityManager(m);
     }

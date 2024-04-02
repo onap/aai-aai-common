@@ -20,6 +20,7 @@
 
 package org.onap.aai.db;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
@@ -37,16 +38,9 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSo
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.janusgraph.core.JanusGraphFactory;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.onap.aai.AAISetup;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
@@ -62,13 +56,9 @@ import org.onap.aai.setup.SchemaVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 
-@RunWith(value = Parameterized.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class DbMethHelperTest extends AAISetup {
     private DbMethHelper dbMethHelper = new DbMethHelper();
-
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
     protected static Graph graph;
 
     @Autowired
@@ -82,21 +72,18 @@ public class DbMethHelperTest extends AAISetup {
     private DBSerializer dbser;
     private TransactionalGraphEngine spy;
     private TransactionalGraphEngine.Admin adminSpy;
-
-    @Parameterized.Parameter
     public QueryStyle queryStyle;
 
-    @Parameterized.Parameters(name = "QueryStyle.{0}")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {{QueryStyle.TRAVERSAL}});
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         graph = JanusGraphFactory.build().set("storage.backend", "inmemory").open();
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         version = schemaVersions.getDefaultVersion();
         loader = loaderFactory.createLoaderForVersion(introspectorFactoryType, version);
@@ -120,8 +107,10 @@ public class DbMethHelperTest extends AAISetup {
         when(adminSpy.getReadOnlyTraversalSource()).thenReturn(g);
     }
 
-    @Test
-    public void testSearchVertexByIdentityMap() throws Exception {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void testSearchVertexByIdentityMap(QueryStyle queryStyle) throws Exception {
+        initDbMethHelperTest(queryStyle);
         String type = "pserver";
         Map<String, Object> map = new HashMap<>();
         map.put("pserver.hostname", "testSearchVertexByIdentityMap-pserver-hostname-01");
@@ -132,57 +121,71 @@ public class DbMethHelperTest extends AAISetup {
         } catch (Exception e) {
             throw new Exception(e);
         }
-        Assert.assertEquals("vp[hostname->testSearchVertexById]", optionalVertex.get().property("hostname").toString());
+        Assertions.assertEquals("vp[hostname->testSearchVertexById]", optionalVertex.get().property("hostname").toString());
     }
 
-    @Test(expected = AmbiguousMapAAIException.class)
-    public void testSearchVertexByIdentityMap_throwAmbiguousMapAAIException()
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void testSearchVertexByIdentityMap_throwAmbiguousMapAAIException(QueryStyle queryStyle)
             throws AmbiguousMapAAIException, Exception {
-        String type = "pserver";
-        Map<String, Object> map = new HashMap<>();
-        map.put("pserver.hostname", "testSearchVertexByIdentityMap-pserver-hostname-01");
-        map.put("complex.physical-location-id", "id1");
+        initDbMethHelperTest(queryStyle);
+        assertThrows(AmbiguousMapAAIException.class, () -> {
+            String type = "pserver";
+            Map<String, Object> map = new HashMap<>();
+            map.put("pserver.hostname", "testSearchVertexByIdentityMap-pserver-hostname-01");
+            map.put("complex.physical-location-id", "id1");
 
-        Optional<Vertex> optionalVertex;
-        try {
-            optionalVertex = dbMethHelper.searchVertexByIdentityMap(type, map);
-        } catch (AmbiguousMapAAIException e) {
-            throw new AmbiguousMapAAIException(e);
-        }
+            Optional<Vertex> optionalVertex;
+            try {
+                optionalVertex = dbMethHelper.searchVertexByIdentityMap(type, map);
+            } catch (AmbiguousMapAAIException e) {
+                throw new AmbiguousMapAAIException(e);
+            }
+        });
     }
 
-    @Test
-    public void testLocateUniqueVertex() throws Exception {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void testLocateUniqueVertex(QueryStyle queryStyle) throws Exception {
+        initDbMethHelperTest(queryStyle);
         String type = "complex";
         Map<String, Object> map = new HashMap<>();
         Vertex complex2 = graph.addVertex("aai-node-type", "complex", "physical-location-id", "id2");
         map.put("physical-location-id", "id2");
         Optional<Vertex> optionalVertex = dbMethHelper.locateUniqueVertex(type, map);
-        Assert.assertEquals("vp[physical-location-id->id2]",
+        Assertions.assertEquals("vp[physical-location-id->id2]",
                 optionalVertex.get().property("physical-location-id").toString());
     }
 
-    @Test(expected = AAIException.class)
-    public void testLocateUniqueVertex_throwsException() throws AAIException, Exception {
-        String type = "Pserver";
-        Map<String, Object> map = new HashMap<>();
-        Introspector obj =
-                loader.unmarshal("relationship", this.getJsonString("related-link-and-relationship-data.json"));
-        map.put("hostname", "testSearchVertexByIdentityMap-pserver-hostname-01");
-        dbMethHelper.locateUniqueVertex(type, map);
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void testLocateUniqueVertex_throwsException(QueryStyle queryStyle) throws AAIException, Exception {
+        initDbMethHelperTest(queryStyle);
+        assertThrows(AAIException.class, () -> {
+            String type = "Pserver";
+            Map<String, Object> map = new HashMap<>();
+            Introspector obj =
+                    loader.unmarshal("relationship", this.getJsonString("related-link-and-relationship-data.json"));
+            map.put("hostname", "testSearchVertexByIdentityMap-pserver-hostname-01");
+            dbMethHelper.locateUniqueVertex(type, map);
+        });
     }
 
-    @Test
-    public void testLocateUniqueVertex_returnNull() throws Exception {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void testLocateUniqueVertex_returnNull(QueryStyle queryStyle) throws Exception {
+        initDbMethHelperTest(queryStyle);
         String type = "complex";
         Map<String, Object> map = new HashMap<>();
         map.put("physical-location-id", "bogusId");
         Optional<Vertex> optionalVertex = dbMethHelper.locateUniqueVertex(type, map);
-        Assert.assertEquals(optionalVertex, Optional.empty());
+        Assertions.assertEquals(optionalVertex, Optional.empty());
     }
 
-    @Test
-    public void testGetVertexProperties() throws Exception {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void testGetVertexProperties(QueryStyle queryStyle) throws Exception {
+        initDbMethHelperTest(queryStyle);
         Vertex pserver3 =
                 graph.addVertex("aai-node-type", "pserver", "hostname", "testGetVertexProperties-pserver-hostname-01",
                         "ptnii-equip-name", "testGetVertexProperties-pserver-ptnii-equip-name-01");
@@ -199,18 +202,20 @@ public class DbMethHelperTest extends AAISetup {
 
         Vertex v = optionalVertex.get();
         List<String> vertexProperties = dbMethHelper.getVertexProperties(v);
-        Assert.assertTrue(vertexProperties.contains("Prop: [aai-node-type], val = [pserver] "));
-        Assert.assertTrue(
+        Assertions.assertTrue(vertexProperties.contains("Prop: [aai-node-type], val = [pserver] "));
+        Assertions.assertTrue(
                 vertexProperties.contains("Prop: [hostname], val = [testGetVertexProperties-pserver-hostname-01] "));
-        Assert.assertTrue(vertexProperties
+        Assertions.assertTrue(vertexProperties
                 .contains("Prop: [ptnii-equip-name], val = [testGetVertexProperties-pserver-ptnii-equip-name-01] "));
     }
 
-    @Test
-    public void testGetVertexProperties_nullParameter() {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void testGetVertexProperties_nullParameter(QueryStyle queryStyle) {
+        initDbMethHelperTest(queryStyle);
         List<String> vertexProperties = dbMethHelper.getVertexProperties(null);
-        Assert.assertTrue(vertexProperties.contains("null Node object passed to showPropertiesForNode()\n"));
-        Assert.assertTrue(vertexProperties.size() == 1);
+        Assertions.assertTrue(vertexProperties.contains("null Node object passed to showPropertiesForNode()\n"));
+        Assertions.assertTrue(vertexProperties.size() == 1);
     }
 
     private String getJsonString(String filename) throws IOException {
@@ -220,14 +225,18 @@ public class DbMethHelperTest extends AAISetup {
         return s;
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         engine.rollback();
         dbEngine.rollback();
     }
 
-    @AfterClass
+    @AfterAll
     public static void destroy() throws Exception {
         graph.close();
+    }
+
+    public void initDbMethHelperTest(QueryStyle queryStyle) {
+        this.queryStyle = queryStyle;
     }
 }

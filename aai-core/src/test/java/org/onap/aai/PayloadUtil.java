@@ -20,7 +20,7 @@
 
 package org.onap.aai;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,7 +43,7 @@ public class PayloadUtil {
                 PayloadUtil.class.getClassLoader().getResourceAsStream("payloads/expected/" + fileName);
 
         String message = String.format("Unable to find the %s in src/test/resources", fileName);
-        assertNotNull(message, inputStream);
+        assertNotNull(inputStream, message);
 
         String resource = IOUtils.toString(inputStream, Charset.defaultCharset());
 
@@ -57,7 +57,7 @@ public class PayloadUtil {
                 PayloadUtil.class.getClassLoader().getResourceAsStream("payloads/resource/" + fileName);
 
         String message = String.format("Unable to find the %s in src/test/resources", fileName);
-        assertNotNull(message, inputStream);
+        assertNotNull(inputStream, message);
 
         String resource = IOUtils.toString(inputStream, Charset.defaultCharset());
 
@@ -71,7 +71,7 @@ public class PayloadUtil {
                 PayloadUtil.class.getClassLoader().getResourceAsStream("payloads/templates/" + fileName);
 
         String message = String.format("Unable to find the %s in src/test/resources", fileName);
-        assertNotNull(message, inputStream);
+        assertNotNull(inputStream, message);
 
         String resource;
 

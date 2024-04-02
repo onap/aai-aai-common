@@ -20,34 +20,24 @@
 
 package org.onap.aai.setup;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.IOException;
 import java.util.List;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.onap.aai.restclient.MockProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-@RunWith(SpringJUnit4ClassRunner.class)
 @TestPropertySource(
         properties = {"schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-ss-wiring-test.properties"})
 @ContextConfiguration(classes = {MockProvider.class, SchemaVersionsBean.class})
 @SpringBootTest
 public class SchemaVersionsBeanTest {
-
-    // set thrown.expect to whatever a specific test needs
-    // this establishes a default of expecting no exceptions to be thrown
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
     @Autowired
     SchemaVersionsBean SchemaVersionsBean;
 

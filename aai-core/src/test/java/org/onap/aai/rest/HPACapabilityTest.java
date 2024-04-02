@@ -20,19 +20,19 @@
 
 package org.onap.aai.rest;
 
-import static org.junit.Assert.assertEquals;
-
 import com.jayway.jsonpath.JsonPath;
 
 import java.util.*;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import javax.ws.rs.core.Response;
 
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 import org.onap.aai.AAIJunitRunner;
 import org.onap.aai.HttpTestUtil;
 import org.onap.aai.PayloadUtil;
@@ -41,30 +41,30 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Ignore
+@Disabled
 @RunWith(AAIJunitRunner.class)
 public class HPACapabilityTest {
 
     private static Logger logger = LoggerFactory.getLogger(HPACapabilityTest.class);
     private HttpTestUtil httpTestUtil;
     private Map<String, String> templateValuesMap;
-
-    @Parameterized.Parameter(value = 0)
     public QueryStyle queryStyle;
 
-    @Parameterized.Parameters(name = "QueryStyle.{0}")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {{QueryStyle.TRAVERSAL}});
     }
 
-    @Before
+    @BeforeEach
     public void setup() {
         httpTestUtil = new HttpTestUtil(queryStyle);
         templateValuesMap = new HashMap<>();
     }
 
-    @Test
-    public void testPutHPACapabilitiesInFlavorAndCheckIfDeleteIsSuccessful() throws Exception {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void testPutHPACapabilitiesInFlavorAndCheckIfDeleteIsSuccessful(QueryStyle queryStyle) throws Exception {
+
+        initHPACapabilityTest(queryStyle);
 
         templateValuesMap.put("cloud-region-id", UUID.randomUUID().toString());
         templateValuesMap.put("cloud-owner", UUID.randomUUID().toString());
@@ -86,10 +86,10 @@ public class HPACapabilityTest {
                 templateValuesMap.get("cloud-owner"), templateValuesMap.get("cloud-region-id"));
 
         Response response = httpTestUtil.doPut(cloudRegionUri, cloudRegionPayload);
-        assertEquals("Expected the cloud region to be created", 201, response.getStatus());
+        assertEquals(201, response.getStatus(), "Expected the cloud region to be created");
 
         response = httpTestUtil.doGet(cloudRegionUri);
-        assertEquals("Expected the cloud region to be found", 200, response.getStatus());
+        assertEquals(200, response.getStatus(), "Expected the cloud region to be found");
         String jsonResponse = response.getEntity().toString();
         System.out.println("#########################jsonResponse#########################");
         System.out.println(jsonResponse);
@@ -107,33 +107,33 @@ public class HPACapabilityTest {
         deleteVserver(tenantUri);
 
         Response tntResponse = httpTestUtil.doGet(tenantUri);
-        assertEquals("Expected to GET Tenant info from cloud-region", 200, tntResponse.getStatus());
+        assertEquals(200, tntResponse.getStatus(), "Expected to GET Tenant info from cloud-region");
         String responseStr = tntResponse.getEntity().toString();
 
         String resourceVersion = JsonPath.read(responseStr, "$.resource-version");
 
         tntResponse = httpTestUtil.doDelete(tenantUri, resourceVersion);
-        assertEquals("Expected to DELETE Tenant info from cloud-region", 204, tntResponse.getStatus());
+        assertEquals(204, tntResponse.getStatus(), "Expected to DELETE Tenant info from cloud-region");
     }
 
     private void deleteVserver(String tenantUri) throws Exception {
         String uri = tenantUri + "/vservers/vserver/" + templateValuesMap.get("vserver-id");
 
         Response tntResponse = httpTestUtil.doGet(uri);
-        assertEquals("Expected to GET Vserver", 200, tntResponse.getStatus());
+        assertEquals(200, tntResponse.getStatus(), "Expected to GET Vserver");
         String responseStr = tntResponse.getEntity().toString();
 
         String resourceVersion = JsonPath.read(responseStr, "$.resource-version");
 
         tntResponse = httpTestUtil.doDelete(uri, resourceVersion);
-        assertEquals("Expected to DELETE Vserver", 204, tntResponse.getStatus());
+        assertEquals(204, tntResponse.getStatus(), "Expected to DELETE Vserver");
     }
 
     private void deleteFlavor(String cloudRegionUri, String flavorId) throws Exception {
         String flavorUri = cloudRegionUri + "/flavors/flavor/" + flavorId;
 
         Response response = httpTestUtil.doGet(flavorUri);
-        assertEquals("Expected to GET Flavors info from cloud-region", 200, response.getStatus());
+        assertEquals(200, response.getStatus(), "Expected to GET Flavors info from cloud-region");
         String jsonResponse = response.getEntity().toString();
         System.out.println("#########################Flavor Response#########################");
         System.out.println(jsonResponse);
@@ -148,14 +148,14 @@ public class HPACapabilityTest {
 
         String resourceVersion = JsonPath.read(responseStr, "$.resource-version");
         response = httpTestUtil.doDelete(flavorUri, resourceVersion);
-        assertEquals("Expected to DELETE Flavor info from cloud-region", 204, response.getStatus());
+        assertEquals(204, response.getStatus(), "Expected to DELETE Flavor info from cloud-region");
     }
 
     private void deleteHPACapability(String flavorUri, String capabilityId) throws Exception {
         String uri = flavorUri + "/hpa-capabilities/hpa-capability/" + capabilityId;
 
         Response response = httpTestUtil.doGet(uri);
-        assertEquals("Expected to GET HPA info from flavors", 200, response.getStatus());
+        assertEquals(200, response.getStatus(), "Expected to GET HPA info from flavors");
         String jsonResponse = response.getEntity().toString();
         System.out.println("#########################HPA Response#########################");
         System.out.println(jsonResponse);
@@ -165,6 +165,10 @@ public class HPACapabilityTest {
         String resourceVersion = JsonPath.read(responseStr, "$.resource-version");
 
         response = httpTestUtil.doDelete(uri, resourceVersion);
-        assertEquals("Expected to DELETE HPA info from flavors", 204, response.getStatus());
+        assertEquals(204, response.getStatus(), "Expected to DELETE HPA info from flavors");
+    }
+
+    public void initHPACapabilityTest(QueryStyle queryStyle) {
+        this.queryStyle = queryStyle;
     }
 }

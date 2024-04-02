@@ -20,21 +20,20 @@
 
 package org.onap.aai.rest;
 
-import static org.junit.Assert.assertEquals;
-
 import com.jayway.jsonpath.JsonPath;
 
 import java.util.*;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import javax.ws.rs.core.Response;
 
-import org.junit.Before;
 import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.onap.aai.AAISetup;
 import org.onap.aai.HttpTestUtil;
 import org.onap.aai.PayloadUtil;
@@ -43,7 +42,6 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.test.context.junit4.rules.SpringClassRule;
 import org.springframework.test.context.junit4.rules.SpringMethodRule;
 
-@RunWith(value = Parameterized.class)
 public class TenantTest extends AAISetup {
 
     private HttpTestUtil httpTestUtil;
@@ -53,24 +51,24 @@ public class TenantTest extends AAISetup {
 
     @Rule
     public final SpringMethodRule springMethodRule = new SpringMethodRule();
-
-    @Parameterized.Parameter(value = 0)
     public QueryStyle queryStyle;
 
-    @Parameterized.Parameters(name = "QueryStyle.{0}")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {{QueryStyle.TRAVERSAL}, {QueryStyle.TRAVERSAL_URI}});
     }
 
-    @Before
+    @BeforeEach
     public void setUp() {
         httpTestUtil = new HttpTestUtil(queryStyle);
         templateValuesMap = new HashMap<>();
     }
 
-    @Ignore("Test is failing due to the deletion of node with children not correct will be fixed soon")
-    @Test
-    public void testCloudRegionTenantDeleteSuccessWithoutDeletingVserver() throws Exception {
+    @Disabled("Test is failing due to the deletion of node with children not correct will be fixed soon")
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void testCloudRegionTenantDeleteSuccessWithoutDeletingVserver(QueryStyle queryStyle) throws Exception {
+
+        initTenantTest(queryStyle);
 
         templateValuesMap.put("cloud-region-id", UUID.randomUUID().toString());
         templateValuesMap.put("cloud-owner", UUID.randomUUID().toString());
@@ -85,24 +83,28 @@ public class TenantTest extends AAISetup {
         String tenantPayload = PayloadUtil.getTemplatePayload("tenant.json", templateValuesMap);
 
         Response response = httpTestUtil.doPut(cloudRegionUri, cloudRegionPayload);
-        assertEquals("Expected the cloud region to be created", 201, response.getStatus());
+        assertEquals(201, response.getStatus(), "Expected the cloud region to be created");
 
         response = httpTestUtil.doGet(tenantUri);
-        assertEquals("Expected the cloud region to be created", 200, response.getStatus());
+        assertEquals(200, response.getStatus(), "Expected the cloud region to be created");
         String responseStr = response.getEntity().toString();
 
         JSONAssert.assertEquals(tenantPayload, responseStr, false);
         String resourceVersion = JsonPath.read(responseStr, "$.resource-version");
 
         response = httpTestUtil.doDelete(tenantUri, resourceVersion);
-        assertEquals("Expected the cloud region to be created", 204, response.getStatus());
+        assertEquals(204, response.getStatus(), "Expected the cloud region to be created");
 
         response = httpTestUtil.doGet(cloudRegionUri);
-        assertEquals("Expected the cloud region to be created", 200, response.getStatus());
+        assertEquals(200, response.getStatus(), "Expected the cloud region to be created");
         responseStr = response.getEntity().toString();
         resourceVersion = JsonPath.read(responseStr, "$.resource-version");
 
         response = httpTestUtil.doDelete(cloudRegionUri, resourceVersion);
-        assertEquals("Expected the cloud region to be created", 204, response.getStatus());
+        assertEquals(204, response.getStatus(), "Expected the cloud region to be created");
+    }
+
+    public void initTenantTest(QueryStyle queryStyle) {
+        this.queryStyle = queryStyle;
     }
 }

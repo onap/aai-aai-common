@@ -20,6 +20,8 @@
 
 package org.onap.aai.serialization.db;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,17 +29,19 @@ import java.util.List;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
 import org.hamcrest.CoreMatchers;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 import org.onap.aai.serialization.engines.query.QueryEngine;
 import org.onap.aai.util.AAIConstants;
-import org.springframework.boot.test.system.OutputCaptureRule;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 
+@ExtendWith(OutputCaptureExtension.class)
 public class ImpliedDeleteUnitTest {
 
     private TransactionalGraphEngine mockEngine;
@@ -45,10 +49,7 @@ public class ImpliedDeleteUnitTest {
 
     private ImpliedDelete impliedDelete;
 
-    @Rule
-    public final OutputCaptureRule outputCapture = new OutputCaptureRule();
-
-    @Before
+    @BeforeEach
     public void setup() {
         mockEngine = Mockito.mock(TransactionalGraphEngine.class);
         mockSerializer = Mockito.mock(DBSerializer.class);
@@ -208,56 +209,60 @@ public class ImpliedDeleteUnitTest {
     }
 
     // aai.implied.delete.whitelist.sdnc=
-    @Test(expected = AAIException.class)
+    @Test
     public void testImpliedDeleteWhenUserIsNotAllowedToDelete() throws AAIException {
+        assertThrows(AAIException.class, () -> {
 
-        QueryEngine mockQueryEngine = Mockito.mock(QueryEngine.class);
+            QueryEngine mockQueryEngine = Mockito.mock(QueryEngine.class);
 
-        Mockito.doReturn("").when(impliedDelete).get(AAIConstants.AAI_IMPLIED_DELETE_WHITELIST + "sdnc", "");
+            Mockito.doReturn("").when(impliedDelete).get(AAIConstants.AAI_IMPLIED_DELETE_WHITELIST + "sdnc", "");
 
-        Mockito.when(mockEngine.getQueryEngine()).thenReturn(mockQueryEngine);
+            Mockito.when(mockEngine.getQueryEngine()).thenReturn(mockQueryEngine);
 
-        TinkerGraph graph = TinkerGraph.open();
+            TinkerGraph graph = TinkerGraph.open();
 
-        Vertex vserver = graph.addVertex("vertex");
-        vserver.property("vserver-id", "some-id");
+            Vertex vserver = graph.addVertex("vertex");
+            vserver.property("vserver-id", "some-id");
 
-        Vertex volume = graph.addVertex("vertex");
-        volume.property("volume-id", "some-id");
+            Vertex volume = graph.addVertex("vertex");
+            volume.property("volume-id", "some-id");
 
-        List<Vertex> vertices = new ArrayList<>();
-        vertices.add(volume);
+            List<Vertex> vertices = new ArrayList<>();
+            vertices.add(volume);
 
-        impliedDelete.execute(vserver.id(), "SDNC", "vserver", vertices);
+            impliedDelete.execute(vserver.id(), "SDNC", "vserver", vertices);
+        });
     }
 
     // aai.implied.delete.whitelist.sdnc='vce'
-    @Test(expected = AAIException.class)
+    @Test
     public void testImpliedDeleteWhenUserIsAllowedToDeleteVceChildrenButRequestedToDeleteVserverChildren()
             throws AAIException {
+        assertThrows(AAIException.class, () -> {
 
-        QueryEngine mockQueryEngine = Mockito.mock(QueryEngine.class);
+            QueryEngine mockQueryEngine = Mockito.mock(QueryEngine.class);
 
-        Mockito.doReturn("'vce'").when(impliedDelete).get(AAIConstants.AAI_IMPLIED_DELETE_WHITELIST + "sdnc", "");
+            Mockito.doReturn("'vce'").when(impliedDelete).get(AAIConstants.AAI_IMPLIED_DELETE_WHITELIST + "sdnc", "");
 
-        Mockito.when(mockEngine.getQueryEngine()).thenReturn(mockQueryEngine);
+            Mockito.when(mockEngine.getQueryEngine()).thenReturn(mockQueryEngine);
 
-        TinkerGraph graph = TinkerGraph.open();
+            TinkerGraph graph = TinkerGraph.open();
 
-        Vertex vserver = graph.addVertex("vertex");
-        vserver.property("vserver-id", "some-id");
+            Vertex vserver = graph.addVertex("vertex");
+            vserver.property("vserver-id", "some-id");
 
-        Vertex volume = graph.addVertex("vertex");
-        volume.property("volume-id", "some-id");
+            Vertex volume = graph.addVertex("vertex");
+            volume.property("volume-id", "some-id");
 
-        List<Vertex> vertices = new ArrayList<>();
-        vertices.add(volume);
+            List<Vertex> vertices = new ArrayList<>();
+            vertices.add(volume);
 
-        impliedDelete.execute(vserver.id(), "SDNC", "vserver", vertices);
+            impliedDelete.execute(vserver.id(), "SDNC", "vserver", vertices);
+        });
     }
 
     @Test
-    public void testImpliedDeleteWhenUserIsAllowedToDeleteAndPrintingDeletingVertexItThrowsExceptionVerifyLog()
+    public void testImpliedDeleteWhenUserIsAllowedToDeleteAndPrintingDeletingVertexItThrowsExceptionVerifyLog(CapturedOutput outputCapture)
             throws AAIException, UnsupportedEncodingException {
 
         QueryEngine mockQueryEngine = Mockito.mock(QueryEngine.class);
@@ -289,7 +294,7 @@ public class ImpliedDeleteUnitTest {
 
         impliedDelete.execute(vserver.id(), "SDNC", "vserver", vertices);
 
-        outputCapture.expect(CoreMatchers.containsString(
-                "Encountered an exception during retrieval of vertex properties with vertex-id " + vserver.id()));
+        CoreMatchers.containsString(
+                "Encountered an exception during retrieval of vertex properties with vertex-id " + vserver.id()).matches(outputCapture.getAll());
     }
 }

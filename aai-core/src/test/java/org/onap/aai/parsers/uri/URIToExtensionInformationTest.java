@@ -20,7 +20,7 @@
 
 package org.onap.aai.parsers.uri;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -29,7 +29,7 @@ import javax.annotation.PostConstruct;
 import javax.ws.rs.core.UriBuilder;
 import javax.xml.bind.JAXBException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.onap.aai.AAISetup;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Loader;
@@ -91,15 +91,15 @@ public class URIToExtensionInformationTest extends AAISetup {
         String namespaceResult = info.getNamespace();
         String methodNameResult = info.getMethodName(httpMethod, true);
 
-        assertEquals("namespace", namespace, namespaceResult);
-        assertEquals("preprocess method name", preMethodName, methodNameResult);
+        assertEquals(namespace, namespaceResult, "namespace");
+        assertEquals(preMethodName, methodNameResult, "preprocess method name");
         methodNameResult = info.getMethodName(httpMethod, false);
 
-        assertEquals("postprocess method name", postMethodName, methodNameResult);
+        assertEquals(postMethodName, methodNameResult, "postprocess method name");
 
         String topLevelResult = info.getTopObject();
 
-        assertEquals("topLevel", topLevel, topLevelResult);
+        assertEquals(topLevel, topLevelResult, "topLevel");
     }
 
 }

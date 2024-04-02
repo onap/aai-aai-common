@@ -23,19 +23,16 @@ package org.onap.aai.restclient;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-@Ignore
-@RunWith(SpringJUnit4ClassRunner.class)
+@Disabled
 @TestPropertySource(locations = "/schemaService/schema-service-rest.properties")
 @ContextConfiguration(
         classes = {RestClientFactoryConfiguration.class, SchemaServiceRestClient.class, RestClientFactory.class,

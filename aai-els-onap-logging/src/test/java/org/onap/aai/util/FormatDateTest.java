@@ -22,9 +22,9 @@
 
 package org.onap.aai.util;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.onap.aai.exceptions.AAIException;
 
 public class FormatDateTest {

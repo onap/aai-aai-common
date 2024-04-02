@@ -21,9 +21,9 @@
 package org.onap.aai.serialization.db;
 
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -35,8 +35,10 @@ import java.util.List;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.janusgraph.core.JanusGraphFactory;
-import org.junit.*;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.onap.aai.AAISetup;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.edges.EdgeIngestor;
@@ -54,11 +56,6 @@ import org.springframework.test.annotation.DirtiesContext;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class VersionedScenariosTest extends AAISetup {
-
-    // to use, set thrown.expect to whatever your test needs
-    // this line establishes default of expecting no exception to be thrown
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
 
     protected static Graph graph;
 
@@ -81,13 +78,13 @@ public class VersionedScenariosTest extends AAISetup {
     private static final String lintDestinationUri = gvnfUri + "/l-interfaces/l-interface/destination";
     private static final String llLabeledUri = "/network/logical-links/logical-link/llLabeled";
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         graph = JanusGraphFactory.build().set("storage.backend", "inmemory").open();
 
     }
 
-    @Before
+    @BeforeEach
     public void setup() throws UnsupportedEncodingException, AAIException, URISyntaxException {
         version = schemaVersions.getDefaultVersion();
         loader = loaderFactory.createLoaderForVersion(introspectorFactoryType, version);
@@ -95,7 +92,7 @@ public class VersionedScenariosTest extends AAISetup {
         initData();
     }
 
-    @After
+    @AfterEach
     public void cleanup() {
         engine.rollback();
     }
@@ -132,10 +129,10 @@ public class VersionedScenariosTest extends AAISetup {
         QueryParser uriQuery = engine.getQueryBuilder().createQueryFromURI(new URI(gvnfUri));
         serializer.serializeToDb(gvnf, gvnfV, uriQuery, "generic-vnf", gvnf.marshal(false));
 
-        assertTrue("generic-vnf created", engine.tx().traversal().V().has(AAIProperties.AAI_URI, gvnfUri).hasNext());
-        assertTrue("source created", engine.tx().traversal().V().has(AAIProperties.AAI_URI, lintSourceUri).hasNext());
-        assertTrue("destination created",
-                engine.tx().traversal().V().has(AAIProperties.AAI_URI, lintDestinationUri).hasNext());
+        assertTrue(engine.tx().traversal().V().has(AAIProperties.AAI_URI, gvnfUri).hasNext(), "generic-vnf created");
+        assertTrue(engine.tx().traversal().V().has(AAIProperties.AAI_URI, lintSourceUri).hasNext(), "source created");
+        assertTrue(engine.tx().traversal().V().has(AAIProperties.AAI_URI, lintDestinationUri).hasNext(),
+                "destination created");
 
         Introspector llDefault = loader.introspectorFromName("logical-link");
         llDefault.setValue("link-name", "llDefault");
@@ -156,13 +153,13 @@ public class VersionedScenariosTest extends AAISetup {
         uriQuery = engine.getQueryBuilder().createQueryFromURI(new URI(llDefaultUri));
         serializer.serializeToDb(llDefault, llDefaultV, uriQuery, "logical-link", llDefault.marshal(false));
 
-        assertTrue("logical-link created",
-                engine.tx().traversal().V().has(AAIProperties.AAI_URI, llDefaultUri).hasNext());
-        assertTrue("default source relationship created", engine.tx().traversal().V()
-                .has(AAIProperties.AAI_URI, llDefaultUri).both().has(AAIProperties.AAI_URI, lintSourceUri).hasNext());
-        assertTrue("default destination relationship created",
-                engine.tx().traversal().V().has(AAIProperties.AAI_URI, llDefaultUri).both()
-                        .has(AAIProperties.AAI_URI, lintDestinationUri).hasNext());
+        assertTrue(engine.tx().traversal().V().has(AAIProperties.AAI_URI, llDefaultUri).hasNext(),
+                "logical-link created");
+        assertTrue(engine.tx().traversal().V()
+                .has(AAIProperties.AAI_URI, llDefaultUri).both().has(AAIProperties.AAI_URI, lintSourceUri).hasNext(), "default source relationship created");
+        assertTrue(engine.tx().traversal().V().has(AAIProperties.AAI_URI, llDefaultUri).both()
+                        .has(AAIProperties.AAI_URI, lintDestinationUri).hasNext(),
+                "default destination relationship created");
 
         Introspector llLabeled = loader.introspectorFromName("logical-link");
         llLabeled.setValue("link-name", "llLabeled");
@@ -185,16 +182,16 @@ public class VersionedScenariosTest extends AAISetup {
         uriQuery = engine.getQueryBuilder().createQueryFromURI(new URI(llLabeledUri));
         serializer.serializeToDb(llLabeled, llLabeledV, uriQuery, "logical-link", llLabeled.marshal(false));
 
-        assertTrue("logical-link created",
-                engine.tx().traversal().V().has(AAIProperties.AAI_URI, llLabeledUri).hasNext());
-        assertTrue("labeled source relationship created",
-                engine.tx().traversal().V().has(AAIProperties.AAI_URI, llLabeledUri)
+        assertTrue(engine.tx().traversal().V().has(AAIProperties.AAI_URI, llLabeledUri).hasNext(),
+                "logical-link created");
+        assertTrue(engine.tx().traversal().V().has(AAIProperties.AAI_URI, llLabeledUri)
                         .both("org.onap.relationships.inventory.Source").has(AAIProperties.AAI_URI, lintSourceUri)
-                        .hasNext());
-        assertTrue("labeled destination relationship created",
-                engine.tx().traversal().V().has(AAIProperties.AAI_URI, llLabeledUri)
+                        .hasNext(),
+                "labeled source relationship created");
+        assertTrue(engine.tx().traversal().V().has(AAIProperties.AAI_URI, llLabeledUri)
                         .both("org.onap.relationships.inventory.Destination")
-                        .has(AAIProperties.AAI_URI, lintDestinationUri).hasNext());
+                        .has(AAIProperties.AAI_URI, lintDestinationUri).hasNext(),
+                "labeled destination relationship created");
     }
 
     @Test

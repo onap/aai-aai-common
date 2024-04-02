@@ -20,8 +20,7 @@
 
 package org.onap.aai.serialization.queryformats;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
@@ -41,8 +40,8 @@ import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.onap.aai.AAISetup;
@@ -90,7 +89,7 @@ public class MultiFormatTest extends AAISetup {
             "{\"results\":[{\"id\":\"0\",\"node-type\":\"generic-vnf\",\"url\":null,\"properties\":{\"vnf-id\":\"vnf-id-1\",\"vnf-name\":\"vnf-name-1\"},\"related-to\":[{\"id\":\"1\",\"relationship-label\":\"tosca.relationships.HostedOn\",\"node-type\":\"vserver\",\"url\":null},{\"id\":\"5\",\"relationship-label\":\"tosca.relationships.HostedOn\",\"node-type\":\"pserver\",\"url\":null}],\"related-nodes\":[{\"id\":\"1\",\"node-type\":\"vserver\",\"url\":null,\"properties\":{\"vserver-id\":\"vserver-id-1\",\"vserver-name\":\"vserver-name-1\"},\"related-to\":[{\"id\":\"0\",\"relationship-label\":\"tosca.relationships.HostedOn\",\"node-type\":\"generic-vnf\",\"url\":null},{\"id\":\"2\",\"relationship-label\":\"tosca.relationships.HostedOn\",\"node-type\":\"pserver\",\"url\":null}],\"related-nodes\":[{\"id\":\"2\",\"node-type\":\"pserver\",\"url\":null,\"properties\":{\"hostname\":\"hostname-1\"},\"related-to\":[{\"id\":\"1\",\"relationship-label\":\"tosca.relationships.HostedOn\",\"node-type\":\"vserver\",\"url\":null},{\"id\":\"3\",\"relationship-label\":\"org.onap.relationships.inventory.LocatedIn\",\"node-type\":\"complex\",\"url\":null}]}]},{\"id\":\"5\",\"node-type\":\"pserver\",\"url\":null,\"properties\":{\"hostname\":\"hostname-2\"},\"related-to\":[{\"id\":\"0\",\"relationship-label\":\"tosca.relationships.HostedOn\",\"node-type\":\"generic-vnf\",\"url\":null},{\"id\":\"6\",\"relationship-label\":\"org.onap.relationships.inventory.LocatedIn\",\"node-type\":\"complex\",\"url\":null}],\"related-nodes\":[{\"id\":\"6\",\"node-type\":\"complex\",\"url\":null,\"properties\":{\"physical-location-id\":\"physical-location-id-2\",\"country\":\"US\"},\"related-to\":[{\"id\":\"5\",\"relationship-label\":\"org.onap.relationships.inventory.LocatedIn\",\"node-type\":\"pserver\",\"url\":null}]}]}]}]}")
             .getAsJsonObject();
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
 
         version = schemaVersions.getAppRootVersion();
@@ -190,13 +189,15 @@ public class MultiFormatTest extends AAISetup {
 
     }
 
-    @Test(expected = AAIFormatQueryResultFormatNotSupported.class)
+    @Test
     public void testThrowsExceptionIfObjectNotSupported() throws AAIFormatVertexException, AAIException,
             UnsupportedEncodingException, AAIFormatQueryResultFormatNotSupported {
+        assertThrows(AAIFormatQueryResultFormatNotSupported.class, () -> {
 
-        loader = mock(Loader.class);
-        idFormat = new IdURL(loader, urlBuilder);
-        idFormat.formatObject(new String());
+            loader = mock(Loader.class);
+            idFormat = new IdURL(loader, urlBuilder);
+            idFormat.formatObject(new String());
+        });
     }
 
     public void createLoaderEngineSetup() {

@@ -22,8 +22,9 @@ package org.onap.aai.dbmap;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.matchesPattern;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.FileNotFoundException;
 import java.util.HashSet;
@@ -35,9 +36,9 @@ import org.janusgraph.core.JanusGraph;
 import org.janusgraph.core.JanusGraphFactory;
 import org.janusgraph.core.schema.JanusGraphIndex;
 import org.janusgraph.core.schema.JanusGraphManagement;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.onap.aai.AAISetup;
 import org.onap.aai.config.SpringContextAware;
 import org.onap.aai.introspection.Introspector;
@@ -49,7 +50,7 @@ import org.onap.aai.setup.SchemaVersions;
 import org.onap.aai.util.AAIConstants;
 
 public class AAIGraphTest extends AAISetup {
-    @Before
+    @BeforeEach
     public void setup() {
         AAIGraph.getInstance();
     }
@@ -80,28 +81,30 @@ public class AAIGraphTest extends AAISetup {
         graph.close();
     }
 
-    @Test(expected = FileNotFoundException.class)
+    @Test
     public void janusGraphOpenNameWithInvalidFilePathTest() throws Exception {
-        JanusGraph graph = JanusGraphFactory.open(new AAIGraphConfig.Builder("invalid").forService(SERVICE_NAME)
-                .withGraphType("graphType").buildConfiguration());
-        JanusGraphManagement graphMgt = graph.openManagement();
-        String connectionInstanceName =
-                graphMgt.getOpenInstances().stream().filter(c -> c.contains("current")).findFirst().get();
-        assertThat(connectionInstanceName,
-                matchesPattern("^\\d+_[\\w\\-\\d]+_" + SERVICE_NAME + "_graphType_\\d+\\(current\\)$"));
-        graphMgt.rollback();
-        graph.close();
+        assertThrows(FileNotFoundException.class, () -> {
+            JanusGraph graph = JanusGraphFactory.open(new AAIGraphConfig.Builder("invalid").forService(SERVICE_NAME)
+                    .withGraphType("graphType").buildConfiguration());
+            JanusGraphManagement graphMgt = graph.openManagement();
+            String connectionInstanceName =
+                    graphMgt.getOpenInstances().stream().filter(c -> c.contains("current")).findFirst().get();
+            assertThat(connectionInstanceName,
+                    matchesPattern("^\\d+_[\\w\\-\\d]+_" + SERVICE_NAME + "_graphType_\\d+\\(current\\)$"));
+            graphMgt.rollback();
+            graph.close();
+        });
     }
 
-    @Ignore("Need to create schema specific to the test")
+    @Disabled("Need to create schema specific to the test")
     @Test
     public void checkIndexOfAliasedIndexedProps() {
         Set<String> aliasedIndexedProps = getAliasedIndexedProps();
         JanusGraphManagement graphMgt = AAIGraph.getInstance().getGraph().openManagement();
         for (String aliasedIndexedProp : aliasedIndexedProps) {
             JanusGraphIndex index = graphMgt.getGraphIndex(aliasedIndexedProp);
-            assertNotNull(aliasedIndexedProp + " index exists", index);
-            assertEquals(aliasedIndexedProp + " index has 1 property keys", index.getFieldKeys().length, 1);
+            assertNotNull(index, aliasedIndexedProp + " index exists");
+            assertEquals(index.getFieldKeys().length, 1, aliasedIndexedProp + " index has 1 property keys");
             assertThat(aliasedIndexedProp + " index indexes " + aliasedIndexedProp + " property key",
                     index.getFieldKeys()[0].name(), is(aliasedIndexedProp));
         }

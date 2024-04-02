@@ -20,7 +20,7 @@
 
 package org.onap.aai.rest;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -31,11 +31,10 @@ import java.util.Map;
 import javax.ws.rs.core.Response;
 
 import org.json.JSONObject;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.onap.aai.AAISetup;
 import org.onap.aai.HttpTestUtil;
 import org.onap.aai.PayloadUtil;
@@ -44,49 +43,48 @@ import org.onap.aai.serialization.engines.QueryStyle;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.test.annotation.DirtiesContext;
 
-@RunWith(value = Parameterized.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class GenericVnfLInterfaceTest extends AAISetup {
 
     private HttpTestUtil httpTestUtil;
-
-    @Parameterized.Parameter(value = 0)
     public QueryStyle queryStyle;
 
-    @Parameterized.Parameters(name = "QueryStyle.{0}")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {{QueryStyle.TRAVERSAL}, {QueryStyle.TRAVERSAL_URI}});
     }
 
-    @Before
+    @BeforeEach
     public void setUp() {
         httpTestUtil = new HttpTestUtil(queryStyle);
     }
 
-    @Test
-    public void testPutTwoLInterfacesToGenericVnf() throws Exception {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void testPutTwoLInterfacesToGenericVnf(QueryStyle queryStyle) throws Exception {
+
+        initGenericVnfLInterfaceTest(queryStyle);
 
         Map<String, String> templateValueMap = new HashMap<>();
         templateValueMap.put("ip-address", "ipv1");
 
         String resource = PayloadUtil.getTemplatePayload("generic-vnf-with-lag-interface.json", templateValueMap);
         Response response = httpTestUtil.doPut("/aai/v12/network/generic-vnfs/generic-vnf/vnf1", resource);
-        assertEquals("Expecting the generic vnf to be created", 201, response.getStatus());
+        assertEquals(201, response.getStatus(), "Expecting the generic vnf to be created");
 
         response = httpTestUtil.doGet("/aai/v12/network/generic-vnfs/generic-vnf/vnf1");
-        assertEquals("Expecting the generic vnf to be updated", 200, response.getStatus());
+        assertEquals(200, response.getStatus(), "Expecting the generic vnf to be updated");
 
         resource = response.getEntity().toString();
         resource = resource.replaceAll("ipv1\",\"resource-version\":\"\\d+\"", "ipv2\"");
         response = httpTestUtil.doPut("/aai/v12/network/generic-vnfs/generic-vnf/vnf1", resource);
-        assertEquals("Expecting the generic vnf to be updated", 200, response.getStatus());
+        assertEquals(200, response.getStatus(), "Expecting the generic vnf to be updated");
 
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws IOException, AAIException {
         Response response = httpTestUtil.doGet("/aai/v12/network/generic-vnfs/generic-vnf/vnf1");
-        assertEquals("Expecting the generic vnf to be updated", 200, response.getStatus());
+        assertEquals(200, response.getStatus(), "Expecting the generic vnf to be updated");
 
         String expected = PayloadUtil.getExpectedPayload("generic-vnf-with-lag-interface.json");
         JSONAssert.assertEquals(expected, response.getEntity().toString(), false);
@@ -95,6 +93,10 @@ public class GenericVnfLInterfaceTest extends AAISetup {
         String resourceVersion = (String) jsonObject.get("resource-version");
 
         response = httpTestUtil.doDelete("/aai/v12/network/generic-vnfs/generic-vnf/vnf1", resourceVersion);
-        assertEquals("Expecting the generic vnf to be deleted", 204, response.getStatus());
+        assertEquals(204, response.getStatus(), "Expecting the generic vnf to be deleted");
+    }
+
+    public void initGenericVnfLInterfaceTest(QueryStyle queryStyle) {
+        this.queryStyle = queryStyle;
     }
 }

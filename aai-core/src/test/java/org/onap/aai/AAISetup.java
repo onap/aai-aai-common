@@ -22,10 +22,13 @@ package org.onap.aai;
 
 import java.util.Map;
 
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Rule;
-import org.onap.aai.config.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.onap.aai.config.ConfigConfiguration;
+import org.onap.aai.config.IntrospectionConfig;
+import org.onap.aai.config.RestBeanConfig;
+import org.onap.aai.config.SpringContextAware;
+import org.onap.aai.config.XmlFormatTransformerConfiguration;
 import org.onap.aai.edges.EdgeIngestor;
 import org.onap.aai.introspection.LoaderFactory;
 import org.onap.aai.introspection.MoxyLoader;
@@ -41,10 +44,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.rules.SpringClassRule;
-import org.springframework.test.context.junit4.rules.SpringMethodRule;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+@ExtendWith(SpringExtension.class)
 @WebAppConfiguration
 @ContextConfiguration(
         classes = {ConfigConfiguration.class, AAIConfigTranslator.class, EdgeIngestor.class, EdgeSerializer.class,
@@ -55,12 +58,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
                 "schema.nodes.location=src/test/resources/onap/oxm",
                 "schema.edges.location=src/test/resources/onap/dbedgerules"})
 public abstract class AAISetup {
-
-    @ClassRule
-    public static final SpringClassRule springClassRule = new SpringClassRule();
-
-    @Rule
-    public final SpringMethodRule springMethodRule = new SpringMethodRule();
 
     @Autowired
     protected Map<SchemaVersion, MoxyLoader> moxyLoaderInstance;
@@ -88,7 +85,7 @@ public abstract class AAISetup {
 
     protected static final String SERVICE_NAME = "JUNIT";
 
-    @BeforeClass
+    @BeforeAll
     public static void setupBundleconfig() throws Exception {
         System.setProperty("AJSC_HOME", ".");
         System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");

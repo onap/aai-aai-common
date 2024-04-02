@@ -20,9 +20,9 @@
 
 package org.onap.aai;
 
-import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
+import org.junit.jupiter.api.BeforeAll;
 import org.onap.aai.edges.EdgeIngestor;
 import org.onap.aai.nodes.NodeIngestor;
 import org.onap.aai.serialization.queryformats.QueryFormatTestHelper;
@@ -53,7 +53,7 @@ public abstract class AAISetupForSwagger {
 
     protected static final String SERVICE_NAME = "JUNIT";
 
-    @BeforeClass
+    @BeforeAll
     public static void setupBundleconfig() throws Exception {
         System.setProperty("AJSC_HOME", ".");
         System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");

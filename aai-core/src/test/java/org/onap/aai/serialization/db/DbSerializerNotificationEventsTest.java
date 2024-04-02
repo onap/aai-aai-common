@@ -21,7 +21,8 @@
 package org.onap.aai.serialization.db;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -32,13 +33,10 @@ import java.util.stream.Collectors;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.janusgraph.core.JanusGraphFactory;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.onap.aai.AAISetup;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.edges.EdgeIngestor;
@@ -54,14 +52,8 @@ import org.onap.aai.setup.SchemaVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 
-@RunWith(value = Parameterized.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class DbSerializerNotificationEventsTest extends AAISetup {
-
-    // to use, set thrown.expect to whatever your test needs
-    // this line establishes default of expecting no exception to be thrown
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
 
     protected static Graph graph;
 
@@ -73,23 +65,20 @@ public class DbSerializerNotificationEventsTest extends AAISetup {
     private SchemaVersion version;
     private final ModelType introspectorFactoryType = ModelType.MOXY;
     private Loader loader;
-    private TransactionalGraphEngine engine; // for tests that aren't mocking the engine
-
-    @Parameterized.Parameter(value = 0)
+    private TransactionalGraphEngine engine;
     public QueryStyle queryStyle;
 
-    @Parameterized.Parameters(name = "QueryStyle.{0}")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {{QueryStyle.TRAVERSAL}, {QueryStyle.TRAVERSAL_URI}});
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void init() throws Exception {
         graph = JanusGraphFactory.build().set("storage.backend", "inmemory").open();
 
     }
 
-    @Before
+    @BeforeEach
     public void setup() throws Exception {
         // createGraph();
         version = schemaVersions.getDefaultVersion();
@@ -105,9 +94,11 @@ public class DbSerializerNotificationEventsTest extends AAISetup {
      * Add l-interface directly to the 2nd p-interface
      * Delete pserver
      */
-    @Test
-    public void createComplexPserverWithRelUpdatePserverToDeleteRelAddPinterfaceThenDeleteComplexCheckingUpdatedListTest()
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void createComplexPserverWithRelUpdatePserverToDeleteRelAddPinterfaceThenDeleteComplexCheckingUpdatedListTest(QueryStyle queryStyle)
             throws AAIException, UnsupportedEncodingException, URISyntaxException {
+        initDbSerializerNotificationEventsTest(queryStyle);
         engine.startTransaction();
 
         System.out.println("Create Complex");
@@ -127,10 +118,10 @@ public class DbSerializerNotificationEventsTest extends AAISetup {
         complex.setValue("region", "ef");
         dbserLocal.serializeToDb(complex, complexV, uriQuery, "complex", complex.marshal(false));
 
-        assertTrue("Complex created", engine.tx().traversal().V().has("aai-node-type", "complex")
-                .has("physical-location-id", "c-id-b").hasNext());
+        assertTrue(engine.tx().traversal().V().has("aai-node-type", "complex")
+                .has("physical-location-id", "c-id-b").hasNext(), "Complex created");
         Map<Vertex, Boolean> updated = getUpdatedVertexes(dbserLocal);
-        assertEquals("Number of updated vertexes", 1, updated.size());
+        assertEquals(1, updated.size(), "Number of updated vertexes");
         assertThat("Only modified vertexes are in the updated set",
                 updated.keySet().stream().map(v -> v.<String>value(AAIProperties.AAI_URI)).collect(Collectors.toSet()),
                 is(Collections.singleton(complexUri)));
@@ -166,14 +157,14 @@ public class DbSerializerNotificationEventsTest extends AAISetup {
         pserver.setValue("p-interfaces", pints.getUnderlyingObject());
         dbserLocal.serializeToDb(pserver, pserverV, uriQuery, "pserver", pserver.marshal(false));
 
-        assertTrue("Pserver created",
-                engine.tx().traversal().V().has("aai-node-type", "pserver").has("hostname", "ps-b").hasNext());
-        assertTrue("Pserver has edge to complex", engine.tx().traversal().V().has("aai-node-type", "pserver")
-                .has("hostname", "ps-b").bothE().otherV().has("aai-node-type", "complex").hasNext());
-        assertTrue("Pserver has edge to pinterface", engine.tx().traversal().V().has("aai-node-type", "pserver")
-                .has("hostname", "ps-b").bothE().otherV().has("aai-node-type", "p-interface").hasNext());
+        assertTrue(engine.tx().traversal().V().has("aai-node-type", "pserver").has("hostname", "ps-b").hasNext(),
+                "Pserver created");
+        assertTrue(engine.tx().traversal().V().has("aai-node-type", "pserver")
+                .has("hostname", "ps-b").bothE().otherV().has("aai-node-type", "complex").hasNext(), "Pserver has edge to complex");
+        assertTrue(engine.tx().traversal().V().has("aai-node-type", "pserver")
+                .has("hostname", "ps-b").bothE().otherV().has("aai-node-type", "p-interface").hasNext(), "Pserver has edge to pinterface");
         updated = getUpdatedVertexes(dbserLocal);
-        assertEquals("Number of updated vertexes", 3, updated.size());
+        assertEquals(3, updated.size(), "Number of updated vertexes");
         assertThat("Only modified vertexes are in the updated set",
                 updated.keySet().stream().map(v -> v.<String>value(AAIProperties.AAI_URI)).collect(Collectors.toSet()),
                 is(new HashSet<>(Arrays.asList(pserverUri, pintUri, complexUri))));
@@ -193,10 +184,10 @@ public class DbSerializerNotificationEventsTest extends AAISetup {
         pserver.setValue("number-of-cpus", 99);
         dbserLocal.serializeToDb(pserver, pserverV, uriQuery, "pserver", pserver.marshal(false));
 
-        assertFalse("Pserver no longer has edge to complex", engine.tx().traversal().V().has("aai-node-type", "pserver")
-                .has("hostname", "ps-b").bothE().otherV().has("aai-node-type", "complex").hasNext());
+        assertFalse(engine.tx().traversal().V().has("aai-node-type", "pserver")
+                .has("hostname", "ps-b").bothE().otherV().has("aai-node-type", "complex").hasNext(), "Pserver no longer has edge to complex");
         updated = getUpdatedVertexes(dbserLocal);
-        assertEquals("Number of updated vertexes", 2, updated.size());
+        assertEquals(2, updated.size(), "Number of updated vertexes");
         assertThat("Only modified vertexes are in the updated set",
                 updated.keySet().stream().map(v -> v.<String>value(AAIProperties.AAI_URI)).collect(Collectors.toSet()),
                 is(new HashSet<>(Arrays.asList(pserverUri, complexUri))));
@@ -220,13 +211,13 @@ public class DbSerializerNotificationEventsTest extends AAISetup {
         final String pint2Uri = pserverUri + "/p-interfaces/p-interface/pint-2";
         dbserLocal.serializeToDb(pserver, pserverV, uriQuery, "pserver", pserver.marshal(false));
 
-        assertTrue("Pserver has edge to pinterface 2",
-                engine.tx().traversal().V().has("aai-node-type", "pserver").has("hostname", "ps-b").in()
-                        .has("aai-node-type", "p-interface").has("interface-name", "pint-2").hasNext());
-        assertTrue("p-interface 2 created", engine.tx().traversal().V().has("aai-node-type", "p-interface")
-                .has("interface-name", "pint-2").has(AAIProperties.AAI_URI, pint2Uri).hasNext());
+        assertTrue(engine.tx().traversal().V().has("aai-node-type", "pserver").has("hostname", "ps-b").in()
+                        .has("aai-node-type", "p-interface").has("interface-name", "pint-2").hasNext(),
+                "Pserver has edge to pinterface 2");
+        assertTrue(engine.tx().traversal().V().has("aai-node-type", "p-interface")
+                .has("interface-name", "pint-2").has(AAIProperties.AAI_URI, pint2Uri).hasNext(), "p-interface 2 created");
         updated = getUpdatedVertexes(dbserLocal);
-        assertEquals("Number of updated vertexes", 1, updated.size());
+        assertEquals(1, updated.size(), "Number of updated vertexes");
         assertThat("Only modified vertexes are in the updated set",
                 updated.keySet().stream().map(v -> v.<String>value(AAIProperties.AAI_URI)).collect(Collectors.toSet()),
                 is(Collections.singleton(pint2Uri)));
@@ -245,15 +236,15 @@ public class DbSerializerNotificationEventsTest extends AAISetup {
         lInt.setValue("interface-name", "lint-1");
         dbserLocal.serializeToDb(lInt, lIntV, uriQuery, "l-interface", lInt.marshal(false));
 
-        assertTrue("l-interface created", engine.tx().traversal().V().has("aai-node-type", "l-interface")
-                .has("interface-name", "lint-1").hasNext());
+        assertTrue(engine.tx().traversal().V().has("aai-node-type", "l-interface")
+                .has("interface-name", "lint-1").hasNext(), "l-interface created");
 
-        assertTrue("Pserver has edge to pinterface to l-interface",
-                engine.tx().traversal().V().has("aai-node-type", "pserver").has("hostname", "ps-b").bothE().otherV()
+        assertTrue(engine.tx().traversal().V().has("aai-node-type", "pserver").has("hostname", "ps-b").bothE().otherV()
                         .has("aai-node-type", "p-interface").bothE().otherV().has("aai-node-type", "l-interface")
-                        .hasNext());
+                        .hasNext(),
+                "Pserver has edge to pinterface to l-interface");
         updated = getUpdatedVertexes(dbserLocal);
-        assertEquals("Number of updated vertexes", 1, updated.size());
+        assertEquals(1, updated.size(), "Number of updated vertexes");
         assertThat("Only modified vertexes are in the updated set",
                 updated.keySet().stream().map(v -> v.<String>value(AAIProperties.AAI_URI)).collect(Collectors.toSet()),
                 is(new HashSet<>(Collections.singletonList(lIntUri))));
@@ -269,9 +260,9 @@ public class DbSerializerNotificationEventsTest extends AAISetup {
         String rv = pserver.getValue(AAIProperties.RESOURCE_VERSION);
         dbserLocal.delete(engine.tx().traversal().V(pserverV).next(), rv, true);
 
-        assertFalse("pserver no longer exists", engine.tx().traversal().V().has("aai-node-type", "pserver").hasNext());
+        assertFalse(engine.tx().traversal().V().has("aai-node-type", "pserver").hasNext(), "pserver no longer exists");
         updated = getUpdatedVertexes(dbserLocal);
-        assertEquals("Number of updated vertexes", 0, updated.size());
+        assertEquals(0, updated.size(), "Number of updated vertexes");
         didNotUpdateStandardVertexProps = updated.entrySet().stream().filter(e -> !e.getValue())
                 .map(e -> e.getKey().<String>value(AAIProperties.AAI_URI)).collect(Collectors.toList());
         assertThat("Vertexes should all have their standard props updated", didNotUpdateStandardVertexProps,
@@ -283,6 +274,10 @@ public class DbSerializerNotificationEventsTest extends AAISetup {
         Map<Vertex, Boolean> updated = new LinkedHashMap<>(dbserLocal.getUpdatedVertexes());
         dbserLocal.touchStandardVertexPropertiesForEdges().forEach(v -> updated.putIfAbsent(v, true));
         return updated;
+    }
+
+    public void initDbSerializerNotificationEventsTest(QueryStyle queryStyle) {
+        this.queryStyle = queryStyle;
     }
 
 }

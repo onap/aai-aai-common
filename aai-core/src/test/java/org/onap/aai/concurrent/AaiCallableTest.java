@@ -20,9 +20,9 @@
 
 package org.onap.aai.concurrent;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.onap.aai.AAISetup;
 import org.slf4j.MDC;
 
@@ -35,7 +35,7 @@ public class AaiCallableTest extends AAISetup {
             @Override
             public Object process() {
                 String mdcValue = MDC.get("test_name");
-                assertTrue("MDC value retained", "test_value".equals(mdcValue));
+                assertTrue("test_value".equals(mdcValue), "MDC value retained");
                 return (new Object());
             }
         };

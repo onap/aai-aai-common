@@ -22,9 +22,9 @@ package org.onap.aai;
 
 import java.util.Map;
 
-import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
+import org.junit.jupiter.api.BeforeAll;
 import org.onap.aai.config.*;
 import org.onap.aai.edges.EdgeIngestor;
 import org.onap.aai.introspection.LoaderFactory;
@@ -90,7 +90,7 @@ public abstract class DataLinkSetup {
 
     protected static final String SERVICE_NAME = "JUNIT";
 
-    @BeforeClass
+    @BeforeAll
     public static void setupBundleconfig() throws Exception {
         System.setProperty("AJSC_HOME", ".");
         System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");

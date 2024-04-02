@@ -20,7 +20,7 @@
 
 package org.onap.aai.edges;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
@@ -29,8 +29,8 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Scanner;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.onap.aai.edges.enums.EdgeType;
 
 public class EdgeRuleQueryTest {
@@ -38,7 +38,7 @@ public class EdgeRuleQueryTest {
     private String readStart = "$.rules.[?]";
 
     /* **** DATA SETUP **** */
-    @Before
+    @BeforeEach
     public void setup() {
         InputStream is = getClass().getResourceAsStream("/edgeRules/test.json");
 

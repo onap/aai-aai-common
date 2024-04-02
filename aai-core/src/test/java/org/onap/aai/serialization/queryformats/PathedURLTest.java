@@ -21,7 +21,7 @@
 package org.onap.aai.serialization.queryformats;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
@@ -36,8 +36,8 @@ import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
 import org.hamcrest.CoreMatchers;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.onap.aai.AAISetup;
@@ -75,7 +75,7 @@ public class PathedURLTest extends AAISetup {
     private Vertex complex;
     private DBSerializer serializer;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
 
         version = schemaVersions.getDefaultVersion();
@@ -133,13 +133,13 @@ public class PathedURLTest extends AAISetup {
 
         JsonObject pserverObject = jsonObjectOptional.get();
 
-        assertNotNull("Expecting the pserver object to contain resource type", pserverObject.get("resource-type"));
+        assertNotNull(pserverObject.get("resource-type"), "Expecting the pserver object to contain resource type");
         assertThat(pserverObject.get("resource-type").getAsString(), CoreMatchers.is("pserver"));
-        assertNotNull("Expecting the pserver object to contain resource link", pserverObject.get("resource-link"));
+        assertNotNull(pserverObject.get("resource-link"), "Expecting the pserver object to contain resource link");
         assertThat(pserverObject.get("resource-link").getAsString(),
                 CoreMatchers.is("/aai/v14/cloud-infrastructure/pservers/pserver/hostname-1"));
-        assertNotNull("Expecting the pserver object to contain resource version",
-                pserverObject.get("resource-version"));
+        assertNotNull(pserverObject.get("resource-version"),
+                "Expecting the pserver object to contain resource version");
     }
 
     @Test
@@ -156,12 +156,12 @@ public class PathedURLTest extends AAISetup {
 
         JsonObject pserverObject = jsonObjectOptional.get();
 
-        assertNotNull("Expecting the pserver object to contain resource type", pserverObject.get("resource-type"));
+        assertNotNull(pserverObject.get("resource-type"), "Expecting the pserver object to contain resource type");
         assertThat(pserverObject.get("resource-type").getAsString(), CoreMatchers.is("pserver"));
-        assertNotNull("Expecting the pserver object to contain resource link", pserverObject.get("resource-link"));
+        assertNotNull(pserverObject.get("resource-link"), "Expecting the pserver object to contain resource link");
         assertThat(pserverObject.get("resource-link").getAsString(),
                 CoreMatchers.is("/aai/v14/cloud-infrastructure/pservers/pserver/hostname-1"));
-        assertNull("Expecting the pserver object to not contain resource version",
-                pserverObject.get("resource-version"));
+        assertNull(pserverObject.get("resource-version"),
+                "Expecting the pserver object to not contain resource version");
     }
 }

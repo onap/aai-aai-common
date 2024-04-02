@@ -20,13 +20,10 @@
 
 package org.onap.aai.introspection.tools;
 
-import static junit.framework.TestCase.assertNotNull;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.onap.aai.AAISetup;
 import org.onap.aai.introspection.*;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
@@ -39,7 +36,7 @@ public class DefaultFieldsTest extends AAISetup {
     private Issue issue;
     private DefaultFields defaultFields;
 
-    @Before
+    @BeforeEach
     public void setup() {
         loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
         issue = new Issue();
@@ -50,7 +47,7 @@ public class DefaultFieldsTest extends AAISetup {
     public void testDefaultFieldOfPserverIsSucccessfullyResolved() throws AAIUnknownObjectException {
 
         Introspector pserver = loader.introspectorFromName("pserver");
-        assertNotNull("Unable to load the template introspector", pserver);
+        assertNotNull(pserver, "Unable to load the template introspector");
 
         issue.setDetail("Some message");
         issue.setType(IssueType.MISSING_REQUIRED_PROP);
@@ -59,16 +56,17 @@ public class DefaultFieldsTest extends AAISetup {
 
         boolean isResolved = defaultFields.resolveIssue(issue);
 
-        assertTrue("Unable to resolve the pserver in-maint default field issue", isResolved);
-        assertEquals("Introspector didn't successfully modify the pserver in-maint", false,
-                pserver.getValue("in-maint"));
+        assertTrue(isResolved, "Unable to resolve the pserver in-maint default field issue");
+        assertEquals(false,
+                pserver.getValue("in-maint"),
+                "Introspector didn't successfully modify the pserver in-maint");
     }
 
     @Test
     public void testDefaultFieldResolverShouldFailWhenResolveOnNonDefaultField() throws AAIUnknownObjectException {
 
         Introspector pserver = loader.introspectorFromName("pserver");
-        assertNotNull("Unable to load the template introspector", pserver);
+        assertNotNull(pserver, "Unable to load the template introspector");
 
         issue.setDetail("Some message");
         issue.setType(IssueType.MISSING_REQUIRED_PROP);
@@ -77,6 +75,6 @@ public class DefaultFieldsTest extends AAISetup {
 
         boolean isResolved = defaultFields.resolveIssue(issue);
 
-        assertFalse("It shouldn't be resolving this issue as hostname is required key", isResolved);
+        assertFalse(isResolved, "It shouldn't be resolving this issue as hostname is required key");
     }
 }

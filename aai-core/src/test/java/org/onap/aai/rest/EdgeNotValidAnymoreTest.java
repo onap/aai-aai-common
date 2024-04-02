@@ -22,8 +22,8 @@ package org.onap.aai.rest;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -35,9 +35,9 @@ import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.janusgraph.core.JanusGraph;
 import org.janusgraph.core.JanusGraphTransaction;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.onap.aai.AAISetup;
 import org.onap.aai.HttpTestUtil;
 import org.onap.aai.PayloadUtil;
@@ -52,7 +52,7 @@ public class EdgeNotValidAnymoreTest extends AAISetup {
 
     private HttpTestUtil testUtil;
 
-    @Before
+    @BeforeEach
     public void setupData() throws IOException, AAIException {
 
         String cloudRegionEndpoint =
@@ -101,7 +101,7 @@ public class EdgeNotValidAnymoreTest extends AAISetup {
         assertThat(body, not(containsString("vlan")));
     }
 
-    @After
+    @AfterEach
     public void teardown() {
 
         JanusGraph janusGraph = AAIGraph.getInstance().getGraph();

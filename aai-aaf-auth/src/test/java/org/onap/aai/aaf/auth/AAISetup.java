@@ -20,11 +20,11 @@
 
 package org.onap.aai.aaf.auth;
 
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 
 public class AAISetup {
 
-    @BeforeClass
+    @BeforeAll
     public static void preSetup() {
         System.setProperty("AJSC_HOME", ".");
         System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");

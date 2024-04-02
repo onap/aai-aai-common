@@ -20,14 +20,11 @@
 
 package org.onap.aai.rest;
 
-import static junit.framework.TestCase.fail;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
 
 import com.jayway.jsonpath.JsonPath;
 
@@ -38,11 +35,10 @@ import javax.ws.rs.core.Response;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.janusgraph.core.JanusGraphTransaction;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.onap.aai.AAISetup;
 import org.onap.aai.HttpTestUtil;
 import org.onap.aai.PayloadUtil;
@@ -54,7 +50,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.test.annotation.DirtiesContext;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
-@RunWith(value = Parameterized.class)
 public class PrivateEdgeIntegrationTest extends AAISetup {
 
     private static Logger logger = LoggerFactory.getLogger(PserverTest.class);
@@ -63,14 +58,9 @@ public class PrivateEdgeIntegrationTest extends AAISetup {
 
     private String modelId;
     private String modelVerId;
-
-    @Parameterized.Parameter(value = 0)
     public QueryStyle queryStyle;
-
-    @Parameterized.Parameter(value = 1)
     public SchemaVersion version;
 
-    @Parameterized.Parameters(name = "QueryStyle.{0} Version.{1}")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {{QueryStyle.TRAVERSAL, new SchemaVersion("v10")},
                 {QueryStyle.TRAVERSAL_URI, new SchemaVersion("v10")}, {QueryStyle.TRAVERSAL, new SchemaVersion("v11")},
@@ -80,7 +70,7 @@ public class PrivateEdgeIntegrationTest extends AAISetup {
                 {QueryStyle.TRAVERSAL_URI, new SchemaVersion("v14")}});
     }
 
-    @Before
+    @BeforeEach
     public void setUpModelData() throws Exception {
         httpTestUtil = new HttpTestUtil(QueryStyle.TRAVERSAL);
         relationshipMap = new HashMap<>();
@@ -116,8 +106,11 @@ public class PrivateEdgeIntegrationTest extends AAISetup {
         assertThat("Model was not successfully created", response.getStatus(), is(201));
     }
 
-    @Test
-    public void testPutGenericVnfWithModelInfoToMatchExistingModelAndCheckIfPrivateEdgeCreated() throws Exception {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0} Version.{1}")
+    public void testPutGenericVnfWithModelInfoToMatchExistingModelAndCheckIfPrivateEdgeCreated(QueryStyle queryStyle, SchemaVersion version) throws Exception {
+
+        initPrivateEdgeIntegrationTest(queryStyle, version);
 
         Map<String, String> genericVnfHashMap = new HashMap<>();
         String genericVnf = "test-generic-" + UUID.randomUUID().toString();
@@ -129,35 +122,38 @@ public class PrivateEdgeIntegrationTest extends AAISetup {
 
         Response response = httpTestUtil.doPut(
                 "/aai/" + version.toString() + "/network/generic-vnfs/generic-vnf/" + genericVnf, genericVnfPayload);
-        assertNotNull("Response returned null", response);
+        assertNotNull(response, "Response returned null");
         assertThat("Check the generic vnf is created", response.getStatus(), is(201));
 
         List<Edge> edges =
                 AAIGraph.getInstance().getGraph().newTransaction().traversal().E().has("private", true).toList();
-        assertNotNull("List of edges should not be null", edges);
+        assertNotNull(edges, "List of edges should not be null");
         assertThat(edges.size(), is(1));
         Edge oldEdge = edges.get(0);
         assertNotNull(oldEdge);
 
         response = httpTestUtil.doGet("/aai/" + version.toString() + "/network/generic-vnfs/generic-vnf/" + genericVnf);
-        assertNotNull("Response returned null", response);
+        assertNotNull(response, "Response returned null");
         assertThat("Check the generic vnf is created", response.getStatus(), is(200));
         assertThat(response.getEntity().toString(), not(containsString("relationship-list")));
 
         String resourceVersion = JsonPath.read(response.getEntity().toString(), "$.resource-version");
         response = httpTestUtil.doDelete(
                 "/aai/" + version.toString() + "/network/generic-vnfs/generic-vnf/" + genericVnf, resourceVersion);
-        assertNotNull("Response returned null", response);
+        assertNotNull(response, "Response returned null");
         assertThat("Check the generic vnf is deleted", response.getStatus(), is(204));
 
         edges = AAIGraph.getInstance().getGraph().newTransaction().traversal().E().has("private", true).toList();
-        assertNotNull("List of edges should not be null", edges);
+        assertNotNull(edges, "List of edges should not be null");
         assertThat(edges.size(), is(0));
     }
 
-    @Test
-    public void testPutGenericVnfWithModelInfoToMatchExistingModelAndDoAnotherPutAndDontIncludeModelInfoAndPrivateEdgeShouldBeDeleted()
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0} Version.{1}")
+    public void testPutGenericVnfWithModelInfoToMatchExistingModelAndDoAnotherPutAndDontIncludeModelInfoAndPrivateEdgeShouldBeDeleted(QueryStyle queryStyle, SchemaVersion version)
             throws Exception {
+
+        initPrivateEdgeIntegrationTest(queryStyle, version);
 
         Map<String, String> genericVnfHashMap = new HashMap<>();
         String genericVnf = "test-generic-" + UUID.randomUUID().toString();
@@ -169,17 +165,17 @@ public class PrivateEdgeIntegrationTest extends AAISetup {
 
         Response response = httpTestUtil.doPut(
                 "/aai/" + version.toString() + "/network/generic-vnfs/generic-vnf/" + genericVnf, genericVnfPayload);
-        assertNotNull("Response returned null", response);
+        assertNotNull(response, "Response returned null");
         assertThat("Check the generic vnf is created", response.getStatus(), is(201));
 
         response = httpTestUtil.doGet("/aai/" + version.toString() + "/network/generic-vnfs/generic-vnf/" + genericVnf);
-        assertNotNull("Response returned null", response);
+        assertNotNull(response, "Response returned null");
         assertThat("Check the generic vnf is created", response.getStatus(), is(200));
         assertThat(response.getEntity().toString(), not(containsString("relationship-list")));
 
         List<Edge> edges =
                 AAIGraph.getInstance().getGraph().newTransaction().traversal().E().has("private", true).toList();
-        assertNotNull("List of edges should not be null", edges);
+        assertNotNull(edges, "List of edges should not be null");
         assertThat(edges.size(), is(1));
         Edge oldEdge = edges.get(0);
         assertNotNull(oldEdge);
@@ -191,31 +187,33 @@ public class PrivateEdgeIntegrationTest extends AAISetup {
 
         response = httpTestUtil.doPut("/aai/" + version.toString() + "/network/generic-vnfs/generic-vnf/" + genericVnf,
                 newGenericVnfPayload);
-        assertNotNull("Response returned from second put is null", response);
+        assertNotNull(response, "Response returned from second put is null");
         assertThat("Check the generic vnf is updated", response.getStatus(), is(200));
 
         response = httpTestUtil.doGet("/aai/" + version.toString() + "/network/generic-vnfs/generic-vnf/" + genericVnf);
-        assertNotNull("Response returned from second put is null", response);
+        assertNotNull(response, "Response returned from second put is null");
         assertThat("Check the generic vnf is updated", response.getStatus(), is(200));
 
         edges = AAIGraph.getInstance().getGraph().newTransaction().traversal().E().has("private", true).toList();
-        assertNotNull("List of edges should not be null", edges);
+        assertNotNull(edges, "List of edges should not be null");
         assertThat("Expected the edges to be zero since updated with no model info", edges.size(), is(0));
 
         resourceVersion = JsonPath.read(response.getEntity().toString(), "$.resource-version");
         response = httpTestUtil.doDelete(
                 "/aai/" + version.toString() + "/network/generic-vnfs/generic-vnf/" + genericVnf, resourceVersion);
-        assertNotNull("Response returned null", response);
+        assertNotNull(response, "Response returned null");
         assertThat("Check the generic vnf is deleted", response.getStatus(), is(204));
 
         edges = AAIGraph.getInstance().getGraph().newTransaction().traversal().E().has("private", true).toList();
-        assertNotNull("List of edges should not be null", edges);
+        assertNotNull(edges, "List of edges should not be null");
         assertThat(edges.size(), is(0));
     }
 
-    @Test
-    public void testPutGenericVnfWithModelInfoToMatchExistingModelAndCheckIfPrivateEdgeCreatedAndAlsoDoAnotherPutSameDataAndMakeSureEdgeIsStillThere()
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0} Version.{1}")
+    public void testPutGenericVnfWithModelInfoToMatchExistingModelAndCheckIfPrivateEdgeCreatedAndAlsoDoAnotherPutSameDataAndMakeSureEdgeIsStillThere(QueryStyle queryStyle, SchemaVersion version)
             throws Exception {
+        initPrivateEdgeIntegrationTest(queryStyle, version);
         Map<String, String> genericVnfHashMap = new HashMap<>();
         String genericVnf = "test-generic-" + UUID.randomUUID().toString();
 
@@ -226,17 +224,17 @@ public class PrivateEdgeIntegrationTest extends AAISetup {
 
         Response response = httpTestUtil.doPut(
                 "/aai/" + version.toString() + "/network/generic-vnfs/generic-vnf/" + genericVnf, genericVnfPayload);
-        assertNotNull("Response returned null", response);
+        assertNotNull(response, "Response returned null");
         assertThat("Check the generic vnf is created", response.getStatus(), is(201));
 
         response = httpTestUtil.doGet("/aai/" + version.toString() + "/network/generic-vnfs/generic-vnf/" + genericVnf);
-        assertNotNull("Response returned null", response);
+        assertNotNull(response, "Response returned null");
         assertThat("Check the generic vnf is created", response.getStatus(), is(200));
         assertThat(response.getEntity().toString(), not(containsString("relationship-list")));
 
         List<Edge> edges =
                 AAIGraph.getInstance().getGraph().newTransaction().traversal().E().has("private", true).toList();
-        assertNotNull("List of edges should not be null", edges);
+        assertNotNull(edges, "List of edges should not be null");
         assertThat(edges.size(), is(1));
         Edge oldEdge = edges.get(0);
         assertNotNull(oldEdge);
@@ -248,17 +246,17 @@ public class PrivateEdgeIntegrationTest extends AAISetup {
 
         response = httpTestUtil.doPut("/aai/" + version.toString() + "/network/generic-vnfs/generic-vnf/" + genericVnf,
                 genericVnfPayloadWithResource);
-        assertNotNull("Response returned null", response);
+        assertNotNull(response, "Response returned null");
         assertThat("Check the generic vnf is updated", response.getStatus(), is(200));
 
         response = httpTestUtil.doGet("/aai/" + version.toString() + "/network/generic-vnfs/generic-vnf/" + genericVnf);
-        assertNotNull("Response returned null", response);
+        assertNotNull(response, "Response returned null");
         assertThat("Check the generic vnf is created", response.getStatus(), is(200));
         assertThat(response.getEntity().toString(), not(containsString("relationship-list")));
 
         resourceVersion = JsonPath.read(response.getEntity().toString(), "$.resource-version");
         edges = AAIGraph.getInstance().getGraph().newTransaction().traversal().E().has("private", true).toList();
-        assertNotNull("List of edges should not be null", edges);
+        assertNotNull(edges, "List of edges should not be null");
         assertThat(edges.size(), is(1));
         Edge newEdge = edges.get(0);
         assertNotNull(newEdge);
@@ -266,16 +264,18 @@ public class PrivateEdgeIntegrationTest extends AAISetup {
 
         response = httpTestUtil.doDelete(
                 "/aai/" + version.toString() + "/network/generic-vnfs/generic-vnf/" + genericVnf, resourceVersion);
-        assertNotNull("Response returned null", response);
+        assertNotNull(response, "Response returned null");
         assertThat("Check the generic vnf is deleted", response.getStatus(), is(204));
 
         edges = AAIGraph.getInstance().getGraph().newTransaction().traversal().E().has("private", true).toList();
-        assertNotNull("List of edges should not be null", edges);
+        assertNotNull(edges, "List of edges should not be null");
         assertThat(edges.size(), is(0));
     }
 
-    @Test
-    public void testPutGenericVnfWithModelThatDoesntExistAndCheckIfItReturnsNotFound() throws Exception {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0} Version.{1}")
+    public void testPutGenericVnfWithModelThatDoesntExistAndCheckIfItReturnsNotFound(QueryStyle queryStyle, SchemaVersion version) throws Exception {
+        initPrivateEdgeIntegrationTest(queryStyle, version);
         Map<String, String> genericVnfHashMap = new HashMap<>();
         String genericVnf = "test-generic-" + UUID.randomUUID().toString();
 
@@ -286,7 +286,7 @@ public class PrivateEdgeIntegrationTest extends AAISetup {
 
         Response response = httpTestUtil.doPut(
                 "/aai/" + version.toString() + "/network/generic-vnfs/generic-vnf/" + genericVnf, genericVnfPayload);
-        assertNotNull("Response returned null", response);
+        assertNotNull(response, "Response returned null");
 
         String body = response.getEntity().toString();
 
@@ -295,8 +295,11 @@ public class PrivateEdgeIntegrationTest extends AAISetup {
         assertThat(body, containsString("Node Not Found"));
     }
 
-    @Test
-    public void testPutGenericVnfWithModelMissingPartOfKeyReturnsBadRequest() throws Exception {
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0} Version.{1}")
+    public void testPutGenericVnfWithModelMissingPartOfKeyReturnsBadRequest(QueryStyle queryStyle, SchemaVersion version) throws Exception {
+
+        initPrivateEdgeIntegrationTest(queryStyle, version);
 
         String genericVnf = "test-generic-" + UUID.randomUUID().toString();
         String genericVnfPayload = "{\n" + "  \"vnf-id\": \"" + genericVnf + "\",\n" + "  \"vnf-type\": \"someval\",\n"
@@ -304,7 +307,7 @@ public class PrivateEdgeIntegrationTest extends AAISetup {
 
         Response response = httpTestUtil.doPut(
                 "/aai/" + version.toString() + "/network/generic-vnfs/generic-vnf/" + genericVnf, genericVnfPayload);
-        assertNotNull("Response returned null", response);
+        assertNotNull(response, "Response returned null");
 
         String body = response.getEntity().toString();
         logger.info("Response from the PUT request: " + body);
@@ -312,9 +315,12 @@ public class PrivateEdgeIntegrationTest extends AAISetup {
         assertThat(body, containsString("model-invariant-id requires model-version-id"));
     }
 
-    @Test
-    public void testPutGenericVnfWithModelInfoToMatchExistingModelAndDeleteModelVerAndCheckIfPreventDeleteFailsWithBadRequest()
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0} Version.{1}")
+    public void testPutGenericVnfWithModelInfoToMatchExistingModelAndDeleteModelVerAndCheckIfPreventDeleteFailsWithBadRequest(QueryStyle queryStyle, SchemaVersion version)
             throws Exception {
+
+        initPrivateEdgeIntegrationTest(queryStyle, version);
 
         Map<String, String> genericVnfHashMap = new HashMap<>();
         String genericVnf = "test-generic-" + UUID.randomUUID().toString();
@@ -326,12 +332,12 @@ public class PrivateEdgeIntegrationTest extends AAISetup {
 
         Response response = httpTestUtil.doPut(
                 "/aai/" + version.toString() + "/network/generic-vnfs/generic-vnf/" + genericVnf, genericVnfPayload);
-        assertNotNull("Response returned null", response);
+        assertNotNull(response, "Response returned null");
         assertThat("Check the generic vnf is created", response.getStatus(), is(201));
 
         List<Edge> edges =
                 AAIGraph.getInstance().getGraph().newTransaction().traversal().E().has("private", true).toList();
-        assertNotNull("List of edges should not be null", edges);
+        assertNotNull(edges, "List of edges should not be null");
         assertThat(edges.size(), is(1));
         Edge oldEdge = edges.get(0);
         assertNotNull(oldEdge);
@@ -343,15 +349,18 @@ public class PrivateEdgeIntegrationTest extends AAISetup {
         String resourceVersion = JsonPath.read(response.getEntity().toString(), "$.resource-version");
         response = httpTestUtil.doDelete("/aai/" + version.toString() + "/service-design-and-creation/models/model/"
                 + modelId + "/model-vers/model-ver/" + modelVerId, resourceVersion);
-        assertNotNull("Response returned null", response);
+        assertNotNull(response, "Response returned null");
         assertThat("Check the generic vnf is deleted", response.getStatus(), is(400));
         assertThat(response.getEntity().toString(),
                 containsString(" Please clean up references from the following types [generic-vnf]"));
     }
 
-    @Test
-    public void testPutWithGenericVnfToExistingModelAndUpdateWithNewModelInfoAndEdgeToOldModelShouldBeDeletedAndNewEdgeToNewModelShouldBeCreated()
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0} Version.{1}")
+    public void testPutWithGenericVnfToExistingModelAndUpdateWithNewModelInfoAndEdgeToOldModelShouldBeDeletedAndNewEdgeToNewModelShouldBeCreated(QueryStyle queryStyle, SchemaVersion version)
             throws Exception {
+
+        initPrivateEdgeIntegrationTest(queryStyle, version);
 
         Map<String, String> genericVnfHashMap = new HashMap<>();
         String genericVnf = "test-generic-" + UUID.randomUUID().toString();
@@ -363,18 +372,18 @@ public class PrivateEdgeIntegrationTest extends AAISetup {
 
         Response response = httpTestUtil.doPut(
                 "/aai/" + version.toString() + "/network/generic-vnfs/generic-vnf/" + genericVnf, genericVnfPayload);
-        assertNotNull("Response returned null", response);
+        assertNotNull(response, "Response returned null");
         assertThat("Check the generic vnf is created", response.getStatus(), is(201));
 
         List<Edge> edges =
                 AAIGraph.getInstance().getGraph().newTransaction().traversal().E().has("private", true).toList();
-        assertNotNull("List of edges should not be null", edges);
+        assertNotNull(edges, "List of edges should not be null");
         assertThat(edges.size(), is(1));
         Edge oldEdge = edges.get(0);
         assertNotNull(oldEdge);
 
         response = httpTestUtil.doGet("/aai/" + version.toString() + "/network/generic-vnfs/generic-vnf/" + genericVnf);
-        assertNotNull("Response returned null", response);
+        assertNotNull(response, "Response returned null");
         assertThat("Check the generic vnf is created", response.getStatus(), is(200));
         assertThat(response.getEntity().toString(), not(containsString("relationship-list")));
 
@@ -394,35 +403,38 @@ public class PrivateEdgeIntegrationTest extends AAISetup {
 
         response = httpTestUtil.doPut("/aai/" + version.toString() + "/network/generic-vnfs/generic-vnf/" + genericVnf,
                 genericVnfPayloadWithResource);
-        assertNotNull("Response returned null", response);
+        assertNotNull(response, "Response returned null");
         assertThat("Check the generic vnf is successfully updated based on new model", response.getStatus(), is(200));
 
         edges = AAIGraph.getInstance().getGraph().newTransaction().traversal().E().has("private", true).toList();
-        assertNotNull("List of edges should not be null", edges);
+        assertNotNull(edges, "List of edges should not be null");
         assertThat(edges.size(), is(1));
         Edge newEdge = edges.get(0);
         assertNotNull(newEdge);
         assertNotEquals(oldEdge, newEdge);
 
         response = httpTestUtil.doGet("/aai/" + version.toString() + "/network/generic-vnfs/generic-vnf/" + genericVnf);
-        assertNotNull("Response returned null", response);
+        assertNotNull(response, "Response returned null");
         assertThat("Check the generic vnf is created", response.getStatus(), is(200));
         assertThat(response.getEntity().toString(), not(containsString("relationship-list")));
         resourceVersion = JsonPath.read(response.getEntity().toString(), "$.resource-version");
 
         response = httpTestUtil.doDelete(
                 "/aai/" + version.toString() + "/network/generic-vnfs/generic-vnf/" + genericVnf, resourceVersion);
-        assertNotNull("Response returned null", response);
+        assertNotNull(response, "Response returned null");
         assertThat("Check the generic vnf is deleted", response.getStatus(), is(204));
 
         edges = AAIGraph.getInstance().getGraph().newTransaction().traversal().E().has("private", true).toList();
-        assertNotNull("List of edges should not be null", edges);
+        assertNotNull(edges, "List of edges should not be null");
         assertThat(edges.size(), is(0));
     }
 
-    @Test
-    public void testPutWithGenericVnfToExistingModelAndUpdateWithNewModelInfoThatDoesntExistAndCheckIfReturnsNotFoundAndOldEdgeShouldNotBeDeleted()
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0} Version.{1}")
+    public void testPutWithGenericVnfToExistingModelAndUpdateWithNewModelInfoThatDoesntExistAndCheckIfReturnsNotFoundAndOldEdgeShouldNotBeDeleted(QueryStyle queryStyle, SchemaVersion version)
             throws Exception {
+
+        initPrivateEdgeIntegrationTest(queryStyle, version);
 
         Map<String, String> genericVnfHashMap = new HashMap<>();
         String genericVnf = "test-generic-" + UUID.randomUUID().toString();
@@ -434,18 +446,18 @@ public class PrivateEdgeIntegrationTest extends AAISetup {
 
         Response response = httpTestUtil.doPut(
                 "/aai/" + version.toString() + "/network/generic-vnfs/generic-vnf/" + genericVnf, genericVnfPayload);
-        assertNotNull("Response returned null", response);
+        assertNotNull(response, "Response returned null");
         assertThat("Check the generic vnf is created", response.getStatus(), is(201));
 
         List<Edge> edges =
                 AAIGraph.getInstance().getGraph().newTransaction().traversal().E().has("private", true).toList();
-        assertNotNull("List of edges should not be null", edges);
+        assertNotNull(edges, "List of edges should not be null");
         assertThat(edges.size(), is(1));
         Edge oldEdge = edges.get(0);
         assertNotNull(oldEdge);
 
         response = httpTestUtil.doGet("/aai/" + version.toString() + "/network/generic-vnfs/generic-vnf/" + genericVnf);
-        assertNotNull("Response returned null", response);
+        assertNotNull(response, "Response returned null");
         assertThat("Check the generic vnf is created", response.getStatus(), is(200));
         assertThat(response.getEntity().toString(), not(containsString("relationship-list")));
 
@@ -463,20 +475,23 @@ public class PrivateEdgeIntegrationTest extends AAISetup {
 
         response = httpTestUtil.doPut("/aai/" + version.toString() + "/network/generic-vnfs/generic-vnf/" + genericVnf,
                 genericVnfPayloadWithResource);
-        assertNotNull("Response returned null", response);
+        assertNotNull(response, "Response returned null");
         assertThat("Check the generic vnf is failed due to missing model ver", response.getStatus(), is(404));
 
         edges = AAIGraph.getInstance().getGraph().newTransaction().traversal().E().has("private", true).toList();
-        assertNotNull("List of edges should not be null", edges);
+        assertNotNull(edges, "List of edges should not be null");
         assertThat(edges.size(), is(1));
         Edge newEdge = edges.get(0);
         assertNotNull(newEdge);
         assertEquals(oldEdge, newEdge);
     }
 
-    @Test
-    public void testPutWithGenericVnfToExistingModelAndUpdateVnfWithModelMissingPartOfKeyAndUpdateShouldFailAndOldEdgeShouldStillExist()
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0} Version.{1}")
+    public void testPutWithGenericVnfToExistingModelAndUpdateVnfWithModelMissingPartOfKeyAndUpdateShouldFailAndOldEdgeShouldStillExist(QueryStyle queryStyle, SchemaVersion version)
             throws Exception {
+
+        initPrivateEdgeIntegrationTest(queryStyle, version);
 
         Map<String, String> genericVnfHashMap = new HashMap<>();
         String genericVnf = "test-generic-" + UUID.randomUUID().toString();
@@ -488,18 +503,18 @@ public class PrivateEdgeIntegrationTest extends AAISetup {
 
         Response response = httpTestUtil.doPut(
                 "/aai/" + version.toString() + "/network/generic-vnfs/generic-vnf/" + genericVnf, genericVnfPayload);
-        assertNotNull("Response returned null", response);
+        assertNotNull(response, "Response returned null");
         assertThat("Check the generic vnf is created", response.getStatus(), is(201));
 
         List<Edge> edges =
                 AAIGraph.getInstance().getGraph().newTransaction().traversal().E().has("private", true).toList();
-        assertNotNull("List of edges should not be null", edges);
+        assertNotNull(edges, "List of edges should not be null");
         assertThat(edges.size(), is(1));
         Edge oldEdge = edges.get(0);
         assertNotNull(oldEdge);
 
         response = httpTestUtil.doGet("/aai/" + version.toString() + "/network/generic-vnfs/generic-vnf/" + genericVnf);
-        assertNotNull("Response returned null", response);
+        assertNotNull(response, "Response returned null");
         assertThat("Check the generic vnf is created", response.getStatus(), is(200));
         assertThat(response.getEntity().toString(), not(containsString("relationship-list")));
 
@@ -520,21 +535,24 @@ public class PrivateEdgeIntegrationTest extends AAISetup {
 
         response = httpTestUtil.doPut("/aai/" + version.toString() + "/network/generic-vnfs/generic-vnf/" + genericVnf,
                 genericVnfPayloadWithResource);
-        assertNotNull("Response returned null", response);
+        assertNotNull(response, "Response returned null");
         assertThat("Check the generic vnf is failed due to missing model ver", response.getStatus(), is(400));
         assertThat(response.getEntity().toString(), containsString("model-invariant-id requires model-version-id"));
 
         edges = AAIGraph.getInstance().getGraph().newTransaction().traversal().E().has("private", true).toList();
-        assertNotNull("List of edges should not be null", edges);
+        assertNotNull(edges, "List of edges should not be null");
         assertThat(edges.size(), is(1));
         Edge newEdge = edges.get(0);
         assertNotNull(newEdge);
         assertEquals(oldEdge, newEdge);
     }
 
-    @Test
-    public void testPutCustomerWithServiceInstanceThatHasModelVerThatExistsInDbAndDoGetOnCustomerAndCheckIfRelationshipIsNotThere()
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0} Version.{1}")
+    public void testPutCustomerWithServiceInstanceThatHasModelVerThatExistsInDbAndDoGetOnCustomerAndCheckIfRelationshipIsNotThere(QueryStyle queryStyle, SchemaVersion version)
             throws Exception {
+
+        initPrivateEdgeIntegrationTest(queryStyle, version);
 
         Map<String, String> customerHashMap = new HashMap<>();
 
@@ -547,19 +565,19 @@ public class PrivateEdgeIntegrationTest extends AAISetup {
         String customer = PayloadUtil.getTemplatePayload("customer.json", customerHashMap);
         Response response = httpTestUtil.doPut("/aai/" + version.toString() + "/business/customers/customer/"
                 + customerHashMap.get("global-customer-id"), customer);
-        assertNotNull("Response returned null", response);
+        assertNotNull(response, "Response returned null");
         assertThat("Check the cloud region is created with link to generic vnf", response.getStatus(), is(201));
 
         List<Edge> edges =
                 AAIGraph.getInstance().getGraph().newTransaction().traversal().E().has("private", true).toList();
-        assertNotNull("List of edges should not be null", edges);
+        assertNotNull(edges, "List of edges should not be null");
         assertThat(edges.size(), is(1));
         Edge oldEdge = edges.get(0);
         assertNotNull(oldEdge);
 
         response = httpTestUtil.doGet("/aai/" + version.toString() + "/business/customers/customer/"
                 + customerHashMap.get("global-customer-id"));
-        assertNotNull("Response returned null", response);
+        assertNotNull(response, "Response returned null");
         assertThat("Check the customer is returned", response.getStatus(), is(200));
         assertThat(response.getEntity().toString(), not(containsString("\"related-to\":\"model-ver\"")));
 
@@ -575,24 +593,24 @@ public class PrivateEdgeIntegrationTest extends AAISetup {
 
         response = httpTestUtil.doPut("/aai/" + version.toString() + "/network/generic-vnfs/generic-vnf/" + genericVnf,
                 genericVnfPayload);
-        assertNotNull("Response returned null", response);
+        assertNotNull(response, "Response returned null");
         assertThat("Check the customer is returned", response.getStatus(), is(201));
 
         response = httpTestUtil.doGet("/aai/" + version.toString() + "/network/generic-vnfs/generic-vnf/" + genericVnf);
-        assertNotNull("Response returned null", response);
+        assertNotNull(response, "Response returned null");
         assertThat("Check the customer is returned", response.getStatus(), is(200));
         assertThat(response.getEntity().toString(), containsString("\"related-to\":\"service-instance\""));
 
         response = httpTestUtil.doGet("/aai/" + version.toString() + "/business/customers/customer/"
                 + customerHashMap.get("global-customer-id"));
-        assertNotNull("Response returned null", response);
+        assertNotNull(response, "Response returned null");
         assertThat("Check the customer is returned", response.getStatus(), is(200));
         assertThat(response.getEntity().toString(), not(containsString("\"related-to\":\"model-ver\"")));
         assertThat(response.getEntity().toString(), containsString("\"related-to\":\"generic-vnf\""));
 
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
 
         JanusGraphTransaction transaction = AAIGraph.getInstance().getGraph().newTransaction();
@@ -616,5 +634,10 @@ public class PrivateEdgeIntegrationTest extends AAISetup {
             }
         }
 
+    }
+
+    public void initPrivateEdgeIntegrationTest(QueryStyle queryStyle, SchemaVersion version) {
+        this.queryStyle = queryStyle;
+        this.version = version;
     }
 }

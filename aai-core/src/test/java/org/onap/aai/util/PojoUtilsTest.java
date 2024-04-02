@@ -20,9 +20,7 @@
 
 package org.onap.aai.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.Lists;
@@ -42,8 +40,8 @@ import javax.xml.bind.JAXBException;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBMarshaller;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.onap.aai.domain.notificationEvent.NotificationEvent;
 
@@ -51,7 +49,7 @@ public class PojoUtilsTest {
 
     private PojoUtils pojoUtils;
 
-    @Before
+    @BeforeEach
     public void init() {
         pojoUtils = new PojoUtils();
     }
@@ -156,9 +154,11 @@ public class PojoUtilsTest {
         assertEquals("", output);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void testGetXmlFromObjectNull() throws Exception {
-        pojoUtils.getXmlFromObject(null);
+        assertThrows(NullPointerException.class, () -> {
+            pojoUtils.getXmlFromObject(null);
+        });
     }
 
     @Test

@@ -21,8 +21,8 @@
 package org.onap.aai.rest;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.List;
 import java.util.UUID;
@@ -39,7 +39,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSo
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.janusgraph.core.JanusGraph;
 import org.janusgraph.core.JanusGraphTransaction;
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.onap.aai.AAISetup;
 import org.onap.aai.HttpTestUtil;
 import org.onap.aai.db.props.AAIProperties;
@@ -93,7 +93,7 @@ public class PserverDuplicateTest extends AAISetup {
         return pserverList.size() != 1;
     }
 
-    @Ignore
+    @Disabled
     public void testWhenDuplicatesExistInGraphThatGetAllSuceeds() throws InterruptedException {
 
         int totalRetries = getNumOfRetries();

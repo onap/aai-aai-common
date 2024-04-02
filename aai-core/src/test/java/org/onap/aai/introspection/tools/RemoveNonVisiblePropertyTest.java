@@ -20,12 +20,10 @@
 
 package org.onap.aai.introspection.tools;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.onap.aai.AAISetup;
 import org.onap.aai.introspection.*;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
@@ -38,7 +36,7 @@ public class RemoveNonVisiblePropertyTest extends AAISetup {
     private Issue issue;
     private RemoveNonVisibleProperty rn;
 
-    @Before
+    @BeforeEach
     public void setup() {
         rn = new RemoveNonVisibleProperty();
         loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
@@ -52,8 +50,8 @@ public class RemoveNonVisiblePropertyTest extends AAISetup {
         issue.setType(IssueType.PROPERTY_NOT_VISIBLE);
         issue.setPropName("in-maint");
         issue.setIntrospector(introspector);
-        assertTrue("Nonvisible property should be removed", rn.resolveIssue(issue));
-        assertNull("Introspector did not remove the non visible property", introspector.getValue("in-maint"));
+        assertTrue(rn.resolveIssue(issue), "Nonvisible property should be removed");
+        assertNull(introspector.getValue("in-maint"), "Introspector did not remove the non visible property");
     }
 
     @Test
@@ -64,7 +62,7 @@ public class RemoveNonVisiblePropertyTest extends AAISetup {
         issue.setType(IssueType.MISSING_REQUIRED_PROP);
         issue.setPropName("in-maint");
         issue.setIntrospector(introspector);
-        assertFalse("Nonvisible property not present so should not have been removed", rn.resolveIssue(issue));
+        assertFalse(rn.resolveIssue(issue), "Nonvisible property not present so should not have been removed");
     }
 
 }

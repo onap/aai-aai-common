@@ -20,7 +20,7 @@
 
 package org.onap.aai.validation.edges;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.jayway.jsonpath.DocumentContext;
 
@@ -29,8 +29,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.onap.aai.edges.JsonIngestor;
 import org.onap.aai.setup.SchemaVersion;
 
@@ -38,7 +38,7 @@ public class CousinDefaultingValidationModuleTest {
     private static List<DocumentContext> ctxs;
     private static CousinDefaultingValidationModule validator;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpBeforeClass() {
         Map<SchemaVersion, List<String>> testRules = new HashMap<>();
         List<String> testFiles = new ArrayList<>();

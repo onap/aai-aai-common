@@ -20,8 +20,7 @@
 
 package org.onap.aai.util;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -33,10 +32,10 @@ import javax.json.JsonObject;
 
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.onap.aai.AAISetup;
 import org.onap.aai.dmaap.AAIDmaapEventJMSProducer;
@@ -51,27 +50,31 @@ public class StoreNotificationEventTest extends AAISetup {
     private static AAIDmaapEventJMSProducer producer;
     private static StoreNotificationEvent sne;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUp() {
         producer = Mockito.mock(AAIDmaapEventJMSProducer.class);
         // sne = new StoreNotificationEvent(producer, "transiationId", "sourceOfTruth");
     }
 
-    @Before
+    @BeforeEach
     public void setUpBefore() {
         producer = Mockito.mock(AAIDmaapEventJMSProducer.class);
         sne = new StoreNotificationEvent(producer, "transiationId", "sourceOfTruth");
 
     }
 
-    @Test(expected = AAIException.class)
+    @Test
     public void testStoreEventNullObj() throws AAIException {
-        sne.storeEventAndSendToJms(new EventHeader(), null);
+        assertThrows(AAIException.class, () -> {
+            sne.storeEventAndSendToJms(new EventHeader(), null);
+        });
     }
 
-    @Test(expected = AAIException.class)
+    @Test
     public void testStoreEventInvalidObjForPojoUtils() throws AAIException {
-        sne.storeEventAndSendToJms(new EventHeader(), new Object());
+        assertThrows(AAIException.class, () -> {
+            sne.storeEventAndSendToJms(new EventHeader(), new Object());
+        });
     }
 
     @Test
@@ -140,31 +143,37 @@ public class StoreNotificationEventTest extends AAISetup {
         assertTrue(res.contains("\"valueType\" : \"STRING\""));
     }
 
-    @Test(expected = AAIException.class)
+    @Test
     public void testStoreDynamicEventNullObj() throws AAIException {
-        DynamicEntity eventHeader = Mockito.mock(DynamicEntity.class);
-        DynamicJAXBContext notificationJaxbContext =
-                nodeIngestor.getContextForVersion(schemaVersions.getEdgeLabelVersion());
-        sne.storeDynamicEvent(notificationJaxbContext, "v12", eventHeader, null);
+        assertThrows(AAIException.class, () -> {
+            DynamicEntity eventHeader = Mockito.mock(DynamicEntity.class);
+            DynamicJAXBContext notificationJaxbContext =
+                    nodeIngestor.getContextForVersion(schemaVersions.getEdgeLabelVersion());
+            sne.storeDynamicEvent(notificationJaxbContext, "v12", eventHeader, null);
+        });
     }
 
-    @Test(expected = Exception.class)
+    @Test
     public void testStoreDynamicEventAAIException() throws Exception {
+        assertThrows(Exception.class, () -> {
 
-        DynamicJAXBContext notificationJaxbContext =
-                nodeIngestor.getContextForVersion(schemaVersions.getEdgeLabelVersion());
-        DynamicEntity obj = Mockito.mock(DynamicEntity.class);
-        DynamicEntity eventHeader = Mockito.mock(DynamicEntity.class);
-        sne.storeDynamicEvent(notificationJaxbContext, "v12", eventHeader, obj);
+            DynamicJAXBContext notificationJaxbContext =
+                    nodeIngestor.getContextForVersion(schemaVersions.getEdgeLabelVersion());
+            DynamicEntity obj = Mockito.mock(DynamicEntity.class);
+            DynamicEntity eventHeader = Mockito.mock(DynamicEntity.class);
+            sne.storeDynamicEvent(notificationJaxbContext, "v12", eventHeader, obj);
+        });
     }
 
-    @Test(expected = AAIException.class)
+    @Test
     public void testStoreEventIntrospectorNullObj() throws Exception {
-        Loader loader = Mockito.mock(Loader.class);
-        sne.storeEventAndSendToJms(loader, null, null);
+        assertThrows(AAIException.class, () -> {
+            Loader loader = Mockito.mock(Loader.class);
+            sne.storeEventAndSendToJms(loader, null, null);
+        });
     }
 
-    @Ignore("Stopped working since the model driven story")
+    @Disabled("Stopped working since the model driven story")
     @Test
     public void testStoreEvent1Introspector() throws Exception {
         Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getEdgeLabelVersion());
@@ -198,7 +207,7 @@ public class StoreNotificationEventTest extends AAISetup {
         assertTrue(res.contains("\"notification-event\""));
     }
 
-    @Ignore("Stopped working since the model driven story")
+    @Disabled("Stopped working since the model driven story")
     @Test
     public void testStoreEventIntrospectorEmptyEventHeader() throws Exception {
         Loader loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getEdgeLabelVersion());

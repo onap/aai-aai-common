@@ -20,8 +20,8 @@
 
 package org.onap.aai.restcore;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.onap.aai.AAISetup;
 
 public class CustomJacksonJaxBJsonProviderTest extends AAISetup {
@@ -30,6 +30,6 @@ public class CustomJacksonJaxBJsonProviderTest extends AAISetup {
     @Test
     public void testGetMapper() {
         customJacksonJaxBJsonProvider = new CustomJacksonJaxBJsonProvider();
-        Assert.assertNotNull(customJacksonJaxBJsonProvider.getMapper());
+        Assertions.assertNotNull(customJacksonJaxBJsonProvider.getMapper());
     }
 }

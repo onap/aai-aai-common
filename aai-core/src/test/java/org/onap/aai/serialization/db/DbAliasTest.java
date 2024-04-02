@@ -20,7 +20,7 @@
 
 package org.onap.aai.serialization.db;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
@@ -37,11 +37,10 @@ import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.janusgraph.core.JanusGraph;
 import org.janusgraph.core.JanusGraphFactory;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.onap.aai.DataLinkSetup;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.exceptions.AAIException;
@@ -56,7 +55,6 @@ import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 import org.onap.aai.setup.SchemaVersion;
 import org.springframework.test.annotation.DirtiesContext;
 
-@RunWith(value = Parameterized.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class DbAliasTest extends DataLinkSetup {
 
@@ -66,16 +64,13 @@ public class DbAliasTest extends DataLinkSetup {
     private final ModelType introspectorFactoryType = ModelType.MOXY;
     private Loader loader;
     private TransactionalGraphEngine dbEngine;
-
-    @Parameterized.Parameter
     public QueryStyle queryStyle;
 
-    @Parameterized.Parameters(name = "QueryStyle.{0}")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {{QueryStyle.TRAVERSAL}, {QueryStyle.TRAVERSAL_URI}});
     }
 
-    @Before
+    @BeforeEach
     public void setup() {
         version = schemaVersions.getDepthVersion();
         graph = JanusGraphFactory.build().set("storage.backend", "inmemory").open();
@@ -83,15 +78,17 @@ public class DbAliasTest extends DataLinkSetup {
         dbEngine = new JanusGraphDBEngine(queryStyle, loader);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         graph.tx().rollback();
         graph.close();
     }
 
-    @Test
-    public void checkOnWrite() throws AAIException, UnsupportedEncodingException, URISyntaxException, SecurityException,
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void checkOnWrite(QueryStyle queryStyle) throws AAIException, UnsupportedEncodingException, URISyntaxException, SecurityException,
             IllegalArgumentException {
+        initDbAliasTest(queryStyle);
         final String property = "persona-model-customization-id";
         String dbPropertyName = property;
         TransactionalGraphEngine spy = spy(this.dbEngine);
@@ -123,15 +120,17 @@ public class DbAliasTest extends DataLinkSetup {
             dbPropertyName = map.get(PropertyMetadata.DB_ALIAS);
         }
 
-        assertEquals("dbAlias is ", "model-customization-id", dbPropertyName);
-        assertEquals("dbAlias property exists", "hello", v.property(dbPropertyName).orElse(""));
-        assertEquals("model property does not", "missing", v.property(property).orElse("missing"));
+        assertEquals("model-customization-id", dbPropertyName, "dbAlias is ");
+        assertEquals("hello", v.property(dbPropertyName).orElse(""), "dbAlias property exists");
+        assertEquals("missing", v.property(property).orElse("missing"), "model property does not");
 
     }
 
-    @Test
-    public void checkOnRead()
+    @MethodSource("data")
+    @ParameterizedTest(name = "QueryStyle.{0}")
+    public void checkOnRead(QueryStyle queryStyle)
             throws AAIException, UnsupportedEncodingException, SecurityException, IllegalArgumentException {
+        initDbAliasTest(queryStyle);
         final String property = "persona-model-customization-id";
 
         TransactionalGraphEngine spy = spy(dbEngine);
@@ -147,8 +146,12 @@ public class DbAliasTest extends DataLinkSetup {
         Introspector obj = loader.introspectorFromName("generic-vnf");
         serializer.dbToObject(Collections.singletonList(v), obj, 0, true, "false");
 
-        assertEquals("dbAlias property exists", "hello", obj.getValue(property));
+        assertEquals("hello", obj.getValue(property), "dbAlias property exists");
 
+    }
+
+    public void initDbAliasTest(QueryStyle queryStyle) {
+        this.queryStyle = queryStyle;
     }
 
 }

@@ -20,17 +20,15 @@
 
 package org.onap.aai.introspection.generator;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.onap.aai.AAISetup;
 import org.onap.aai.exceptions.AAIException;
@@ -39,7 +37,7 @@ import org.onap.aai.introspection.Loader;
 import org.onap.aai.introspection.ModelType;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 
-@Ignore
+@Disabled
 public class CreateExampleTest extends AAISetup {
 
     private static CreateExample createExample;
@@ -47,12 +45,12 @@ public class CreateExampleTest extends AAISetup {
 
     private static boolean classLoaded = false;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUp() {
 
     }
 
-    @Before
+    @BeforeEach
     public void createLoaderVersion() {
         if (!classLoaded) {
             loader = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getAppRootVersion());

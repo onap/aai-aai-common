@@ -20,13 +20,15 @@
 
 package org.onap.aai.audit;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.onap.aai.AAISetup;
 import org.onap.aai.setup.SchemaVersion;
 import org.springframework.test.annotation.DirtiesContext;
@@ -38,7 +40,7 @@ public class ListEndpointsTest extends AAISetup {
     private SchemaVersion version;
     private ListEndpoints listEndpoints;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         properties = new Properties();
         version = schemaVersions.getDefaultVersion();
@@ -47,9 +49,9 @@ public class ListEndpointsTest extends AAISetup {
 
     @Test
     public void testGetEndpoints() {
-        Assert.assertNotNull(listEndpoints);
+        Assertions.assertNotNull(listEndpoints);
         List<String> list = listEndpoints.getEndpoints();
-        Assert.assertTrue(list != null && !list.isEmpty());
+        Assertions.assertTrue(list != null && !list.isEmpty());
 
         for (String endpoint : list) {
             System.out.println("endpoints: " + endpoint);
@@ -58,27 +60,29 @@ public class ListEndpointsTest extends AAISetup {
 
     @Test
     public void testGetEndpointsWithParam() {
-        Assert.assertNotNull(listEndpoints);
+        Assertions.assertNotNull(listEndpoints);
         List<String> list = listEndpoints.getEndpoints();
-        Assert.assertTrue(list != null && !list.isEmpty());
+        Assertions.assertTrue(list != null && !list.isEmpty());
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void testGetEndpoints_throwException() {
-        new ListEndpoints(basePath, null);
+        assertThrows(RuntimeException.class, () -> {
+            new ListEndpoints(basePath, null);
+        });
     }
 
     @Test
     public void testGetLogicalNames() {
-        Assert.assertNotNull(listEndpoints);
+        Assertions.assertNotNull(listEndpoints);
         Map<String, String> map = listEndpoints.getLogicalNames();
-        Assert.assertTrue(map != null && !map.isEmpty());
+        Assertions.assertTrue(map != null && !map.isEmpty());
     }
 
     @Test
     public void testToStrinWithParam() {
-        Assert.assertNotNull(listEndpoints);
+        Assertions.assertNotNull(listEndpoints);
         String endpoints = listEndpoints.toString("complex");
-        Assert.assertTrue(!endpoints.contains("complex"));
+        Assertions.assertTrue(!endpoints.contains("complex"));
     }
 }

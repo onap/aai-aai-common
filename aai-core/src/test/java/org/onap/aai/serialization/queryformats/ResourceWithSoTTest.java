@@ -20,7 +20,7 @@
 
 package org.onap.aai.serialization.queryformats;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
@@ -32,8 +32,8 @@ import org.apache.tinkerpop.gremlin.process.traversal.strategy.verification.Read
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.onap.aai.AAISetup;
@@ -72,7 +72,7 @@ public class ResourceWithSoTTest extends AAISetup {
     private DBSerializer serializer;
     private final ModelType factoryType = ModelType.MOXY;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
 
         version = schemaVersions.getDefaultVersion();

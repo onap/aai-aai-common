@@ -20,7 +20,7 @@
 
 package org.onap.aai.serialization.db;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
@@ -37,9 +37,11 @@ import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.janusgraph.core.JanusGraphFactory;
-import org.junit.*;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.onap.aai.config.ConfigConfiguration;
 import org.onap.aai.config.IntrospectionConfig;
 import org.onap.aai.config.SpringContextAware;
@@ -61,13 +63,11 @@ import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.setup.SchemaVersions;
 import org.onap.aai.util.AAIConstants;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 //@RunWith(value = Parameterized.class) TODO replace this functionality
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(
+@SpringJUnitConfig(
         classes = {ConfigConfiguration.class, AAICoreFakeEdgesConfigTranslator.class, NodeIngestor.class,
                 EdgeIngestor.class, EdgeSerializer.class, SpringContextAware.class, IntrospectionConfig.class,
                 XmlFormatTransformerConfiguration.class})
@@ -75,11 +75,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
         properties = {"schema.translator.list = config", "schema.nodes.location=src/test/resources/onap/oxm",
                 "schema.edges.location=src/test/resources/onap/dbedgerules"})
 public class DbSerializer_needsFakeRulesTest {
-
-    // to use, set thrown.expect to whatever your test needs
-    // this line establishes default of expecting no exception to be thrown
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
 
     protected static Graph graph;
 
@@ -101,7 +96,7 @@ public class DbSerializer_needsFakeRulesTest {
 
     public QueryStyle queryStyle = QueryStyle.TRAVERSAL;
 
-    @BeforeClass
+    @BeforeAll
     public static void init() throws Exception {
         graph = JanusGraphFactory.build().set("storage.backend", "inmemory").open();
         System.setProperty("AJSC_HOME", ".");
@@ -111,7 +106,7 @@ public class DbSerializer_needsFakeRulesTest {
 
     }
 
-    @Before
+    @BeforeEach
     public void setup() throws Exception {
         version = schemaVersions.getDefaultVersion();
         loader = SpringContextAware.getBean(LoaderFactory.class).createLoaderForVersion(introspectorFactoryType,
@@ -124,12 +119,12 @@ public class DbSerializer_needsFakeRulesTest {
         dbser = new DBSerializer(version, engine, introspectorFactoryType, "AAI-TEST");
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         engine.rollback();
     }
 
-    @AfterClass
+    @AfterAll
     public static void destroy() throws Exception {
         graph.close();
     }
@@ -204,8 +199,8 @@ public class DbSerializer_needsFakeRulesTest {
                 .createQueryFromURI(new URI("/network/generic-vnfs/generic-vnf/vnf-" + testName));
 
         localDbser.serializeToDb(gvnfObj, gvnf, uriQuery, null, "test");
-        assertTrue("Generic-vnf has uuid ", gvnf.property(AAIProperties.AAI_UUID).isPresent());
-        assertTrue("Edge has uuid ", gvnf.edges(Direction.BOTH).next().property(AAIProperties.AAI_UUID).isPresent());
+        assertTrue(gvnf.property(AAIProperties.AAI_UUID).isPresent(), "Generic-vnf has uuid ");
+        assertTrue(gvnf.edges(Direction.BOTH).next().property(AAIProperties.AAI_UUID).isPresent(), "Edge has uuid ");
 
     }
 
@@ -267,8 +262,9 @@ public class DbSerializer_needsFakeRulesTest {
         assertNotNull(dbser.createEdge(relationship, gvnf));
         assertTrue(engine.tx().traversal().V(gvnf).both("re-uses").hasNext());
         assertTrue(engine.tx().traversal().V(vnfc).both("re-uses").hasNext());
-        assertEquals("Number of edges between vertexes is 1", Long.valueOf(1),
-                engine.tx().traversal().V(vnfc).both().count().next());
+        assertEquals(Long.valueOf(1),
+                engine.tx().traversal().V(vnfc).both().count().next(),
+                "Number of edges between vertexes is 1");
 
     }
 
@@ -306,10 +302,12 @@ public class DbSerializer_needsFakeRulesTest {
         assertTrue(engine.tx().traversal().V(vnfc).both("re-uses").hasNext());
         assertTrue(engine.tx().traversal().V(gvnf).both("uses").hasNext());
         assertTrue(engine.tx().traversal().V(vnfc).both("uses").hasNext());
-        assertEquals("Number of edges between vertexes is 2", Long.valueOf(2),
-                engine.tx().traversal().V(vnfc).both().count().next());
-        assertEquals("Number of edges between vertexes is 2", Long.valueOf(2),
-                engine.tx().traversal().V(gvnf).both().count().next());
+        assertEquals(Long.valueOf(2),
+                engine.tx().traversal().V(vnfc).both().count().next(),
+                "Number of edges between vertexes is 2");
+        assertEquals(Long.valueOf(2),
+                engine.tx().traversal().V(gvnf).both().count().next(),
+                "Number of edges between vertexes is 2");
 
     }
 
@@ -341,10 +339,12 @@ public class DbSerializer_needsFakeRulesTest {
         assertNotNull(dbser.createEdge(relationship, gvnf));
         assertTrue(engine.tx().traversal().V(gvnf).both("uses").hasNext());
         assertTrue(engine.tx().traversal().V(vnfc).both("uses").hasNext());
-        assertEquals("Number of edges between vertexes is 1", Long.valueOf(1),
-                engine.tx().traversal().V(vnfc).both().count().next());
-        assertEquals("Number of edges between vertexes is 1", Long.valueOf(1),
-                engine.tx().traversal().V(gvnf).both().count().next());
+        assertEquals(Long.valueOf(1),
+                engine.tx().traversal().V(vnfc).both().count().next(),
+                "Number of edges between vertexes is 1");
+        assertEquals(Long.valueOf(1),
+                engine.tx().traversal().V(gvnf).both().count().next(),
+                "Number of edges between vertexes is 1");
 
     }
 
@@ -376,16 +376,18 @@ public class DbSerializer_needsFakeRulesTest {
         relationship.setValue("relationship-data", relData);
 
         assertTrue(localDbser.deleteEdge(relationship, gvnf).isPresent());
-        assertFalse("generic-vnf has no edge uses", engine.tx().traversal().V(gvnf).both("uses").hasNext());
-        assertFalse("vnfc has no edge uses", engine.tx().traversal().V(vnfc).both("uses").hasNext());
-        assertTrue("generic-vnf has edge re-uses", engine.tx().traversal().V(gvnf).both("re-uses").hasNext());
-        assertTrue("vnfc has edge re-uses", engine.tx().traversal().V(vnfc).both("re-uses").hasNext());
-        assertTrue("generic-vnf has edge re-uses", engine.tx().traversal().V(gvnf).both("over-uses").hasNext());
-        assertTrue("vnfc has edge re-uses", engine.tx().traversal().V(vnfc).both("over-uses").hasNext());
-        assertEquals("Number of edges between vertexes is 2", Long.valueOf(2),
-                engine.tx().traversal().V(vnfc).both().count().next());
-        assertEquals("Number of edges between vertexes is 2", Long.valueOf(2),
-                engine.tx().traversal().V(gvnf).both().count().next());
+        assertFalse(engine.tx().traversal().V(gvnf).both("uses").hasNext(), "generic-vnf has no edge uses");
+        assertFalse(engine.tx().traversal().V(vnfc).both("uses").hasNext(), "vnfc has no edge uses");
+        assertTrue(engine.tx().traversal().V(gvnf).both("re-uses").hasNext(), "generic-vnf has edge re-uses");
+        assertTrue(engine.tx().traversal().V(vnfc).both("re-uses").hasNext(), "vnfc has edge re-uses");
+        assertTrue(engine.tx().traversal().V(gvnf).both("over-uses").hasNext(), "generic-vnf has edge re-uses");
+        assertTrue(engine.tx().traversal().V(vnfc).both("over-uses").hasNext(), "vnfc has edge re-uses");
+        assertEquals(Long.valueOf(2),
+                engine.tx().traversal().V(vnfc).both().count().next(),
+                "Number of edges between vertexes is 2");
+        assertEquals(Long.valueOf(2),
+                engine.tx().traversal().V(gvnf).both().count().next(),
+                "Number of edges between vertexes is 2");
 
     }
 
@@ -419,16 +421,18 @@ public class DbSerializer_needsFakeRulesTest {
         relationship.setValue("relationship-label", "re-uses");
 
         assertTrue(localDbser.deleteEdge(relationship, gvnf).isPresent());
-        assertTrue("generic-vnf has edge uses", engine.tx().traversal().V(gvnf).both("uses").hasNext());
-        assertTrue("vnfc has edge uses", engine.tx().traversal().V(vnfc).both("uses").hasNext());
-        assertFalse("generic-vnf has no edge re-uses", engine.tx().traversal().V(gvnf).both("re-uses").hasNext());
-        assertFalse("vnfc has no edge re-uses", engine.tx().traversal().V(vnfc).both("re-uses").hasNext());
-        assertTrue("generic-vnf has edge re-uses", engine.tx().traversal().V(gvnf).both("over-uses").hasNext());
-        assertTrue("vnfc has edge re-uses", engine.tx().traversal().V(vnfc).both("over-uses").hasNext());
-        assertEquals("Number of edges between vertexes is 2", Long.valueOf(2),
-                engine.tx().traversal().V(vnfc).both().count().next());
-        assertEquals("Number of edges between vertexes is 2", Long.valueOf(2),
-                engine.tx().traversal().V(gvnf).both().count().next());
+        assertTrue(engine.tx().traversal().V(gvnf).both("uses").hasNext(), "generic-vnf has edge uses");
+        assertTrue(engine.tx().traversal().V(vnfc).both("uses").hasNext(), "vnfc has edge uses");
+        assertFalse(engine.tx().traversal().V(gvnf).both("re-uses").hasNext(), "generic-vnf has no edge re-uses");
+        assertFalse(engine.tx().traversal().V(vnfc).both("re-uses").hasNext(), "vnfc has no edge re-uses");
+        assertTrue(engine.tx().traversal().V(gvnf).both("over-uses").hasNext(), "generic-vnf has edge re-uses");
+        assertTrue(engine.tx().traversal().V(vnfc).both("over-uses").hasNext(), "vnfc has edge re-uses");
+        assertEquals(Long.valueOf(2),
+                engine.tx().traversal().V(vnfc).both().count().next(),
+                "Number of edges between vertexes is 2");
+        assertEquals(Long.valueOf(2),
+                engine.tx().traversal().V(gvnf).both().count().next(),
+                "Number of edges between vertexes is 2");
 
     }
 
@@ -436,32 +440,31 @@ public class DbSerializer_needsFakeRulesTest {
     public void deleteEdgeWithValidInvalidLabelWhenMultipleExistsTest()
             throws AAIException, UnsupportedEncodingException, NoSuchFieldException, SecurityException,
             IllegalArgumentException, IllegalAccessException {
+        Throwable exception = assertThrows(AAIException.class, () -> {
 
-        DBSerializer localDbser = getDBSerializerWithSpecificEdgeRules();
+            DBSerializer localDbser = getDBSerializerWithSpecificEdgeRules();
 
-        engine.startTransaction();
+            engine.startTransaction();
 
-        Vertex gvnf = engine.tx().addVertex("aai-node-type", "generic-vnf", "vnf-id", "myvnf", "aai-uri",
-                "/network/generic-vnfs/generic-vnf/myvnf");
-        Vertex vnfc = engine.tx().addVertex("aai-node-type", "vnfc", "vnfc-name", "a-name", "aai-uri",
-                "/network/vnfcs/vnfc/a-name");
-        edgeSer.addEdge(graph.traversal(), gvnf, vnfc, "uses");
-        edgeSer.addEdge(graph.traversal(), gvnf, vnfc, "re-uses");
-        edgeSer.addEdge(graph.traversal(), gvnf, vnfc, "over-uses");
+            Vertex gvnf = engine.tx().addVertex("aai-node-type", "generic-vnf", "vnf-id", "myvnf", "aai-uri",
+                    "/network/generic-vnfs/generic-vnf/myvnf");
+            Vertex vnfc = engine.tx().addVertex("aai-node-type", "vnfc", "vnfc-name", "a-name", "aai-uri",
+                    "/network/vnfcs/vnfc/a-name");
+            edgeSer.addEdge(graph.traversal(), gvnf, vnfc, "uses");
+            edgeSer.addEdge(graph.traversal(), gvnf, vnfc, "re-uses");
+            edgeSer.addEdge(graph.traversal(), gvnf, vnfc, "over-uses");
 
-        Introspector relData = loader.introspectorFromName("relationship-data");
-        relData.setValue("relationship-key", "vnfc.vnfc-name");
-        relData.setValue("relationship-value", "a-name");
-        Introspector relationship = loader.introspectorFromName("relationship");
-        relationship.setValue("related-to", "vnfc");
-        relationship.setValue("related-link", "/network/vnfcs/vnfc/a-name");
-        relationship.setValue("relationship-data", relData);
-        relationship.setValue("relationship-label", "NA");
-
-        thrown.expect(AAIException.class);
-        thrown.expectMessage("No rule found");
-        thrown.expectMessage("node type: generic-vnf, node type: vnfc, label: NA, type: COUSIN");
-        localDbser.deleteEdge(relationship, gvnf);
+            Introspector relData = loader.introspectorFromName("relationship-data");
+            relData.setValue("relationship-key", "vnfc.vnfc-name");
+            relData.setValue("relationship-value", "a-name");
+            Introspector relationship = loader.introspectorFromName("relationship");
+            relationship.setValue("related-to", "vnfc");
+            relationship.setValue("related-link", "/network/vnfcs/vnfc/a-name");
+            relationship.setValue("relationship-data", relData);
+            relationship.setValue("relationship-label", "NA");
+            localDbser.deleteEdge(relationship, gvnf);
+        });
+        assertTrue(exception.getMessage().contains("node type: generic-vnf, node type: vnfc, label: NA, type: COUSIN"));
     }
 
     @Test
@@ -494,25 +497,27 @@ public class DbSerializer_needsFakeRulesTest {
 
         localDbser.serializeToDb(gvnfObj, gvnf, uriQuery, null, "test");
 
-        assertTrue("vertex with vnf-id myvnf exists", engine.tx().traversal().V().has("vnf-id", "myvnf").hasNext());
-        assertTrue("vertex with vnfc-name a-name exists",
-                engine.tx().traversal().V().has("vnfc-name", "a-name").hasNext());
-        assertFalse("generic-vnf has no edge re-uses",
-                engine.tx().traversal().V().has("vnf-id", "myvnf").both("uses").hasNext());
-        assertFalse("vnfc has no edge re-uses",
-                engine.tx().traversal().V().has("vnfc-name", "a-name").both("uses").hasNext());
-        assertTrue("generic-vnf has edge re-uses",
-                engine.tx().traversal().V().has("vnf-id", "myvnf").both("re-uses").hasNext());
-        assertTrue("vnfc has edge re-uses",
-                engine.tx().traversal().V().has("vnfc-name", "a-name").both("re-uses").hasNext());
-        assertFalse("generic-vnf has no edge re-uses",
-                engine.tx().traversal().V().has("vnf-id", "myvnf").both("over-uses").hasNext());
-        assertFalse("vnfc has no edge re-uses",
-                engine.tx().traversal().V().has("vnfc-name", "a-name").both("over-uses").hasNext());
-        assertEquals("Number of edges between vertexes is 1", Long.valueOf(1),
-                engine.tx().traversal().V().has("vnfc-name", "a-name").both().count().next());
-        assertEquals("Number of edges between vertexes is 1", Long.valueOf(1),
-                engine.tx().traversal().V().has("vnf-id", "myvnf").both().count().next());
+        assertTrue(engine.tx().traversal().V().has("vnf-id", "myvnf").hasNext(), "vertex with vnf-id myvnf exists");
+        assertTrue(engine.tx().traversal().V().has("vnfc-name", "a-name").hasNext(),
+                "vertex with vnfc-name a-name exists");
+        assertFalse(engine.tx().traversal().V().has("vnf-id", "myvnf").both("uses").hasNext(),
+                "generic-vnf has no edge re-uses");
+        assertFalse(engine.tx().traversal().V().has("vnfc-name", "a-name").both("uses").hasNext(),
+                "vnfc has no edge re-uses");
+        assertTrue(engine.tx().traversal().V().has("vnf-id", "myvnf").both("re-uses").hasNext(),
+                "generic-vnf has edge re-uses");
+        assertTrue(engine.tx().traversal().V().has("vnfc-name", "a-name").both("re-uses").hasNext(),
+                "vnfc has edge re-uses");
+        assertFalse(engine.tx().traversal().V().has("vnf-id", "myvnf").both("over-uses").hasNext(),
+                "generic-vnf has no edge re-uses");
+        assertFalse(engine.tx().traversal().V().has("vnfc-name", "a-name").both("over-uses").hasNext(),
+                "vnfc has no edge re-uses");
+        assertEquals(Long.valueOf(1),
+                engine.tx().traversal().V().has("vnfc-name", "a-name").both().count().next(),
+                "Number of edges between vertexes is 1");
+        assertEquals(Long.valueOf(1),
+                engine.tx().traversal().V().has("vnf-id", "myvnf").both().count().next(),
+                "Number of edges between vertexes is 1");
 
     }
 
@@ -546,24 +551,26 @@ public class DbSerializer_needsFakeRulesTest {
 
         localDbser.serializeToDb(gvnfObj, gvnf, uriQuery, null, "test");
 
-        assertTrue("vertex with vnf-id myvnf exists", engine.tx().traversal().V().has("vnf-id", "myvnf").hasNext());
-        assertTrue("vertex with vnfc-name a-name exists",
-                engine.tx().traversal().V().has("vnfc-name", "a-name").hasNext());
-        assertTrue("generic-vnf has edge uses",
-                engine.tx().traversal().V().has("vnf-id", "myvnf").both("uses").hasNext());
-        assertTrue("vnfc has edge uses", engine.tx().traversal().V().has("vnfc-name", "a-name").both("uses").hasNext());
-        assertFalse("generic-vnf has no edge re-uses",
-                engine.tx().traversal().V().has("vnf-id", "myvnf").both("re-uses").hasNext());
-        assertFalse("vnfc has no edge re-uses",
-                engine.tx().traversal().V().has("vnfc-name", "a-name").both("re-uses").hasNext());
-        assertFalse("generic-vnf has no edge over-uses",
-                engine.tx().traversal().V().has("vnf-id", "myvnf").both("over-uses").hasNext());
-        assertFalse("vnfc has no edge over-uses",
-                engine.tx().traversal().V().has("vnfc-name", "a-name").both("over-uses").hasNext());
-        assertEquals("Number of edges between vertexes is 1", Long.valueOf(1),
-                engine.tx().traversal().V().has("vnfc-name", "a-name").both().count().next());
-        assertEquals("Number of edges between vertexes is 1", Long.valueOf(1),
-                engine.tx().traversal().V().has("vnf-id", "myvnf").both().count().next());
+        assertTrue(engine.tx().traversal().V().has("vnf-id", "myvnf").hasNext(), "vertex with vnf-id myvnf exists");
+        assertTrue(engine.tx().traversal().V().has("vnfc-name", "a-name").hasNext(),
+                "vertex with vnfc-name a-name exists");
+        assertTrue(engine.tx().traversal().V().has("vnf-id", "myvnf").both("uses").hasNext(),
+                "generic-vnf has edge uses");
+        assertTrue(engine.tx().traversal().V().has("vnfc-name", "a-name").both("uses").hasNext(), "vnfc has edge uses");
+        assertFalse(engine.tx().traversal().V().has("vnf-id", "myvnf").both("re-uses").hasNext(),
+                "generic-vnf has no edge re-uses");
+        assertFalse(engine.tx().traversal().V().has("vnfc-name", "a-name").both("re-uses").hasNext(),
+                "vnfc has no edge re-uses");
+        assertFalse(engine.tx().traversal().V().has("vnf-id", "myvnf").both("over-uses").hasNext(),
+                "generic-vnf has no edge over-uses");
+        assertFalse(engine.tx().traversal().V().has("vnfc-name", "a-name").both("over-uses").hasNext(),
+                "vnfc has no edge over-uses");
+        assertEquals(Long.valueOf(1),
+                engine.tx().traversal().V().has("vnfc-name", "a-name").both().count().next(),
+                "Number of edges between vertexes is 1");
+        assertEquals(Long.valueOf(1),
+                engine.tx().traversal().V().has("vnf-id", "myvnf").both().count().next(),
+                "Number of edges between vertexes is 1");
 
     }
 
@@ -571,31 +578,32 @@ public class DbSerializer_needsFakeRulesTest {
     public void serializeToDbWithInvalidLabelTest()
             throws AAIException, UnsupportedEncodingException, NoSuchFieldException, SecurityException,
             IllegalArgumentException, IllegalAccessException, URISyntaxException {
+        Throwable exception = assertThrows(AAIException.class, () -> {
 
-        DBSerializer localDbser = getDBSerializerWithSpecificEdgeRules();
+            DBSerializer localDbser = getDBSerializerWithSpecificEdgeRules();
 
-        engine.startTransaction();
+            engine.startTransaction();
 
-        engine.tx().addVertex("aai-node-type", "vnfc", "vnfc-name", "a-name", "aai-uri", "/network/vnfcs/vnfc/a-name");
+            engine.tx().addVertex("aai-node-type", "vnfc", "vnfc-name", "a-name", "aai-uri", "/network/vnfcs/vnfc/a-name");
 
-        Introspector relationship = loader.introspectorFromName("relationship");
-        relationship.setValue("related-to", "vnfc");
-        relationship.setValue("related-link", "/network/vnfcs/vnfc/a-name");
-        relationship.setValue("relationship-label", "NA");
-        Introspector relationshipList = loader.introspectorFromName("relationship-list");
-        relationshipList.setValue("relationship", Collections.singletonList(relationship.getUnderlyingObject()));
+            Introspector relationship = loader.introspectorFromName("relationship");
+            relationship.setValue("related-to", "vnfc");
+            relationship.setValue("related-link", "/network/vnfcs/vnfc/a-name");
+            relationship.setValue("relationship-label", "NA");
+            Introspector relationshipList = loader.introspectorFromName("relationship-list");
+            relationshipList.setValue("relationship", Collections.singletonList(relationship.getUnderlyingObject()));
 
-        Introspector gvnfObj = loader.introspectorFromName("generic-vnf");
-        Vertex gvnf = localDbser.createNewVertex(gvnfObj);
-        gvnfObj.setValue("relationship-list", relationshipList.getUnderlyingObject());
-        gvnfObj.setValue("vnf-id", "myvnf");
+            Introspector gvnfObj = loader.introspectorFromName("generic-vnf");
+            Vertex gvnf = localDbser.createNewVertex(gvnfObj);
+            gvnfObj.setValue("relationship-list", relationshipList.getUnderlyingObject());
+            gvnfObj.setValue("vnf-id", "myvnf");
 
-        QueryParser uriQuery =
-                dbEngine.getQueryBuilder().createQueryFromURI(new URI("/network/generic-vnfs/generic-vnf/myvnf"));
+            QueryParser uriQuery =
+                    dbEngine.getQueryBuilder().createQueryFromURI(new URI("/network/generic-vnfs/generic-vnf/myvnf"));
+            localDbser.serializeToDb(gvnfObj, gvnf, uriQuery, null, "test");
 
-        thrown.expect(AAIException.class);
-        thrown.expectMessage("No EdgeRule found for passed nodeTypes: generic-vnf, vnfc with label NA.");
-        localDbser.serializeToDb(gvnfObj, gvnf, uriQuery, null, "test");
+        });
+        assertTrue(exception.getMessage().contains("No EdgeRule found for passed nodeTypes: generic-vnf, vnfc with label NA."));
 
     }
 
@@ -647,25 +655,27 @@ public class DbSerializer_needsFakeRulesTest {
 
         localDbser.serializeToDb(gvnfObj, gvnf, uriQuery, null, "test");
 
-        assertTrue("vertex with vnf-id myvnf exists", engine.tx().traversal().V().has("vnf-id", "myvnf").hasNext());
-        assertTrue("vertex with vnfc-name a-name exists",
-                engine.tx().traversal().V().has("vnfc-name", "a-name").hasNext());
-        assertTrue("generic-vnf has  edge uses",
-                engine.tx().traversal().V().has("vnf-id", "myvnf").both("uses").hasNext());
-        assertTrue("vnfc has  edge uses",
-                engine.tx().traversal().V().has("vnfc-name", "a-name").both("uses").hasNext());
-        assertTrue("generic-vnf has edge re-uses",
-                engine.tx().traversal().V().has("vnf-id", "myvnf").both("re-uses").hasNext());
-        assertTrue("vnfc has edge re-uses",
-                engine.tx().traversal().V().has("vnfc-name", "a-name").both("re-uses").hasNext());
-        assertFalse("generic-vnf has no edge over-uses",
-                engine.tx().traversal().V().has("vnf-id", "myvnf").both("over-uses").hasNext());
-        assertFalse("vnfc has no edge over-uses",
-                engine.tx().traversal().V().has("vnfc-name", "a-name").both("over-uses").hasNext());
-        assertEquals("Number of edges between vertexes is 2", Long.valueOf(2),
-                engine.tx().traversal().V().has("vnfc-name", "a-name").both().count().next());
-        assertEquals("Number of edges between vertexes is 2", Long.valueOf(2),
-                engine.tx().traversal().V().has("vnf-id", "myvnf").both().count().next());
+        assertTrue(engine.tx().traversal().V().has("vnf-id", "myvnf").hasNext(), "vertex with vnf-id myvnf exists");
+        assertTrue(engine.tx().traversal().V().has("vnfc-name", "a-name").hasNext(),
+                "vertex with vnfc-name a-name exists");
+        assertTrue(engine.tx().traversal().V().has("vnf-id", "myvnf").both("uses").hasNext(),
+                "generic-vnf has  edge uses");
+        assertTrue(engine.tx().traversal().V().has("vnfc-name", "a-name").both("uses").hasNext(),
+                "vnfc has  edge uses");
+        assertTrue(engine.tx().traversal().V().has("vnf-id", "myvnf").both("re-uses").hasNext(),
+                "generic-vnf has edge re-uses");
+        assertTrue(engine.tx().traversal().V().has("vnfc-name", "a-name").both("re-uses").hasNext(),
+                "vnfc has edge re-uses");
+        assertFalse(engine.tx().traversal().V().has("vnf-id", "myvnf").both("over-uses").hasNext(),
+                "generic-vnf has no edge over-uses");
+        assertFalse(engine.tx().traversal().V().has("vnfc-name", "a-name").both("over-uses").hasNext(),
+                "vnfc has no edge over-uses");
+        assertEquals(Long.valueOf(2),
+                engine.tx().traversal().V().has("vnfc-name", "a-name").both().count().next(),
+                "Number of edges between vertexes is 2");
+        assertEquals(Long.valueOf(2),
+                engine.tx().traversal().V().has("vnf-id", "myvnf").both().count().next(),
+                "Number of edges between vertexes is 2");
 
     }
 
@@ -719,25 +729,27 @@ public class DbSerializer_needsFakeRulesTest {
 
         localDbser.serializeToDb(gvnfObj, gvnf, uriQuery, null, "test");
 
-        assertTrue("vertex with vnf-id myvnf exists", engine.tx().traversal().V().has("vnf-id", "myvnf").hasNext());
-        assertTrue("vertex with vnfc-name a-name exists",
-                engine.tx().traversal().V().has("vnfc-name", "a-name").hasNext());
-        assertTrue("generic-vnf has  edge uses",
-                engine.tx().traversal().V().has("vnf-id", "myvnf").both("uses").hasNext());
-        assertTrue("vnfc has  edge uses",
-                engine.tx().traversal().V().has("vnfc-name", "a-name").both("uses").hasNext());
-        assertFalse("generic-vnf no longer has edge re-uses",
-                engine.tx().traversal().V().has("vnf-id", "myvnf").both("re-uses").hasNext());
-        assertFalse("vnfc no longer has edge re-uses",
-                engine.tx().traversal().V().has("vnfc-name", "a-name").both("re-uses").hasNext());
-        assertFalse("generic-vnf has no edge over-uses",
-                engine.tx().traversal().V().has("vnf-id", "myvnf").both("over-uses").hasNext());
-        assertFalse("vnfc has no edge over-uses",
-                engine.tx().traversal().V().has("vnfc-name", "a-name").both("over-uses").hasNext());
-        assertEquals("Number of edges between vertexes is 1", Long.valueOf(1),
-                engine.tx().traversal().V().has("vnfc-name", "a-name").both().count().next());
-        assertEquals("Number of edges between vertexes is 1", Long.valueOf(1),
-                engine.tx().traversal().V().has("vnf-id", "myvnf").both().count().next());
+        assertTrue(engine.tx().traversal().V().has("vnf-id", "myvnf").hasNext(), "vertex with vnf-id myvnf exists");
+        assertTrue(engine.tx().traversal().V().has("vnfc-name", "a-name").hasNext(),
+                "vertex with vnfc-name a-name exists");
+        assertTrue(engine.tx().traversal().V().has("vnf-id", "myvnf").both("uses").hasNext(),
+                "generic-vnf has  edge uses");
+        assertTrue(engine.tx().traversal().V().has("vnfc-name", "a-name").both("uses").hasNext(),
+                "vnfc has  edge uses");
+        assertFalse(engine.tx().traversal().V().has("vnf-id", "myvnf").both("re-uses").hasNext(),
+                "generic-vnf no longer has edge re-uses");
+        assertFalse(engine.tx().traversal().V().has("vnfc-name", "a-name").both("re-uses").hasNext(),
+                "vnfc no longer has edge re-uses");
+        assertFalse(engine.tx().traversal().V().has("vnf-id", "myvnf").both("over-uses").hasNext(),
+                "generic-vnf has no edge over-uses");
+        assertFalse(engine.tx().traversal().V().has("vnfc-name", "a-name").both("over-uses").hasNext(),
+                "vnfc has no edge over-uses");
+        assertEquals(Long.valueOf(1),
+                engine.tx().traversal().V().has("vnfc-name", "a-name").both().count().next(),
+                "Number of edges between vertexes is 1");
+        assertEquals(Long.valueOf(1),
+                engine.tx().traversal().V().has("vnf-id", "myvnf").both().count().next(),
+                "Number of edges between vertexes is 1");
 
     }
 

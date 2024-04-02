@@ -20,7 +20,7 @@
 
 package org.onap.aai.serialization.tinkerpop;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.Tree;
@@ -29,13 +29,13 @@ import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.onap.aai.edges.enums.EdgeProperty;
 import org.onap.aai.serialization.engines.query.GraphTraversalQueryEngine;
 
-@Ignore
+@Disabled
 public class TreeBackedVertexTest {
 
     private Graph graph = TinkerGraph.open();
@@ -44,7 +44,7 @@ public class TreeBackedVertexTest {
     private Tree<Element> treeDepth1 = null;
     private Tree<Element> treeDepth0NodeOnly = null;
 
-    @Before
+    @BeforeEach
     public void configure() {
         GraphTraversalSource g = graph.traversal();
 
@@ -69,41 +69,44 @@ public class TreeBackedVertexTest {
         treeDepth0NodeOnly = new GraphTraversalQueryEngine(g).findSubGraph((Vertex) startKey, 0, true);
     }
 
-    @Ignore
+    @Disabled
     @Test
     public void oneHopViaEdges() {
 
         // BulkSet set = (BulkSet)result;
         TreeBackedVertex v = new TreeBackedVertex((Vertex) tree.getObjectsAtDepth(1).iterator().next(), tree);
 
-        assertEquals("locate child", v.edges(Direction.OUT).next().inVertex().property("name").orElse(""),
-                "interface 2");
-        assertEquals("locate cousin", v.edges(Direction.IN).next().outVertex().property("name").orElse(""),
-                "pserver 1");
+        assertEquals(v.edges(Direction.OUT).next().inVertex().property("name").orElse(""),
+                "interface 2",
+                "locate child");
+        assertEquals(v.edges(Direction.IN).next().outVertex().property("name").orElse(""),
+                "pserver 1",
+                "locate cousin");
 
     }
 
-    @Ignore
+    @Disabled
     @Test
     public void oneHopViaVertices() {
 
         // BulkSet set = (BulkSet)result;
         TreeBackedVertex v = new TreeBackedVertex((Vertex) tree.getObjectsAtDepth(1).iterator().next(), tree);
 
-        assertEquals("locate child", "interface 2", v.vertices(Direction.OUT).next().property("name").orElse(""));
-        assertEquals("locate cousin", "pserver 1", v.vertices(Direction.IN).next().property("name").orElse(""));
+        assertEquals("interface 2", v.vertices(Direction.OUT).next().property("name").orElse(""), "locate child");
+        assertEquals("pserver 1", v.vertices(Direction.IN).next().property("name").orElse(""), "locate cousin");
 
     }
 
-    @Ignore
+    @Disabled
     @Test
     public void twoHopCousinViaVertices() {
 
         // BulkSet set = (BulkSet)result;
         TreeBackedVertex v = new TreeBackedVertex((Vertex) tree.getObjectsAtDepth(1).iterator().next(), tree);
 
-        assertEquals("locate child", "subnet 1",
-                v.vertices(Direction.OUT).next().vertices(Direction.OUT, "in").next().property("name").orElse(""));
+        assertEquals("subnet 1",
+                v.vertices(Direction.OUT).next().vertices(Direction.OUT, "in").next().property("name").orElse(""),
+                "locate child");
 
     }
 
@@ -114,45 +117,46 @@ public class TreeBackedVertexTest {
         TreeBackedVertex v =
                 new TreeBackedVertex((Vertex) treeDepth1.getObjectsAtDepth(1).iterator().next(), treeDepth1);
 
-        assertEquals("nothing returned", false,
-                v.vertices(Direction.OUT).next().vertices(Direction.OUT, "hasChild").hasNext());
+        assertEquals(false,
+                v.vertices(Direction.OUT).next().vertices(Direction.OUT, "hasChild").hasNext(),
+                "nothing returned");
 
     }
 
     @Test
     public void walkVertices() {
         TreeBackedVertex v = new TreeBackedVertex((Vertex) tree.getObjectsAtDepth(1).iterator().next(), tree);
-        assertEquals("locate child", "address 2", v.vertices(Direction.OUT).next().vertices(Direction.OUT, "hasChild")
-                .next().property("name").orElse(""));
+        assertEquals("address 2", v.vertices(Direction.OUT).next().vertices(Direction.OUT, "hasChild")
+                .next().property("name").orElse(""), "locate child");
     }
 
     @Test
     public void walkEdges() {
         TreeBackedVertex v = new TreeBackedVertex((Vertex) tree.getObjectsAtDepth(1).iterator().next(), tree);
 
-        assertEquals("locate child", "address 2", v.edges(Direction.OUT).next().inVertex()
-                .edges(Direction.OUT, "hasChild").next().inVertex().property("name").orElse(""));
+        assertEquals("address 2", v.edges(Direction.OUT).next().inVertex()
+                .edges(Direction.OUT, "hasChild").next().inVertex().property("name").orElse(""), "locate child");
     }
 
     @Test
     public void noEdgesFoudWithLabelVertices() {
         TreeBackedVertex v = new TreeBackedVertex((Vertex) tree.getObjectsAtDepth(1).iterator().next(), tree);
 
-        assertEquals("missing hello label", false, v.vertices(Direction.OUT, "hello").hasNext());
+        assertEquals(false, v.vertices(Direction.OUT, "hello").hasNext(), "missing hello label");
     }
 
     @Test
     public void noEdgesFoudWithLabelEdges() {
         TreeBackedVertex v = new TreeBackedVertex((Vertex) tree.getObjectsAtDepth(1).iterator().next(), tree);
 
-        assertEquals("missing hello label", false, v.edges(Direction.OUT, "hello").hasNext());
+        assertEquals(false, v.edges(Direction.OUT, "hello").hasNext(), "missing hello label");
     }
 
     @Test
     public void depthZeroNodeOnly() {
         TreeBackedVertex v = new TreeBackedVertex((Vertex) treeDepth0NodeOnly.getObjectsAtDepth(1).iterator().next(),
                 treeDepth0NodeOnly);
-        assertEquals("no edges returned", false, v.edges(Direction.BOTH).hasNext());
+        assertEquals(false, v.edges(Direction.BOTH).hasNext(), "no edges returned");
     }
 
 }

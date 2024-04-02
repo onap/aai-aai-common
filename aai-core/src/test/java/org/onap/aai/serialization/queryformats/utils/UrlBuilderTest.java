@@ -20,7 +20,7 @@
 
 package org.onap.aai.serialization.queryformats.utils;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -29,8 +29,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.onap.aai.AAISetup;
@@ -50,7 +50,7 @@ public class UrlBuilderTest extends AAISetup {
     private static final Object vId = Long.valueOf(123);
     private static final String protocolAndHost = "http://localhost/aai/";
 
-    @Before
+    @BeforeEach
     public void before() throws UnsupportedEncodingException, URISyntaxException {
         MockitoAnnotations.openMocks(this);
         when(serializer.getURIForVertex(any(Vertex.class))).thenReturn(new URI(uri));
@@ -63,7 +63,7 @@ public class UrlBuilderTest extends AAISetup {
         UrlBuilder builder = new UrlBuilder(version, serializer, protocolAndHost, schemaVersions, basePath);
         String result = builder.pathed(v);
 
-        assertEquals("has no protocol and host", basePath + "/" + version + uri, result);
+        assertEquals(basePath + "/" + version + uri, result, "has no protocol and host");
 
     }
 
@@ -73,7 +73,7 @@ public class UrlBuilderTest extends AAISetup {
         UrlBuilder builder = new UrlBuilder(version, serializer, protocolAndHost, schemaVersions, basePath);
         String result = builder.id(v);
 
-        assertEquals("has no protocol and host", basePath + "/" + version + "/resources/id/" + vId, result);
+        assertEquals(basePath + "/" + version + "/resources/id/" + vId, result, "has no protocol and host");
 
     }
 
@@ -83,7 +83,7 @@ public class UrlBuilderTest extends AAISetup {
         UrlBuilder builder = new UrlBuilder(version, serializer, protocolAndHost, schemaVersions, basePath);
         String result = builder.pathed(v);
 
-        assertEquals("has protocol and host", protocolAndHost + version + uri, result);
+        assertEquals(protocolAndHost + version + uri, result, "has protocol and host");
 
     }
 
@@ -93,7 +93,7 @@ public class UrlBuilderTest extends AAISetup {
         UrlBuilder builder = new UrlBuilder(version, serializer, protocolAndHost, schemaVersions, basePath);
         String result = builder.id(v);
 
-        assertEquals("has protocol and host", protocolAndHost + version + "/resources/id/" + vId, result);
+        assertEquals(protocolAndHost + version + "/resources/id/" + vId, result, "has protocol and host");
 
     }
 

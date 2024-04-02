@@ -20,35 +20,34 @@
 
 package org.onap.aaiutils.oxm;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.regex.Pattern;
 
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class OxmModelLoaderTest {
-
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
 
     @Test
     public void shouldLoadOxmModelsWhichMatchToPattern() throws Exception {
         OxmModelLoader.loadModels("classpath*:test_aai_oxm*.xml", Pattern.compile("test_aai_oxm_(.*).xml"));
 
-        Assert.assertTrue(OxmModelLoader.getVersionContextMap().size() == 2);
-        Assert.assertFalse(OxmModelLoader.getVersionContextMap().containsKey("v7"));
-        Assert.assertTrue(OxmModelLoader.getVersionContextMap().containsKey("v8"));
-        Assert.assertTrue(OxmModelLoader.getVersionContextMap().containsKey("v9"));
+        Assertions.assertTrue(OxmModelLoader.getVersionContextMap().size() == 2);
+        Assertions.assertFalse(OxmModelLoader.getVersionContextMap().containsKey("v7"));
+        Assertions.assertTrue(OxmModelLoader.getVersionContextMap().containsKey("v8"));
+        Assertions.assertTrue(OxmModelLoader.getVersionContextMap().containsKey("v9"));
     }
 
     @Test
     public void shouldReportAnErrorWhenOxmModelsAreNotAvailable() throws Exception {
-        thrown.expect(Exception.class);
-        thrown.expectMessage("Failed to load schema");
+        Throwable exception = assertThrows(Exception.class, () -> {
 
-        OxmModelLoader.loadModels("classpath*:non_existing_aai_oxm*.xml",
-                Pattern.compile("non_existing_aai_oxm_(.*).xml"));
+            OxmModelLoader.loadModels("classpath*:non_existing_aai_oxm*.xml",
+                    Pattern.compile("non_existing_aai_oxm_(.*).xml"));
+        });
+        assertTrue(exception.getMessage().contains("Failed to load schema"));
     }
 
 }

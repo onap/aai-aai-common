@@ -27,11 +27,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Before;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.onap.aai.edges.EdgeIngestor;
 import org.onap.aai.nodes.NodeIngestor;
 import org.onap.aai.setup.AAIConfigTranslator;
@@ -40,7 +40,7 @@ import org.onap.aai.setup.SchemaLocationsBean;
 import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.setup.Translator;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class OxmSchemaServiceSetup {
 
     @Mock
@@ -56,7 +56,7 @@ public class OxmSchemaServiceSetup {
     private OxmEdgeRulesLoader edgeLoader;
     private OxmSchemaLoader vertexLoader;
 
-    @Before
+    @BeforeEach
     public void schemaBeanMockSetup() throws Exception {
         schemaVersionList.add(new SchemaVersion("v13"));
 

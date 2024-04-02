@@ -20,7 +20,7 @@
 
 package org.onap.aai.serialization.queryformats;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
@@ -35,9 +35,9 @@ import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
 import org.onap.aai.AAISetup;
 import org.onap.aai.exceptions.AAIException;
@@ -76,7 +76,7 @@ public class CountQuerySupportTest extends AAISetup {
     private FormatFactory ff;
     private Formatter formatter;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
 
         version = schemaVersions.getDefaultVersion();
@@ -98,7 +98,7 @@ public class CountQuerySupportTest extends AAISetup {
 
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         graph.close();
     }

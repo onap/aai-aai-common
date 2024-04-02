@@ -35,7 +35,7 @@ limitations under the License.
 
 	<properties>
 		<httpclient.version>4.5.13</httpclient.version>
-        <groovy.version>2.5.15</groovy.version>
+		<groovy.version>2.5.15</groovy.version>
 		<springframework.version>4.3.24.RELEASE</springframework.version>
 	</properties>
 	<build>
@@ -69,7 +69,7 @@ limitations under the License.
 		<dependency>
 			<groupId>org.codehaus.groovy</groupId>
 			<artifactId>groovy</artifactId>
-            <version>${groovy.version}</version>
+			<version>${groovy.version}</version>
 			<classifier>indy</classifier>
 		</dependency>
 		<dependency>
@@ -121,6 +121,11 @@ limitations under the License.
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
 		</dependency>
@@ -133,22 +138,11 @@ limitations under the License.
 			<artifactId>spring-boot-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
 		<!-- TODO: Migrate tests to junit 5 and remove this dependency -->
 		<dependency>
 			<groupId>org.junit.vintage</groupId>
 			<artifactId>junit-vintage-engine</artifactId>
 			<scope>test</scope>
-			<exclusions>
-					<exclusion>
-							<groupId>org.hamcrest</groupId>
-							<artifactId>hamcrest-core</artifactId>
-					</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
