@@ -16,6 +16,23 @@
       "message": "Please undo that",
       "revId": "d4689b77da731708d199990c89a9efcd7ff590e3",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4b95489c_07c76e8a",
+        "filename": "aai-core/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 196,
+      "author": {
+        "id": 7849
+      },
+      "writtenOn": "2024-04-09T13:07:24Z",
+      "side": 1,
+      "message": "According to the [spring docs](https://spring.io/projects/spring-kafka), 2.7.x should be used here",
+      "revId": "d4689b77da731708d199990c89a9efcd7ff590e3",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
     }
   ]
 }
