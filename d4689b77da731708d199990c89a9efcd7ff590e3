@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "42454125_8cff9430",
+        "filename": "aai-core/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 7849
+      },
+      "writtenOn": "2024-04-09T13:04:43Z",
+      "side": 1,
+      "message": "Please undo that",
+      "revId": "d4689b77da731708d199990c89a9efcd7ff590e3",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
+    }
+  ]
+}
