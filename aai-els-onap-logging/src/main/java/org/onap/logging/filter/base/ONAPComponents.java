@@ -24,15 +24,12 @@ import java.util.EnumSet;
 import java.util.Set;
 
 public enum ONAPComponents implements ONAPComponentsList {
-    OPENSTACK_ADAPTER, BPMN, GRM, AAI, DMAAP, POLICY, CATALOG_DB, REQUEST_DB, SNIRO, SDC, EXTERNAL, VNF_ADAPTER, SDNC_ADAPTER, MULTICLOUD, CLAMP, PORTAL, VID, APPC, DCAE, HOLMES, SDNC, SO, VFC, ESR, DBC, DR, MR, OPTF;
+    OPENSTACK_ADAPTER, BPMN, GRM, AAI, POLICY, CATALOG_DB, REQUEST_DB, SNIRO, SDC, EXTERNAL, VNF_ADAPTER, SDNC_ADAPTER, MULTICLOUD, CLAMP, PORTAL, VID, APPC, DCAE, HOLMES, SDNC, SO, VFC, ESR, DBC, DR, MR, OPTF;
 
     public static Set<ONAPComponents> getSOInternalComponents() {
         return EnumSet.of(OPENSTACK_ADAPTER, BPMN, CATALOG_DB, REQUEST_DB, VNF_ADAPTER, SDNC_ADAPTER);
     }
 
-    public static Set<ONAPComponents> getDMAAPInternalComponents() {
-        return EnumSet.of(DBC, DR, MR);
-    }
 
     public static Set<ONAPComponents> getAAIInternalComponents() {
         return EnumSet.of(ESR);
@@ -42,8 +39,6 @@ public enum ONAPComponents implements ONAPComponentsList {
     public String toString() {
         if (getSOInternalComponents().contains(this))
             return SO + "." + this.name();
-        else if (getDMAAPInternalComponents().contains(this))
-            return DMAAP + "." + this.name();
         else if (getAAIInternalComponents().contains(this))
             return AAI + "." + this.name();
         else

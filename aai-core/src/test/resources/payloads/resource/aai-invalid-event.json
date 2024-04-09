@@ -1,0 +1,64 @@
+{
+    "event-topic": "AAI-INVALID-EVENT",
+    "aaiEventPayload": {
+        "cambria.partition": "AAI",
+        "event-header": {
+            "severity": "NORMAL",
+            "entity-type": "object-group",
+            "top-entity-type": "object-group",
+            "entity-link": "/aai/v28/common/object-groups/object-group/ric_cluster",
+            "event-type": "AAI-EVENT",
+            "domain": "dev",
+            "action": "UPDATE",
+            "sequence-number": "0",
+            "id": "23f12123-c326-48a7-b57e-e48746c295ea",
+            "source-name": "postman-api",
+            "version": "v28",
+            "timestamp": "20231207-12:14:44:757"
+        },
+        "entity": {
+            "relationship-list": {
+                "relationship": [
+                    {
+                        "related-to": "cell",
+                        "relationship-data": [
+                            {
+                                "relationship-value": "445611193273958916",
+                                "relationship-key": "cell.cell-id"
+                            }
+                        ],
+                        "related-link": "/aai/v28/network/cells/cell/445611193273958916",
+                        "relationship-label": "org.onap.relationships.inventory.MemberOf",
+                        "related-to-property": [
+                            {
+                                "property-key": "cell.cell-name",
+                                "property-value": "MY6885_M-Schwere-Reiter-Str-440460_GU2_84079913"
+                            }
+                        ]
+                    },
+                    {
+                        "related-to": "cell",
+                        "relationship-data": [
+                            {
+                                "relationship-value": "445611193272330241",
+                                "relationship-key": "cell.cell-id"
+                            }
+                        ],
+                        "related-link": "/aai/v28/network/cells/cell/445611193272330241",
+                        "relationship-label": "org.onap.relationships.inventory.MemberOf",
+                        "related-to-property": [
+                            {
+                                "property-key": "cell.cell-name",
+                                "property-value": "MY6885_M-Schwere-Reiter-Str-440460_GTC2_84003803"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "group-name": "Urban",
+            "resource-version": "1701951284582",
+            "group-type": "cell",
+            "object-group-id": "ric_cluster"
+        }
+    }
+}

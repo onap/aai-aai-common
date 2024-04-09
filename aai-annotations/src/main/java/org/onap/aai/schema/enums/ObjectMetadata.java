@@ -28,7 +28,7 @@ public enum ObjectMetadata {
     DESCRIPTION("description"),
     /**
      * names of properties to appear in relationship-lists
-     * and parent objects in DMaaP messages
+     * and parent objects in Kafka messages
      * <br>
      * <b>comma separated list</b>
      */

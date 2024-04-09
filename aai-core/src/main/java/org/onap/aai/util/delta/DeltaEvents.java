@@ -28,8 +28,8 @@ import java.util.Date;
 import java.util.Map;
 
 import org.onap.aai.db.props.AAIProperties;
-import org.onap.aai.dmaap.AAIDmaapEventJMSProducer;
-import org.onap.aai.dmaap.MessageProducer;
+import org.onap.aai.kafka.AAIKafkaEventJMSProducer;
+import org.onap.aai.kafka.MessageProducer;
 import org.onap.aai.util.AAIConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +50,7 @@ public class DeltaEvents {
     private MessageProducer messageProducer;
 
     public DeltaEvents(String transId, String sourceName, String schemaVersion, Map<String, ObjectDelta> objectDeltas) {
-        this(transId, sourceName, schemaVersion, objectDeltas, new AAIDmaapEventJMSProducer());
+        this(transId, sourceName, schemaVersion, objectDeltas, new AAIKafkaEventJMSProducer());
     }
 
     public DeltaEvents(String transId, String sourceName, String schemaVersion, Map<String, ObjectDelta> objectDeltas,
