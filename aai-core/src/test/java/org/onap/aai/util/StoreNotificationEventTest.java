@@ -39,27 +39,27 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.onap.aai.AAISetup;
-import org.onap.aai.dmaap.AAIDmaapEventJMSProducer;
 import org.onap.aai.domain.notificationEvent.NotificationEvent.EventHeader;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.introspection.ModelType;
+import org.onap.aai.kafka.AAIKafkaEventJMSProducer;
 
 public class StoreNotificationEventTest extends AAISetup {
 
-    private static AAIDmaapEventJMSProducer producer;
+    private static AAIKafkaEventJMSProducer producer;
     private static StoreNotificationEvent sne;
 
     @BeforeClass
     public static void setUp() {
-        producer = Mockito.mock(AAIDmaapEventJMSProducer.class);
+        producer = Mockito.mock(AAIKafkaEventJMSProducer.class);
         // sne = new StoreNotificationEvent(producer, "transiationId", "sourceOfTruth");
     }
 
     @Before
     public void setUpBefore() {
-        producer = Mockito.mock(AAIDmaapEventJMSProducer.class);
+        producer = Mockito.mock(AAIKafkaEventJMSProducer.class);
         sne = new StoreNotificationEvent(producer, "transiationId", "sourceOfTruth");
 
     }

@@ -108,7 +108,7 @@ Beijing (v13)
 API changes
 ~~~~~~~~~~~
 
-- DELETE request will generate a DMAAP event for each node deleted
+- DELETE request will generate a KAFKA event for each node deleted
   (not just the for which the DELETE request was made)
 
 - Relationship list
@@ -188,7 +188,7 @@ Event Specific:
    interest.
 
 -  In v11, clients that require lineage, children, or relationship
-   information need to subscribe to a different DMaaP topic than the
+   information need to subscribe to a different Kafka topic than the
    current one.
 
 Relationship List

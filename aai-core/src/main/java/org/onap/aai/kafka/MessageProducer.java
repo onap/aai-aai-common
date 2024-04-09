@@ -18,7 +18,7 @@
  * ============LICENSE_END=========================================================
  */
 
-package org.onap.aai.dmaap;
+package org.onap.aai.kafka;
 
 import org.json.JSONObject;
 

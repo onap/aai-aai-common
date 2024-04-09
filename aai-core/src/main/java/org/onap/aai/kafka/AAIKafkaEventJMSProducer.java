@@ -20,7 +20,7 @@
  * ============LICENSE_END=========================================================
  */
 
-package org.onap.aai.dmaap;
+package org.onap.aai.kafka;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.command.ActiveMQQueue;
@@ -29,11 +29,11 @@ import org.onap.aai.util.AAIConfig;
 import org.springframework.jms.connection.CachingConnectionFactory;
 import org.springframework.jms.core.JmsTemplate;
 
-public class AAIDmaapEventJMSProducer implements MessageProducer {
+public class AAIKafkaEventJMSProducer implements MessageProducer {
 
     private JmsTemplate jmsTemplate;
 
-    public AAIDmaapEventJMSProducer() {
+    public AAIKafkaEventJMSProducer() {
         if ("true".equals(AAIConfig.get("aai.jms.enable", "true"))) {
             this.jmsTemplate = new JmsTemplate();
             String activeMqTcpUrl = System.getProperty("activemq.tcp.url", "tcp://localhost:61547");
