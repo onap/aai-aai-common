@@ -33,6 +33,57 @@
       "message": "According to the [spring docs](https://spring.io/projects/spring-kafka), 2.7.x should be used here",
       "revId": "d4689b77da731708d199990c89a9efcd7ff590e3",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "abf305b7_76175f4f",
+        "filename": "aai-core/src/main/java/org/onap/aai/web/EventClientPublisher.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 7849
+      },
+      "writtenOn": "2024-04-09T13:12:00Z",
+      "side": 1,
+      "message": "This class should probably deleted",
+      "revId": "d4689b77da731708d199990c89a9efcd7ff590e3",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1a7f7ef0_cd3d61f4",
+        "filename": "aai-core/src/main/java/org/onap/aai/web/KafkaConfig.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 7849
+      },
+      "writtenOn": "2024-04-09T13:12:00Z",
+      "side": 1,
+      "message": "Is the copyright correct?",
+      "revId": "d4689b77da731708d199990c89a9efcd7ff590e3",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d3a715a0_cb71957b",
+        "filename": "aai-core/src/test/java/org/onap/aai/kafka/AAIKafkaEventJMSConsumerTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 7849
+      },
+      "writtenOn": "2024-04-09T13:12:00Z",
+      "side": 1,
+      "message": "Leftover?",
+      "revId": "d4689b77da731708d199990c89a9efcd7ff590e3",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
     }
   ]
 }
