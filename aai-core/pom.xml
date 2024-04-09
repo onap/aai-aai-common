@@ -136,6 +136,17 @@ limitations under the License.
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
+		<groupId>org.junit.vintage</groupId>
+		<artifactId>junit-vintage-engine</artifactId>
+		<scope>test</scope>
+		<exclusions>
+			<exclusion>
+				<groupId>org.hamcrest</groupId>
+				<artifactId>hamcrest-core</artifactId>
+			</exclusion>
+		</exclusions>
+		</dependency>
+		<dependency>
 			<groupId>com.att.eelf</groupId>
 			<artifactId>eelf-core</artifactId>
 			<version>2.0.0-oss</version>
@@ -190,6 +201,16 @@ limitations under the License.
 			<groupId>com.fasterxml.jackson.jaxrs</groupId>
 			<artifactId>jackson-jaxrs-json-provider</artifactId>
 		</dependency>
+		<dependency>
+    		<groupId>org.springframework.kafka</groupId>
+    		<artifactId>spring-kafka</artifactId>
+			<version>2.7.14</version>
+		</dependency>
+		<dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka-test</artifactId>
+            <scope>test</scope>
+        </dependency>
 		<dependency>
 			<groupId>com.googlecode.json-simple</groupId>
 			<artifactId>json-simple</artifactId>

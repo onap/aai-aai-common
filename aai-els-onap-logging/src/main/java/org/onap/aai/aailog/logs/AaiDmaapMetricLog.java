@@ -33,7 +33,7 @@ public class AaiDmaapMetricLog extends MDCSetup {
 
     protected static final Logger logger = LoggerFactory.getLogger(AaiDmaapMetricLog.class);
     private static final Marker INVOKE_RETURN = MarkerFactory.getMarker("INVOKE-RETURN");
-    private static final String TARGET_ENTITY = "DMaaP";
+    private static final String TARGET_ENTITY = "KAFKA";
 
     public AaiDmaapMetricLog() {
         if (MDC.get(ONAPLogConstants.MDCs.SERVER_FQDN) == null) {

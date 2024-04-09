@@ -30,13 +30,13 @@ import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.onap.aai.dmaap.AAIDmaapEventJMSProducer;
-import org.onap.aai.dmaap.MessageProducer;
 import org.onap.aai.domain.notificationEvent.NotificationEvent;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
+import org.onap.aai.kafka.AAIKafkaEventJMSProducer;
+import org.onap.aai.kafka.MessageProducer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -59,12 +59,12 @@ public class StoreNotificationEvent {
      * Instantiates a new store notification event.
      */
     public StoreNotificationEvent(String transactionId, String sourceOfTruth) {
-        this.messageProducer = new AAIDmaapEventJMSProducer();
+        this.messageProducer = new AAIKafkaEventJMSProducer();
         this.transactionId = transactionId;
         this.sourceOfTruth = sourceOfTruth;
     }
 
-    public StoreNotificationEvent(AAIDmaapEventJMSProducer producer, String transactionId, String sourceOfTruth) {
+    public StoreNotificationEvent(AAIKafkaEventJMSProducer producer, String transactionId, String sourceOfTruth) {
         this.messageProducer = producer;
         this.transactionId = transactionId;
         this.sourceOfTruth = sourceOfTruth;
@@ -139,7 +139,7 @@ public class StoreNotificationEvent {
         try {
             PojoUtils pu = new PojoUtils();
             String entityJson = pu.getJsonFromObject(ne);
-            sendToDmaapJmsQueue(entityJson);
+            sendToKafkaJmsQueue(entityJson);
             return entityJson;
         } catch (Exception e) {
             throw new AAIException("AAI_7350", e);
@@ -227,7 +227,7 @@ public class StoreNotificationEvent {
             marshaller.setProperty(org.eclipse.persistence.jaxb.MarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME, false);
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, false);
             marshaller.marshal(notificationEvent, result);
-            this.sendToDmaapJmsQueue(result.toString());
+            this.sendToKafkaJmsQueue(result.toString());
 
         } catch (Exception e) {
             throw new AAIException("AAI_7350", e);
@@ -380,7 +380,7 @@ public class StoreNotificationEvent {
             notificationEvent.setValue("entity", obj.getUnderlyingObject());
 
             String entityJson = notificationEvent.marshal(false);
-            sendToDmaapJmsQueue(entityJson);
+            sendToKafkaJmsQueue(entityJson);
             return entityJson;
         } catch (JSONException e) {
             throw new AAIException("AAI_7350", e);
@@ -389,7 +389,7 @@ public class StoreNotificationEvent {
         }
     }
 
-    private void sendToDmaapJmsQueue(String entityString) throws JSONException {
+    private void sendToKafkaJmsQueue(String entityString) throws JSONException {
 
         JSONObject entityJsonObject = new JSONObject(entityString);
 
