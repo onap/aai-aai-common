@@ -18,6 +18,24 @@
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "eab6c141_c5a5d9f3",
+        "filename": "aai-core/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 7849
+      },
+      "writtenOn": "2024-04-10T10:06:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "42454125_8cff9430",
+      "revId": "d4689b77da731708d199990c89a9efcd7ff590e3",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "4b95489c_07c76e8a",
@@ -31,6 +49,24 @@
       "writtenOn": "2024-04-09T13:07:24Z",
       "side": 1,
       "message": "According to the [spring docs](https://spring.io/projects/spring-kafka), 2.7.x should be used here",
+      "revId": "d4689b77da731708d199990c89a9efcd7ff590e3",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "35fb8d77_6315ee67",
+        "filename": "aai-core/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 196,
+      "author": {
+        "id": 7849
+      },
+      "writtenOn": "2024-04-10T10:06:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4b95489c_07c76e8a",
       "revId": "d4689b77da731708d199990c89a9efcd7ff590e3",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
     },
