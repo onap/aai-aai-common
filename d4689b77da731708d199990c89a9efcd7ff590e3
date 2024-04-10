@@ -52,6 +52,24 @@
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e801e188_8763f553",
+        "filename": "aai-core/src/main/java/org/onap/aai/web/EventClientPublisher.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 7849
+      },
+      "writtenOn": "2024-04-10T10:04:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "abf305b7_76175f4f",
+      "revId": "d4689b77da731708d199990c89a9efcd7ff590e3",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "1a7f7ef0_cd3d61f4",
@@ -100,6 +118,24 @@
       "writtenOn": "2024-04-09T13:12:00Z",
       "side": 1,
       "message": "Leftover?",
+      "revId": "d4689b77da731708d199990c89a9efcd7ff590e3",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bac98ef7_822d0e37",
+        "filename": "aai-core/src/test/java/org/onap/aai/kafka/AAIKafkaEventJMSConsumerTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 7849
+      },
+      "writtenOn": "2024-04-10T10:04:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d3a715a0_cb71957b",
       "revId": "d4689b77da731708d199990c89a9efcd7ff590e3",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
     }
