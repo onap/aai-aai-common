@@ -69,6 +69,24 @@
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "118b7068_466bdab1",
+        "filename": "aai-core/src/main/java/org/onap/aai/web/KafkaConfig.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 7849
+      },
+      "writtenOn": "2024-04-10T06:27:53Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1a7f7ef0_cd3d61f4",
+      "revId": "d4689b77da731708d199990c89a9efcd7ff590e3",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d3a715a0_cb71957b",
