@@ -265,7 +265,7 @@ public class ErrorLogHelperTest {
         Info info = ErrorLogHelper.getRestApiInfoResponse(aaiExceptionsMap);
         ErrorMessage errorMessage = info.getErrorMessages().get(0);
         assertEquals("INF0001", errorMessage.getMessageId());
-        assertEquals("Internal Error (msg=%1) (ec=%2)", errorMessage.getText());
+        assertEquals("Success X-FromAppId=%1 X-TransactionId=%2 (msg=%3) (ec=%4)", errorMessage.getText());
         assertEquals("Successful health check:OK", errorMessage.getVariables().get(0));
         assertEquals("0.0.0002", errorMessage.getVariables().get(1));
     }

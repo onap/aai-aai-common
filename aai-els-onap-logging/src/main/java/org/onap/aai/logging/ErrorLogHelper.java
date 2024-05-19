@@ -383,8 +383,7 @@ public class ErrorLogHelper {
     }
 
     private static ErrorObject getRestErrorObject(AAIException aaiException) {
-        final int restErrorCode = Integer.parseInt(aaiException.getErrorObject().getRESTErrorCode());
-        return ErrorLogHelper.getErrorObject("AAI_" + restErrorCode);
+        return ErrorLogHelper.getErrorObject("AAI_" + aaiException.getErrorObject().getRESTErrorCode());
     }
 
     public static Fault createPolicyFault(AAIException aaiException, String text, List<String> variables) {
