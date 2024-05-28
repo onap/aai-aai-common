@@ -196,7 +196,13 @@ public class HttpEntryTest extends AAISetup {
                 .put("equip-type", "theEquipType")
                 .toString();
 
+        JSONObject expectedResponseBody = new JSONObject()
+                .put("hostname", "theHostname")
+                .put("equip-type", "theEquipType");
         Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri, requestBody);
+        JSONObject actualResponseBody = new JSONObject(response.getEntity().toString());
+
+        JSONAssert.assertEquals(expectedResponseBody, actualResponseBody, JSONCompareMode.NON_EXTENSIBLE);
         assertEquals("Expected the pserver to be returned", 200, response.getStatus());
     }
 

@@ -98,42 +98,15 @@ public class UEBNotification {
             Introspector obj, HashMap<String, Introspector> relatedObjects, String basePath)
             throws AAIException, UnsupportedEncodingException {
 
-        String action = "UPDATE";
-
-        if (status.equals(Status.CREATED)) {
-            action = "CREATE";
-        } else if (status.equals(Status.OK)) {
-            action = "UPDATE";
-        } else if (status.equals(Status.NO_CONTENT)) {
-            action = "DELETE";
-        }
+        String action = getAction(status);
 
         try {
             Introspector eventHeader = currentVersionLoader.introspectorFromName("notification-event-header");
             URIToObject parser = new URIToObject(currentVersionLoader, uri, relatedObjects);
 
-            if ((basePath != null) && (!basePath.isEmpty())) {
-                if (!(basePath.startsWith("/"))) {
-                    basePath = "/" + basePath;
-                }
-                if (!(basePath.endsWith("/"))) {
-                    basePath = basePath + "/";
-                }
-            } else {
-                // default
-                basePath = "/aai/";
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("Please check the schema.uri.base.path as it didn't seem to be set");
-                }
-            }
+            basePath = formatBasePath(basePath);
 
-            String uriStr = getUri(uri.toString(), basePath);
-            String entityLink;
-            if (uriStr.startsWith("/")) {
-                entityLink = basePath + notificationVersion + uriStr;
-            } else {
-                entityLink = basePath + notificationVersion + "/" + uriStr;
-            }
+            String entityLink = formatEntityLink(uri, basePath);
 
             eventHeader.setValue("entity-link", entityLink);
             eventHeader.setValue("action", action);
@@ -189,6 +162,48 @@ public class UEBNotification {
             LOGGER.error(
                     "Unmarshalling error occurred while generating UEBNotification " + LogFormatTools.getStackTop(e));
         }
+    }
+
+    private String formatEntityLink(URI uri, String basePath) {
+        String uriStr = getUri(uri.toString(), basePath);
+        String entityLink;
+        if (uriStr.startsWith("/")) {
+            entityLink = basePath + notificationVersion + uriStr;
+        } else {
+            entityLink = basePath + notificationVersion + "/" + uriStr;
+        }
+        return entityLink;
+    }
+
+    private String formatBasePath(String basePath) {
+        if ((basePath != null) && (!basePath.isEmpty())) {
+            if (!(basePath.startsWith("/"))) {
+                basePath = "/" + basePath;
+            }
+            if (!(basePath.endsWith("/"))) {
+                basePath = basePath + "/";
+            }
+        } else {
+            // default
+            basePath = "/aai/";
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Please check the schema.uri.base.path as it didn't seem to be set");
+            }
+        }
+        return basePath;
+    }
+
+    private String getAction(Status status) {
+        String action = "UPDATE";
+
+        if (status.equals(Status.CREATED)) {
+            action = "CREATE";
+        } else if (status.equals(Status.OK)) {
+            action = "UPDATE";
+        } else if (status.equals(Status.NO_CONTENT)) {
+            action = "DELETE";
+        }
+        return action;
     }
 
     /**

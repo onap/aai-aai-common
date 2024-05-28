@@ -155,49 +155,22 @@ public class HttpEntry {
     }
 
     public HttpEntry setHttpEntryProperties(SchemaVersion version, String serverBase) {
-        this.version = version;
-        this.loader = loaderFactory.createLoaderForVersion(introspectorFactoryType, version);
-        this.dbEngine = new JanusGraphDBEngine(queryStyle, loader);
-
-        getDbEngine().startTransaction();
-        this.notification = new UEBNotification(loader, loaderFactory, schemaVersions);
-        if ("true".equals(AAIConfig.get("aai.notification.depth.all.enabled", "true"))) {
-            this.notificationDepth = AAIProperties.MAXIMUM_DEPTH;
-        } else {
-            this.notificationDepth = AAIProperties.MINIMUM_DEPTH;
-        }
-
+        setHttpEntryProperties(version);
         this.serverBase = serverBase;
         return this;
     }
 
     public HttpEntry setHttpEntryProperties(SchemaVersion version, UEBNotification notification) {
-        this.version = version;
-        this.loader = loaderFactory.createLoaderForVersion(introspectorFactoryType, version);
-        this.dbEngine = new JanusGraphDBEngine(queryStyle, loader);
-
+        setHttpEntryProperties(version);
         this.notification = notification;
-
-        if ("true".equals(AAIConfig.get("aai.notification.depth.all.enabled", "true"))) {
-            this.notificationDepth = AAIProperties.MAXIMUM_DEPTH;
-        } else {
-            this.notificationDepth = AAIProperties.MINIMUM_DEPTH;
-        }
-        // start transaction on creation
-        getDbEngine().startTransaction();
         return this;
     }
 
     public HttpEntry setHttpEntryProperties(SchemaVersion version, UEBNotification notification,
             int notificationDepth) {
-        this.version = version;
-        this.loader = loaderFactory.createLoaderForVersion(introspectorFactoryType, version);
-        this.dbEngine = new JanusGraphDBEngine(queryStyle, loader);
-
+        setHttpEntryProperties(version);
         this.notification = notification;
         this.notificationDepth = notificationDepth;
-        // start transaction on creation
-        getDbEngine().startTransaction();
         return this;
     }
 
