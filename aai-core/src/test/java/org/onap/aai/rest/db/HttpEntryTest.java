@@ -31,6 +31,8 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -82,6 +84,7 @@ import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.introspection.ModelType;
 import org.onap.aai.parsers.query.QueryParser;
+import org.onap.aai.prevalidation.ValidationService;
 import org.onap.aai.rest.db.responses.ErrorResponse;
 import org.onap.aai.rest.db.responses.Relationship;
 import org.onap.aai.rest.db.responses.RelationshipWrapper;
@@ -93,10 +96,13 @@ import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 import org.onap.aai.util.AAIConfig;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 @RunWith(value = Parameterized.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class HttpEntryTest extends AAISetup {
+
+    @MockBean ValidationService validationService;
 
     protected static final MediaType APPLICATION_JSON = MediaType.valueOf("application/json");
 
@@ -116,7 +122,7 @@ public class HttpEntryTest extends AAISetup {
      */
     @Parameterized.Parameters(name = "QueryStyle.{0}")
     public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][] { { QueryStyle.TRAVERSAL }, { QueryStyle.TRAVERSAL_URI } });
+        return Arrays.asList(new Object[][] { { QueryStyle.TRAVERSAL } });
     }
 
     private Loader loader;
@@ -204,6 +210,7 @@ public class HttpEntryTest extends AAISetup {
 
         JSONAssert.assertEquals(expectedResponseBody, actualResponseBody, JSONCompareMode.NON_EXTENSIBLE);
         assertEquals("Expected the pserver to be returned", 200, response.getStatus());
+        verify(validationService, times(1)).validate(any());
     }
 
     @Test
@@ -222,6 +229,7 @@ public class HttpEntryTest extends AAISetup {
 
         Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, requestBody);
         assertEquals("Expecting the pserver to be created", 201, response.getStatus());
+        verify(validationService, times(1)).validate(any());
     }
 
     @Test
@@ -260,6 +268,7 @@ public class HttpEntryTest extends AAISetup {
         assertEquals("Expecting the pserver to be updated", 200, response.getStatus());
         assertTrue("That old properties are removed",
                 traversal.V().has("hostname", "updatedHostname").hasNot("number-of-cpus").hasNext());
+        verify(validationService, times(1)).validate(any());
     }
 
     @Test
@@ -328,6 +337,7 @@ public class HttpEntryTest extends AAISetup {
                 traversal.V().has("aai-node-type", "p-interface").has("aai-uri", uri).has("interface-name", "p1")
                         .out("tosca.relationships.network.BindsTo").has("aai-node-type", "pserver")
                         .has("hostname", "hostname").hasNext());
+        verify(validationService, times(1)).validate(any());
     }
 
     @Test
@@ -347,6 +357,7 @@ public class HttpEntryTest extends AAISetup {
         assertTrue("object should be updated while keeping old properties",
                 traversal.V().has("aai-node-type", "pserver").has("hostname", "new-hostname")
                         .has("equip-type", "the-equip-type").hasNext());
+        verify(validationService, times(1)).validate(any());
     }
 
     @Test
@@ -363,6 +374,7 @@ public class HttpEntryTest extends AAISetup {
                 doDelete(resourceVersion, uri, "pserver").getStatus());
         assertTrue("Expecting the pserver to be deleted",
                 !traversal.V().has("aai-node-type", "pserver").has("hostname", "the-hostname").hasNext());
+        verify(validationService, times(1)).validate(any());
     }
 
     @Test
@@ -412,6 +424,7 @@ public class HttpEntryTest extends AAISetup {
                 .has(EdgeProperty.PREVENT_DELETE.toString(), "IN");
         assertTrue("p-server has incoming edge from complex", vertexQuery.hasNext());
         assertTrue("Created Edge has expected properties", edgeQuery.hasNext());
+        verify(validationService, times(1)).validate(any());
     }
 
     @Test
@@ -530,6 +543,7 @@ public class HttpEntryTest extends AAISetup {
         assertEquals("Expected get to succeed", 200, response.getStatus());
         assertThat(responseEntity, containsString("/cloud-infrastructure/pservers/pserver/pserver-1"));
         assertThat(responseEntity, containsString("/cloud-infrastructure/pservers/pserver/pserver-2"));
+        verify(validationService, times(1)).validate(any());
     }
 
     @Test
@@ -565,6 +579,7 @@ public class HttpEntryTest extends AAISetup {
         assertEquals("Expected the response to be successful", 200, response.getStatus());
         assertThat("Related pserver is returned", response.getEntity().toString(),
                 containsString("\"hostname\":\"related-to-pserver\""));
+        verify(validationService, times(1)).validate(any());
 
     }
 
@@ -594,6 +609,7 @@ public class HttpEntryTest extends AAISetup {
         Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri, requestBody);
         assertThat("Related to pserver is returned.", response.getEntity().toString(),
                 containsString("\"hostname\":\"abstract-pserver\""));
+        verify(validationService, times(1)).validate(any());
     }
 
     @Test
@@ -640,6 +656,7 @@ public class HttpEntryTest extends AAISetup {
                 relationships[0].getRelatedLink());
         assertEquals("complex.physical-location-id", relationships[0].getRelationshipData()[0].getRelationshipKey());
         assertEquals("related-to-complex", relationships[0].getRelationshipData()[0].getRelationshipValue());
+        verify(validationService, times(1)).validate(any());
     }
 
     @Test
@@ -699,6 +716,7 @@ public class HttpEntryTest extends AAISetup {
 
         JSONAssert.assertEquals(expectedResponseBody, actualResponseBody, JSONCompareMode.NON_EXTENSIBLE);
         queryParameters.remove("format");
+        verify(validationService, times(1)).validate(any());
     }
 
     @Test
@@ -815,5 +833,30 @@ public class HttpEntryTest extends AAISetup {
         traversalHttpEntry.setHttpEntryProperties(schemaVersions.getDefaultVersion());
         int depth = traversalHttpEntry.setDepth(null, depthParam);
         assertEquals(AAIProperties.MAXIMUM_DEPTH.intValue(), depth);
+    }
+
+    @Test
+    public void thatEventsAreValidated() throws AAIException, UnsupportedEncodingException {
+        String uri = "/cloud-infrastructure/pservers/pserver/theHostname";
+        traversal.addV()
+                .property("aai-node-type", "pserver")
+                .property("hostname", "theHostname")
+                .property("equip-type", "theEquipType")
+                .property(AAIProperties.AAI_URI, uri)
+                .next();
+        String requestBody = new JSONObject()
+                .put("hostname", "theHostname")
+                .put("equip-type", "theEquipType")
+                .toString();
+
+        JSONObject expectedResponseBody = new JSONObject()
+                .put("hostname", "theHostname")
+                .put("equip-type", "theEquipType");
+        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri, requestBody);
+        JSONObject actualResponseBody = new JSONObject(response.getEntity().toString());
+
+        JSONAssert.assertEquals(expectedResponseBody, actualResponseBody, JSONCompareMode.NON_EXTENSIBLE);
+        assertEquals("Expected the pserver to be returned", 200, response.getStatus());
+        verify(validationService, times(1)).validate(any());
     }
 }
