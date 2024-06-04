@@ -70,6 +70,7 @@ public class AAIGraph {
             }
             this.loadGraph(rtConfig, serviceName);
         } catch (Exception e) {
+            logger.error("Failed to instantiate graph", e);
             throw new RuntimeException("Failed to instantiate graphs", e);
         }
     }

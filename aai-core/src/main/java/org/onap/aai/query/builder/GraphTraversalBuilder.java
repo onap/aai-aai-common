@@ -34,7 +34,7 @@ import java.util.Set;
 
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
-import org.apache.tinkerpop.gremlin.process.traversal.Step;
+import org.apache.tinkerpop.gremlin.process.traversal.Pop;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal.Admin;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
@@ -682,6 +682,15 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
     @Override
     public QueryBuilder<E> select(String name) {
         this.traversal.select(name);
+
+        stepIndex++;
+
+        return this;
+    }
+
+    @Override
+    public QueryBuilder<E> select(Pop pop, String name) {
+        this.traversal.select(pop, name);
 
         stepIndex++;
 
