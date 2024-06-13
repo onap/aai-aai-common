@@ -15,6 +15,87 @@ This document provides release notes for the Active and Available Inventory Proj
 Release Data
 ============
 
+Version: 13.0.1
+---------------
+
+General
+-------
+
+Features
+^^^^^^^^
+
+- schema update to `v29` with enhancements to ...
+- replace dmaap dependency with kafka
+- make root logging level configurable via chart
+
+aai-common (`1.13.6`)
+---------------------
+
+Features
+^^^^^^^^
+
+- update tinkerpop from `3.2.3` to `3.2.11`
+- improve some bean loading for schema generation related objects
+
+resources (`1.13.5`)
+--------------------
+
+Features
+^^^^^^^^
+
+- update aai-common version to `1.13.6`
+- make project runnable locally via `mvn spring-boot:run`
+- migrate to Junit 5
+
+Fixes
+^^^^^
+
+- do not throw exception to communicate ok response in echo/liveness probe
+
+traversal (`1.13.5`)
+--------------------
+
+Features
+^^^^^^^^
+
+- update aai-common version to `1.13.6`
+- use newer java 8 base image
+
+model-loader (`1.14.1`)
+-----------------------
+
+Features
+^^^^^^^^
+
+- update dependencies (in particular spring-boot `2.1` to `2.7`)
+- code refactorings (model controller, less by-reference parameter updates, spring RestTemplate instead of aai rest client)
+- tracing support
+- add spring-boot actuator to enable liveness probes
+
+graphadmin (`1.13.7`)
+---------------------
+
+Features
+^^^^^^^^
+
+- update aai-common to `1.13.6`
+
+babel (`1.13.1`)
+----------------
+
+Features
+^^^^^^^^
+
+- remove AAF dependency, update dependencies
+- support tracing
+
+Fixes
+^^^^^
+
+- service was returning text/plain response with json response body
+
+:Release Date: 2024-06-13
+
 Version: 13.0.0
 ---------------
 
