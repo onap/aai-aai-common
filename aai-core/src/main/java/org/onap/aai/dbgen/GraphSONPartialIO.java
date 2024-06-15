@@ -147,5 +147,10 @@ public final class GraphSONPartialIO
                 throw new IllegalArgumentException("The graph argument was not specified");
             return new GraphSONPartialIO(this);
         }
+
+        @Override
+        public <V> boolean requiresVersion(V version) {
+            throw new UnsupportedOperationException("Unimplemented method 'requiresVersion'");
+        }
     }
 }
