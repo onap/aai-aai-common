@@ -102,7 +102,7 @@ public class NodeIngestor {
 
             } catch (Exception e) {
                 LOGGER.error("Error while Processing the translator" + e.getMessage());
-                throw new ExceptionInInitializerError("NodeIngestor could not ingest schema");
+                throw new ExceptionInInitializerError(e);
             }
         }
         if (versionContextMap.isEmpty() || schemaPerVersion.isEmpty() || typesPerVersion.isEmpty()) {
