@@ -122,7 +122,7 @@ public class HttpEntryTest extends AAISetup {
      */
     @Parameterized.Parameters(name = "QueryStyle.{0}")
     public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][] { { QueryStyle.TRAVERSAL } });
+        return Arrays.asList(new Object[][] { { QueryStyle.TRAVERSAL }, { QueryStyle.TRAVERSAL_URI } });
     }
 
     private Loader loader;
