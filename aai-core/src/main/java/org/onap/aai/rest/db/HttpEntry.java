@@ -50,6 +50,8 @@ import org.onap.aai.logging.ErrorLogHelper;
 import org.onap.aai.nodes.NodeIngestor;
 import org.onap.aai.parsers.query.QueryParser;
 import org.onap.aai.prevalidation.ValidationService;
+import org.onap.aai.query.builder.QueryOptions;
+import org.onap.aai.query.entities.PaginationResult;
 import org.onap.aai.rest.ueb.UEBNotification;
 import org.onap.aai.restcore.HttpMethod;
 import org.onap.aai.schema.enums.ObjectMetadata;
@@ -219,16 +221,6 @@ public class HttpEntry {
         return dbEngine;
     }
 
-    public Pair<Boolean, List<Pair<URI, Response>>> process(List<DBRequest> requests, String sourceOfTruth,
-            Set<String> groups) throws AAIException {
-        return this.process(requests, sourceOfTruth, groups, true);
-    }
-
-    public Pair<Boolean, List<Pair<URI, Response>>> process(List<DBRequest> requests, String sourceOfTruth)
-            throws AAIException {
-        return this.process(requests, sourceOfTruth, true);
-    }
-
     /**
      * Checks the pagination bucket and pagination index variables to determine whether or not the user
      * requested paginated results
@@ -310,22 +302,21 @@ public class HttpEntry {
         return this.totalVertices;
     }
 
-    /**
-     * Process.
-     *
-     * @param requests the requests
-     * @param sourceOfTruth the source of truth
-     *
-     * @return the pair
-     * @throws AAIException the AAI exception
-     */
-    public Pair<Boolean, List<Pair<URI, Response>>> process(List<DBRequest> requests, String sourceOfTruth,
-            boolean enableResourceVersion) throws AAIException {
-        return this.process(requests, sourceOfTruth, Collections.EMPTY_SET, enableResourceVersion);
+    public Pair<Boolean, List<Pair<URI, Response>>> process(List<DBRequest> requests, String sourceOfTruth) throws AAIException {
+        return this.process(requests, sourceOfTruth, true);
     }
 
-    private Pair<Boolean, List<Pair<URI, Response>>> process(List<DBRequest> requests, String sourceOfTruth,
-            Set<String> groups, boolean enableResourceVersion) throws AAIException {
+    public Pair<Boolean, List<Pair<URI, Response>>> process(List<DBRequest> requests, String sourceOfTruth, Set<String> groups) throws AAIException {
+        return this.process(requests, sourceOfTruth, groups, true, null);
+    }
+
+    public Pair<Boolean, List<Pair<URI, Response>>> process(List<DBRequest> requests, String sourceOfTruth,
+            boolean enableResourceVersion) throws AAIException {
+        return this.process(requests, sourceOfTruth, Collections.emptySet(), enableResourceVersion, null);
+    }
+
+    public Pair<Boolean, List<Pair<URI, Response>>> process(List<DBRequest> requests, String sourceOfTruth,
+            Set<String> groups, boolean enableResourceVersion, QueryOptions queryOptions) throws AAIException {
 
         DBSerializer serializer = null;
 
@@ -376,21 +367,20 @@ public class HttpEntry {
                     uri = UriBuilder.fromPath(uriTemp).build();
 
                     boolean groupsAvailable = serializer.getGroups() != null && !serializer.getGroups().isEmpty();
-                    List<Vertex> queryResult = query.getQueryBuilder().toList();
-                    List<Vertex> vertices;
-                    if (this.isPaginated()) {
-                        List<Vertex> vertTemp = groupsAvailable ? queryResult.stream().filter((vx) -> {
-                            return OwnerCheck.isAuthorized(groups, vx);
-                        }).collect(Collectors.toList()) : queryResult;
-                        this.setTotalsForPaging(vertTemp.size(), this.paginationBucket);
-                        vertices = vertTemp.subList(((this.paginationIndex - 1) * this.paginationBucket),
-                                Math.min((this.paginationBucket * this.paginationIndex), vertTemp.size()));
+                    List<Vertex> queryResult;
+                    PaginationResult<Vertex> paginationResult = null;
+                    if(queryOptions != null) {
+                        paginationResult = query.getQueryBuilder().toPaginationResult(queryOptions.getPageable());
+                        queryResult = paginationResult.getResults();
                     } else {
-                        vertices = groupsAvailable && queryResult.size() > 1 ? queryResult.stream().filter((vx) -> {
-                            return OwnerCheck.isAuthorized(groups, vx);
-                        }).collect(Collectors.toList()) : queryResult;
-
+                        queryResult = query.getQueryBuilder().toList();
                     }
+
+                    List<Vertex> vertices = groupsAvailable
+                        ? queryResult.stream()
+                            .filter(vertex -> OwnerCheck.isAuthorized(groups, vertex))
+                            .collect(Collectors.toList())
+                        : queryResult;
 
                     boolean isNewVertex;
                     HttpHeaders headers = request.getHeaders();
@@ -686,10 +676,10 @@ public class HttpEntry {
 
                     ) {
                         String myvertid = v.id().toString();
-                        if (this.isPaginated()) {
+                        if (queryOptions != null && queryOptions.getPageable() != null) {
                             response = Response.status(status).header("vertex-id", myvertid)
-                                    .header("total-results", this.getTotalVertices())
-                                    .header("total-pages", this.getTotalPaginationBuckets()).entity(result)
+                                    .header("total-results", paginationResult.getTotalCount())
+                                    .entity(result)
                                     .type(outputMediaType).build();
                         } else {
                             response = Response.status(status).header("vertex-id", myvertid).entity(result)
@@ -815,7 +805,7 @@ public class HttpEntry {
 
     /**
      * Verifies that vertex has needed properties to generate on
-     * 
+     *
      * @param vertex Vertex to be verified
      * @return <code>true</code> if vertex has necessary properties and exists
      */
@@ -1126,6 +1116,7 @@ public class HttpEntry {
         }
     }
 
+    @Deprecated
     public List<Object> getPaginatedVertexListForAggregateFormat(List<Object> aggregateVertexList) throws AAIException {
         List<Object> finalList = new Vector<>();
         if (this.isPaginated()) {
@@ -1154,6 +1145,16 @@ public class HttpEntry {
         return aggregateVertexList;
     }
 
+    /**
+     * This method is used to paginate the vertex list based on the pagination index and bucket size
+     *
+     * @deprecated
+     * This method is no longer supported. Use {@link #process(List, String, Set, boolean, QueryOptions)} instead.
+     * @param vertexList
+     * @return
+     * @throws AAIException
+     */
+    @Deprecated
     public List<Object> getPaginatedVertexList(List<Object> vertexList) throws AAIException {
         List<Object> vertices;
         if (this.isPaginated()) {
