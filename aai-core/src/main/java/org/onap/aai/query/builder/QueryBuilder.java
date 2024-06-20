@@ -47,6 +47,7 @@ import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.parsers.query.QueryParser;
 import org.onap.aai.parsers.query.QueryParserStrategy;
+import org.onap.aai.query.entities.PaginationResult;
 import org.springframework.context.ApplicationContext;
 
 /**
@@ -501,7 +502,7 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
      * This is necessary in cases such as "if the Optional Property 1 is sent,
      * find all Nodes of type A with edges to Nodes of type B with property 1,
      * otherwise, simply find all nodes of type A".
-     * 
+     *
      * @param type
      * @param outNodeType
      * @param inNodeType
@@ -520,7 +521,7 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
      * This is necessary in cases such as "if the Optional Property 1 is sent,
      * find all Nodes of type A with edges to Nodes of type B with property 1,
      * otherwise, simply find all nodes of type A".
-     * 
+     *
      * @param type
      * @param outNodeType
      * @param inNodeType
@@ -742,6 +743,22 @@ public abstract class QueryBuilder<E> implements Iterator<E> {
     public abstract QueryBuilder<E> getContainerQuery();
 
     public abstract List<E> toList();
+
+    /**
+     * Paginate the resulting list.
+     * This is a final step that returns a PaginationResult.
+     * @param pageable object that contains page and page size
+     * @return returns a page of the results and the total count.
+     */
+    public abstract PaginationResult<E> toPaginationResult(Pageable pageable);
+
+    /**
+     * Sort the resulting list.
+     * @param sort object that contains the property to sort by and the direction
+     * @return returns the QueryBuilder for further query building
+     */
+    public abstract QueryBuilder<E> sort(Sort sort);
+
 
     /**
      * Used to skip step if there is an optional property missing.

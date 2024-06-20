@@ -44,6 +44,7 @@ import org.onap.aai.edges.exceptions.EdgeRuleNotFoundException;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
+import org.onap.aai.query.entities.PaginationResult;
 import org.onap.aai.restcore.search.GremlinGroovyShell;
 import org.onap.aai.schema.enums.ObjectMetadata;
 import org.onap.aai.serialization.db.exceptions.NoEdgeRuleFoundException;
@@ -956,8 +957,16 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
         return (QueryBuilder<Edge>) this;
     }
 
-    /*
-     * This is required for the subgraphstrategies to work
-     */
+    @Override
+    public PaginationResult<E> toPaginationResult(Pageable pageable) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'toPaginationResult'");
+    }
+
+    @Override
+    public QueryBuilder<E> sort(Sort sort) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'sort'");
+    }
 
 }
