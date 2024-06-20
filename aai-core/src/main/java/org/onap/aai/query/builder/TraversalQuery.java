@@ -250,4 +250,10 @@ public class TraversalQuery<E> extends GraphTraversalBuilder<E> {
         }
     }
 
+    @Override
+    public QueryBuilder<E> queryOptions(QueryOptions queryOptions) {
+        // TODO Auto-generated method stub
+        return super.queryOptions(queryOptions);
+    }
+
 }

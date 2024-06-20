@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import org.apache.tinkerpop.gremlin.groovy.jsr223.GroovyTranslator;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.Pop;
@@ -56,11 +57,15 @@ import org.onap.aai.introspection.Loader;
 import org.onap.aai.schema.enums.ObjectMetadata;
 import org.onap.aai.schema.enums.PropertyMetadata;
 import org.onap.aai.serialization.db.exceptions.NoEdgeRuleFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Class GraphTraversalBuilder.
  */
 public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(GraphTraversalBuilder.class);
 
     protected GraphTraversal<Vertex, E> traversal = null;
     protected Admin<Vertex, E> completeTraversal = null;
@@ -875,7 +880,7 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
 
     @Override
     public QueryBuilder<E> getContainerQuery() {
-        
+
         if (this.parentStepIndex == 0) {
             return removeQueryStepsBetween(0, containerStepIndex);
         } else {
@@ -927,12 +932,20 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
      */
     protected abstract QueryBuilder<E> removeQueryStepsBetween(int start, int end);
 
+    private final GroovyTranslator groovyTranslator = GroovyTranslator.of("source");
+
     protected void executeQuery() {
 
         Admin<Vertex, Vertex> admin;
         if (start != null) {
             this.completeTraversal = traversal.asAdmin();
         } else {
+            boolean queryLoggingEnabled = true;
+            if(queryLoggingEnabled) {
+                String query = groovyTranslator.translate(traversal.asAdmin().getBytecode());
+                LOGGER.info("Query: {}", query);
+            }
+
             admin = source.V().asAdmin();
             TraversalHelper.insertTraversal(admin.getEndStep(), traversal.asAdmin(), admin);
 
@@ -966,6 +979,21 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
             executeQuery();
         }
         return this.completeTraversal.toList();
+    }
+
+    @Override
+    public QueryBuilder<E> queryOptions(QueryOptions queryOptions) {
+        if(queryOptions.getPageable() != null) {
+            paginate(queryOptions.getPageable());
+        }
+        return this;
+    }
+
+    public QueryBuilder<Vertex> paginate(Pageable pageable) {
+        int page = pageable.getPage();
+        traversal.range(page, page + pageable.getPageSize());
+        stepIndex++;
+        return (QueryBuilder<Vertex>) this;
     }
 
     protected QueryBuilder<Edge> has(String key, String value) {

@@ -138,4 +138,10 @@ public class GremlinTraversal<E> extends GremlinQueryBuilder<E> {
 
         return new GremlinTraversal<>(newList, loader, source, this);
     }
+
+    @Override
+    public QueryBuilder<E> queryOptions(QueryOptions queryOptions) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'queryOptions'");
+    }
 }

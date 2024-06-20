@@ -139,4 +139,10 @@ public class GremlinUnique<E> extends GremlinQueryBuilder<E> {
 
         return new GremlinUnique<>(newList, loader, source, this);
     }
+
+    @Override
+    public QueryBuilder<E> queryOptions(QueryOptions queryOptions) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'queryOptions'");
+    }
 }
