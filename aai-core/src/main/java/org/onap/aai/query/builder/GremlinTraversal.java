@@ -34,6 +34,7 @@ import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.parsers.query.QueryParser;
 import org.onap.aai.parsers.query.TraversalStrategy;
+import org.onap.aai.query.entities.PaginationResult;
 
 /**
  * The Class GremlinTraversal.
@@ -137,5 +138,17 @@ public class GremlinTraversal<E> extends GremlinQueryBuilder<E> {
         }
 
         return new GremlinTraversal<>(newList, loader, source, this);
+    }
+
+    @Override
+    public PaginationResult<E> toPaginationResult(Pageable pageable) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'toPaginationResult'");
+    }
+
+    @Override
+    public QueryBuilder<E> sort(String sortAttribute) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'sort'");
     }
 }

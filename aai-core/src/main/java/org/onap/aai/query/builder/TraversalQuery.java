@@ -250,4 +250,10 @@ public class TraversalQuery<E> extends GraphTraversalBuilder<E> {
         }
     }
 
+    @Override
+    public QueryBuilder<E> sort(String sortAttribute) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'sort'");
+    }
+
 }
