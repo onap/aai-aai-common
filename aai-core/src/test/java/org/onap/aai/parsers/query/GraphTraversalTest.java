@@ -52,6 +52,8 @@ import org.onap.aai.TinkerpopUpgrade;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.ModelType;
+import org.onap.aai.query.builder.Pageable;
+import org.onap.aai.query.builder.QueryBuilder;
 import org.onap.aai.rest.RestTokens;
 import org.onap.aai.serialization.engines.JanusGraphDBEngine;
 import org.onap.aai.serialization.engines.QueryStyle;
@@ -79,7 +81,7 @@ public class GraphTraversalTest extends DataLinkSetup {
 
     /**
      * Configure.
-     * 
+     *
      * @throws Exception
      * @throws SecurityException
      * @throws NoSuchFieldException
@@ -591,5 +593,25 @@ public class GraphTraversalTest extends DataLinkSetup {
         thrown.expectMessage(containsString("chain plurals"));
         QueryParser query = dbEngineDepthVersion.getQueryBuilder().createQueryFromURI(uri);
 
+    }
+
+    @Test
+    public void pagination() throws UnsupportedEncodingException, AAIException {
+        URI uri = UriBuilder.fromPath(
+                "cloud-infrastructure/complexes/complex/key1/related-to/pservers")
+                .build();
+
+        QueryBuilder<Vertex> query = dbEngineDepthVersion.getQueryBuilder().createQueryFromURI(uri).getQueryBuilder().paginate(new Pageable(2, 5));
+        GraphTraversal<Vertex, Vertex> expected = __.<Vertex>start().has("physical-location-id", "key1")
+                .has("aai-node-type", "complex").in("org.onap.relationships.inventory.LocatedIn")
+                .has("aai-node-type", "pserver")
+                .range(10, 15);
+        GraphTraversal<Vertex, Vertex> expectedParent = __.<Vertex>start().has("physical-location-id", "key1")
+                .has("aai-node-type", "complex");
+
+        assertEquals("gremlin query should be " + expected.toString(), expected.toString(),
+                query.getQuery().toString());
+        assertEquals("parent", expectedParent.toString(),
+                query.getParentQuery().getQuery().toString());
     }
 }

@@ -35,6 +35,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.Collections;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -85,6 +86,8 @@ import org.onap.aai.introspection.Loader;
 import org.onap.aai.introspection.ModelType;
 import org.onap.aai.parsers.query.QueryParser;
 import org.onap.aai.prevalidation.ValidationService;
+import org.onap.aai.query.builder.Pageable;
+import org.onap.aai.query.builder.QueryOptions;
 import org.onap.aai.rest.db.responses.ErrorResponse;
 import org.onap.aai.rest.db.responses.Relationship;
 import org.onap.aai.rest.db.responses.RelationshipWrapper;
@@ -189,7 +192,7 @@ public class HttpEntryTest extends AAISetup {
     }
 
     @Test
-    public void thatObjectsCanBeRetrieved() throws UnsupportedEncodingException, AAIException {
+    public void thatObjectCanBeRetrieved() throws UnsupportedEncodingException, AAIException {
         String uri = "/cloud-infrastructure/pservers/pserver/theHostname";
         traversal.addV()
                 .property("aai-node-type", "pserver")
@@ -197,15 +200,11 @@ public class HttpEntryTest extends AAISetup {
                 .property("equip-type", "theEquipType")
                 .property(AAIProperties.AAI_URI, uri)
                 .next();
-        String requestBody = new JSONObject()
-                .put("hostname", "theHostname")
-                .put("equip-type", "theEquipType")
-                .toString();
 
         JSONObject expectedResponseBody = new JSONObject()
                 .put("hostname", "theHostname")
                 .put("equip-type", "theEquipType");
-        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri, requestBody);
+        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri);
         JSONObject actualResponseBody = new JSONObject(response.getEntity().toString());
 
         JSONAssert.assertEquals(expectedResponseBody, actualResponseBody, JSONCompareMode.NON_EXTENSIBLE);
@@ -214,11 +213,84 @@ public class HttpEntryTest extends AAISetup {
     }
 
     @Test
+    public void thatObjectsCanBeRetrieved() throws UnsupportedEncodingException, AAIException {
+        String uri = "/cloud-infrastructure/pservers/pserver/theHostname";
+        traversal.addV()
+                .property("aai-node-type", "pserver")
+                .property("hostname", "theHostname")
+                .property("equip-type", "theEquipType")
+                .property(AAIProperties.AAI_URI, uri)
+                .next();
+        traversal.addV()
+                .property("aai-node-type", "pserver")
+                .property("hostname", "theHostname2")
+                .property("equip-type", "theEquipType2")
+                .property(AAIProperties.AAI_URI, uri + "2")
+                .next();
+
+        JSONObject expectedResponseBody = new JSONObject();
+        JSONObject pserver1 = new JSONObject()
+                .put("hostname", "theHostname")
+                .put("equip-type", "theEquipType");
+        JSONObject pserver2 = new JSONObject()
+                .put("hostname", "theHostname2")
+                .put("equip-type", "theEquipType2");
+        expectedResponseBody.put("pserver", new JSONArray()
+                .put(pserver1)
+                .put(pserver2));
+
+        uri = "/cloud-infrastructure/pservers";
+        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri);
+        JSONObject actualResponseBody = new JSONObject(response.getEntity().toString());
+
+        JSONAssert.assertEquals(expectedResponseBody, actualResponseBody, JSONCompareMode.NON_EXTENSIBLE);
+        assertEquals("Expected the pservers to be returned", 200, response.getStatus());
+        verify(validationService, times(1)).validate(any());
+    }
+
+    @Test
+    public void thatPaginatedObjectsCanBeRetrieved() throws UnsupportedEncodingException, AAIException {
+        String uri = "/cloud-infrastructure/pservers/pserver/theHostname";
+        traversal.addV()
+                .property("aai-node-type", "pserver")
+                .property("hostname", "theHostname")
+                .property("equip-type", "theEquipType")
+                .property(AAIProperties.AAI_URI, uri)
+                .next();
+        traversal.addV()
+                .property("aai-node-type", "pserver")
+                .property("hostname", "theHostname2")
+                .property("equip-type", "theEquipType2")
+                .property(AAIProperties.AAI_URI, uri + "2")
+                .next();
+
+        JSONObject expectedResponseBody = new JSONObject();
+        JSONObject pserver1 = new JSONObject()
+                .put("hostname", "theHostname")
+                .put("equip-type", "theEquipType");
+        expectedResponseBody.put("pserver", new JSONArray()
+                .put(pserver1));
+
+        uri = "/cloud-infrastructure/pservers";
+        QueryOptions queryOptions = QueryOptions.builder().pageable(new Pageable(1, 1)).build();
+        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri, queryOptions);
+        JSONObject actualResponseBody = new JSONObject(response.getEntity().toString());
+
+        assertEquals(1, actualResponseBody.getJSONArray("pserver").length());
+        assertEquals("Expected the pservers to be returned", 200, response.getStatus());
+        verify(validationService, times(1)).validate(any());
+
+        queryOptions = QueryOptions.builder().pageable(new Pageable(0, 2)).build();
+        response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri, queryOptions);
+        actualResponseBody = new JSONObject(response.getEntity().toString());
+        assertEquals(2, actualResponseBody.getJSONArray("pserver").length());
+    }
+
+    @Test
     public void thatObjectsCanNotBeFound() throws UnsupportedEncodingException, AAIException {
         String uri = "/cloud-infrastructure/pservers/pserver/junit-test2";
-        String requestBody = "";
 
-        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri, requestBody);
+        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri);
         assertEquals("The pserver is not found", 404, response.getStatus());
     }
 
@@ -536,7 +608,7 @@ public class HttpEntryTest extends AAISetup {
         queryParameters.add("format", "pathed");
         String requestBody = "";
         Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET,
-                "/cloud-infrastructure/pservers", requestBody);
+                "/cloud-infrastructure/pservers");
         queryParameters.remove("format");
 
         String responseEntity = response.getEntity().toString();
@@ -573,8 +645,7 @@ public class HttpEntryTest extends AAISetup {
                 .next();
 
         uri = "/cloud-infrastructure/complexes/complex/related-to-complex/related-to/pservers";
-        String responseBody = "";
-        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri, responseBody);
+        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri);
 
         assertEquals("Expected the response to be successful", 200, response.getStatus());
         assertThat("Related pserver is returned", response.getEntity().toString(),
@@ -604,9 +675,8 @@ public class HttpEntryTest extends AAISetup {
                 .addE("tosca.relationships.HostedOn").from("v2").to("v1")
                 .next();
 
-        String requestBody = "";
         uri = "/network/generic-vnfs/generic-vnf/abstract-generic-vnf/related-to/pservers";
-        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri, requestBody);
+        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri);
         assertThat("Related to pserver is returned.", response.getEntity().toString(),
                 containsString("\"hostname\":\"abstract-pserver\""));
         verify(validationService, times(1)).validate(any());
@@ -644,9 +714,7 @@ public class HttpEntryTest extends AAISetup {
 
         // Get Relationship
         uri = "/cloud-infrastructure/pservers/pserver/related-to-pserver";
-        String requestBody = "";
-        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET_RELATIONSHIP, uri,
-                requestBody);
+        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET_RELATIONSHIP, uri);
         Relationship[] relationships = mapper.readValue(response.getEntity().toString(), RelationshipWrapper.class)
                 .getRelationships();
 
@@ -691,9 +759,7 @@ public class HttpEntryTest extends AAISetup {
         // Get Relationship
         uri = "/cloud-infrastructure/pservers/pserver/related-to-pserver";
         queryParameters.add("format", "resource");
-        String requestBody = "";
-        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET_RELATIONSHIP, uri,
-                requestBody);
+        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET_RELATIONSHIP, uri);
 
         JSONObject actualResponseBody = new JSONObject(response.getEntity().toString());
 
@@ -766,10 +832,29 @@ public class HttpEntryTest extends AAISetup {
     }
 
     private Response doRequest(HttpEntry httpEntry, Loader loader, TransactionalGraphEngine dbEngine, HttpMethod method,
-            String uri, String requestBody) throws UnsupportedEncodingException, AAIException {
+    String uri) throws UnsupportedEncodingException, AAIException {
+        return doRequest(httpEntry, loader, dbEngine, method, uri, null, null);
+    }
+
+    private Response doRequest(HttpEntry httpEntry, Loader loader, TransactionalGraphEngine dbEngine, HttpMethod method,
+    String uri, String requestBody) throws UnsupportedEncodingException, AAIException {
+        return doRequest(httpEntry, loader, dbEngine, method, uri, requestBody, null);
+    }
+    private Response doRequest(HttpEntry httpEntry, Loader loader, TransactionalGraphEngine dbEngine, HttpMethod method,
+    String uri, QueryOptions queryOptions) throws UnsupportedEncodingException, AAIException {
+        return doRequest(httpEntry, loader, dbEngine, method, uri, null, queryOptions);
+    }
+
+    private Response doRequest(HttpEntry httpEntry, Loader loader, TransactionalGraphEngine dbEngine, HttpMethod method,
+            String uri, String requestBody, QueryOptions queryOptions) throws UnsupportedEncodingException, AAIException {
         URI uriObject = UriBuilder.fromPath(uri).build();
         QueryParser uriQuery = dbEngine.getQueryBuilder().createQueryFromURI(uriObject);
-        String objType = uriQuery.getResultType();
+        String objType;
+        if (!uriQuery.getContainerType().equals("")) {
+                objType = uriQuery.getContainerType();
+        } else {
+                objType = uriQuery.getResultType();
+        }
         if (uri.endsWith("relationship")) {
             objType = "relationship";
         }
@@ -780,14 +865,15 @@ public class HttpEntryTest extends AAISetup {
             obj = loader.unmarshal(objType, requestBody, org.onap.aai.restcore.MediaType.getEnum("application/json"));
         }
 
-        DBRequest dbRequest = new DBRequest.Builder(method, uriObject, uriQuery, obj, httpHeaders, uriInfo,
-                "JUNIT-TRANSACTION")
-                .rawRequestContent(requestBody).build();
+        DBRequest.Builder builder = new DBRequest.Builder(method, uriObject, uriQuery, obj, httpHeaders, uriInfo,
+                "JUNIT-TRANSACTION");
+        DBRequest dbRequest = requestBody != null
+                ? builder.rawRequestContent(requestBody).build()
+                : builder.build();
 
-        List<DBRequest> dbRequestList = new ArrayList<>();
-        dbRequestList.add(dbRequest);
+        List<DBRequest> dbRequestList = Collections.singletonList(dbRequest);
 
-        Pair<Boolean, List<Pair<URI, Response>>> responsesTuple = httpEntry.process(dbRequestList, "JUNIT");
+        Pair<Boolean, List<Pair<URI, Response>>> responsesTuple = httpEntry.process(dbRequestList, "JUNIT", Collections.emptySet(), true, queryOptions);
         return responsesTuple.getValue1().get(0).getValue1();
     }
 
@@ -844,15 +930,11 @@ public class HttpEntryTest extends AAISetup {
                 .property("equip-type", "theEquipType")
                 .property(AAIProperties.AAI_URI, uri)
                 .next();
-        String requestBody = new JSONObject()
-                .put("hostname", "theHostname")
-                .put("equip-type", "theEquipType")
-                .toString();
 
         JSONObject expectedResponseBody = new JSONObject()
                 .put("hostname", "theHostname")
                 .put("equip-type", "theEquipType");
-        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri, requestBody);
+        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri);
         JSONObject actualResponseBody = new JSONObject(response.getEntity().toString());
 
         JSONAssert.assertEquals(expectedResponseBody, actualResponseBody, JSONCompareMode.NON_EXTENSIBLE);

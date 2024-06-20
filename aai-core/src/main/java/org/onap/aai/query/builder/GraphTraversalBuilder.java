@@ -27,14 +27,18 @@ import com.google.common.collect.Multimap;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import org.apache.tinkerpop.gremlin.groovy.jsr223.GroovyTranslator;
+import org.apache.tinkerpop.gremlin.process.traversal.Order;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.Pop;
+import org.apache.tinkerpop.gremlin.process.traversal.Scope;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal.Admin;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
@@ -53,14 +57,21 @@ import org.onap.aai.edges.exceptions.EdgeRuleNotFoundException;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
+import org.onap.aai.query.entities.PaginationResult;
 import org.onap.aai.schema.enums.ObjectMetadata;
 import org.onap.aai.schema.enums.PropertyMetadata;
 import org.onap.aai.serialization.db.exceptions.NoEdgeRuleFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Class GraphTraversalBuilder.
  */
 public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(GraphTraversalBuilder.class);
+
+    private final GroovyTranslator groovyTranslator = GroovyTranslator.of("source");
 
     protected GraphTraversal<Vertex, E> traversal = null;
     protected Admin<Vertex, E> completeTraversal = null;
@@ -875,7 +886,7 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
 
     @Override
     public QueryBuilder<E> getContainerQuery() {
-        
+
         if (this.parentStepIndex == 0) {
             return removeQueryStepsBetween(0, containerStepIndex);
         } else {
@@ -933,6 +944,12 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
         if (start != null) {
             this.completeTraversal = traversal.asAdmin();
         } else {
+            boolean queryLoggingEnabled = false;
+            if(queryLoggingEnabled) {
+                String query = groovyTranslator.translate(traversal.asAdmin().getBytecode());
+                LOGGER.info("Query: {}", query);
+            }
+
             admin = source.V().asAdmin();
             TraversalHelper.insertTraversal(admin.getEndStep(), traversal.asAdmin(), admin);
 
@@ -966,6 +983,66 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
             executeQuery();
         }
         return this.completeTraversal.toList();
+    }
+
+    @Override
+    public QueryBuilder<E> sort(Sort sort) {
+        Order order = sort.getDirection() == Sort.Direction.ASC ? Order.asc : Order.desc;
+        traversal.order().by(sort.getProperty(), order);
+        stepIndex++;
+        return this;
+    }
+
+    @Override
+    public QueryBuilder<E> paginate(Pageable pageable) {
+        int page = pageable.getPage();
+        int pageSize = pageable.getPageSize();
+        traversal.range(page * pageSize, (page + 1) * pageSize);
+        stepIndex++;
+        return this;
+    }
+
+    public PaginationResult<E> toPaginationResult(Pageable pageable) {
+        int page = pageable.getPage();
+        int pageSize = pageable.getPageSize();
+        traversal.fold().as("results","count")
+                 .select("results","count").
+                    by(__.range(Scope.local, page * pageSize, (page + 1) + pageSize)).
+                    by(__.count(Scope.local));
+        if (this.completeTraversal == null) {
+            executeQuery();
+        }
+        Map<String,Object> result = (Map<String,Object>) completeTraversal.next();
+        return toPaginationResult(result, pageable);
+    }
+
+    private PaginationResult<E> toPaginationResult(Map<String,Object> result, Pageable pageable) {
+        Object objCount = result.get("count");
+        Object vertices = result.get("results");
+        List<E> results = null;
+        if(vertices instanceof List) {
+            results = (List<E>) vertices;
+        } else if (vertices instanceof Vertex) {
+            Collections.singletonList((E) vertices);
+        } else {
+            String msg = String.format("Results must be a list or a vertex, but was %s", vertices.getClass().getName());
+            LOGGER.error(msg);
+            throw new IllegalArgumentException(msg);
+        }
+        long totalCount = parseCount(objCount);
+        return new PaginationResult<E>(results, totalCount);
+    }
+
+    private long parseCount(Object count) {
+        if(count instanceof String) {
+            return Long.parseLong((String) count);
+        } else if(count instanceof Integer) {
+            return Long.valueOf((int) count);
+        } else if (count instanceof Long) {
+            return (long) count;
+        } else {
+            throw new IllegalArgumentException("Count must be a string, integer, or long");
+        }
     }
 
     protected QueryBuilder<Edge> has(String key, String value) {
