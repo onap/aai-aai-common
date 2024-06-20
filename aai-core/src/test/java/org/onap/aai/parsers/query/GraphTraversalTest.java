@@ -52,6 +52,8 @@ import org.onap.aai.TinkerpopUpgrade;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.ModelType;
+import org.onap.aai.query.builder.Pageable;
+import org.onap.aai.query.builder.QueryBuilder;
 import org.onap.aai.rest.RestTokens;
 import org.onap.aai.serialization.engines.JanusGraphDBEngine;
 import org.onap.aai.serialization.engines.QueryStyle;
@@ -79,7 +81,7 @@ public class GraphTraversalTest extends DataLinkSetup {
 
     /**
      * Configure.
-     * 
+     *
      * @throws Exception
      * @throws SecurityException
      * @throws NoSuchFieldException
@@ -579,8 +581,7 @@ public class GraphTraversalTest extends DataLinkSetup {
 
         thrown.expect(AAIException.class);
         thrown.expectMessage(containsString(RestTokens.COUSIN.toString()));
-        QueryParser query = dbEngineDepthVersion.getQueryBuilder().createQueryFromURI(uri);
-
+        dbEngineDepthVersion.getQueryBuilder().createQueryFromURI(uri);
     }
 
     @Test
@@ -589,7 +590,6 @@ public class GraphTraversalTest extends DataLinkSetup {
 
         thrown.expect(AAIException.class);
         thrown.expectMessage(containsString("chain plurals"));
-        QueryParser query = dbEngineDepthVersion.getQueryBuilder().createQueryFromURI(uri);
-
+        dbEngineDepthVersion.getQueryBuilder().createQueryFromURI(uri);
     }
 }
