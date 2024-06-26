@@ -319,8 +319,10 @@ public class HttpEntryTest extends AAISetup {
         Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri, queryOptions);
         JSONObject actualResponseBody = new JSONObject(response.getEntity().toString());
         String totalCount = response.getHeaderString("total-results");
+        String totalPages = response.getHeaderString("total-pages");
 
         assertEquals(2, Integer.parseInt(totalCount));
+        assertEquals(2, Integer.parseInt(totalPages));
         assertEquals(1, actualResponseBody.getJSONArray("pserver").length());
         assertEquals("Expected the pservers to be returned", 200, response.getStatus());
         verify(validationService, times(1)).validate(any());
@@ -983,19 +985,6 @@ public class HttpEntryTest extends AAISetup {
         Pair<Boolean, List<Pair<URI, Response>>> responsesTuple = traversalHttpEntry.process(Arrays.asList(dbRequest),
                 "JUNIT");
         return responsesTuple.getValue1().get(0).getValue1();
-    }
-
-    @Test
-    public void testSetGetPaginationMethods() {
-        traversalHttpEntry.setHttpEntryProperties(schemaVersions.getDefaultVersion());
-        traversalHttpEntry.setPaginationBucket(10);
-        traversalHttpEntry.setPaginationIndex(1);
-        traversalHttpEntry.setTotalsForPaging(101, traversalHttpEntry.getPaginationBucket());
-        assertEquals("Expected the pagination bucket size to be 10", 10, traversalHttpEntry.getPaginationBucket());
-        assertEquals("Expected the total number of pagination buckets to be 11", 11,
-                traversalHttpEntry.getTotalPaginationBuckets());
-        assertEquals("Expected the pagination index to be 1", 1, traversalHttpEntry.getPaginationIndex());
-        assertEquals("Expected the total amount of vertices to be 101", 101, traversalHttpEntry.getTotalVertices());
     }
 
     @Test

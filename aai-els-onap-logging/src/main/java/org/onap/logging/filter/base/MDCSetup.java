@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -168,13 +168,17 @@ public class MDCSetup {
     }
 
     public void setElapsedTime() {
-        DateTimeFormatter timeFormatter = DateTimeFormatter.ISO_ZONED_DATE_TIME;
-        ZonedDateTime entryTimestamp =
-                ZonedDateTime.parse(MDC.get(ONAPLogConstants.MDCs.ENTRY_TIMESTAMP), timeFormatter);
-        ZonedDateTime endTimestamp = ZonedDateTime.parse(MDC.get(ONAPLogConstants.MDCs.LOG_TIMESTAMP), timeFormatter);
-
-        MDC.put(ONAPLogConstants.MDCs.ELAPSED_TIME,
-                Long.toString(ChronoUnit.MILLIS.between(entryTimestamp, endTimestamp)));
+        String entryTimestampString = MDC.get(ONAPLogConstants.MDCs.ENTRY_TIMESTAMP);
+        String elapsedTime = "elapsedTimeIsNotAvailable";
+        if(entryTimestampString != null) {
+            DateTimeFormatter timeFormatter = DateTimeFormatter.ISO_ZONED_DATE_TIME;
+            ZonedDateTime entryTimestamp =
+                    ZonedDateTime.parse(entryTimestampString, timeFormatter);
+            String logTimestamp = MDC.get(ONAPLogConstants.MDCs.LOG_TIMESTAMP);
+            ZonedDateTime endTimestamp = ZonedDateTime.parse(logTimestamp, timeFormatter);
+            elapsedTime = Long.toString(ChronoUnit.MILLIS.between(entryTimestamp, endTimestamp));
+        }
+        MDC.put(ONAPLogConstants.MDCs.ELAPSED_TIME, elapsedTime);
     }
 
     public void setElapsedTimeInvokeTimestamp() {

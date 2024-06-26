@@ -95,11 +95,6 @@ public class HttpEntry {
 
     private boolean processSingle = true;
 
-    private int paginationBucket = -1;
-    private int paginationIndex = -1;
-    private int totalVertices = 0;
-    private int totalPaginationBuckets = 0;
-
     @Autowired
     private NodeIngestor nodeIngestor;
 
@@ -178,130 +173,24 @@ public class HttpEntry {
         return this;
     }
 
-    /**
-     * Gets the introspector factory type.
-     *
-     * @return the introspector factory type
-     */
     public ModelType getIntrospectorFactoryType() {
         return introspectorFactoryType;
     }
 
-    /**
-     * Gets the query style.
-     *
-     * @return the query style
-     */
     public QueryStyle getQueryStyle() {
         return queryStyle;
     }
 
-    /**
-     * Gets the version.
-     *
-     * @return the version
-     */
     public SchemaVersion getVersion() {
         return version;
     }
 
-    /**
-     * Gets the loader.
-     *
-     * @return the loader
-     */
     public Loader getLoader() {
         return loader;
     }
 
-    /**
-     * Gets the db engine.
-     *
-     * @return the db engine
-     */
     public TransactionalGraphEngine getDbEngine() {
         return dbEngine;
-    }
-
-    /**
-     * Checks the pagination bucket and pagination index variables to determine whether or not the user
-     * requested paginated results
-     *
-     * @return a boolean true/false of whether the user requested paginated results
-     */
-    public boolean isPaginated() {
-        return this.paginationBucket > -1 && this.paginationIndex > -1;
-    }
-
-    /**
-     * Returns the pagination size
-     *
-     * @return integer of the size of results to be returned when paginated
-     */
-    public int getPaginationBucket() {
-        return this.paginationBucket;
-    }
-
-    /**
-     * Setter for the pagination bucket variable which stores in this object the size of results to return
-     *
-     * @param pb
-     */
-    public void setPaginationBucket(int pb) {
-        this.paginationBucket = pb;
-    }
-
-    /**
-     * Getter to return the pagination index requested by the user when requesting paginated results
-     *
-     * @return
-     */
-    public int getPaginationIndex() {
-        return this.paginationIndex;
-    }
-
-    /**
-     * Sets the pagination index that was passed in by the user, to determine which index or results to retrieve when
-     * paginated
-     *
-     * @param pi
-     */
-    public void setPaginationIndex(int pi) {
-        if (pi == 0) {
-            pi = 1;
-        }
-        this.paginationIndex = pi;
-    }
-
-    /**
-     * Sets the total vertices variables and calculates the amount of pages based on size and total vertices
-     *
-     * @param totalVertices
-     * @param paginationBucketSize
-     */
-    public void setTotalsForPaging(int totalVertices, int paginationBucketSize) {
-        this.totalVertices = totalVertices;
-        // set total number of buckets equal to full pages
-        this.totalPaginationBuckets = totalVertices / paginationBucketSize;
-        // conditionally add a page for the remainder
-        if (totalVertices % paginationBucketSize > 0) {
-            this.totalPaginationBuckets++;
-        }
-    }
-
-    /**
-     * @return the total amount of pages
-     */
-    public int getTotalPaginationBuckets() {
-        return this.totalPaginationBuckets;
-    }
-
-    /**
-     *
-     * @return the total number of vertices when paginated
-     */
-    public int getTotalVertices() {
-        return this.totalVertices;
     }
 
     public Pair<Boolean, List<Pair<URI, Response>>> process(List<DBRequest> requests, String sourceOfTruth) throws AAIException {
@@ -679,8 +568,10 @@ public class HttpEntry {
                     ) {
                         String myvertid = v.id().toString();
                         if (paginationResult != null && paginationResult.getTotalCount() != null) {
+                            long totalPages = getTotalPages(queryOptions, paginationResult);
                             response = Response.status(status).header("vertex-id", myvertid)
                                     .header("total-results", paginationResult.getTotalCount())
+                                    .header("total-pages", totalPages)
                                     .entity(result)
                                     .type(outputMediaType).build();
                         } else {
@@ -739,6 +630,17 @@ public class HttpEntry {
         }
 
         return Pair.with(success, responses);
+    }
+
+    private long getTotalPages(QueryOptions queryOptions, PaginationResult<Vertex> paginationResult) {
+        long totalCount = paginationResult.getTotalCount();
+        int pageSize = queryOptions.getPageable().getPageSize();
+        long totalPages = totalCount / pageSize;
+        // conditionally add a page for the remainder
+        if (totalCount % pageSize > 0) {
+            totalPages++;
+        }
+        return totalPages;
     }
 
     private List<Vertex> executeQuery(QueryParser query, QueryOptions queryOptions) {
@@ -1121,68 +1023,5 @@ public class HttpEntry {
                 LOGGER.warn("Error in sending notification");
             }
         }
-    }
-
-    public void setPaginationParameters(String resultIndex, String resultSize) {
-        if (resultIndex != null && !"-1".equals(resultIndex) && resultSize != null && !"-1".equals(resultSize)) {
-            this.setPaginationIndex(Integer.parseInt(resultIndex));
-            this.setPaginationBucket(Integer.parseInt(resultSize));
-        }
-    }
-
-    @Deprecated
-    public List<Object> getPaginatedVertexListForAggregateFormat(List<Object> aggregateVertexList) throws AAIException {
-        List<Object> finalList = new Vector<>();
-        if (this.isPaginated()) {
-            if (aggregateVertexList != null && !aggregateVertexList.isEmpty()) {
-                int listSize = aggregateVertexList.size();
-                if (listSize == 1) {
-                    List<Object> vertexList = (List<Object>) aggregateVertexList.get(0);
-                    this.setTotalsForPaging(vertexList.size(), this.getPaginationBucket());
-                    int startIndex = (this.getPaginationIndex() - 1) * this.getPaginationBucket();
-                    int endIndex =
-                            Math.min((this.getPaginationBucket() * this.getPaginationIndex()), vertexList.size());
-                    if (startIndex > endIndex) {
-                        throw new AAIException("AAI_6150",
-                                " ResultIndex is not appropriate for the result set, Needs to be <= " + endIndex);
-                    }
-                    finalList.add(new ArrayList<Object>());
-                    for (int i = startIndex; i < endIndex; i++) {
-                        ((ArrayList<Object>) finalList.get(0))
-                                .add(((ArrayList<Object>) aggregateVertexList.get(0)).get(i));
-                    }
-                    return finalList;
-                }
-            }
-        }
-        // If the list size is greater than 1 or if pagination is not needed, return the original list.
-        return aggregateVertexList;
-    }
-
-    /**
-     * This method is used to paginate the vertex list based on the pagination index and bucket size
-     *
-     * @deprecated
-     * This method is no longer supported. Use {@link #process(List, String, Set, boolean, QueryOptions)} instead.
-     * @param vertexList
-     * @return
-     * @throws AAIException
-     */
-    @Deprecated
-    public List<Object> getPaginatedVertexList(List<Object> vertexList) throws AAIException {
-        List<Object> vertices;
-        if (this.isPaginated()) {
-            this.setTotalsForPaging(vertexList.size(), this.getPaginationBucket());
-            int startIndex = (this.getPaginationIndex() - 1) * this.getPaginationBucket();
-            int endIndex = Math.min((this.getPaginationBucket() * this.getPaginationIndex()), vertexList.size());
-            if (startIndex > endIndex) {
-                throw new AAIException("AAI_6150",
-                        " ResultIndex is not appropriate for the result set, Needs to be <= " + endIndex);
-            }
-            vertices = vertexList.subList(startIndex, endIndex);
-        } else {
-            vertices = vertexList;
-        }
-        return vertices;
     }
 }
