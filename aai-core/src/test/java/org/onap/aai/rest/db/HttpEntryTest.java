@@ -319,8 +319,10 @@ public class HttpEntryTest extends AAISetup {
         Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri, queryOptions);
         JSONObject actualResponseBody = new JSONObject(response.getEntity().toString());
         String totalCount = response.getHeaderString("total-results");
+        String totalPages = response.getHeaderString("total-pages");
 
         assertEquals(2, Integer.parseInt(totalCount));
+        assertEquals(2, Integer.parseInt(totalPages));
         assertEquals(1, actualResponseBody.getJSONArray("pserver").length());
         assertEquals("Expected the pservers to be returned", 200, response.getStatus());
         verify(validationService, times(1)).validate(any());

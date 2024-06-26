@@ -679,8 +679,10 @@ public class HttpEntry {
                     ) {
                         String myvertid = v.id().toString();
                         if (paginationResult != null && paginationResult.getTotalCount() != null) {
+                            long totalPages = getTotalPages(queryOptions, paginationResult);
                             response = Response.status(status).header("vertex-id", myvertid)
                                     .header("total-results", paginationResult.getTotalCount())
+                                    .header("total-pages", totalPages)
                                     .entity(result)
                                     .type(outputMediaType).build();
                         } else {
@@ -739,6 +741,17 @@ public class HttpEntry {
         }
 
         return Pair.with(success, responses);
+    }
+
+    private long getTotalPages(QueryOptions queryOptions, PaginationResult<Vertex> paginationResult) {
+        long totalCount = paginationResult.getTotalCount();
+        int pageSize = queryOptions.getPageable().getPageSize();
+        long totalPages = totalCount / pageSize;
+        // conditionally add a page for the remainder
+        if (totalCount % pageSize > 0) {
+            totalPages++;
+        }
+        return totalPages;
     }
 
     private List<Vertex> executeQuery(QueryParser query, QueryOptions queryOptions) {
