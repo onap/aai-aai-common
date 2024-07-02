@@ -62,8 +62,8 @@ limitations under the License.
     <eelf.core.version>2.0.0-oss</eelf.core.version>
     <freemarker.version>2.3.31</freemarker.version>
     <google.guava.version>31.1-jre</google.guava.version>
-    <gremlin.version>3.4.13</gremlin.version>
-    <janusgraph.version>0.5.3</janusgraph.version>
+    <gremlin.version>3.5.0</gremlin.version>
+    <janusgraph.version>0.6.0</janusgraph.version>
     <groovy.version>2.5.15</groovy.version>
     <gson.version>2.9.1</gson.version>
     <hamcrest.junit.version>2.0.0.0</hamcrest.junit.version>
@@ -223,12 +223,6 @@ limitations under the License.
       </dependency>
 
       <dependency>
-        <groupId>commons-configuration</groupId>
-        <artifactId>commons-configuration</artifactId>
-        <version>${commons.configuration.version}</version>
-      </dependency>
-
-      <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
         <version>${commons.lang3.version}</version>
@@ -317,15 +311,6 @@ limitations under the License.
         <groupId>org.janusgraph</groupId>
         <artifactId>janusgraph-cql</artifactId>
         <version>${janusgraph.version}</version>
-      </dependency>
-
-
-      <!-- https://docs.datastax.com/en/developer/java-driver/3.5/manual/metrics/index.html#metrics-4-compatibility -->
-      <!-- remove this for janusgraph >= 0.6.0 -->
-      <dependency>
-        <groupId>io.dropwizard.metrics</groupId>
-        <artifactId>metrics-core</artifactId>
-        <version>3.2.6</version>
       </dependency>
 
       <dependency>

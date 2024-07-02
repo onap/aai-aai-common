@@ -26,6 +26,7 @@ import java.io.FileNotFoundException;
 import java.util.Properties;
 
 import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.io.IoCore;
@@ -101,7 +102,7 @@ public class AAIGraph {
         // Graph being opened by JanusGraphFactory is being placed in hashmap to be used later
         // These graphs shouldn't be closed until the application shutdown
         try {
-            PropertiesConfiguration propertiesConfiguration = new AAIGraphConfig.Builder(configPath)
+            Configuration propertiesConfiguration = new AAIGraphConfig.Builder(configPath)
                     .forService(serviceName).withGraphType("realtime").buildConfiguration();
             graph = JanusGraphFactory.open(propertiesConfiguration);
 

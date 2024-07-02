@@ -25,8 +25,10 @@ import java.io.FileNotFoundException;
 import java.lang.management.ManagementFactory;
 import java.util.Objects;
 
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.commons.configuration2.PropertiesConfiguration;
+import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
+import org.apache.commons.configuration2.builder.fluent.Parameters;
+import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.lang3.StringUtils;
 import org.janusgraph.diskstorage.configuration.ConfigElement;
 
@@ -59,10 +61,12 @@ public class AAIGraphConfig {
             throws ConfigurationException, FileNotFoundException {
         File file = new File(shortcutOrFile);
         if (file.exists()) {
-            PropertiesConfiguration propertiesConfiguration = new PropertiesConfiguration();
-            propertiesConfiguration.setAutoSave(false);
-            propertiesConfiguration.load(shortcutOrFile);
-            return propertiesConfiguration;
+            FileBasedConfigurationBuilder<PropertiesConfiguration> builder =
+                new FileBasedConfigurationBuilder<PropertiesConfiguration>(PropertiesConfiguration.class)
+                .configure(new Parameters()
+                .properties()
+                .setFile(file));
+            return builder.getConfiguration();
         } else {
             throw new FileNotFoundException(shortcutOrFile);
         }
