@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.onap.aai.aai-common</groupId>
         <artifactId>aai-parent</artifactId>
-        <version>1.14.3-SNAPSHOT</version>
+        <version>1.14.4-SNAPSHOT</version>
         <relativePath>../aai-parent/pom.xml</relativePath>
     </parent>
     <artifactId>aai-els-onap-logging</artifactId>

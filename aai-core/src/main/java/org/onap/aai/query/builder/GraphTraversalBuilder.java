@@ -946,7 +946,7 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
         } else {
             boolean queryLoggingEnabled = false;
             if(queryLoggingEnabled) {
-                String query = groovyTranslator.translate(traversal.asAdmin().getBytecode());
+                String query = groovyTranslator.translate(traversal.asAdmin().getBytecode()).getScript();
                 LOGGER.info("Query: {}", query);
             }
 

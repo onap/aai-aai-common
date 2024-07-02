@@ -91,7 +91,7 @@ public class GraphTraversalQueryEngine extends QueryEngine {
         try {
             StopWatch.conditionalStart();
             final GraphTraversal<Vertex, Vertex> pipe =
-                    this.g.V().has(AAIProperties.AAI_URI, P.within(uris)).order().by(AAIProperties.AAI_URI, Order.decr);
+                    this.g.V().has(AAIProperties.AAI_URI, P.within(uris)).order().by(AAIProperties.AAI_URI, Order.desc);
             return pipe.toList();
         } finally {
             dbTimeMsecs += StopWatch.stopIfStarted();
