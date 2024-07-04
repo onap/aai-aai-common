@@ -18,3 +18,4 @@ bundleconfig-local/etc/logback.xml
 aai-core/logs/
 .classpath
 **/.classpath
+**/bin
