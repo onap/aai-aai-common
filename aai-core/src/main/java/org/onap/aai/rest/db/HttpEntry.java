@@ -54,7 +54,8 @@ import org.onap.aai.parsers.query.QueryParser;
 import org.onap.aai.prevalidation.ValidationService;
 import org.onap.aai.query.builder.QueryOptions;
 import org.onap.aai.query.entities.PaginationResult;
-import org.onap.aai.rest.ueb.UEBNotification;
+import org.onap.aai.rest.notification.NotificationService;
+import org.onap.aai.rest.notification.UEBNotification;
 import org.onap.aai.restcore.HttpMethod;
 import org.onap.aai.schema.enums.ObjectMetadata;
 import org.onap.aai.serialization.db.DBSerializer;
@@ -70,7 +71,6 @@ import org.onap.aai.setup.SchemaVersions;
 import org.onap.aai.transforms.XmlFormatTransformer;
 import org.onap.aai.util.AAIConfig;
 import org.onap.aai.util.AAIConstants;
-import org.onap.aai.util.delta.DeltaEvents;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,16 +84,10 @@ public class HttpEntry {
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpEntry.class);
 
     private ModelType introspectorFactoryType;
-
     private QueryStyle queryStyle;
-
     private SchemaVersion version;
-
     private Loader loader;
-
     private TransactionalGraphEngine dbEngine;
-
-    private boolean processSingle = true;
 
     @Autowired
     private NodeIngestor nodeIngestor;
@@ -104,24 +98,16 @@ public class HttpEntry {
     @Autowired
     private SchemaVersions schemaVersions;
 
+    @Autowired
+    private NotificationService notificationService;
+
     @Value("${schema.uri.base.path}")
     private String basePath;
-
-    @Value("${delta.events.enabled:false}")
-    private boolean isDeltaEventsEnabled;
 
     private String serverBase;
 
     @Autowired
     private XmlFormatTransformer xmlFormatTransformer;
-
-    /**
-     * Inject the validation service if the profile pre-valiation is enabled,
-     * Otherwise this variable will be set to null and thats why required=false
-     * so that it can continue even if pre validation isn't enabled
-     */
-    @Autowired(required = false)
-    private ValidationService validationService;
 
     private UEBNotification notification;
 
@@ -292,7 +278,7 @@ public class HttpEntry {
                     if (cleanUp == null) {
                         cleanUp = "false";
                     }
-                    if (vertices.size() > 1 && processSingle
+                    if (vertices.size() > 1
                             && !(method.equals(HttpMethod.GET) || method.equals(HttpMethod.GET_RELATIONSHIP))) {
                         if (method.equals(HttpMethod.DELETE)) {
 
@@ -539,7 +525,7 @@ public class HttpEntry {
                              */
 
                             if (isDelVerticesPresent) {
-                                this.buildNotificationEvent(sourceOfTruth, status, transactionId, notification,
+                                notificationService.buildNotificationEvent(sourceOfTruth, status, transactionId, notification,
                                         deleteObjects, uriMap, deleteRelatedObjects, basePath);
                             }
                             break;
@@ -624,7 +610,7 @@ public class HttpEntry {
         }
 
         if (success) {
-            generateEvents(sourceOfTruth, serializer, transactionId, queryEngine, mainVertexesToNotifyOn);
+            notificationService.generateEvents(notification, notificationDepth, sourceOfTruth, serializer, transactionId, queryEngine, mainVertexesToNotifyOn, version);
         } else {
             notification.clearEvents();
         }
@@ -655,104 +641,6 @@ public class HttpEntry {
             : query.getQueryBuilder().toPaginationResult(queryOptions.getPageable());
     }
 
-    /**
-     * Generate notification events for the resulting db requests.
-     */
-    private void generateEvents(String sourceOfTruth, DBSerializer serializer, String transactionId,
-            QueryEngine queryEngine, Set<Vertex> mainVertexesToNotifyOn) throws AAIException {
-        if (notificationDepth == AAIProperties.MINIMUM_DEPTH) {
-            serializer.getUpdatedVertexes().entrySet().stream().filter(Map.Entry::getValue).map(Map.Entry::getKey)
-                    .forEach(mainVertexesToNotifyOn::add);
-        }
-        Set<Vertex> edgeVertexes = serializer.touchStandardVertexPropertiesForEdges().stream()
-                .filter(v -> !mainVertexesToNotifyOn.contains(v)).collect(Collectors.toSet());
-        try {
-            createNotificationEvents(mainVertexesToNotifyOn, sourceOfTruth, serializer, transactionId, queryEngine,
-                    notificationDepth);
-            if ("true".equals(AAIConfig.get("aai.notification.both.sides.enabled", "true"))) {
-                createNotificationEvents(edgeVertexes, sourceOfTruth, serializer, transactionId, queryEngine,
-                        AAIProperties.MINIMUM_DEPTH);
-            }
-        } catch (UnsupportedEncodingException e) {
-            LOGGER.warn("Encountered exception generating events", e);
-        }
-
-        // Since @Autowired required is set to false, we need to do a null check
-        // for the existence of the validationService since its only enabled if profile is enabled
-        if (validationService != null) {
-            validationService.validate(notification.getEvents());
-        }
-        notification.triggerEvents();
-        if (isDeltaEventsEnabled) {
-            try {
-                DeltaEvents deltaEvents =
-                        new DeltaEvents(transactionId, sourceOfTruth, version.toString(), serializer.getObjectDeltas());
-                deltaEvents.triggerEvents();
-            } catch (Exception e) {
-                LOGGER.error("Error sending Delta Events", e);
-            }
-        }
-    }
-
-    /**
-     * Generate notification events for provided set of vertexes at the specified depth
-     */
-    private void createNotificationEvents(Set<Vertex> vertexesToNotifyOn, String sourceOfTruth, DBSerializer serializer,
-            String transactionId, QueryEngine queryEngine, int eventDepth)
-            throws AAIException, UnsupportedEncodingException {
-        for (Vertex vertex : vertexesToNotifyOn) {
-            if (canGenerateEvent(vertex)) {
-                boolean isCurVertexNew =
-                        vertex.value(AAIProperties.CREATED_TS).equals(vertex.value(AAIProperties.LAST_MOD_TS));
-                Status curObjStatus = (isCurVertexNew) ? Status.CREATED : Status.OK;
-
-                Introspector curObj = serializer.getLatestVersionView(vertex, eventDepth);
-                String aaiUri = vertex.<String>property(AAIProperties.AAI_URI).value();
-                String uri = String.format("%s/%s%s", basePath, version, aaiUri);
-                HashMap<String, Introspector> curRelatedObjs = new HashMap<>();
-                if (!curObj.isTopLevel()) {
-                    curRelatedObjs = serializer.getRelatedObjects(queryEngine, vertex, curObj, this.loader);
-                }
-                notification.createNotificationEvent(transactionId, sourceOfTruth, curObjStatus, URI.create(uri),
-                        curObj, curRelatedObjs, basePath);
-            }
-        }
-    }
-
-    /**
-     * Verifies that vertex has needed properties to generate on
-     *
-     * @param vertex Vertex to be verified
-     * @return <code>true</code> if vertex has necessary properties and exists
-     */
-    private boolean canGenerateEvent(Vertex vertex) {
-        boolean canGenerate = true;
-        try {
-            if (!vertex.property(AAIProperties.AAI_URI).isPresent()) {
-                LOGGER.debug("Encountered an vertex {} with missing aai-uri", vertex.id());
-                canGenerate = false;
-            } else if (!vertex.property(AAIProperties.CREATED_TS).isPresent()
-                    || !vertex.property(AAIProperties.LAST_MOD_TS).isPresent()) {
-                LOGGER.debug("Encountered an vertex {} with missing timestamp", vertex.id());
-                canGenerate = false;
-            }
-        } catch (IllegalStateException e) {
-            if (e.getMessage().contains(" was removed")) {
-                LOGGER.warn("Attempted to generate event for non existent vertex", e);
-            } else {
-                LOGGER.warn("Encountered exception generating events", e);
-            }
-            canGenerate = false;
-        }
-        return canGenerate;
-    }
-
-    /**
-     * Gets the media type.
-     *
-     * @param mediaTypeList the media type list
-     * @return the media type
-     */
     private String getMediaType(List<MediaType> mediaTypeList) {
         String mediaType = MediaType.APPLICATION_JSON; // json is the default
         for (MediaType mt : mediaTypeList) {
@@ -763,28 +651,6 @@ public class HttpEntry {
         return mediaType;
     }
 
-    /**
-     * Gets the object from db.
-     *
-     * @param serializer the serializer
-     * @param query the query
-     * @param obj the obj
-     * @param uri the uri
-     * @param depth the depth
-     * @param cleanUp the clean up
-     * @return the object from db
-     * @throws AAIException the AAI exception
-     * @throws IllegalAccessException the illegal access exception
-     * @throws IllegalArgumentException the illegal argument exception
-     * @throws InvocationTargetException the invocation target exception
-     * @throws SecurityException the security exception
-     * @throws InstantiationException the instantiation exception
-     * @throws NoSuchMethodException the no such method exception
-     * @throws UnsupportedEncodingException the unsupported encoding exception
-     * @throws MalformedURLException the malformed URL exception
-     * @throws AAIUnknownObjectException
-     * @throws URISyntaxException
-     */
     private Introspector getObjectFromDb(List<Vertex> results, DBSerializer serializer, QueryParser query,
             Introspector obj, URI uri, int depth, boolean nodeOnly, String cleanUp)
             throws AAIException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
@@ -801,29 +667,6 @@ public class HttpEntry {
 
     }
 
-    /**
-     * Gets the object from db.
-     *
-     * @param serializer the serializer
-     * @param query the query
-     * @param obj the obj
-     * @param uri the uri
-     * @param depth the depth
-     * @param cleanUp the clean up
-     * @param isSkipRelatedTo include related to flag
-     * @return the object from db
-     * @throws AAIException the AAI exception
-     * @throws IllegalAccessException the illegal access exception
-     * @throws IllegalArgumentException the illegal argument exception
-     * @throws InvocationTargetException the invocation target exception
-     * @throws SecurityException the security exception
-     * @throws InstantiationException the instantiation exception
-     * @throws NoSuchMethodException the no such method exception
-     * @throws UnsupportedEncodingException the unsupported encoding exception
-     * @throws MalformedURLException the malformed URL exception
-     * @throws AAIUnknownObjectException
-     * @throws URISyntaxException
-     */
     private Introspector getObjectFromDb(List<Vertex> results, DBSerializer serializer, QueryParser query,
             Introspector obj, URI uri, int depth, boolean nodeOnly, String cleanUp, boolean isSkipRelatedTo)
             throws AAIException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
@@ -840,25 +683,6 @@ public class HttpEntry {
 
     }
 
-    /**
-     * Gets the object from db.
-     *
-     * @param serializer the serializer
-     * @param query the query
-     * @param uri the uri
-     * @return the object from db
-     * @throws AAIException the AAI exception
-     * @throws IllegalAccessException the illegal access exception
-     * @throws IllegalArgumentException the illegal argument exception
-     * @throws InvocationTargetException the invocation target exception
-     * @throws SecurityException the security exception
-     * @throws InstantiationException the instantiation exception
-     * @throws NoSuchMethodException the no such method exception
-     * @throws UnsupportedEncodingException the unsupported encoding exception
-     * @throws MalformedURLException the malformed URL exception
-     * @throws AAIUnknownObjectException
-     * @throws URISyntaxException
-     */
     private Introspector getRelationshipObjectFromDb(List<Vertex> results, DBSerializer serializer, QueryParser query,
             URI uri, boolean isSkipRelatedTo) throws AAIException, IllegalArgumentException, SecurityException,
             UnsupportedEncodingException, AAIUnknownObjectException {
@@ -877,36 +701,15 @@ public class HttpEntry {
         return serializer.dbToRelationshipObject(v, isSkipRelatedTo);
     }
 
-    /**
-     * Creates the not found message.
-     *
-     * @param resultType the result type
-     * @param uri the uri
-     * @return the string
-     */
     private String createNotFoundMessage(String resultType, URI uri) {
         return "No Node of type " + resultType + " found at: " + uri.getPath();
     }
 
-    /**
-     * Creates the not found message.
-     *
-     * @param resultType the result type
-     * @param uri the uri
-     * @return the string
-     */
     private String createRelationshipNotFoundMessage(String resultType, URI uri) {
         return "No relationship found of type " + resultType + " at the given URI: " + uri.getPath()
                 + "/relationship-list";
     }
 
-    /**
-     * Sets the depth.
-     *
-     * @param depthParam the depth param
-     * @return the int
-     * @throws AAIException the AAI exception
-     */
     protected int setDepth(Introspector obj, String depthParam) throws AAIException {
         int depth = AAIProperties.MAXIMUM_DEPTH;
 
@@ -1002,26 +805,5 @@ public class HttpEntry {
 
         return relatedObjectsMap;
 
-    }
-
-    private void buildNotificationEvent(String sourceOfTruth, Status status, String transactionId,
-            UEBNotification notification, Map<Vertex, Introspector> deleteObjects, Map<String, URI> uriMap,
-            Map<String, HashMap<String, Introspector>> deleteRelatedObjects, String basePath) {
-        for (Map.Entry<Vertex, Introspector> entry : deleteObjects.entrySet()) {
-            try {
-                if (null != entry.getValue()) {
-                    String vertexObjectId = entry.getValue().getObjectId();
-
-                    if (uriMap.containsKey(vertexObjectId) && deleteRelatedObjects.containsKey(vertexObjectId)) {
-                        notification.createNotificationEvent(transactionId, sourceOfTruth, status,
-                                uriMap.get(vertexObjectId), entry.getValue(), deleteRelatedObjects.get(vertexObjectId),
-                                basePath);
-                    }
-                }
-            } catch (UnsupportedEncodingException | AAIException e) {
-
-                LOGGER.warn("Error in sending notification");
-            }
-        }
     }
 }

@@ -52,7 +52,7 @@ import org.onap.aai.parsers.query.QueryParser;
 import org.onap.aai.parsers.uri.URIToObject;
 import org.onap.aai.rest.db.DBRequest;
 import org.onap.aai.rest.db.HttpEntry;
-import org.onap.aai.rest.ueb.UEBNotification;
+import org.onap.aai.rest.notification.UEBNotification;
 import org.onap.aai.restcore.HttpMethod;
 import org.onap.aai.restcore.RESTAPI;
 import org.onap.aai.serialization.engines.QueryStyle;

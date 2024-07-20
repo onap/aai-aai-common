@@ -18,7 +18,7 @@
  * ============LICENSE_END=========================================================
  */
 
-package org.onap.aai.rest.ueb;
+package org.onap.aai.rest.notification;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;

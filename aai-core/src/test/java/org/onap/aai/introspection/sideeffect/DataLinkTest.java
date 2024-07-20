@@ -218,7 +218,7 @@ public class DataLinkTest extends DataLinkSetup {
 
     }
 
-    /** 
+    /**
      * This is more directly testing the modification mechanism (see verifyModificationOfVertex test)
      */
     @Test
@@ -229,7 +229,7 @@ public class DataLinkTest extends DataLinkSetup {
         URI uri = new URI("/network/vpn-bindings/vpn-binding/modifyKey/route-targets/route-target/modifyTargetKey2/modifyRoleKey2");
         MultivaluedMap<String, String> map = URITools.getQueryMap(uri);
         GraphTraversal<Vertex, Vertex> traversal = __.<Vertex>start();
-        
+
         QueryParser uriQuery = dbEngine.getQueryBuilder(this.queryStyle, loader, source, traversal).createQueryFromURI(uri, map);
         List<Vertex> results = uriQuery.getQueryBuilder().toList();
 
@@ -390,4 +390,3 @@ public class DataLinkTest extends DataLinkSetup {
 
     }
  }
- 

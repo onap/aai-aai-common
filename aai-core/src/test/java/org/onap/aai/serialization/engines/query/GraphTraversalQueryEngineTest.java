@@ -301,7 +301,7 @@ public class GraphTraversalQueryEngineTest extends AAISetup {
     /**
      * convenience helper method to make it easier to check the contents of the tree against
      * a list of expected results
-     * 
+     *
      * @param tree - the tree whose contents you want in collection form
      * @return set of the contents of the tree
      */

@@ -23,27 +23,24 @@ package org.onap.aai.introspection;
 import java.util.Map;
 
 import org.onap.aai.setup.SchemaVersion;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+/**
+ * Factory method that grants access to the globally loaded schema versions.
+ * There is one {@link MoxyLoader} instance for each api version ({@link SchemaVersion}) that the AAI supports.
+ */
+@Component
 public class LoaderFactory {
 
-    @Autowired
-    public Map<SchemaVersion, MoxyLoader> moxyLoaderInstance;
+    private final Map<SchemaVersion, MoxyLoader> moxyLoaderInstance;
 
     public LoaderFactory(Map<SchemaVersion, MoxyLoader> moxyLoaderInstance) {
         this.moxyLoaderInstance = moxyLoaderInstance;
     }
 
     /**
-     * Creates a new Loader object.
-     *
-     * @param type
-     *        the type
-     * @param version
-     *        the version
-     * @param llBuilder
-     *        the ll builder
-     * @return the loader
+     * Contrary to the naming, this method does not create a new loader,
+     * but rather returns an existing loader instance
      */
     public Loader createLoaderForVersion(ModelType type, SchemaVersion version) {
 
@@ -52,7 +49,6 @@ public class LoaderFactory {
         }
 
         return null;
-
     }
 
     public Loader getLoaderStrategy(ModelType type, SchemaVersion version) {
@@ -61,15 +57,9 @@ public class LoaderFactory {
             return getMoxyLoaderInstance().get(version);
         }
         return null;
-
     }
 
     public Map<SchemaVersion, MoxyLoader> getMoxyLoaderInstance() {
         return moxyLoaderInstance;
     }
-
-    public void setMoxyLoaderInstance(Map<SchemaVersion, MoxyLoader> moxyLoaderInstance) {
-        this.moxyLoaderInstance = moxyLoaderInstance;
-    }
-
 }

@@ -18,7 +18,7 @@
  * ============LICENSE_END=========================================================
  */
 
-package org.onap.aai.rest.ueb;
+package org.onap.aai.rest.notification;
 
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;

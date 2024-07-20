@@ -95,8 +95,8 @@
  import org.onap.aai.rest.db.responses.Relationship;
  import org.onap.aai.rest.db.responses.RelationshipWrapper;
  import org.onap.aai.rest.db.responses.ServiceException;
- import org.onap.aai.rest.ueb.UEBNotification;
- import org.onap.aai.restcore.HttpMethod;
+import org.onap.aai.rest.notification.UEBNotification;
+import org.onap.aai.restcore.HttpMethod;
  import org.onap.aai.serialization.engines.QueryStyle;
  import org.onap.aai.serialization.engines.TransactionalGraphEngine;
  import org.onap.aai.util.AAIConfig;

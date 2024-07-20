@@ -37,18 +37,12 @@ import org.springframework.context.annotation.Import;
 @Import({ConfigConfiguration.class, SchemaServiceConfiguration.class, NodesConfiguration.class,
         EdgesConfiguration.class})
 @Configuration
-
 public class IntrospectionConfig {
 
     private Map<SchemaVersion, MoxyLoader> moxyInstanceMap = new ConcurrentHashMap<>();
 
     @Autowired
     NodesConfiguration nodesConfiguration;
-
-    @Bean
-    public LoaderFactory loaderFactory(SchemaVersions schemaVersions) {
-        return new LoaderFactory(moxyLoaderInstance(schemaVersions));
-    }
 
     @Bean
     public Map<SchemaVersion, MoxyLoader> moxyLoaderInstance(SchemaVersions schemaVersions) {

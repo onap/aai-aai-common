@@ -52,8 +52,6 @@ import org.onap.aai.TinkerpopUpgrade;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.ModelType;
-import org.onap.aai.query.builder.Pageable;
-import org.onap.aai.query.builder.QueryBuilder;
 import org.onap.aai.rest.RestTokens;
 import org.onap.aai.serialization.engines.JanusGraphDBEngine;
 import org.onap.aai.serialization.engines.QueryStyle;

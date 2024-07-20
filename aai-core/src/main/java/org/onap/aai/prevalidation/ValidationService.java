@@ -43,7 +43,7 @@ import javax.annotation.PostConstruct;
 import org.apache.http.conn.ConnectTimeoutException;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
-import org.onap.aai.rest.ueb.NotificationEvent;
+import org.onap.aai.rest.notification.NotificationEvent;
 import org.onap.aai.restclient.RestClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
