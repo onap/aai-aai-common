@@ -22,44 +22,27 @@
 
 package org.onap.aai.kafka;
 
-import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.activemq.command.ActiveMQQueue;
 import org.json.JSONObject;
 import org.onap.aai.util.AAIConfig;
-import org.springframework.jms.connection.CachingConnectionFactory;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.stereotype.Service;
 
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
 public class AAIKafkaEventJMSProducer implements MessageProducer {
 
-    private JmsTemplate jmsTemplate;
+    private final JmsTemplate jmsTemplate;
 
-    public AAIKafkaEventJMSProducer() {
-        if ("true".equals(AAIConfig.get("aai.jms.enable", "true"))) {
-            this.jmsTemplate = new JmsTemplate();
-            String activeMqTcpUrl = System.getProperty("activemq.tcp.url", "tcp://localhost:61547");
-            this.jmsTemplate
-                    .setConnectionFactory(new CachingConnectionFactory(new ActiveMQConnectionFactory(activeMqTcpUrl)));
-            this.jmsTemplate.setDefaultDestination(new ActiveMQQueue("IN_QUEUE"));
+    public void sendMessageToDefaultDestination(String msg) {
+        boolean jmsEnabled = "true".equals(AAIConfig.get("aai.jms.enable", "true"));
+        if (jmsEnabled) {
+            jmsTemplate.convertAndSend(msg);
         }
     }
 
     public void sendMessageToDefaultDestination(JSONObject finalJson) {
-        if (jmsTemplate != null) {
-            jmsTemplate.convertAndSend(finalJson.toString());
-            CachingConnectionFactory ccf = (CachingConnectionFactory) this.jmsTemplate.getConnectionFactory();
-            if (ccf != null) {
-                ccf.destroy();
-            }
-        }
-    }
-
-    public void sendMessageToDefaultDestination(String msg) {
-        if (jmsTemplate != null) {
-            jmsTemplate.convertAndSend(msg);
-            CachingConnectionFactory ccf = (CachingConnectionFactory) this.jmsTemplate.getConnectionFactory();
-            if (ccf != null) {
-                ccf.destroy();
-            }
-        }
+        sendMessageToDefaultDestination(finalJson.toString());
     }
 }

@@ -29,6 +29,7 @@ import org.onap.aai.config.*;
 import org.onap.aai.edges.EdgeIngestor;
 import org.onap.aai.introspection.LoaderFactory;
 import org.onap.aai.introspection.MoxyLoader;
+import org.onap.aai.kafka.AAIKafkaEventJMSProducer;
 import org.onap.aai.nodes.NodeIngestor;
 import org.onap.aai.prevalidation.ValidationConfiguration;
 import org.onap.aai.prevalidation.ValidationService;
@@ -40,6 +41,7 @@ import org.onap.aai.setup.AAIConfigTranslator;
 import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.setup.SchemaVersions;
 import org.onap.aai.util.AAIConstants;
+import org.onap.aai.web.KafkaConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.ContextConfiguration;
@@ -52,7 +54,8 @@ import org.springframework.test.context.web.WebAppConfiguration;
 @ContextConfiguration(
         classes = {ConfigConfiguration.class, AAIConfigTranslator.class, EdgeIngestor.class, EdgeSerializer.class,
                 NodeIngestor.class, SpringContextAware.class, IntrospectionConfig.class, RestBeanConfig.class,
-                XmlFormatTransformerConfiguration.class, ValidationService.class, ValidationConfiguration.class, LoaderFactory.class, NotificationService.class})
+                XmlFormatTransformerConfiguration.class, ValidationService.class, ValidationConfiguration.class,
+                KafkaConfig.class, LoaderFactory.class})
 @TestPropertySource(
         properties = {"schema.uri.base.path = /aai", "schema.xsd.maxoccurs = 5000", "schema.translator.list=config",
                 "schema.nodes.location=src/test/resources/onap/oxm",
