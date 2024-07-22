@@ -163,7 +163,7 @@
 			<pattern>${eelfTransLogPattern}</pattern>
 		</encoder>
 	</appender>
-	
+
 	<appender name="asynctranslog" class="ch.qos.logback.classic.AsyncAppender">
 		<queueSize>1000</queueSize>
 		<includeCallerData>true</includeCallerData>
@@ -255,7 +255,7 @@
 	<logger name="ajsc.UserDefinedBeansDefService" level="WARN" />
 	<logger name="ajsc.LoggingConfigurationService" level="WARN" />
 
-	<!-- AJSC related loggers (DME2 Registration, csi logging, restlet, servlet 
+	<!-- AJSC related loggers (DME2 Registration, csi logging, restlet, servlet
 		logging) -->
 	<logger name="org.codehaus.groovy" level="WARN" />
 	<logger name="com.att.scamper" level="WARN" />
@@ -279,7 +279,7 @@
 	<logger name="org.apache.coyote" level="WARN" />
 	<logger name="org.apache.jasper" level="WARN" />
 
-	<!-- Camel Related Loggers (including restlet/servlet/jaxrs/cxf logging. 
+	<!-- Camel Related Loggers (including restlet/servlet/jaxrs/cxf logging.
 		May aid in troubleshooting) -->
 	<logger name="org.apache.camel" level="WARN" />
 	<logger name="org.apache.cxf" level="WARN" />
@@ -363,9 +363,7 @@
 	</logger>
 
 	<logger name="org.onap.aai.kafka" level="DEBUG" additivity="false">
-		<appender-ref ref="kafkaAAIEventConsumer" />
-		<appender-ref ref="kafkaAAIEventConsumerDebug" />
-		<appender-ref ref="kafkaAAIEventConsumerMetric" />
+		<appender-ref ref="STDOUT" />
 	</logger>
 
 	<logger name="org.apache" level="WARN" />
