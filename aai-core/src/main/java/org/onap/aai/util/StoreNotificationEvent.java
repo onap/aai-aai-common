@@ -39,14 +39,18 @@ import org.onap.aai.kafka.AAIKafkaEventJMSProducer;
 import org.onap.aai.kafka.MessageProducer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
+import org.springframework.jms.core.JmsTemplate;
 
 public class StoreNotificationEvent {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StoreNotificationEvent.class);
 
-    private MessageProducer messageProducer;
+    @Autowired JmsTemplate jmsTemplate;
+
+    private final MessageProducer messageProducer;
     private String fromAppId = "";
     private String transId = "";
     private final String transactionId;
@@ -59,12 +63,12 @@ public class StoreNotificationEvent {
      * Instantiates a new store notification event.
      */
     public StoreNotificationEvent(String transactionId, String sourceOfTruth) {
-        this.messageProducer = new AAIKafkaEventJMSProducer();
+        this.messageProducer = new AAIKafkaEventJMSProducer(jmsTemplate);
         this.transactionId = transactionId;
         this.sourceOfTruth = sourceOfTruth;
     }
 
-    public StoreNotificationEvent(AAIKafkaEventJMSProducer producer, String transactionId, String sourceOfTruth) {
+    public StoreNotificationEvent(MessageProducer producer, String transactionId, String sourceOfTruth) {
         this.messageProducer = producer;
         this.transactionId = transactionId;
         this.sourceOfTruth = sourceOfTruth;
