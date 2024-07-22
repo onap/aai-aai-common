@@ -20,7 +20,6 @@
 
 package org.onap.aai.util.delta;
 
-import com.google.gson.*;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -28,38 +27,35 @@ import java.util.Date;
 import java.util.Map;
 
 import org.onap.aai.db.props.AAIProperties;
-import org.onap.aai.kafka.AAIKafkaEventJMSProducer;
 import org.onap.aai.kafka.MessageProducer;
 import org.onap.aai.util.AAIConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 
 public class DeltaEvents {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DeltaEvents.class);
-
     private static final Gson gson =
             new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_DASHES).create();
+    private static final String eventVersion = "v1";
 
-    private String transId;
-    private String sourceName;
-    private String eventVersion = "v1";
-    private String schemaVersion;
-    private Map<String, ObjectDelta> objectDeltas;
+    private final String transId;
+    private final String sourceName;
+    private final String schemaVersion;
+    private final Map<String, ObjectDelta> objectDeltas;
 
-    private MessageProducer messageProducer;
+    @Autowired private MessageProducer messageProducer;
 
     public DeltaEvents(String transId, String sourceName, String schemaVersion, Map<String, ObjectDelta> objectDeltas) {
-        this(transId, sourceName, schemaVersion, objectDeltas, new AAIKafkaEventJMSProducer());
-    }
-
-    public DeltaEvents(String transId, String sourceName, String schemaVersion, Map<String, ObjectDelta> objectDeltas,
-            MessageProducer messageProducer) {
-        this.transId = transId;
-        this.sourceName = sourceName;
-        this.schemaVersion = schemaVersion;
-        this.objectDeltas = objectDeltas;
-        this.messageProducer = messageProducer;
+    this.transId = transId;
+    this.sourceName = sourceName;
+    this.schemaVersion = schemaVersion;
+    this.objectDeltas = objectDeltas;
     }
 
     public boolean triggerEvents() {
@@ -98,7 +94,7 @@ public class DeltaEvents {
         header.addProperty("source-name", this.sourceName);
         header.addProperty("domain", this.getDomain());
         header.addProperty("event-type", this.getEventType());
-        header.addProperty("event-version", this.eventVersion);
+        header.addProperty("event-version", eventVersion);
         header.addProperty("schema-version", this.schemaVersion);
         header.addProperty("action", first.getAction().toString());
         header.addProperty("entity-type", this.getEntityType(first));
@@ -126,7 +122,7 @@ public class DeltaEvents {
 
     /**
      * Given Long timestamp convert to format YYYYMMdd-HH:mm:ss:SSS
-     * 
+     *
      * @param timestamp milliseconds since epoc
      * @return long timestamp in format YYYYMMdd-HH:mm:ss:SSS
      */
