@@ -30,25 +30,21 @@ import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.onap.aai.config.SpringContextAware;
 import org.onap.aai.domain.notificationEvent.NotificationEvent;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
-import org.onap.aai.kafka.AAIKafkaEventJMSProducer;
 import org.onap.aai.kafka.MessageProducer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
-import org.springframework.jms.core.JmsTemplate;
 
 public class StoreNotificationEvent {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StoreNotificationEvent.class);
-
-    @Autowired JmsTemplate jmsTemplate;
 
     private final MessageProducer messageProducer;
     private String fromAppId = "";
@@ -63,7 +59,7 @@ public class StoreNotificationEvent {
      * Instantiates a new store notification event.
      */
     public StoreNotificationEvent(String transactionId, String sourceOfTruth) {
-        this.messageProducer = new AAIKafkaEventJMSProducer(jmsTemplate);
+        this.messageProducer = SpringContextAware.getBean(MessageProducer.class);
         this.transactionId = transactionId;
         this.sourceOfTruth = sourceOfTruth;
     }

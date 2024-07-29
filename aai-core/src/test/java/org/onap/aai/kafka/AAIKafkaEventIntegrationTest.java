@@ -19,29 +19,43 @@
  */
 package org.onap.aai.kafka;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.mockito.Mockito.when;
 
-import java.time.Duration;
+import java.net.URI;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Set;
+import java.util.UUID;
 
 import javax.ws.rs.core.Response;
 
 import org.apache.kafka.clients.consumer.Consumer;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.apache.kafka.common.TopicPartition;
-import org.json.JSONObject;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.onap.aai.AAISetup;
 import org.onap.aai.PayloadUtil;
-import org.onap.aai.restcore.HttpMethod;
+import org.onap.aai.db.props.AAIProperties;
+import org.onap.aai.dbmap.AAIGraph;
+import org.onap.aai.introspection.LoaderFactory;
+import org.onap.aai.introspection.ModelType;
+import org.onap.aai.introspection.Introspector;
+import org.onap.aai.introspection.Loader;
+import org.onap.aai.rest.notification.NotificationService;
+import org.onap.aai.rest.notification.UEBNotification;
+import org.onap.aai.serialization.db.DBSerializer;
+import org.onap.aai.serialization.engines.JanusGraphDBEngine;
+import org.onap.aai.serialization.engines.QueryStyle;
+import org.onap.aai.serialization.engines.TransactionalGraphEngine;
+import org.onap.aai.serialization.engines.TransactionalGraphEngine.Admin;
+import org.skyscreamer.jsonassert.Customization;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
+import org.skyscreamer.jsonassert.comparator.CustomComparator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.kafka.core.ConsumerFactory;
@@ -54,7 +68,6 @@ import org.springframework.test.context.TestPropertySource;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@ActiveProfiles("kafka")
 @Import(KafkaTestConfiguration.class)
 @EmbeddedKafka(partitions = 1, topics = { "AAI-EVENT" })
 @TestPropertySource(
@@ -74,10 +87,16 @@ public class AAIKafkaEventIntegrationTest extends AAISetup {
     MessageProducer messageProducer;
 
     @Autowired
+    NotificationService notificationService;
+
+    @Autowired
+    LoaderFactory loaderFactory;
+
+    @Autowired
     private ConsumerFactory<String, String> consumerFactory;
 
     @Test
-    public void onMessage_shouldSendMessageToKafkaTopic_whenAAIEventReceived()
+    public void thatMessageProducerSendsMessagesInCorrectFormat()
             throws Exception {
         Consumer<String, String> consumer = consumerFactory.createConsumer();
 
@@ -91,6 +110,49 @@ public class AAIKafkaEventIntegrationTest extends AAISetup {
         assertFalse(consumerRecords.isEmpty());
         consumerRecords.forEach(consumerRecord -> {
             JSONAssert.assertEquals(expectedResponse, consumerRecord.value(), JSONCompareMode.NON_EXTENSIBLE);
+        });
+    }
+
+    @Test
+    public void thatNotificationServiceGeneratesEvents() throws Exception {
+        GraphTraversalSource g = AAIGraph.getInstance().getGraph().traversal();
+        Vertex vertex = g.addV()
+            .property("aai-node-type", "pserver")
+            .property("hostname", "hn")
+            .property("aai-uri", "/cloud-infrastructure/pservers/pserver/hn")
+            .property(AAIProperties.CREATED_TS, "1234")
+            .property(AAIProperties.LAST_MOD_TS, "1234")
+            .next();
+
+        Loader loader = loaderFactory.getMoxyLoaderInstance().get(schemaVersions.getDefaultVersion());
+        UEBNotification uebNotification = new UEBNotification(loader, loaderFactory, schemaVersions);
+
+        Introspector pserver = loader.introspectorFromName("pserver");
+        pserver.setValue("hostname", "hn");
+        URI uri = new URI("/cloud-infrastructure/pservers/pserver/hn");
+        uebNotification.createNotificationEvent("b9b5ae31-a234-40b1-86be-c23d091e1140", "JUNIT-SOT", Response.Status.CREATED, uri,
+                pserver, new HashMap<>(), "/aai");
+        TransactionalGraphEngine dbEngine = new JanusGraphDBEngine(QueryStyle.TRAVERSAL_URI, loader);
+        TransactionalGraphEngine dbEngineSpy = Mockito.spy(dbEngine);
+        Admin adminSpy = Mockito.spy(dbEngine.asAdmin());
+        when(dbEngineSpy.asAdmin()).thenReturn(adminSpy);
+        when(adminSpy.getTraversalSource()).thenReturn(g);
+        DBSerializer serializer = new DBSerializer(schemaVersions.getDefaultVersion(), dbEngineSpy, ModelType.MOXY, "JUNIT-SOT", Collections.emptySet(),
+        AAIProperties.MAXIMUM_DEPTH);
+
+        Set<Vertex> mainVertexesToNotifyOn = Collections.singleton(vertex);
+        notificationService.generateEvents(uebNotification, AAIProperties.MAXIMUM_DEPTH, "JUNIT-SOT", serializer, "b9b5ae31-a234-40b1-86be-c23d091e1140", dbEngine.getQueryEngine(), mainVertexesToNotifyOn, schemaVersions.getDefaultVersion());
+
+        String expectedResponse = PayloadUtil.getExpectedPayload("uebNotificationEvents.json");
+        Consumer<String, String> consumer = consumerFactory.createConsumer();
+        consumer.subscribe(Collections.singletonList("AAI-EVENT"));
+
+        ConsumerRecords<String, String> consumerRecords = KafkaTestUtils.getRecords(consumer, 10000);
+        assertFalse(consumerRecords.isEmpty());
+        consumerRecords.forEach(consumerRecord -> {
+            JSONAssert.assertEquals(expectedResponse, consumerRecord.value(), new CustomComparator(JSONCompareMode.NON_EXTENSIBLE,
+                new Customization("event-header.timestamp", (o1, o2) -> true)
+            ));
         });
     }
 
