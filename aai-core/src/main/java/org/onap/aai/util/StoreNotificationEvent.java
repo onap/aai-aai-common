@@ -31,6 +31,7 @@ import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.onap.aai.domain.notificationEvent.NotificationEvent;
+import org.onap.aai.domain.notificationEvent.NotificationEvent.AaiEventPayload;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
@@ -138,7 +139,7 @@ public class StoreNotificationEvent {
 
         ne.setCambriaPartition(AAIConstants.UEB_PUB_PARTITION_AAI);
         ne.setEventHeader(eh);
-        ne.setEntity(obj);
+        ne.setAaiEventPayload(new AaiEventPayload(obj));
 
         try {
             PojoUtils pu = new PojoUtils();
