@@ -30,7 +30,6 @@ import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
@@ -51,7 +50,6 @@ import org.onap.aai.introspection.sideeffect.OwnerCheck;
 import org.onap.aai.logging.ErrorLogHelper;
 import org.onap.aai.nodes.NodeIngestor;
 import org.onap.aai.parsers.query.QueryParser;
-import org.onap.aai.prevalidation.ValidationService;
 import org.onap.aai.query.builder.QueryOptions;
 import org.onap.aai.query.entities.PaginationResult;
 import org.onap.aai.rest.notification.NotificationService;
@@ -103,6 +101,9 @@ public class HttpEntry {
 
     @Value("${schema.uri.base.path}")
     private String basePath;
+
+    @Value("${aai.notifications.enabled:true}")
+    private boolean notificationsEnabled;
 
     private String serverBase;
 
@@ -437,8 +438,10 @@ public class HttpEntry {
                                     String curUri = String.format("%s/%s%s", basePath, version, entry.getKey());
                                     Introspector curObj = entry.getValue().getValue0();
                                     HashMap<String, Introspector> curObjRelated = entry.getValue().getValue1();
-                                    notification.createNotificationEvent(transactionId, sourceOfTruth,
-                                            Status.NO_CONTENT, URI.create(curUri), curObj, curObjRelated, basePath);
+                                    if(notificationsEnabled) {
+                                        notification.createNotificationEvent(transactionId, sourceOfTruth,
+                                                Status.NO_CONTENT, URI.create(curUri), curObj, curObjRelated, basePath);
+                                    }
                                 }
                             }
 
@@ -517,8 +520,10 @@ public class HttpEntry {
 
                             serializer.delete(v, deletableVertices, resourceVersion, enableResourceVersion);
                             status = Status.NO_CONTENT;
-                            notification.createNotificationEvent(transactionId, sourceOfTruth, status, uri, obj,
-                                    relatedObjects, basePath);
+                            if(notificationsEnabled) {
+                                notification.createNotificationEvent(transactionId, sourceOfTruth, status, uri, obj,
+                                        relatedObjects, basePath);
+                            }
 
                             /*
                              * Notify delete-other-v candidates
@@ -609,10 +614,12 @@ public class HttpEntry {
             }
         }
 
-        if (success) {
-            notificationService.generateEvents(notification, notificationDepth, sourceOfTruth, serializer, transactionId, queryEngine, mainVertexesToNotifyOn, version);
-        } else {
-            notification.clearEvents();
+        if(notificationsEnabled) {
+            if (success) {
+                notificationService.generateEvents(notification, notificationDepth, sourceOfTruth, serializer, transactionId, queryEngine, mainVertexesToNotifyOn, version);
+            } else {
+                notification.clearEvents();
+            }
         }
 
         return Pair.with(success, responses);

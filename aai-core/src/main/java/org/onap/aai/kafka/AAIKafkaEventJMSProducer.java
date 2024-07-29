@@ -23,7 +23,6 @@
 package org.onap.aai.kafka;
 
 import org.json.JSONObject;
-import org.onap.aai.util.AAIConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
@@ -34,11 +33,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AAIKafkaEventJMSProducer implements MessageProducer {
 
-    @Value("${aai.events.enabled:true}") private boolean eventsEnabled;
+    @Value("${aai.notifications.enabled:true}")
+    private boolean notificationsEnabled;
+
     private final JmsTemplate jmsTemplate;
 
     public void sendMessageToDefaultDestination(String msg) {
-        if (eventsEnabled) {
+        if (notificationsEnabled) {
             jmsTemplate.convertAndSend(msg);
         }
     }
