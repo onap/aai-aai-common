@@ -1,0 +1,18 @@
+{
+    "cambria.partition": "AAI",
+    "event-header": {
+        "severity": "NORMAL",
+        "entity-type": "pserver",
+        "top-entity-type": "pserver",
+        "entity-link": "/aai/v14/cloud-infrastructure/pservers/pserver/hn",
+        "event-type": "AAI-EVENT",
+        "domain": "devINT1",
+        "action": "CREATE",
+        "sequence-number": "0",
+        "id": "b9b5ae31-a234-40b1-86be-c23d091e1140",
+        "source-name": "JUNIT-SOT",
+        "version": "v14",
+        "timestamp": "20240729-13:47:55:035"
+    },
+    "entity": { "hostname": "hn" }
+}

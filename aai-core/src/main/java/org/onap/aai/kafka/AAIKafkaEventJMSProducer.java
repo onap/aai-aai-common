@@ -33,11 +33,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AAIKafkaEventJMSProducer implements MessageProducer {
 
-    @Value("${aai.events.enabled:true}") private boolean eventsEnabled;
+    @Value("${aai.notifications.enabled:true}")
+    private boolean notificationsEnabled;
+
     private final JmsTemplate jmsTemplate;
 
     public void sendMessageToDefaultDestination(String msg) {
-        if (eventsEnabled) {
+        if (notificationsEnabled) {
             jmsTemplate.convertAndSend(msg);
         }
     }

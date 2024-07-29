@@ -41,9 +41,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.jms.connection.CachingConnectionFactory;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
@@ -51,14 +51,14 @@ import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 
-@Profile("kafka")
 @Configuration
+@ConditionalOnProperty(value = "aai.notifications.enabled", havingValue = "true")
 public class KafkaConfig {
 
-    @Value("${jms.bind.address}")
+    @Value("${jms.bind.address:tcp://localhost:61647}")
     private String bindAddress;
 
-    @Value("${spring.kafka.producer.bootstrap-servers}")
+    @Value("${spring.kafka.producer.bootstrap-servers:localhost:9092}")
     private String bootstrapServers;
 
     @Value("${spring.kafka.producer.properties.security.protocol}")
@@ -67,10 +67,10 @@ public class KafkaConfig {
     @Value("${spring.kafka.producer.properties.sasl.mechanism}")
     private String saslMechanism;
 
-    @Value("${spring.kafka.producer.properties.sasl.jaas.config}")
+    @Value("${spring.kafka.producer.properties.sasl.jaas.config:#{null}}")
     private String saslJaasConfig;
 
-    @Value("${spring.kafka.producer.retries}")
+    @Value("${spring.kafka.producer.retries:3}")
     private String retries;
 
     private static final Logger logger = LoggerFactory.getLogger(KafkaConfig.class);
