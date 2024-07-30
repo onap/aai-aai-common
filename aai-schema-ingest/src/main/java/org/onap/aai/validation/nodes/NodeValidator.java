@@ -1,4 +1,4 @@
-/** 
+/**
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
@@ -27,9 +27,11 @@ import org.onap.aai.setup.ConfigTranslator;
 import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.validation.SchemaErrorStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 @Component
+@ConditionalOnProperty(name = "schema.translator.list", havingValue = "config", matchIfMissing = true)
 public class NodeValidator {
 
     private ConfigTranslator translator;

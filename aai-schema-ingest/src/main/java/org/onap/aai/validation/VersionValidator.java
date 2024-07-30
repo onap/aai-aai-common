@@ -1,4 +1,4 @@
-/** 
+/**
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
@@ -21,6 +21,7 @@
 package org.onap.aai.validation;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 /**
@@ -28,6 +29,7 @@ import org.springframework.stereotype.Component;
  * all required versions
  */
 @Component
+@ConditionalOnProperty(name = "schema.translator.list", havingValue = "config", matchIfMissing = true)
 public class VersionValidator {
     private SchemaErrorStrategy strat;
     private VersionValidationModule verMod;
