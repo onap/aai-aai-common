@@ -26,10 +26,9 @@ import org.onap.aai.restclient.RestClient;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 
-@Profile("pre-validation")
 @Configuration
+@ConditionalOnProperty(name = "aai.notification.validation.enabled", havingValue = "true")
 public class ValidationConfiguration {
 
     @Bean(name = "validationRestClient")
