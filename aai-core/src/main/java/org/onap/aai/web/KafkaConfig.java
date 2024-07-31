@@ -176,9 +176,10 @@ public class KafkaConfig {
     }
 
     @Bean
+    @ConditionalOnMissingBean
     public NotificationService notificationService(LoaderFactory loaderFactory,
     @Value("${schema.uri.base.path}") String basePath,
     @Value("${delta.events.enabled:false}") boolean isDeltaEventsEnabled) {
-        return new NotificationService(loaderFactory, basePath, isDeltaEventsEnabled);
+        return new NotificationService(null, loaderFactory, basePath, isDeltaEventsEnabled);
     }
 }

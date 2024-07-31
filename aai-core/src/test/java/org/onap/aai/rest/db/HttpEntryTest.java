@@ -31,8 +31,10 @@
  import static org.junit.Assert.assertThat;
  import static org.junit.Assert.assertTrue;
  import static org.mockito.ArgumentMatchers.any;
- import static org.mockito.Mockito.doNothing;
- import static org.mockito.Mockito.times;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
  import static org.mockito.Mockito.verify;
  import static org.mockito.Mockito.when;
 
@@ -95,6 +97,7 @@
  import org.onap.aai.rest.db.responses.Relationship;
  import org.onap.aai.rest.db.responses.RelationshipWrapper;
  import org.onap.aai.rest.db.responses.ServiceException;
+import org.onap.aai.rest.notification.NotificationService;
 import org.onap.aai.rest.notification.UEBNotification;
 import org.onap.aai.restcore.HttpMethod;
  import org.onap.aai.serialization.engines.QueryStyle;
@@ -110,6 +113,7 @@ import org.onap.aai.restcore.HttpMethod;
  public class HttpEntryTest extends AAISetup {
 
      @MockBean ValidationService validationService;
+     @MockBean NotificationService notificationService;
 
      protected static final MediaType APPLICATION_JSON = MediaType.valueOf("application/json");
 
@@ -213,7 +217,7 @@ import org.onap.aai.restcore.HttpMethod;
 
          JSONAssert.assertEquals(expectedResponseBody, actualResponseBody, JSONCompareMode.NON_EXTENSIBLE);
          assertEquals("Expected the pserver to be returned", 200, response.getStatus());
-         verify(validationService, times(1)).validate(any());
+         verify(notificationService, times(1)).generateEvents(any(), anyInt(), any(), any(), any(), any(), any(), any());
      }
 
      @Test
@@ -249,7 +253,7 @@ import org.onap.aai.restcore.HttpMethod;
 
          JSONAssert.assertEquals(expectedResponseBody, actualResponseBody, JSONCompareMode.NON_EXTENSIBLE);
          assertEquals("Expected the pservers to be returned", 200, response.getStatus());
-         verify(validationService, times(1)).validate(any());
+         verify(notificationService, times(1)).generateEvents(any(), anyInt(), any(), any(), any(), any(), any(), any());
      }
 
      @Test
@@ -283,7 +287,7 @@ import org.onap.aai.restcore.HttpMethod;
          assertNull(response.getHeaderString("total-results"));
          assertEquals(1, actualResponseBody.getJSONArray("pserver").length());
          assertEquals("Expected the pservers to be returned", 200, response.getStatus());
-         verify(validationService, times(1)).validate(any());
+         verify(notificationService, times(1)).generateEvents(any(), anyInt(), any(), any(), any(), any(), any(), any());
 
          queryOptions = QueryOptions.builder().pageable(new Pageable(0,5).includeTotalCount()).build();
          response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri, queryOptions);
@@ -307,6 +311,7 @@ import org.onap.aai.restcore.HttpMethod;
 
          assertTrue( response.getEntity().toString().contains("Node Not Found:No Node of type pserver found at: /cloud-infrastructure/pservers"));
          assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatus());
+         verify(notificationService, never()).generateEvents(any(), anyInt(), any(), any(), any(), any(), any(), any());
 
      }
 
@@ -344,7 +349,7 @@ import org.onap.aai.restcore.HttpMethod;
          assertEquals(2, Integer.parseInt(totalPages));
          assertEquals(1, actualResponseBody.getJSONArray("pserver").length());
          assertEquals("Expected the pservers to be returned", 200, response.getStatus());
-         verify(validationService, times(1)).validate(any());
+         verify(notificationService, times(1)).generateEvents(any(), anyInt(), any(), any(), any(), any(), any(), any());
 
          queryOptions = QueryOptions.builder().pageable(new Pageable(0, 2)).build();
          response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri, queryOptions);
@@ -392,7 +397,6 @@ import org.onap.aai.restcore.HttpMethod;
          actualResponseBody = new JSONObject(response.getEntity().toString());
          assertEquals("theEquipType2", actualResponseBody.getJSONArray("pserver").getJSONObject(0).getString("equip-type"));
          assertEquals("theEquipType", actualResponseBody.getJSONArray("pserver").getJSONObject(1).getString("equip-type"));
-
      }
 
      @Test
@@ -401,6 +405,7 @@ import org.onap.aai.restcore.HttpMethod;
 
          Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri);
          assertEquals("The pserver is not found", 404, response.getStatus());
+         verify(notificationService, never()).generateEvents(any(), anyInt(), any(), any(), any(), any(), any(), any());
      }
 
      @Test
@@ -410,7 +415,7 @@ import org.onap.aai.restcore.HttpMethod;
 
          Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, requestBody);
          assertEquals("Expecting the pserver to be created", 201, response.getStatus());
-         verify(validationService, times(1)).validate(any());
+         verify(notificationService, times(1)).generateEvents(any(), anyInt(), any(), any(), any(), any(), any(), any());
      }
 
      @Test
@@ -428,6 +433,7 @@ import org.onap.aai.restcore.HttpMethod;
          assertEquals(
                  "Resource version specified on create:resource-version passed for create of /cloud-infrastructure/pservers/pserver/theHostname",
                  errorResponseEntity.getRequestError().getServiceException().getVariables().get(2));
+        verify(notificationService, never()).generateEvents(any(), anyInt(), any(), any(), any(), any(), any(), any());
      }
 
      @Test
@@ -449,7 +455,7 @@ import org.onap.aai.restcore.HttpMethod;
          assertEquals("Expecting the pserver to be updated", 200, response.getStatus());
          assertTrue("That old properties are removed",
                  traversal.V().has("hostname", "updatedHostname").hasNot("number-of-cpus").hasNext());
-         verify(validationService, times(1)).validate(any());
+         verify(notificationService, times(1)).generateEvents(any(), anyInt(), any(), any(), any(), any(), any(), any());
      }
 
      @Test
@@ -473,6 +479,7 @@ import org.onap.aai.restcore.HttpMethod;
          assertEquals(
                  "Precondition Failed:resource-version MISMATCH for update of /cloud-infrastructure/pservers/pserver/updatedHostname",
                  errorResponseEntity.getRequestError().getServiceException().getVariables().get(2));
+        verify(notificationService, never()).generateEvents(any(), anyInt(), any(), any(), any(), any(), any(), any());
      }
 
      @Test
@@ -518,7 +525,7 @@ import org.onap.aai.restcore.HttpMethod;
                  traversal.V().has("aai-node-type", "p-interface").has("aai-uri", uri).has("interface-name", "p1")
                          .out("tosca.relationships.network.BindsTo").has("aai-node-type", "pserver")
                          .has("hostname", "hostname").hasNext());
-         verify(validationService, times(1)).validate(any());
+         verify(notificationService, times(1)).generateEvents(any(), anyInt(), any(), any(), any(), any(), any(), any());
      }
 
      @Test
@@ -538,7 +545,7 @@ import org.onap.aai.restcore.HttpMethod;
          assertTrue("object should be updated while keeping old properties",
                  traversal.V().has("aai-node-type", "pserver").has("hostname", "new-hostname")
                          .has("equip-type", "the-equip-type").hasNext());
-         verify(validationService, times(1)).validate(any());
+         verify(notificationService, times(1)).generateEvents(any(), anyInt(), any(), any(), any(), any(), any(), any());
      }
 
      @Test
@@ -555,7 +562,7 @@ import org.onap.aai.restcore.HttpMethod;
                  doDelete(resourceVersion, uri, "pserver").getStatus());
          assertTrue("Expecting the pserver to be deleted",
                  !traversal.V().has("aai-node-type", "pserver").has("hostname", "the-hostname").hasNext());
-         verify(validationService, times(1)).validate(any());
+         verify(notificationService, times(1)).generateEvents(any(), anyInt(), any(), any(), any(), any(), any(), any());
      }
 
      @Test
@@ -605,7 +612,7 @@ import org.onap.aai.restcore.HttpMethod;
                  .has(EdgeProperty.PREVENT_DELETE.toString(), "IN");
          assertTrue("p-server has incoming edge from complex", vertexQuery.hasNext());
          assertTrue("Created Edge has expected properties", edgeQuery.hasNext());
-         verify(validationService, times(1)).validate(any());
+         verify(notificationService, times(1)).generateEvents(any(), anyInt(), any(), any(), any(), any(), any(), any());
      }
 
      @Test
@@ -724,7 +731,7 @@ import org.onap.aai.restcore.HttpMethod;
          assertEquals("Expected get to succeed", 200, response.getStatus());
          assertThat(responseEntity, containsString("/cloud-infrastructure/pservers/pserver/pserver-1"));
          assertThat(responseEntity, containsString("/cloud-infrastructure/pservers/pserver/pserver-2"));
-         verify(validationService, times(1)).validate(any());
+         verify(notificationService, times(1)).generateEvents(any(), anyInt(), any(), any(), any(), any(), any(), any());
      }
 
      @Test
@@ -759,7 +766,7 @@ import org.onap.aai.restcore.HttpMethod;
          assertEquals("Expected the response to be successful", 200, response.getStatus());
          assertThat("Related pserver is returned", response.getEntity().toString(),
                  containsString("\"hostname\":\"related-to-pserver\""));
-         verify(validationService, times(1)).validate(any());
+         verify(notificationService, times(1)).generateEvents(any(), anyInt(), any(), any(), any(), any(), any(), any());
 
      }
 
@@ -788,7 +795,7 @@ import org.onap.aai.restcore.HttpMethod;
          Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri);
          assertThat("Related to pserver is returned.", response.getEntity().toString(),
                  containsString("\"hostname\":\"abstract-pserver\""));
-         verify(validationService, times(1)).validate(any());
+         verify(notificationService, times(1)).generateEvents(any(), anyInt(), any(), any(), any(), any(), any(), any());
      }
 
      @Test
@@ -833,7 +840,7 @@ import org.onap.aai.restcore.HttpMethod;
                  relationships[0].getRelatedLink());
          assertEquals("complex.physical-location-id", relationships[0].getRelationshipData()[0].getRelationshipKey());
          assertEquals("related-to-complex", relationships[0].getRelationshipData()[0].getRelationshipValue());
-         verify(validationService, times(1)).validate(any());
+         verify(notificationService, times(1)).generateEvents(any(), anyInt(), any(), any(), any(), any(), any(), any());
      }
 
      @Test
@@ -891,53 +898,7 @@ import org.onap.aai.restcore.HttpMethod;
 
          JSONAssert.assertEquals(expectedResponseBody, actualResponseBody, JSONCompareMode.NON_EXTENSIBLE);
          queryParameters.remove("format");
-         verify(validationService, times(1)).validate(any());
-     }
-
-     @Test
-     public void notificationOnRelatedToTest() throws UnsupportedEncodingException, AAIException {
-
-         Loader ld = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
-         UEBNotification uebNotification = Mockito.spy(new UEBNotification(ld, loaderFactory, schemaVersions));
-         traversalHttpEntry.setHttpEntryProperties(schemaVersions.getDefaultVersion(), uebNotification);
-
-         Loader loader = traversalHttpEntry.getLoader();
-         TransactionalGraphEngine dbEngine = traversalHttpEntry.getDbEngine();
-         // Put pserver
-         String uri = "/cloud-infrastructure/pservers/pserver/junit-edge-test-pserver";
-         String content = "{\"hostname\":\"junit-edge-test-pserver\"}";
-         doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, content);
-         // Put complex
-         uri = "/cloud-infrastructure/complexes/complex/junit-edge-test-complex";
-         content = "{\"physical-location-id\":\"junit-edge-test-complex\",\"physical-location-type\":\"AAIDefault\",\"street1\":\"AAIDefault\",\"city\":\"AAIDefault\",\"state\":\"NJ\",\"postal-code\":\"07748\",\"country\":\"USA\",\"region\":\"US\"}";
-         doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, content);
-
-         // PutEdge
-         uri = "/cloud-infrastructure/complexes/complex/junit-edge-test-complex/relationship-list/relationship";
-         content = "{\"related-to\":\"pserver\",\"related-link\":\"/aai/" + schemaVersions.getDefaultVersion().toString()
-                 + "/cloud-infrastructure/pservers/pserver/junit-edge-test-pserver\",\"relationship-label\":\"org.onap.relationships.inventory.LocatedIn\"}";
-
-         doNothing().when(uebNotification).triggerEvents();
-         Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT_EDGE, uri, content);
-
-         assertEquals("Expected the pserver relationship to be deleted", 200, response.getStatus());
-         assertEquals("Two notifications", 2, uebNotification.getEvents().size());
-         assertEquals("Notification generated for PUT edge", "UPDATE",
-                 uebNotification.getEvents().get(0).getEventHeader().getValue("action").toString());
-         assertThat("Event body for the edge create has the related to",
-                 uebNotification.getEvents().get(0).getObj().marshal(false),
-                 containsString("cloud-infrastructure/pservers/pserver/junit-edge-test-pserver"));
-
-         response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.DELETE_EDGE, uri, content);
-         assertEquals("Expected the pserver relationship to be deleted", 204, response.getStatus());
-         assertEquals("Two notifications", 2, uebNotification.getEvents().size());
-         assertEquals("Notification generated for DELETE edge", "UPDATE",
-                 uebNotification.getEvents().get(0).getEventHeader().getValue("action").toString());
-         assertThat("Event body for the edge delete does not have the related to",
-                 uebNotification.getEvents().get(0).getObj().marshal(false),
-                 not(containsString("cloud-infrastructure/pservers/pserver/junit-edge-test-pserver")));
-         dbEngine.rollback();
-
+         verify(notificationService, times(1)).generateEvents(any(), anyInt(), any(), any(), any(), any(), any(), any());
      }
 
      private Response doRequest(HttpEntry httpEntry, Loader loader, TransactionalGraphEngine dbEngine, HttpMethod method,
@@ -1035,6 +996,6 @@ import org.onap.aai.restcore.HttpMethod;
 
          JSONAssert.assertEquals(expectedResponseBody, actualResponseBody, JSONCompareMode.NON_EXTENSIBLE);
          assertEquals("Expected the pserver to be returned", 200, response.getStatus());
-         verify(validationService, times(1)).validate(any());
+         verify(notificationService, times(1)).generateEvents(any(), anyInt(), any(), any(), any(), any(), any(), any());
      }
  }

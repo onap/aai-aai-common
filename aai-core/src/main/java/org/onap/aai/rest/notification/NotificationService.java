@@ -35,7 +35,6 @@ import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.LoaderFactory;
 import org.onap.aai.prevalidation.ValidationService;
-import org.onap.aai.rest.db.HttpEntry;
 import org.onap.aai.serialization.db.DBSerializer;
 import org.onap.aai.serialization.engines.query.QueryEngine;
 import org.onap.aai.setup.SchemaVersion;
@@ -43,8 +42,8 @@ import org.onap.aai.util.AAIConfig;
 import org.onap.aai.util.delta.DeltaEvents;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -52,26 +51,21 @@ public class NotificationService {
 
   public static final Logger LOGGER = LoggerFactory.getLogger(NotificationService.class);
 
+  private final ValidationService validationService;
   private final LoaderFactory loaderFactory;
   private final boolean isDeltaEventsEnabled;
   private final String basePath;
 
   public NotificationService(
+    @Nullable ValidationService validationService,
     LoaderFactory loaderFactory,
     @Value("${schema.uri.base.path}") String basePath,
     @Value("${delta.events.enabled:false}") boolean isDeltaEventsEnabled) {
+    this.validationService = validationService;
     this.loaderFactory = loaderFactory;
     this.basePath = basePath;
     this.isDeltaEventsEnabled = isDeltaEventsEnabled;
   }
-
-  /**
-   * Inject the validation service if the profile pre-valiation is enabled,
-   * Otherwise this variable will be set to null and thats why required=false
-   * so that it can continue even if pre validation isn't enabled
-   */
-  @Autowired(required = false)
-  private ValidationService validationService;
 
   /**
    * Generate notification events for the resulting db requests.
@@ -100,9 +94,7 @@ public class NotificationService {
       LOGGER.warn("Encountered exception generating events", e);
     }
 
-    // Since @Autowired required is set to false, we need to do a null check
-    // for the existence of the validationService since its only enabled if profile
-    // is enabled
+    // validation is configurable via aai.notification.validation.enabled
     if (validationService != null) {
       validationService.validate(notification.getEvents());
     }
