@@ -23,20 +23,13 @@ package org.onap.aai.parsers.uri;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
 
 import javax.annotation.PostConstruct;
 import javax.ws.rs.core.MultivaluedHashMap;
@@ -47,14 +40,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InOrder;
 import org.onap.aai.AAISetup;
 import org.onap.aai.edges.enums.EdgeType;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.introspection.ModelType;
-import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.onap.aai.setup.SchemaVersion;
 
 

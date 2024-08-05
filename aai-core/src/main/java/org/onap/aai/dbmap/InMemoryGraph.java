@@ -29,7 +29,6 @@ import org.apache.tinkerpop.gremlin.structure.io.IoCore;
 import org.janusgraph.core.JanusGraph;
 import org.janusgraph.core.JanusGraphFactory;
 import org.janusgraph.core.JanusGraphTransaction;
-import org.janusgraph.core.schema.JanusGraphManagement;
 import org.onap.aai.dbgen.GraphSONPartialIO;
 import org.onap.aai.dbgen.SchemaGenerator;
 import org.onap.aai.logging.LogFormatTools;

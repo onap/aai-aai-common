@@ -27,7 +27,9 @@ import static org.junit.Assert.assertEquals;
 
 import com.google.common.collect.Multimap;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.junit.Rule;

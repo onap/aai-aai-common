@@ -19,27 +19,17 @@
  */
 package org.onap.aai.kafka;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-import java.time.Duration;
 import java.util.Collections;
-import java.util.List;
-
-import javax.ws.rs.core.Response;
 
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.apache.kafka.common.TopicPartition;
-import org.json.JSONObject;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.onap.aai.AAISetup;
 import org.onap.aai.PayloadUtil;
-import org.onap.aai.restcore.HttpMethod;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.springframework.beans.factory.annotation.Autowired;

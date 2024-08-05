@@ -25,7 +25,6 @@ package org.onap.aai.dbmap;
 import java.io.FileNotFoundException;
 import java.util.Properties;
 
-import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.tinkerpop.gremlin.structure.Graph;

@@ -23,7 +23,6 @@
 package org.onap.aai.kafka;
 
 import org.json.JSONObject;
-import org.onap.aai.util.AAIConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;

@@ -23,7 +23,7 @@ package org.onap.aai.introspection;
 import com.google.common.base.CaseFormat;
 import com.google.common.collect.ImmutableMap;
 
-import java.io.*;
+import java.io.StringReader;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;

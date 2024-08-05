@@ -29,8 +29,6 @@ import java.util.Map;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.kafka.MessageProducer;
 import org.onap.aai.util.AAIConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.gson.FieldNamingPolicy;

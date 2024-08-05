@@ -35,7 +35,6 @@ import org.onap.aai.introspection.Loader;
 import org.onap.aai.parsers.query.QueryParser;
 import org.onap.aai.parsers.query.TraversalStrategy;
 import org.onap.aai.parsers.query.UniqueStrategy;
-import org.onap.aai.query.entities.PaginationResult;
 
 /**
  * The Class GremlinUnique.

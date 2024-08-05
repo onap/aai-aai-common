@@ -22,7 +22,8 @@
 
 package org.onap.aai.rest;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 
 import org.junit.Test;
 

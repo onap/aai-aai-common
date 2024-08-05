@@ -25,10 +25,7 @@ package org.onap.aai.config;
 import org.onap.aai.edges.EdgeIngestor;
 import org.onap.aai.nodes.NodeIngestor;
 import org.onap.aai.serialization.db.EdgeSerializer;
-import org.onap.aai.setup.AAIConfigTranslator;
 import org.onap.aai.setup.ConfigTranslator;
-import org.onap.aai.setup.SchemaConfigVersions;
-import org.onap.aai.setup.SchemaLocationsBean;
 import org.onap.aai.validation.CheckEverythingStrategy;
 import org.onap.aai.validation.SchemaErrorStrategy;
 import org.onap.aai.validation.nodes.DefaultDuplicateNodeDefinitionValidationModule;
@@ -36,7 +33,10 @@ import org.onap.aai.validation.nodes.DuplicateNodeDefinitionValidationModule;
 import org.onap.aai.validation.nodes.NodeValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.PropertySource;
 
 @Import({NodesConfiguration.class, EdgesConfiguration.class})
 @Configuration

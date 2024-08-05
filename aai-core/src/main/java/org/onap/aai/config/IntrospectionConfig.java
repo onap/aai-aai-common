@@ -22,10 +22,9 @@
 
 package org.onap.aai.config;
 
-import java.util.*;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.onap.aai.introspection.LoaderFactory;
 import org.onap.aai.introspection.MoxyLoader;
 import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.setup.SchemaVersions;

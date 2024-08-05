@@ -28,7 +28,10 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 import org.onap.aai.AAISetup;
-import org.onap.aai.introspection.*;
+import org.onap.aai.introspection.Introspector;
+import org.onap.aai.introspection.Loader;
+import org.onap.aai.introspection.LoaderFactory;
+import org.onap.aai.introspection.ModelType;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.springframework.test.annotation.DirtiesContext;
 

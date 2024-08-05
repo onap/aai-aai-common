@@ -32,7 +32,6 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.KafkaAdmin;
-import org.springframework.test.context.TestPropertySource;
 
 @TestConfiguration
 public class KafkaTestConfiguration {
