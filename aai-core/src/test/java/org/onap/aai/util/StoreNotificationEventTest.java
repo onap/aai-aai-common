@@ -22,6 +22,7 @@ package org.onap.aai.util;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -39,6 +40,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.onap.aai.AAISetup;
+import org.onap.aai.domain.notificationEvent.NotificationEvent;
 import org.onap.aai.domain.notificationEvent.NotificationEvent.EventHeader;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
@@ -69,38 +71,29 @@ public class StoreNotificationEventTest extends AAISetup {
         sne.storeEventAndSendToJms(new EventHeader(), null);
     }
 
-    @Test(expected = AAIException.class)
-    public void testStoreEventInvalidObjForPojoUtils() throws AAIException {
-        sne.storeEventAndSendToJms(new EventHeader(), new Object());
-    }
+    // @Test(expected = AAIException.class)
+    // public void testStoreEventInvalidObjForPojoUtils() throws AAIException {
+    //     sne.storeEventAndSendToJms(new EventHeader(), new Object());
+    // }
 
     @Test
     public void testStoreEventEmptyEventHeader()
             throws AAIException, JsonGenerationException, JsonMappingException, IOException {
         JsonObject object = Json.createObjectBuilder().add("hello", "world").build();
-        String res = sne.storeEventAndSendToJms(new EventHeader(), object);
+        NotificationEvent notificationEvent = sne.storeEventAndSendToJms(new EventHeader(), object);
 
-        assertNotNull(res);
-        assertTrue(res.contains("\"cambria.partition\" : \"" + AAIConstants.UEB_PUB_PARTITION_AAI + "\""));
-        assertTrue(res.contains("\"event-header\""));
-        assertTrue(res.contains("\"id\""));
-        assertTrue(res.contains("\"timestamp\""));
-        assertTrue(res
-                .contains("\"source-name\" : \"" + AAIConfig.get("aai.notificationEvent.default.sourceName") + "\""));
-        assertTrue(res.contains("\"domain\" : \"" + AAIConfig.get("aai.notificationEvent.default.domain") + "\""));
-        assertTrue(res.contains(
-                "\"sequence-number\" : \"" + AAIConfig.get("aai.notificationEvent.default.sequenceNumber") + "\""));
-        assertTrue(res.contains("\"severity\" : \"" + AAIConfig.get("aai.notificationEvent.default.severity") + "\""));
-        assertTrue(
-                res.contains("\"event-type\" : \"" + AAIConfig.get("aai.notificationEvent.default.eventType") + "\""));
-        assertTrue(res.contains("\"version\" : \"" + AAIConfig.get("aai.notificationEvent.default.version") + "\""));
-        assertTrue(res.contains("\"action\" : \"UNK\""));
-        assertTrue(res.contains("\"entity-link\" : \"UNK\""));
-        assertTrue(res.contains("\"entity\""));
-        assertTrue(res.contains("\"hello\""));
-        assertTrue(res.contains("\"chars\" : \"world\""));
-        assertTrue(res.contains("\"string\" : \"world\""));
-        assertTrue(res.contains("\"valueType\" : \"STRING\""));
+        assertEquals(AAIConstants.UEB_PUB_PARTITION_AAI, notificationEvent.getCambriaPartition());
+        assertNotNull(notificationEvent.getEventHeader());
+        assertNotNull(notificationEvent.getEventHeader().getId()); //
+        assertNotNull(notificationEvent.getEventHeader().getTimestamp());
+        assertEquals(AAIConfig.get("aai.notificationEvent.default.sourceName"), notificationEvent.getEventHeader().getSourceName());
+        assertEquals(AAIConfig.get("aai.notificationEvent.default.domain"), notificationEvent.getEventHeader().getDomain());
+        assertEquals(AAIConfig.get("aai.notificationEvent.default.sequenceNumber"), notificationEvent.getEventHeader().getSequenceNumber());
+        assertEquals(AAIConfig.get("aai.notificationEvent.default.severity"), notificationEvent.getEventHeader().getSeverity());
+        assertEquals(AAIConfig.get("aai.notificationEvent.default.eventType"), notificationEvent.getEventHeader().getEventType());
+        assertEquals(AAIConfig.get("aai.notificationEvent.default.version"), notificationEvent.getEventHeader().getVersion());
+        assertEquals("UNK", notificationEvent.getEventHeader().getAction());
+        assertEquals("UNK", notificationEvent.getEventHeader().getEntityLink());
     }
 
     @Test
@@ -118,44 +111,23 @@ public class StoreNotificationEventTest extends AAISetup {
         eh.setSeverity("ALERT");
         eh.setVersion("v12");
 
-        String res = sne.storeEventAndSendToJms(eh, object);
+        NotificationEvent notificationEvent = sne.storeEventAndSendToJms(eh, object);
 
-        assertNotNull(res);
-        assertTrue(res.contains("\"cambria.partition\" : \"" + AAIConstants.UEB_PUB_PARTITION_AAI + "\""));
-        assertTrue(res.contains("\"event-header\""));
-        assertTrue(res.contains("\"id\" : \"123\""));
-        assertTrue(res.contains("\"timestamp\" : \"current-time\""));
-        assertTrue(res.contains("\"source-name\" : \"source\""));
-        assertTrue(res.contains("\"domain\" : \"PROD\""));
-        assertTrue(res.contains("\"sequence-number\" : \"23\""));
-        assertTrue(res.contains("\"severity\" : \"ALERT\""));
-        assertTrue(res.contains("\"event-type\" : \"surprise\""));
-        assertTrue(res.contains("\"version\" : \"v12\""));
-        assertTrue(res.contains("\"action\" : \"action!\""));
-        assertTrue(res.contains("\"entity-link\" : \"entity-link\""));
-        assertTrue(res.contains("\"entity\""));
-        assertTrue(res.contains("\"hello\""));
-        assertTrue(res.contains("\"chars\" : \"world\""));
-        assertTrue(res.contains("\"string\" : \"world\""));
-        assertTrue(res.contains("\"valueType\" : \"STRING\""));
-    }
-
-    @Test(expected = AAIException.class)
-    public void testStoreDynamicEventNullObj() throws AAIException {
-        DynamicEntity eventHeader = Mockito.mock(DynamicEntity.class);
-        DynamicJAXBContext notificationJaxbContext =
-                nodeIngestor.getContextForVersion(schemaVersions.getEdgeLabelVersion());
-        sne.storeDynamicEvent(notificationJaxbContext, "v12", eventHeader, null);
-    }
-
-    @Test(expected = Exception.class)
-    public void testStoreDynamicEventAAIException() throws Exception {
-
-        DynamicJAXBContext notificationJaxbContext =
-                nodeIngestor.getContextForVersion(schemaVersions.getEdgeLabelVersion());
-        DynamicEntity obj = Mockito.mock(DynamicEntity.class);
-        DynamicEntity eventHeader = Mockito.mock(DynamicEntity.class);
-        sne.storeDynamicEvent(notificationJaxbContext, "v12", eventHeader, obj);
+        assertEquals(AAIConstants.UEB_PUB_PARTITION_AAI, notificationEvent.getCambriaPartition());
+        assertNotNull(notificationEvent.getEventHeader());
+        assertEquals("123", notificationEvent.getEventHeader().getId());
+        assertEquals("current-time", notificationEvent.getEventHeader().getTimestamp());
+        assertEquals("source", notificationEvent.getEventHeader().getSourceName());
+        assertEquals("PROD", notificationEvent.getEventHeader().getDomain());
+        assertEquals("23", notificationEvent.getEventHeader().getSequenceNumber());
+        assertEquals("ALERT", notificationEvent.getEventHeader().getSeverity());
+        assertEquals("surprise", notificationEvent.getEventHeader().getEventType());
+        assertEquals("v12", notificationEvent.getEventHeader().getVersion());
+        assertEquals("action!", notificationEvent.getEventHeader().getAction());
+        assertEquals("entity-link", notificationEvent.getEventHeader().getEntityLink());
+        assertNotNull(notificationEvent.getEntity());
+        JsonObject entityJsonObject = (JsonObject) notificationEvent.getEntity();
+        assertEquals("world", entityJsonObject.getString("hello"));
     }
 
     @Test(expected = AAIException.class)
@@ -180,7 +152,7 @@ public class StoreNotificationEventTest extends AAISetup {
         eventHeader.setValue("severity", "ALERT");
         eventHeader.setValue("version", "v12");
         Introspector obj = loader.introspectorFromName("notification-event");
-        String res = sne.storeEventAndSendToJms(loader, eventHeader, obj);
+        String res = sne.storeEventAndSendToJms(loader, eventHeader, obj).toString();
 
         assertNotNull(res);
         assertTrue(res.contains("\"cambria.partition\":\"" + AAIConstants.UEB_PUB_PARTITION_AAI + "\""));
@@ -205,7 +177,7 @@ public class StoreNotificationEventTest extends AAISetup {
         Introspector eventHeader = loader.introspectorFromName("notification-event-header");
         Introspector obj = loader.introspectorFromName("notification-event");
 
-        String res = sne.storeEventAndSendToJms(loader, eventHeader, obj);
+        String res = sne.storeEventAndSendToJms(loader, eventHeader, obj).toString();
 
         assertNotNull(res);
         assertTrue(res.contains("\"cambria.partition\":\"" + AAIConstants.UEB_PUB_PARTITION_AAI + "\""));

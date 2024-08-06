@@ -21,10 +21,13 @@
 package org.onap.aai.kafka;
 
 import org.json.JSONObject;
+import org.onap.aai.domain.notificationEvent.NotificationEvent;
 
 public interface MessageProducer {
 
     void sendMessageToDefaultDestination(JSONObject finalJson);
 
     void sendMessageToDefaultDestination(String msg);
+
+    void sendMessageToDefaultDestination(NotificationEvent notificationEvent);
 }
