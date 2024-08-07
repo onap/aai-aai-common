@@ -1,0 +1,26 @@
+<model xmlns="http://org.onap.aai.inventory/v14">
+  <model-invariant-id>d821d1aa-8a69-47a4-aa63-3dae1742c47c</model-invariant-id>
+  <model-type>service</model-type>
+  <model-role>Network Service</model-role>
+  <model-vers>
+      <model-ver>
+          <model-version-id>8b713350-90fc-44b1-8c6e-a2b3973aa9d3</model-version-id>
+          <model-name>test-svc-distribution</model-name>
+          <model-version>1.0</model-version>
+          <model-description>test-svc-distribution</model-description>
+          <model-elements>
+              <model-element>
+                  <new-data-del-flag>T</new-data-del-flag>
+                  <cardinality>unbounded</cardinality>
+                  <model-elements>
+                      <model-element>
+                          <new-data-del-flag>T</new-data-del-flag>
+                          <cardinality>unbounded</cardinality>
+                          <model-elements/>
+                      </model-element>
+                  </model-elements>
+              </model-element>
+          </model-elements>
+      </model-ver>
+  </model-vers>
+</model>
