@@ -30,7 +30,6 @@ import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -46,7 +45,6 @@ public class CadiProps {
 
     private Properties cadiProperties;
 
-    @Autowired
     public CadiProps(@Value("${aaf.cadi.file:./resources/cadi.properties}") String filename) {
         cadiFileName = filename;
         cadiProperties = new Properties();

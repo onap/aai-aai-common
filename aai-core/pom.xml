@@ -152,14 +152,6 @@ limitations under the License.
 			<version>2.0.0-oss</version>
 		</dependency>
 		<dependency>
-			<groupId>org.codehaus.jackson</groupId>
-			<artifactId>jackson-core-asl</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.codehaus.jackson</groupId>
-			<artifactId>jackson-mapper-asl</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
@@ -272,6 +264,7 @@ limitations under the License.
 		<dependency>
 			<groupId>org.apache.tinkerpop</groupId>
 			<artifactId>gremlin-core</artifactId>
+			<version>${gremlin.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.tinkerpop</groupId>

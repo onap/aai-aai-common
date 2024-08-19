@@ -32,7 +32,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.onap.aai.aaf.auth.ResponseFormatter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.filter.OrderedRequestContextFilter;
 import org.springframework.context.annotation.Profile;
@@ -59,7 +58,6 @@ public class AafAuthorizationFilter extends OrderedRequestContextFilter {
 
     private List<String> advancedKeywordsList;
 
-    @Autowired
     public AafAuthorizationFilter(GremlinFilter gremlinFilter, @Value("${permission.type}") String type,
             @Value("${permission.instance}") String instance,
             @Value("${advanced.keywords.list:}") String advancedKeys) {

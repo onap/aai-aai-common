@@ -23,6 +23,7 @@
 
 package org.onap.aai.schemaif.oxm;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Multimap;
 
 import java.io.IOException;
@@ -35,7 +36,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.codehaus.jackson.map.ObjectMapper;
 import org.onap.aai.cl.eelf.LoggerFactory;
 import org.onap.aai.edges.EdgeRule;
 import org.onap.aai.schemaif.SchemaProviderException;

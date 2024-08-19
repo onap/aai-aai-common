@@ -27,6 +27,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 import com.google.common.base.CaseFormat;
 import com.google.common.collect.Multimap;
@@ -124,12 +125,15 @@ public class PojoUtils {
      */
     public <T> String getJsonFromObject(T clazz, boolean wrapRoot, boolean indent)
             throws JsonGenerationException, JsonMappingException, IOException {
-        ObjectMapper mapper = JsonMapper.builder().serializationInclusion(JsonInclude.Include.NON_NULL)
+        ObjectMapper mapper = JsonMapper.builder()
+                .addModule(new JaxbAnnotationModule())
+                .addModule(new JavaTimeModule())
+                .serializationInclusion(JsonInclude.Include.NON_NULL)
                 .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
                 .configure(SerializationFeature.INDENT_OUTPUT, indent)
                 .configure(SerializationFeature.WRAP_ROOT_VALUE, wrapRoot)
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-                .configure(DeserializationFeature.UNWRAP_ROOT_VALUE, wrapRoot).addModule(new JaxbAnnotationModule())
+                .configure(DeserializationFeature.UNWRAP_ROOT_VALUE, wrapRoot)
                 .build();
 
         return mapper.writeValueAsString(clazz);

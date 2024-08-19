@@ -100,18 +100,8 @@ public class PojoUtilsTest {
         LocalDateTime date = LocalDateTime.of(2017, Month.SEPTEMBER, 18, 10, 55, 0, 300);
 
         String res = pojoUtils.getJsonFromObject(date);
-
+        assertEquals("\"2017-09-18T10:55:00.0000003\"", res);
         assertNotNull(res);
-        assertTrue(res.contains("\"dayOfMonth\" : 18"));
-        assertTrue(res.contains("\"dayOfWeek\" : \"MONDAY\""));
-        assertTrue(res.contains("\"dayOfYear\" : 261"));
-        assertTrue(res.contains("\"hour\" : 10"));
-        assertTrue(res.contains("\"minute\" : 55"));
-        assertTrue(res.contains("\"month\" : \"SEPTEMBER\""));
-        assertTrue(res.contains("\"monthValue\" : 9"));
-        assertTrue(res.contains("\"nano\" : 300"));
-        assertTrue(res.contains("\"second\" : 0"));
-        assertTrue(res.contains("\"year\" : 2017"));
     }
 
     @Test

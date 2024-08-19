@@ -32,7 +32,6 @@ import org.onap.aaf.cadi.filter.CadiFilter;
 import org.onap.aai.aaf.auth.ResponseFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.filter.OrderedRequestContextFilter;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -49,7 +48,6 @@ public class AafFilter extends OrderedRequestContextFilter {
 
     private final CadiFilter cadiFilter;
 
-    @Autowired
     public AafFilter(CadiProps cadiProps) throws IOException, ServletException {
         cadiFilter = new CadiFilter(new PropAccess((level, element) -> {
             switch (level) {

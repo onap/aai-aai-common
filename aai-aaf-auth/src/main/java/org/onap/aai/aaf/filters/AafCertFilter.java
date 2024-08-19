@@ -32,7 +32,6 @@ import org.onap.aaf.cadi.filter.CadiFilter;
 import org.onap.aai.aaf.auth.AafRequestFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.filter.OrderedRequestContextFilter;
 import org.springframework.context.annotation.Profile;
@@ -57,7 +56,6 @@ public class AafCertFilter extends OrderedRequestContextFilter {
 
     private final CadiProps cadiProps;
 
-    @Autowired
     public AafCertFilter(@Value("${aaf.userchain.pattern}") String aafUserChainPattern, CadiProps cadiProps)
             throws IOException, ServletException {
 
