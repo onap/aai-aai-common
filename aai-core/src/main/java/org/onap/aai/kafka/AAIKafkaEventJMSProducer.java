@@ -20,29 +20,45 @@
  * ============LICENSE_END=========================================================
  */
 
-package org.onap.aai.kafka;
+ package org.onap.aai.kafka;
 
-import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.jms.core.JmsTemplate;
-import org.springframework.stereotype.Service;
+ import org.json.JSONObject;
+ import org.onap.aai.config.SpringContextAware;
+ import org.onap.aai.domain.notificationEvent.NotificationEvent;
+ import org.onap.aai.util.AAIConfig;
+ import org.springframework.jms.core.JmsTemplate;
+ import org.springframework.stereotype.Service;
 
-import lombok.RequiredArgsConstructor;
+ import com.fasterxml.jackson.core.JsonProcessingException;
+ import com.fasterxml.jackson.databind.ObjectMapper;
+ import com.fasterxml.jackson.databind.json.JsonMapper;
 
-@Service
-@RequiredArgsConstructor
-public class AAIKafkaEventJMSProducer implements MessageProducer {
+ import lombok.RequiredArgsConstructor;
+ import lombok.extern.slf4j.Slf4j;
 
-    @Value("${aai.events.enabled:true}") private boolean eventsEnabled;
-    private final JmsTemplate jmsTemplate;
+ @Slf4j
+ @Service
+ @RequiredArgsConstructor
+ public class AAIKafkaEventJMSProducer implements MessageProducer {
 
-    public void sendMessageToDefaultDestination(String msg) {
-        if (eventsEnabled) {
-            jmsTemplate.convertAndSend(msg);
-        }
-    }
+     private boolean eventsEnabled = "true".equals(AAIConfig.get("aai.jms.enable", "true"));
+     private JmsTemplate jmsTemplate;
+     private static final ObjectMapper mapper = new JsonMapper();
 
-    public void sendMessageToDefaultDestination(JSONObject finalJson) {
-        sendMessageToDefaultDestination(finalJson.toString());
-    }
-}
+     public AAIKafkaEventJMSProducer(JmsTemplate jmsTemplate) {
+         this.jmsTemplate = jmsTemplate;
+     }
+
+     public void sendMessageToDefaultDestination(String msg) {
+         if (eventsEnabled) {
+             if(jmsTemplate == null) {
+                 this.jmsTemplate = SpringContextAware.getBean(JmsTemplate.class);
+             }
+             jmsTemplate.convertAndSend(msg);
+         }
+     }
+
+     public void sendMessageToDefaultDestination(JSONObject finalJson) {
+         sendMessageToDefaultDestination(finalJson.toString());
+     }
+ }
