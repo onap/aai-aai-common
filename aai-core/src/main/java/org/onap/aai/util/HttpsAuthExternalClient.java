@@ -20,21 +20,16 @@
 
 package org.onap.aai.util;
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.config.ClientConfig;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
-import com.sun.jersey.api.json.JSONConfiguration;
-import com.sun.jersey.client.urlconnection.HTTPSProperties;
-
 import java.io.FileInputStream;
-import java.security.KeyStore;
+
+import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.SslConfigurator;
 
 import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
-import javax.net.ssl.TrustManagerFactory;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
 
 public class HttpsAuthExternalClient {
 
@@ -48,63 +43,45 @@ public class HttpsAuthExternalClient {
      */
     public static Client getClient(String keystoreFileName, String keystorePassword) throws Exception {
 
-        ClientConfig config = new DefaultClientConfig();
-        config.getFeatures().put(JSONConfiguration.FEATURE_POJO_MAPPING, Boolean.TRUE);
-        config.getClasses().add(org.onap.aai.restcore.CustomJacksonJaxBJsonProvider.class);
-        Client client = null;
-        SSLContext ctx = null;
-        String truststore_path = AAIConstants.AAI_HOME_ETC_AUTH + AAIConfig.get(AAIConstants.AAI_TRUSTSTORE_FILENAME);
-        try (FileInputStream tin = new FileInputStream(truststore_path)) {
-            String truststore_password = AAIConfig.get(AAIConstants.AAI_TRUSTSTORE_PASSWD);
-            String keystore_path = AAIConstants.AAI_HOME_ETC_AUTH + keystoreFileName;
-            String keystore_password = keystorePassword;
-            // System.setProperty("javax.net.ssl.trustStore", truststore_path);
-            // System.setProperty("javax.net.ssl.trustStorePassword", truststore_password);
-            HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
-                public boolean verify(String string, SSLSession ssls) {
+        ClientConfig config = new ClientConfig();
+        config.register(org.onap.aai.restcore.CustomJacksonJaxBJsonProvider.class);
+
+        SSLContext sslContext = null;
+        String truststorePath = AAIConstants.AAI_HOME_ETC_AUTH + AAIConfig.get(AAIConstants.AAI_TRUSTSTORE_FILENAME);
+        try (FileInputStream tin = new FileInputStream(truststorePath)) {
+            String truststorePassword = AAIConfig.get(AAIConstants.AAI_TRUSTSTORE_PASSWD);
+            String keystorePath = AAIConstants.AAI_HOME_ETC_AUTH + keystoreFileName;
+
+            SslConfigurator sslConfig = SslConfigurator.newInstance()
+                    .trustStoreFile(truststorePath)
+                    .trustStorePassword(truststorePassword)
+                    .keyStoreFile(keystorePath)
+                    .keyStorePassword(keystorePassword);
+
+            sslContext = sslConfig.createSSLContext();
+
+            HostnameVerifier hostnameVerifier = new HostnameVerifier() {
+                @Override
+                public boolean verify(String s, SSLSession sslSession) {
                     return true;
                 }
-            });
+            };
 
-            ctx = SSLContext.getInstance("TLS");
-            KeyManagerFactory kmf = null;
+            Client client = ClientBuilder.newBuilder()
+                    .withConfig(config)
+                    .sslContext(sslContext)
+                    .hostnameVerifier(hostnameVerifier)
+                    .build();
 
-            /****
-             * kmf = KeyManagerFactory.getInstance("SunX509");
-             * FileInputStream fin = new FileInputStream(keystore_path);
-             * KeyStore ks = KeyStore.getInstance("PKCS12");
-             * char[] pwd = keystore_password.toCharArray();
-             * ks.load(fin, pwd);
-             * kmf.init(ks, pwd);
-             ***/
+            // Uncomment this line to get more logging for the request/response
+            // client.register(new
+            // LoggingFeature(Logger.getLogger(LoggingFeature.DEFAULT_LOGGER_NAME),
+            // Level.INFO, LoggingFeature.Verbosity.PAYLOAD_ANY, 8192));
 
-            String alg = TrustManagerFactory.getDefaultAlgorithm();
-            TrustManagerFactory tmf = TrustManagerFactory.getInstance(alg);
-
-            KeyStore ts = KeyStore.getInstance("PKCS12");
-            char[] tpwd = truststore_password.toCharArray();
-            ts.load(tin, tpwd);
-            tmf.init(ts);
-
-            // ctx.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
-            // Updating key manager to null, to disable two way SSL
-            ctx.init(null, tmf.getTrustManagers(), null);
-
-            config.getProperties().put(HTTPSProperties.PROPERTY_HTTPS_PROPERTIES,
-                    new HTTPSProperties(new HostnameVerifier() {
-                        @Override
-                        public boolean verify(String s, SSLSession sslSession) {
-                            return true;
-                        }
-                    }, ctx));
-
-            client = Client.create(config);
-            // uncomment this line to get more logging for the request/response
-            // client.addFilter(new LoggingFilter(System.out));
+            return client;
         } catch (Exception e) {
             throw e;
         }
-        return client;
     }
 
 }

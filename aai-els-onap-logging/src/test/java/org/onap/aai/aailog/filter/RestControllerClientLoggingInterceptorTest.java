@@ -22,14 +22,14 @@ package org.onap.aai.aailog.filter;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-
-import com.sun.jersey.api.client.ClientRequest;
+import static org.mockito.Mockito.when;
 
 import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 
+import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 
@@ -38,6 +38,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.onap.logging.filter.base.Constants;
@@ -47,17 +48,24 @@ import org.slf4j.MDC;
 @RunWith(MockitoJUnitRunner.class)
 public class RestControllerClientLoggingInterceptorTest {
 
-    private ClientRequest clientRequest;
+    @Spy
+    private ClientRequestContext clientRequest;
 
     @Spy
     @InjectMocks
-    private RestControllerClientLoggingInterceptor restControllerClientLoggingInterceptor;
+    private RestControllerClientRequestLoggingInterceptor restControllerClientLoggingInterceptor;
 
     @Before
     public void init() throws URISyntaxException {
         System.setProperty("javax.ws.rs.ext.RuntimeDelegate", "com.sun.ws.rs.ext.RuntimeDelegateImpl");
-        clientRequest = ClientRequest.create().build(
-                new URI("https://localhost:9999/aai/v1/cloud-infrastructure/complexes/complex/complex-1"), "GET");
+        when(clientRequest.getHeaders()).thenReturn(new MultivaluedHashMap<String, Object>());
+        when(clientRequest.getUri())
+                .thenReturn(new URI("https://localhost:9999/aai/v1/cloud-infrastructure/complexes/complex/complex-1"));
+
+        // clientRequest = ClientRequest.create().build(
+        // new
+        // URI("https://localhost:9999/aai/v1/cloud-infrastructure/complexes/complex/complex-1"),
+        // "GET");
     }
 
     @After
@@ -71,6 +79,10 @@ public class RestControllerClientLoggingInterceptorTest {
         String transId = "37b3ab2a-e57e-4fe8-8d8f-eee3019efce6";
         MultivaluedMap<String, Object> requestHeaders = new MultivaluedHashMap<String, Object>();
         requestHeaders.add(Constants.HttpHeaders.TRANSACTION_ID, transId);
+        when(clientRequest.getHeaders()).thenReturn(requestHeaders);
+        when(clientRequest.getUri())
+                .thenReturn(new URI("https://localhost:9999/aai/v1/cloud-infrastructure/complexes/complex/complex-1"));
+
         clientRequest.getHeaders().putAll(requestHeaders);
         restControllerClientLoggingInterceptor.pre(clientRequest);
         MultivaluedMap<String, Object> headers = clientRequest.getHeaders();

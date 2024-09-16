@@ -52,7 +52,7 @@ limitations under the License.
     <commons.compress.version>1.27.0</commons.compress.version>
     <commons.configuration.version>1.10</commons.configuration.version>
     <commons.io.version>2.16.1</commons.io.version>
-    <commons.lang3.version>3.9</commons.lang3.version>
+    <commons.lang3.version>3.15.0</commons.lang3.version>
     <commons.net.version>3.8.0</commons.net.version>
     <commons.text.version>1.10.0</commons.text.version>
     <docker.fabric.version>0.40.2</docker.fabric.version>
@@ -72,7 +72,6 @@ limitations under the License.
     <old.jaxb.version>2.3.0.1</old.jaxb.version>
     <jaxrs.version>2.1.1</jaxrs.version>
     <jcommander.version>1.78</jcommander.version>
-    <jersey.version>1.19.4</jersey.version>
     <jnr.ffi.version>2.2.12</jnr.ffi.version>
     <jolt.version>0.1.7</jolt.version>
     <jopt.simple.version>5.0.4</jopt.simple.version>
@@ -493,24 +492,6 @@ limitations under the License.
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-text</artifactId>
         <version>${commons.text.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>com.sun.jersey</groupId>
-        <artifactId>jersey-core</artifactId>
-        <version>${jersey.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>com.sun.jersey</groupId>
-        <artifactId>jersey-client</artifactId>
-        <version>${jersey.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>com.sun.jersey</groupId>
-        <artifactId>jersey-json</artifactId>
-        <version>${jersey.version}</version>
       </dependency>
 
       <dependency>
