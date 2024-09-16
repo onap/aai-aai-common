@@ -20,13 +20,6 @@
 
 package org.onap.aai.util;
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.config.ClientConfig;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
-import com.sun.jersey.api.json.JSONConfiguration;
-import com.sun.jersey.client.urlconnection.HTTPSProperties;
-
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.KeyManagementException;
@@ -41,8 +34,16 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
-import org.onap.aai.aailog.filter.RestControllerClientLoggingInterceptor;
+import org.apache.commons.configuration2.JSONConfiguration;
+import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.client.ClientProperties;
+import org.onap.aai.aailog.filter.RestControllerClientRequestLoggingInterceptor;
+import org.onap.aai.aailog.filter.RestControllerClientResponseLoggingInterceptor;
 import org.onap.aai.exceptions.AAIException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,12 +63,10 @@ public class HttpsAuthClient {
             System.out.println("Making Jersey https call...");
             Client client = HttpsAuthClient.getClient();
 
-            ClientResponse res = client.resource(url).accept("application/json").header("X-TransactionId", "PROV001")
-                    .header("X-FromAppId", "AAI").type("application/json").get(ClientResponse.class);
-
-            // System.out.println("Jersey result: ");
-            // System.out.println(res.getEntity(String.class).toString());
-
+            Response res = client.target(url)
+                    .request(MediaType.APPLICATION_JSON)
+                    .header("X-TransactionId", "PROV001")
+                    .header("X-FromAppId", "AAI").get();
         } catch (KeyManagementException e) {
             logger.debug("HttpsAuthClient KeyManagement error : {}", e.getMessage());
         } catch (Exception e) {
@@ -89,9 +88,9 @@ public class HttpsAuthClient {
             String keystorePassword) throws KeyManagementException, UnrecoverableKeyException, CertificateException,
             NoSuchAlgorithmException, KeyStoreException, IOException {
 
-        ClientConfig config = new DefaultClientConfig();
-        config.getFeatures().put(JSONConfiguration.FEATURE_POJO_MAPPING, Boolean.TRUE);
-        config.getClasses().add(org.onap.aai.restcore.CustomJacksonJaxBJsonProvider.class);
+        ClientConfig config = new ClientConfig();
+        config.register(org.onap.aai.restcore.CustomJacksonJaxBJsonProvider.class);
+
         SSLContext ctx = null;
         try {
             System.setProperty("javax.net.ssl.trustStore", truststorePath);
@@ -117,20 +116,16 @@ public class HttpsAuthClient {
             }
 
             ctx.init(kmf.getKeyManagers(), null, null);
-            config.getProperties().put(HTTPSProperties.PROPERTY_HTTPS_PROPERTIES,
-                    new HTTPSProperties(new HostnameVerifier() {
-                        @Override
-                        public boolean verify(String s, SSLSession sslSession) {
-                            return true;
-                        }
-                    }, ctx));
+            config.property("jersey.config.client.ssl.context", ctx);
+            config.property("jersey.config.client.hostname.verifier", (HostnameVerifier) (s, sslSession) -> true);
         } catch (Exception e) {
             System.out.println("Error setting up config: exiting " + e.getMessage());
             throw e;
         }
 
-        Client client = Client.create(config);
-        client.addFilter(new RestControllerClientLoggingInterceptor());
+        Client client = ClientBuilder.newClient(config);
+        client.register(new RestControllerClientRequestLoggingInterceptor());
+        client.register(new RestControllerClientResponseLoggingInterceptor());
         // uncomment this line to get more logging for the request/response
         // client.addFilter(new LoggingFilter(System.out));
 

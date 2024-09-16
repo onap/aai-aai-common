@@ -22,9 +22,8 @@ package org.onap.aai.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientHandlerException;
-import com.sun.jersey.api.client.ClientResponse;
+
+import javax.ws.rs.client.Entity;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -36,6 +35,11 @@ import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import javax.ws.rs.ClientErrorException;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.onap.aai.exceptions.AAIException;
 import org.slf4j.Logger;
@@ -69,8 +73,7 @@ public class RestController implements RestControllerInterface {
 
     public static final String REST_APIPATH_CLOUDREGION = "cloud-infrastructure/cloud-regions/cloud-region/";
     public static final String REST_APIPATH_TENANT = "cloud-infrastructure/tenants/tenant/";
-    public static final String REST_APIPATH_VIRTUAL_DATA_CENTER =
-            "cloud-infrastructure/virtual-data-centers/virtual-data-center/";
+    public static final String REST_APIPATH_VIRTUAL_DATA_CENTER = "cloud-infrastructure/virtual-data-centers/virtual-data-center/";
     public static final String REST_APIPATH_VIRTUAL_DATA_CENTERS = "cloud-infrastructure/virtual-data-centers/";
     public static final String REST_APIPATH_GENERIC_VNF = "network/generic-vnfs/generic-vnf/";
     public static final String REST_APIPATH_GENERIC_VNFS = "network/generic-vnfs";
@@ -173,8 +176,8 @@ public class RestController implements RestControllerInterface {
             url = AAIConfig.get(AAIConstants.AAI_OLDSERVER_URL) + path;
         } else {
             if (overrideLocalHost == null) {
-                overrideLocalHost =
-                        AAIConfig.get(AAIConstants.AAI_LOCAL_OVERRIDE, AAIConstants.AAI_LOCAL_OVERRIDE_DEFAULT);
+                overrideLocalHost = AAIConfig.get(AAIConstants.AAI_LOCAL_OVERRIDE,
+                        AAIConstants.AAI_LOCAL_OVERRIDE_DEFAULT);
             }
             if (AAIConstants.AAI_LOCAL_OVERRIDE_DEFAULT.equals(overrideLocalHost)) {
                 url = String.format(AAIConstants.AAI_LOCAL_REST, port,
@@ -185,21 +188,26 @@ public class RestController implements RestControllerInterface {
             }
         }
         LOGGER.debug(url + " for the get REST API");
-        ClientResponse cres = client.resource(url).accept("application/json").header("X-TransactionId", transId)
-                .header("X-FromAppId", sourceID).header("Real-Time", "true").type("application/json")
-                .get(ClientResponse.class);
+        Response response = client.target(url)
+                .request(MediaType.APPLICATION_JSON)
+                .header("X-TransactionId", transId)
+                .header("X-FromAppId", sourceID)
+                .header("Real-Time", "true")
+                .get();
 
-        // System.out.println("cres.EntityInputSream()="+cres.getEntityInputStream().toString());
-        // System.out.println("cres.tostring()="+cres.toString());
+        // System.out.println("response.EntityInputSream()="+response.getEntityInputStream().toString());
+        // System.out.println("response.tostring()="+response.toString());
 
-        if (cres.getStatus() == 200) {
+        if (response.getStatus() == 200) {
             // System.out.println(methodName + ": url=" + url);
-            t = (T) cres.getEntity(t.getClass());
+            T entity = response.readEntity((Class<T>) t.getClass());
+            restObject.set(entity);
             restObject.set(t);
             LOGGER.debug(methodName + "REST api GET was successfull!");
         } else {
-            // System.out.println(methodName + ": url=" + url + " failed with status=" + cres.getStatus());
-            throw new AAIException("AAI_7116", methodName + " with status=" + cres.getStatus() + ", url=" + url);
+            // System.out.println(methodName + ": url=" + url + " failed with status=" +
+            // response.getStatus());
+            throw new AAIException("AAI_7116", methodName + " with status=" + response.getStatus() + ", url=" + url);
         }
     }
 
@@ -229,21 +237,25 @@ public class RestController implements RestControllerInterface {
         url = AAIConfig.get(AAIConstants.AAI_SERVER_URL_BASE) + apiVersion + "/" + path;
 
         LOGGER.debug(url + " for the get REST API");
-        ClientResponse cres = client.resource(url).accept("application/json").header("X-TransactionId", transId)
-                .header("X-FromAppId", sourceID).header("Real-Time", "true").type("application/json")
-                .get(ClientResponse.class);
+        Response response = client.target(url)
+                .request(MediaType.APPLICATION_JSON)
+                .header("X-TransactionId", transId)
+                .header("X-FromAppId", sourceID)
+                .header("Real-Time", "true")
+                .get();
 
-        // System.out.println("cres.EntityInputSream()="+cres.getEntityInputStream().toString());
-        // System.out.println("cres.tostring()="+cres.toString());
+        // System.out.println("response.EntityInputSream()="+response.getEntityInputStream().toString());
+        // System.out.println("response.tostring()="+response.toString());
 
-        if (cres.getStatus() == 200) {
+        if (response.getStatus() == 200) {
             // System.out.println(methodName + ": url=" + url);
-            t = (T) cres.getEntity(t.getClass());
-            restObject.set(t);
+            T entity = response.readEntity((Class<T>) t.getClass());
+            restObject.set(entity);
             LOGGER.debug(methodName + "REST api GET was successfull!");
         } else {
-            // System.out.println(methodName + ": url=" + url + " failed with status=" + cres.getStatus());
-            throw new AAIException("AAI_7116", methodName + " with status=" + cres.getStatus() + ", url=" + url);
+            // System.out.println(methodName + ": url=" + url + " failed with status=" +
+            // response.getStatus());
+            throw new AAIException("AAI_7116", methodName + " with status=" + response.getStatus() + ", url=" + url);
         }
     }
 
@@ -318,8 +330,8 @@ public class RestController implements RestControllerInterface {
             url = AAIConfig.get(AAIConstants.AAI_OLDSERVER_URL) + path;
         } else {
             if (overrideLocalHost == null) {
-                overrideLocalHost =
-                        AAIConfig.get(AAIConstants.AAI_LOCAL_OVERRIDE, AAIConstants.AAI_LOCAL_OVERRIDE_DEFAULT);
+                overrideLocalHost = AAIConfig.get(AAIConstants.AAI_LOCAL_OVERRIDE,
+                        AAIConstants.AAI_LOCAL_OVERRIDE_DEFAULT);
             }
             if (AAIConstants.AAI_LOCAL_OVERRIDE_DEFAULT.equals(overrideLocalHost)) {
                 url = String.format(AAIConstants.AAI_LOCAL_REST, port,
@@ -330,18 +342,21 @@ public class RestController implements RestControllerInterface {
             }
         }
 
-        ClientResponse cres = client.resource(url).accept("application/json").header("X-TransactionId", transId)
-                .header("X-FromAppId", sourceID).header("Real-Time", "true").type("application/json").entity(t)
-                .put(ClientResponse.class);
+        Response response = client.target(url)
+                .request(MediaType.APPLICATION_JSON)
+                .header("X-TransactionId", transId)
+                .header("X-FromAppId", sourceID)
+                .header("Real-Time", "true")
+                .put(Entity.entity(t, MediaType.APPLICATION_JSON));
 
-        // System.out.println("cres.tostring()="+cres.toString());
+        // System.out.println("response.tostring()="+response.toString());
 
-        int statuscode = cres.getStatus();
+        int statuscode = response.getStatus();
         if (statuscode >= 200 && statuscode <= 299) {
             LOGGER.debug(methodName + ": url=" + url + ", request=" + path);
         } else {
             throw new AAIException("AAI_7116", methodName + " with status=" + statuscode + ", url=" + url + ", msg="
-                    + cres.getEntity(String.class));
+                    + response.readEntity(String.class));
         }
     }
 
@@ -365,18 +380,21 @@ public class RestController implements RestControllerInterface {
 
         url = AAIConfig.get(AAIConstants.AAI_SERVER_URL_BASE) + apiVersion + "/" + path;
 
-        ClientResponse cres = client.resource(url).accept("application/json").header("X-TransactionId", transId)
-                .header("X-FromAppId", sourceID).header("Real-Time", "true").type("application/json").entity(t)
-                .put(ClientResponse.class);
+        Response response = client.target(url)
+                .request(MediaType.APPLICATION_JSON)
+                .header("X-TransactionId", transId)
+                .header("X-FromAppId", sourceID)
+                .header("Real-Time", "true")
+                .put(Entity.entity(t, MediaType.APPLICATION_JSON));
 
-        // System.out.println("cres.tostring()="+cres.toString());
+        // System.out.println("response.tostring()="+response.toString());
 
-        int statuscode = cres.getStatus();
+        int statuscode = response.getStatus();
         if (statuscode >= 200 && statuscode <= 299) {
             LOGGER.debug(methodName + ": url=" + url + ", request=" + path);
         } else {
             throw new AAIException("AAI_7116", methodName + " with status=" + statuscode + ", url=" + url + ", msg="
-                    + cres.getEntity(String.class));
+                    + response.getEntity());
         }
     }
 
@@ -410,16 +428,20 @@ public class RestController implements RestControllerInterface {
             url = String.format(AAIConstants.AAI_LOCAL_REST_OVERRIDE, overrideLocalHost,
                     AAIConfig.get(AAIConstants.AAI_DEFAULT_API_VERSION_PROP)) + path;
         }
-        ClientResponse cres = client.resource(url).accept("application/json").header("X-TransactionId", transId)
-                .header("X-FromAppId", sourceID).header("Real-Time", "true").type("application/json").entity(request)
-                .delete(ClientResponse.class);
+        Response response = client.target(url)
+                .request(MediaType.APPLICATION_JSON)
+                .header("X-TransactionId", transId)
+                .header("X-FromAppId", sourceID)
+                .header("Real-Time", "true")
+                .delete();
 
-        if (cres.getStatus() == 404) { // resource not found
-            LOGGER.info("Resource does not exist...: " + cres.getStatus() + ":" + cres.getEntity(String.class));
-        } else if (cres.getStatus() == 200 || cres.getStatus() == 204) {
+        if (response.getStatus() == 404) { // resource not found
+            LOGGER.info(
+                    "Resource does not exist...: " + response.getStatus() + ":" + response.readEntity(String.class));
+        } else if (response.getStatus() == 200 || response.getStatus() == 204) {
             LOGGER.info("Resource " + url + " deleted");
         } else {
-            LOGGER.error("Deleting Resource failed: " + cres.getStatus() + ":" + cres.getEntity(String.class));
+            LOGGER.error("Deleting Resource failed: " + response.getStatus() + ":" + response.readEntity(String.class));
             throw new AAIException("AAI_7116", "Error during DELETE");
         }
     }
@@ -451,17 +473,20 @@ public class RestController implements RestControllerInterface {
 
             url = AAIConfig.get(AAIConstants.AAI_SERVER_URL_BASE) + apiVersion + "/" + path;
 
-            ClientResponse cres = client.resource(url).accept("application/json").header("X-TransactionId", transId)
-                    .header("X-FromAppId", sourceID).header("Real-Time", "true").type("application/json").entity(t)
-                    .post(ClientResponse.class);
+            Response response = client.target(url)
+                    .request(MediaType.APPLICATION_JSON)
+                    .header("X-TransactionId", transId)
+                    .header("X-FromAppId", sourceID)
+                    .header("Real-Time", "true")
+                    .post(Entity.entity(t, MediaType.APPLICATION_JSON));
 
-            int statuscode = cres.getStatus();
+            int statuscode = response.getStatus();
             if (statuscode >= 200 && statuscode <= 299) {
                 LOGGER.debug(methodName + "REST api POST was successful!");
-                return cres.getEntity(String.class);
+                return response.readEntity(String.class);
             } else {
                 throw new AAIException("AAI_7116", methodName + " with status=" + statuscode + ", url=" + url + ", msg="
-                        + cres.getEntity(String.class));
+                        + response.readEntity(String.class));
             }
 
         } catch (AAIException e) {
@@ -503,17 +528,17 @@ public class RestController implements RestControllerInterface {
      */
     /*
      * DoesResourceExist
-     * 
+     *
      * To check whether a resource exist or get a copy of the existing version of the resource
-     * 
+     *
      * Resourcepath: should contain the qualified resource path (including encoded unique key identifier value),
      * resourceClassName: is the canonical name of the resource class name,
      * fromAppId:
      * transId:
-     * 
+     *
      * Will return null (if the resource doesn’t exist) (or)
      * Will return the specified resource from the Graph.
-     * 
+     *
      * Example:
      * LogicalLink llink = new LogicalLink();
      * String resourceClassName = llink.getClass().getCanonicalName();
@@ -536,7 +561,7 @@ public class RestController implements RestControllerInterface {
 
         } catch (AAIException e) {
 
-        } catch (ClientHandlerException che) {
+        } catch (ClientErrorException che) {
 
         } catch (Exception e) {
 
@@ -560,13 +585,13 @@ public class RestController implements RestControllerInterface {
         transId += ":" + UUID.randomUUID().toString();
 
         int numRetries = 5;
-        ClientResponse cres = null;
+        Response response = null;
         int statusCode = -1;
 
         try {
             if (overrideLocalHost == null) {
-                overrideLocalHost =
-                        AAIConfig.get(AAIConstants.AAI_LOCAL_OVERRIDE, AAIConstants.AAI_LOCAL_OVERRIDE_DEFAULT);
+                overrideLocalHost = AAIConfig.get(AAIConstants.AAI_LOCAL_OVERRIDE,
+                        AAIConstants.AAI_LOCAL_OVERRIDE_DEFAULT);
             }
             if (AAIConstants.AAI_LOCAL_OVERRIDE_DEFAULT.equals(overrideLocalHost)) {
                 url = String.format(AAIConstants.AAI_LOCAL_REST, AAIConstants.AAI_RESOURCES_PORT,
@@ -578,11 +603,14 @@ public class RestController implements RestControllerInterface {
 
             do {
 
-                cres = client.resource(url).accept("application/json").header("X-TransactionId", transId)
-                        .header("X-FromAppId", sourceID).header("X-HTTP-Method-Override", "PATCH")
-                        .type("application/merge-patch+json").entity(t).post(ClientResponse.class);
+                response = client.target(url)
+                        .request(MediaType.APPLICATION_JSON)
+                        .header("X-TransactionId", transId)
+                        .header("X-FromAppId", sourceID)
+                        .header("X-HTTP-Method-Override", "PATCH")
+                        .post(Entity.entity(t, "application/merge-patch+json"));
 
-                statusCode = cres.getStatus();
+                statusCode = response.getStatus();
 
                 if (statusCode >= 200 && statusCode <= 299) {
                     LOGGER.debug(methodName + "REST api PATCH was successful!");
@@ -598,7 +626,7 @@ public class RestController implements RestControllerInterface {
             LOGGER.debug(methodName + "Unable to make the patch request to url " + url + " even after trying = "
                     + numRetries + " times.");
             throw new AAIException("AAI_7116", methodName + " with status=" + statusCode + ", url=" + url + ", msg="
-                    + cres.getEntity(String.class));
+                    + response.readEntity(String.class));
 
         } catch (AAIException e) {
             throw new AAIException("AAI_7116", methodName + " with url=" + url + ", Exception: " + e.toString());
