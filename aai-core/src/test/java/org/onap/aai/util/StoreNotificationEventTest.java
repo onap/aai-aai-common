@@ -25,11 +25,10 @@ import static org.junit.Assert.assertTrue;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.io.IOException;
-
-import javax.json.Json;
-import javax.json.JsonObject;
 
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
@@ -50,6 +49,8 @@ public class StoreNotificationEventTest extends AAISetup {
 
     private static AAIKafkaEventJMSProducer producer;
     private static StoreNotificationEvent sne;
+
+    private final ObjectMapper mapper = new ObjectMapper();
 
     @BeforeClass
     public static void setUp() {
@@ -77,7 +78,8 @@ public class StoreNotificationEventTest extends AAISetup {
     @Test
     public void testStoreEventEmptyEventHeader()
             throws AAIException, JsonGenerationException, JsonMappingException, IOException {
-        JsonObject object = Json.createObjectBuilder().add("hello", "world").build();
+
+        ObjectNode object = mapper.createObjectNode().put("hello", "world");
         String res = sne.storeEventAndSendToJms(new EventHeader(), object);
 
         assertNotNull(res);
@@ -98,14 +100,12 @@ public class StoreNotificationEventTest extends AAISetup {
         assertTrue(res.contains("\"entity-link\" : \"UNK\""));
         assertTrue(res.contains("\"entity\""));
         assertTrue(res.contains("\"hello\""));
-        assertTrue(res.contains("\"chars\" : \"world\""));
-        assertTrue(res.contains("\"string\" : \"world\""));
-        assertTrue(res.contains("\"valueType\" : \"STRING\""));
+        assertTrue(res.contains("\"world\""));
     }
 
     @Test
     public void testStoreEvent() throws AAIException, JsonGenerationException, JsonMappingException, IOException {
-        JsonObject object = Json.createObjectBuilder().add("hello", "world").build();
+        ObjectNode object = mapper.createObjectNode().put("hello", "world");
         EventHeader eh = new EventHeader();
         eh.setId("123");
         eh.setTimestamp("current-time");
@@ -135,9 +135,7 @@ public class StoreNotificationEventTest extends AAISetup {
         assertTrue(res.contains("\"entity-link\" : \"entity-link\""));
         assertTrue(res.contains("\"entity\""));
         assertTrue(res.contains("\"hello\""));
-        assertTrue(res.contains("\"chars\" : \"world\""));
-        assertTrue(res.contains("\"string\" : \"world\""));
-        assertTrue(res.contains("\"valueType\" : \"STRING\""));
+        assertTrue(res.contains("\"world\""));
     }
 
     @Test(expected = AAIException.class)
