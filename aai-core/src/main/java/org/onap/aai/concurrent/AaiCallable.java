@@ -35,7 +35,6 @@ public abstract class AaiCallable<T> implements Callable<T> {
     /**
      * The constructor.
      */
-    @SuppressWarnings("unchecked")
     public AaiCallable() {
         mdcCopy = MDC.getCopyOfContextMap();
     }
