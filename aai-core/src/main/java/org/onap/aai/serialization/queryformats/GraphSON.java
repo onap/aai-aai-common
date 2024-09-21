@@ -54,7 +54,7 @@ public class GraphSON implements FormatMapper {
     private static final GraphSONVersion version = GraphSONVersion.V1_0;
 
     private final GraphSONMapper mapper =
-            GraphSONMapper.build().version(version).addRegistry(JanusGraphIoRegistry.getInstance()).create();
+            GraphSONMapper.build().version(version).addRegistry(JanusGraphIoRegistry.instance()).create();
     private final GraphSONWriter writer = GraphSONWriter.build().mapper(mapper).create();
 
     @Override

@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import org.apache.tinkerpop.gremlin.groovy.jsr223.GroovyTranslator;
+import org.apache.tinkerpop.gremlin.process.traversal.translator.GroovyTranslator;
 import org.apache.tinkerpop.gremlin.process.traversal.Order;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
@@ -519,7 +519,7 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
     @Override
     public QueryBuilder<E> store(String name) {
 
-        this.traversal.store(name);
+        this.traversal.aggregate(Scope.local , name);
         stepIndex++;
 
         return this;
