@@ -30,7 +30,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 
 import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.transform.OutputKeys;
@@ -145,7 +145,7 @@ public class NodeIngestorTest {
         ctx13.generateSchema(outputResolver13);
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         printDocument(nodeIngestor.getSchema(new SchemaVersion("v13")), buffer);
-        String content = new String(Files.readAllBytes(Paths.get("src/test/resources/forWiringTests/aai_oxm_v13.xml")));
+        String content = new String(Files.readAllBytes(Path.of("src/test/resources/forWiringTests/aai_oxm_v13.xml")));
         content = content.replaceAll("\\s+", "");
         String expected = buffer.toString().replaceAll("\\s+", "");
 

@@ -30,7 +30,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -154,7 +154,7 @@ public final class AAIAuthCore {
 
         try {
             LOGGER.debug("Reading from " + globalAuthFileName);
-            String authFile = new String(Files.readAllBytes(Paths.get(globalAuthFileName)));
+            String authFile = new String(Files.readAllBytes(Path.of(globalAuthFileName)));
 
             JsonObject authObject = JsonParser.parseString(authFile).getAsJsonObject();
             if (authObject.has("roles")) {

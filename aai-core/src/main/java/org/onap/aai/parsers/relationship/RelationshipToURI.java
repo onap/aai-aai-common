@@ -112,12 +112,12 @@ public class RelationshipToURI {
         try {
             if (loader.getVersion().compareTo(schemaVersions.getRelatedLinkVersion()) >= 0) {
                 result = processRelatedLink(relatedLink);
-                if (!result.isPresent()) {
+                if (result.isEmpty()) {
                     result = processRelationshipData();
                 }
             } else {
                 result = processRelationshipData();
-                if (!result.isPresent()) {
+                if (result.isEmpty()) {
                     result = processRelatedLink(relatedLink);
                 }
             }

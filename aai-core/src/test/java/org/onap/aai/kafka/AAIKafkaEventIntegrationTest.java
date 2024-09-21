@@ -26,7 +26,7 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -129,7 +129,7 @@ public class AAIKafkaEventIntegrationTest extends AAISetup {
 
         traversalUriHttpEntry.setHttpEntryProperties(new SchemaVersion("v14"));
         String pserverUri = "/aai/v14/cloud-infrastructure/pservers/pserver/pserver1";
-        String entity = new String(Files.readAllBytes(Paths.get("src/test/resources/payloads/templates/pserver.json"))).replace("${hostname}", "pserver1");
+        String entity = new String(Files.readAllBytes(Path.of("src/test/resources/payloads/templates/pserver.json"))).replace("${hostname}", "pserver1");
         DBRequest dbRequest = createDBRequest(pserverUri, entity);
         List<DBRequest> dbRequests = new ArrayList<>();
         dbRequests.add(dbRequest);

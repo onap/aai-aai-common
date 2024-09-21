@@ -44,7 +44,7 @@ public class Count implements FormatMapper {
 
         final JsonObject countResult = new JsonObject();
 
-        list.stream().map(this::getCount).filter(Optional::isPresent).map(Optional::get)
+        list.stream().map(this::getCount).flatMap(Optional::stream)
                 .collect(Collectors.toConcurrentMap(Pair::getValue0, Pair::getValue1, Long::sum))
                 .forEach(countResult::addProperty);
 

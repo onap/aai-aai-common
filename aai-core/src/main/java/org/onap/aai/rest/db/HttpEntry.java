@@ -384,7 +384,7 @@ public class HttpEntry {
                                 if (obj != null) {
                                     status = Status.OK;
                                     MarshallerProperties properties;
-                                    if (!request.getMarshallerProperties().isPresent()) {
+                                    if (request.getMarshallerProperties().isEmpty()) {
                                         properties = new MarshallerProperties.Builder(
                                                 org.onap.aai.restcore.MediaType.getEnum(outputMediaType)).build();
                                     } else {

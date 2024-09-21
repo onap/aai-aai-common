@@ -112,7 +112,7 @@ public class EdgeSerializer {
         if (message.isPresent() && !isBestEffort) {
             throw new EdgeMultiplicityException(message.get());
         }
-        if (!message.isPresent()) {
+        if (message.isEmpty()) {
             if (rule.getDirection().equals(Direction.OUT)) {
                 e = aVertex.addEdge(rule.getLabel(), bVertex);
             } else if (rule.getDirection().equals(Direction.IN)) {
@@ -185,7 +185,7 @@ public class EdgeSerializer {
         if (message.isPresent() && !isBestEffort) {
             throw new EdgeMultiplicityException(message.get());
         }
-        if (!message.isPresent()) {
+        if (message.isEmpty()) {
             if (rule.getDirection().equals(Direction.OUT)) {
                 e = aVertex.addEdge(rule.getLabel(), bVertex);
             } else if (rule.getDirection().equals(Direction.IN)) {

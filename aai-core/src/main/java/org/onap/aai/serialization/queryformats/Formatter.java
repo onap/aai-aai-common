@@ -102,7 +102,7 @@ public class Formatter {
                 }
 
                 return Optional.<JsonObject>empty();
-            }).filter(Optional::isPresent).map(Optional::get).forEach(json -> {
+            }).flatMap(Optional::stream).forEach(json -> {
                 if (isParallel) {
                     synchronized (body) {
                         body.add(json);

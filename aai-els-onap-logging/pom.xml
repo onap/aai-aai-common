@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.onap.aai.aai-common</groupId>
         <artifactId>aai-parent</artifactId>
-        <version>1.14.7-SNAPSHOT</version>
+        <version>1.15.0-SNAPSHOT</version>
         <relativePath>../aai-parent/pom.xml</relativePath>
     </parent>
     <artifactId>aai-els-onap-logging</artifactId>
@@ -65,8 +65,8 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>javax.annotation</groupId>
-            <artifactId>javax.annotation-api</artifactId>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -129,7 +129,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.30</version>
+            <version>1.18.34</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

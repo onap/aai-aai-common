@@ -136,7 +136,7 @@ public abstract class SideEffect {
     }
 
     private Optional<String> resolveRelativePath(Optional<String> populatedUri) throws UnsupportedEncodingException {
-        if (!populatedUri.isPresent()) {
+        if (populatedUri.isEmpty()) {
             return Optional.empty();
         } else {
             return Optional.of(populatedUri.get().replaceFirst("\\./", this.serializer.getURIForVertex(self) + "/"));

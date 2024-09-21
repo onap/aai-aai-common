@@ -30,7 +30,7 @@
 
     <groupId>org.onap.aai.aai-common</groupId>
     <artifactId>aai-common</artifactId>
-    <version>1.14.7-SNAPSHOT</version>
+    <version>1.15.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>aai-aai-common</name>
     <description>Contains all of the common code for resources and traversal repos</description>
@@ -110,8 +110,7 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <configuration>
-                        <source>11</source>
-                        <target>11</target>
+                        <release>11</release>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -236,11 +235,6 @@
             <id>AJSC</id>
             <name>AJSC repository</name>
             <url>https://mvnrepository.com/artifact/com.att.ajsc</url>
-        </repository>
-        <repository>
-            <id>restlet</id>
-            <name>maven reslet</name>
-            <url>https://maven.restlet.com/</url>
         </repository>
         <repository>
             <id>ecomp-releases</id>

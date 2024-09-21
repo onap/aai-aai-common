@@ -127,7 +127,7 @@ public class PathedURLTest extends AAISetup {
         when(urlBuilder.pathed(pserver)).thenReturn("/aai/v14/cloud-infrastructure/pservers/pserver/hostname-1");
         Optional<JsonObject> jsonObjectOptional = pathedURL.getJsonFromVertex(pserver);
 
-        if (!jsonObjectOptional.isPresent()) {
+        if (jsonObjectOptional.isEmpty()) {
             fail("Expecting an json object returned from pathed url but returned none");
         }
 
@@ -150,7 +150,7 @@ public class PathedURLTest extends AAISetup {
         when(urlBuilder.pathed(pserver)).thenReturn("/aai/v14/cloud-infrastructure/pservers/pserver/hostname-1");
         Optional<JsonObject> jsonObjectOptional = pathedURL.getJsonFromVertex(pserver);
 
-        if (!jsonObjectOptional.isPresent()) {
+        if (jsonObjectOptional.isEmpty()) {
             fail("Expecting an json object returned from pathed url but returned none");
         }
 

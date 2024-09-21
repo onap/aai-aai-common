@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Properties;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -42,7 +41,7 @@ public class FailoverMonitor {
 
     public boolean shouldRun() throws IOException {
 
-        Path failoverPath = Paths.get(failoverPropertiesPath);
+        Path failoverPath = Path.of(failoverPropertiesPath);
 
         if (Files.exists(failoverPath)) {
             Properties properties = new Properties();

@@ -27,7 +27,7 @@ limitations under the License.
   <parent>
     <groupId>org.onap.aai.aai-common</groupId>
     <artifactId>aai-common</artifactId>
-    <version>1.14.7-SNAPSHOT</version>
+    <version>1.15.0-SNAPSHOT</version>
   </parent>
   <artifactId>aai-parent</artifactId>
   <name>aai-parent</name>
@@ -38,6 +38,7 @@ limitations under the License.
   </modules>
 
   <properties>
+    <maven.compiler.release>11</maven.compiler.release>
     <!-- update this just prior to release or figure out something with version.properties -->
     <aai.release.version>${aai.common.version}</aai.release.version>
     <aai.common.logging.version>1.8.0</aai.common.logging.version>
@@ -119,7 +120,7 @@ limitations under the License.
     <!-- we let things pass by default, set custom level for each child project -->
     <jacoco.line.coverage.limit>0.00</jacoco.line.coverage.limit>
 
-    <jacoco.version>0.8.5</jacoco.version>
+    <jacoco.version>0.8.12</jacoco.version>
     <sonar-jacoco-listeners.version>3.2</sonar-jacoco-listeners.version>
     <sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
     <sonar.coverage.jacoco.xmlReportPaths>${project.reporting.outputDirectory}/jacoco-ut/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
@@ -273,9 +274,9 @@ limitations under the License.
         <scope>provided</scope>
       </dependency>
       <dependency>
-        <groupId>javax.annotation</groupId>
-        <artifactId>javax.annotation-api</artifactId>
-        <version>${javax.annotation.version}</version>
+        <groupId>jakarta.annotation</groupId>
+        <artifactId>jakarta.annotation-api</artifactId>
+        <version>1.3.5</version>
       </dependency>
 
       <dependency>
@@ -386,9 +387,9 @@ limitations under the License.
       </dependency>
 
       <dependency>
-        <groupId>javax.xml.bind</groupId>
-        <artifactId>jaxb-api</artifactId>
-        <version>${jaxb.version}</version>
+        <groupId>jakarta.xml.bind</groupId>
+        <artifactId>jakarta.xml.bind-api</artifactId>
+        <version>2.3.3</version>
       </dependency>
 
       <dependency>
@@ -436,15 +437,9 @@ limitations under the License.
       </dependency>
 
       <dependency>
-        <groupId>com.sun.xml.bind</groupId>
-        <artifactId>jaxb-impl</artifactId>
-        <version>${old.jaxb.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>com.sun.xml.bind</groupId>
-        <artifactId>jaxb-core</artifactId>
-        <version>${old.jaxb.version}</version>
+        <groupId>org.glassfish.jaxb</groupId>
+        <artifactId>jaxb-runtime</artifactId>
+        <version>2.3.9</version>
       </dependency>
 
       <dependency>

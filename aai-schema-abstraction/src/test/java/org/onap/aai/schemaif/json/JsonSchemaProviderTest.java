@@ -33,7 +33,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
 import java.util.zip.ZipEntry;
@@ -74,7 +74,7 @@ public class JsonSchemaProviderTest {
         ByteArrayOutputStream fos = new ByteArrayOutputStream();
         ZipOutputStream zos = new ZipOutputStream(fos);
         zos.putNextEntry(new ZipEntry("schemaServiceResponse.json"));
-        byte[] fileData = Files.readAllBytes(Paths.get("src/test/resources/json/schemaServiceResponse.json"));
+        byte[] fileData = Files.readAllBytes(Path.of("src/test/resources/json/schemaServiceResponse.json"));
         zos.write(fileData, 0, fileData.length);
         zos.closeEntry();
         zos.close();
@@ -591,7 +591,7 @@ public class JsonSchemaProviderTest {
     }
 
     static String readFile(String path) throws IOException {
-        byte[] encoded = Files.readAllBytes(Paths.get(path));
+        byte[] encoded = Files.readAllBytes(Path.of(path));
         return new String(encoded);
     }
 }
