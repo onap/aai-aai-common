@@ -62,8 +62,8 @@ limitations under the License.
     <eelf.core.version>2.0.0-oss</eelf.core.version>
     <freemarker.version>2.3.31</freemarker.version>
     <google.guava.version>31.1-jre</google.guava.version>
-    <gremlin.version>3.5.8</gremlin.version>
-    <janusgraph.version>0.6.4</janusgraph.version>
+    <gremlin.version>3.7.1</gremlin.version>
+    <janusgraph.version>1.0.0</janusgraph.version>
     <groovy.version>2.5.15</groovy.version>
     <gson.version>2.9.1</gson.version>
     <hamcrest.junit.version>2.0.0.0</hamcrest.junit.version>
