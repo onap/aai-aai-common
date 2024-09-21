@@ -26,12 +26,10 @@ import com.google.common.collect.Multimap;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -49,10 +47,10 @@ import org.janusgraph.core.PropertyKey;
 import org.janusgraph.core.schema.ConsistencyModifier;
 import org.janusgraph.core.schema.JanusGraphIndex;
 import org.janusgraph.core.schema.JanusGraphManagement;
-import org.janusgraph.core.schema.JanusGraphManagement.IndexJobFuture;
 import org.janusgraph.core.schema.RelationTypeIndex;
 import org.janusgraph.core.schema.SchemaAction;
 import org.janusgraph.core.schema.SchemaStatus;
+import org.janusgraph.diskstorage.keycolumnvalue.scan.ScanJobFuture;
 import org.janusgraph.graphdb.database.StandardJanusGraph;
 import org.janusgraph.graphdb.database.management.ManagementSystem;
 import org.janusgraph.graphdb.database.management.RelationIndexStatusReport;
@@ -109,7 +107,7 @@ public class SchemaGenerator {
 
         final Map<String, Introspector> objs = LoaderUtil.getLatestVersion().getAllObjects();
         final Map<String, PropertyKey> seenProps = new HashMap<>();
-        
+
         for (Introspector obj : objs.values()) {
             createSchemaForObject(graphMgmt, seenProps, obj);
         }
@@ -340,7 +338,7 @@ public class SchemaGenerator {
     private static void awaitRelationIndexStatus(JanusGraph graph, Collection<String> labels, SchemaStatus newStatus) {
         LOGGER.info("Awaiting index status [{}]", newStatus);;
         CompletableFuture<RelationIndexStatusReport>[] awaits = labels.stream()
-            .map(label -> 
+            .map(label ->
                 CompletableFuture.supplyAsync(() -> {
                     try {
                         return ManagementSystem
@@ -365,8 +363,8 @@ public class SchemaGenerator {
     private static void updateRelationIndexes(JanusGraph graph, Collection<String> labels, SchemaAction updateAction) {
         JanusGraphManagement graphMgmt = graph.openManagement();
 
-        CompletableFuture<IndexJobFuture>[] awaits = labels.stream()
-            .map(label -> 
+        CompletableFuture<ScanJobFuture>[] awaits = labels.stream()
+            .map(label ->
                 CompletableFuture.supplyAsync(() -> {
                     EdgeLabel relation = graphMgmt.getEdgeLabel(label);
                     RelationTypeIndex index = graphMgmt.getRelationIndex(relation, label);
@@ -398,7 +396,7 @@ public class SchemaGenerator {
                 LOGGER.debug("Closing open transaction [{}] before schema generation", transaction.toString());
                 transaction.rollback();
         });
-        
+
         final JanusGraphManagement graphMgtForClosing = graph.openManagement();
 
         Set<String> instances = graphMgtForClosing.getOpenInstances();
