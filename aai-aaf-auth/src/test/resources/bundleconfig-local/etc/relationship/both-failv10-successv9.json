@@ -1,8 +1,0 @@
-{
-	"related-to": "generic-vnf",
-	"related-link": "/aai/v10/network/generic-vnfs/test-objet/key1",
-	"relationship-data" : [{
-		"relationship-key" : "generic-vnf.vnf-id",
-		"relationship-value":"key2"
-	}]
-}

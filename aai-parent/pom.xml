@@ -45,7 +45,6 @@ limitations under the License.
     <aai.rest.client.version>1.6.4</aai.rest.client.version>
     <aai.schema.service.version>1.9.6</aai.schema.service.version>
 
-    <aaf.version>2.1.15</aaf.version>
     <antlr.version>4.11.1</antlr.version>
     <activemq.version>5.16.1</activemq.version>
     <commons.beanutils.version>1.9.4</commons.beanutils.version>
@@ -186,12 +185,6 @@ limitations under the License.
       <dependency>
         <groupId>org.onap.aai.aai-common</groupId>
         <artifactId>aai-core</artifactId>
-        <version>${aai.release.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.onap.aai.aai-common</groupId>
-        <artifactId>aai-aaf-auth</artifactId>
         <version>${aai.release.version}</version>
       </dependency>
 
@@ -408,19 +401,6 @@ limitations under the License.
         <groupId>org.apache.activemq</groupId>
         <artifactId>activemq-openwire-legacy</artifactId>
         <version>${activemq.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.onap.aaf.authz</groupId>
-        <artifactId>aaf-cadi-core</artifactId>
-        <version>${aaf.version}</version>
-        <scope>compile</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.onap.aaf.authz</groupId>
-        <artifactId>aaf-cadi-aaf</artifactId>
-        <version>${aaf.version}</version>
-        <scope>compile</scope>
       </dependency>
 
       <dependency>
