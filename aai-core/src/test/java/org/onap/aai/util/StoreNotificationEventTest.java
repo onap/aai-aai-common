@@ -45,21 +45,22 @@ import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.introspection.ModelType;
 import org.onap.aai.kafka.AAIKafkaEventJMSProducer;
+import org.onap.aai.kafka.AAIKafkaEventProducer;
 
 public class StoreNotificationEventTest extends AAISetup {
 
-    private static AAIKafkaEventJMSProducer producer;
+    private static AAIKafkaEventProducer producer;
     private static StoreNotificationEvent sne;
 
     @BeforeClass
     public static void setUp() {
-        producer = Mockito.mock(AAIKafkaEventJMSProducer.class);
+        producer = Mockito.mock(AAIKafkaEventProducer.class);
         // sne = new StoreNotificationEvent(producer, "transiationId", "sourceOfTruth");
     }
 
     @Before
     public void setUpBefore() {
-        producer = Mockito.mock(AAIKafkaEventJMSProducer.class);
+        producer = Mockito.mock(AAIKafkaEventProducer.class);
         sne = new StoreNotificationEvent(producer, "transiationId", "sourceOfTruth");
 
     }

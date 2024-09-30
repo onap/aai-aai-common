@@ -31,11 +31,12 @@ import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.onap.aai.domain.notificationEvent.NotificationEvent;
+import org.onap.aai.domain.notificationEvent.NotificationEvent.EventHeader;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
-import org.onap.aai.kafka.AAIKafkaEventJMSProducer;
+import org.onap.aai.kafka.AAIKafkaEventProducer;
 import org.onap.aai.kafka.MessageProducer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,13 +44,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.kafka.core.KafkaTemplate;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import lombok.SneakyThrows;
 
 public class StoreNotificationEvent {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StoreNotificationEvent.class);
 
     @Autowired JmsTemplate jmsTemplate;
+    @Autowired KafkaTemplate<String, String> kafkaTemplate;
 
+    private static final ObjectMapper mapper = new ObjectMapper();
+    private static final PojoUtils pojoUtils = new PojoUtils();
     private final MessageProducer messageProducer;
     private String fromAppId = "";
     private String transId = "";
@@ -63,7 +72,7 @@ public class StoreNotificationEvent {
      * Instantiates a new store notification event.
      */
     public StoreNotificationEvent(String transactionId, String sourceOfTruth) {
-        this.messageProducer = new AAIKafkaEventJMSProducer(jmsTemplate);
+        this.messageProducer = new AAIKafkaEventProducer(kafkaTemplate);
         this.transactionId = transactionId;
         this.sourceOfTruth = sourceOfTruth;
     }
@@ -77,14 +86,14 @@ public class StoreNotificationEvent {
     /**
      * Store event.
      *
-     * @param eh
+     * @param eventHeader
      *        the eh
      * @param obj
      *        the obj
      * @throws AAIException
      *         the AAI exception
      */
-    public String storeEventAndSendToJms(NotificationEvent.EventHeader eh, Object obj) throws AAIException {
+    public String storeEventAndSendToJms(NotificationEvent.EventHeader eventHeader, Object obj) throws AAIException {
 
         if (obj == null) {
             throw new AAIException("AAI_7350");
@@ -93,57 +102,57 @@ public class StoreNotificationEvent {
         org.onap.aai.domain.notificationEvent.ObjectFactory factory =
                 new org.onap.aai.domain.notificationEvent.ObjectFactory();
 
-        org.onap.aai.domain.notificationEvent.NotificationEvent ne = factory.createNotificationEvent();
+        org.onap.aai.domain.notificationEvent.NotificationEvent notificationEvent = factory.createNotificationEvent();
 
-        if (eh.getId() == null) {
-            eh.setId(genDate2() + "-" + UUID.randomUUID().toString());
+        if (eventHeader.getId() == null) {
+            eventHeader.setId(genDate2() + "-" + UUID.randomUUID().toString());
         }
-        if (eh.getTimestamp() == null) {
-            eh.setTimestamp(genDate());
+        if (eventHeader.getTimestamp() == null) {
+            eventHeader.setTimestamp(genDate());
         }
 
         // there's no default, but i think we want to put this in hbase?
 
-        if (eh.getEntityLink() == null) {
-            eh.setEntityLink("UNK");
+        if (eventHeader.getEntityLink() == null) {
+            eventHeader.setEntityLink("UNK");
         }
 
-        if (eh.getAction() == null) {
-            eh.setAction("UNK");
+        if (eventHeader.getAction() == null) {
+            eventHeader.setAction("UNK");
         }
 
-        if (eh.getEventType() == null) {
-            eh.setEventType(AAIConfig.get("aai.notificationEvent.default.eventType", "UNK"));
+        if (eventHeader.getEventType() == null) {
+            eventHeader.setEventType(AAIConfig.get("aai.notificationEvent.default.eventType", "UNK"));
         }
 
-        if (eh.getDomain() == null) {
-            eh.setDomain(AAIConfig.get("aai.notificationEvent.default.domain", "UNK"));
+        if (eventHeader.getDomain() == null) {
+            eventHeader.setDomain(AAIConfig.get("aai.notificationEvent.default.domain", "UNK"));
         }
 
-        if (eh.getSourceName() == null) {
-            eh.setSourceName(AAIConfig.get("aai.notificationEvent.default.sourceName", "UNK"));
+        if (eventHeader.getSourceName() == null) {
+            eventHeader.setSourceName(AAIConfig.get("aai.notificationEvent.default.sourceName", "UNK"));
         }
 
-        if (eh.getSequenceNumber() == null) {
-            eh.setSequenceNumber(AAIConfig.get("aai.notificationEvent.default.sequenceNumber", "UNK"));
+        if (eventHeader.getSequenceNumber() == null) {
+            eventHeader.setSequenceNumber(AAIConfig.get("aai.notificationEvent.default.sequenceNumber", "UNK"));
         }
 
-        if (eh.getSeverity() == null) {
-            eh.setSeverity(AAIConfig.get("aai.notificationEvent.default.severity", "UNK"));
+        if (eventHeader.getSeverity() == null) {
+            eventHeader.setSeverity(AAIConfig.get("aai.notificationEvent.default.severity", "UNK"));
         }
 
-        if (eh.getVersion() == null) {
-            eh.setVersion(AAIConfig.get("aai.notificationEvent.default.version", "UNK"));
+        if (eventHeader.getVersion() == null) {
+            eventHeader.setVersion(AAIConfig.get("aai.notificationEvent.default.version", "UNK"));
         }
 
-        ne.setCambriaPartition(AAIConstants.UEB_PUB_PARTITION_AAI);
-        ne.setEventHeader(eh);
-        ne.setEntity(obj);
+        notificationEvent.setCambriaPartition(AAIConstants.UEB_PUB_PARTITION_AAI);
+        notificationEvent.setEventHeader(eventHeader);
+        notificationEvent.setEntity(obj);
 
         try {
-            PojoUtils pu = new PojoUtils();
-            String entityJson = pu.getJsonFromObject(ne);
-            sendToKafkaJmsQueue(entityJson);
+
+            String entityJson = pojoUtils.getJsonFromObject(notificationEvent);
+            sendToKafkaJmsQueue(notificationEvent);
             return entityJson;
         } catch (Exception e) {
             throw new AAIException("AAI_7350", e);
@@ -231,7 +240,9 @@ public class StoreNotificationEvent {
             marshaller.setProperty(org.eclipse.persistence.jaxb.MarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME, false);
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, false);
             marshaller.marshal(notificationEvent, result);
-            this.sendToKafkaJmsQueue(result.toString());
+            String marshalled = result.toString();
+            NotificationEvent notificationEvent2 = mapper.readValue(marshalled, NotificationEvent.class);
+            this.sendToKafkaJmsQueue(notificationEvent2);
 
         } catch (Exception e) {
             throw new AAIException("AAI_7350", e);
@@ -325,17 +336,40 @@ public class StoreNotificationEvent {
         }
     }
 
+    private EventHeader map(Introspector eventHeader) {
+        EventHeader header = new EventHeader();
+        header.setId(eventHeader.getValue("id"));
+        header.setTimestamp(eventHeader.getValue("timestamp"));
+        header.setSourceName(eventHeader.getValue("source-name"));
+        header.setDomain(eventHeader.getValue("domain"));
+        header.setSequenceNumber(eventHeader.getValue("sequence-number"));
+        header.setSeverity(eventHeader.getValue("severity"));
+        header.setEventType(eventHeader.getValue("event-type"));
+        header.setVersion(eventHeader.getValue("version"));
+        header.setAction(eventHeader.getValue("action"));
+        header.setEntityType(eventHeader.getValue("entity-type"));
+        header.setTopEntityType(eventHeader.getValue("top-entity-type"));
+        header.setEntityLink(eventHeader.getValue("entity-link"));
+        header.setStatus(eventHeader.getValue("status"));
+        return header;
+    }
+
+    @SneakyThrows
     public String storeEventAndSendToJms(Loader loader, Introspector eventHeader, Introspector obj)
             throws AAIException {
         if (obj == null) {
             throw new AAIException("AAI_7350");
         }
 
+        EventHeader header = map(eventHeader);
+
         try {
             final Introspector notificationEvent = loader.introspectorFromName("notification-event");
-
+            NotificationEvent not = new NotificationEvent();
             if (eventHeader.getValue("id") == null) {
-                eventHeader.setValue("id", genDate2() + "-" + UUID.randomUUID().toString());
+                String id = genDate2() + "-" + UUID.randomUUID().toString();
+
+                eventHeader.setValue("id", id);
             }
 
             if (eventHeader.getValue("timestamp") == null) {
@@ -384,7 +418,12 @@ public class StoreNotificationEvent {
             notificationEvent.setValue("entity", obj.getUnderlyingObject());
 
             String entityJson = notificationEvent.marshal(false);
-            sendToKafkaJmsQueue(entityJson);
+            // NotificationEvent notificationEvent2 = mapper.readValue(entityJson, NotificationEvent.class);
+            NotificationEvent notificationEvent2 = new NotificationEvent();
+            notificationEvent2.setCambriaPartition(AAIConfig.get("aai.notificationEvent.default.partition", AAIConstants.UEB_PUB_PARTITION_AAI));
+            notificationEvent2.setEventHeader(header);
+            notificationEvent2.setEntity(obj.getUnderlyingObject());
+            sendToKafkaJmsQueue(notificationEvent2);
             return entityJson;
         } catch (JSONException e) {
             throw new AAIException("AAI_7350", e);
@@ -426,7 +465,14 @@ public class StoreNotificationEvent {
         finalJson.put("fullId", "");
         finalJson.put("aaiEventPayload", entityJsonObjectUpdated);
 
+        // here
         messageProducer.sendMessageToDefaultDestination(finalJson);
+    }
+
+    @SneakyThrows
+    private void sendToKafkaJmsQueue(NotificationEvent notificationEvent) throws JSONException {
+        String notificationEventString = mapper.writeValueAsString(notificationEvent);
+        messageProducer.sendMessageToDefaultDestination(notificationEventString);
     }
 
     /**
