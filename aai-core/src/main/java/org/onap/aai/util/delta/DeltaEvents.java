@@ -27,19 +27,24 @@ import java.util.Date;
 import java.util.Map;
 
 import org.onap.aai.db.props.AAIProperties;
+import org.onap.aai.domain.notificationEvent.NotificationEvent;
 import org.onap.aai.kafka.MessageProducer;
 import org.onap.aai.util.AAIConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
+import lombok.SneakyThrows;
+
 public class DeltaEvents {
 
     private static final Gson gson =
             new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_DASHES).create();
+    private static final ObjectMapper mapper = new ObjectMapper();
     private static final String eventVersion = "v1";
 
     private final String transId;
@@ -56,19 +61,17 @@ public class DeltaEvents {
     this.objectDeltas = objectDeltas;
     }
 
+    @SneakyThrows
     public boolean triggerEvents() {
         if (objectDeltas.isEmpty()) {
             return false;
         }
 
-        JsonObject finalJson = new JsonObject();
-        finalJson.addProperty("event-topic", "DELTA");
-        finalJson.addProperty("transId", transId);
-        finalJson.addProperty("fromAppId", sourceName);
-        finalJson.addProperty("fullId", "");
-        finalJson.add("aaiEventPayload", buildEvent());
-
-        this.messageProducer.sendMessageToDefaultDestination(finalJson.toString());
+        String notificationEventString = buildEvent().toString();
+        // Just to have validation here until we are not passing String anymore
+        NotificationEvent event = mapper.readValue(notificationEventString, NotificationEvent.class);
+        String eventString = mapper.writeValueAsString(event);
+        this.messageProducer.sendMessageToDefaultDestination(eventString);
         return true;
     }
 

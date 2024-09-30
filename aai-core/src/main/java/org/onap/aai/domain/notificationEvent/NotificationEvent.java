@@ -26,9 +26,16 @@
 
 package org.onap.aai.domain.notificationEvent;
 
+import java.util.Collections;
+import java.util.Map;
+
 import javax.xml.bind.annotation.*;
 
 import org.w3c.dom.Element;
+
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * <p>
@@ -80,12 +87,21 @@ import org.w3c.dom.Element;
 @XmlRootElement(name = "NotificationEvent")
 public class NotificationEvent {
 
+    @JsonProperty("cambria.partition")
     @XmlElement(name = "cambria.partition")
     protected String cambriaPartition;
+    @JsonProperty("event-header")
     @XmlElement(name = "event-header")
     protected EventHeader eventHeader;
+
+    @JsonIgnore
     @XmlAnyElement(lax = true)
     protected Object entity;
+
+    @JsonAnyGetter
+    public Map<String, Object> any() {
+        return Collections.singletonMap(entity.getClass().getSimpleName(), entity);
+    }
 
     /**
      * Gets the value of the eventHeader property.
@@ -205,24 +221,30 @@ public class NotificationEvent {
         protected String id;
         @XmlElement(required = true)
         protected String timestamp;
+        @JsonProperty("source-name")
         @XmlElement(name = "source-name", required = true)
         protected String sourceName;
         @XmlElement(required = true)
         protected String domain;
+        @JsonProperty("sequence-number")
         @XmlElement(name = "sequence-number", required = true)
         protected String sequenceNumber;
         @XmlElement(required = true)
         protected String severity;
+        @JsonProperty("event-type")
         @XmlElement(name = "event-type", required = true)
         protected String eventType;
         @XmlElement(required = true)
         protected String version;
         @XmlElement(required = true)
         protected String action;
+        @JsonProperty("entity-type")
         @XmlElement(name = "entity-type", required = true)
         protected String entityType;
+        @JsonProperty("top-entity-type")
         @XmlElement(name = "top-entity-type", required = true)
         protected String topEntityType;
+        @JsonProperty("entity-link")
         @XmlElement(name = "entity-link", required = true)
         protected String entityLink;
         @XmlElement(required = true)

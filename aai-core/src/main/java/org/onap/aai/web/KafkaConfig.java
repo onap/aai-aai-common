@@ -35,6 +35,7 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.onap.aai.introspection.LoaderFactory;
 import org.onap.aai.kafka.AAIKafkaEventJMSConsumer;
 import org.onap.aai.kafka.AAIKafkaEventJMSProducer;
+import org.onap.aai.kafka.AAIKafkaEventProducer;
 import org.onap.aai.kafka.MessageProducer;
 import org.onap.aai.rest.notification.NotificationService;
 import org.slf4j.Logger;
@@ -170,9 +171,14 @@ public class KafkaConfig {
         return new KafkaTemplate<>(producerFactory);
     }
 
+    // @Bean
+    // public MessageProducer messageProducer(JmsTemplate jmsTemplate) {
+    //     return new AAIKafkaEventJMSProducer(jmsTemplate);
+    // }
+
     @Bean
-    public MessageProducer messageProducer(JmsTemplate jmsTemplate) {
-        return new AAIKafkaEventJMSProducer(jmsTemplate);
+    public MessageProducer messageProducer(KafkaTemplate<String, String> kafkaTemplate) {
+        return new AAIKafkaEventProducer(kafkaTemplate);
     }
 
     @Bean
