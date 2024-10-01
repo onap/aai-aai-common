@@ -54,6 +54,7 @@ import org.onap.aai.parsers.query.QueryParser;
 import org.onap.aai.prevalidation.ValidationService;
 import org.onap.aai.query.builder.QueryOptions;
 import org.onap.aai.query.entities.PaginationResult;
+import org.onap.aai.rest.notification.NotificationEvent;
 import org.onap.aai.rest.notification.NotificationService;
 import org.onap.aai.rest.notification.UEBNotification;
 import org.onap.aai.restcore.HttpMethod;
@@ -437,8 +438,8 @@ public class HttpEntry {
                                     String curUri = String.format("%s/%s%s", basePath, version, entry.getKey());
                                     Introspector curObj = entry.getValue().getValue0();
                                     HashMap<String, Introspector> curObjRelated = entry.getValue().getValue1();
-                                    notification.createNotificationEvent(transactionId, sourceOfTruth,
-                                            Status.NO_CONTENT, URI.create(curUri), curObj, curObjRelated, basePath);
+                                    NotificationEvent notificationEvent = new NotificationEvent(transactionId, sourceOfTruth, Status.NO_CONTENT, URI.create(curUri), curObj, curObjRelated, basePath, loader, version);
+                                    notification.addEvent(notificationEvent);
                                 }
                             }
 
@@ -517,8 +518,8 @@ public class HttpEntry {
 
                             serializer.delete(v, deletableVertices, resourceVersion, enableResourceVersion);
                             status = Status.NO_CONTENT;
-                            notification.createNotificationEvent(transactionId, sourceOfTruth, status, uri, obj,
-                                    relatedObjects, basePath);
+                            NotificationEvent notificationEvent = new NotificationEvent(transactionId, sourceOfTruth, status, uri, obj, relatedObjects, basePath, loader, schemaVersions.getDefaultVersion());
+                            notification.addEvent(notificationEvent);
 
                             /*
                              * Notify delete-other-v candidates

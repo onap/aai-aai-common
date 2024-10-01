@@ -20,163 +20,32 @@
 
 package org.onap.aai.rest.notification;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.core.Response.Status;
-
 import org.onap.aai.exceptions.AAIException;
-import org.onap.aai.introspection.Introspector;
-import org.onap.aai.introspection.Loader;
-import org.onap.aai.introspection.LoaderFactory;
-import org.onap.aai.introspection.ModelType;
-import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
-import org.onap.aai.introspection.exceptions.AAIUnmarshallingException;
-import org.onap.aai.logging.LogFormatTools;
-import org.onap.aai.parsers.uri.URIToObject;
-import org.onap.aai.setup.SchemaVersion;
-import org.onap.aai.setup.SchemaVersions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * The Class UEBNotification.
- */
+import lombok.SneakyThrows;
+
 public class UEBNotification {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UEBNotification.class);
 
-    private Loader currentVersionLoader = null;
-    protected Map<String, NotificationEvent> events = null;
-    private SchemaVersion notificationVersion = null;
+    private final Map<String, NotificationEvent> events;
 
-    /**
-     * Instantiates a new UEB notification.
-     *
-     * @param loader the loader
-     */
-    public UEBNotification(Loader loader, LoaderFactory loaderFactory, SchemaVersions schemaVersions) {
+    public UEBNotification() {
         events = new LinkedHashMap<>();
-        SchemaVersion defaultVersion = schemaVersions.getDefaultVersion();
-        currentVersionLoader = loaderFactory.createLoaderForVersion(loader.getModelType(), defaultVersion);
-        notificationVersion = defaultVersion;
     }
 
-    /**
-     * Instantiates a new UEB notification.
-     *
-     * @param modelType - Model type
-     * @param loaderFactory - the loader factory
-     * @param schemaVersions the schema versions bean
-     */
-    public UEBNotification(ModelType modelType, LoaderFactory loaderFactory, SchemaVersions schemaVersions) {
-        events = new LinkedHashMap<>();
-        SchemaVersion defaultVersion = schemaVersions.getDefaultVersion();
-        currentVersionLoader = loaderFactory.createLoaderForVersion(modelType, defaultVersion);
-        notificationVersion = defaultVersion;
+    @SneakyThrows
+    public void addEvent(NotificationEvent notificationEvent) {
+        this.events.put(notificationEvent.getEventHeader().getEntityLink(), notificationEvent);
     }
 
-    /**
-     * Creates the notification event.
-     *
-     * @param transactionId the X-TransactionId
-     * @param sourceOfTruth
-     * @param status the status
-     * @param uri the uri
-     * @param obj the obj
-     * @param basePath base URI path
-     * @throws AAIException the AAI exception
-     * @throws IllegalArgumentException the illegal argument exception
-     * @throws UnsupportedEncodingException the unsupported encoding exception
-     */
-    public void createNotificationEvent(String transactionId, String sourceOfTruth, Status status, URI uri,
-            Introspector obj, HashMap<String, Introspector> relatedObjects, String basePath)
-            throws AAIException, UnsupportedEncodingException {
-
-        String action = getAction(status);
-
-        try {
-            EntityConverter entityConverter = new EntityConverter(new URIToObject(currentVersionLoader, uri, relatedObjects));
-            Introspector eventHeader = currentVersionLoader.introspectorFromName("notification-event-header");
-
-            basePath = formatBasePath(basePath);
-
-            String entityLink = formatEntityLink(uri, basePath);
-
-            eventHeader.setValue("entity-link", entityLink);
-            eventHeader.setValue("action", action);
-            eventHeader.setValue("entity-type", obj.getDbName());
-            eventHeader.setValue("top-entity-type", entityConverter.getTopEntityName());
-            eventHeader.setValue("source-name", sourceOfTruth);
-            eventHeader.setValue("version", notificationVersion.toString());
-            eventHeader.setValue("id", transactionId);
-
-
-            Introspector eventObject = entityConverter.convert(obj);
-
-            final NotificationEvent event =
-                    new NotificationEvent(currentVersionLoader, eventHeader, eventObject, transactionId, sourceOfTruth);
-            events.put(uri.toString(), event);
-        } catch (AAIUnknownObjectException e) {
-            throw new RuntimeException("Fatal error - notification-event-header object not found!");
-        } catch (AAIUnmarshallingException e) {
-            LOGGER.error(
-                    "Unmarshalling error occurred while generating UEBNotification " + LogFormatTools.getStackTop(e));
-        }
-    }
-
-    private String formatEntityLink(URI uri, String basePath) {
-        String uriStr = getUri(uri.toString(), basePath);
-        String entityLink;
-        if (uriStr.startsWith("/")) {
-            entityLink = basePath + notificationVersion + uriStr;
-        } else {
-            entityLink = basePath + notificationVersion + "/" + uriStr;
-        }
-        return entityLink;
-    }
-
-    private String formatBasePath(String basePath) {
-        if ((basePath != null) && (!basePath.isEmpty())) {
-            if (!(basePath.startsWith("/"))) {
-                basePath = "/" + basePath;
-            }
-            if (!(basePath.endsWith("/"))) {
-                basePath = basePath + "/";
-            }
-        } else {
-            // default
-            basePath = "/aai/";
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("Please check the schema.uri.base.path as it didn't seem to be set");
-            }
-        }
-        return basePath;
-    }
-
-    private String getAction(Status status) {
-        String action = "UPDATE";
-
-        if (status.equals(Status.CREATED)) {
-            action = "CREATE";
-        } else if (status.equals(Status.OK)) {
-            action = "UPDATE";
-        } else if (status.equals(Status.NO_CONTENT)) {
-            action = "DELETE";
-        }
-        return action;
-    }
-
-    /**
-     * Trigger events.
-     *
-     * @throws AAIException the AAI exception
-     */
     public void triggerEvents() throws AAIException {
         for (NotificationEvent event : events.values()) {
             event.trigger();
@@ -190,27 +59,6 @@ public class UEBNotification {
 
     public Map<String, NotificationEvent> getEventsMap() {
         return this.events;
-    }
-
-    private String getUri(String uri, String basePath) {
-        if (uri == null || uri.isEmpty()) {
-            return "";
-        } else if (uri.charAt(0) != '/') {
-            uri = '/' + uri;
-        }
-
-        if ((basePath != null) && (!basePath.isEmpty())) {
-            if (!(basePath.startsWith("/"))) {
-                basePath = "/" + basePath;
-            }
-            if (!(basePath.endsWith("/"))) {
-                basePath = basePath + "/";
-            }
-        }
-
-        LOGGER.trace("Notification header uri base path:'{}', uri:'{}'", basePath, uri);
-
-        return uri.replaceAll("^" + basePath + "v\\d+", "");
     }
 
     public void clearEvents() {
