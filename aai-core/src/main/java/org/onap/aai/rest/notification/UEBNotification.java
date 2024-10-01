@@ -51,15 +51,10 @@ public class UEBNotification {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UEBNotification.class);
 
-    private Loader currentVersionLoader = null;
-    protected Map<String, NotificationEvent> events = null;
-    private SchemaVersion notificationVersion = null;
+    private final Loader currentVersionLoader;
+    protected final Map<String, NotificationEvent> events;
+    private final SchemaVersion notificationVersion;
 
-    /**
-     * Instantiates a new UEB notification.
-     *
-     * @param loader the loader
-     */
     public UEBNotification(Loader loader, LoaderFactory loaderFactory, SchemaVersions schemaVersions) {
         events = new LinkedHashMap<>();
         SchemaVersion defaultVersion = schemaVersions.getDefaultVersion();
@@ -67,13 +62,6 @@ public class UEBNotification {
         notificationVersion = defaultVersion;
     }
 
-    /**
-     * Instantiates a new UEB notification.
-     *
-     * @param modelType - Model type
-     * @param loaderFactory - the loader factory
-     * @param schemaVersions the schema versions bean
-     */
     public UEBNotification(ModelType modelType, LoaderFactory loaderFactory, SchemaVersions schemaVersions) {
         events = new LinkedHashMap<>();
         SchemaVersion defaultVersion = schemaVersions.getDefaultVersion();
