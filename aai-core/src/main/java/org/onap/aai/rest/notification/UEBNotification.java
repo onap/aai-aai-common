@@ -116,43 +116,8 @@ public class UEBNotification {
             eventHeader.setValue("version", notificationVersion.toString());
             eventHeader.setValue("id", transactionId);
 
-            List<Object> parentList = parser.getParentList();
-            parentList.clear();
+            Introspector eventObject = new EntityConverter().convert(currentVersionLoader, uri, obj, relatedObjects);
 
-            if (!parser.getTopEntity().equals(parser.getEntity())) {
-                Introspector child = obj;
-                if (!parser.getLoader().getVersion().equals(obj.getVersion())) {
-                    String json = obj.marshal(false);
-                    child = parser.getLoader().unmarshal(parser.getEntity().getName(), json);
-                }
-
-                // wrap the child object in its parents
-                parentList.add(child.getUnderlyingObject());
-            }
-
-            final Introspector eventObject;
-
-            // convert to most resent version
-            if (!parser.getLoader().getVersion().equals(currentVersionLoader.getVersion())) {
-                String json = "";
-                if (parser.getTopEntity().equals(parser.getEntity())) {
-                    // convert the parent object passed in
-                    json = obj.marshal(false);
-                    eventObject = currentVersionLoader.unmarshal(obj.getName(), json);
-                } else {
-                    // convert the object created in the parser
-                    json = parser.getTopEntity().marshal(false);
-                    eventObject = currentVersionLoader.unmarshal(parser.getTopEntity().getName(), json);
-                }
-            } else {
-                if (parser.getTopEntity().equals(parser.getEntity())) {
-                    // take the top level parent object passed in
-                    eventObject = obj;
-                } else {
-                    // take the wrapped child objects (ogres are like onions)
-                    eventObject = parser.getTopEntity();
-                }
-            }
             final NotificationEvent event =
                     new NotificationEvent(currentVersionLoader, eventHeader, eventObject, transactionId, sourceOfTruth);
             events.put(uri.toString(), event);
