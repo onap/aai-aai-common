@@ -24,6 +24,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.core.MultivaluedMap;
 
@@ -37,26 +38,20 @@ import org.onap.aai.setup.SchemaVersion;
 /**
  * Given a URI this class returns an object, or series of nested objects
  * with their keys populated based off the values in the URI.
- * 
+ *
  * It populates the keys in the order they are listed in the model.
  */
 public class URIToObject implements Parsable {
 
+    private final SchemaVersion version;
+    private final Loader loader;
+    private final Map<String, Introspector> relatedObjects;
     private Introspector topEntity = null;
-
     private String topEntityName = null;
-
     private String entityName = null;
-
     private Introspector entity = null;
-
     private Introspector previous = null;
-
     private List<Object> parentList = null;
-
-    private SchemaVersion version = null;
-    private Loader loader = null;
-    private final HashMap<String, Introspector> relatedObjects;
 
     /**
      * Instantiates a new URI to object.
@@ -77,7 +72,7 @@ public class URIToObject implements Parsable {
         this.version = loader.getVersion();
     }
 
-    public URIToObject(Loader loader, URI uri, HashMap<String, Introspector> relatedObjects)
+    public URIToObject(Loader loader, URI uri, Map<String, Introspector> relatedObjects)
             throws AAIException, UnsupportedEncodingException {
 
         URIParser parser = new URIParser(loader, uri);
