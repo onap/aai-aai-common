@@ -101,8 +101,8 @@ public class UEBNotification {
         String action = getAction(status);
 
         try {
+            EntityConverter entityConverter = new EntityConverter(new URIToObject(currentVersionLoader, uri, relatedObjects));
             Introspector eventHeader = currentVersionLoader.introspectorFromName("notification-event-header");
-            URIToObject parser = new URIToObject(currentVersionLoader, uri, relatedObjects);
 
             basePath = formatBasePath(basePath);
 
@@ -111,48 +111,14 @@ public class UEBNotification {
             eventHeader.setValue("entity-link", entityLink);
             eventHeader.setValue("action", action);
             eventHeader.setValue("entity-type", obj.getDbName());
-            eventHeader.setValue("top-entity-type", parser.getTopEntityName());
+            eventHeader.setValue("top-entity-type", entityConverter.getTopEntityName());
             eventHeader.setValue("source-name", sourceOfTruth);
             eventHeader.setValue("version", notificationVersion.toString());
             eventHeader.setValue("id", transactionId);
 
-            List<Object> parentList = parser.getParentList();
-            parentList.clear();
 
-            if (!parser.getTopEntity().equals(parser.getEntity())) {
-                Introspector child = obj;
-                if (!parser.getLoader().getVersion().equals(obj.getVersion())) {
-                    String json = obj.marshal(false);
-                    child = parser.getLoader().unmarshal(parser.getEntity().getName(), json);
-                }
+            Introspector eventObject = entityConverter.convert(obj);
 
-                // wrap the child object in its parents
-                parentList.add(child.getUnderlyingObject());
-            }
-
-            final Introspector eventObject;
-
-            // convert to most resent version
-            if (!parser.getLoader().getVersion().equals(currentVersionLoader.getVersion())) {
-                String json = "";
-                if (parser.getTopEntity().equals(parser.getEntity())) {
-                    // convert the parent object passed in
-                    json = obj.marshal(false);
-                    eventObject = currentVersionLoader.unmarshal(obj.getName(), json);
-                } else {
-                    // convert the object created in the parser
-                    json = parser.getTopEntity().marshal(false);
-                    eventObject = currentVersionLoader.unmarshal(parser.getTopEntity().getName(), json);
-                }
-            } else {
-                if (parser.getTopEntity().equals(parser.getEntity())) {
-                    // take the top level parent object passed in
-                    eventObject = obj;
-                } else {
-                    // take the wrapped child objects (ogres are like onions)
-                    eventObject = parser.getTopEntity();
-                }
-            }
             final NotificationEvent event =
                     new NotificationEvent(currentVersionLoader, eventHeader, eventObject, transactionId, sourceOfTruth);
             events.put(uri.toString(), event);
