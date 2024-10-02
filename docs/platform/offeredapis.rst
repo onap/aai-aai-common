@@ -19,6 +19,4 @@ The list of APIs that AAI offers could be found in the following table:
    :widths: 60,60
 
    "html doc", "yaml doc"
-   ":download:`link <https://wiki.onap.org/download/attachments/103422039/aai_swagger_v24.html?api=v2>`", ":download:`link <https://wiki.onap.org/download/attachments/103422039/aai_swagger_v24.yaml?api=v2>`"
-
-
+   ":download:`link <https://lf-onap.atlassian.net/wiki/download/attachments/16506145/aai_swagger_v27.html?api=v2>`", ":download:`link <https://lf-onap.atlassian.net/wiki/download/attachments/16506145/aai_swagger_v27.yaml?api=v2>`"
