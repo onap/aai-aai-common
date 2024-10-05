@@ -20,6 +20,8 @@
 
 package org.onap.aai.introspection;
 
+import com.fasterxml.jackson.annotation.JsonRawValue;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.google.common.base.CaseFormat;
 
 import java.io.UnsupportedEncodingException;
@@ -618,6 +620,12 @@ public abstract class Introspector implements Cloneable {
                 new MarshallerProperties.Builder(MediaType.APPLICATION_JSON_TYPE).formatted(formatted).build();
 
         return marshal(properties);
+    }
+
+    @JsonValue
+    @JsonRawValue
+    public String toString() {
+        return marshal(false);
     }
 
     public String makeSingular(String word) {
