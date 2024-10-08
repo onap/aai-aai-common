@@ -130,7 +130,7 @@ public class HttpEntry {
         this.dbEngine = new JanusGraphDBEngine(queryStyle, loader);
 
         getDbEngine().startTransaction();
-        this.notification = new UEBNotification(loader, loaderFactory, schemaVersions);
+        this.notification = new UEBNotification(loaderFactory, schemaVersions);
         if ("true".equals(AAIConfig.get("aai.notification.depth.all.enabled", "true"))) {
             this.notificationDepth = AAIProperties.MAXIMUM_DEPTH;
         } else {

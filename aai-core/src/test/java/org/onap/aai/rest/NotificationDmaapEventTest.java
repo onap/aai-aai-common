@@ -26,6 +26,7 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.junit.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -55,9 +56,10 @@ import org.onap.aai.HttpTestUtil;
 import org.onap.aai.PayloadUtil;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.dbmap.AAIGraph;
+import org.onap.aai.domain.notificationEvent.NotificationEvent;
+import org.onap.aai.domain.notificationEvent.NotificationEvent.EventHeader;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.ModelType;
-import org.onap.aai.rest.notification.NotificationEvent;
 import org.onap.aai.rest.notification.UEBNotification;
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -66,6 +68,8 @@ import org.springframework.test.annotation.DirtiesContext;
 @RunWith(value = Parameterized.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class NotificationDmaapEventTest extends AAISetup {
+
+    ObjectMapper mapper = new ObjectMapper();
 
     @Parameterized.Parameter
     public QueryStyle queryStyle;
@@ -80,7 +84,7 @@ public class NotificationDmaapEventTest extends AAISetup {
             throws IOException, AAIException {
 
         String uri = "/aai/v14/cloud-infrastructure/pservers/pserver/example-hostname-val-85598";
-        UEBNotification notification = Mockito.spy(new UEBNotification(ModelType.MOXY, loaderFactory, schemaVersions));
+        UEBNotification notification = Mockito.spy(new UEBNotification(loaderFactory, schemaVersions));
         HttpTestUtil httpTestUtil = new HttpTestUtil(queryStyle, notification, AAIProperties.MINIMUM_DEPTH);
 
         String resource = PayloadUtil.getResourcePayload("pserver-with-children-for-notification.json");
@@ -97,13 +101,8 @@ public class NotificationDmaapEventTest extends AAISetup {
 
         // Verify all the events are create since its a new PUT
         notification.getEvents().forEach((event) -> {
-
-            String header = event.getEventHeader().marshal(false);
-
-            assertThat(event.getEventHeader().marshal(false), containsString("\"CREATE\""));
-
-            assertThat(header, containsString("\"top-entity-type\":\"pserver\""));
-
+            assertEquals("CREATE", event.getEventHeader().getAction());
+            assertEquals("pserver", event.getEventHeader().getTopEntityType());
         });
 
         response = httpTestUtil.doGet(uri);
@@ -116,7 +115,7 @@ public class NotificationDmaapEventTest extends AAISetup {
             throws IOException, AAIException {
 
         String uri = "/aai/v14/cloud-infrastructure/pservers/pserver/example-hostname-val-85598";
-        UEBNotification notification = Mockito.spy(new UEBNotification(ModelType.MOXY, loaderFactory, schemaVersions));
+        UEBNotification notification = Mockito.spy(new UEBNotification(loaderFactory, schemaVersions));
         HttpTestUtil httpTestUtil = new HttpTestUtil(queryStyle);
 
         String pserverResource = PayloadUtil.getResourcePayload("pserver-with-children-for-notification.json");
@@ -147,19 +146,20 @@ public class NotificationDmaapEventTest extends AAISetup {
         List<NotificationEvent> events = notification.getEvents();
         assertThat(events.size(), is(2));
 
-        String notificationEventHeader = events.get(1).getEventHeader().marshal(false);
-        String notificationEventBody = events.get(1).getObj().marshal(false);
+        EventHeader notificationEventHeader = events.get(1).getEventHeader();
+        String notificationEventBody = events.get(1).getEntity().toString();
 
-        assertThat(notificationEventHeader, containsString("\"action\":\"CREATE\""));
-        assertThat(notificationEventHeader, containsString("\"entity-type\":\"p-interface\""));
-        assertThat(notificationEventHeader, containsString("\"top-entity-type\":\"pserver\""));
+        assertEquals("CREATE", notificationEventHeader.getAction());
+        assertEquals("p-interface", notificationEventHeader.getEntityType());
+        assertEquals("pserver", notificationEventHeader.getTopEntityType());
 
         String expectedNotificationHeader = PayloadUtil.getResourcePayload(
                 "notification-dmaap-events/depth-zero/expected-notification-header-create-child-on-existing-obj.json");
         String expectedNotificationBody = PayloadUtil.getResourcePayload(
                 "notification-dmaap-events/depth-zero/expected-notification-body-create-child-on-existing-obj.json");
 
-        JSONAssert.assertEquals(expectedNotificationHeader, notificationEventHeader, false);
+        String eventHeaderJson = mapper.writeValueAsString(events.get(1).getEventHeader());
+        JSONAssert.assertEquals(expectedNotificationHeader, eventHeaderJson, false);
         JSONAssert.assertEquals(expectedNotificationBody, notificationEventBody, false);
     }
 
@@ -168,7 +168,7 @@ public class NotificationDmaapEventTest extends AAISetup {
             throws IOException, AAIException {
 
         String uri = "/aai/v14/cloud-infrastructure/pservers/pserver/example-hostname-val-85598";
-        UEBNotification notification = Mockito.spy(new UEBNotification(ModelType.MOXY, loaderFactory, schemaVersions));
+        UEBNotification notification = Mockito.spy(new UEBNotification(loaderFactory, schemaVersions));
         HttpTestUtil httpTestUtil = new HttpTestUtil(queryStyle);
 
         String pserverResource = PayloadUtil.getResourcePayload("pserver-with-children-for-notification.json");
@@ -200,19 +200,19 @@ public class NotificationDmaapEventTest extends AAISetup {
         List<NotificationEvent> events = notification.getEvents();
         assertThat(events.size(), is(1));
 
-        String notificationEventHeader = events.get(0).getEventHeader().marshal(false);
-        String notificationEventBody = events.get(0).getObj().marshal(false);
-
-        assertThat(notificationEventHeader, containsString("\"action\":\"UPDATE\""));
-        assertThat(notificationEventHeader, containsString("\"entity-type\":\"pserver\""));
-        assertThat(notificationEventHeader, containsString("\"top-entity-type\":\"pserver\""));
+        EventHeader notificationEventHeader = events.get(0).getEventHeader();
+        String notificationEventBody = events.get(0).getEntity().toString();
+        assertEquals("CREATE", notificationEventHeader.getAction());
+        assertEquals("pserver", notificationEventHeader.getEntityType());
+        assertEquals("pserver", notificationEventHeader.getTopEntityType());
 
         String expectedNotificationHeader = PayloadUtil.getResourcePayload(
                 "notification-dmaap-events/depth-all/expected-notification-header-create-child-on-existing-obj.json");
         String expectedNotificationBody = PayloadUtil.getResourcePayload(
                 "notification-dmaap-events/depth-all/expected-notification-body-create-child-on-existing-obj.json");
 
-        JSONAssert.assertEquals(expectedNotificationHeader, notificationEventHeader, false);
+        String eventHeaderJson = mapper.writeValueAsString(events.get(1).getEventHeader());
+        JSONAssert.assertEquals(expectedNotificationHeader, eventHeaderJson, false);
         JSONAssert.assertEquals(expectedNotificationBody, notificationEventBody, false);
 
         response = httpTestUtil.doGet(uri, "0");
@@ -235,7 +235,7 @@ public class NotificationDmaapEventTest extends AAISetup {
         String cloudRegionUri =
                 "/aai/v14/cloud-infrastructure/cloud-regions/cloud-region/random-cloud-region-owner/random-cloud-region-id";
 
-        UEBNotification notification = Mockito.spy(new UEBNotification(ModelType.MOXY, loaderFactory, schemaVersions));
+        UEBNotification notification = Mockito.spy(new UEBNotification(loaderFactory, schemaVersions));
         HttpTestUtil httpTestUtil = new HttpTestUtil(queryStyle, notification, AAIProperties.MINIMUM_DEPTH);
 
         Map<String, String> uriPayload = new LinkedHashMap<>();
@@ -252,8 +252,7 @@ public class NotificationDmaapEventTest extends AAISetup {
         assertThat("Expecting the number of dmaap events to be 2", numberOfEventsActual, is(expectedEvents));
 
         notification.getEvents().forEach((event) -> {
-            String notificationEventHeader = event.getEventHeader().marshal(false);
-            assertThat(notificationEventHeader, containsString("\"CREATE\""));
+            assertEquals("CREATE", event.getEventHeader().getAction());
         });
     }
 
@@ -265,7 +264,7 @@ public class NotificationDmaapEventTest extends AAISetup {
         String cloudRegionUri =
                 "/aai/v14/cloud-infrastructure/cloud-regions/cloud-region/random-cloud-region-owner/random-cloud-region-id";
 
-        UEBNotification notification = Mockito.spy(new UEBNotification(ModelType.MOXY, loaderFactory, schemaVersions));
+        UEBNotification notification = Mockito.spy(new UEBNotification(loaderFactory, schemaVersions));
         HttpTestUtil httpTestUtil = new HttpTestUtil(queryStyle, notification, AAIProperties.MAXIMUM_DEPTH);
 
         Map<String, String> uriPayload = new LinkedHashMap<>();
@@ -282,8 +281,7 @@ public class NotificationDmaapEventTest extends AAISetup {
         assertThat("Expecting the number of dmaap events to be 2", numberOfEventsActual, is(expectedEvents));
 
         notification.getEvents().forEach((event) -> {
-            String notificationEventHeader = event.getEventHeader().marshal(false);
-            assertThat(notificationEventHeader, containsString("\"CREATE\""));
+            assertEquals("CREATE", event.getEventHeader().getAction());
         });
     }
 
@@ -291,7 +289,7 @@ public class NotificationDmaapEventTest extends AAISetup {
     public void testDeleteOnExistingPserverAndCheckIfNotificationDepthIsZeroThatAllEventsHaveDeleteAndThatDepthIsZeroOnEachNotificationEvent()
             throws IOException, AAIException {
         String uri = "/aai/v14/cloud-infrastructure/pservers/pserver/example-hostname-val-85598";
-        UEBNotification notification = Mockito.spy(new UEBNotification(ModelType.MOXY, loaderFactory, schemaVersions));
+        UEBNotification notification = Mockito.spy(new UEBNotification(loaderFactory, schemaVersions));
         HttpTestUtil httpTestUtil = new HttpTestUtil(queryStyle);
 
         String pserverResource = PayloadUtil.getResourcePayload("pserver-with-children-for-notification.json");
@@ -316,19 +314,16 @@ public class NotificationDmaapEventTest extends AAISetup {
         assertThat(notificationEvents.size(), is(17));
 
         notificationEvents.forEach((event) -> {
-
-            String header = event.getEventHeader().marshal(false);
-
-            assertThat(event.getEventHeader().marshal(false), containsString("\"DELETE\""));
-
-            assertThat(header, containsString("\"top-entity-type\":\"pserver\""));
+            EventHeader header = event.getEventHeader();
+            assertEquals("DELETE", header.getAction());
+            assertEquals("pserver", header.getTopEntityType());
         });
     }
 
     @Test
     public void testDeleteOnExistingResourceVersionMismatchNoEventGenerated() throws IOException, AAIException {
         String uri = "/aai/v14/cloud-infrastructure/pservers/pserver/example-hostname-val-85598";
-        UEBNotification notification = Mockito.spy(new UEBNotification(ModelType.MOXY, loaderFactory, schemaVersions));
+        UEBNotification notification = Mockito.spy(new UEBNotification(loaderFactory, schemaVersions));
         HttpTestUtil httpTestUtil = new HttpTestUtil(queryStyle);
 
         String pserverResource = PayloadUtil.getResourcePayload("pserver-with-children-for-notification.json");
@@ -362,7 +357,7 @@ public class NotificationDmaapEventTest extends AAISetup {
             throws IOException, AAIException {
 
         String uri = "/aai/v14/cloud-infrastructure/pservers/pserver/example-hostname-val-85598";
-        UEBNotification notification = Mockito.spy(new UEBNotification(ModelType.MOXY, loaderFactory, schemaVersions));
+        UEBNotification notification = Mockito.spy(new UEBNotification(loaderFactory, schemaVersions));
         HttpTestUtil httpTestUtil = new HttpTestUtil(queryStyle, notification, AAIProperties.MAXIMUM_DEPTH);
 
         String resource = PayloadUtil.getResourcePayload("pserver-with-children-for-notification.json");
@@ -378,20 +373,16 @@ public class NotificationDmaapEventTest extends AAISetup {
         NotificationEvent notificationEvent = notification.getEvents().get(0);
 
         // Verify all the events are create since its a new PUT
-        String header = notificationEvent.getEventHeader().marshal(false);
-
-        assertThat(header, containsString("\"CREATE\""));
-
-        assertThat(header, containsString("\"entity-type\":\"pserver\""));
-
-        assertThat(header, containsString("\"top-entity-type\":\"pserver\""));
-
-        assertThat(header, containsString("\"entity-link\":\"" + uri + "\""));
+        EventHeader eventHeader = notificationEvent.getEventHeader();
+        assertEquals("CREATE", eventHeader.getAction());
+        assertEquals("pserver", eventHeader.getEntityType());
+        assertEquals("pserver", eventHeader.getTopEntityType());
+        assertEquals(uri, eventHeader.getEntityLink());
 
         response = httpTestUtil.doGet(uri);
         assertEquals("Expecting the pserver to be found", 200, response.getStatus());
 
-        JSONAssert.assertEquals(response.getEntity().toString(), notificationEvent.getObj().marshal(false), false);
+        JSONAssert.assertEquals(response.getEntity().toString(), notificationEvent.getEntity().toString(), false);
     }
 
     @Test
@@ -399,7 +390,7 @@ public class NotificationDmaapEventTest extends AAISetup {
             throws IOException, AAIException {
 
         String uri = "/aai/v14/cloud-infrastructure/pservers/pserver/example-hostname-val-85598";
-        UEBNotification notification = Mockito.spy(new UEBNotification(ModelType.MOXY, loaderFactory, schemaVersions));
+        UEBNotification notification = Mockito.spy(new UEBNotification(loaderFactory, schemaVersions));
         HttpTestUtil httpTestUtil = new HttpTestUtil(queryStyle);
 
         String resource = PayloadUtil.getResourcePayload("pserver-with-children-for-notification.json");
@@ -424,7 +415,7 @@ public class NotificationDmaapEventTest extends AAISetup {
         assertThat(response.getEntity().toString(), containsString("new-equip-patch-type"));
 
         assertThat(notification.getEvents().size(), is(1));
-        String updateNotificationEvent = notification.getEvents().get(0).getObj().marshal(true);
+        String updateNotificationEvent = notification.getEvents().get(0).getEntity().toString();
 
         // Check that everything in notification event is also response body
         // Not comparing the other way as notification only includes parents main properties
@@ -436,7 +427,7 @@ public class NotificationDmaapEventTest extends AAISetup {
             throws IOException, AAIException {
 
         String uri = "/aai/v14/cloud-infrastructure/pservers/pserver/example-hostname-val-85598";
-        UEBNotification notification = Mockito.spy(new UEBNotification(ModelType.MOXY, loaderFactory, schemaVersions));
+        UEBNotification notification = Mockito.spy(new UEBNotification(loaderFactory, schemaVersions));
         HttpTestUtil httpTestUtil = new HttpTestUtil(queryStyle);
 
         String resource = PayloadUtil.getResourcePayload("pserver-with-children-for-notification.json");
@@ -461,7 +452,7 @@ public class NotificationDmaapEventTest extends AAISetup {
         assertThat(response.getEntity().toString(), containsString("new-equip-patch-type"));
 
         assertThat(notification.getEvents().size(), is(1));
-        String updateNotificationEvent = notification.getEvents().get(0).getObj().marshal(true);
+        String updateNotificationEvent = notification.getEvents().get(0).getEntity().toString();
 
         // Check that everything in notification event is also response body
         // Not comparing the other way as notification only includes parents main properties
@@ -476,7 +467,7 @@ public class NotificationDmaapEventTest extends AAISetup {
             throws IOException, AAIException {
 
         String uri = "/aai/v14/cloud-infrastructure/pservers/pserver/example-hostname-val-85598";
-        UEBNotification notification = Mockito.spy(new UEBNotification(ModelType.MOXY, loaderFactory, schemaVersions));
+        UEBNotification notification = Mockito.spy(new UEBNotification(loaderFactory, schemaVersions));
         HttpTestUtil httpTestUtil = new HttpTestUtil(queryStyle);
 
         String resource = PayloadUtil.getResourcePayload("pserver-with-children-for-notification.json");
@@ -506,7 +497,7 @@ public class NotificationDmaapEventTest extends AAISetup {
         assertThat(response.getEntity().toString(), containsString("new-equipment-identifier"));
 
         assertThat(notification.getEvents().size(), is(1));
-        String updateNotificationEvent = notification.getEvents().get(0).getObj().marshal(true);
+        String updateNotificationEvent = notification.getEvents().get(0).getEntity().toString();
 
         // Check that everything in notification event is also response body
         // Not comparing the other way as notification only includes parents main properties
@@ -520,7 +511,7 @@ public class NotificationDmaapEventTest extends AAISetup {
             throws IOException, AAIException {
 
         String uri = "/aai/v14/cloud-infrastructure/pservers/pserver/example-hostname-val-85598";
-        UEBNotification notification = Mockito.spy(new UEBNotification(ModelType.MOXY, loaderFactory, schemaVersions));
+        UEBNotification notification = Mockito.spy(new UEBNotification(loaderFactory, schemaVersions));
         HttpTestUtil httpTestUtil = new HttpTestUtil(queryStyle);
 
         String resource = PayloadUtil.getResourcePayload("pserver-with-children-for-notification.json");
@@ -547,7 +538,7 @@ public class NotificationDmaapEventTest extends AAISetup {
 
         response = httpTestUtil.doGet(uri);
         assertThat(notification.getEvents().size(), is(1));
-        String updateNotificationEvent = notification.getEvents().get(0).getObj().marshal(true);
+        String updateNotificationEvent = notification.getEvents().get(0).getEntity().toString();
         System.out.println("Update notification " + updateNotificationEvent);
 
         // Check that everything in notification event is also response body
@@ -564,7 +555,7 @@ public class NotificationDmaapEventTest extends AAISetup {
         String pserverUri = "/aai/v14/cloud-infrastructure/pservers/pserver/" + hostname;
         String genericVnfUri = "/aai/v14/network/generic-vnfs/generic-vnf/generic-vnf-notification";
 
-        UEBNotification notification = Mockito.spy(new UEBNotification(ModelType.MOXY, loaderFactory, schemaVersions));
+        UEBNotification notification = Mockito.spy(new UEBNotification(loaderFactory, schemaVersions));
         HttpTestUtil httpTestUtil = new HttpTestUtil(queryStyle);
 
         String resource = PayloadUtil.getResourcePayload("pserver-with-children-for-notification.json");
@@ -604,9 +595,9 @@ public class NotificationDmaapEventTest extends AAISetup {
         String expectedNotificationBody = PayloadUtil.getResourcePayload(
                 "notification-dmaap-events/depth-zero/expected-notification-body-create-edge-between-pserver-and-generic-vnf.json");
 
-        JSONAssert.assertEquals(expectedNotificationHeader, notificationEvents.get(0).getEventHeader().marshal(false),
+        JSONAssert.assertEquals(expectedNotificationHeader, mapper.writeValueAsString(notificationEvents.get(0).getEventHeader()),
                 false);
-        JSONAssert.assertEquals(expectedNotificationBody, notificationEvents.get(0).getObj().marshal(false), false);
+        JSONAssert.assertEquals(expectedNotificationBody, notificationEvents.get(0).getEntity().toString(), false);
 
         response = httpTestUtil.doGet(genericVnfUri);
 
@@ -623,7 +614,7 @@ public class NotificationDmaapEventTest extends AAISetup {
         String pserverUri = "/aai/v14/cloud-infrastructure/pservers/pserver/" + hostname;
         String genericVnfUri = "/aai/v14/network/generic-vnfs/generic-vnf/generic-vnf-notification";
 
-        UEBNotification notification = Mockito.spy(new UEBNotification(ModelType.MOXY, loaderFactory, schemaVersions));
+        UEBNotification notification = Mockito.spy(new UEBNotification(loaderFactory, schemaVersions));
         HttpTestUtil httpTestUtil = new HttpTestUtil(queryStyle);
 
         String resource = PayloadUtil.getResourcePayload("pserver-with-children-for-notification.json");
@@ -663,10 +654,10 @@ public class NotificationDmaapEventTest extends AAISetup {
         String expectedNotificationBody = PayloadUtil.getResourcePayload(
                 "notification-dmaap-events/depth-all/expected-notification-body-create-edge-between-pserver-and-generic-vnf.json");
 
-        System.out.println("Notification Body: " + notificationEvents.get(0).getObj().marshal(false));
-        JSONAssert.assertEquals(expectedNotificationHeader, notificationEvents.get(0).getEventHeader().marshal(false),
+        System.out.println("Notification Body: " + notificationEvents.get(0).getEntity().toString());
+        JSONAssert.assertEquals(expectedNotificationHeader, mapper.writeValueAsString(notificationEvents.get(0).getEventHeader()),
                 false);
-        JSONAssert.assertEquals(expectedNotificationBody, notificationEvents.get(0).getObj().marshal(false), false);
+        JSONAssert.assertEquals(expectedNotificationBody, notificationEvents.get(0).getEntity().toString(), false);
 
         response = httpTestUtil.doGet(genericVnfUri);
 
@@ -685,7 +676,7 @@ public class NotificationDmaapEventTest extends AAISetup {
 
         String relationship = PayloadUtil.getResourcePayload("pserver-to-gvnf-relationship-notification.json");
 
-        UEBNotification notification = Mockito.spy(new UEBNotification(ModelType.MOXY, loaderFactory, schemaVersions));
+        UEBNotification notification = Mockito.spy(new UEBNotification(loaderFactory, schemaVersions));
         HttpTestUtil httpTestUtil = new HttpTestUtil(queryStyle);
 
         String resource = PayloadUtil.getResourcePayload("pserver-with-children-for-notification.json");
@@ -741,9 +732,9 @@ public class NotificationDmaapEventTest extends AAISetup {
         String expectedNotificationBody = PayloadUtil.getResourcePayload(
                 "notification-dmaap-events/depth-zero/expected-notification-body-delete-edge-between-pserver-and-generic-vnf.json");
 
-        JSONAssert.assertEquals(expectedNotificationHeader, notificationEvents.get(0).getEventHeader().marshal(false),
+        JSONAssert.assertEquals(expectedNotificationHeader, mapper.writeValueAsString(notificationEvents.get(0).getEventHeader()),
                 false);
-        JSONAssert.assertEquals(expectedNotificationBody, notificationEvents.get(0).getObj().marshal(false), false);
+        JSONAssert.assertEquals(expectedNotificationBody, notificationEvents.get(0).getEntity().toString(), false);
 
     }
 
@@ -758,7 +749,7 @@ public class NotificationDmaapEventTest extends AAISetup {
 
         String relationship = PayloadUtil.getResourcePayload("pserver-to-gvnf-relationship-notification.json");
 
-        UEBNotification notification = Mockito.spy(new UEBNotification(ModelType.MOXY, loaderFactory, schemaVersions));
+        UEBNotification notification = Mockito.spy(new UEBNotification(loaderFactory, schemaVersions));
         HttpTestUtil httpTestUtil = new HttpTestUtil(queryStyle);
 
         String resource = PayloadUtil.getResourcePayload("pserver-with-children-for-notification.json");
@@ -813,9 +804,9 @@ public class NotificationDmaapEventTest extends AAISetup {
         String expectedNotificationBody = PayloadUtil.getResourcePayload(
                 "notification-dmaap-events/depth-all/expected-notification-body-delete-edge-between-pserver-and-generic-vnf.json");
 
-        JSONAssert.assertEquals(expectedNotificationHeader, notificationEvents.get(0).getEventHeader().marshal(false),
+        JSONAssert.assertEquals(expectedNotificationHeader, mapper.writeValueAsString(notificationEvents.get(0).getEventHeader()),
                 false);
-        JSONAssert.assertEquals(expectedNotificationBody, notificationEvents.get(0).getObj().marshal(false), false);
+        JSONAssert.assertEquals(expectedNotificationBody, notificationEvents.get(0).getEntity().toString(), false);
 
     }
 
@@ -823,7 +814,7 @@ public class NotificationDmaapEventTest extends AAISetup {
     public void testDeleteOnExistingResourceVersionMismatchNoEventGeneratedFullDepth()
             throws IOException, AAIException {
         String uri = "/aai/v14/cloud-infrastructure/pservers/pserver/example-hostname-val-85598";
-        UEBNotification notification = Mockito.spy(new UEBNotification(ModelType.MOXY, loaderFactory, schemaVersions));
+        UEBNotification notification = Mockito.spy(new UEBNotification(loaderFactory, schemaVersions));
         HttpTestUtil httpTestUtil = new HttpTestUtil(queryStyle);
 
         String pserverResource = PayloadUtil.getResourcePayload("pserver-with-children-for-notification.json");
@@ -851,7 +842,7 @@ public class NotificationDmaapEventTest extends AAISetup {
     @Test
     public void testCreateVnfWithChildrenCreateCustomerWithChildrenAndCousinBetweenVlanAndServiceInstanceThenDeleteCustomerVerifyingVlanRV()
             throws IOException, AAIException {
-        UEBNotification notification = Mockito.spy(new UEBNotification(ModelType.MOXY, loaderFactory, schemaVersions));
+        UEBNotification notification = Mockito.spy(new UEBNotification(loaderFactory, schemaVersions));
         HttpTestUtil httpTestUtil = new HttpTestUtil(queryStyle);
 
         String json = PayloadUtil.getResourcePayload(
@@ -912,7 +903,7 @@ public class NotificationDmaapEventTest extends AAISetup {
 
     @Test
     public void testBulkCreateOfComplexAndPserverWithRelationshipThenBulkDeleteBoth() throws IOException, AAIException {
-        UEBNotification notification = Mockito.spy(new UEBNotification(ModelType.MOXY, loaderFactory, schemaVersions));
+        UEBNotification notification = Mockito.spy(new UEBNotification(loaderFactory, schemaVersions));
         HttpTestUtil httpTestUtil = new HttpTestUtil(queryStyle, notification, AAIProperties.MAXIMUM_DEPTH);
 
         JsonObject payloads = JsonParser
@@ -945,7 +936,7 @@ public class NotificationDmaapEventTest extends AAISetup {
         Map<String, Pair<String, String>> deletes = new LinkedHashMap<>();
         deletes.put(pserverUri, new Pair<>(pserverRv, null));
         deletes.put(complexUri, new Pair<>(complexRV, null));
-        notification = Mockito.spy(new UEBNotification(ModelType.MOXY, loaderFactory, schemaVersions));
+        notification = Mockito.spy(new UEBNotification(loaderFactory, schemaVersions));
         httpTestUtil = new HttpTestUtil(queryStyle, notification, AAIProperties.MAXIMUM_DEPTH);
         httpTestUtil.doDelete(deletes);
 
@@ -958,7 +949,7 @@ public class NotificationDmaapEventTest extends AAISetup {
     @Test
     public void testCreateVnfWithChildrenCreateCustomerWithChildrenAndCousinBetweenVlanAndServiceInstanceThenImplicitDeleteVlanVerifyingServiceInstanceRV()
             throws IOException, AAIException {
-        UEBNotification notification = Mockito.spy(new UEBNotification(ModelType.MOXY, loaderFactory, schemaVersions));
+        UEBNotification notification = Mockito.spy(new UEBNotification(loaderFactory, schemaVersions));
         HttpTestUtil httpTestUtil = new HttpTestUtil(queryStyle);
 
         String json = PayloadUtil.getResourcePayload(
