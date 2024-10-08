@@ -153,14 +153,6 @@ public class HttpTestUtil extends RESTAPI {
 
         doReturn(null).when(queryParameters).remove(any());
         when(httpHeaders.getMediaType()).thenReturn(APPLICATION_JSON);
-
-        try {
-            if (notification != null) {
-                doNothing().when(notification).triggerEvents();
-            }
-        } catch (AAIException e) {
-            e.printStackTrace();
-        }
     }
 
     public Response doPut(String uri, String payload) throws UnsupportedEncodingException, AAIException {

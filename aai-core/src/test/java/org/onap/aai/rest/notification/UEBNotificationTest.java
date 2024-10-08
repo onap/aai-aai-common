@@ -71,14 +71,14 @@ public class UEBNotificationTest extends AAISetup {
         Introspector pserver = loader.introspectorFromName("pserver");
         pserver.setValue("hostname", "hn");
         URI uri = new URI("/cloud-infrastructure/pservers/pserver/hn");
-        UEBNotification uebNotification = new UEBNotification(loader, loaderFactory, schemaVersions);
+        UEBNotification uebNotification = new UEBNotification(loaderFactory, schemaVersions);
         uebNotification.createNotificationEvent(UUID.randomUUID().toString(), "JUNIT-SOT", Response.Status.CREATED, uri,
                 pserver, new HashMap<>(), BASE_PATH);
 
         assertEquals("One event created", 1, uebNotification.getEvents().size());
         assertEquals("Uri is correct",
                 BASE_PATH + "/" + schemaVersions.getDefaultVersion() + "/cloud-infrastructure/pservers/pserver/hn",
-                uebNotification.getEvents().get(0).getEventHeader().getValue("entity-link").toString());
+                uebNotification.getEvents().get(0).getEventHeader().getEntityLink());
     }
 
     @Test
@@ -87,13 +87,13 @@ public class UEBNotificationTest extends AAISetup {
         Introspector pserver = loader.introspectorFromName("pserver");
         pserver.setValue("hostname", "hn");
         URI uri = new URI(BASE_PATH + "/v12/cloud-infrastructure/pservers/pserver/hn");
-        UEBNotification uebNotification = new UEBNotification(loader, loaderFactory, schemaVersions);
+        UEBNotification uebNotification = new UEBNotification(loaderFactory, schemaVersions);
         uebNotification.createNotificationEvent(UUID.randomUUID().toString(), "JUNIT-SOT", Response.Status.CREATED, uri,
                 pserver, new HashMap<>(), BASE_PATH);
 
         assertEquals("One event created", 1, uebNotification.getEvents().size());
         assertEquals("Uri is correct",
                 BASE_PATH + "/" + schemaVersions.getDefaultVersion() + "/cloud-infrastructure/pservers/pserver/hn",
-                uebNotification.getEvents().get(0).getEventHeader().getValue("entity-link").toString());
+                uebNotification.getEvents().get(0).getEventHeader().getEntityLink());
     }
 }

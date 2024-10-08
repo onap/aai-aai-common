@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
- * Copyright © 2017-2018 AT&T Intellectual Property. All rights reserved.
+ * Copyright © 2024 Deutsche Telekom. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,17 +20,12 @@
 
 package org.onap.aai.kafka;
 
-import org.json.JSONObject;
+import org.onap.aai.domain.notificationEvent.NotificationEvent;
+import org.onap.aai.rest.notification.UEBNotification;
+import org.springframework.stereotype.Service;
 
-/**
- * MessageProducer interface based on untyped messages
- *
- * @deprecated use {@link org.onap.aai.kafka.NotificationProducer} instead
- */
-@Deprecated
-public interface MessageProducer {
-
-    void sendMessageToDefaultDestination(JSONObject finalJson);
-
-    void sendMessageToDefaultDestination(String msg);
+@Service
+public interface NotificationProducer {
+  public void sendNotification(NotificationEvent notificationEvent);
+  public void sendUEBNotification(UEBNotification uebNotification);
 }
