@@ -36,6 +36,7 @@ import org.onap.aai.introspection.LoaderFactory;
 import org.onap.aai.kafka.AAIKafkaEventJMSConsumer;
 import org.onap.aai.kafka.AAIKafkaEventJMSProducer;
 import org.onap.aai.kafka.MessageProducer;
+import org.onap.aai.kafka.NotificationProducer;
 import org.onap.aai.rest.notification.NotificationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -179,7 +180,7 @@ public class KafkaConfig {
     @ConditionalOnMissingBean
     public NotificationService notificationService(LoaderFactory loaderFactory,
     @Value("${schema.uri.base.path}") String basePath,
-    @Value("${delta.events.enabled:false}") boolean isDeltaEventsEnabled) {
-        return new NotificationService(null, loaderFactory, basePath, isDeltaEventsEnabled);
+    @Value("${delta.events.enabled:false}") boolean isDeltaEventsEnabled, NotificationProducer notificationProducer) {
+        return new NotificationService(null, loaderFactory, basePath, isDeltaEventsEnabled, notificationProducer);
     }
 }

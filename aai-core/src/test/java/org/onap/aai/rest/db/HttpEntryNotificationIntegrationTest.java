@@ -129,7 +129,7 @@ public class HttpEntryNotificationIntegrationTest extends AAISetup {
   public void notificationOnRelatedToTest() throws UnsupportedEncodingException, AAIException {
 
     Loader ld = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
-    UEBNotification uebNotification = Mockito.spy(new UEBNotification(ld, loaderFactory, schemaVersions));
+    UEBNotification uebNotification = Mockito.spy(new UEBNotification(loaderFactory, schemaVersions));
     traversalHttpEntry.setHttpEntryProperties(schemaVersions.getDefaultVersion(), uebNotification);
 
     Loader loader = traversalHttpEntry.getLoader();
@@ -148,25 +148,24 @@ public class HttpEntryNotificationIntegrationTest extends AAISetup {
     content = "{\"related-to\":\"pserver\",\"related-link\":\"/aai/" + schemaVersions.getDefaultVersion().toString()
         + "/cloud-infrastructure/pservers/pserver/junit-edge-test-pserver\",\"relationship-label\":\"org.onap.relationships.inventory.LocatedIn\"}";
 
-    doNothing().when(uebNotification).triggerEvents();
     Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT_EDGE, uri,
         content);
 
     assertEquals("Expected the pserver relationship to be deleted", 200, response.getStatus());
     assertEquals("Two notifications", 2, uebNotification.getEvents().size());
     assertEquals("Notification generated for PUT edge", "UPDATE",
-        uebNotification.getEvents().get(0).getEventHeader().getValue("action").toString());
+        uebNotification.getEvents().get(0).getEventHeader().getAction());
     assertThat("Event body for the edge create has the related to",
-        uebNotification.getEvents().get(0).getObj().marshal(false),
+        uebNotification.getEvents().get(0).getEntity().toString(),
         containsString("cloud-infrastructure/pservers/pserver/junit-edge-test-pserver"));
 
     response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.DELETE_EDGE, uri, content);
     assertEquals("Expected the pserver relationship to be deleted", 204, response.getStatus());
     assertEquals("Two notifications", 2, uebNotification.getEvents().size());
     assertEquals("Notification generated for DELETE edge", "UPDATE",
-        uebNotification.getEvents().get(0).getEventHeader().getValue("action").toString());
+        uebNotification.getEvents().get(0).getEventHeader().getAction());
     assertThat("Event body for the edge delete does not have the related to",
-        uebNotification.getEvents().get(0).getObj().marshal(false),
+        uebNotification.getEvents().get(0).getEntity().toString(),
         not(containsString("cloud-infrastructure/pservers/pserver/junit-edge-test-pserver")));
     dbEngine.rollback();
 

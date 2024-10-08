@@ -27,6 +27,8 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -40,6 +42,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.onap.aai.PayloadUtil;
+import org.onap.aai.domain.notificationEvent.NotificationEvent;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.restclient.RestClient;
 import org.springframework.boot.test.system.OutputCaptureRule;
@@ -56,12 +59,15 @@ public class ValidationServiceTest {
     public OutputCaptureRule capture = new OutputCaptureRule();
 
     private Gson gson;
+    private ObjectMapper mapper;
 
     @Before
     public void setUp() throws Exception {
+        mapper = new ObjectMapper();
+        mapper.registerModule(new JaxbAnnotationModule());
         gson = new Gson();
         restClient = Mockito.mock(RestClient.class);
-        validationService = Mockito.spy(new ValidationService(restClient, "JUNIT", "generic-vnf", null));
+        validationService = Mockito.spy(new ValidationService(restClient, "JUNIT", "generic-vnf", null, mapper));
     }
 
     @Test
@@ -81,11 +87,12 @@ public class ValidationServiceTest {
             throws IOException, AAIException {
 
         String pserverRequest = PayloadUtil.getResourcePayload("prevalidation/success-request-with-no-violations.json");
+        NotificationEvent notificationEvent = new ObjectMapper().readValue(pserverRequest, NotificationEvent.class);
 
         Mockito.when(restClient.execute(eq(ValidationService.VALIDATION_ENDPOINT), eq(HttpMethod.POST), any(),
                 eq(pserverRequest))).thenThrow(new RuntimeException(new ConnectException("Connection refused")));
 
-        validationService.preValidate(pserverRequest);
+        validationService.preValidate(notificationEvent);
 
         assertThat(capture.toString(),
                 containsString("Connection refused to the validation microservice due to service unreachable"));
@@ -96,12 +103,13 @@ public class ValidationServiceTest {
             throws IOException, AAIException {
 
         String pserverRequest = PayloadUtil.getResourcePayload("prevalidation/success-request-with-no-violations.json");
+        NotificationEvent notificationEvent = new ObjectMapper().readValue(pserverRequest, NotificationEvent.class);
 
         Mockito.when(restClient.execute(eq(ValidationService.VALIDATION_ENDPOINT), eq(HttpMethod.POST), any(),
                 eq(pserverRequest)))
                 .thenThrow(new RuntimeException(new ConnectTimeoutException("Connection timed out")));
 
-        validationService.preValidate(pserverRequest);
+        validationService.preValidate(notificationEvent);
 
         assertThat(capture.toString(), containsString(
                 "Connection timeout to the validation microservice as this could indicate the server is unable to reach port"));
@@ -112,6 +120,7 @@ public class ValidationServiceTest {
             throws IOException, AAIException {
 
         String pserverRequest = PayloadUtil.getResourcePayload("prevalidation/success-request-with-no-violations.json");
+        NotificationEvent notificationEvent = new ObjectMapper().readValue(pserverRequest, NotificationEvent.class);
         String validationResponse =
                 PayloadUtil.getResourcePayload("prevalidation/success-response-with-empty-violations.json");
 
@@ -125,7 +134,7 @@ public class ValidationServiceTest {
 
         Mockito.doReturn(true).when(validationService).isSuccess(responseEntity);
 
-        List<String> errorMessages = validationService.preValidate(pserverRequest);
+        List<String> errorMessages = validationService.preValidate(notificationEvent);
         assertNotNull("Expected the error messages to be not null", errorMessages);
         assertThat(errorMessages.size(), is(0));
     }
@@ -135,13 +144,14 @@ public class ValidationServiceTest {
             throws IOException, AAIException {
 
         String pserverRequest = PayloadUtil.getResourcePayload("prevalidation/success-request-with-no-violations.json");
+        NotificationEvent notificationEvent = new ObjectMapper().readValue(pserverRequest, NotificationEvent.class);
 
         Mockito.when(restClient.execute(eq(ValidationService.VALIDATION_ENDPOINT), eq(HttpMethod.POST), any(),
                 eq(pserverRequest)))
                 .thenThrow(new RuntimeException(
                         new SocketTimeoutException("Request timed out due to taking longer than client expected")));
 
-        validationService.preValidate(pserverRequest);
+        validationService.preValidate(notificationEvent);
 
         assertThat(capture.toString(),
                 containsString("Request to validation service took longer than the currently set timeout"));
