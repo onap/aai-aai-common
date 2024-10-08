@@ -45,8 +45,9 @@ import org.onap.aai.HttpTestUtil;
 import org.onap.aai.PayloadUtil;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.dbmap.AAIGraph;
+import org.onap.aai.domain.notificationEvent.NotificationEvent;
+import org.onap.aai.domain.notificationEvent.NotificationEvent.EventHeader;
 import org.onap.aai.introspection.ModelType;
-import org.onap.aai.rest.notification.NotificationEvent;
 import org.onap.aai.rest.notification.UEBNotification;
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -73,7 +74,7 @@ public class ImpliedDeleteIntegrationTest extends AAISetup {
 
         String uri = "/aai/v12/cloud-infrastructure/pservers/pserver/test-pserver-implied-delete";
 
-        UEBNotification notification = Mockito.spy(new UEBNotification(ModelType.MOXY, loaderFactory, schemaVersions));
+        UEBNotification notification = Mockito.spy(new UEBNotification(loaderFactory, schemaVersions));
         HttpTestUtil httpTestUtil = new HttpTestUtil(queryStyle, notification, AAIProperties.MINIMUM_DEPTH);
 
         String resource = PayloadUtil.getResourcePayload("pserver-implied-delete.json");
@@ -91,7 +92,7 @@ public class ImpliedDeleteIntegrationTest extends AAISetup {
         JSONAssert.assertEquals(resource, response.getEntity().toString(), false);
         jsonObject.getJSONObject("p-interfaces").remove("p-interface");
 
-        notification = Mockito.spy(new UEBNotification(ModelType.MOXY, loaderFactory, schemaVersions));
+        notification = Mockito.spy(new UEBNotification(loaderFactory, schemaVersions));
         httpTestUtil = new HttpTestUtil(queryStyle, notification, AAIProperties.MINIMUM_DEPTH);
 
         response = httpTestUtil.doPut(uri, jsonObject.toString());
@@ -100,10 +101,11 @@ public class ImpliedDeleteIntegrationTest extends AAISetup {
         List<NotificationEvent> notificationEvents = notification.getEvents();
         assertThat(notificationEvents.size(), is(5));
 
-        List<String> notificationEventHeaders = notification.getEvents().stream()
-                .map(event -> event.getEventHeader().marshal(false)).collect(Collectors.toList());
+        List<EventHeader> notificationEventHeaders = notification.getEvents().stream()
+                .map(NotificationEvent::getEventHeader)
+                .collect(Collectors.toList());
 
-        Long deletedEventsCount = notificationEventHeaders.stream().filter(e -> e.contains("\"DELETE\"")).count();
+        Long deletedEventsCount = notificationEventHeaders.stream().filter(e -> "DELETE".equals(e.getAction())).count();
 
         assertThat(deletedEventsCount, is(4L));
 

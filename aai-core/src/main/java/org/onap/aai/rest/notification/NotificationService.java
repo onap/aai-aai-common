@@ -34,6 +34,7 @@ import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.LoaderFactory;
+import org.onap.aai.kafka.NotificationProducer;
 import org.onap.aai.prevalidation.ValidationService;
 import org.onap.aai.serialization.db.DBSerializer;
 import org.onap.aai.serialization.engines.query.QueryEngine;
@@ -52,6 +53,7 @@ public class NotificationService {
   public static final Logger LOGGER = LoggerFactory.getLogger(NotificationService.class);
 
   private final ValidationService validationService;
+  private final NotificationProducer notificationProducer;
   private final LoaderFactory loaderFactory;
   private final boolean isDeltaEventsEnabled;
   private final String basePath;
@@ -60,11 +62,13 @@ public class NotificationService {
     @Nullable ValidationService validationService,
     LoaderFactory loaderFactory,
     @Value("${schema.uri.base.path}") String basePath,
-    @Value("${delta.events.enabled:false}") boolean isDeltaEventsEnabled) {
+    @Value("${delta.events.enabled:false}") boolean isDeltaEventsEnabled,
+    NotificationProducer notificationProducer) {
     this.validationService = validationService;
     this.loaderFactory = loaderFactory;
     this.basePath = basePath;
     this.isDeltaEventsEnabled = isDeltaEventsEnabled;
+    this.notificationProducer = notificationProducer;
   }
 
   /**
@@ -99,7 +103,7 @@ public class NotificationService {
       validationService.validate(notification.getEvents());
     }
 
-    notification.triggerEvents();
+    notificationProducer.sendUEBNotification(notification);
     if (isDeltaEventsEnabled) {
       try {
         DeltaEvents deltaEvents = new DeltaEvents(transactionId, sourceOfTruth, schemaVersion.toString(),
