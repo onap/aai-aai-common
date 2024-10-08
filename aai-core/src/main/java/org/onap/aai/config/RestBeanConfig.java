@@ -32,8 +32,19 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.web.context.annotation.RequestScope;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
+
 @Configuration
 public class RestBeanConfig {
+
+    @Bean
+    public ObjectMapper objectMapper() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JaxbAnnotationModule());
+        return objectMapper;
+    }
+
     @Bean(name = "traversalUriHttpEntry")
     @Scope(scopeName = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public HttpEntry traversalUriHttpEntry() {

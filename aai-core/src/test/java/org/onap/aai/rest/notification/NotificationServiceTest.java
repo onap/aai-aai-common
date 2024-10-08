@@ -24,6 +24,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -50,6 +51,7 @@ import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.LoaderFactory;
+import org.onap.aai.kafka.NotificationProducerService;
 import org.onap.aai.prevalidation.ValidationService;
 import org.onap.aai.serialization.db.DBSerializer;
 import org.onap.aai.serialization.engines.query.QueryEngine;
@@ -62,6 +64,7 @@ public class NotificationServiceTest extends AAISetup {
   @Mock SchemaVersions schemaVersions;
   @Mock UEBNotification uebNotification;
   @Mock ValidationService validationService;
+  @Mock NotificationProducerService notificationProducerService;
   @Mock DBSerializer dbSerializer;
   @Mock QueryEngine queryEngine;
   @Mock Introspector introspector;
@@ -77,9 +80,10 @@ public class NotificationServiceTest extends AAISetup {
     when(dbSerializer.touchStandardVertexPropertiesForEdges()).thenReturn(Collections.emptySet());
     when(dbSerializer.getLatestVersionView(any(),anyInt())).thenReturn(introspector);
 
-    notificationService = new NotificationService(validationService, loaderFactory, basePath, isDeltaEventsEnabled);
+    notificationService = new NotificationService(validationService, loaderFactory, basePath, isDeltaEventsEnabled, notificationProducerService);
     when(schemaVersions.getDefaultVersion()).thenReturn(new SchemaVersion("v29"));
     doNothing().when(uebNotification).createNotificationEvent(any(),any(),any(),any(),any(),any(),any());
+    doNothing().when(notificationProducerService).sendUEBNotification(any());
   }
 
   @Test
@@ -101,7 +105,7 @@ public class NotificationServiceTest extends AAISetup {
 
     verify(uebNotification, times(1)).createNotificationEvent(eq("transactionId"), eq("sourceOfTruth"), eq(Status.OK), eq(URI.create("/aai/v29/pservers/pserver/hostname")), eq(introspector), any(), eq("/aai"));
     verify(validationService, times(1)).validate(anyList());
-    verify(uebNotification, times(1)).triggerEvents();
+    verify(notificationProducerService, times(1)).sendUEBNotification(uebNotification);
   }
 
   @Test
@@ -119,9 +123,9 @@ public class NotificationServiceTest extends AAISetup {
     SchemaVersion schemaVersion = new SchemaVersion("v29");
     when(dbSerializer.getUpdatedVertexes()).thenReturn(Collections.emptyMap());
 
-    notificationService = new NotificationService(null, loaderFactory, basePath, isDeltaEventsEnabled);
+    notificationService = new NotificationService(null, loaderFactory, basePath, isDeltaEventsEnabled, notificationProducerService);
     notificationService.generateEvents(uebNotification, AAIProperties.MINIMUM_DEPTH, "sourceOfTruth", dbSerializer, "transactionId", queryEngine, mainVertexesToNotifyOn, schemaVersion);
 
-    verify(uebNotification, times(1)).triggerEvents();
+    verify(notificationProducerService, times(1)).sendUEBNotification(uebNotification);
   }
 }
