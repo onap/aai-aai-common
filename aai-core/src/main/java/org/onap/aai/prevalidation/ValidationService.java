@@ -22,8 +22,8 @@
 
 package org.onap.aai.prevalidation;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
@@ -41,9 +41,10 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 
 import org.apache.http.conn.ConnectTimeoutException;
+import org.onap.aai.domain.notificationEvent.NotificationEvent;
+import org.onap.aai.domain.notificationEvent.NotificationEvent.EventHeader;
 import org.onap.aai.exceptions.AAIException;
-import org.onap.aai.introspection.Introspector;
-import org.onap.aai.rest.notification.NotificationEvent;
+
 import org.onap.aai.restclient.RestClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,22 +75,19 @@ public class ValidationService {
     static final String VALIDATION_HEALTH_ENDPOINT = "/v1/info";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ValidationService.class);
-    private static final String ENTITY_TYPE = "entity-type";
-    private static final String ACTION = "action";
-    private static final String SOURCE_NAME = "source-name";
     private static final String DELETE = "DELETE";
 
     private final RestClient validationRestClient;
     private final String appName;
     private final Set<String> validationNodeTypes;
-    private final Gson gson;
-
-    private List<Pattern> exclusionList;
+    private final ObjectMapper mapper;
+    private final List<Pattern> exclusionList;
 
     public ValidationService(@Qualifier("validationRestClient") RestClient validationRestClient,
             @Value("${spring.application.name}") String appName,
             @Value("${validation.service.node-types}") String validationNodes,
-            @Value("${validation.service.exclusion-regexes:#{null}}") String exclusionRegexes) {
+            @Value("${validation.service.exclusion-regexes:#{null}}") String exclusionRegexes,
+            ObjectMapper mapper) {
         this.validationRestClient = validationRestClient;
         this.appName = appName;
 
@@ -101,7 +99,7 @@ public class ValidationService {
             this.exclusionList =
                     Arrays.stream(exclusionRegexes.split(",")).map(Pattern::compile).collect(Collectors.toList());
         }
-        this.gson = new Gson();
+        this.mapper = mapper;
         LOGGER.info("Successfully initialized the pre validation service");
     }
 
@@ -119,7 +117,7 @@ public class ValidationService {
         ResponseEntity<String> healthCheckResponse = null;
         try {
             healthCheckResponse =
-                    validationRestClient.execute(VALIDATION_HEALTH_ENDPOINT, HttpMethod.GET, httpHeaders, null);
+                    validationRestClient.execute(VALIDATION_HEALTH_ENDPOINT, HttpMethod.GET, httpHeaders);
         } catch (Exception ex) {
             AAIException validationException = new AAIException("AAI_4021", ex);
             throw validationException;
@@ -142,7 +140,7 @@ public class ValidationService {
         }
 
         for (NotificationEvent event : notificationEvents) {
-            Introspector eventHeader = event.getEventHeader();
+            EventHeader eventHeader = event.getEventHeader();
             if (eventHeader == null) {
                 // Should I skip processing the request and let it continue
                 // or fail the request and cause client impact
@@ -156,10 +154,10 @@ public class ValidationService {
             if (isDelete(eventHeader)) {
                 continue;
             }
-            String entityType = eventHeader.getValue(ENTITY_TYPE);
+            String entityType = eventHeader.getEntityType();
 
             if (this.shouldValidate(entityType)) {
-                List<String> violations = preValidate(event.getNotificationEvent());
+                List<String> violations = preValidate(event);
                 if (!violations.isEmpty()) {
                     AAIException aaiException = new AAIException("AAI_4019");
                     aaiException.getTemplateVars().addAll(violations);
@@ -172,8 +170,8 @@ public class ValidationService {
     /**
      * Determine if event is of type delete
      */
-    private boolean isDelete(Introspector eventHeader) {
-        String action = eventHeader.getValue(ACTION);
+    private boolean isDelete(EventHeader eventHeader) {
+        String action = eventHeader.getAction();
         return DELETE.equalsIgnoreCase(action);
     }
 
@@ -186,15 +184,15 @@ public class ValidationService {
         // Get the first notification and if the source of that notification
         // is in one of the regexes then we skip sending it to validation
         NotificationEvent notification = notificationEvents.get(0);
-        Introspector eventHeader = notification.getEventHeader();
+        EventHeader eventHeader = notification.getEventHeader();
         if (eventHeader != null) {
-            String source = eventHeader.getValue(SOURCE_NAME);
+            String source = eventHeader.getSourceName();
             return exclusionList.stream().anyMatch(pattern -> pattern.matcher(source).matches());
         }
         return false;
     }
 
-    public List<String> preValidate(String body) throws AAIException {
+    public List<String> preValidate(NotificationEvent notificationEvent) throws AAIException {
         Map<String, String> httpHeaders = new HashMap<>();
         httpHeaders.put("X-FromAppId", appName);
         httpHeaders.put("X-TransactionID", UUID.randomUUID().toString());
@@ -203,7 +201,8 @@ public class ValidationService {
         List<String> violations = new ArrayList<>();
         ResponseEntity<String> responseEntity;
         try {
-            responseEntity = validationRestClient.execute(VALIDATION_ENDPOINT, HttpMethod.POST, httpHeaders, body);
+            String requestBody = mapper.writeValueAsString(notificationEvent);
+            responseEntity = validationRestClient.execute(VALIDATION_ENDPOINT, HttpMethod.POST, httpHeaders, requestBody);
             Object responseBody = responseEntity.getBody();
             if (isSuccess(responseEntity)) {
                 LOGGER.debug("Validation Service returned following response status code {} and body {}",
@@ -242,8 +241,8 @@ public class ValidationService {
     private Validation getValidation(Object responseBody) {
         Validation validation = null;
         try {
-            validation = gson.fromJson(responseBody.toString(), Validation.class);
-        } catch (JsonSyntaxException jsonException) {
+            validation = mapper.readValue(responseBody.toString(), Validation.class);
+        } catch (JsonProcessingException jsonException) {
             LOGGER.warn("Unable to convert the response body {}", jsonException.getMessage());
         }
         return validation;
