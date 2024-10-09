@@ -32,6 +32,7 @@ import java.util.Map;
 
 import javax.ws.rs.core.Response.Status;
 
+import org.onap.aai.domain.notificationEvent.NotificationEvent;
 import org.onap.aai.domain.notificationEvent.NotificationEvent.EventHeader;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
@@ -59,7 +60,7 @@ public class UEBNotification {
     private final String domain = AAIConfig.get("aai.notificationEvent.default.domain", "UNK");
     private final String sequenceNumber = AAIConfig.get("aai.notificationEvent.default.sequenceNumber", "UNK");
     private final String severity = AAIConfig.get("aai.notificationEvent.default.severity", "UNK");
-    private final Map<String, org.onap.aai.domain.notificationEvent.NotificationEvent> events;
+    private final Map<String, NotificationEvent> events;
     private final Loader currentVersionLoader;
     private final SchemaVersion notificationVersion;
 
@@ -98,8 +99,7 @@ public class UEBNotification {
 
             Introspector entity = entityConverter.convert(obj);
 
-            final org.onap.aai.domain.notificationEvent.NotificationEvent event =
-                new org.onap.aai.domain.notificationEvent.NotificationEvent();
+            final NotificationEvent event = new NotificationEvent();
             event.setEventHeader(eventHeader);
             event.setCambriaPartition(AAIConstants.UEB_PUB_PARTITION_AAI);
             event.setEntity(entity);
@@ -154,7 +154,7 @@ public class UEBNotification {
         return action;
     }
 
-    public List<org.onap.aai.domain.notificationEvent.NotificationEvent> getEvents() {
+    public List<NotificationEvent> getEvents() {
         return new ArrayList<>(this.events.values());
     }
 

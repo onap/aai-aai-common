@@ -90,7 +90,6 @@ limitations under the License.
       -->
     <spring.boot.version>2.5.15</spring.boot.version>
     <spring.version>5.3.39</spring.version>
-    <spring.jms.version>5.2.25.RELEASE</spring.jms.version>
     <spring.test.version>${spring.version}</spring.test.version>
     <json.path.version>2.2.0</json.path.version>
     <json.version>20190722</json.version>
@@ -162,13 +161,6 @@ limitations under the License.
         <artifactId>spring-security-rsa</artifactId>
         <version>${spring.security.rsa.version}</version>
       </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-jms</artifactId>
-        <version>5.3.39</version>
-      </dependency>
-
-
 
       <dependency>
         <groupId>com.googlecode.json-simple</groupId>

@@ -38,7 +38,6 @@ import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.setup.SchemaVersions;
 import org.onap.aai.testutils.TestUtilConfigTranslatorforDataLink;
 import org.onap.aai.util.AAIConstants;
-import org.onap.aai.web.KafkaNotificationEventConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.annotation.DirtiesContext;
@@ -50,7 +49,7 @@ import org.springframework.test.context.junit4.rules.SpringMethodRule;
 @ContextConfiguration(
         classes = {ConfigConfiguration.class, TestUtilConfigTranslatorforDataLink.class, EdgeIngestor.class,
                 EdgeSerializer.class, NodeIngestor.class, SpringContextAware.class, IntrospectionConfig.class,
-                RestBeanConfig.class, XmlFormatTransformerConfiguration.class, LoaderFactory.class, NotificationService.class, KafkaNotificationEventConfig.class})
+                RestBeanConfig.class, XmlFormatTransformerConfiguration.class, LoaderFactory.class, NotificationService.class, KafkaConfig.class})
 @TestPropertySource(
         properties = {"schema.uri.base.path = /aai", "schema.xsd.maxoccurs = 5000", "schema.version.api.default = v4",
                 "schema.version.edge.label.start = v4", "schema.version.depth.start = v3",

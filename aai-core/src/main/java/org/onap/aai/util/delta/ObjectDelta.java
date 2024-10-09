@@ -20,7 +20,9 @@
 
 package org.onap.aai.util.delta;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,24 +31,17 @@ import java.util.Map;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+@Data
 public class ObjectDelta {
 
-    @SerializedName("uri")
     private String uri;
-
-    @SerializedName("action")
     private DeltaAction action;
-
-    @SerializedName("source-of-truth")
+    @JsonProperty("source-of-truth")
     private String sourceOfTruth;
-
-    @SerializedName("timestamp")
     private long timestamp;
-
-    @SerializedName("property-deltas")
+    @JsonProperty("property-deltas")
     private Map<String, PropertyDelta> propertyDeltas = new HashMap<>();
-
-    @SerializedName("relationship-deltas")
+    @JsonProperty("relationship-deltas")
     private List<RelationshipDelta> relationshipDeltas = new ArrayList<>();
 
     public ObjectDelta(String uri, DeltaAction action, String sourceOfTruth, long timestamp) {
@@ -62,54 +57,6 @@ public class ObjectDelta {
 
     public void addRelationshipDelta(RelationshipDelta relationshipDelta) {
         relationshipDeltas.add(relationshipDelta);
-    }
-
-    public String getUri() {
-        return uri;
-    }
-
-    public void setUri(String uri) {
-        this.uri = uri;
-    }
-
-    public DeltaAction getAction() {
-        return action;
-    }
-
-    public void setAction(DeltaAction action) {
-        this.action = action;
-    }
-
-    public String getSourceOfTruth() {
-        return sourceOfTruth;
-    }
-
-    public void setSourceOfTruth(String sourceOfTruth) {
-        this.sourceOfTruth = sourceOfTruth;
-    }
-
-    public long getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
-    }
-
-    public void setPropertyDeltas(Map<String, PropertyDelta> propertyDeltas) {
-        this.propertyDeltas = propertyDeltas;
-    }
-
-    public void setRelationshipDeltas(List<RelationshipDelta> relationshipDeltas) {
-        this.relationshipDeltas = relationshipDeltas;
-    }
-
-    public Map<String, PropertyDelta> getPropertyDeltas() {
-        return propertyDeltas;
-    }
-
-    public List<RelationshipDelta> getRelationshipDeltas() {
-        return relationshipDeltas;
     }
 
     @Override

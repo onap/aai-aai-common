@@ -42,6 +42,7 @@ import org.junit.*;
 import org.junit.runner.RunWith;
 import org.onap.aai.config.ConfigConfiguration;
 import org.onap.aai.config.IntrospectionConfig;
+import org.onap.aai.config.KafkaConfig;
 import org.onap.aai.config.SpringContextAware;
 import org.onap.aai.config.XmlFormatTransformerConfiguration;
 import org.onap.aai.db.props.AAIProperties;
@@ -58,7 +59,6 @@ import org.onap.aai.serialization.db.exceptions.NoEdgeRuleFoundException;
 import org.onap.aai.serialization.queryformats.QueryFormatTestHelper;
 import org.onap.aai.setup.SchemaVersions;
 import org.onap.aai.util.AAIConstants;
-import org.onap.aai.web.KafkaNotificationEventConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -69,7 +69,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration(
         classes = {ConfigConfiguration.class, QueryTestsConfigTranslator.class, NodeIngestor.class, EdgeIngestor.class,
                 EdgeSerializer.class, SpringContextAware.class, IntrospectionConfig.class,
-                XmlFormatTransformerConfiguration.class, LoaderFactory.class, NotificationService.class, KafkaNotificationEventConfig.class})
+                XmlFormatTransformerConfiguration.class, LoaderFactory.class, NotificationService.class, KafkaConfig.class})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @TestPropertySource(
         properties = {"schema.translator.list = config", "schema.nodes.location=src/test/resources/onap/oxm",

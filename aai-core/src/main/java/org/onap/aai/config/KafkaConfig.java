@@ -18,14 +18,17 @@
  * ============LICENSE_END=========================================================
  */
 
-package org.onap.aai.web;
+package org.onap.aai.config;
 
 import java.util.Map;
 import java.util.HashMap;
 
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.onap.aai.domain.deltaEvent.DeltaEvent;
 import org.onap.aai.domain.notificationEvent.NotificationEvent;
+import org.onap.aai.kafka.DeltaProducer;
+import org.onap.aai.kafka.DeltaProducerService;
 import org.onap.aai.kafka.NotificationProducer;
 import org.onap.aai.kafka.NotificationProducerService;
 import org.slf4j.Logger;
@@ -39,12 +42,9 @@ import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 
 @Configuration
-public class KafkaNotificationEventConfig {
+public class KafkaConfig {
 
-    private static final Logger logger = LoggerFactory.getLogger(KafkaNotificationEventConfig.class);
-
-    @Value("${jms.bind.address}")
-    private String bindAddress;
+    private static final Logger logger = LoggerFactory.getLogger(KafkaConfig.class);
 
     @Value("${spring.kafka.producer.bootstrap-servers}")
     private String bootstrapServers;
@@ -87,25 +87,34 @@ public class KafkaNotificationEventConfig {
     }
 
     @Bean
-    public ProducerFactory<String, NotificationEvent> notificationEventProducerFactory() throws Exception {
-        Map<String, Object> props = buildKafkaProperties();
-
-        return new DefaultKafkaProducerFactory<>(props);
-    }
-
-    @Bean
     public KafkaTemplate<String, NotificationEvent> kafkaNotificationEventTemplate(ProducerFactory<String, NotificationEvent> producerFactory) throws Exception {
-      try {
-
         return new KafkaTemplate<>(producerFactory);
-      } catch (Exception e) {
-        String smth = "";
-        return null;
-      }
     }
 
     @Bean
     public NotificationProducer notificationProducer(KafkaTemplate<String,NotificationEvent> kafkaTemplate) {
         return new NotificationProducerService(kafkaTemplate);
+    }
+
+    @Bean
+    public ProducerFactory<String, NotificationEvent> notificationEventProducerFactory() throws Exception {
+        Map<String, Object> props = buildKafkaProperties();
+        return new DefaultKafkaProducerFactory<>(props);
+    }
+
+    @Bean
+    public ProducerFactory<String, DeltaEvent> deltaEventProducerFactory() throws Exception {
+        Map<String, Object> props = buildKafkaProperties();
+        return new DefaultKafkaProducerFactory<>(props);
+    }
+
+    @Bean
+    public KafkaTemplate<String, DeltaEvent> kafkaDeltaEventTemplate(ProducerFactory<String, DeltaEvent> producerFactory) throws Exception {
+        return new KafkaTemplate<>(producerFactory);
+    }
+
+    @Bean
+    public DeltaProducer deltaProducer(KafkaTemplate<String,DeltaEvent> kafkaTemplate) {
+        return new DeltaProducerService(kafkaTemplate);
     }
 }

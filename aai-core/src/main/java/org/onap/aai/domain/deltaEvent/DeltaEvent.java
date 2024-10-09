@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
- * Copyright © 2017-2019 AT&T Intellectual Property. All rights reserved.
+ * Copyright © 2024 Deutsche Telekom. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,35 +18,22 @@
  * ============LICENSE_END=========================================================
  */
 
-package org.onap.aai.util.delta;
+package org.onap.aai.domain.deltaEvent;
+
+import java.util.Collection;
+
+import org.onap.aai.domain.notificationEvent.NotificationEvent.EventHeader;
+import org.onap.aai.util.delta.ObjectDelta;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
 @Data
-public class PropertyDelta {
-
-    protected DeltaAction action;
-    protected Object value;
-    @JsonProperty("old-value")
-    private Object oldValue;
-
-    public PropertyDelta(DeltaAction action, Object value) {
-        this.action = action;
-        this.value = value;
-    }
-
-    public PropertyDelta(DeltaAction action, Object value, Object oldValue) {
-        this(action, value);
-        this.oldValue = oldValue;
-    }
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this).append("action", action).append("value", value).append("oldValue", oldValue)
-                .toString();
-    }
+public class DeltaEvent {
+  @JsonProperty("cambria.partition")
+  protected String cambriaPartition;
+  @JsonProperty("event-header")
+  protected EventHeader eventHeader;
+  Collection<ObjectDelta> entities;
 }

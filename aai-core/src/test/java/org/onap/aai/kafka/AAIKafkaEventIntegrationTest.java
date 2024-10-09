@@ -75,7 +75,6 @@ import lombok.extern.slf4j.Slf4j;
 @EmbeddedKafka(partitions = 1, topics = { "AAI-EVENT" })
 @TestPropertySource(
         properties = {
-          "jms.bind.address=tcp://localhost:61647",
           "aai.events.enabled=true",
           "spring.kafka.producer.retries=0",
           "spring.kafka.producer.properties.sasl.jaas.config=#{null}",

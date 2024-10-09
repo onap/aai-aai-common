@@ -45,7 +45,7 @@ public class NotificationEvent {
     @XmlType(
             name = "",
             propOrder = {"id", "timestamp", "sourceName", "domain", "sequenceNumber", "severity", "eventType",
-                    "version", "action", "entityType", "topEntityType", "entityLink"})
+                    "version", "action", "entityType", "topEntityType", "entityLink","entityUuid"})
     public static class EventHeader {
 
         @XmlElement(required = true)
@@ -78,6 +78,8 @@ public class NotificationEvent {
         @XmlElement(name = "entity-link", required = true)
         @JsonProperty("entity-link")
         protected String entityLink;
+        @JsonProperty("entity-uuid")
+        protected String entityUuid;
     }
 
 }

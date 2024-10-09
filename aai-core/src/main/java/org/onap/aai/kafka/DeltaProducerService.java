@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
- * Copyright © 2017-2019 AT&T Intellectual Property. All rights reserved.
+ * Copyright © 2024 Deutsche Telekom. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,35 +18,27 @@
  * ============LICENSE_END=========================================================
  */
 
-package org.onap.aai.util.delta;
+package org.onap.aai.kafka;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.onap.aai.domain.deltaEvent.DeltaEvent;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.stereotype.Service;
 
-import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
+@Service
+@RequiredArgsConstructor
+public class DeltaProducerService implements DeltaProducer {
 
-@Data
-public class PropertyDelta {
+  private final KafkaTemplate<String,DeltaEvent> kafkaTemplate;
+  @Value("${aai.notifications.enabled:true}")
+  boolean notificationsEnabled;
 
-    protected DeltaAction action;
-    protected Object value;
-    @JsonProperty("old-value")
-    private Object oldValue;
-
-    public PropertyDelta(DeltaAction action, Object value) {
-        this.action = action;
-        this.value = value;
+  @Override
+  public void sendNotification(DeltaEvent deltaEvent) {
+    if(notificationsEnabled) {
+      kafkaTemplate.send("DELTA", deltaEvent);
     }
-
-    public PropertyDelta(DeltaAction action, Object value, Object oldValue) {
-        this(action, value);
-        this.oldValue = oldValue;
-    }
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this).append("action", action).append("value", value).append("oldValue", oldValue)
-                .toString();
-    }
+  }
 }

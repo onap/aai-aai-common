@@ -27,33 +27,25 @@ import java.util.Date;
 import java.util.Map;
 
 import org.onap.aai.db.props.AAIProperties;
-import org.onap.aai.kafka.MessageProducer;
+import org.onap.aai.domain.deltaEvent.DeltaEvent;
+import org.onap.aai.domain.notificationEvent.NotificationEvent.EventHeader;
+import org.onap.aai.kafka.DeltaProducer;
 import org.onap.aai.util.AAIConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-
 public class DeltaEvents {
-
-    private static final Gson gson =
-            new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_DASHES).create();
-    private static final String eventVersion = "v1";
-
     private final String transId;
     private final String sourceName;
     private final String schemaVersion;
     private final Map<String, ObjectDelta> objectDeltas;
 
-    @Autowired private MessageProducer messageProducer;
+    @Autowired private DeltaProducer deltaProducer;
 
     public DeltaEvents(String transId, String sourceName, String schemaVersion, Map<String, ObjectDelta> objectDeltas) {
-    this.transId = transId;
-    this.sourceName = sourceName;
-    this.schemaVersion = schemaVersion;
-    this.objectDeltas = objectDeltas;
+        this.transId = transId;
+        this.sourceName = sourceName;
+        this.schemaVersion = schemaVersion;
+        this.objectDeltas = objectDeltas;
     }
 
     public boolean triggerEvents() {
@@ -61,44 +53,35 @@ public class DeltaEvents {
             return false;
         }
 
-        JsonObject finalJson = new JsonObject();
-        finalJson.addProperty("event-topic", "DELTA");
-        finalJson.addProperty("transId", transId);
-        finalJson.addProperty("fromAppId", sourceName);
-        finalJson.addProperty("fullId", "");
-        finalJson.add("aaiEventPayload", buildEvent());
-
-        this.messageProducer.sendMessageToDefaultDestination(finalJson.toString());
+        deltaProducer.sendNotification(buildEvent());
         return true;
     }
 
-    private JsonObject buildEvent() {
-        JsonObject event = new JsonObject();
-        event.addProperty("cambria.partition", this.getPartition());
-        event.add("event-header", getHeader());
-        event.add("entities", gson.toJsonTree(objectDeltas.values()));
-        return event;
+    private DeltaEvent buildEvent() {
+        DeltaEvent deltaEvent = new DeltaEvent();
+        deltaEvent.setCambriaPartition(getPartition());
+        deltaEvent.setEventHeader(getHeader());
+        deltaEvent.setEntities(objectDeltas.values());
+        return deltaEvent;
     }
 
     private String getPartition() {
         return "DELTA";
     }
 
-    private JsonObject getHeader() {
+    private EventHeader getHeader() {
         ObjectDelta first = objectDeltas.values().iterator().next();
-        JsonObject header = new JsonObject();
-        header.addProperty("id", this.transId);
-        header.addProperty("timestamp", this.getTimeStamp(first.getTimestamp()));
-        header.addProperty("source-name", this.sourceName);
-        header.addProperty("domain", this.getDomain());
-        header.addProperty("event-type", this.getEventType());
-        header.addProperty("event-version", eventVersion);
-        header.addProperty("schema-version", this.schemaVersion);
-        header.addProperty("action", first.getAction().toString());
-        header.addProperty("entity-type", this.getEntityType(first));
-        header.addProperty("entity-link", first.getUri());
-        header.addProperty("entity-uuid", this.getUUID(first));
-
+        EventHeader header = new EventHeader();
+        header.setId(this.transId);
+        header.setTimestamp(this.getTimeStamp(first.getTimestamp()));
+        header.setSourceName(this.sourceName);
+        header.setDomain(this.getDomain());
+        header.setEventType(this.getEventType());
+        header.setVersion(this.schemaVersion);
+        header.setAction(first.getAction().toString());
+        header.setEntityType(this.getEntityType(first));
+        header.setEntityLink(first.getUri());
+        header.setEntityUuid(this.getUUID(first));
         return header;
     }
 
