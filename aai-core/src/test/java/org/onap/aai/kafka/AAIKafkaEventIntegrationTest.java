@@ -44,6 +44,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.onap.aai.AAISetup;
 import org.onap.aai.PayloadUtil;
+import org.onap.aai.domain.notificationEvent.NotificationEvent;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
@@ -63,10 +64,11 @@ import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
-@Ignore
 @Slf4j
 @ActiveProfiles("kafka")
 @Import(KafkaTestConfiguration.class)
@@ -77,7 +79,8 @@ import lombok.extern.slf4j.Slf4j;
           "aai.events.enabled=true",
           "spring.kafka.producer.retries=0",
           "spring.kafka.producer.properties.sasl.jaas.config=#{null}",
-          "spring.kafka.producer.bootstrap-servers=${spring.embedded.kafka.brokers}"
+          "spring.kafka.producer.bootstrap-servers=${spring.embedded.kafka.brokers}",
+          "aai.notifications.enabled=true"
         })
 public class AAIKafkaEventIntegrationTest extends AAISetup {
 
@@ -85,7 +88,10 @@ public class AAIKafkaEventIntegrationTest extends AAISetup {
     private KafkaTemplate<String, String> kafkaTemplate;
 
     @Autowired
-    MessageProducer messageProducer;
+    ObjectMapper mapper;
+
+    @Autowired
+    NotificationProducer messageProducer;
 
     @Autowired
     private ConsumerFactory<String, String> consumerFactory;
@@ -103,6 +109,7 @@ public class AAIKafkaEventIntegrationTest extends AAISetup {
     }
 
     @Test
+    @Ignore
     public void onMessage_shouldSendMessageToKafkaTopic_whenAAIEventReceived()
             throws Exception {
         Consumer<String, String> consumer = consumerFactory.createConsumer();
@@ -110,8 +117,9 @@ public class AAIKafkaEventIntegrationTest extends AAISetup {
         consumer.subscribe(Collections.singletonList("AAI-EVENT"));
 
         String payload = PayloadUtil.getResourcePayload("aai-event.json");
+        NotificationEvent event = mapper.readValue(payload, NotificationEvent.class);
         String expectedResponse = PayloadUtil.getExpectedPayload("aai-event.json");
-        messageProducer.sendMessageToDefaultDestination(payload);
+        messageProducer.sendNotification(event);
 
         ConsumerRecords<String, String> consumerRecords = KafkaTestUtils.getRecords(consumer, 10000);
         assertFalse(consumerRecords.isEmpty());
@@ -121,8 +129,6 @@ public class AAIKafkaEventIntegrationTest extends AAISetup {
     }
 
     @Test
-    @Ignore
-    // only works when aai.jms.enable=true in aaiconfig.properties
     public void thatEventsAreBeingCreated() throws AAIException, IOException {
         Consumer<String, String> consumer = consumerFactory.createConsumer();
         consumer.subscribe(Collections.singletonList("AAI-EVENT"));

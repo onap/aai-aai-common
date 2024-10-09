@@ -27,21 +27,18 @@ import java.time.format.DateTimeFormatter;
 public class FormatDate {
 
     private final String timeZone;
-    private final String pattern;
+    private final DateTimeFormatter formatter ;
 
     public FormatDate(String pattern) {
-        this.pattern = pattern;
-        this.timeZone = "GMT";
+        this(pattern, "GMT");
     }
 
     public FormatDate(String pattern, String timeZone) {
-        this.pattern = pattern;
         this.timeZone = timeZone;
+        this.formatter = DateTimeFormatter.ofPattern(pattern);
     }
 
     public String getDateTime() {
-
-        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
         return formatter.format(ZonedDateTime.now(ZoneId.of(timeZone)));
     }
 }

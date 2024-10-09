@@ -4,6 +4,8 @@
  * ================================================================================
  * Copyright © 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
+ * Modifications Copyright © 2024 Deutsche Telekom.
+ * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -30,6 +32,7 @@ import java.util.Map;
 
 import javax.ws.rs.core.Response.Status;
 
+import org.onap.aai.domain.notificationEvent.NotificationEvent.EventHeader;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
@@ -41,59 +44,31 @@ import org.onap.aai.logging.LogFormatTools;
 import org.onap.aai.parsers.uri.URIToObject;
 import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.setup.SchemaVersions;
+import org.onap.aai.util.AAIConfig;
+import org.onap.aai.util.AAIConstants;
+import org.onap.aai.util.FormatDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * The Class UEBNotification.
- */
 public class UEBNotification {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UEBNotification.class);
+    private static final FormatDate FORMAT_DATE = new FormatDate("YYYYMMdd-HH:mm:ss:SSS");
+    private static final String EVENT_TYPE = "AAI-EVENT";
 
-    private Loader currentVersionLoader = null;
-    protected Map<String, NotificationEvent> events = null;
-    private SchemaVersion notificationVersion = null;
+    private final String domain = AAIConfig.get("aai.notificationEvent.default.domain", "UNK");
+    private final String sequenceNumber = AAIConfig.get("aai.notificationEvent.default.sequenceNumber", "UNK");
+    private final String severity = AAIConfig.get("aai.notificationEvent.default.severity", "UNK");
+    private final Map<String, org.onap.aai.domain.notificationEvent.NotificationEvent> events;
+    private final Loader currentVersionLoader;
+    private final SchemaVersion notificationVersion;
 
-    /**
-     * Instantiates a new UEB notification.
-     *
-     * @param loader the loader
-     */
-    public UEBNotification(Loader loader, LoaderFactory loaderFactory, SchemaVersions schemaVersions) {
+    public UEBNotification(LoaderFactory loaderFactory, SchemaVersions schemaVersions) {
         events = new LinkedHashMap<>();
-        SchemaVersion defaultVersion = schemaVersions.getDefaultVersion();
-        currentVersionLoader = loaderFactory.createLoaderForVersion(loader.getModelType(), defaultVersion);
-        notificationVersion = defaultVersion;
+        notificationVersion = schemaVersions.getDefaultVersion();
+        currentVersionLoader = loaderFactory.createLoaderForVersion(ModelType.MOXY, notificationVersion);
     }
 
-    /**
-     * Instantiates a new UEB notification.
-     *
-     * @param modelType - Model type
-     * @param loaderFactory - the loader factory
-     * @param schemaVersions the schema versions bean
-     */
-    public UEBNotification(ModelType modelType, LoaderFactory loaderFactory, SchemaVersions schemaVersions) {
-        events = new LinkedHashMap<>();
-        SchemaVersion defaultVersion = schemaVersions.getDefaultVersion();
-        currentVersionLoader = loaderFactory.createLoaderForVersion(modelType, defaultVersion);
-        notificationVersion = defaultVersion;
-    }
-
-    /**
-     * Creates the notification event.
-     *
-     * @param transactionId the X-TransactionId
-     * @param sourceOfTruth
-     * @param status the status
-     * @param uri the uri
-     * @param obj the obj
-     * @param basePath base URI path
-     * @throws AAIException the AAI exception
-     * @throws IllegalArgumentException the illegal argument exception
-     * @throws UnsupportedEncodingException the unsupported encoding exception
-     */
     public void createNotificationEvent(String transactionId, String sourceOfTruth, Status status, URI uri,
             Introspector obj, HashMap<String, Introspector> relatedObjects, String basePath)
             throws AAIException, UnsupportedEncodingException {
@@ -102,25 +77,32 @@ public class UEBNotification {
 
         try {
             EntityConverter entityConverter = new EntityConverter(new URIToObject(currentVersionLoader, uri, relatedObjects));
-            Introspector eventHeader = currentVersionLoader.introspectorFromName("notification-event-header");
+            EventHeader eventHeader = new EventHeader();
 
             basePath = formatBasePath(basePath);
-
             String entityLink = formatEntityLink(uri, basePath);
+            eventHeader.setEntityLink(entityLink);
+            eventHeader.setAction(action);
+            eventHeader.setEntityType(obj.getDbName());
+            eventHeader.setTopEntityType(entityConverter.getTopEntityName());
+            eventHeader.setSourceName(sourceOfTruth);
+            eventHeader.setVersion(notificationVersion.toString());
+            eventHeader.setId(transactionId);
 
-            eventHeader.setValue("entity-link", entityLink);
-            eventHeader.setValue("action", action);
-            eventHeader.setValue("entity-type", obj.getDbName());
-            eventHeader.setValue("top-entity-type", entityConverter.getTopEntityName());
-            eventHeader.setValue("source-name", sourceOfTruth);
-            eventHeader.setValue("version", notificationVersion.toString());
-            eventHeader.setValue("id", transactionId);
+            // default values
+            eventHeader.setTimestamp(FORMAT_DATE.getDateTime());
+            eventHeader.setEventType(EVENT_TYPE);
+            eventHeader.setDomain(domain);
+            eventHeader.setSequenceNumber(sequenceNumber);
+            eventHeader.setSeverity(severity);
 
+            Introspector entity = entityConverter.convert(obj);
 
-            Introspector eventObject = entityConverter.convert(obj);
-
-            final NotificationEvent event =
-                    new NotificationEvent(currentVersionLoader, eventHeader, eventObject, transactionId, sourceOfTruth);
+            final org.onap.aai.domain.notificationEvent.NotificationEvent event =
+                new org.onap.aai.domain.notificationEvent.NotificationEvent();
+            event.setEventHeader(eventHeader);
+            event.setCambriaPartition(AAIConstants.UEB_PUB_PARTITION_AAI);
+            event.setEntity(entity);
             events.put(uri.toString(), event);
         } catch (AAIUnknownObjectException e) {
             throw new RuntimeException("Fatal error - notification-event-header object not found!");
@@ -172,24 +154,8 @@ public class UEBNotification {
         return action;
     }
 
-    /**
-     * Trigger events.
-     *
-     * @throws AAIException the AAI exception
-     */
-    public void triggerEvents() throws AAIException {
-        for (NotificationEvent event : events.values()) {
-            event.trigger();
-        }
-        clearEvents();
-    }
-
-    public List<NotificationEvent> getEvents() {
+    public List<org.onap.aai.domain.notificationEvent.NotificationEvent> getEvents() {
         return new ArrayList<>(this.events.values());
-    }
-
-    public Map<String, NotificationEvent> getEventsMap() {
-        return this.events;
     }
 
     private String getUri(String uri, String basePath) {
