@@ -20,19 +20,18 @@
 
 package org.onap.aai.util.delta;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import lombok.Data;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+@Data
 public class PropertyDelta {
 
-    @SerializedName("action")
     protected DeltaAction action;
-
-    @SerializedName("value")
     protected Object value;
-
-    @SerializedName("old-value")
+    @JsonProperty("old-value")
     private Object oldValue;
 
     public PropertyDelta(DeltaAction action, Object value) {
@@ -42,30 +41,6 @@ public class PropertyDelta {
 
     public PropertyDelta(DeltaAction action, Object value, Object oldValue) {
         this(action, value);
-        this.oldValue = oldValue;
-    }
-
-    public DeltaAction getAction() {
-        return action;
-    }
-
-    public void setAction(DeltaAction action) {
-        this.action = action;
-    }
-
-    public Object getValue() {
-        return value;
-    }
-
-    public void setValue(Object value) {
-        this.value = value;
-    }
-
-    public Object getOldValue() {
-        return oldValue;
-    }
-
-    public void setOldValue(Object oldValue) {
         this.oldValue = oldValue;
     }
 
