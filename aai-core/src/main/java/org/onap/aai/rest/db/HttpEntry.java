@@ -196,7 +196,6 @@ public class HttpEntry {
             Set<String> groups, boolean enableResourceVersion, QueryOptions queryOptions) throws AAIException {
 
         DBSerializer serializer = null;
-
         if (serverBase != null) {
             serializer = new DBSerializer(version, dbEngine, introspectorFactoryType, sourceOfTruth, groups,
                     notificationDepth, serverBase);
@@ -205,45 +204,28 @@ public class HttpEntry {
                     notificationDepth);
         }
 
-        Response response;
-        Introspector obj;
-        QueryParser query;
-        URI uri;
-        String transactionId = null;
-        int depth;
-        Format format = null;
-        List<Pair<URI, Response>> responses = new ArrayList<>();
-        MultivaluedMap<String, String> params;
-        HttpMethod method;
-        String uriTemp;
-        boolean success = true;
-        QueryEngine queryEngine = dbEngine.getQueryEngine();
         Set<Vertex> mainVertexesToNotifyOn = new LinkedHashSet<>();
-
         AaiDBMetricLog metricLog = new AaiDBMetricLog(AAIConstants.AAI_RESOURCES_MS);
 
         String outputMediaType = null;
-
         if (requests != null && !requests.isEmpty()) {
             HttpHeaders headers = requests.get(0).getHeaders();
             outputMediaType = getMediaType(headers.getAcceptableMediaTypes());
         }
 
+        String transactionId = requests.get(0).getTransactionId();
+        boolean success = true;
+        List<Pair<URI, Response>> responses = new ArrayList<>();
         for (DBRequest request : requests) {
-            response = null;
+            Response response = null;
             Status status = Status.NOT_FOUND;
-            method = request.getMethod();
+            HttpMethod method = request.getMethod();
             metricLog.pre(request);
             try {
                 try {
+                    String uriTemp = request.getUri().getRawPath().replaceFirst("^v\\d+/", "");
 
-                    obj = request.getIntrospector();
-                    query = request.getParser();
-                    transactionId = request.getTransactionId();
-                    uriTemp = request.getUri().getRawPath().replaceFirst("^v\\d+/", "");
-                    uri = UriBuilder.fromPath(uriTemp).build();
-
-                    boolean groupsAvailable = serializer.getGroups() != null && !serializer.getGroups().isEmpty();
+                    QueryParser query = request.getParser();
                     List<Vertex> queryResult;
                     PaginationResult<Vertex> paginationResult = null;
                     if(queryOptions != null && queryOptions.getPageable() != null) {
@@ -253,28 +235,22 @@ public class HttpEntry {
                         queryResult = executeQuery(query, queryOptions);
                     }
 
+                    boolean groupsAvailable = serializer.getGroups() != null && !serializer.getGroups().isEmpty();
                     List<Vertex> vertices = groupsAvailable
                         ? queryResult.stream()
                             .filter(vertex -> OwnerCheck.isAuthorized(groups, vertex))
                             .collect(Collectors.toList())
                         : queryResult;
 
-                    boolean isNewVertex;
-                    HttpHeaders headers = request.getHeaders();
-                    outputMediaType = getMediaType(headers.getAcceptableMediaTypes());
-                    String result = null;
-                    params = request.getInfo().getQueryParameters(false);
-                    depth = setDepth(obj, params.getFirst("depth"));
+                    MultivaluedMap<String, String> params = request.getInfo().getQueryParameters(false);
+                    Introspector obj = request.getIntrospector();
+                    int depth = setDepth(obj, params.getFirst("depth"));
+                    Format format = null;
                     if (params.containsKey("format")) {
                         format = Format.getFormat(params.getFirst("format"));
                     }
-                    String cleanUp = params.getFirst("cleanup");
-                    String requestContext = "";
-                    List<String> requestContextList = request.getHeaders().getRequestHeader("aai-request-context");
-                    if (requestContextList != null) {
-                        requestContext = requestContextList.get(0);
-                    }
 
+                    String cleanUp = params.getFirst("cleanup");
                     if (cleanUp == null) {
                         cleanUp = "false";
                     }
@@ -287,6 +263,7 @@ public class HttpEntry {
                             throw new AAIException("AAI_6137");
                         }
                     }
+                    boolean isNewVertex;
                     if (method.equals(HttpMethod.PUT)) {
                         String resourceVersion = obj.getValue(AAIProperties.RESOURCE_VERSION);
                         if (vertices.isEmpty()) {
@@ -337,6 +314,16 @@ public class HttpEntry {
                     HashMap<String, Introspector> relatedObjects = new HashMap<>();
                     String nodeOnly = params.getFirst("nodes-only");
                     boolean isNodeOnly = nodeOnly != null;
+                    QueryEngine queryEngine = dbEngine.getQueryEngine();
+                    String requestContext = "";
+                    List<String> requestContextList = request.getHeaders().getRequestHeader("aai-request-context");
+                    if (requestContextList != null) {
+                        requestContext = requestContextList.get(0);
+                    }
+                    URI uri = UriBuilder.fromPath(uriTemp).build();
+                    HttpHeaders headers = request.getHeaders();
+                    outputMediaType = getMediaType(headers.getAcceptableMediaTypes());
+                    String result = null;
                     switch (method) {
                         case GET:
 
