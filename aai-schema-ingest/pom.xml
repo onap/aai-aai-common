@@ -35,7 +35,6 @@ limitations under the License.
 
 	<properties>
 		<httpclient.version>4.5.13</httpclient.version>
-        <groovy.version>2.5.15</groovy.version>
 		<springframework.version>4.3.24.RELEASE</springframework.version>
 	</properties>
 	<build>
@@ -65,12 +64,6 @@ limitations under the License.
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.codehaus.groovy</groupId>
-			<artifactId>groovy</artifactId>
-            <version>${groovy.version}</version>
-			<classifier>indy</classifier>
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>

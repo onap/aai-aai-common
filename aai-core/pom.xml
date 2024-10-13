@@ -36,7 +36,6 @@ limitations under the License.
 		<springframework.version>4.3.24.RELEASE</springframework.version>
 
 		<jacoco.line.coverage.limit>0.50</jacoco.line.coverage.limit>
-		<groovy.version>2.5.15</groovy.version>
 		<mockito.core.version>3.4.0</mockito.core.version>
 		<!-- Start of Default ONAP Schema Properties -->
 		<aai.wiki.link>https://wiki.onap.org/</aai.wiki.link>
@@ -301,12 +300,6 @@ limitations under the License.
 			<artifactId>json-patch</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.codehaus.groovy</groupId>
-			<artifactId>groovy</artifactId>
-            <version>${groovy.version}</version>
-			<classifier>indy</classifier>
-		</dependency>
-		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
 		</dependency>
@@ -354,12 +347,6 @@ limitations under the License.
 		<dependency>
 			<groupId>org.apache.tinkerpop</groupId>
 			<artifactId>gremlin-groovy</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>org.codehaus.groovy</groupId>
-					<artifactId>groovy</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>

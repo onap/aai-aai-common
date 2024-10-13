@@ -63,13 +63,11 @@ limitations under the License.
     <google.guava.version>31.1-jre</google.guava.version>
     <gremlin.version>3.7.1</gremlin.version>
     <janusgraph.version>1.0.0</janusgraph.version>
-    <groovy.version>2.5.15</groovy.version>
     <gson.version>2.9.1</gson.version>
     <hamcrest.junit.version>2.0.0.0</hamcrest.junit.version>
     <hamcrest.core.version>2.2</hamcrest.core.version>
     <javatuples.version>1.2</javatuples.version>
     <jaxb.version>2.3.1</jaxb.version>
-    <old.jaxb.version>2.3.0.1</old.jaxb.version>
     <jaxrs.version>2.1.1</jaxrs.version>
     <jcommander.version>1.78</jcommander.version>
     <jnr.ffi.version>2.2.12</jnr.ffi.version>
@@ -324,13 +322,6 @@ limitations under the License.
       </dependency>
 
       <dependency>
-        <groupId>org.codehaus.groovy</groupId>
-        <artifactId>groovy</artifactId>
-        <version>${groovy.version}</version>
-        <classifier>indy</classifier>
-      </dependency>
-
-      <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-all</artifactId>
         <version>${mockito.all.version}</version>
@@ -376,38 +367,6 @@ limitations under the License.
         <artifactId>jakarta.xml.bind-api</artifactId>
         <version>2.3.3</version>
       </dependency>
-
-      <dependency>
-        <groupId>org.apache.activemq</groupId>
-        <artifactId>activemq-broker</artifactId>
-        <version>${activemq.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.apache.activemq</groupId>
-        <artifactId>activemq-client</artifactId>
-        <version>${activemq.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.apache.activemq</groupId>
-        <artifactId>activemq-openwire-legacy</artifactId>
-        <version>${activemq.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.easymock</groupId>
-        <artifactId>easymock</artifactId>
-        <version>${easy.mock.version}</version>
-        <scope>test</scope>
-      </dependency>
-
-      <dependency>
-        <groupId>com.sun.xml.bind</groupId>
-        <artifactId>jaxb-xjc</artifactId>
-        <version>${old.jaxb.version}</version>
-      </dependency>
-
       <dependency>
         <groupId>org.glassfish.jaxb</groupId>
         <artifactId>jaxb-runtime</artifactId>
