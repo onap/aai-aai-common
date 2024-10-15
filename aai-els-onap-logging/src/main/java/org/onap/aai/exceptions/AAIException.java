@@ -28,7 +28,6 @@ import java.util.LinkedList;
 
 import org.onap.aai.logging.ErrorLogHelper;
 import org.onap.aai.logging.ErrorObject;
-import org.onap.aai.logging.ErrorObjectNotFoundException;
 
 public class AAIException extends Exception {
 

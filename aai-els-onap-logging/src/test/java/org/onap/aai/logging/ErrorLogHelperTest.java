@@ -22,7 +22,7 @@
 package org.onap.aai.logging;
 
 import static java.lang.Thread.sleep;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,10 +34,9 @@ import java.util.Map;
 
 import javax.ws.rs.core.MediaType;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.onap.aai.domain.errorResponse.ErrorMessage;
 import org.onap.aai.domain.errorResponse.ExceptionType;
 import org.onap.aai.domain.errorResponse.Fault;
@@ -59,12 +58,12 @@ public class ErrorLogHelperTest {
     private static final ObjectMapper objectMapper = new ObjectMapper();
     private static final XmlMapper xmlMapper = new XmlMapper();
 
-    @Before
+    @BeforeEach
     public void init() {
         System.setProperty("AJSC_HOME", ".");
     }
 
-    @After
+    @AfterEach
     public void cleanup() throws IOException {
         MDC.clear();
         LogFile.deleteContents(errorLogFileName);

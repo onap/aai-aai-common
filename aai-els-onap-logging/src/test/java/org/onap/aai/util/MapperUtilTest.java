@@ -22,19 +22,19 @@
 
 package org.onap.aai.util;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.json.JSONObject;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class MapperUtilTest {
 
     private JSONObject expectedJson;
     private JSONObject sampleJson;
 
-    @Before
+    @BeforeEach
     public void setup() {
         expectedJson = new JSONObject();
         sampleJson = new JSONObject();
@@ -45,7 +45,7 @@ public class MapperUtilTest {
         expectedJson.put("color", "black");
         expectedJson.put("shape", "box");
         SampleClass sample = new SampleClass("black", "box");
-        Assert.assertEquals(expectedJson.toString(), MapperUtil.writeAsJSONString(sample));
+        Assertions.assertEquals(expectedJson.toString(), MapperUtil.writeAsJSONString(sample));
     }
 
     @Test

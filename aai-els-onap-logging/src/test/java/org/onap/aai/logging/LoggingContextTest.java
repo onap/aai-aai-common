@@ -20,17 +20,17 @@
 
 package org.onap.aai.logging;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.concurrent.TimeUnit;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.MDC;
 
 public class LoggingContextTest {
 
-    @After
+    @AfterEach
     public void cleanup() {
         MDC.clear();
     }

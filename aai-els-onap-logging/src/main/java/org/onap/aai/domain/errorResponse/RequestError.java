@@ -21,7 +21,6 @@ package org.onap.aai.domain.errorResponse;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-import lombok.Value;
 import java.util.Map;
 
 @NoArgsConstructor

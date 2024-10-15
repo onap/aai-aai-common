@@ -29,6 +29,7 @@ import static org.hamcrest.core.IsNull.nullValue;
 import static org.hamcrest.core.IsSame.sameInstance;
 import static org.hamcrest.core.StringEndsWith.endsWith;
 import static org.hamcrest.number.OrderingComparison.lessThan;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,8 +37,8 @@ import java.util.UUID;
 
 import javax.xml.bind.DatatypeConverter;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -52,7 +53,7 @@ public class ONAPLogAdapterTest {
     /**
      * Ensure that MDCs are cleared after each testcase.
      */
-    @After
+    @AfterEach
     public void resetMDCs() {
         MDC.clear();
     }
@@ -60,10 +61,11 @@ public class ONAPLogAdapterTest {
     /**
      * Test nullcheck.
      */
-    @Test(expected = NullPointerException.class)
+    @Test
     public void testCheckNotNull() {
+        assertThrows(NullPointerException.class, () ->
 
-        ONAPLogAdapter.checkNotNull(null);
+            ONAPLogAdapter.checkNotNull(null));
     }
 
     /**

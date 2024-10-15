@@ -20,9 +20,7 @@
 
 package org.onap.logging.filter.base;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
@@ -32,15 +30,15 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 
-import org.junit.After;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.onap.logging.ref.slf4j.ONAPLogConstants;
 import org.slf4j.MDC;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class MDCSetupTest extends MDCSetup {
 
     @Mock
@@ -49,7 +47,7 @@ public class MDCSetupTest extends MDCSetup {
     private String requestId = "4d31fe02-4918-4975-942f-fe51a44e6a9b";
     private String invocationId = "4d31fe02-4918-4975-942f-fe51a44e6a9a";
 
-    @After
+    @AfterEach
     public void tearDown() {
         MDC.clear();
         System.clearProperty("partnerName");

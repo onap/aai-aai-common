@@ -20,7 +20,7 @@
 
 package org.onap.aai.logging;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 import ch.qos.logback.access.spi.IAccessEvent;
@@ -29,16 +29,16 @@ import java.security.cert.X509Certificate;
 
 import javax.security.auth.x500.X500Principal;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockHttpServletRequest;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class CNNameTest {
     @Mock
     X509Certificate cert;
@@ -50,7 +50,7 @@ public class CNNameTest {
     @InjectMocks
     private CNName cnName;
 
-    @Before
+    @BeforeEach
     public void setup() {
         when(cnName.isStarted()).thenReturn(true);
     }

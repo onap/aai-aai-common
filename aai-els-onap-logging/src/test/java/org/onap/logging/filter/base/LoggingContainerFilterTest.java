@@ -20,12 +20,12 @@
 
 package org.onap.logging.filter.base;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.onap.logging.ref.slf4j.ONAPLogConstants;
 
 public class LoggingContainerFilterTest {
