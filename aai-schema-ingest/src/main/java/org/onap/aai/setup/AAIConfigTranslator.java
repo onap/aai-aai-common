@@ -48,7 +48,7 @@ public class AAIConfigTranslator extends ConfigTranslator {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.onap.aai.setup.ConfigTranslator#getNodeFiles()
      */
     @Override
@@ -70,7 +70,7 @@ public class AAIConfigTranslator extends ConfigTranslator {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.onap.aai.setup.ConfigTranslator#getEdgeFiles()
      */
     @Override
@@ -94,9 +94,13 @@ public class AAIConfigTranslator extends ConfigTranslator {
     private List<String> getVersionFiles(String startDirectory, SchemaVersion schemaVersion,
            Supplier<Stream<String>> inclusionPattern, Supplier<Stream<String>> exclusionPattern) {
 
-       final File versionDirectory = new File(startDirectory + "/" + schemaVersion.toString());
-       final List<String> container = Arrays.stream(versionDirectory.listFiles())
-           .filter(Objects::nonNull)    
+        final File versionDirectory = new File(startDirectory + "/" + schemaVersion.toString());
+        File[] versionFiles = versionDirectory.listFiles();
+        if(versionFiles == null) {
+            throw new RuntimeException("No files found in directory: " + versionDirectory.getAbsolutePath());
+        }
+        final List<String> container = Arrays.stream(versionFiles)
+           .filter(Objects::nonNull)
            .map(File::getName)
            .filter(versionFileName -> inclusionPattern
                .get()
