@@ -27,7 +27,7 @@
     <parent>
         <groupId>org.onap.aai.aai-common</groupId>
         <artifactId>aai-parent</artifactId>
-        <version>1.15.1-SNAPSHOT</version>
+        <version>1.15.2-SNAPSHOT</version>
         <relativePath>../aai-parent/pom.xml</relativePath>
     </parent>
     <artifactId>aai-utils</artifactId>
@@ -35,7 +35,6 @@
 
     <properties>
         <onap.nexus.url>https://nexus.onap.org</onap.nexus.url>
-        <logback.version>1.2.3</logback.version>
     </properties>
 
     <dependencies>
