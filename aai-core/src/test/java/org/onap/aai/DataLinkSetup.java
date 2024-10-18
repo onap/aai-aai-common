@@ -31,6 +31,7 @@ import org.onap.aai.introspection.LoaderFactory;
 import org.onap.aai.introspection.MoxyLoader;
 import org.onap.aai.nodes.NodeIngestor;
 import org.onap.aai.rest.db.HttpEntry;
+import org.onap.aai.rest.db.QueryExecutionService;
 import org.onap.aai.rest.notification.NotificationService;
 import org.onap.aai.serialization.db.EdgeSerializer;
 import org.onap.aai.serialization.queryformats.QueryFormatTestHelper;
@@ -49,7 +50,8 @@ import org.springframework.test.context.junit4.rules.SpringMethodRule;
 @ContextConfiguration(
         classes = {ConfigConfiguration.class, TestUtilConfigTranslatorforDataLink.class, EdgeIngestor.class,
                 EdgeSerializer.class, NodeIngestor.class, SpringContextAware.class, IntrospectionConfig.class,
-                RestBeanConfig.class, XmlFormatTransformerConfiguration.class, LoaderFactory.class, NotificationService.class, KafkaConfig.class})
+                RestBeanConfig.class, XmlFormatTransformerConfiguration.class, LoaderFactory.class,
+                NotificationService.class, KafkaConfig.class, QueryExecutionService.class})
 @TestPropertySource(
         properties = {"schema.uri.base.path = /aai", "schema.xsd.maxoccurs = 5000", "schema.version.api.default = v4",
                 "schema.version.edge.label.start = v4", "schema.version.depth.start = v3",

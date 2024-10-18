@@ -33,6 +33,7 @@ import org.onap.aai.nodes.NodeIngestor;
 import org.onap.aai.prevalidation.ValidationConfiguration;
 import org.onap.aai.prevalidation.ValidationService;
 import org.onap.aai.rest.db.HttpEntry;
+import org.onap.aai.rest.db.QueryExecutionService;
 import org.onap.aai.rest.notification.NotificationService;
 import org.onap.aai.serialization.db.EdgeSerializer;
 import org.onap.aai.serialization.queryformats.QueryFormatTestHelper;
@@ -53,7 +54,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
         classes = {ConfigConfiguration.class, AAIConfigTranslator.class, EdgeIngestor.class, EdgeSerializer.class,
                 NodeIngestor.class, SpringContextAware.class, IntrospectionConfig.class, RestBeanConfig.class,
                 XmlFormatTransformerConfiguration.class, ValidationService.class, ValidationConfiguration.class,
-                KafkaConfig.class, LoaderFactory.class, NotificationService.class, KafkaConfig.class})
+                KafkaConfig.class, LoaderFactory.class, NotificationService.class, KafkaConfig.class,QueryExecutionService.class})
 @TestPropertySource(
         properties = {"schema.uri.base.path = /aai", "schema.xsd.maxoccurs = 5000", "schema.translator.list=config",
                 "schema.nodes.location=src/test/resources/onap/oxm",
