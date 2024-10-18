@@ -327,11 +327,9 @@ public class HttpEntry {
                     String result = null;
                     switch (method) {
                         case GET:
-
                             if (format == null) {
                                 obj = this.getObjectFromDb(vertices, serializer, query, obj, request.getUri(), depth,
                                         isNodeOnly, cleanUp, isSkipRelatedTo);
-
                                 if (obj != null) {
                                     status = Status.OK;
                                     MarshallerProperties properties;
@@ -361,6 +359,21 @@ public class HttpEntry {
                                     result = xmlFormatTransformer.transform(result);
                                 }
                                 status = Status.OK;
+                            }
+
+                            if (paginationResult != null && paginationResult.getTotalCount() != null) {
+                                long totalPages = getTotalPages(queryOptions, paginationResult);
+                                response = Response.status(status)
+                                        .header("total-results", paginationResult.getTotalCount())
+                                        .header("total-pages", totalPages)
+                                        .entity(result)
+                                        .type(outputMediaType)
+                                        .build();
+                            } else {
+                                response = Response.status(status)
+                                        .entity(result)
+                                        .type(outputMediaType)
+                                        .build();
                             }
 
                             break;
@@ -401,6 +414,10 @@ public class HttpEntry {
                                 }
                                 status = Status.OK;
                             }
+                            response = Response.status(status)
+                                    .entity(result)
+                                    .type(outputMediaType)
+                                    .build();
                             break;
                         case PUT:
                             if (isNewVertex) {
@@ -429,6 +446,11 @@ public class HttpEntry {
                                             Status.NO_CONTENT, URI.create(curUri), curObj, curObjRelated, basePath);
                                 }
                             }
+
+                            response = Response.status(status)
+                                    .entity(result)
+                                    .type(outputMediaType)
+                                    .build();
 
                             break;
                         case PUT_EDGE:
@@ -470,6 +492,10 @@ public class HttpEntry {
                             } catch (IOException | JsonPatchException e) {
                                 throw new AAIException("AAI_3000", "could not perform patch operation");
                             }
+                            response = Response.status(status)
+                                    .entity(result)
+                                    .type(outputMediaType)
+                                    .build();
                             break;
                         case DELETE:
                             String resourceVersion = params.getFirst(AAIProperties.RESOURCE_VERSION);
@@ -531,29 +557,10 @@ public class HttpEntry {
                             break;
                     }
 
-                    /*
-                     * temporarily adding vertex id to the headers
-                     * to be able to use for testing the vertex id endpoint functionality
-                     * since we presently have no other way of generating those id urls
-                     */
-                    if (response == null && v != null && (method.equals(HttpMethod.PUT) || method.equals(HttpMethod.GET)
-                            || method.equals(HttpMethod.MERGE_PATCH) || method.equals(HttpMethod.GET_RELATIONSHIP))
-
-                    ) {
-                        String myvertid = v.id().toString();
-                        if (paginationResult != null && paginationResult.getTotalCount() != null) {
-                            long totalPages = getTotalPages(queryOptions, paginationResult);
-                            response = Response.status(status).header("vertex-id", myvertid)
-                                    .header("total-results", paginationResult.getTotalCount())
-                                    .header("total-pages", totalPages)
-                                    .entity(result)
-                                    .type(outputMediaType).build();
-                        } else {
-                            response = Response.status(status).header("vertex-id", myvertid).entity(result)
-                                    .type(outputMediaType).build();
-                        }
-                    } else if (response == null) {
-                        response = Response.status(status).type(outputMediaType).build();
+                    if (response == null) {
+                        response = Response.status(status)
+                                    .type(outputMediaType)
+                                    .build();
                     } // else, response already set to something
 
                     Pair<URI, Response> pairedResp = Pair.with(request.getUri(), response);
