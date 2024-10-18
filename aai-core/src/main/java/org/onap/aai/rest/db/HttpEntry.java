@@ -222,8 +222,15 @@ public class HttpEntry {
             Status status = Status.NOT_FOUND;
             HttpMethod method = request.getMethod();
             metricLog.pre(request);
+
             try {
                 try {
+                    if(HttpMethod.GET.equals(method)) {
+                        response = processGet(request, queryOptions, serializer, groups, enableResourceVersion, method, outputMediaType);
+                        Pair<URI, Response> pairedResp = Pair.with(request.getUri(), response);
+                        responses.add(pairedResp);
+                        break;
+                    }
                     String uriTemp = request.getUri().getRawPath().replaceFirst("^v\\d+/", "");
 
                     QueryParser query = request.getParser();
@@ -327,11 +334,9 @@ public class HttpEntry {
                     String result = null;
                     switch (method) {
                         case GET:
-
                             if (format == null) {
                                 obj = this.getObjectFromDb(vertices, serializer, query, obj, request.getUri(), depth,
                                         isNodeOnly, cleanUp, isSkipRelatedTo);
-
                                 if (obj != null) {
                                     status = Status.OK;
                                     MarshallerProperties properties;
@@ -349,9 +354,10 @@ public class HttpEntry {
                                 FormatFactory ff = new FormatFactory(loader, serializer, schemaVersions, basePath + "/",
                                         serverBase);
                                 Formatter formatter = ff.get(format, params);
-                                result = formatter.output(
-                                        vertices.stream().map(vertex -> (Object) vertex).collect(Collectors.toList()))
-                                        .toString();
+                                List<Object> queryResults = vertices.stream()
+                                    .map(Object.class::cast)
+                                    .collect(Collectors.toList());
+                                result = formatter.output(queryResults).toString();
 
                                 if (outputMediaType == null) {
                                     outputMediaType = MediaType.APPLICATION_JSON;
@@ -361,6 +367,21 @@ public class HttpEntry {
                                     result = xmlFormatTransformer.transform(result);
                                 }
                                 status = Status.OK;
+                            }
+
+                            if (paginationResult != null && paginationResult.getTotalCount() != null) {
+                                long totalPages = getTotalPages(queryOptions, paginationResult);
+                                response = Response.status(status)
+                                        .header("total-results", paginationResult.getTotalCount())
+                                        .header("total-pages", totalPages)
+                                        .entity(result)
+                                        .type(outputMediaType)
+                                        .build();
+                            } else {
+                                response = Response.status(status)
+                                        .entity(result)
+                                        .type(outputMediaType)
+                                        .build();
                             }
 
                             break;
@@ -401,6 +422,10 @@ public class HttpEntry {
                                 }
                                 status = Status.OK;
                             }
+                            response = Response.status(status)
+                                    .entity(result)
+                                    .type(outputMediaType)
+                                    .build();
                             break;
                         case PUT:
                             if (isNewVertex) {
@@ -430,6 +455,11 @@ public class HttpEntry {
                                 }
                             }
 
+                            response = Response.status(status)
+                                    .entity(result)
+                                    .type(outputMediaType)
+                                    .build();
+
                             break;
                         case PUT_EDGE:
                             serializer.touchStandardVertexProperties(v, false);
@@ -438,6 +468,9 @@ public class HttpEntry {
 
                             mainVertexesToNotifyOn.add(v);
                             serializer.addVertexToEdgeVertexes(relatedVertex);
+                            response = Response.status(status)
+                                        .type(outputMediaType)
+                                        .build();
                             break;
                         case MERGE_PATCH:
                             Introspector existingObj = loader.introspectorFromName(obj.getDbName());
@@ -470,6 +503,10 @@ public class HttpEntry {
                             } catch (IOException | JsonPatchException e) {
                                 throw new AAIException("AAI_3000", "could not perform patch operation");
                             }
+                            response = Response.status(status)
+                                    .entity(result)
+                                    .type(outputMediaType)
+                                    .build();
                             break;
                         case DELETE:
                             String resourceVersion = params.getFirst(AAIProperties.RESOURCE_VERSION);
@@ -516,6 +553,9 @@ public class HttpEntry {
                                 notificationService.buildNotificationEvent(sourceOfTruth, status, transactionId, notification,
                                         deleteObjects, uriMap, deleteRelatedObjects, basePath);
                             }
+                            response = Response.status(status)
+                                        .type(outputMediaType)
+                                        .build();
                             break;
                         case DELETE_EDGE:
                             serializer.touchStandardVertexProperties(v, false);
@@ -526,35 +566,13 @@ public class HttpEntry {
                                 mainVertexesToNotifyOn.add(v);
                                 serializer.addVertexToEdgeVertexes(otherV.get());
                             }
+                            response = Response.status(status)
+                                        .type(outputMediaType)
+                                        .build();
                             break;
                         default:
                             break;
                     }
-
-                    /*
-                     * temporarily adding vertex id to the headers
-                     * to be able to use for testing the vertex id endpoint functionality
-                     * since we presently have no other way of generating those id urls
-                     */
-                    if (response == null && v != null && (method.equals(HttpMethod.PUT) || method.equals(HttpMethod.GET)
-                            || method.equals(HttpMethod.MERGE_PATCH) || method.equals(HttpMethod.GET_RELATIONSHIP))
-
-                    ) {
-                        String myvertid = v.id().toString();
-                        if (paginationResult != null && paginationResult.getTotalCount() != null) {
-                            long totalPages = getTotalPages(queryOptions, paginationResult);
-                            response = Response.status(status).header("vertex-id", myvertid)
-                                    .header("total-results", paginationResult.getTotalCount())
-                                    .header("total-pages", totalPages)
-                                    .entity(result)
-                                    .type(outputMediaType).build();
-                        } else {
-                            response = Response.status(status).header("vertex-id", myvertid).entity(result)
-                                    .type(outputMediaType).build();
-                        }
-                    } else if (response == null) {
-                        response = Response.status(status).type(outputMediaType).build();
-                    } // else, response already set to something
 
                     Pair<URI, Response> pairedResp = Pair.with(request.getUri(), response);
                     responses.add(pairedResp);
@@ -604,6 +622,122 @@ public class HttpEntry {
         }
 
         return Pair.with(success, responses);
+    }
+
+    private Response processGet(DBRequest request, QueryOptions queryOptions, DBSerializer serializer,
+    Set<String> groups, boolean enableResourceVersion,
+    HttpMethod method, String outputMediaType) throws AAIException, UnsupportedEncodingException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, SecurityException, InstantiationException, NoSuchMethodException, URISyntaxException {
+        Status status = Status.NOT_FOUND;
+        QueryParser query = request.getParser();
+        List<Vertex> queryResult;
+        PaginationResult<Vertex> paginationResult = null;
+        if(queryOptions != null && queryOptions.getPageable() != null) {
+            paginationResult = executePaginatedQuery(query, queryOptions);
+            queryResult = paginationResult.getResults();
+        } else {
+            queryResult = executeQuery(query, queryOptions);
+        }
+
+        boolean groupsAvailable = serializer.getGroups() != null && !serializer.getGroups().isEmpty();
+        List<Vertex> vertices = groupsAvailable
+            ? queryResult.stream()
+                .filter(vertex -> OwnerCheck.isAuthorized(groups, vertex))
+                .collect(Collectors.toList())
+            : queryResult;
+
+        MultivaluedMap<String, String> params = request.getInfo().getQueryParameters(false);
+        Introspector obj = request.getIntrospector();
+        int depth = setDepth(obj, params.getFirst("depth"));
+        Format format = null;
+        if (params.containsKey("format")) {
+            format = Format.getFormat(params.getFirst("format"));
+        }
+
+        String cleanUp = params.getFirst("cleanup");
+        if (cleanUp == null) {
+            cleanUp = "false";
+        }
+
+        if (vertices.isEmpty()) {
+            String msg = createNotFoundMessage(query.getResultType(), request.getUri());
+            throw new AAIException("AAI_6114", msg);
+        }
+
+        /*
+         * This skip-related-to query parameter is used to determine if the relationships object will omit
+         * the related-to-property
+         * If a GET is sent to resources without a format, if format=resource, or if format=resource_and_url
+         * with this param set to false
+         * then behavior will be keep the related-to properties. By default, set to true.
+         * Otherwise, for any other case, when the skip-related-to parameter exists, has value=true, or some
+         * unfamiliar input (e.g. skip-related-to=bogusvalue), the value is true.
+         */
+        boolean isSkipRelatedTo = true;
+        if (params.containsKey("skip-related-to")) {
+            String skipRelatedTo = params.getFirst("skip-related-to");
+            isSkipRelatedTo = !(skipRelatedTo != null && skipRelatedTo.equals("false"));
+        } else {
+            // if skip-related-to param is missing, then default it to false;
+            isSkipRelatedTo = false;
+        }
+
+        // HashMap<String, Introspector> relatedObjects = new HashMap<>();
+        String nodeOnly = params.getFirst("nodes-only");
+        boolean isNodeOnly = nodeOnly != null;
+
+        HttpHeaders headers = request.getHeaders();
+        outputMediaType = getMediaType(headers.getAcceptableMediaTypes());
+        String result = null;
+
+        if (format == null) {
+            obj = this.getObjectFromDb(vertices, serializer, query, obj, request.getUri(), depth,
+                    isNodeOnly, cleanUp, isSkipRelatedTo);
+            if (obj != null) {
+                status = Status.OK;
+                MarshallerProperties properties;
+                Optional<MarshallerProperties> marshallerPropOpt =
+                        request.getMarshallerProperties();
+                if (marshallerPropOpt.isPresent()) {
+                    properties = marshallerPropOpt.get();
+                } else {
+                    properties = new MarshallerProperties.Builder(
+                            org.onap.aai.restcore.MediaType.getEnum(outputMediaType)).build();
+                }
+                result = obj.marshal(properties);
+            }
+        } else {
+            FormatFactory ff = new FormatFactory(loader, serializer, schemaVersions, basePath + "/",
+                    serverBase);
+            Formatter formatter = ff.get(format, params);
+            List<Object> queryResults = vertices.stream()
+                .map(Object.class::cast)
+                .collect(Collectors.toList());
+            result = formatter.output(queryResults).toString();
+
+            if (outputMediaType == null) {
+                outputMediaType = MediaType.APPLICATION_JSON;
+            }
+
+            if (MediaType.APPLICATION_XML_TYPE.isCompatible(MediaType.valueOf(outputMediaType))) {
+                result = xmlFormatTransformer.transform(result);
+            }
+            status = Status.OK;
+        }
+
+        if (paginationResult != null && paginationResult.getTotalCount() != null) {
+            long totalPages = getTotalPages(queryOptions, paginationResult);
+            return Response.status(status)
+                    .header("total-results", paginationResult.getTotalCount())
+                    .header("total-pages", totalPages)
+                    .entity(result)
+                    .type(outputMediaType)
+                    .build();
+        } else {
+            return Response.status(status)
+                    .entity(result)
+                    .type(outputMediaType)
+                    .build();
+        }
     }
 
     private long getTotalPages(QueryOptions queryOptions, PaginationResult<Vertex> paginationResult) {
