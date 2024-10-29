@@ -89,7 +89,7 @@ For this exercise, I set up a new instance of Ubuntu in Virtualbox and gave it 1
 
    $ sudo service haproxy restart
 
-4. Follow the initial setup instructions in `Setting Up Your Development Environment <https://wiki.onap.org/display/DW/Setting+Up+Your+Development+Environment>`__ e.g.
+4. Follow the initial setup instructions in `Setting Up Your Development Environment <https://lf-onap.atlassian.net/wiki/display/DW/Setting+Up+Your+Development+Environment>`__ e.g.
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
  .. code-block:: bash
 

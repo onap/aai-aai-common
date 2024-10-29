@@ -1,4 +1,4 @@
-FROM haproxy:2.4.13-alpine
+FROM haproxy:2.4.27-alpine
 
 # For building the image in a proxy environment if necessary
 ARG HTTP_PROXY
@@ -25,21 +25,18 @@ RUN apk add --no-cache \
 RUN mkdir -p /etc/ssl/certs/ && mkdir -p /etc/ssl/private
 
 COPY --chown=haproxy aai.pem /etc/ssl/private/aai.pem
-COPY --chown=haproxy docker-entrypoint.sh /docker-entrypoint.sh
-COPY --chown=haproxy resolvers.conf /usr/local/etc/haproxy/resolvers.conf
 COPY --chown=haproxy haproxy.cfg /usr/local/etc/haproxy/haproxy.cfg
 
 # Changing group and group permission to allow haproxy user to execute sed comamnd ot change files
 RUN chgrp haproxy /usr/local/etc/haproxy; \
-    chgrp haproxy /docker-entrypoint.sh /usr/local/etc/haproxy/haproxy.cfg /usr/local/etc/haproxy/resolvers.conf
+    chgrp haproxy /usr/local/etc/haproxy/haproxy.cfg
 
-RUN chmod +x /docker-entrypoint.sh; \
-    chmod g+wx /usr/local/etc/haproxy; \
-    chmod g+w /docker-entrypoint.sh /usr/local/etc/haproxy/haproxy.cfg /usr/local/etc/haproxy/resolvers.conf
+RUN chmod g+wx /usr/local/etc/haproxy; \
+    chmod g+w /usr/local/etc/haproxy/haproxy.cfg
 
 # Reverting to haproxy use to not run the pod with root permissions
 USER haproxy
 
-ENTRYPOINT [ "/docker-entrypoint.sh" ]
-CMD [ "haproxy", "-f", "/usr/local/etc/haproxy/haproxy.cfg", "-f", "/usr/local/etc/haproxy/resolvers.conf" ]
+ENTRYPOINT [ "haproxy" ]
+CMD [ "-W", "-db", "-f", "/usr/local/etc/haproxy/haproxy.cfg", "-f", "/usr/local/etc/haproxy/resolvers.conf" ]
 EXPOSE 8443
