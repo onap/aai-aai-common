@@ -20,11 +20,16 @@
 
 package org.onap.aai.annotations;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
+
 public class AnnotationsTest {
 
     public AnnotationsTest() {
     }
 
+    @Test
     @Metadata(
             isKey = false,
             description = "",
@@ -44,5 +49,6 @@ public class AnnotationsTest {
             maximumDepth = "",
             crossEntityReference = "")
     public void testAnnotation() {
+        assertTrue(true);
     }
 }

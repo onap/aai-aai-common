@@ -22,14 +22,14 @@ package org.onap.aai.edges;
 
 import static com.jayway.jsonpath.Criteria.where;
 import static com.jayway.jsonpath.Filter.filter;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.Filter;
+import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
-import org.junit.Test;
 import org.onap.aai.setup.SchemaVersion;
 
 public class JsonIngestorTest {

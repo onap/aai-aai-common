@@ -33,7 +33,6 @@ import org.apache.commons.io.IOUtils;
 import org.onap.aai.edges.JsonIngestor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Converts the contents of the schema config file
@@ -46,7 +45,6 @@ public abstract class ConfigTranslator extends Translator {
 
     protected SchemaLocationsBean schemaLocationsBean;
 
-    @Autowired
     public ConfigTranslator(SchemaLocationsBean schemaLocationsBean, SchemaConfigVersions schemaConfigVersions) {
         super(schemaConfigVersions);
         this.schemaLocationsBean = schemaLocationsBean;

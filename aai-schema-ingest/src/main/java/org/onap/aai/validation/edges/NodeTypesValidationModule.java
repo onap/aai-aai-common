@@ -26,7 +26,6 @@ import java.util.Set;
 
 import org.onap.aai.nodes.NodeIngestor;
 import org.onap.aai.setup.SchemaVersion;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -39,7 +38,6 @@ import org.springframework.stereotype.Component;
 public class NodeTypesValidationModule {
     private NodeIngestor ni;
 
-    @Autowired
     public NodeTypesValidationModule(NodeIngestor ni) {
         this.ni = ni;
     }

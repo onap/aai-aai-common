@@ -21,7 +21,7 @@
 
 package org.onap.aai.restclient;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.content;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
@@ -124,7 +124,7 @@ public class MockRestClient extends RestClient {
 
         String result = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
         String message = String.format("Unable to find the %s in src/test/resources", filename);
-        assertNotNull(message, inputStream);
+        assertNotNull(inputStream, message);
 
         JsonObject payload = JsonParser.parseString(result).getAsJsonObject();
         return payload;

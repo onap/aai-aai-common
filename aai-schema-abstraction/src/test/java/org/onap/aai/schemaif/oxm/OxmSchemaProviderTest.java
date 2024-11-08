@@ -21,22 +21,22 @@
 
 package org.onap.aai.schemaif.oxm;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Set;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.onap.aai.schemaif.SchemaProviderException;
 import org.onap.aai.schemaif.definitions.EdgeSchema;
 import org.onap.aai.schemaif.definitions.PropertySchema;
 import org.onap.aai.schemaif.definitions.VertexSchema;
 import org.onap.aai.schemaif.definitions.types.DataType.Type;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class OxmSchemaProviderTest extends OxmSchemaServiceSetup {
 
     @Test
