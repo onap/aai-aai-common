@@ -52,7 +52,6 @@ import org.onap.aai.setup.SchemaVersions;
 import org.onap.aai.setup.Translator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
@@ -86,7 +85,6 @@ public class NodeIngestor {
      * @param translatorSet
      */
 
-    @Autowired
     public NodeIngestor(Set<Translator> translatorSet) {
         this.translators = translatorSet;
         this.caseFormatStore = new CaseFormatStore();

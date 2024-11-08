@@ -20,13 +20,12 @@
 
 package org.onap.aai.validation.edges;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.onap.aai.config.NodesConfiguration;
 import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.testutils.TestUtilConfigTranslator;
@@ -34,9 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-@RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(
         classes = {NodesConfiguration.class, TestUtilConfigTranslator.class, NodeTypesValidationModule.class})
 @TestPropertySource(

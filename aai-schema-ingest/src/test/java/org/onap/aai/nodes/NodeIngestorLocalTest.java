@@ -22,7 +22,8 @@ package org.onap.aai.nodes;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -43,10 +44,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.onap.aai.config.NodesConfiguration;
 import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.testutils.TestUtilConfigTranslator;
@@ -55,10 +53,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.w3c.dom.Document;
 
-@RunWith(SpringRunner.class)
 @TestPropertySource(
         properties = {
                 "schema.ingest.file = src/test/resources/forWiringTests/schema-ingest-wiring-test-local-node.properties"})
@@ -68,11 +64,6 @@ import org.w3c.dom.Document;
 
 @SpringBootTest
 public class NodeIngestorLocalTest {
-
-    // set thrown.expect to whatever a specific test needs
-    // this establishes a default of expecting no exceptions to be thrown
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
     @Autowired
     NodeIngestor nodeIngestor;
 
@@ -90,37 +81,37 @@ public class NodeIngestorLocalTest {
 
     @Test
     public void testGetContextForVersion11() {
-        DynamicJAXBContext ctx10 = nodeIngestor.getContextForVersion(new SchemaVersion("v10"));
+        assertThrows(IllegalArgumentException.class, () -> {
+            DynamicJAXBContext ctx10 = nodeIngestor.getContextForVersion(new SchemaVersion("v10"));
 
-        // should work bc Foo is valid in test_network_v10 schema
-        DynamicEntity foo10 = ctx10.newDynamicEntity("Foo");
+            // should work bc Foo is valid in test_network_v10 schema
+            DynamicEntity foo10 = ctx10.newDynamicEntity("Foo");
 
-        foo10.set("fooId", "bar");
-        assertEquals("bar", foo10.get("fooId"));
+            foo10.set("fooId", "bar");
+            assertEquals("bar", foo10.get("fooId"));
 
-        // should work bc Bar is valid in test_business_v10 schema
-        DynamicEntity bar10 = ctx10.newDynamicEntity("Bar");
-        bar10.set("barId", "bar2");
-        assertEquals("bar2", bar10.get("barId"));
-        XSDOutputResolver outputResolver10 = new XSDOutputResolver();
-        ctx10.generateSchema(outputResolver10);
+            // should work bc Bar is valid in test_business_v10 schema
+            DynamicEntity bar10 = ctx10.newDynamicEntity("Bar");
+            bar10.set("barId", "bar2");
+            assertEquals("bar2", bar10.get("barId"));
+            XSDOutputResolver outputResolver10 = new XSDOutputResolver();
+            ctx10.generateSchema(outputResolver10);
 
-        DynamicJAXBContext ctx11 = nodeIngestor.getContextForVersion(new SchemaVersion("v11"));
+            DynamicJAXBContext ctx11 = nodeIngestor.getContextForVersion(new SchemaVersion("v11"));
 
-        // should work bc Foo.quantity is valid in test_network_v11 schema
-        DynamicEntity foo11 = ctx11.newDynamicEntity("Foo");
-        foo11.set("quantity", "12");
-        assertEquals("12", foo11.get("quantity"));
+            // should work bc Foo.quantity is valid in test_network_v11 schema
+            DynamicEntity foo11 = ctx11.newDynamicEntity("Foo");
+            foo11.set("quantity", "12");
+            assertEquals("12", foo11.get("quantity"));
 
-        DynamicEntity quux11 = ctx11.newDynamicEntity("Quux");
-        quux11.set("qManagerName", "some guy");
-        assertEquals("some guy", quux11.get("qManagerName"));
-        XSDOutputResolver outputResolver11 = new XSDOutputResolver();
-        ctx11.generateSchema(outputResolver11);
-
-        thrown.expect(IllegalArgumentException.class);
-        // should fail bc Quux not in v10 test schema
-        ctx10.newDynamicEntity("Quux");
+            DynamicEntity quux11 = ctx11.newDynamicEntity("Quux");
+            quux11.set("qManagerName", "some guy");
+            assertEquals("some guy", quux11.get("qManagerName"));
+            XSDOutputResolver outputResolver11 = new XSDOutputResolver();
+            ctx11.generateSchema(outputResolver11);
+            // should fail bc Quux not in v10 test schema
+            ctx10.newDynamicEntity("Quux");
+        });
     }
 
     @Test

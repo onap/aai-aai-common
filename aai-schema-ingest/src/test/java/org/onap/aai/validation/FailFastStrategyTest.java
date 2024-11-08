@@ -1,4 +1,4 @@
-/** 
+/**
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
@@ -20,29 +20,26 @@
 
 package org.onap.aai.validation;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 
 public class FailFastStrategyTest {
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
 
     @Test
     public void test() {
-        FailFastStrategy strat = new FailFastStrategy();
-
-        // simulate no issues found
-        assertTrue(strat.isOK());
-        assertTrue("No errors found.".equals(strat.getErrorMsg()));
-
-        // simulate an issue found
         String testError = "hi i'm a problem";
-        thrown.expect(AAISchemaValidationException.class);
-        thrown.expectMessage(testError);
-        strat.notifyOnError(testError);
+        Throwable exception = assertThrows(AAISchemaValidationException.class, () -> {
+            FailFastStrategy strat = new FailFastStrategy();
+
+            // simulate no issues found
+            assertTrue(strat.isOK());
+            assertTrue("No errors found.".equals(strat.getErrorMsg()));
+
+            // simulate an issue found
+            strat.notifyOnError(testError);
+        });
+        assertTrue(exception.getMessage().contains(testError));
     }
 
 }

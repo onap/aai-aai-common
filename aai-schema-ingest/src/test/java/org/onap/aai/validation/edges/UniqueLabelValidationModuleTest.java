@@ -20,14 +20,14 @@
 
 package org.onap.aai.validation.edges;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.jayway.jsonpath.DocumentContext;
 
 import java.util.*;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.onap.aai.edges.JsonIngestor;
 import org.onap.aai.setup.SchemaVersion;
 
@@ -36,7 +36,7 @@ public class UniqueLabelValidationModuleTest {
     private static UniqueLabelValidationModule validator;
     public static final SchemaVersion LATEST = new SchemaVersion("v14");
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() {
         Map<SchemaVersion, List<String>> testRules = new TreeMap<>();
         List<String> testFiles = new ArrayList<>();

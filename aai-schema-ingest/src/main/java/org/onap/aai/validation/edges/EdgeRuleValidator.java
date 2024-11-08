@@ -30,7 +30,6 @@ import org.onap.aai.edges.enums.EdgeField;
 import org.onap.aai.setup.ConfigTranslator;
 import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.validation.SchemaErrorStrategy;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
@@ -48,7 +47,6 @@ public class EdgeRuleValidator {
     protected final CousinDefaultingValidationModule defaultsValidator;
     protected final NodeTypesValidationModule typeValidator;
 
-    @Autowired
     public EdgeRuleValidator(ConfigTranslator config, SchemaErrorStrategy strat,
             EdgeFieldsValidationModule fieldValidator, UniqueLabelValidationModule labelValidator,
             SingleContainmentValidationModule containsValidator, CousinDefaultingValidationModule defaultsValidator,

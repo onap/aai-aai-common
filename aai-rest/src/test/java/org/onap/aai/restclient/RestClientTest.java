@@ -20,6 +20,13 @@
 
 package org.onap.aai.restclient;
 
-public class RestClientTest {
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.junit.jupiter.api.Test;
+
+public class RestClientTest {
+  @Test
+  public void test() {
+    assertTrue(true);
+  }
 }

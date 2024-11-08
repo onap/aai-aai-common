@@ -51,7 +51,6 @@ import org.onap.aai.setup.SchemaVersions;
 import org.onap.aai.setup.Translator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -76,7 +75,6 @@ public class EdgeIngestor {
 
     private Set<Translator> translators;
 
-    @Autowired
     public EdgeIngestor(Set<Translator> translatorSet) {
         this.translators = translatorSet;
     }

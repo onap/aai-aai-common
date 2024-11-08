@@ -20,7 +20,6 @@
 
 package org.onap.aai.validation;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
@@ -34,7 +33,6 @@ public class VersionValidator {
     private SchemaErrorStrategy strat;
     private VersionValidationModule verMod;
 
-    @Autowired
     public VersionValidator(SchemaErrorStrategy strategy, VersionValidationModule verMod) {
         this.strat = strategy;
         this.verMod = verMod;
