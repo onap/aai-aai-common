@@ -1,0 +1,9 @@
+Verified+1: ONAP Required GHA <releng+onap.required.gha@linuxfoundation.org>
+Verified+1: ONAP Jobbuilder <onap-jobbuilder@jenkins.onap.org>
+Verified+1: ONAP Bypass GHA <releng+onap.bypass.gha@linuxfoundation.org>
+Code-Review+2: Nandkishor Patke <nandkishor-laxman.patke@t-systems.com>
+Submitted-by: Nandkishor Patke <nandkishor-laxman.patke@t-systems.com>
+Submitted-at: Sat, 09 Nov 2024 03:05:55 +0000
+Reviewed-on: https://gerrit.onap.org/r/c/aai/aai-common/+/139362
+Project: aai/aai-common
+Branch: refs/heads/master
