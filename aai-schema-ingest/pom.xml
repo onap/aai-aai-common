@@ -26,7 +26,7 @@ limitations under the License.
 	<parent>
 		<groupId>org.onap.aai.aai-common</groupId>
 		<artifactId>aai-parent</artifactId>
-		<version>1.15.2-SNAPSHOT</version>
+		<version>1.15.3-SNAPSHOT</version>
 		<relativePath>../aai-parent/pom.xml</relativePath>
 	</parent>
 	<artifactId>aai-schema-ingest</artifactId>
@@ -147,10 +147,6 @@ limitations under the License.
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.att.eelf</groupId>
-			<artifactId>eelf-core</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.google.code.gson</groupId>

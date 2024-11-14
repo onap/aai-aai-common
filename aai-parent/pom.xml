@@ -27,7 +27,7 @@ limitations under the License.
   <parent>
     <groupId>org.onap.aai.aai-common</groupId>
     <artifactId>aai-common</artifactId>
-    <version>1.15.2-SNAPSHOT</version>
+    <version>1.15.3-SNAPSHOT</version>
   </parent>
   <artifactId>aai-parent</artifactId>
   <name>aai-parent</name>
@@ -92,7 +92,7 @@ limitations under the License.
     <junit.version>4.12</junit.version>
     <httpclient.version>4.5.13</httpclient.version>
     <io.swagger.version>1.5.24</io.swagger.version>
-    <logback.version>1.2.13</logback.version>
+    <logback.version>1.2.12</logback.version>
     <slf4j.version>1.7.25</slf4j.version>
     <log4j.version>2.17.1</log4j.version>
     <mockito.all.version>3.4.0</mockito.all.version>
@@ -191,12 +191,6 @@ limitations under the License.
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
         <version>${commons.lang3.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>com.att.eelf</groupId>
-        <artifactId>eelf-core</artifactId>
-        <version>${eelf.core.version}</version>
       </dependency>
 
       <dependency>

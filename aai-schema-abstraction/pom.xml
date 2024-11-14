@@ -28,7 +28,7 @@
   <parent>
     <groupId>org.onap.aai.aai-common</groupId>
     <artifactId>aai-parent</artifactId>
-    <version>1.15.2-SNAPSHOT</version>
+    <version>1.15.3-SNAPSHOT</version>
     <relativePath>../aai-parent/pom.xml</relativePath>
   </parent>
 
@@ -53,21 +53,6 @@
     <dependency>
       <groupId>org.onap.aai.logging-service</groupId>
       <artifactId>common-logging</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.att.eelf</groupId>
-      <artifactId>eelf-core</artifactId>
-      <version>1.0.1-oss</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.powermock</groupId>
-          <artifactId>powermock-module-junit4</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.powermock</groupId>
-          <artifactId>powermock-api-mockito</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.onap.aai.logging-service</groupId>

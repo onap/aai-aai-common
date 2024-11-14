@@ -20,12 +20,12 @@
 
 package org.onap.aai.serialization.queryformats;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -50,8 +50,9 @@ import org.onap.aai.serialization.queryformats.params.Depth;
 import org.onap.aai.serialization.queryformats.params.NodesOnly;
 import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
 
+@Slf4j
 public class TreeFormat extends MultiFormatMapper {
-    private static final EELFLogger TREE_FORMAT_LOGGER = EELFManager.getInstance().getLogger(TreeFormat.class);
+
     protected final DBSerializer serializer;
     protected final Loader loader;
     protected final UrlBuilder urlBuilder;
@@ -145,14 +146,14 @@ public class TreeFormat extends MultiFormatMapper {
         for (Object o : queryResults) {
             try {
                 return this.formatObjectToJsonArray(o, properties).orElseGet(() -> {
-                    TREE_FORMAT_LOGGER.warn("Empty Optional returned by 'formatObjectToJsonArray'");
+                    log.warn("Empty Optional returned by 'formatObjectToJsonArray'");
                     return body;
                 });
             } catch (AAIFormatVertexException e) {
-                TREE_FORMAT_LOGGER
+                log
                         .warn("Failed to format vertex, returning a partial list " + LogFormatTools.getStackTop(e));
             } catch (AAIFormatQueryResultFormatNotSupported e) {
-                TREE_FORMAT_LOGGER.warn("Failed to format result type of the query " + LogFormatTools.getStackTop(e));
+                log.warn("Failed to format result type of the query " + LogFormatTools.getStackTop(e));
             }
         }
         return body;
