@@ -34,8 +34,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import org.onap.aai.cl.api.Logger;
-import org.onap.aai.cl.eelf.LoggerFactory;
 import org.onap.aai.schemaif.SchemaProvider;
 import org.onap.aai.schemaif.SchemaProviderException;
 import org.onap.aai.schemaif.SchemaProviderMsgs;
@@ -51,9 +49,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class JsonSchemaProvider implements SchemaProvider {
-    // Logger logger = LoggerFactory.getInstance().getLogger(JsonSchemaProvider.class.getName());
-    Logger logger = LoggerFactory.getInstance().getLogger(SchemaProvider.class);
 
     private JsonSchemaProviderConfig config;
     private Map<String, SchemaInstance> schemaCache = new ConcurrentHashMap<>();
@@ -152,11 +151,10 @@ public class JsonSchemaProvider implements SchemaProvider {
         ResponseEntity<byte[]> response = restTemplate.exchange(url, HttpMethod.GET, entity, byte[].class);
 
         if (response.getStatusCodeValue() == HttpStatus.NOT_FOUND.value()) {
-            logger.warn(SchemaProviderMsgs.SCHEMA_LOAD_ERROR, "version " + version + " not found");
+            log.warn("PVD0500E | Unable to load schema: {}", "version " + version + " not found");
             throw new SchemaProviderException("Schema version " + version + " not found");
         } else if (response.getStatusCodeValue() != HttpStatus.OK.value()) {
-            logger.error(SchemaProviderMsgs.SCHEMA_LOAD_ERROR,
-                    "failed to load version " + version + ": " + response.getBody());
+            log.error("PVD0500E | Unable to load schema: {}", "version " + version + " not found");
             throw new SchemaProviderException("Error getting schema version " + version + ":" + response.getBody());
         }
 
@@ -167,13 +165,12 @@ public class JsonSchemaProvider implements SchemaProvider {
             StringWriter writer = new StringWriter();
             PrintWriter printWriter = new PrintWriter(writer);
             ex.printStackTrace(printWriter);
-            logger.error(SchemaProviderMsgs.SCHEMA_LOAD_ERROR,
-                    "failed to load version " + version + ": " + response.getBody() + "\n" + writer.toString());
+            log.error("PVD0500E | Unable to load schema: {}", "failed to load version: " + version + ": "+ response.getBody() + "\n" + writer.toString());
             throw new SchemaProviderException("Error loading schema version " + version + ":" + ex.getMessage());
 
         }
 
-        logger.info(SchemaProviderMsgs.LOADED_SCHEMA_FILE, version);
+        log.info("PVD0001I|Successfully loaded schema: {}", version);
     }
 
     static final int BUFFER = 512;

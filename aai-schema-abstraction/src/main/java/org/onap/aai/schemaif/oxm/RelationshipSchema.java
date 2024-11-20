@@ -26,6 +26,8 @@ package org.onap.aai.schemaif.oxm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Multimap;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,20 +38,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.onap.aai.cl.eelf.LoggerFactory;
 import org.onap.aai.edges.EdgeRule;
 import org.onap.aai.schemaif.SchemaProviderException;
-import org.onap.aai.schemaif.SchemaProviderMsgs;
 
+@Slf4j
 public class RelationshipSchema {
 
     public static final String SCHEMA_SOURCE_NODE_TYPE = "from";
     public static final String SCHEMA_TARGET_NODE_TYPE = "to";
     public static final String SCHEMA_RELATIONSHIP_TYPE = "label";
     public static final String SCHEMA_RULES_ARRAY = "rules";
-
-    private static org.onap.aai.cl.api.Logger logger =
-            LoggerFactory.getInstance().getLogger(RelationshipSchema.class.getName());
 
     private Map<String, Map<String, Class<?>>> relations = new HashMap<>();
     /**
@@ -85,7 +83,7 @@ public class RelationshipSchema {
                     try {
                         return resolveClass(p.getValue());
                     } catch (SchemaProviderException | ClassNotFoundException e) {
-                        logger.error(SchemaProviderMsgs.SCHEMA_LOAD_ERROR, "Error in RelationshipSchema: " + e);
+                        log.error("PVD0500E|Unable to load schema: {}", "Error in RelationshipSchema: " + e);
                     }
                     return null;
                 }));
@@ -124,7 +122,7 @@ public class RelationshipSchema {
                     try {
                         return resolveClass(p.getValue());
                     } catch (SchemaProviderException | ClassNotFoundException e) {
-                        logger.error(SchemaProviderMsgs.SCHEMA_LOAD_ERROR, "Error in RelationshipSchema: " + e);
+                        log.error("PVD0500E|Unable to load schema: {}", "Error in RelationshipSchema: " + e);
                     }
                     return null;
                 }));

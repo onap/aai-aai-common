@@ -13,11 +13,6 @@
     <artifactId>aai-failover</artifactId>
 
     <dependencies>
-        <!-- Common logging framework -->
-        <dependency>
-            <groupId>org.onap.aai.logging-service</groupId>
-            <artifactId>common-logging</artifactId>
-        </dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
@@ -25,6 +20,10 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aspects</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
         </dependency>
     </dependencies>
 </project>

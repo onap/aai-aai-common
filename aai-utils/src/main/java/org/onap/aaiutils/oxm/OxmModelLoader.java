@@ -39,17 +39,17 @@ import javax.xml.bind.JAXBException;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
-import org.onap.aai.cl.api.Logger;
-import org.onap.aai.cl.eelf.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class OxmModelLoader {
 
     private static final Pattern AAI_OXM_FILE_PATTERN = Pattern.compile("aai_oxm_(.*).xml");
     private static Map<String, DynamicJAXBContext> versionContextMap = new ConcurrentHashMap<>();
-    private static final Logger LOGGER = LoggerFactory.getInstance().getLogger(OxmModelLoader.class.getName());
 
     public synchronized static void loadModels() throws Exception {
         OxmModelLoader.loadModels("classpath*:/oxm/aai_oxm*.xml", AAI_OXM_FILE_PATTERN);
@@ -65,8 +65,7 @@ public class OxmModelLoader {
                 try {
                     OxmModelLoader.loadModel(matcher.group(1), resource);
                 } catch (Exception e) {
-                    LOGGER.error(OxmModelLoaderMsgs.OXM_LOAD_ERROR,
-                            "Failed to load " + resource.getFilename() + ": " + e.getMessage());
+                    log.error("CRD0503E|Unable to load OXM schema: {}", "Failed to load " + resource.getFilename() + ": " + e.getMessage());
                     throw new Exception("Failed to load schema");
                 }
             }
@@ -79,7 +78,7 @@ public class OxmModelLoader {
 
         Resource[] resources = resolver.getResources(oxmResourcesPattern);
         if (resources.length == 0) {
-            LOGGER.error(OxmModelLoaderMsgs.OXM_LOAD_ERROR, "No OXM schema files found on classpath");
+            log.error("CRD0503E|Unable to load OXM schema: {}", "No OXM schema files found on classpath");
             throw new Exception("Failed to load schema");
         }
         return resources;
@@ -129,8 +128,7 @@ public class OxmModelLoader {
                 .createContextFromOXM(Thread.currentThread().getContextClassLoader(), properties);
 
         versionContextMap.put(version, jaxbContext);
-
-        LOGGER.info(OxmModelLoaderMsgs.LOADED_OXM_FILE, resourceName);
+        log.info("CRD0007I|Successfully loaded schema: {}", resourceName);
     }
 
 }

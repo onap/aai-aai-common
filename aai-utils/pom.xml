@@ -50,11 +50,6 @@
             <groupId>jakarta.xml.bind</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>
         </dependency>
-        <!-- Common logging framework -->
-        <dependency>
-            <groupId>org.onap.aai.logging-service</groupId>
-            <artifactId>common-logging</artifactId>
-        </dependency>
         <!-- https://mvnrepository.com/artifact/org.springframework/spring-core -->
         <dependency>
             <groupId>org.springframework</groupId>
@@ -73,6 +68,11 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
         </dependency>
+        <dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<scope>provided</scope>
+		</dependency>
   <dependency>
    <groupId>org.hamcrest</groupId>
    <artifactId>hamcrest-junit</artifactId>

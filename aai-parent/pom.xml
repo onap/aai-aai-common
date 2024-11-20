@@ -103,6 +103,7 @@ limitations under the License.
     <plexus.utils.version>3.1.1</plexus.utils.version>
     <reflections.version>0.9.10</reflections.version>
     <snakeyaml.version>1.29</snakeyaml.version>
+    <lombok.version>1.18.34</lombok.version>
 
     <javax.servlet.version>3.1.0</javax.servlet.version>
     <javax.annotation.version>1.2</javax.annotation.version>
@@ -449,25 +450,6 @@ limitations under the License.
         <version>${commons.io.version}</version>
       </dependency>
 
-
-      <dependency>
-        <groupId>org.onap.aai.logging-service</groupId>
-        <artifactId>common-logging</artifactId>
-        <version>${aai.common.logging.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.onap.aai.logging-service</groupId>
-        <artifactId>logging-api</artifactId>
-        <version>${aai.common.logging.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.onap.logging-analytics</groupId>
-        <artifactId>logging-slf4j</artifactId>
-        <version>${logging.analytics.version}</version>
-      </dependency>
-
       <dependency>
         <groupId>org.onap.aai</groupId>
         <artifactId>rest-client</artifactId>
@@ -563,6 +545,13 @@ limitations under the License.
         <groupId>commons-net</groupId>
         <artifactId>commons-net</artifactId>
         <version>${commons.net.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <version>${lombok.version}</version>
+        <scope>provided</scope>
       </dependency>
 
     </dependencies>

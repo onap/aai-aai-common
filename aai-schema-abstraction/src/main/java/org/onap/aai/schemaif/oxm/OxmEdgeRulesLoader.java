@@ -23,6 +23,8 @@ package org.onap.aai.schemaif.oxm;
 
 import com.google.common.collect.Multimap;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -36,18 +38,16 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
-import org.onap.aai.cl.api.Logger;
-import org.onap.aai.cl.eelf.LoggerFactory;
 import org.onap.aai.edges.EdgeIngestor;
 import org.onap.aai.edges.EdgeRule;
 import org.onap.aai.edges.exceptions.EdgeRuleNotFoundException;
 import org.onap.aai.schemaif.SchemaProviderException;
-import org.onap.aai.schemaif.SchemaProviderMsgs;
 import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.setup.Translator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 public class OxmEdgeRulesLoader {
 
@@ -63,8 +63,6 @@ public class OxmEdgeRulesLoader {
     static final String propsSuffix = ".json";
     final static Pattern propsFilePattern = Pattern.compile(propsPrefix + "(.*)" + propsSuffix);
     final static Pattern propsVersionPattern = Pattern.compile("(?i)v\\d*");
-
-    private static Logger logger = LoggerFactory.getInstance().getLogger(OxmEdgeRulesLoader.class.getName());
 
     private OxmEdgeRulesLoader() {
     }
@@ -94,8 +92,8 @@ public class OxmEdgeRulesLoader {
     public static synchronized void loadModels() throws SchemaProviderException {
         Map<String, File> propFiles = edgePropertyFiles(edgePropsConfiguration);
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Loading DB Edge Rules");
+        if (log.isDebugEnabled()) {
+            log.debug("Loading DB Edge Rules");
         }
 
         for (String version : OxmSchemaLoader.getLoadedOXMVersions()) {
@@ -118,8 +116,8 @@ public class OxmEdgeRulesLoader {
     public static synchronized void loadModels(String v) throws SchemaProviderException {
         Map<String, File> propFiles = edgePropertyFiles(edgePropsConfiguration);
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Loading DB Edge Rules ");
+        if (log.isDebugEnabled()) {
+            log.debug("Loading DB Edge Rules ");
         }
 
         try {
@@ -145,7 +143,7 @@ public class OxmEdgeRulesLoader {
         if (versionContextMap == null || versionContextMap.isEmpty()) {
             loadModels();
         } else if (!versionContextMap.containsKey(version)) {
-            logger.error(SchemaProviderMsgs.SCHEMA_LOAD_ERROR, "Error loading DB Edge Rules for: " + version);
+            log.error("PVD0500E | Unable to load schema: {}", "Error loading DB Edge Rules for: " + version);
             throw new SchemaProviderException("Error loading DB Edge Rules for: " + version);
         }
 
@@ -182,7 +180,7 @@ public class OxmEdgeRulesLoader {
 
         // If there are still no models available, then there's not much we can do...
         if (versionContextMap.isEmpty()) {
-            logger.error(SchemaProviderMsgs.SCHEMA_LOAD_ERROR, "No available DB Edge Rules to get latest version for.");
+            log.error("PVD0500E | Unable to load schema: {}", "No available DB Edge Rules to get latest version for.");
             throw new SchemaProviderException("No available DB Edge Rules to get latest version for.");
         }
 
@@ -228,7 +226,7 @@ public class OxmEdgeRulesLoader {
         if (edges != null) {
             RelationshipSchema rs = new RelationshipSchema(edges, edgeProps);
             versionContextMap.put(version.toString().toLowerCase(), rs);
-            logger.info(SchemaProviderMsgs.LOADED_DB_RULE_FILE, version.toString());
+            log.info("PVD0002I|Successfully loaded DB Edge Rule and Edge Properties for: {}", version);
         }
     }
 

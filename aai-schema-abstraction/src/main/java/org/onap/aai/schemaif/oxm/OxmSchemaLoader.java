@@ -43,10 +43,13 @@ import org.onap.aai.setup.Translator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * This class contains all of the logic for importing OXM model schemas from the available OXM
  * schema files.
  */
+@Slf4j
 @Component
 public class OxmSchemaLoader {
 
@@ -58,9 +61,6 @@ public class OxmSchemaLoader {
     private static Map<String, HashMap<String, VertexSchema>> vertexLookup = new ConcurrentHashMap<>();
 
     final static Pattern versionPattern = Pattern.compile("(?i)v(\\d*)");
-
-    private static org.onap.aai.cl.api.Logger logger =
-            LoggerFactory.getInstance().getLogger(OxmSchemaLoader.class.getName());
 
     private OxmSchemaLoader() {
     }
@@ -86,8 +86,8 @@ public class OxmSchemaLoader {
      *
      */
     public synchronized static void loadModels() throws SchemaProviderException {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Loading OXM Models");
+        if (log.isDebugEnabled()) {
+            log.debug("Loading OXM Models");
         }
 
         for (SchemaVersion oxmVersion : translator.getSchemaVersions().getVersions()) {
@@ -102,7 +102,7 @@ public class OxmSchemaLoader {
         versionContextMap.put(oxmVersion, jaxbContext);
         loadXmlLookupMap(oxmVersion, jaxbContext);
         loadVertexLookupMap(oxmVersion, jaxbContext);
-        logger.info(SchemaProviderMsgs.LOADED_SCHEMA_FILE, oxmVersion);
+        log.info("PVD0001I|Successfully loaded schema: {}", oxmVersion);
     }
 
     /**
@@ -208,7 +208,7 @@ public class OxmSchemaLoader {
         }
         // If there are still no models available, then there's not much we can do...
         if (versionContextMap.isEmpty()) {
-            logger.error(SchemaProviderMsgs.SCHEMA_LOAD_ERROR, "No available OXM schemas to get versions for.");
+            log.error("PVD0500E|Unable to load schema: No available OXM schemas to get versions for.");
             throw new SchemaProviderException("No available OXM schemas to get latest version for.");
         }
         List<String> versions = new ArrayList<String>();
