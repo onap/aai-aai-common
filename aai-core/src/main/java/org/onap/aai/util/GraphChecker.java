@@ -42,7 +42,6 @@ public class GraphChecker {
      *         <li>false, if database is NOT available</li>
      */
     public boolean isAaiGraphDbAvailable() {
-        boolean dbAvailable;
         JanusGraphTransaction transaction = null;
         try {
             // disable caching and other features that are not needed for this check
@@ -53,41 +52,20 @@ public class GraphChecker {
                 .vertexCacheSize(0)
                 .skipDBCacheRead()
                 .start();
-            dbAvailable = transaction.traversal().V().limit(1).hasNext();
-        } catch (JanusGraphException e) {
-            String message = "Database is not available (after JanusGraph exception)";
-            ErrorLogHelper.logError("500", message + ": " + e.getMessage());
-            log.error(message, e);
-            dbAvailable = false;
-        } catch (Error e) {
-            // Following error occurs when aai resources is starting:
-            // - UnsatisfiedLinkError (for org.onap.aai.dbmap.AAIGraph$Helper instantiation)
-            // Following errors are raised when aai resources is starting and cassandra is not
-            // running:
-            // - ExceptionInInitializerError
-            // - NoClassDefFoundError (definition for org.onap.aai.dbmap.AAIGraph$Helper is not
-            // found)
-            String message = "Database is not available (after error)";
-            ErrorLogHelper.logError("500", message + ": " + e.getMessage());
-            log.error(message, e);
-            dbAvailable = false;
-        } catch (Exception e) {
-            String message = "Database availability can not be determined";
-            ErrorLogHelper.logError("500", message + ": " + e.getMessage());
-            log.error(message, e);
-            dbAvailable = false;
+            transaction.traversal().V().limit(1).hasNext(); // if this is not throwing an exception, the database is available
+            return true;
+        } catch (Throwable e) {
+            log.error("Database is not available: ", e);
+            return false;
         } finally {
             if (transaction != null && !transaction.isClosed()) {
                 // check if transaction is open then closed instead of flag
                 try {
                     transaction.rollback();
                 } catch (Exception e) {
-                    String message = "Exception occurred while closing transaction";
-                    log.error(message, e);
-                    ErrorLogHelper.logError("500", message + ": " + e.getMessage());
+                    log.error("Exception occurred while closing transaction", e);
                 }
             }
         }
-        return dbAvailable;
     }
 }

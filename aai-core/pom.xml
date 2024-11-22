@@ -33,8 +33,6 @@ limitations under the License.
 	<name>aai-core</name>
 	<packaging>jar</packaging>
 	<properties>
-		<springframework.version>4.3.24.RELEASE</springframework.version>
-
 		<jacoco.line.coverage.limit>0.50</jacoco.line.coverage.limit>
 		<mockito.core.version>3.4.0</mockito.core.version>
 		<!-- Start of Default ONAP Schema Properties -->
@@ -60,7 +58,6 @@ limitations under the License.
 		<profile>
 			<id>onap</id>
 			<properties>
-				<springframework.version>4.3.24.RELEASE</springframework.version>
 				<aai.release>onap</aai.release>
 				<schema.configuration.location>N/A</schema.configuration.location>
 				<schema.nodes.location>aai-schema/src/main/resources/${aai.release}/oxm</schema.nodes.location>
@@ -187,6 +184,11 @@ limitations under the License.
 		<dependency>
 			<groupId>org.janusgraph</groupId>
 			<artifactId>janusgraph-inmemory</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.janusgraph</groupId>
+			<artifactId>janusgraph-cql</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -373,6 +375,36 @@ limitations under the License.
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>testcontainers</artifactId>
+			<version>${testcontainers.version}</version>
+			<scope>test</scope>
+			<exclusions>
+					<exclusion>
+							<groupId>junit</groupId>
+							<artifactId>junit</artifactId>
+					</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<version>${testcontainers.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+				<groupId>org.testcontainers</groupId>
+				<artifactId>cassandra</artifactId>
+				<version>${testcontainers.version}</version>
+				<scope>test</scope>
+		</dependency>
+		<dependency>
+				<groupId>org.testcontainers</groupId>
+				<artifactId>toxiproxy</artifactId>
+				<version>${testcontainers.version}</version>
+				<scope>test</scope>
 		</dependency>
 	</dependencies>
 

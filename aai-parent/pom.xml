@@ -102,6 +102,7 @@ limitations under the License.
     <reflections.version>0.9.10</reflections.version>
     <snakeyaml.version>1.29</snakeyaml.version>
     <lombok.version>1.18.34</lombok.version>
+    <testcontainers.version>1.20.4</testcontainers.version>
 
     <javax.servlet.version>3.1.0</javax.servlet.version>
     <javax.annotation.version>1.2</javax.annotation.version>

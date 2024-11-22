@@ -22,8 +22,6 @@ package org.onap.aai.config;
 
 import java.io.FileNotFoundException;
 
-import javax.annotation.PreDestroy;
-
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Graph;

@@ -53,7 +53,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
         classes = {ConfigConfiguration.class, AAIConfigTranslator.class, EdgeIngestor.class, EdgeSerializer.class,
                 NodeIngestor.class, SpringContextAware.class, IntrospectionConfig.class, RestBeanConfig.class,
                 XmlFormatTransformerConfiguration.class, ValidationService.class, ValidationConfiguration.class,
-                KafkaConfig.class, LoaderFactory.class, NotificationService.class, KafkaConfig.class})
+                KafkaConfig.class, LoaderFactory.class, NotificationService.class})
 @TestPropertySource(
         properties = {"schema.uri.base.path = /aai", "schema.xsd.maxoccurs = 5000", "schema.translator.list=config",
                 "schema.nodes.location=src/test/resources/onap/oxm",
