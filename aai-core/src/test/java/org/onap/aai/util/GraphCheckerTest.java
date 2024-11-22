@@ -8,6 +8,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.janusgraph.core.JanusGraph;
+import org.janusgraph.core.JanusGraphException;
 import org.janusgraph.core.JanusGraphTransaction;
 import org.janusgraph.core.TransactionBuilder;
 import org.junit.Before;
@@ -47,9 +48,17 @@ public class GraphCheckerTest extends AAISetup {
     boolean available = graphChecker.isAaiGraphDbAvailable();
     assertTrue(available);
   }
+
   @Test
-  public void thatAvailabilityCanBeFalse() {
+  public void thatEmptyDBQueryIsInterpretedAsAvailable() {
     when(traversal.hasNext()).thenReturn(false);
+    boolean available = graphChecker.isAaiGraphDbAvailable();
+    assertTrue(available);
+  }
+
+  @Test
+  public void thatExceptionWillReturnAvailabilityFalse() {
+    when(traversal.hasNext()).thenThrow(JanusGraphException.class);
     boolean available = graphChecker.isAaiGraphDbAvailable();
     assertFalse(available);
   }
