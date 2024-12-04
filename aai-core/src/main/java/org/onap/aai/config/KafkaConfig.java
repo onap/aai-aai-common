@@ -61,6 +61,9 @@ public class KafkaConfig {
     @Value("${spring.kafka.producer.retries:3}")
     private String retries;
 
+    @Value("${spring.kafka.producer.maxInFlightConnections:10}")
+    private String maxInFlightConnections;
+
     private Map<String, Object> buildKafkaProperties() throws Exception {
         Map<String, Object> props = new HashMap<>();
         if (bootstrapServers == null) {
@@ -71,8 +74,9 @@ public class KafkaConfig {
         }
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        props.put(JsonSerializer.ADD_TYPE_INFO_HEADERS, false);
         props.put(ProducerConfig.RETRIES_CONFIG, retries);
-        props.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, "5");
+        props.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, maxInFlightConnections);
 
         if (saslJaasConfig == null) {
             logger.info("Not using any authentication for kafka interaction");
