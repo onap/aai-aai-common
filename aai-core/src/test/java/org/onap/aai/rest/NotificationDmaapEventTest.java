@@ -59,7 +59,6 @@ import org.onap.aai.dbmap.AAIGraph;
 import org.onap.aai.domain.notificationEvent.NotificationEvent;
 import org.onap.aai.domain.notificationEvent.NotificationEvent.EventHeader;
 import org.onap.aai.exceptions.AAIException;
-import org.onap.aai.introspection.ModelType;
 import org.onap.aai.rest.notification.UEBNotification;
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.skyscreamer.jsonassert.JSONAssert;
