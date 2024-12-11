@@ -88,7 +88,7 @@ limitations under the License.
       -->
     <spring.boot.version>2.7.18</spring.boot.version>
     <json.path.version>2.2.0</json.path.version>
-    <json.version>20190722</json.version>
+    <json.version>20240303</json.version>
     <junit.version>4.12</junit.version>
     <httpclient.version>4.5.13</httpclient.version>
     <io.swagger.version>1.5.24</io.swagger.version>

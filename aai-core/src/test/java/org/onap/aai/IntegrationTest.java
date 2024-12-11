@@ -22,7 +22,6 @@ package org.onap.aai;
 
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.onap.aai.config.ConfigConfiguration;
-import org.onap.aai.config.GraphConfig;
 import org.onap.aai.config.IntrospectionConfig;
 import org.onap.aai.config.KafkaConfig;
 import org.onap.aai.config.RestBeanConfig;
@@ -36,7 +35,6 @@ import org.onap.aai.prevalidation.ValidationService;
 import org.onap.aai.rest.notification.NotificationService;
 import org.onap.aai.serialization.db.EdgeSerializer;
 import org.onap.aai.setup.AAIConfigTranslator;
-import org.onap.aai.util.GraphChecker;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;

@@ -39,9 +39,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.configuration2.JSONConfiguration;
 import org.glassfish.jersey.client.ClientConfig;
-import org.glassfish.jersey.client.ClientProperties;
 import org.onap.aai.aailog.filter.RestControllerClientRequestLoggingInterceptor;
 import org.onap.aai.aailog.filter.RestControllerClientResponseLoggingInterceptor;
 import org.onap.aai.exceptions.AAIException;

@@ -20,7 +20,8 @@
 
 package org.onap.aai.edges;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.google.common.collect.Multimap;
 import org.junit.jupiter.api.Test;

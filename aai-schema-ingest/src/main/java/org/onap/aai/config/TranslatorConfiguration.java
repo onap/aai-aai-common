@@ -22,7 +22,7 @@
 
 package org.onap.aai.config;
 
-import org.onap.aai.setup.*;
+import org.onap.aai.setup.ConfigTranslator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;

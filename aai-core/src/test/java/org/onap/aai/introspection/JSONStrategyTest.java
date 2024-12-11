@@ -23,15 +23,19 @@ package org.onap.aai.introspection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.onap.aai.AAISetup;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 @Ignore("Not a used/flushed out feature")
+// This has been converted from org.json to Jackson,
+// but not in a way that tests are working
 public class JSONStrategyTest extends AAISetup {
     private JSONStrategy jsonStrategy;
     private JSONStrategy jsonStrategyContainer;
@@ -40,21 +44,25 @@ public class JSONStrategyTest extends AAISetup {
     @Before
     public void setup() {
         try {
-            JSONObject pserver = new JSONObject();
+
+            ObjectMapper mapper = new ObjectMapper();
+            ObjectNode pserver = mapper.createObjectNode();
+
             pserver.put("hostname", "value1");
             pserver.put("numberofCpus", 4);
             jsonStrategy = new JSONStrategy(pserver, "pserver-type");
 
             // The values of this object are arrays containing JSONObjects
-            JSONArray pservers = new JSONArray();
+            ArrayNode pservers = mapper.createArrayNode();
             pservers.add(pserver);
-            JSONObject container = new JSONObject();
-            container.put("pservers", pservers);
+
+            ObjectNode container = mapper.createObjectNode();
+            container.set("pservers", pservers);
             jsonStrategyContainer = new JSONStrategy(container, "pservers-type");
 
             // The values of this object are JSONObjects
-            JSONObject complex = new JSONObject();
-            complex.put("pserver", pserver);
+            ObjectNode complex = mapper.createObjectNode();
+            complex.set("pserver", pserver);
             jsonStrategyComplex = new JSONStrategy(complex, "pservers-type");
         } catch (Exception e) {
             System.out.println("error during setup: " + e.getMessage());
@@ -96,8 +104,8 @@ public class JSONStrategyTest extends AAISetup {
 
     @Test
     public void getJavaClassNameTest() {
-        Assert.assertEquals("org.json.simple.JSONObject", jsonStrategy.getJavaClassName());
-        Assert.assertEquals("org.json.simple.JSONObject", jsonStrategyContainer.getJavaClassName());
+        Assert.assertEquals("com.fasterxml.jackson.databind.node.ObjectNode", jsonStrategy.getJavaClassName());
+        Assert.assertEquals("com.fasterxml.jackson.databind.node.ObjectNode", jsonStrategyContainer.getJavaClassName());
     }
 
     @Test
