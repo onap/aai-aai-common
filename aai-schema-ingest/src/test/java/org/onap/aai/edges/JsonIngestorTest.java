@@ -22,7 +22,7 @@ package org.onap.aai.edges;
 
 import static com.jayway.jsonpath.Criteria.where;
 import static com.jayway.jsonpath.Filter.filter;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.Filter;

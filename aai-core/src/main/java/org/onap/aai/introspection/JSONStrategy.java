@@ -22,30 +22,41 @@ package org.onap.aai.introspection;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.onap.aai.schema.enums.ObjectMetadata;
 import org.onap.aai.schema.enums.PropertyMetadata;
 import org.onap.aai.setup.SchemaVersion;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 public class JSONStrategy extends Introspector {
 
-    private JSONObject json = null;
+    private JsonNode json = null;
     private String namedType = "";
+    private static final ObjectMapper mapper = new ObjectMapper();
 
     protected JSONStrategy(Object o) {
         super(o);
-        json = (JSONObject) o;
+        json = mapper.valueToTree(o);
         // Assumes you provide a wrapper
-        Set<String> keySet = json.keySet();
-        if (keySet.size() == 1) {
-            namedType = keySet.iterator().next();
-            json = (JSONObject) json.get(namedType);
+        Iterator<Map.Entry<String, JsonNode>> fields = json.fields();
+        if (fields.hasNext()) {
+            Map.Entry<String, JsonNode> entry = fields.next();
+            if (!fields.hasNext()) {
+                namedType = entry.getKey();
+                json = entry.getValue();
+            } else {
+                throw new IllegalArgumentException("This object has no named type.");
+            }
         } else {
             throw new IllegalArgumentException("This object has no named type.");
         }
@@ -53,7 +64,7 @@ public class JSONStrategy extends Introspector {
 
     protected JSONStrategy(Object o, String namedType) {
         super(o);
-        json = (JSONObject) o;
+        json = (JsonNode) o;
         this.namedType = namedType;
 
     }
@@ -74,8 +85,7 @@ public class JSONStrategy extends Introspector {
 
     @Override
     public void setValue(String name, Object obj) {
-        json.put(name, obj);
-
+        ((ObjectNode) json).set(name, (JsonNode) obj);
     }
 
     @Override
@@ -85,8 +95,14 @@ public class JSONStrategy extends Introspector {
 
     @Override
     public Set<String> getProperties() {
-        Set<String> result = json.keySet();
-        return result;
+        Iterator<String> fieldNames = json.fieldNames();
+        Set<String> properties = new HashSet<>();
+
+        // Iterate through the iterator and add each element to the set
+        while (fieldNames.hasNext()) {
+            properties.add(fieldNames.next());
+        }
+        return properties;
     }
 
     @Override
@@ -150,7 +166,7 @@ public class JSONStrategy extends Introspector {
     public Class<?> getGenericTypeClass(String name) {
         Class<?> resultClass = null;
         Object resultObject = this.getValue(name);
-        if (resultObject instanceof JSONArray) {
+        if (resultObject instanceof ArrayNode) {
             resultClass = ((List<?>) resultObject).get(0).getClass();
         }
 

@@ -22,7 +22,10 @@
 
 package org.onap.aai.config;
 
-import org.onap.aai.restclient.*;
+import org.onap.aai.restclient.RestClient;
+import org.onap.aai.restclient.SchemaServiceNoAuthClient;
+import org.onap.aai.restclient.SchemaServiceOneWayClient;
+import org.onap.aai.restclient.SchemaServiceRestClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
