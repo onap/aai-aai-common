@@ -33,7 +33,6 @@ import java.util.regex.Pattern;
 import org.eclipse.persistence.dynamic.DynamicType;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
-import org.onap.aai.cl.eelf.LoggerFactory;
 import org.onap.aai.nodes.NodeIngestor;
 import org.onap.aai.schemaif.SchemaProviderException;
 import org.onap.aai.schemaif.SchemaProviderMsgs;

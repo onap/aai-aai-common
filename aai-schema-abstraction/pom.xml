@@ -67,10 +67,6 @@
       <artifactId>jackson-databind</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.onap.aai</groupId>
-      <artifactId>rest-client</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.hamcrest</groupId>
       <artifactId>hamcrest-junit</artifactId>
       <scope>test</scope>

@@ -24,14 +24,6 @@
 
 package org.onap.aai.schemaif;
 
-import com.att.eelf.i18n.EELFResourceManager;
-
-import org.onap.aai.cl.eelf.LogMessageEnum;
-
-public enum SchemaProviderMsgs implements LogMessageEnum {
+public enum SchemaProviderMsgs {
     SCHEMA_LOAD_ERROR, LOADED_SCHEMA_FILE, LOADED_DB_RULE_FILE;
-
-    static {
-        EELFResourceManager.loadMessageBundle("logging/SchemaProviderMsgs");
-    }
 }
