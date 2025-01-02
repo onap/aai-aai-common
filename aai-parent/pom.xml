@@ -93,8 +93,7 @@ limitations under the License.
     <httpclient.version>4.5.13</httpclient.version>
     <io.swagger.version>1.5.24</io.swagger.version>
     <logback.version>1.2.13</logback.version>
-    <slf4j.version>1.7.25</slf4j.version>
-    <log4j.version>2.17.1</log4j.version>
+    <slf4j.version>1.7.36</slf4j.version>
     <mockito.all.version>3.4.0</mockito.all.version>
     <mockito.core.version>3.4.0</mockito.core.version>
     <opencsv.version>3.1</opencsv.version>
@@ -207,6 +206,18 @@ limitations under the License.
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jcl-over-slf4j</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jul-to-slf4j</artifactId>
         <version>${slf4j.version}</version>
       </dependency>
 
@@ -427,13 +438,6 @@ limitations under the License.
         <groupId>com.opencsv</groupId>
         <artifactId>opencsv</artifactId>
         <version>${opencsv.version}</version>
-      </dependency>
-
-      <dependency>
-          <groupId>org.apache.logging.log4j</groupId>
-          <artifactId>log4j</artifactId>
-          <version>${log4j.version}</version>
-          <type>pom</type>
       </dependency>
 
       <dependency>
