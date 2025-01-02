@@ -289,10 +289,6 @@ limitations under the License.
 			<artifactId>logback-access</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.freemarker</groupId>
-			<artifactId>freemarker</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>com.github.fge</groupId>
 			<artifactId>json-patch</artifactId>
 		</dependency>
