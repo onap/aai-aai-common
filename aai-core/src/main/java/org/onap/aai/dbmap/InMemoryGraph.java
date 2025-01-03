@@ -73,7 +73,7 @@ public class InMemoryGraph {
             }
 
         } catch (Exception e) {
-            LOGGER.error(String.format("ERROR: Could not load datasnapshot to in memory graph. %n%s",
+            LOGGER.error("ERROR: Could not load datasnapshot to in memory graph. %n%s".formatted(
                     LogFormatTools.getStackTop(e)));
             throw new IllegalStateException("Could not load datasnapshot to in memory graph");
 

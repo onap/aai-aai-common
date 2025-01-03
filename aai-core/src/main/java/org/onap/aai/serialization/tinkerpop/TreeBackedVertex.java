@@ -20,6 +20,7 @@
 
 package org.onap.aai.serialization.tinkerpop;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -36,8 +37,9 @@ import org.apache.tinkerpop.gremlin.structure.util.detached.DetachedVertex;
  *
  */
 
-public class TreeBackedVertex extends DetachedVertex implements Vertex {
+public class TreeBackedVertex extends DetachedVertex {
 
+    @Serial
     private static final long serialVersionUID = -976854460992756953L;
     private final transient Tree<Element> tree;
     private final transient Vertex self;

@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import javax.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 
 import org.onap.aai.logging.LogFormatTools;
 import org.onap.aai.serialization.queryformats.exceptions.AAIFormatQueryResultFormatNotSupported;

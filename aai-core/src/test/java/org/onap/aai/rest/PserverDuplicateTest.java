@@ -33,8 +33,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import javax.ws.rs.core.Response;
-
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.janusgraph.core.JanusGraph;
@@ -47,6 +45,8 @@ import org.onap.aai.dbmap.AAIGraph;
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.ws.rs.core.Response;
 
 public class PserverDuplicateTest extends AAISetup {
 

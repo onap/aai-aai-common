@@ -27,14 +27,10 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriInfo;
 
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -66,6 +62,10 @@ import org.springframework.test.context.TestPropertySource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.UriInfo;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
@@ -120,7 +120,7 @@ public class AAIKafkaEventIntegrationTest extends AAISetup {
         String expectedResponse = PayloadUtil.getExpectedPayload("aai-event.json");
         messageProducer.sendNotification(event);
 
-        ConsumerRecords<String, String> consumerRecords = KafkaTestUtils.getRecords(consumer, 10000);
+        ConsumerRecords<String, String> consumerRecords = KafkaTestUtils.getRecords(consumer, Duration.ofSeconds(10));
         assertFalse(consumerRecords.isEmpty());
         consumerRecords.forEach(consumerRecord -> {
             JSONAssert.assertEquals(expectedResponse, consumerRecord.value(), JSONCompareMode.NON_EXTENSIBLE);
@@ -141,7 +141,7 @@ public class AAIKafkaEventIntegrationTest extends AAISetup {
 
         traversalUriHttpEntry.process(dbRequests, "test");
 
-        ConsumerRecords<String, String> consumerRecords = KafkaTestUtils.getRecords(consumer, 100000);
+        ConsumerRecords<String, String> consumerRecords = KafkaTestUtils.getRecords(consumer, Duration.ofSeconds(10));
         assertFalse(consumerRecords.isEmpty());
         String expectedResponse = PayloadUtil.getExpectedPayload("pserver-event.json");
 

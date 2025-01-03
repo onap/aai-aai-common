@@ -20,7 +20,7 @@
 
 package org.onap.logging.filter.base;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 public class SimpleServletHeadersMap implements SimpleMap {
     private HttpServletRequest request;

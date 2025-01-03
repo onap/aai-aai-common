@@ -36,8 +36,8 @@ import java.net.URISyntaxException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import javax.ws.rs.core.*;
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.*;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.janusgraph.core.JanusGraphException;
@@ -422,7 +422,7 @@ public class HttpEntry {
                                     // The format is purposefully %s/%s%s due to the fact
                                     // that every aai-uri will have a slash at the beginning
                                     // If that assumption isn't true, then its best to change this code
-                                    String curUri = String.format("%s/%s%s", basePath, version, entry.getKey());
+                                    String curUri = "%s/%s%s".formatted(basePath, version, entry.getKey());
                                     Introspector curObj = entry.getValue().getValue0();
                                     HashMap<String, Introspector> curObjRelated = entry.getValue().getValue1();
                                     notification.createNotificationEvent(transactionId, sourceOfTruth,

@@ -60,8 +60,8 @@ public class CNNameTest {
 
         MockHttpServletRequest https = new MockHttpServletRequest();
         https.addHeader("Authorization", "Basic dXNlcjpwYXNzd29yZA==");
-        https.setAttribute("javax.servlet.request.cipher_suite", "");
-        https.setAttribute("javax.servlet.request.X509Certificate", null);
+        https.setAttribute("jakarta.servlet.request.cipher_suite", "");
+        https.setAttribute("jakarta.servlet.request.X509Certificate", null);
 
         when(accessEvent.getRequest()).thenReturn(https);
         assertEquals("user", cnName.convert(accessEvent));
@@ -74,8 +74,8 @@ public class CNNameTest {
         MockHttpServletRequest https = new MockHttpServletRequest();
 
         https.addHeader("Authorization", "dXNlcjpwYXNzd29yZA==");
-        https.setAttribute("javax.servlet.request.cipher_suite", "");
-        https.setAttribute("javax.servlet.request.X509Certificate", null);
+        https.setAttribute("jakarta.servlet.request.cipher_suite", "");
+        https.setAttribute("jakarta.servlet.request.X509Certificate", null);
 
         when(accessEvent.getRequest()).thenReturn(https);
         assertEquals("-", cnName.convert(accessEvent));
@@ -88,8 +88,8 @@ public class CNNameTest {
         MockHttpServletRequest https = new MockHttpServletRequest();
 
         https.addHeader("Authorization", "Basic dXNlcjpwYXNzd29yZA==");
-        https.setAttribute("javax.servlet.request.cipher_suite", null);
-        https.setAttribute("javax.servlet.request.X509Certificate", null);
+        https.setAttribute("jakarta.servlet.request.cipher_suite", null);
+        https.setAttribute("jakarta.servlet.request.X509Certificate", null);
 
         when(accessEvent.getRequest()).thenReturn(https);
         assertEquals("-", cnName.convert(accessEvent));
@@ -102,8 +102,8 @@ public class CNNameTest {
         X509Certificate[] certChain = {cert};
         MockHttpServletRequest https = new MockHttpServletRequest();
 
-        https.setAttribute("javax.servlet.request.cipher_suite", "");
-        https.setAttribute("javax.servlet.request.X509Certificate", certChain);
+        https.setAttribute("jakarta.servlet.request.cipher_suite", "");
+        https.setAttribute("jakarta.servlet.request.X509Certificate", certChain);
 
         when(accessEvent.getRequest()).thenReturn(https);
         when(cert.getSubjectX500Principal()).thenReturn(new X500Principal(testSubject));

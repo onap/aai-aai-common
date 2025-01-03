@@ -28,7 +28,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
+import com.fasterxml.jackson.module.jakarta.xmlbind.JakartaXmlBindAnnotationModule;
 import com.google.common.base.CaseFormat;
 import com.google.common.collect.Multimap;
 
@@ -46,9 +46,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Random;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.eclipse.persistence.dynamic.DynamicEntity;
@@ -126,7 +126,7 @@ public class PojoUtils {
     public <T> String getJsonFromObject(T clazz, boolean wrapRoot, boolean indent)
             throws JsonGenerationException, JsonMappingException, IOException {
         ObjectMapper mapper = JsonMapper.builder()
-                .addModule(new JaxbAnnotationModule())
+                .addModule(new JakartaXmlBindAnnotationModule())
                 .addModule(new JavaTimeModule())
                 .serializationInclusion(JsonInclude.Include.NON_NULL)
                 .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)

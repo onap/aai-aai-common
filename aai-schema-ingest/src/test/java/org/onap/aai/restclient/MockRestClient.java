@@ -70,7 +70,7 @@ public class MockRestClient extends RestClient {
                     .removeIf(converter -> MappingJackson2XmlHttpMessageConverter.class.isAssignableFrom(converter.getClass()));
             }
         });
-        restTemplate = restTemplateBuilder.build();
+        restTemplate = restTemplateBuilder.detectRequestFactory(false).build();
         mockRestServiceServer = MockRestServiceServer.createServer(restTemplate);
 
         JsonObject payload = null;
@@ -80,7 +80,7 @@ public class MockRestClient extends RestClient {
             e.printStackTrace();
         }
         JsonArray mockUris = payload.getAsJsonArray("mock-uri");
-        
+
         String url = "https://localhost:8447/aai/v14";
 
         for (int i = 0; i < mockUris.size(); i++) {

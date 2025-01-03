@@ -23,14 +23,14 @@ package org.onap.aai.rest;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import javax.ws.rs.core.Response;
 
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.janusgraph.core.JanusGraphTransaction;
@@ -53,6 +53,8 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.annotation.DirtiesContext;
+
+import jakarta.ws.rs.core.Response;
 
 @RunWith(value = Parameterized.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)

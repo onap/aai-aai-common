@@ -58,8 +58,6 @@ public abstract class AAISetupForSwagger {
         System.setProperty("AJSC_HOME", ".");
         System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
         System.setProperty("aai.service.name", SERVICE_NAME);
-        QueryFormatTestHelper.setFinalStatic(AAIConstants.class.getField("AAI_HOME_ETC_OXM"),
-                "src/test/resources/bundleconfig-local/etc/oxm/");
     }
 
 }

@@ -32,7 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -188,7 +188,7 @@ public class ErrorLogHelperTest {
 
         org.onap.aai.domain.errorResponse.Fault restResponse =
             objectMapper.readValue(errorResponse, org.onap.aai.domain.errorResponse.Fault.class);
-                
+
         Map<ExceptionType, ErrorMessage> requestError = restResponse.getRequestError();
         assertNotNull(requestError);
         ErrorMessage errorMessage = requestError.get(ExceptionType.SERVICE);
@@ -244,7 +244,7 @@ public class ErrorLogHelperTest {
     @Test
     public void thatInvalidMediaTypeWillReturnInvalidAcceptHeaderException() throws ErrorObjectNotFoundException, JsonMappingException, JsonProcessingException {
         String errorResponse = ErrorLogHelper.getRESTAPIErrorResponse(Collections.singletonList(MediaType.TEXT_PLAIN_TYPE), new AAIException(), new ArrayList<>());
-        
+
         Fault restResponse = objectMapper.readValue(errorResponse, Fault.class);
         assertNotNull(restResponse);
 

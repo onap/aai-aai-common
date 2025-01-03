@@ -24,7 +24,7 @@
 // Generated on: 2015.06.15 at 03:03:58 PM EDT
 //
 
-@javax.xml.bind.annotation.XmlSchema(
+@jakarta.xml.bind.annotation.XmlSchema(
         namespace = "http://org.onap.aai.inventory",
-        elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
+        elementFormDefault = jakarta.xml.bind.annotation.XmlNsForm.QUALIFIED)
 package org.onap.aai.domain.responseMessage;
