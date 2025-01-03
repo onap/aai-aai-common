@@ -20,8 +20,11 @@
 
 package org.onap.aai.logging;
 
+import java.io.Serial;
+
 public class ErrorObjectFormatException extends Exception {
 
+    @Serial
     private static final long serialVersionUID = 3732705544448553685L;
 
     public ErrorObjectFormatException() {

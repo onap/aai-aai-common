@@ -210,7 +210,7 @@ public class Aggregate extends MultiFormatMapper {
                 JsonArray inner = new JsonArray();
                 for (Vertex o : (ArrayList<Vertex>) l) {
                     if (o instanceof Vertex) {
-                        Optional<JsonObject> obj = this.getJsonFromVertex((Vertex) o, properties);
+                        Optional<JsonObject> obj = this.getJsonFromVertex(o, properties);
                         if (obj.isPresent()) {
                             inner.add(obj.get());
                         } else {

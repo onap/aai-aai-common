@@ -23,7 +23,7 @@ package org.onap.aai.serialization.queryformats.utils;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import javax.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 
 import org.onap.aai.serialization.queryformats.exceptions.QueryParamInjectionException;
 import org.onap.aai.serialization.queryformats.params.*;

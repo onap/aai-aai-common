@@ -22,13 +22,9 @@ package org.onap.aai.rest;
 
 import static org.junit.Assert.assertEquals;
 
-import com.jayway.jsonpath.JsonPath;
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
-
-import javax.ws.rs.core.Response;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -41,6 +37,10 @@ import org.onap.aai.PayloadUtil;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.skyscreamer.jsonassert.JSONAssert;
+
+import com.jayway.jsonpath.JsonPath;
+
+import jakarta.ws.rs.core.Response;
 
 /**
  * <b>CloudRegionTest</b> is testing if you put a cloud region with all

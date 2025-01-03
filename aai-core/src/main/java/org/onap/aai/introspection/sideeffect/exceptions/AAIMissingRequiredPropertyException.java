@@ -20,10 +20,13 @@
 
 package org.onap.aai.introspection.sideeffect.exceptions;
 
+import java.io.Serial;
+
 import org.onap.aai.exceptions.AAIException;
 
 public class AAIMissingRequiredPropertyException extends AAIException {
 
+    @Serial
     private static final long serialVersionUID = -8907079650472014019L;
 
     public AAIMissingRequiredPropertyException() {

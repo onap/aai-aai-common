@@ -159,8 +159,8 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
             boolean bValue = false;
             if (value instanceof String) {
                 bValue = Boolean.valueOf(value.toString());
-            } else if (value instanceof Boolean) {
-                bValue = (Boolean) value;
+            } else if (value instanceof Boolean boolean1) {
+                bValue = boolean1;
             }
 
             this.vertexHas(key, bValue);

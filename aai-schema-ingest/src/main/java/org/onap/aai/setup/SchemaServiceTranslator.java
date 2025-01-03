@@ -36,6 +36,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -82,7 +83,7 @@ public class SchemaServiceTranslator extends Translator {
 
         verifySchemaServiceResponse(schemaResponse.getStatusCode());
         LOGGER.debug("SchemaResponse Status code" + schemaResponse.getStatusCode());
-        
+
         Resource resultBody = schemaResponse.getBody();
         return resultBody != null
             ? Collections.singletonList(resultBody.getInputStream())
@@ -105,8 +106,8 @@ public class SchemaServiceTranslator extends Translator {
 
     }
 
-    private void verifySchemaServiceResponse(HttpStatus statusCode) throws IOException {
-        if (statusCode != HttpStatus.OK) {
+    private void verifySchemaServiceResponse(HttpStatusCode statusCode) throws IOException {
+        if (!statusCode.equals(HttpStatusCode.valueOf(HttpStatus.OK.value()))) {
             LOGGER.error("Please check the Schema Service. It returned with the status code {}", statusCode);
             throw new IOException("SchemaService is not available");
         }

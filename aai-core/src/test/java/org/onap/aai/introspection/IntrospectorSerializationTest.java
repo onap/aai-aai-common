@@ -34,7 +34,7 @@ import org.onap.aai.setup.SchemaVersion;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
+import com.fasterxml.jackson.module.jakarta.xmlbind.JakartaXmlBindAnnotationModule;
 
 public class IntrospectorSerializationTest extends AAISetup {
 
@@ -59,7 +59,7 @@ public class IntrospectorSerializationTest extends AAISetup {
   @Test
   public void serializeNotificationEvent() throws IOException, AAIUnmarshallingException {
     mapper = new ObjectMapper();
-    mapper.registerModule(new JaxbAnnotationModule());
+    mapper.registerModule(new JakartaXmlBindAnnotationModule());
 
     String pserver = new String(Files.readAllBytes(Path.of("src/test/resources/payloads/templates/pserver.json"))).replace("${hostname}", "pserver1");
     Introspector introspector = loader.unmarshal("pserver", pserver);

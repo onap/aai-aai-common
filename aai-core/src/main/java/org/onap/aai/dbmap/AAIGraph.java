@@ -138,7 +138,7 @@ public class AAIGraph {
                     transaction.tx().commit();
                     logger.info("Snapshot loaded to inmemory graph.");
                 } catch (Exception e) {
-                    logger.info(String.format("ERROR: Could not load datasnapshot to in memory graph. %n%s",
+                    logger.info("ERROR: Could not load datasnapshot to in memory graph. %n%s".formatted(
                             ExceptionUtils.getStackTrace(e)));
                     throw new RuntimeException(e);
                 }

@@ -20,10 +20,13 @@
 
 package org.onap.aai.parsers.exceptions;
 
+import java.io.Serial;
+
 import org.onap.aai.exceptions.AAIException;
 
 public class AAIIdentityMapParseException extends AAIException {
 
+    @Serial
     private static final long serialVersionUID = -888876613879411865L;
 
     public AAIIdentityMapParseException(String message) {

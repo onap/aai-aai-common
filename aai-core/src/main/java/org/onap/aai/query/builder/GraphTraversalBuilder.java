@@ -290,8 +290,8 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
 
             if (value instanceof String) {// "true"
                 bValue = Boolean.valueOf(value.toString());
-            } else if (value instanceof Boolean) {// true
-                bValue = (Boolean) value;
+            } else if (value instanceof Boolean boolean1) {// true
+                bValue = boolean1;
             }
 
             this.vertexHas(key, bValue);
@@ -1046,7 +1046,7 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
         } else if (vertices instanceof Vertex) {
             results = Collections.singletonList((E) vertices);
         } else {
-            String msg = String.format("Results must be a list or a vertex, but was %s", vertices.getClass().getName());
+            String msg = "Results must be a list or a vertex, but was %s".formatted(vertices.getClass().getName());
             LOGGER.error(msg);
             throw new IllegalArgumentException(msg);
         }
@@ -1055,12 +1055,12 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
     }
 
     private long parseCount(Object count) {
-        if(count instanceof String) {
-            return Long.parseLong((String) count);
-        } else if(count instanceof Integer) {
-            return Long.valueOf((int) count);
-        } else if (count instanceof Long) {
-            return (long) count;
+        if(count instanceof String string) {
+            return Long.parseLong(string);
+        } else if(count instanceof Integer integer) {
+            return Long.valueOf(integer);
+        } else if (count instanceof Long long1) {
+            return long1;
         } else {
             throw new IllegalArgumentException("Count must be a string, integer, or long");
         }

@@ -23,7 +23,7 @@ package org.onap.aai.parsers.query;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 
-import javax.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;

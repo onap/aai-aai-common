@@ -20,10 +20,13 @@
 
 package org.onap.aai.parsers.exceptions;
 
+import java.io.Serial;
+
 import org.onap.aai.exceptions.AAIException;
 
 public class AmbiguousMapAAIException extends AAIException {
 
+    @Serial
     private static final long serialVersionUID = -878581771971431246L;
 
     public AmbiguousMapAAIException(String message) {

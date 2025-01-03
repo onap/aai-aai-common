@@ -27,7 +27,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 
 import org.apache.tinkerpop.gremlin.process.traversal.Step;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
@@ -184,8 +184,8 @@ public class TraversalQuery<E> extends GraphTraversalBuilder<E> {
             : start;
         for (int i = start; i < end - 1; i++) {
             Step step = steps.get(start);
-            if (step instanceof HasStep) {
-                List<HasContainer> hasContainers = ((HasStep) step).getHasContainers();
+            if (step instanceof HasStep hasStep) {
+                List<HasContainer> hasContainers = hasStep.getHasContainers();
                 int hasContainerSize = hasContainers.size();
                 boolean isEndWithinHasContainer = isEndWithinHasContainer(end, i, hasContainers);
                 if (isEndWithinHasContainer) {
@@ -220,11 +220,11 @@ public class TraversalQuery<E> extends GraphTraversalBuilder<E> {
         int adjustedIndex = start;
         for (int i = 0; i < start; i++) {
             Step step = steps.get(i);
-            if (step instanceof HasStep) {
-                if(isEndWithinHasContainer(adjustedIndex, i, ((HasStep) step).getHasContainers())){
+            if (step instanceof HasStep hasStep) {
+                if(isEndWithinHasContainer(adjustedIndex, i, hasStep.getHasContainers())){
                     adjustedIndex -= 1;
                 }
-                adjustedIndex -= ((HasStep) step).getHasContainers().size();
+                adjustedIndex -= hasStep.getHasContainers().size();
             }
         }
         return adjustedIndex;
