@@ -20,6 +20,7 @@
 
 package org.onap.aai;
 
+import java.lang.reflect.Field;
 import java.util.Map;
 
 import org.junit.BeforeClass;
@@ -98,8 +99,9 @@ public abstract class AAISetup {
         System.setProperty("AJSC_HOME", ".");
         System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
         System.setProperty("aai.service.name", SERVICE_NAME);
-        QueryFormatTestHelper.setFinalStatic(AAIConstants.class.getField("AAI_HOME_ETC_OXM"),
-                "src/test/resources/bundleconfig-local/etc/oxm/");
+        // Field etcHomeField = AAIConstants.class.getField("AAI_HOME_ETC_OXM");
+        // QueryFormatTestHelper.setFinalStatic(etcHomeField,
+        //         "src/test/resources/bundleconfig-local/etc/oxm/");
     }
 
 }

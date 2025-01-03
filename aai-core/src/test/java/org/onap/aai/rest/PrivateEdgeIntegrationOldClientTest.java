@@ -30,7 +30,7 @@ import com.jayway.jsonpath.JsonPath;
 
 import java.util.*;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.junit.Before;

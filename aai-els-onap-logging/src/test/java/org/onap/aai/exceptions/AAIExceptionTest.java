@@ -25,11 +25,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.IOException;
 
-import javax.ws.rs.core.Response;
-
 import org.junit.jupiter.api.Test;
 import org.onap.aai.logging.AaiElsErrorCode;
 import org.onap.aai.logging.ErrorObject;
+
+import jakarta.ws.rs.core.Response;
 
 public class AAIExceptionTest {
     private AAIException aaiException;

@@ -20,10 +20,13 @@
 
 package org.onap.aai.introspection.sideeffect.exceptions;
 
+import java.io.Serial;
+
 import org.onap.aai.exceptions.AAIException;
 
 public class AAIMultiplePropertiesException extends AAIException {
 
+    @Serial
     private static final long serialVersionUID = 2098371383166008345L;
 
     public AAIMultiplePropertiesException() {

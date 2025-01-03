@@ -47,7 +47,7 @@ import java.util.concurrent.Future;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.UriBuilder;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
@@ -909,7 +909,7 @@ public class DBSerializer {
                 List<Vertex> results = parser.getQueryBuilder().toList();
                 if (results.isEmpty()) {
                     final AAIException ex =
-                            new AAIException(AAI_6129, String.format("Node of type %s. Could not find object at: %s",
+                            new AAIException(AAI_6129, "Node of type %s. Could not find object at: %s".formatted(
                                     parser.getResultType(), parser.getUri()));
                     ex.getTemplateVars().add(parser.getResultType());
                     ex.getTemplateVars().add(parser.getUri().toString());
@@ -939,7 +939,7 @@ public class DBSerializer {
                                                           // rule
                     }
                     throw new AAIException("AAI_6120",
-                            String.format("No EdgeRule found for passed nodeTypes: %s, %s.", aNodeType, bNodeType));
+                            "No EdgeRule found for passed nodeTypes: %s, %s.".formatted(aNodeType, bNodeType));
                 } else {
                     try {
                         final List<EdgeRule> rules = new ArrayList<>(edgeIngestor.getRules(ruleQuery).values());
@@ -1034,7 +1034,7 @@ public class DBSerializer {
 
                 if (!edgeRules.hasRule(baseQ.build())) {
                     throw new AAIException("AAI_6120",
-                            String.format("No EdgeRule found for passed nodeTypes: %s, %s%s.", aNodeType, cousinType,
+                            "No EdgeRule found for passed nodeTypes: %s, %s%s.".formatted(aNodeType, cousinType,
                                     label != null ? (" with label " + label) : ""));
                 } else if (edgeRules.hasRule(baseQ.edgeType(EdgeType.TREE).build())
                         && !edgeRules.hasRule(baseQ.edgeType(EdgeType.COUSIN).build())) {

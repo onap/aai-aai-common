@@ -20,8 +20,11 @@
 
 package org.onap.aai.serialization.queryformats.exceptions;
 
+import java.io.Serial;
+
 public class AAIFormatVertexException extends Exception {
 
+    @Serial
     private static final long serialVersionUID = -5814240841844624097L;
 
     public AAIFormatVertexException() {

@@ -20,12 +20,17 @@
 
 package org.onap.aai.restclient;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
+import org.apache.hc.client5.http.classic.HttpClient;
+
 import javax.net.ssl.SSLContext;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
+import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
+import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactoryBuilder;
+import org.apache.hc.core5.ssl.SSLContextBuilder;
 import org.onap.aai.aailog.filter.RestClientLoggingInterceptor;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
@@ -50,14 +55,18 @@ public abstract class TwoWaySSLRestClient extends RestClient {
 
     protected HttpClient getClient() throws Exception {
 
-        SSLContext sslContext =
-                SSLContextBuilder.create().build();
-
-        HttpClient client =
-                HttpClients.custom()
-                    .setSSLContext(sslContext)
-                    .setSSLHostnameVerifier((s, sslSession) -> true)
-                    .build();
+        SSLContext sslContext = SSLContext.getDefault();
+        PoolingHttpClientConnectionManager connectionManager = PoolingHttpClientConnectionManagerBuilder.create()
+            .setSSLSocketFactory(
+                SSLConnectionSocketFactoryBuilder.create()
+                    .setSslContext(sslContext)
+                    .build()
+                )
+            .build();
+        HttpClient client = HttpClients
+            .custom()
+            .setConnectionManager(connectionManager)
+            .build();
 
         return client;
     }

@@ -31,11 +31,6 @@ import static org.mockito.Mockito.verify;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 
-import javax.annotation.PostConstruct;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.UriBuilder;
-import javax.xml.bind.JAXBException;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -47,6 +42,11 @@ import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.introspection.ModelType;
 import org.onap.aai.setup.SchemaVersion;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.UriBuilder;
+import jakarta.xml.bind.JAXBException;
 
 
 public class URIParserTest extends AAISetup {

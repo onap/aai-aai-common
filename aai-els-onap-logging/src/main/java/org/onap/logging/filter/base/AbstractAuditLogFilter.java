@@ -20,7 +20,7 @@
 
 package org.onap.logging.filter.base;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.onap.logging.ref.slf4j.ONAPLogConstants;
 import org.slf4j.Logger;

@@ -20,8 +20,11 @@
 
 package org.onap.aai.logging;
 
+import java.io.Serial;
+
 public class ErrorObjectNotFoundException extends Exception {
 
+    @Serial
     private static final long serialVersionUID = 4115316781400786740L;
 
     public ErrorObjectNotFoundException() {

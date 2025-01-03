@@ -31,7 +31,7 @@ public class AAIJunitRunner extends Parameterized {
     public AAIJunitRunner(Class<?> klass) throws Throwable {
         super(klass);
         setProps();
-        modifyOxmHome();
+        // modifyOxmHome();
     }
 
     public void setProps() {
@@ -39,20 +39,12 @@ public class AAIJunitRunner extends Parameterized {
         System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
     }
 
-    public void modifyOxmHome() {
-        try {
-            Field aaiConstantsField = AAIConstants.class.getField("AAI_HOME_ETC_OXM");
-            setFinalStatic(aaiConstantsField, "../aai-schema/src/main/resources/oxm/");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void setFinalStatic(Field field, Object newValue) throws Exception {
-        field.setAccessible(true);
-        Field modifiersField = Field.class.getDeclaredField("modifiers");
-        modifiersField.setAccessible(true);
-        modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-        field.set(null, newValue);
-    }
+    // public void modifyOxmHome() {
+    //     try {
+    //         Field aaiConstantsField = AAIConstants.class.getField("AAI_HOME_ETC_OXM");
+    //         setFinalStatic(aaiConstantsField, "../aai-schema/src/main/resources/oxm/");
+    //     } catch (Exception e) {
+    //         e.printStackTrace();
+    //     }
+    // }
 }

@@ -20,10 +20,13 @@
 
 package org.onap.aai.serialization.db.exceptions;
 
+import java.io.Serial;
+
 import org.onap.aai.exceptions.AAIException;
 
 public class NoEdgeRuleFoundException extends AAIException {
 
+    @Serial
     private static final long serialVersionUID = -906843868234976763L;
 
     public NoEdgeRuleFoundException(String message) {

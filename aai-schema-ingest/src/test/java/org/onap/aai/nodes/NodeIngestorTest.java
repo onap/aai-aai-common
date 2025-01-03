@@ -33,7 +33,7 @@ import java.io.OutputStreamWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import javax.xml.bind.SchemaOutputResolver;
+import jakarta.xml.bind.SchemaOutputResolver;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
 import javax.xml.transform.Transformer;

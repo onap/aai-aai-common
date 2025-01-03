@@ -23,8 +23,8 @@ package org.onap.aai.query.builder.optimization;
 import java.lang.reflect.Method;
 import java.net.URI;
 
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.junit.Before;

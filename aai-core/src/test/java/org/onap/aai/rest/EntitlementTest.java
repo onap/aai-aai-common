@@ -22,14 +22,10 @@ package org.onap.aai.rest;
 
 import static org.junit.Assert.assertEquals;
 
-import com.jayway.jsonpath.JsonPath;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.Collection;
-
-import javax.ws.rs.core.Response;
 
 import org.junit.After;
 import org.junit.Before;
@@ -43,6 +39,10 @@ import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.test.annotation.DirtiesContext;
+
+import com.jayway.jsonpath.JsonPath;
+
+import jakarta.ws.rs.core.Response;
 
 @RunWith(value = Parameterized.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
