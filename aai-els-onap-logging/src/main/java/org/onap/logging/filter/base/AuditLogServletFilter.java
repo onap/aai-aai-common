@@ -24,14 +24,14 @@ package org.onap.logging.filter.base;
 
 import java.io.IOException;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.onap.logging.ref.slf4j.ONAPLogConstants;
 import org.slf4j.MDC;
@@ -48,13 +48,13 @@ public class AuditLogServletFilter extends AbstractAuditLogFilter<HttpServletReq
     public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain filterChain)
             throws IOException, ServletException {
         try {
-            if (request != null && request instanceof HttpServletRequest) {
-                pre((HttpServletRequest) request);
+            if (request != null && request instanceof HttpServletRequest servletRequest) {
+                pre(servletRequest);
             }
             filterChain.doFilter(request, response);
         } finally {
-            if (request != null && request instanceof HttpServletRequest) {
-                post((HttpServletRequest) request, (HttpServletResponse) response);
+            if (request != null && request instanceof HttpServletRequest servletRequest) {
+                post(servletRequest, (HttpServletResponse) response);
             }
             MDC.clear();
         }

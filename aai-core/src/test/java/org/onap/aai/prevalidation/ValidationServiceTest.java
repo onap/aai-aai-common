@@ -31,7 +31,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
+import com.fasterxml.jackson.module.jakarta.xmlbind.JakartaXmlBindAnnotationModule;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -39,7 +39,7 @@ import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.util.List;
 
-import org.apache.http.conn.ConnectTimeoutException;
+import org.apache.hc.client5.http.ConnectTimeoutException;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -69,7 +69,7 @@ public class ValidationServiceTest {
     @Before
     public void setUp() throws Exception {
         mapper = new ObjectMapper();
-        mapper.registerModule(new JaxbAnnotationModule());
+        mapper.registerModule(new JakartaXmlBindAnnotationModule());
         gson = new Gson();
         restClient = Mockito.mock(RestClient.class);
         validationService = Mockito.spy(new ValidationService(restClient, "JUNIT", "generic-vnf", null, mapper));

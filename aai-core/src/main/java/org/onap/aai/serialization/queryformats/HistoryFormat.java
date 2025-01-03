@@ -103,12 +103,12 @@ public abstract class HistoryFormat extends MultiFormatMapper {
     }
 
     protected JsonObject mapPropertyValues(JsonObject json, String propertyKey, Object propertyValue) {
-        if (propertyValue instanceof String) {
-            json.addProperty(propertyKey, (String) propertyValue);
-        } else if (propertyValue instanceof Boolean) {
-            json.addProperty(propertyKey, (Boolean) propertyValue);
-        } else if (propertyValue instanceof Number) {
-            json.addProperty(propertyKey, (Number) propertyValue);
+        if (propertyValue instanceof String string) {
+            json.addProperty(propertyKey, string);
+        } else if (propertyValue instanceof Boolean boolean1) {
+            json.addProperty(propertyKey, boolean1);
+        } else if (propertyValue instanceof Number number) {
+            json.addProperty(propertyKey, number);
         } else {
             if (!(propertyValue instanceof List)) {
                 return json;

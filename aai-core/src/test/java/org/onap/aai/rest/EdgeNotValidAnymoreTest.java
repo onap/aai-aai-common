@@ -28,8 +28,6 @@ import static org.junit.Assert.assertThat;
 import java.io.IOException;
 import java.util.UUID;
 
-import javax.ws.rs.core.Response;
-
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
@@ -47,6 +45,8 @@ import org.onap.aai.edges.enums.EdgeField;
 import org.onap.aai.edges.enums.EdgeProperty;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.serialization.engines.QueryStyle;
+
+import jakarta.ws.rs.core.Response;
 
 public class EdgeNotValidAnymoreTest extends AAISetup {
 

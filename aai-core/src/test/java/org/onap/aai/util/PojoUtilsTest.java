@@ -24,10 +24,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import com.google.common.collect.ImmutableListMultimap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
-
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -37,8 +33,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import javax.xml.bind.JAXBException;
-
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBMarshaller;
@@ -46,6 +40,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.onap.aai.domain.notificationEvent.NotificationEvent;
+
+import com.google.common.collect.ImmutableListMultimap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
+
+import jakarta.xml.bind.JAXBException;
 
 public class PojoUtilsTest {
 

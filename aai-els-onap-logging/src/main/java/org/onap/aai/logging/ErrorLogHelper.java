@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 import java.util.Properties;
 import java.util.Map.Entry;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
 import org.onap.aai.domain.errorResponse.ErrorMessage;

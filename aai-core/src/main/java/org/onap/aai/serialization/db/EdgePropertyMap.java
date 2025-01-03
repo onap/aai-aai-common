@@ -20,6 +20,7 @@
 
 package org.onap.aai.serialization.db;
 
+import java.io.Serial;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,6 +29,7 @@ import org.apache.tinkerpop.gremlin.structure.Direction;
 
 public class EdgePropertyMap<K, V> extends HashMap<K, V> {
 
+    @Serial
     private static final long serialVersionUID = -8298355506617458683L;
 
     private static final Pattern variablePattern = Pattern.compile("(!)?\\$\\{(\\w+)\\}");

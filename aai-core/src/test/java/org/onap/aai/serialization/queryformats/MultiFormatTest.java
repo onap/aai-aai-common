@@ -26,12 +26,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
 import java.io.UnsupportedEncodingException;
-
-import javax.ws.rs.core.MultivaluedHashMap;
 
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
@@ -60,6 +55,11 @@ import org.onap.aai.serialization.queryformats.utils.UrlBuilder;
 import org.onap.aai.setup.SchemaVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+import jakarta.ws.rs.core.MultivaluedHashMap;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class MultiFormatTest extends AAISetup {

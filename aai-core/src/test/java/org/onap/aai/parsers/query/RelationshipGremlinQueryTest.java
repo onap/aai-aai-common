@@ -26,8 +26,8 @@ import static org.junit.Assert.assertEquals;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.dynamic.DynamicEntity;
@@ -42,7 +42,6 @@ import org.onap.aai.AAISetup;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.IntrospectorFactory;
-import org.onap.aai.introspection.LoaderFactory;
 import org.onap.aai.introspection.ModelType;
 import org.onap.aai.nodes.NodeIngestor;
 import org.onap.aai.serialization.engines.JanusGraphDBEngine;

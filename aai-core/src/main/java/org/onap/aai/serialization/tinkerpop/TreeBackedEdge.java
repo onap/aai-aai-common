@@ -20,6 +20,7 @@
 
 package org.onap.aai.serialization.tinkerpop;
 
+import java.io.Serial;
 import java.util.Iterator;
 
 import org.apache.tinkerpop.gremlin.structure.Direction;
@@ -35,8 +36,9 @@ import org.apache.tinkerpop.gremlin.util.iterator.IteratorUtils;
  * These objects are not mutable and can only be used to read information out.
  *
  */
-public class TreeBackedEdge extends DetachedEdge implements Edge {
+public class TreeBackedEdge extends DetachedEdge {
 
+    @Serial
     private static final long serialVersionUID = 5419650145562077538L;
     private TreeBackedVertex inVertex;
     private TreeBackedVertex outVertex;

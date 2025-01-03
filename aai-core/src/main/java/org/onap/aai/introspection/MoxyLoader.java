@@ -29,8 +29,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.dynamic.DynamicEntity;
@@ -78,7 +78,7 @@ public class MoxyLoader extends Loader {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @throws AAIUnknownObjectException
      */
     @Override

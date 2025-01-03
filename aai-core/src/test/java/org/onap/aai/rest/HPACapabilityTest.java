@@ -22,11 +22,12 @@ package org.onap.aai.rest;
 
 import static org.junit.Assert.assertEquals;
 
-import com.jayway.jsonpath.JsonPath;
-
-import java.util.*;
-
-import javax.ws.rs.core.Response;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -40,6 +41,10 @@ import org.onap.aai.serialization.engines.QueryStyle;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.jayway.jsonpath.JsonPath;
+
+import jakarta.ws.rs.core.Response;
 
 @Ignore
 @RunWith(AAIJunitRunner.class)

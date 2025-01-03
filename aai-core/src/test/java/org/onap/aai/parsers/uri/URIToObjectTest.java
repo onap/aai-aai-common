@@ -28,10 +28,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.HashMap;
 
-import javax.annotation.PostConstruct;
-import javax.ws.rs.core.UriBuilder;
-import javax.xml.bind.JAXBException;
-
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
@@ -40,11 +36,14 @@ import org.onap.aai.AAISetup;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
-import org.onap.aai.introspection.LoaderFactory;
 import org.onap.aai.introspection.ModelType;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.onap.aai.setup.SchemaVersion;
 import org.springframework.test.annotation.DirtiesContext;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.ws.rs.core.UriBuilder;
+import jakarta.xml.bind.JAXBException;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class URIToObjectTest extends AAISetup {

@@ -20,7 +20,7 @@
 
 package org.onap.aai.parsers.uri;
 
-import javax.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 
 import org.onap.aai.edges.enums.EdgeType;
 import org.onap.aai.exceptions.AAIException;

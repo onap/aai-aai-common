@@ -109,8 +109,6 @@ public class DbSerializer_needsFakeRulesTest {
         graph = JanusGraphFactory.build().set("storage.backend", "inmemory").open();
         System.setProperty("AJSC_HOME", ".");
         System.setProperty("BUNDLECONFIG_DIR", "src/test/resources/bundleconfig-local");
-        QueryFormatTestHelper.setFinalStatic(AAIConstants.class.getField("AAI_HOME_ETC_OXM"),
-                "src/test/resources/bundleconfig-local/etc/oxm/");
 
     }
 

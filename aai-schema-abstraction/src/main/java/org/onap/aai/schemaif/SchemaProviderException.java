@@ -21,8 +21,11 @@
 
 package org.onap.aai.schemaif;
 
+import java.io.Serial;
+
 public class SchemaProviderException extends Exception {
 
+    @Serial
     private static final long serialVersionUID = 8162385108397238865L;
 
     public SchemaProviderException() {

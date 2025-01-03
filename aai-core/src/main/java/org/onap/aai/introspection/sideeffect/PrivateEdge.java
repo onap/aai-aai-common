@@ -32,7 +32,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
-import javax.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
@@ -109,11 +109,11 @@ public class PrivateEdge extends SideEffect {
                     Multimap<String, EdgeRule> edgeRulesMap = edgeIngestor.getRules(edgeQuery);
 
                     if (edgeRulesMap.isEmpty()) {
-                        String message = String.format("Unable to find edge between %s and %s", obj.getName(),
+                        String message = "Unable to find edge between %s and %s".formatted(obj.getName(),
                                 otherVProperty.value().toString());
                         throw new AAIException("AAI_6127", message);
                     } else if (edgeRulesMap.size() > 1) {
-                        String message = String.format("Found multiple edges between %s and %s", obj.getName(),
+                        String message = "Found multiple edges between %s and %s".formatted(obj.getName(),
                                 otherVProperty.value().toString());
                         throw new EdgeMultiplicityException(message);
                     }

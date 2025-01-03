@@ -20,8 +20,11 @@
 
 package org.onap.aai.logging;
 
+import java.io.Serial;
+
 public class StopWatchNotStartedException extends RuntimeException {
 
+    @Serial
     private static final long serialVersionUID = -4540164295822859408L;
 
     public StopWatchNotStartedException() {
