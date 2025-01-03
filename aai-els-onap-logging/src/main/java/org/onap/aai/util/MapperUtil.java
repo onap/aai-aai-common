@@ -22,13 +22,13 @@
 
 package org.onap.aai.util;
 
+import org.onap.aai.exceptions.AAIException;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
-
-import org.onap.aai.exceptions.AAIException;
+import com.fasterxml.jackson.module.jakarta.xmlbind.JakartaXmlBindAnnotationModule;
 
 public class MapperUtil {
 
@@ -69,7 +69,7 @@ public class MapperUtil {
     public static <T> T readWithDashesAsObjectOf(Class<T> clazz, String value) throws AAIException {
         ObjectMapper mapper = new ObjectMapper();
         try {
-            mapper.registerModule(new JaxbAnnotationModule());
+            mapper.registerModule(new JakartaXmlBindAnnotationModule());
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             mapper.configure(DeserializationFeature.UNWRAP_ROOT_VALUE, false);
 
@@ -114,7 +114,7 @@ public class MapperUtil {
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             mapper.configure(DeserializationFeature.UNWRAP_ROOT_VALUE, false);
 
-            mapper.registerModule(new JaxbAnnotationModule());
+            mapper.registerModule(new JakartaXmlBindAnnotationModule());
             return mapper.writeValueAsString(obj);
         } catch (Exception e) {
             throw new AAIException("AAI_4008", e);

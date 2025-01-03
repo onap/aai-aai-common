@@ -20,7 +20,7 @@
 
 package org.onap.aai.domain.translog;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 
 import org.eclipse.persistence.oxm.annotations.XmlCDATA;
 

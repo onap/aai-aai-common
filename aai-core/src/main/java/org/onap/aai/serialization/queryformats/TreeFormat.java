@@ -202,8 +202,8 @@ public class TreeFormat extends MultiFormatMapper {
                 }
             }
             // Gremlin Query
-            else if (o instanceof Vertex) {
-                Optional<JsonObject> obj = this.getJsonFromVertex((Vertex) o);
+            else if (o instanceof Vertex vertex) {
+                Optional<JsonObject> obj = this.getJsonFromVertex(vertex);
                 if (obj.isPresent()) {
                     jsonObject = obj.get();
                     for (Map.Entry<String, JsonElement> mapEntry : jsonObject.entrySet()) {
@@ -239,8 +239,8 @@ public class TreeFormat extends MultiFormatMapper {
         for (Map.Entry<Object, Tree<Object>> entry : tree.entrySet()) {
             Object o = entry.getKey();
 
-            if (o instanceof Vertex) {
-                processVertex(relatedNodes, entry, (Vertex) o);
+            if (o instanceof Vertex vertex) {
+                processVertex(relatedNodes, entry, vertex);
             }
         }
         return Optional.of(relatedNodes);

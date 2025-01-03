@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.onap.aai.db.props.AAIProperties;
@@ -129,7 +129,7 @@ public class NotificationService {
 
         Introspector curObj = serializer.getLatestVersionView(vertex, eventDepth);
         String aaiUri = vertex.<String>property(AAIProperties.AAI_URI).value();
-        String uri = String.format("%s/%s%s", basePath, schemaVersion, aaiUri);
+        String uri = "%s/%s%s".formatted(basePath, schemaVersion, aaiUri);
         HashMap<String, Introspector> curRelatedObjs = new HashMap<>();
         if (!curObj.isTopLevel()) {
           curRelatedObjs = serializer.getRelatedObjects(queryEngine, vertex, curObj, loaderFactory.getMoxyLoaderInstance().get(schemaVersion));

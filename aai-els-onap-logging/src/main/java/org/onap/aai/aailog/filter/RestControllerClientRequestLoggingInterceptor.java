@@ -26,9 +26,9 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.client.ClientRequestContext;
-import javax.ws.rs.client.ClientRequestFilter;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.client.ClientRequestContext;
+import jakarta.ws.rs.client.ClientRequestFilter;
 import org.glassfish.jersey.client.ClientResponse;
 import org.onap.aai.aailog.logs.ServiceName;
 import org.onap.logging.filter.base.Constants;

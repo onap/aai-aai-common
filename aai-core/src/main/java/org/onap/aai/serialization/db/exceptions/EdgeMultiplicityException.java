@@ -20,10 +20,13 @@
 
 package org.onap.aai.serialization.db.exceptions;
 
+import java.io.Serial;
+
 import org.onap.aai.exceptions.AAIException;
 
 public class EdgeMultiplicityException extends AAIException {
 
+    @Serial
     private static final long serialVersionUID = -5575661036426538012L;
 
     public EdgeMultiplicityException(String message) {

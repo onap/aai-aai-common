@@ -25,12 +25,6 @@ import static org.mockito.Mockito.when;
 
 import java.net.URI;
 
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerResponseContext;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriInfo;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,6 +35,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.onap.logging.filter.base.Constants;
 import org.onap.logging.ref.slf4j.ONAPLogConstants;
 import org.slf4j.MDC;
+
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.container.ContainerResponseContext;
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.UriInfo;
 
 @ExtendWith(MockitoExtension.class)
 public class AaiAuditLogContainerFilterTest {

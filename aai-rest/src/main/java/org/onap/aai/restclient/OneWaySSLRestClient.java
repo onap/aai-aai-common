@@ -20,12 +20,16 @@
 
 package org.onap.aai.restclient;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
+import org.apache.hc.client5.http.classic.HttpClient;
+
 import javax.net.ssl.SSLContext;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
+import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
+import org.apache.hc.core5.ssl.SSLContextBuilder;
 import org.onap.aai.aailog.filter.RestClientLoggingInterceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,9 +67,15 @@ public abstract class OneWaySSLRestClient extends RestClient {
         SSLContext sslContext = SSLContextBuilder.create()
                 .loadTrustMaterial(ResourceUtils.getFile(trustStore), trustStorePassword).build();
 
-        HttpClient client =
-                HttpClients.custom().setSSLContext(sslContext).setSSLHostnameVerifier((s, sslSession) -> true).build();
+        PoolingHttpClientConnectionManager connectionManager =
+                PoolingHttpClientConnectionManagerBuilder.create()
+                        .setTlsSocketStrategy(new DefaultClientTlsStrategy(sslContext, (s, sslSession) -> true))
+                        .build();
 
+        HttpClient client =
+                HttpClients.custom()
+                        .setConnectionManager(connectionManager)
+                        .build();
         return client;
     }
 

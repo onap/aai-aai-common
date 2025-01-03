@@ -38,7 +38,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.onap.aai.edges.enums.DirectionNotation;

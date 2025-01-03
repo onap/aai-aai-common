@@ -20,10 +20,13 @@
 
 package org.onap.aai.introspection.exceptions;
 
+import java.io.Serial;
+
 import org.onap.aai.exceptions.AAIException;
 
 public class AAIUnmarshallingException extends AAIException {
 
+    @Serial
     private static final long serialVersionUID = -5615651557821878103L;
 
     private static final String AAI_MSG = "AAI_3000";

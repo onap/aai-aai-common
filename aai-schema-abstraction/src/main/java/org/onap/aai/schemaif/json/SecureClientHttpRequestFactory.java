@@ -51,9 +51,9 @@ public class SecureClientHttpRequestFactory extends SimpleClientHttpRequestFacto
 
     @Override
     protected void prepareConnection(final HttpURLConnection connection, final String httpMethod) throws IOException {
-        if (connection instanceof HttpsURLConnection) {
-            ((HttpsURLConnection) connection).setSSLSocketFactory(getSSLContext().getSocketFactory());
-            ((HttpsURLConnection) connection).setHostnameVerifier(new HostnameVerifier() {
+        if (connection instanceof HttpsURLConnection lConnection) {
+            lConnection.setSSLSocketFactory(getSSLContext().getSocketFactory());
+            lConnection.setHostnameVerifier(new HostnameVerifier() {
                 @Override
                 public boolean verify(String str, SSLSession sslSession) {
                     return true;

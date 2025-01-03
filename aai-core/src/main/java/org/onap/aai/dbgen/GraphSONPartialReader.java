@@ -115,7 +115,7 @@ public final class GraphSONPartialReader implements GraphReader {
                         if (supportsTx && counter.incrementAndGet() % batchSize == 0)
                             graphToWriteTo.tx().commit();
                     } catch (Exception ex) {
-                        LOGGER.info(String.format("Error in reading vertex from graphson%s", vertex.toString()));
+                        LOGGER.info("Error in reading vertex from graphson%s".formatted(vertex.toString()));
                     }
                 });
 
@@ -134,13 +134,13 @@ public final class GraphSONPartialReader implements GraphReader {
                                     : cachedOutV.addEdge(e.label(), cachedInV);
                     e.properties().forEachRemaining(p -> newEdge.property(p.key(), p.value()));
                 } else {
-                    LOGGER.debug(String.format("Ghost edges from %s to %s", cachedOutV, cachedInV));
+                    LOGGER.debug("Ghost edges from %s to %s".formatted(cachedOutV, cachedInV));
 
                 }
                 if (supportsTx && counter.incrementAndGet() % batchSize == 0)
                     graphToWriteTo.tx().commit();
             } catch (Exception ex) {
-                LOGGER.info(String.format("Error in writing vertex into graph%s", e.toString()));
+                LOGGER.info("Error in writing vertex into graph%s".formatted(e.toString()));
             }
         }));
 
@@ -258,7 +258,7 @@ public final class GraphSONPartialReader implements GraphReader {
             final JsonNode root = mapper.readTree(inputStream);
             final JsonNode vertices = root.get(GraphSONTokens.VERTICES);
             if (!vertices.getNodeType().equals(JsonNodeType.ARRAY))
-                throw new IOException(String.format("The '%s' key must be an array", GraphSONTokens.VERTICES));
+                throw new IOException("The '%s' key must be an array".formatted(GraphSONTokens.VERTICES));
             return IteratorUtils.stream(vertices.elements()).map(Object::toString);
         } else {
             final BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));

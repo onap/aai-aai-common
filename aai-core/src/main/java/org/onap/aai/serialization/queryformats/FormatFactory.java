@@ -20,8 +20,8 @@
 
 package org.onap.aai.serialization.queryformats;
 
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Loader;

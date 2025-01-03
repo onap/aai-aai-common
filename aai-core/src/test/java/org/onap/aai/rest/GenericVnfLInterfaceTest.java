@@ -28,8 +28,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.ws.rs.core.Response;
-
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
@@ -43,6 +41,8 @@ import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.test.annotation.DirtiesContext;
+
+import jakarta.ws.rs.core.Response;
 
 @RunWith(value = Parameterized.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)

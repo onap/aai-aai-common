@@ -29,10 +29,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 
-import javax.ws.rs.client.ClientRequestContext;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,6 +39,10 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.onap.logging.filter.base.Constants;
 import org.onap.logging.ref.slf4j.ONAPLogConstants;
 import org.slf4j.MDC;
+
+import jakarta.ws.rs.client.ClientRequestContext;
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RestControllerClientLoggingInterceptorTest {
@@ -56,7 +56,7 @@ public class RestControllerClientLoggingInterceptorTest {
 
     @Before
     public void init() throws URISyntaxException {
-        System.setProperty("javax.ws.rs.ext.RuntimeDelegate", "com.sun.ws.rs.ext.RuntimeDelegateImpl");
+        System.setProperty("jakarta.ws.rs.ext.RuntimeDelegate", "com.sun.ws.rs.ext.RuntimeDelegateImpl");
         when(clientRequest.getHeaders()).thenReturn(new MultivaluedHashMap<String, Object>());
         when(clientRequest.getUri())
                 .thenReturn(new URI("https://localhost:9999/aai/v1/cloud-infrastructure/complexes/complex/complex-1"));

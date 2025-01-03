@@ -23,7 +23,7 @@ package org.onap.aai.util;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
-import javax.ws.rs.client.Entity;
+import jakarta.ws.rs.client.Entity;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -36,10 +36,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import javax.ws.rs.ClientErrorException;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.ClientErrorException;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 import org.onap.aai.exceptions.AAIException;
 import org.slf4j.Logger;
@@ -180,10 +180,10 @@ public class RestController implements RestControllerInterface {
                         AAIConstants.AAI_LOCAL_OVERRIDE_DEFAULT);
             }
             if (AAIConstants.AAI_LOCAL_OVERRIDE_DEFAULT.equals(overrideLocalHost)) {
-                url = String.format(AAIConstants.AAI_LOCAL_REST, port,
+                url = AAIConstants.AAI_LOCAL_REST.formatted(port,
                         AAIConfig.get(AAIConstants.AAI_DEFAULT_API_VERSION_PROP)) + path;
             } else {
-                url = String.format(AAIConstants.AAI_LOCAL_REST_OVERRIDE, overrideLocalHost,
+                url = AAIConstants.AAI_LOCAL_REST_OVERRIDE.formatted(overrideLocalHost,
                         AAIConfig.get(AAIConstants.AAI_DEFAULT_API_VERSION_PROP)) + path;
             }
         }
@@ -334,10 +334,10 @@ public class RestController implements RestControllerInterface {
                         AAIConstants.AAI_LOCAL_OVERRIDE_DEFAULT);
             }
             if (AAIConstants.AAI_LOCAL_OVERRIDE_DEFAULT.equals(overrideLocalHost)) {
-                url = String.format(AAIConstants.AAI_LOCAL_REST, port,
+                url = AAIConstants.AAI_LOCAL_REST.formatted(port,
                         AAIConfig.get(AAIConstants.AAI_DEFAULT_API_VERSION_PROP)) + path;
             } else {
-                url = String.format(AAIConstants.AAI_LOCAL_REST_OVERRIDE, overrideLocalHost,
+                url = AAIConstants.AAI_LOCAL_REST_OVERRIDE.formatted(overrideLocalHost,
                         AAIConfig.get(AAIConstants.AAI_DEFAULT_API_VERSION_PROP)) + path;
             }
         }
@@ -422,10 +422,10 @@ public class RestController implements RestControllerInterface {
             overrideLocalHost = AAIConfig.get(AAIConstants.AAI_LOCAL_OVERRIDE, AAIConstants.AAI_LOCAL_OVERRIDE_DEFAULT);
         }
         if (AAIConstants.AAI_LOCAL_OVERRIDE_DEFAULT.equals(overrideLocalHost)) {
-            url = String.format(AAIConstants.AAI_LOCAL_REST, port,
+            url = AAIConstants.AAI_LOCAL_REST.formatted(port,
                     AAIConfig.get(AAIConstants.AAI_DEFAULT_API_VERSION_PROP)) + path;
         } else {
-            url = String.format(AAIConstants.AAI_LOCAL_REST_OVERRIDE, overrideLocalHost,
+            url = AAIConstants.AAI_LOCAL_REST_OVERRIDE.formatted(overrideLocalHost,
                     AAIConfig.get(AAIConstants.AAI_DEFAULT_API_VERSION_PROP)) + path;
         }
         Response response = client.target(url)
@@ -594,10 +594,10 @@ public class RestController implements RestControllerInterface {
                         AAIConstants.AAI_LOCAL_OVERRIDE_DEFAULT);
             }
             if (AAIConstants.AAI_LOCAL_OVERRIDE_DEFAULT.equals(overrideLocalHost)) {
-                url = String.format(AAIConstants.AAI_LOCAL_REST, AAIConstants.AAI_RESOURCES_PORT,
+                url = AAIConstants.AAI_LOCAL_REST.formatted(AAIConstants.AAI_RESOURCES_PORT,
                         AAIConfig.get(AAIConstants.AAI_DEFAULT_API_VERSION_PROP)) + path;
             } else {
-                url = String.format(AAIConstants.AAI_LOCAL_REST_OVERRIDE, overrideLocalHost,
+                url = AAIConstants.AAI_LOCAL_REST_OVERRIDE.formatted(overrideLocalHost,
                         AAIConfig.get(AAIConstants.AAI_DEFAULT_API_VERSION_PROP)) + path;
             }
 

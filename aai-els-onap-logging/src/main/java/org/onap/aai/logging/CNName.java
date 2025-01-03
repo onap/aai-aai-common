@@ -28,7 +28,7 @@ import ch.qos.logback.access.spi.IAccessEvent;
 import java.security.cert.X509Certificate;
 
 import javax.security.auth.x500.X500Principal;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,12 +46,12 @@ public class CNName extends AccessConverter {
             return "INACTIVE_HEADER_CONV";
         }
 
-        String cipherSuite = (String) accessEvent.getRequest().getAttribute("javax.servlet.request.cipher_suite");
+        String cipherSuite = (String) accessEvent.getRequest().getAttribute("jakarta.servlet.request.cipher_suite");
         String authUser = null;
         if (cipherSuite != null) {
             try {
                 X509Certificate certChain[] = (X509Certificate[]) accessEvent.getRequest()
-                        .getAttribute("javax.servlet.request.X509Certificate");
+                        .getAttribute("jakarta.servlet.request.X509Certificate");
                 if (certChain == null || certChain.length == 0) {
 
                     HttpServletRequest request = accessEvent.getRequest();
