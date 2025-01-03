@@ -38,9 +38,9 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
-import org.apache.http.conn.ConnectTimeoutException;
+import org.apache.hc.client5.http.ConnectTimeoutException;
 import org.onap.aai.domain.notificationEvent.NotificationEvent;
 import org.onap.aai.domain.notificationEvent.NotificationEvent.EventHeader;
 import org.onap.aai.exceptions.AAIException;
@@ -225,12 +225,12 @@ public class ValidationService {
             // resources microservice shouldn't be blocked because of validation service
             // is taking too long or if the validation service is down
             // Any other exception it should block the request from passing?
-            if (e.getCause() instanceof SocketTimeoutException) {
+            if (e.getCause() instanceof ConnectTimeoutException) {
+                LOGGER.error(CONNECTION_TIMEOUT_STRING, e.getCause());
+            } else if (e.getCause() instanceof SocketTimeoutException) {
                 LOGGER.error(REQUEST_TIMEOUT_STRING, e.getCause());
             } else if (e.getCause() instanceof ConnectException) {
                 LOGGER.error(CONNECTION_REFUSED_STRING, e.getCause());
-            } else if (e.getCause() instanceof ConnectTimeoutException) {
-                LOGGER.error(CONNECTION_TIMEOUT_STRING, e.getCause());
             } else {
                 LOGGER.error("Unknown exception thrown please investigate", e.getCause());
             }

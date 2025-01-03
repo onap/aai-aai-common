@@ -20,10 +20,13 @@
 
 package org.onap.aai.serialization.queryformats.exceptions;
 
+import java.io.Serial;
+
 import org.onap.aai.exceptions.AAIException;
 
 public class QueryParamInjectionException extends AAIException {
 
+    @Serial
     private static final long serialVersionUID = -5575661036426538012L;
 
     public QueryParamInjectionException(String message) {

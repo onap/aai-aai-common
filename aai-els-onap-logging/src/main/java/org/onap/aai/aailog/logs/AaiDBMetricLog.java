@@ -20,8 +20,8 @@
 
 package org.onap.aai.aailog.logs;
 
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.Response;
 
 import org.onap.logging.filter.base.AbstractMetricLogFilter;
 import org.onap.logging.filter.base.ONAPComponents;

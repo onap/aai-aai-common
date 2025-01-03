@@ -26,7 +26,7 @@ import java.net.URISyntaxException;
 import java.util.*;
 import java.util.Map.Entry;
 
-import javax.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 
 import org.onap.aai.edges.enums.EdgeType;
 import org.onap.aai.exceptions.AAIException;

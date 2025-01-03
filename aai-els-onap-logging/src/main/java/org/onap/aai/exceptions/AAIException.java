@@ -23,6 +23,7 @@
 
 package org.onap.aai.exceptions;
 
+import java.io.Serial;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -32,6 +33,7 @@ import org.onap.aai.logging.ErrorObject;
 public class AAIException extends Exception {
 
     public static final String DEFAULT_EXCEPTION_CODE = "AAI_4000";
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private final String code;

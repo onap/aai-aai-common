@@ -20,7 +20,7 @@
 
 package org.onap.aai.domain.responseMessage;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {"aaiResponseMessageDatumKey", "aaiResponseMessageDatumValue",

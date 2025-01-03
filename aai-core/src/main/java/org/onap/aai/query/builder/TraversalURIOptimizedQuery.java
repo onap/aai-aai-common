@@ -119,9 +119,9 @@ public class TraversalURIOptimizedQuery<E> extends TraversalQuery<E> {
         for (int i = adjustedIndex; i < steps.size(); i++) {
             Step step = steps.get(i);
             boolean isFirstStep = i == adjustedIndex;
-            if (isFirstStep && step instanceof HasStep) {
+            if (isFirstStep && step instanceof HasStep<?> hasStep) {
                 int splitPosition = indexAndStepCountTuple.getValue();
-                List<HasContainer> newContainers = ((HasStep<?>) step).getHasContainers().stream()
+                List<HasContainer> newContainers = hasStep.getHasContainers().stream()
                         .skip(splitPosition)
                         .collect(Collectors.toList());
                 traversalAdminStart
@@ -148,8 +148,8 @@ public class TraversalURIOptimizedQuery<E> extends TraversalQuery<E> {
         int stepCount = 0;
         for (int j = 0; j <= lastURIStepIndex; j++) {
             Step step = steps.get(j);
-            if (step instanceof HasStep) {
-                stepCount += ((HasStep<?>) step).getHasContainers().size();
+            if (step instanceof HasStep<?> hasStep) {
+                stepCount += hasStep.getHasContainers().size();
             } else {
                 stepCount++;
             }

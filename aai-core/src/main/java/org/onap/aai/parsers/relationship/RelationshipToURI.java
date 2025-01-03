@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
-import javax.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.UriBuilder;
 
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.onap.aai.config.SpringContextAware;

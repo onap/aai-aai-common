@@ -20,7 +20,7 @@
 
 package org.onap.aai.service;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.onap.aai.validation.nodes.NodeValidator;
 import org.slf4j.Logger;

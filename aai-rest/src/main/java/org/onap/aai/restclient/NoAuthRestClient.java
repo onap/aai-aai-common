@@ -20,10 +20,9 @@
 
 package org.onap.aai.restclient;
 
-import javax.annotation.PostConstruct;
-
-import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.HttpClients;
+import jakarta.annotation.PostConstruct;
+import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.onap.aai.aailog.filter.RestClientLoggingInterceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

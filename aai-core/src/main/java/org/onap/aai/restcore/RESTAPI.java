@@ -33,10 +33,10 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriInfo;
 
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.exceptions.AAIException;
@@ -314,7 +314,7 @@ public class RESTAPI {
             response = handler.get(timeoutLimit, TimeUnit.MILLISECONDS);
         } catch (TimeoutException e) {
             AAIException ex = new AAIException("AAI_7406",
-                    String.format("Timeout limit of %s seconds reached.", timeoutLimit / 1000));
+                    "Timeout limit of %s seconds reached.".formatted(timeoutLimit / 1000));
             response = consumerExceptionResponseGenerator(headers, info, method, ex);
             handler.cancel(true);
         } catch (InterruptedException e) {

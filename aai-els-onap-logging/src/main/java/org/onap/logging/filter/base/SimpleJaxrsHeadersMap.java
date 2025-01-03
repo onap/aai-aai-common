@@ -20,7 +20,7 @@
 
 package org.onap.logging.filter.base;
 
-import javax.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 
 public class SimpleJaxrsHeadersMap implements SimpleMap {
     MultivaluedMap<String, String> map;

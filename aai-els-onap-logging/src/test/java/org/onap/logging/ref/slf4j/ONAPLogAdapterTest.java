@@ -35,8 +35,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.xml.bind.DatatypeConverter;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -44,6 +42,8 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.slf4j.event.Level;
 import org.springframework.mock.web.MockHttpServletRequest;
+
+import jakarta.xml.bind.DatatypeConverter;
 
 /**
  * Tests for {@link ONAPLogAdapter}.
