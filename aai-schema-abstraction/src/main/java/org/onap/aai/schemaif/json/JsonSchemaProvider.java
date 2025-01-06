@@ -61,9 +61,7 @@ public class JsonSchemaProvider implements SchemaProvider {
     public JsonSchemaProvider(JsonSchemaProviderConfig config) {
         this.config = config;
 
-        SecureClientHttpRequestFactory fac = new SecureClientHttpRequestFactory(config);
-        fac.setBufferRequestBody(false);
-        this.restTemplate = new RestTemplate(fac);
+        this.restTemplate = new RestTemplate();
     }
 
     @Override

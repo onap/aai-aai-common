@@ -32,8 +32,6 @@ import org.springframework.web.client.RestTemplate;
 
 public abstract class NoAuthRestClient extends RestClient {
 
-    private static Logger logger = LoggerFactory.getLogger(NoAuthRestClient.class);
-
     protected RestTemplate restTemplate;
 
     @PostConstruct

@@ -1,8 +1,6 @@
 .settings
 target/
 **/logs/
-bundleconfig-local/etc/auth/aai-client-cert.p12
-bundleconfig-local/etc/auth/tomcat_keystore
 bundleconfig-local/etc/oxm
 src/main/aai_schema
 bundleconfig-local/etc/logback.xml

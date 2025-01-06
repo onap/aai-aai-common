@@ -35,8 +35,7 @@ import org.springframework.test.context.TestPropertySource;
 @Disabled
 @TestPropertySource(locations = "/schemaService/schema-service-rest.properties")
 @ContextConfiguration(
-        classes = {RestClientFactoryConfiguration.class, SchemaServiceRestClient.class, RestClientFactory.class,
-                PropertyPasswordConfiguration.class})
+        classes = {RestClientFactoryConfiguration.class, SchemaServiceRestClient.class, RestClientFactory.class})
 
 @SpringBootTest
 public class SchemaRestClientTest {

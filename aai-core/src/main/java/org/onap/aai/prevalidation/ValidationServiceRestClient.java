@@ -38,44 +38,12 @@ public class ValidationServiceRestClient extends TwoWaySSLRestClient {
     @Value("${validation.service.base.url}")
     private String baseUrl;
 
-    @Value("${validation.service.ssl.key-store}")
-    private String keystorePath;
-
-    @Value("${validation.service.ssl.trust-store}")
-    private String truststorePath;
-
-    @Value("${validation.service.ssl.key-store-password}")
-    private String keystorePassword;
-
-    @Value("${validation.service.ssl.trust-store-password}")
-    private String truststorePassword;
-
     @Value("${validation.service.timeout-in-milliseconds}")
     private Integer timeout;
 
     @Override
     public String getBaseUrl() {
         return baseUrl;
-    }
-
-    @Override
-    protected String getKeystorePath() {
-        return keystorePath;
-    }
-
-    @Override
-    protected String getTruststorePath() {
-        return truststorePath;
-    }
-
-    @Override
-    protected char[] getKeystorePassword() {
-        return keystorePassword.toCharArray();
-    }
-
-    @Override
-    protected char[] getTruststorePassword() {
-        return truststorePassword.toCharArray();
     }
 
     protected HttpComponentsClientHttpRequestFactory getHttpRequestFactory() throws Exception {
