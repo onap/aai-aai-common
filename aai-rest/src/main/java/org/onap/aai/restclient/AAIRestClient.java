@@ -36,46 +36,12 @@ import org.springframework.util.MultiValueMap;
 @ConditionalOnExpression("${aai-rest-client.enabled:false}")
 public class AAIRestClient extends TwoWaySSLRestClient {
 
-    private static Logger logger = LoggerFactory.getLogger(AAIRestClient.class);
-
     @Value("${aai.base.url}")
     private String baseUrl;
-
-    @Value("${aai.ssl.key-store}")
-    private String keystorePath;
-
-    @Value("${aai.ssl.trust-store}")
-    private String truststorePath;
-
-    @Value("${aai.ssl.key-store-password}")
-    private String keystorePassword;
-
-    @Value("${aai.ssl.trust-store-password}")
-    private String truststorePassword;
 
     @Override
     public String getBaseUrl() {
         return baseUrl;
-    }
-
-    @Override
-    protected String getKeystorePath() {
-        return keystorePath;
-    }
-
-    @Override
-    protected String getTruststorePath() {
-        return truststorePath;
-    }
-
-    @Override
-    protected char[] getKeystorePassword() {
-        return keystorePassword.toCharArray();
-    }
-
-    @Override
-    protected char[] getTruststorePassword() {
-        return truststorePassword.toCharArray();
     }
 
     @Override
