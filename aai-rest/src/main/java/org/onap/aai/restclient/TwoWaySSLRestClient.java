@@ -20,11 +20,6 @@
 
 package org.onap.aai.restclient;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.security.KeyStore;
-
 import javax.annotation.PostConstruct;
 import javax.net.ssl.SSLContext;
 
@@ -32,15 +27,10 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.onap.aai.aailog.filter.RestClientLoggingInterceptor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.util.ResourceUtils;
 import org.springframework.web.client.RestTemplate;
 
 public abstract class TwoWaySSLRestClient extends RestClient {
-
-    private static Logger logger = LoggerFactory.getLogger(TwoWaySSLRestClient.class);
 
     private RestTemplate restTemplate;
 
@@ -60,38 +50,17 @@ public abstract class TwoWaySSLRestClient extends RestClient {
 
     protected HttpClient getClient() throws Exception {
 
-        char[] keyStorePassword = getKeystorePassword();
-        char[] trustStorePassword = getTruststorePassword();
-
-        String keyStore = getKeystorePath();
-        String trustStore = getTruststorePath();
-
         SSLContext sslContext =
-                SSLContextBuilder.create().loadKeyMaterial(loadPfx(keyStore, keyStorePassword), keyStorePassword)
-                        .loadTrustMaterial(ResourceUtils.getFile(trustStore), trustStorePassword).build();
+                SSLContextBuilder.create().build();
 
         HttpClient client =
-                HttpClients.custom().setSSLContext(sslContext).setSSLHostnameVerifier((s, sslSession) -> true).build();
+                HttpClients.custom()
+                    .setSSLContext(sslContext)
+                    .setSSLHostnameVerifier((s, sslSession) -> true)
+                    .build();
 
         return client;
     }
-
-    private KeyStore loadPfx(String file, char[] password) throws Exception {
-        KeyStore keyStore = KeyStore.getInstance("PKCS12");
-        File key = ResourceUtils.getFile(file);
-        try (InputStream in = new FileInputStream(key)) {
-            keyStore.load(in, password);
-        }
-        return keyStore;
-    }
-
-    protected abstract String getKeystorePath();
-
-    protected abstract String getTruststorePath();
-
-    protected abstract char[] getTruststorePassword();
-
-    protected abstract char[] getKeystorePassword();
 
     @Override
     public RestTemplate getRestTemplate() {

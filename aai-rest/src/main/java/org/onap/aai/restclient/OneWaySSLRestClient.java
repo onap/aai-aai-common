@@ -35,8 +35,6 @@ import org.springframework.web.client.RestTemplate;
 
 public abstract class OneWaySSLRestClient extends RestClient {
 
-    private static Logger logger = LoggerFactory.getLogger(OneWaySSLRestClient.class);
-
     private RestTemplate restTemplate;
 
     @PostConstruct
@@ -56,26 +54,19 @@ public abstract class OneWaySSLRestClient extends RestClient {
 
     protected HttpClient getClient() throws Exception {
 
-        char[] trustStorePassword = getTruststorePassword();
-
-        String trustStore = getTruststorePath();
-
-        SSLContext sslContext = SSLContextBuilder.create()
-                .loadTrustMaterial(ResourceUtils.getFile(trustStore), trustStorePassword).build();
+        SSLContext sslContext = SSLContextBuilder.create().build();
 
         HttpClient client =
-                HttpClients.custom().setSSLContext(sslContext).setSSLHostnameVerifier((s, sslSession) -> true).build();
+            HttpClients.custom()
+                .setSSLContext(sslContext)
+                .setSSLHostnameVerifier((s, sslSession) -> true)
+                .build();
 
         return client;
     }
-
-    protected abstract String getTruststorePath();
-
-    protected abstract char[] getTruststorePassword();
 
     @Override
     public RestTemplate getRestTemplate() {
         return restTemplate;
     }
-
 }

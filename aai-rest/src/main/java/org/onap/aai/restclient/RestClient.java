@@ -133,9 +133,9 @@ public abstract class RestClient {
         HttpEntity<String> httpEntity;
         log.debug("Headers: " + headers.toString());
         if (body == null) {
-            httpEntity = new HttpEntity(getHeaders(headers));
+            httpEntity = new HttpEntity<String>(getHeaders(headers));
         } else {
-            httpEntity = new HttpEntity(body, getHeaders(headers));
+            httpEntity = new HttpEntity<String>(body, getHeaders(headers));
         }
         String url = getBaseUrl() + uri;
         return getRestTemplate().exchange(url, method, httpEntity, Resource.class);

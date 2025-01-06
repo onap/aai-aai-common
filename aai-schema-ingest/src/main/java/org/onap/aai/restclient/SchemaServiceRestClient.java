@@ -34,46 +34,13 @@ import org.springframework.http.MediaType;
 import org.springframework.util.MultiValueMap;
 
 public class SchemaServiceRestClient extends TwoWaySSLRestClient {
-    private static Logger logger = LoggerFactory.getLogger(SchemaServiceRestClient.class);
 
     @Value("${schema.service.base.url}")
     private String baseUrl;
 
-    @Value("${schema.service.ssl.key-store}")
-    private String keystorePath;
-
-    @Value("${schema.service.ssl.trust-store}")
-    private String truststorePath;
-
-    @Value("${schema.service.ssl.key-store-password}")
-    private String keystorePassword;
-
-    @Value("${schema.service.ssl.trust-store-password}")
-    private String truststorePassword;
-
     @Override
     public String getBaseUrl() {
         return baseUrl;
-    }
-
-    @Override
-    protected String getKeystorePath() {
-        return keystorePath;
-    }
-
-    @Override
-    protected String getTruststorePath() {
-        return truststorePath;
-    }
-
-    @Override
-    protected char[] getKeystorePassword() {
-        return keystorePassword.toCharArray();
-    }
-
-    @Override
-    protected char[] getTruststorePassword() {
-        return truststorePassword.toCharArray();
     }
 
     @Override

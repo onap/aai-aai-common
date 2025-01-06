@@ -37,28 +37,13 @@ public class AAIApplicationConfigTest {
     }
 
     @Test
-    public void truststoreTest() throws AAIException {
-        assertEquals("truststore.jks", AAIApplicationConfig.getTruststore());
-    }
-
-    @Test
-    public void keystoreTest() throws AAIException {
-        assertEquals("keystore.jks", AAIApplicationConfig.getKeystore());
-    }
-
-    @Test
-    public void getKeystorePkcs12Test() throws AAIException {
-        assertEquals("keystore.pkcs12", AAIApplicationConfig.getKeystorePkcs12());
-    }
-
-    @Test
     public void getValueWithDefaultTest() throws AAIException {
         assertEquals("default-value", AAIApplicationConfig.get("non-existing-key", "default-value"));
     }
 
     @Test
     public void getValueTest() throws AAIException {
-        assertEquals("certificates", AAIApplicationConfig.get("server.certs.location"));
+        assertEquals("8446", AAIApplicationConfig.get("server.port"));
     }
 
     @Test
@@ -69,11 +54,5 @@ public class AAIApplicationConfigTest {
     @Test
     public void getIntValueWithDefaultTest() throws AAIException {
         assertTrue(9999 == AAIApplicationConfig.getInt("non-existing-key", "9999"));
-    }
-
-    @Test
-    public void getValueWithReplacementTest() throws AAIException {
-        assertEquals("/opt/app/aai/etc/auth/aai-client-cert.p12",
-                AAIApplicationConfig.get("schema.service.ssl.key-store"));
     }
 }

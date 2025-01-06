@@ -59,11 +59,6 @@ public final class AAIConstants {
     public static final String AAI_SCHEMA_MOD_LOGBACK_PROPS = "schemaMod-logback.xml";
     public static final String AAI_FORCE_DELETE_LOGBACK_PROPS = "forceDelete-logback.xml";
 
-    public static final String AAI_TRUSTSTORE_FILENAME = "aai.truststore.filename";
-    public static final String AAI_TRUSTSTORE_PASSWD = "aai.truststore.passwd";
-    public static final String AAI_KEYSTORE_FILENAME = "aai.keystore.filename";
-    public static final String AAI_KEYSTORE_PASSWD = "aai.keystore.passwd";
-
     public static final String AAI_SERVER_URL_BASE = "aai.server.url.base";
     public static final String AAI_SERVER_URL = "aai.server.url";
     public static final String AAI_OLDSERVER_URL = "aai.oldserver.url";
