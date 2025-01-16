@@ -15,6 +15,34 @@ This document provides release notes for the Active and Available Inventory Proj
 Release Data
 ============
 
+Version: 15.X.X
+---------------
+
+General
+-------
+
+Features
+^^^^^^^^
+
+- Janusgraph upgrade (`0.6.4` -> `1.0.0`)
+- rework Kafka message publishing to be more efficient and support tracing
+- reduce log noise
+- various security fixes
+
+Version: 14.X.X
+---------------
+
+General
+-------
+
+Features
+^^^^^^^^
+
+- Java upgrade (`8` -> `11`)
+- Janusgraph upgrade (`0.2.3` -> `0.6.4`)
+- Spring-boot upgrade (`2.4.13` -> `2.5.15`)
+- add db-backed pagination which greatly improves performance of this type of requests
+
 Version: 13.0.1
 ---------------
 
