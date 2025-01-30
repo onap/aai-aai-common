@@ -36,7 +36,6 @@ import java.util.zip.ZipInputStream;
 
 import org.onap.aai.schemaif.SchemaProvider;
 import org.onap.aai.schemaif.SchemaProviderException;
-import org.onap.aai.schemaif.SchemaProviderMsgs;
 import org.onap.aai.schemaif.definitions.EdgeSchema;
 import org.onap.aai.schemaif.definitions.VertexSchema;
 import org.onap.aai.schemaif.json.definitions.JsonEdgeSchema;

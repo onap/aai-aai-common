@@ -19,9 +19,7 @@
 package org.onap.aai.util;
 
 import org.janusgraph.core.JanusGraph;
-import org.janusgraph.core.JanusGraphException;
 import org.janusgraph.core.JanusGraphTransaction;
-import org.onap.aai.logging.ErrorLogHelper;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
