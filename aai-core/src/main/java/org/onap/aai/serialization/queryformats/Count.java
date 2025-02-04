@@ -66,15 +66,14 @@ public class Count implements FormatMapper {
 
         Pair<String, Long> pair = null;
 
-        if (o instanceof Vertex) {
-            Vertex v = (Vertex) o;
+        if (o instanceof Vertex v) {
             pair = Pair.with(v.property(AAIProperties.NODE_TYPE).value().toString(), 1L);
         } else if (o instanceof Tree) {
             pair = Pair.with("trees", 1L);
         } else if (o instanceof Path) {
             pair = Pair.with("paths", 1L);
-        } else if (o instanceof Long) {
-            pair = Pair.with("count", (Long) o);
+        } else if (o instanceof Long long1) {
+            pair = Pair.with("count", long1);
         }
 
         if (pair == null) {

@@ -22,9 +22,6 @@ package org.onap.aai.serialization.queryformats.utils;
 
 import static org.junit.Assert.assertEquals;
 
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -34,6 +31,9 @@ import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.serialization.db.DBSerializer;
 import org.onap.aai.serialization.queryformats.Resource.Builder;
+
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 
 @RunWith(MockitoJUnitRunner.class)
 public class QueryParamInjectorTest {

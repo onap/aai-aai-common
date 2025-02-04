@@ -30,7 +30,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.onap.aai.domain.notificationEvent.NotificationEvent;
 import org.onap.aai.domain.notificationEvent.NotificationEvent.EventHeader;

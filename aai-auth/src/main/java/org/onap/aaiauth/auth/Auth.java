@@ -21,7 +21,7 @@
 
 package org.onap.aaiauth.auth;
 
-import org.apache.http.cookie.Cookie;
+import org.apache.hc.client5.http.cookie.Cookie;
 
 public class Auth {
 

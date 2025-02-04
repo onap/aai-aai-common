@@ -55,19 +55,19 @@ public abstract class MultiFormatMapper implements FormatMapper {
     @Override
     public Optional<JsonObject> formatObject(Object input)
             throws AAIFormatVertexException, AAIFormatQueryResultFormatNotSupported {
-        if (input instanceof Vertex) {
+        if (input instanceof Vertex vertex) {
             logger.debug("Formatting vertex object");
-            return this.getJsonFromVertex((Vertex) input);
-        } else if (input instanceof Tree) {
+            return this.getJsonFromVertex(vertex);
+        } else if (input instanceof Tree<?> tree) {
             logger.debug("Formatting tree object");
             if (isTree) {
-                return this.getRelatedNodesFromTree((Tree<?>) input, null);
+                return this.getRelatedNodesFromTree(tree, null);
             } else {
-                return this.getJsonFromTree((Tree<?>) input);
+                return this.getJsonFromTree(tree);
             }
-        } else if (input instanceof Path) {
+        } else if (input instanceof Path path) {
             logger.debug("Formatting path object");
-            return this.getJsonFromPath((Path) input);
+            return this.getJsonFromPath(path);
         } else {
             throw new AAIFormatQueryResultFormatNotSupported();
         }
@@ -76,19 +76,19 @@ public abstract class MultiFormatMapper implements FormatMapper {
     @Override
     public Optional<JsonObject> formatObject(Object input, Map<String, List<String>> properties)
             throws AAIFormatVertexException, AAIFormatQueryResultFormatNotSupported {
-        if (input instanceof Vertex) {
+        if (input instanceof Vertex vertex) {
             logger.debug("Formatting vertex object with properties map filter");
-            return this.getJsonFromVertex((Vertex) input, properties);
-        } else if (input instanceof Tree) {
+            return this.getJsonFromVertex(vertex, properties);
+        } else if (input instanceof Tree<?> tree) {
             logger.debug("Formatting tree object with properties map filter");
             if (isTree) {
-                return this.getRelatedNodesFromTree((Tree<?>) input, properties);
+                return this.getRelatedNodesFromTree(tree, properties);
             } else {
-                return this.getJsonFromTree((Tree<?>) input);
+                return this.getJsonFromTree(tree);
             }
-        } else if (input instanceof Path) {
+        } else if (input instanceof Path path) {
             logger.debug("Formatting path object");
-            return this.getJsonFromPath((Path) input);
+            return this.getJsonFromPath(path);
         } else {
             throw new AAIFormatQueryResultFormatNotSupported();
         }
@@ -106,8 +106,8 @@ public abstract class MultiFormatMapper implements FormatMapper {
         JsonArray ja = new JsonArray();
 
         for (Object o : path) {
-            if (o instanceof Vertex) {
-                Optional<JsonObject> obj = this.getJsonFromVertex((Vertex) o);
+            if (o instanceof Vertex vertex) {
+                Optional<JsonObject> obj = this.getJsonFromVertex(vertex);
                 obj.ifPresent(ja::add);
             }
         }

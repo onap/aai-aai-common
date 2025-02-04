@@ -24,16 +24,16 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
-import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
+import com.fasterxml.jackson.jakarta.rs.json.JacksonXmlBindJsonProvider;
+import com.fasterxml.jackson.module.jakarta.xmlbind.JakartaXmlBindAnnotationModule;
 
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.ext.Provider;
 
 /**
  * The Class CustomJacksonJaxBJsonProvider.
  */
 @Provider
-public class CustomJacksonJaxBJsonProvider extends JacksonJaxbJsonProvider {
+public class CustomJacksonJaxBJsonProvider extends JacksonXmlBindJsonProvider {
 
     private static ObjectMapper commonMapper = null;
 
@@ -53,7 +53,7 @@ public class CustomJacksonJaxBJsonProvider extends JacksonJaxbJsonProvider {
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             mapper.configure(DeserializationFeature.UNWRAP_ROOT_VALUE, false);
 
-            mapper.registerModule(new JaxbAnnotationModule());
+            mapper.registerModule(new JakartaXmlBindAnnotationModule());
 
             commonMapper = mapper;
         }

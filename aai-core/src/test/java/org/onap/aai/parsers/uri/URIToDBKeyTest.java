@@ -27,10 +27,6 @@ import static org.junit.Assert.assertEquals;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 
-import javax.annotation.PostConstruct;
-import javax.ws.rs.core.UriBuilder;
-import javax.xml.bind.JAXBException;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -39,6 +35,10 @@ import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.introspection.ModelType;
 import org.onap.aai.parsers.exceptions.DoesNotStartWithValidNamespaceException;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.ws.rs.core.UriBuilder;
+import jakarta.xml.bind.JAXBException;
 
 public class URIToDBKeyTest extends AAISetup {
 

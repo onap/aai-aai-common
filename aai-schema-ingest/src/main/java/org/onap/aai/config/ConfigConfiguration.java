@@ -25,6 +25,7 @@ package org.onap.aai.config;
 import org.onap.aai.setup.SchemaConfigVersions;
 import org.onap.aai.setup.SchemaLocationsBean;
 import org.onap.aai.setup.SchemaVersions;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,6 +38,7 @@ import org.springframework.context.annotation.PropertySource;
 public class ConfigConfiguration {
 
     @Bean(name = "schemaConfigVersions")
+    @ConditionalOnMissingBean
     public SchemaConfigVersions schemaConfigVersions() {
         return new SchemaConfigVersions();
     }

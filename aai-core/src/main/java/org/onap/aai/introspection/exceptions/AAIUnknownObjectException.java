@@ -20,10 +20,13 @@
 
 package org.onap.aai.introspection.exceptions;
 
+import java.io.Serial;
+
 import org.onap.aai.exceptions.AAIException;
 
 public class AAIUnknownObjectException extends AAIException {
 
+    @Serial
     private static final long serialVersionUID = -504200228742133774L;
 
     public AAIUnknownObjectException() {

@@ -20,7 +20,10 @@
 
 package org.onap.aai.logging;
 
+import java.io.Serial;
+
 public class LoggingContextNotExistsException extends RuntimeException {
 
+    @Serial
     private static final long serialVersionUID = -4965807709525739623L;
 }
