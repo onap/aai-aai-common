@@ -16,6 +16,7 @@ The key AAI repos for running the AAI REST APIs:
 
    platform/index.rst
    release-notes.rst
+   platform/offeredapis.rst
    AAI REST API Documentation/AAIRESTAPI.rst
    AAI REST API Documentation/bulkApi.rst
    AAI REST API Documentation/customQueries.rst

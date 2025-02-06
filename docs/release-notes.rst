@@ -10,7 +10,7 @@ AAI Release Notes
 Abstract
 ========
 
-This document provides release notes for the Active and Available Inventory Project's Kohn Release
+This document provides release notes for the Active and Available Inventory Project's Oslo Release
 
 Release Data
 ============
