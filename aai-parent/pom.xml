@@ -90,7 +90,6 @@ limitations under the License.
     <opencsv.version>3.1</opencsv.version>
     <plexus.utils.version>3.1.1</plexus.utils.version>
     <reflections.version>0.9.10</reflections.version>
-    <snakeyaml.version>1.29</snakeyaml.version>
     <lombok.version>1.18.36</lombok.version>
     <testcontainers.version>1.20.4</testcontainers.version>
 
@@ -464,12 +463,6 @@ limitations under the License.
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-utils</artifactId>
         <version>${plexus.utils.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.yaml</groupId>
-        <artifactId>snakeyaml</artifactId>
-        <version>${snakeyaml.version}</version>
       </dependency>
 
       <dependency>
