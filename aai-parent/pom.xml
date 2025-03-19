@@ -83,7 +83,7 @@ limitations under the License.
     <json.path.version>2.2.0</json.path.version>
     <json.version>20240303</json.version>
     <junit.version>4.12</junit.version>
-    <logback.version>1.4.10</logback.version>
+    <logback.version>1.4.14</logback.version>
     <slf4j.version>2.0.7</slf4j.version>
     <mockito.all.version>3.4.0</mockito.all.version>
     <mockito.core.version>3.4.0</mockito.core.version>
