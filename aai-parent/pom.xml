@@ -64,7 +64,7 @@ limitations under the License.
     <jaxrs.version>2.1.1</jaxrs.version>
     <jcommander.version>1.78</jcommander.version>
     <jnr.ffi.version>2.2.12</jnr.ffi.version>
-    <jolt.version>0.1.7</jolt.version>
+    <jolt.version>0.1.8</jolt.version>
     <jopt.simple.version>5.0.4</jopt.simple.version>
     <jsonassert.version>1.5.1</jsonassert.version>
     <json.patch.version>1.9</json.patch.version>
