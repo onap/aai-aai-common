@@ -1,0 +1,11 @@
+---
+# Dependabot configured for weekly Gradle updates
+
+version: 2
+updates:
+  # Enable version updates for Gradle
+  - package-ecosystem: "gradle"
+    directory: "/"
+    # Check the registry for updates weekly
+    schedule:
+      interval: "weekly"
