@@ -51,7 +51,7 @@ limitations under the License.
     <commons.io.version>2.16.1</commons.io.version>
     <commons.lang3.version>3.15.0</commons.lang3.version>
     <commons.net.version>3.8.0</commons.net.version>
-    <commons.text.version>1.10.0</commons.text.version>
+    <commons.text.version>1.13.0</commons.text.version>
     <docker.fabric.version>0.40.2</docker.fabric.version>
     <eclipse.persistence.version>3.0.1</eclipse.persistence.version>
     <google.guava.version>33.4.0-jre</google.guava.version>
