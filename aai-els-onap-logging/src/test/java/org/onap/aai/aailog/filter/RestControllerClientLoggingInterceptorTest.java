@@ -20,8 +20,8 @@
 
 package org.onap.aai.aailog.filter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
 import java.net.InetAddress;
@@ -29,13 +29,15 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.onap.logging.filter.base.Constants;
 import org.onap.logging.ref.slf4j.ONAPLogConstants;
 import org.slf4j.MDC;
@@ -44,7 +46,8 @@ import jakarta.ws.rs.client.ClientRequestContext;
 import jakarta.ws.rs.core.MultivaluedHashMap;
 import jakarta.ws.rs.core.MultivaluedMap;
 
-@RunWith(MockitoJUnitRunner.class)
+@MockitoSettings(strictness = Strictness.WARN)
+@ExtendWith(MockitoExtension.class)
 public class RestControllerClientLoggingInterceptorTest {
 
     @Spy
@@ -54,7 +57,7 @@ public class RestControllerClientLoggingInterceptorTest {
     @InjectMocks
     private RestControllerClientRequestLoggingInterceptor restControllerClientLoggingInterceptor;
 
-    @Before
+    @BeforeEach
     public void init() throws URISyntaxException {
         System.setProperty("jakarta.ws.rs.ext.RuntimeDelegate", "com.sun.ws.rs.ext.RuntimeDelegateImpl");
         when(clientRequest.getHeaders()).thenReturn(new MultivaluedHashMap<String, Object>());
@@ -67,7 +70,7 @@ public class RestControllerClientLoggingInterceptorTest {
         // "GET");
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         MDC.clear();
     }
