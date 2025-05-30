@@ -123,7 +123,7 @@ public class MockRestClient extends RestClient {
         InputStream inputStream = getClass().getClassLoader().getResourceAsStream(filename);
 
         String result = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
-        String message = String.format("Unable to find the %s in src/test/resources", filename);
+        String message = "Unable to find the %s in src/test/resources".formatted(filename);
         assertNotNull(inputStream, message);
 
         JsonObject payload = JsonParser.parseString(result).getAsJsonObject();

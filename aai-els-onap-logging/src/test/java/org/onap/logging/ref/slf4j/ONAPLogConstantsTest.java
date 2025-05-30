@@ -24,21 +24,17 @@ package org.onap.logging.ref.slf4j;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for {@link ONAPLogConstants}.
  */
 public class ONAPLogConstantsTest {
-
-    @Rule
-    public ExpectedException exceptionRule = ExpectedException.none();
 
     @Test
     public void testConstructors() throws Exception {
@@ -49,12 +45,13 @@ public class ONAPLogConstantsTest {
     }
 
     @Test
-    public void testConstructorUnsupported() throws Exception {
-        exceptionRule.expect(InvocationTargetException.class);
-        exceptionRule.expectCause(instanceOf(UnsupportedOperationException.class));
-        Constructor<?> c = ONAPLogConstants.class.getDeclaredConstructors()[0];
-        c.setAccessible(true);
-        c.newInstance();
+    public void testConstructorUnsupported() {
+        Throwable exception = assertThrows(InvocationTargetException.class, () -> {
+            Constructor<?> c = ONAPLogConstants.class.getDeclaredConstructors()[0];
+            c.setAccessible(true);
+            c.newInstance();
+        });
+        assertThat(exception.getCause(), instanceOf(UnsupportedOperationException.class));
     }
 
     @Test
@@ -110,16 +107,12 @@ public class ONAPLogConstantsTest {
     }
 
     
-    void assertInaccessibleConstructor(final Class<?> c) throws Exception {
-        exceptionRule.expect(IllegalAccessException.class);
-        // Should fail for hidden constructor.
-        c.getDeclaredConstructors()[0].newInstance();
-
-
-        exceptionRule.expect(InvocationTargetException.class);
-        exceptionRule.expectCause(instanceOf(UnsupportedOperationException.class));
-        final Constructor<?> constructor = c.getDeclaredConstructors()[0];
-        constructor.setAccessible(true);
-        constructor.newInstance();
+    void assertInaccessibleConstructor(final Class<?> c) {
+        Throwable exception = assertThrows(InvocationTargetException.class, () -> {
+            final Constructor<?> constructor = c.getDeclaredConstructors()[0];
+            constructor.setAccessible(true);
+            constructor.newInstance();
+        });
+        assertThat(exception.getCause(), instanceOf(UnsupportedOperationException.class));
     }
 }
