@@ -27,7 +27,7 @@ limitations under the License.
   <parent>
     <groupId>org.onap.aai.aai-common</groupId>
     <artifactId>aai-common</artifactId>
-    <version>1.16.0-SNAPSHOT</version>
+    <version>1.16.1-SNAPSHOT</version>
   </parent>
   <artifactId>aai-parent</artifactId>
   <name>aai-parent</name>
@@ -53,12 +53,11 @@ limitations under the License.
     <commons.net.version>3.8.0</commons.net.version>
     <commons.text.version>1.13.0</commons.text.version>
     <docker.fabric.version>0.40.2</docker.fabric.version>
-    <eclipse.persistence.version>3.0.1</eclipse.persistence.version>
+    <eclipse.persistence.version>4.0.6</eclipse.persistence.version>
     <google.guava.version>33.4.0-jre</google.guava.version>
     <gremlin.version>3.7.3</gremlin.version>
     <janusgraph.version>1.1.0</janusgraph.version>
     <gson.version>2.9.1</gson.version>
-    <hamcrest.junit.version>2.0.0.0</hamcrest.junit.version>
     <hamcrest.core.version>2.2</hamcrest.core.version>
     <jaxb.version>2.3.1</jaxb.version>
     <jaxrs.version>2.1.1</jaxrs.version>
@@ -79,7 +78,7 @@ limitations under the License.
         Please don't upgrade to 2.3.0 or above for nexus iq or security scans
         as it could potentially break our code
       -->
-    <spring.boot.version>3.0.13</spring.boot.version>
+    <spring.boot.version>3.1.12</spring.boot.version>
     <json.path.version>2.2.0</json.path.version>
     <json.version>20240303</json.version>
     <junit.version>4.12</junit.version>
@@ -90,7 +89,7 @@ limitations under the License.
     <opencsv.version>3.1</opencsv.version>
     <plexus.utils.version>3.1.1</plexus.utils.version>
     <reflections.version>0.9.10</reflections.version>
-    <lombok.version>1.18.36</lombok.version>
+    <lombok.version>1.18.38</lombok.version>
     <testcontainers.version>1.20.4</testcontainers.version>
 
     <jakarta.servlet.version>3.1.0</jakarta.servlet.version>
@@ -103,7 +102,7 @@ limitations under the License.
     <!-- we let things pass by default, set custom level for each child project -->
     <jacoco.line.coverage.limit>0.00</jacoco.line.coverage.limit>
 
-    <jacoco.version>0.8.12</jacoco.version>
+    <jacoco.version>0.8.13</jacoco.version>
     <sonar-jacoco-listeners.version>3.2</sonar-jacoco-listeners.version>
     <sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
     <sonar.coverage.jacoco.xmlReportPaths>${project.reporting.outputDirectory}/jacoco-ut/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
@@ -213,21 +212,10 @@ limitations under the License.
 
       <dependency>
         <groupId>org.hamcrest</groupId>
-        <artifactId>java-hamcrest</artifactId>
-        <version>${hamcrest.junit.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.hamcrest</groupId>
         <artifactId>hamcrest-core</artifactId>
         <version>${hamcrest.core.version}</version>
       </dependency>
 
-      <dependency>
-        <groupId>org.hamcrest</groupId>
-        <artifactId>hamcrest-junit</artifactId>
-        <version>${hamcrest.junit.version}</version>
-      </dependency>
       <dependency>
         <groupId>jakarta.annotation</groupId>
         <artifactId>jakarta.annotation-api</artifactId>
@@ -344,7 +332,7 @@ limitations under the License.
       <dependency>
         <groupId>jakarta.xml.bind</groupId>
         <artifactId>jakarta.xml.bind-api</artifactId>
-        <version>3.0.1</version>
+        <version>4.0.2</version>
       </dependency>
       <dependency>
         <groupId>org.glassfish.jaxb</groupId>
