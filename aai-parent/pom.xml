@@ -86,7 +86,7 @@ limitations under the License.
     <slf4j.version>2.0.17</slf4j.version>
     <mockito.all.version>3.4.0</mockito.all.version>
     <mockito.core.version>3.4.0</mockito.core.version>
-    <opencsv.version>3.1</opencsv.version>
+    <opencsv.version>5.12.0</opencsv.version>
     <plexus.utils.version>3.1.1</plexus.utils.version>
     <reflections.version>0.9.10</reflections.version>
     <lombok.version>1.18.38</lombok.version>
