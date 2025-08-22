@@ -29,5 +29,6 @@ jobs:
             GERRIT_SSH_USER_G2G: ${{ vars.GERRIT_SSH_USER_G2G }}
             GERRIT_SSH_USER_G2G_EMAIL: ${{ vars.GERRIT_SSH_USER_G2G_EMAIL }}
             ORGANIZATION: ${{ vars.ORGANIZATION }}
+            USE_PR_AS_COMMIT: true
         secrets:
             GERRIT_SSH_PRIVKEY_G2G: ${{ secrets.GERRIT_SSH_PRIVKEY_G2G }}
