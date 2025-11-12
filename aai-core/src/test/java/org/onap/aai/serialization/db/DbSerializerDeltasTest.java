@@ -61,7 +61,10 @@ import org.springframework.test.context.TestPropertySource;
 
 @RunWith(value = Parameterized.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
-@TestPropertySource(properties = {"delta.events.enabled=true",})
+@TestPropertySource(properties = {"delta.events.enabled=true",
+        "delta.events.node.types=generic-vnf,vf-module,complex,ipsec-configuration,p-interface,vig-server,pserver",
+        "delta.events.actions=CREATE,UPDATE,DELETE",
+        "delta.relationship.events.enabled=true"})
 public class DbSerializerDeltasTest extends AAISetup {
 
     // to use, set thrown.expect to whatever your test needs
@@ -327,7 +330,7 @@ public class DbSerializerDeltasTest extends AAISetup {
         dbserLocal.serializeToDb(complex, complexV, uriQuery, "complex", complex.marshal(false));
         assertTrue("Complex created", engine.tx().traversal().V().has("aai-node-type", "complex")
                 .has("physical-location-id", "c-id").hasNext());
-
+        System.out.println("dbserLocal.getObjectDeltas() :- "+dbserLocal.getObjectDeltas());
         assertEquals(DeltaAction.CREATE, dbserLocal.getObjectDeltas().get(complexUri).getAction());
         assertEquals(4L, dbserLocal.getObjectDeltas().get(complexUri).getPropertyDeltas().values().stream()
                 .filter(d -> d.getAction().equals(DeltaAction.STATIC)).count());

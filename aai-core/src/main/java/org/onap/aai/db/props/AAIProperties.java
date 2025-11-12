@@ -22,6 +22,8 @@
 
 package org.onap.aai.db.props;
 
+import java.util.Set;
+
 public class AAIProperties {
     public static final String NODE_TYPE = "aai-node-type";
     public static final String LAST_MOD_SOURCE_OF_TRUTH = "last-mod-source-of-truth";
@@ -44,6 +46,24 @@ public class AAIProperties {
 
     private AAIProperties() {
 
+    }
+
+    /**
+     * Returns the set of standard AAI field property names that are commonly used
+     * across resources (metadata and control fields).
+     *
+     * @return immutable Set of standard field names
+     */
+    public static Set<String> getStandardFields() {
+        return Set.of(
+            LAST_MOD_TS,
+            RESOURCE_VERSION,
+            LAST_MOD_SOURCE_OF_TRUTH,
+            AAI_UUID,
+            NODE_TYPE,
+            CREATED_TS,
+            SOURCE_OF_TRUTH
+        );
     }
 
 }

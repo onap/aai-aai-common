@@ -25,35 +25,82 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
+import java.util.Set;
 
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.domain.deltaEvent.DeltaEvent;
 import org.onap.aai.domain.notificationEvent.NotificationEvent.EventHeader;
 import org.onap.aai.kafka.DeltaProducer;
 import org.onap.aai.util.AAIConfig;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class DeltaEvents {
+
     private final String transId;
     private final String sourceName;
     private final String schemaVersion;
     private final Map<String, ObjectDelta> objectDeltas;
+    private final DeltaProducer deltaProducer;
+    private final boolean isRelationshipDeltaEnabled;
+    private final Set<String> deltaEventActionSet;
 
-    @Autowired private DeltaProducer deltaProducer;
-
-    public DeltaEvents(String transId, String sourceName, String schemaVersion, Map<String, ObjectDelta> objectDeltas) {
+    public DeltaEvents(String transId, String sourceName, String schemaVersion, Map<String, ObjectDelta> objectDeltas,DeltaProducer deltaProducer,
+                            boolean isRelationshipDeltaEnabled, Set<String> deltaEventActionSet) {
         this.transId = transId;
         this.sourceName = sourceName;
         this.schemaVersion = schemaVersion;
         this.objectDeltas = objectDeltas;
+        this.deltaProducer = deltaProducer;
+        this.isRelationshipDeltaEnabled = isRelationshipDeltaEnabled;
+        this.deltaEventActionSet = deltaEventActionSet;
     }
 
     public boolean triggerEvents() {
         if (objectDeltas.isEmpty()) {
             return false;
         }
+        ObjectDelta first = getFirstDelta();
+        if(first != null && !deltaEventActionSet.contains(first.getAction().toString())) {
+            return false;
+        }
+
+        if(!isRelationshipDeltaEnabled && isOnlyStandardVertexUpdate())    {
+            return false;
+        }
 
         deltaProducer.sendNotification(buildEvent());
+        return true;
+    }
+
+    // Check relationship delta by checking if only standard properties are changed
+    private boolean isOnlyStandardVertexUpdate() {
+
+        ObjectDelta firstEntity = getFirstDelta();
+        if (firstEntity == null) {
+            return false;
+        }
+        //The main entity action is always UPDATE for relationship changes
+        if(!DeltaAction.UPDATE.equals(firstEntity.getAction()))
+            return false;
+
+        if (firstEntity.getRelationshipDeltas() != null && !firstEntity.getRelationshipDeltas().isEmpty()) {
+            return false;
+        }
+
+        Set<String> standardFields = AAIProperties.getStandardFields();
+
+        if (firstEntity.getPropertyDeltas() == null || firstEntity.getPropertyDeltas().isEmpty()) {
+            return false;
+        }
+
+        for (Map.Entry<String, PropertyDelta> entry : firstEntity.getPropertyDeltas().entrySet()) {
+            String key = entry.getKey();
+            PropertyDelta propDelta = entry.getValue();
+            DeltaAction action = propDelta.getAction();
+
+            if (action == DeltaAction.UPDATE && !standardFields.contains(key)) {
+                return false;
+            }
+        }
         return true;
     }
 
@@ -70,7 +117,7 @@ public class DeltaEvents {
     }
 
     private EventHeader getHeader() {
-        ObjectDelta first = objectDeltas.values().iterator().next();
+        ObjectDelta first = getFirstDelta();
         EventHeader header = new EventHeader();
         header.setId(this.transId);
         header.setTimestamp(this.getTimeStamp(first.getTimestamp()));
@@ -83,6 +130,10 @@ public class DeltaEvents {
         header.setEntityLink(first.getUri());
         header.setEntityUuid(this.getUUID(first));
         return header;
+    }
+
+    private ObjectDelta getFirstDelta() {
+        return objectDeltas.values().iterator().next();
     }
 
     private String getUUID(ObjectDelta objectDelta) {

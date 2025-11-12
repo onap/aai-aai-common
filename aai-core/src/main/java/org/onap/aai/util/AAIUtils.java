@@ -24,9 +24,12 @@ package org.onap.aai.util;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Set;
 import java.util.TimeZone;
+import java.util.stream.Collectors;
 
 public class AAIUtils {
 
@@ -58,5 +61,22 @@ public class AAIUtils {
         DateFormat formatter = new SimpleDateFormat("yyMMdd-HH:mm:ss:SSS");
         formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
         return formatter.format(date);
+    }
+
+    /**
+     * Converts a comma-separated string into a {@link Set} of trimmed, non-empty values.
+     *
+     * @param rawValue the comma-separated string input
+     * @return a {@link Set} containing trimmed elements, or an empty set if the input is null or blank
+     */
+    public static Set<String> toSetFromDelimitedString(String rawValue) {
+        if (rawValue == null || rawValue.trim().isEmpty()) {
+            return Collections.emptySet();
+        }
+
+        return Arrays.stream(rawValue.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.toSet());
     }
 }

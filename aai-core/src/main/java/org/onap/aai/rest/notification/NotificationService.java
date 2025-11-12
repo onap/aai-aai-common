@@ -41,11 +41,13 @@ import org.onap.aai.serialization.engines.query.QueryEngine;
 import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.util.AAIConfig;
 import org.onap.aai.util.delta.DeltaEvents;
+import org.onap.aai.util.delta.DeltaEventsConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
+import org.onap.aai.kafka.DeltaProducer;
 
 @Service
 public class NotificationService {
@@ -57,18 +59,26 @@ public class NotificationService {
   private final LoaderFactory loaderFactory;
   private final boolean isDeltaEventsEnabled;
   private final String basePath;
+  private final DeltaProducer deltaProducer;
+  private final Set<String> deltaEventActionSet;
+  private final boolean isRelationshipDeltaEnabled;
 
   public NotificationService(
     @Nullable ValidationService validationService,
     LoaderFactory loaderFactory,
     @Value("${schema.uri.base.path}") String basePath,
-    @Value("${delta.events.enabled:false}") boolean isDeltaEventsEnabled,
-    NotificationProducer notificationProducer) {
+    NotificationProducer notificationProducer,
+    DeltaProducer deltaProducer,
+    DeltaEventsService deltaEventsService) {
     this.validationService = validationService;
     this.loaderFactory = loaderFactory;
     this.basePath = basePath;
-    this.isDeltaEventsEnabled = isDeltaEventsEnabled;
     this.notificationProducer = notificationProducer;
+    this.deltaProducer = deltaProducer;
+    DeltaEventsConfig deltaConfig = deltaEventsService.getDeltaEventsConfig();
+    this.isDeltaEventsEnabled = deltaConfig.isDeltaEventsEnabled();
+    this.isRelationshipDeltaEnabled = deltaConfig.isRelationshipDeltaEnabled();
+    this.deltaEventActionSet = deltaConfig.getDeltaEventActions();
   }
 
   /**
@@ -107,7 +117,7 @@ public class NotificationService {
     if (isDeltaEventsEnabled) {
       try {
         DeltaEvents deltaEvents = new DeltaEvents(transactionId, sourceOfTruth, schemaVersion.toString(),
-            serializer.getObjectDeltas());
+            serializer.getObjectDeltas(), deltaProducer, isRelationshipDeltaEnabled, deltaEventActionSet);
         deltaEvents.triggerEvents();
       } catch (Exception e) {
         LOGGER.error("Error sending Delta Events", e);

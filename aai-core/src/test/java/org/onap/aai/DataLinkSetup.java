@@ -31,13 +31,12 @@ import org.onap.aai.introspection.LoaderFactory;
 import org.onap.aai.introspection.MoxyLoader;
 import org.onap.aai.nodes.NodeIngestor;
 import org.onap.aai.rest.db.HttpEntry;
+import org.onap.aai.rest.notification.DeltaEventsService;
 import org.onap.aai.rest.notification.NotificationService;
 import org.onap.aai.serialization.db.EdgeSerializer;
-import org.onap.aai.serialization.queryformats.QueryFormatTestHelper;
 import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.setup.SchemaVersions;
 import org.onap.aai.testutils.TestUtilConfigTranslatorforDataLink;
-import org.onap.aai.util.AAIConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.annotation.DirtiesContext;
@@ -49,13 +48,17 @@ import org.springframework.test.context.junit4.rules.SpringMethodRule;
 @ContextConfiguration(
         classes = {ConfigConfiguration.class, TestUtilConfigTranslatorforDataLink.class, EdgeIngestor.class,
                 EdgeSerializer.class, NodeIngestor.class, SpringContextAware.class, IntrospectionConfig.class,
-                RestBeanConfig.class, XmlFormatTransformerConfiguration.class, LoaderFactory.class, NotificationService.class, KafkaConfig.class})
+                RestBeanConfig.class, XmlFormatTransformerConfiguration.class, LoaderFactory.class, NotificationService.class, KafkaConfig.class, DeltaEventsService.class})
 @TestPropertySource(
         properties = {"schema.uri.base.path = /aai", "schema.xsd.maxoccurs = 5000", "schema.version.api.default = v4",
                 "schema.version.edge.label.start = v4", "schema.version.depth.start = v3",
                 "schema.version.app.root.start = v4", "schema.version.related.link.start = v4",
                 "schema.version.namespace.change.start = v4", "schema.version.list = v1,v2,v3,v4",
-                "schema.translator.list = config","aai.notifications.enabled = false"})
+                "schema.translator.list = config","aai.notifications.enabled = false",
+                "delta.events.enabled=true",
+                "delta.events.node.types=generic-vnf,vf-module",
+                "delta.relationship.events.enabled=false", 
+                "delta.events.actions=CREATE,UPDATE,DELETE"})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public abstract class DataLinkSetup {
 
