@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d6a6c59e_b4d24e72",
+        "filename": "aai-core/src/main/java/org/onap/aai/rest/notification/DeltaEventsService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 7849
+      },
+      "writtenOn": "2025-11-12T14:40:04Z",
+      "side": 1,
+      "message": "Please add copyright headers to new classes",
+      "revId": "aa7186abd45be911fb7e0d618e4e111d2bea152a",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "da0bbd52_f2c4a723",
+        "filename": "aai-core/src/main/java/org/onap/aai/rest/notification/DeltaEventsService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 7849
+      },
+      "writtenOn": "2025-11-12T14:40:04Z",
+      "side": 1,
+      "message": "~~I don\u0027t think we should name this `service` when the class is actually about exposing configuration.\nAs such I would suggest to rename this to `DeltaEventsConfiguration` with a `@Configuration` annotation~~\nEdit: After thinking this further, we could also just make the `DeltaEventsConfig` class that you are constructing here an `@Configuration` bean, which would make this class obsolete.\nThen you could directly autowire that in the `NotificationService` instead of going through this additional class",
+      "revId": "aa7186abd45be911fb7e0d618e4e111d2bea152a",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
+    }
+  ]
+}
