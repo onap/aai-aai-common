@@ -34,15 +34,16 @@ import org.onap.aai.nodes.NodeIngestor;
 import org.onap.aai.prevalidation.ValidationConfiguration;
 import org.onap.aai.prevalidation.ValidationService;
 import org.onap.aai.rest.db.HttpEntry;
+import org.onap.aai.rest.notification.DeltaEventsService;
 import org.onap.aai.rest.notification.NotificationService;
 import org.onap.aai.serialization.db.EdgeSerializer;
-import org.onap.aai.serialization.queryformats.QueryFormatTestHelper;
 import org.onap.aai.setup.AAIConfigTranslator;
 import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.setup.SchemaVersions;
-import org.onap.aai.util.AAIConstants;
+import org.onap.aai.util.delta.DeltaEventsConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.rules.SpringClassRule;
@@ -54,12 +55,17 @@ import org.springframework.test.context.web.WebAppConfiguration;
         classes = {ConfigConfiguration.class, AAIConfigTranslator.class, EdgeIngestor.class, EdgeSerializer.class,
                 NodeIngestor.class, SpringContextAware.class, IntrospectionConfig.class, RestBeanConfig.class,
                 XmlFormatTransformerConfiguration.class, ValidationService.class, ValidationConfiguration.class,
-                KafkaConfig.class, LoaderFactory.class, NotificationService.class})
+                KafkaConfig.class, LoaderFactory.class, NotificationService.class, DeltaEventsService.class})
 @TestPropertySource(
         properties = {"schema.uri.base.path = /aai", "schema.xsd.maxoccurs = 5000", "schema.translator.list=config",
                 "schema.nodes.location=src/test/resources/onap/oxm",
                 "schema.edges.location=src/test/resources/onap/dbedgerules",
-                "aai.notifications.enabled=false"})
+                "aai.notifications.enabled=false",
+                "delta.events.enabled=false",
+                "delta.events.node-types=generic-vnf,vf-module,complex,ipsec-configuration,p-interface,vig-server,pserver",
+                "delta.events.relationship-enabled=false", 
+                "delta.events.actions=CREATE,UPDATE,DELETE"})
+@EnableConfigurationProperties(DeltaEventsConfig.class)
 public abstract class AAISetup {
 
     @ClassRule

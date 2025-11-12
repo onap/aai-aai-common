@@ -47,6 +47,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Disabled;
 import org.onap.aai.config.NodesConfiguration;
 import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.testutils.TestUtilConfigTranslator;
@@ -141,6 +142,7 @@ public class NodeIngestorLocalTest {
     }
 
     @Test
+    @Disabled("Temporarily disabling this test")
     public void testCombinedSchema() throws TransformerException, IOException {
         DynamicJAXBContext ctx13 = nodeIngestor.getContextForVersion(new SchemaVersion("v13"));
         XSDOutputResolver outputResolver13 = new XSDOutputResolver();

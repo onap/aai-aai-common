@@ -53,12 +53,9 @@ import org.onap.aai.introspection.Loader;
 import org.onap.aai.introspection.LoaderFactory;
 import org.onap.aai.introspection.ModelType;
 import org.onap.aai.nodes.NodeIngestor;
-import org.onap.aai.rest.notification.NotificationService;
 import org.onap.aai.serialization.db.EdgeSerializer;
 import org.onap.aai.serialization.db.exceptions.NoEdgeRuleFoundException;
-import org.onap.aai.serialization.queryformats.QueryFormatTestHelper;
 import org.onap.aai.setup.SchemaVersions;
-import org.onap.aai.util.AAIConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -69,12 +66,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration(
         classes = {ConfigConfiguration.class, QueryTestsConfigTranslator.class, NodeIngestor.class, EdgeIngestor.class,
                 EdgeSerializer.class, SpringContextAware.class, IntrospectionConfig.class,
-                XmlFormatTransformerConfiguration.class, LoaderFactory.class, NotificationService.class, KafkaConfig.class})
+                XmlFormatTransformerConfiguration.class, LoaderFactory.class, KafkaConfig.class})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @TestPropertySource(
         properties = {"schema.translator.list = config", "schema.nodes.location=src/test/resources/onap/oxm",
-                "schema.edges.location=src/test/resources/onap/dbedgerules",
-                "aai.notifications.enabled=false"})
+                "schema.edges.location=src/test/resources/onap/dbedgerules"})
 public abstract class QueryBuilderTestAbstraction {
 
     protected Loader loader;
