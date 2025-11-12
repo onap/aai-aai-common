@@ -23,16 +23,13 @@ package org.onap.aai;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.onap.aai.config.ConfigConfiguration;
 import org.onap.aai.config.IntrospectionConfig;
-import org.onap.aai.config.KafkaConfig;
 import org.onap.aai.config.RestBeanConfig;
 import org.onap.aai.config.SpringContextAware;
-import org.onap.aai.config.XmlFormatTransformerConfiguration;
 import org.onap.aai.edges.EdgeIngestor;
 import org.onap.aai.introspection.LoaderFactory;
 import org.onap.aai.nodes.NodeIngestor;
 import org.onap.aai.prevalidation.ValidationConfiguration;
 import org.onap.aai.prevalidation.ValidationService;
-import org.onap.aai.rest.notification.NotificationService;
 import org.onap.aai.serialization.db.EdgeSerializer;
 import org.onap.aai.setup.AAIConfigTranslator;
 import org.springframework.test.context.ContextConfiguration;
@@ -43,8 +40,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ContextConfiguration(
         classes = {ConfigConfiguration.class, AAIConfigTranslator.class, EdgeIngestor.class, EdgeSerializer.class,
                 NodeIngestor.class, SpringContextAware.class, IntrospectionConfig.class, RestBeanConfig.class,
-                XmlFormatTransformerConfiguration.class, ValidationService.class, ValidationConfiguration.class,
-                KafkaConfig.class, LoaderFactory.class, NotificationService.class})
+                ValidationService.class, ValidationConfiguration.class, LoaderFactory.class})
 @TestPropertySource(
         value = "classpath:/application.properties",
         properties = {
@@ -52,7 +48,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
                 "schema.translator.list=config",
                 "schema.nodes.location=src/test/resources/onap/oxm",
                 "schema.edges.location=src/test/resources/onap/dbedgerules",
-                "aai.notifications.enabled=false","classpath:/application.properties",
+                "classpath:/application.properties"
         })
 public class IntegrationTest {
 

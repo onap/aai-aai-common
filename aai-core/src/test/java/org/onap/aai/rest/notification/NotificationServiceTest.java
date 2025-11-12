@@ -56,6 +56,8 @@ import org.onap.aai.serialization.db.DBSerializer;
 import org.onap.aai.serialization.engines.query.QueryEngine;
 import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.setup.SchemaVersions;
+import org.onap.aai.util.delta.DeltaEventsConfig;
+import org.onap.aai.kafka.DeltaProducer;
 
 public class NotificationServiceTest extends AAISetup {
 
@@ -67,8 +69,13 @@ public class NotificationServiceTest extends AAISetup {
   @Mock DBSerializer dbSerializer;
   @Mock QueryEngine queryEngine;
   @Mock Introspector introspector;
+  @Mock DeltaProducer deltaProducer;
+  @Mock DeltaEventsService deltaService;
 
   boolean isDeltaEventsEnabled = false;
+  boolean isRelationshipDeltaEnabled = true;
+  DeltaEventsConfig deltaConfig = new DeltaEventsConfig();
+  String deltaEventsAllowed = "CREATE,UPDATE,DELETE";
   String basePath = "/aai";
   NotificationService notificationService;
 
@@ -79,7 +86,12 @@ public class NotificationServiceTest extends AAISetup {
     when(dbSerializer.touchStandardVertexPropertiesForEdges()).thenReturn(Collections.emptySet());
     when(dbSerializer.getLatestVersionView(any(),anyInt())).thenReturn(introspector);
 
-    notificationService = new NotificationService(validationService, loaderFactory, basePath, isDeltaEventsEnabled, notificationProducerService);
+    deltaConfig.setEnabled(true);
+    deltaConfig.setRelationshipEnabled(true);
+    deltaConfig.setActions(Set.of("CREATE", "UPDATE", "DELETE"));
+    deltaConfig.setNodeTypes(Set.of("pnf", "service-instance"));
+
+    notificationService = new NotificationService(validationService, loaderFactory, basePath, notificationProducerService,deltaProducer, deltaConfig, deltaService);
     when(schemaVersions.getDefaultVersion()).thenReturn(new SchemaVersion("v29"));
     doNothing().when(uebNotification).createNotificationEvent(any(),any(),any(),any(),any(),any(),any());
     doNothing().when(notificationProducerService).sendUEBNotification(any());
@@ -122,7 +134,7 @@ public class NotificationServiceTest extends AAISetup {
     SchemaVersion schemaVersion = new SchemaVersion("v29");
     when(dbSerializer.getUpdatedVertexes()).thenReturn(Collections.emptyMap());
 
-    notificationService = new NotificationService(null, loaderFactory, basePath, isDeltaEventsEnabled, notificationProducerService);
+    notificationService = new NotificationService(validationService, loaderFactory, basePath, notificationProducerService,deltaProducer, deltaConfig, deltaService);
     notificationService.generateEvents(uebNotification, AAIProperties.MINIMUM_DEPTH, "sourceOfTruth", dbSerializer, "transactionId", queryEngine, mainVertexesToNotifyOn, schemaVersion);
 
     verify(notificationProducerService, times(1)).sendUEBNotification(uebNotification);

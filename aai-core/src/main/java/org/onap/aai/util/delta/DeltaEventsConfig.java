@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
- * Copyright © 2017-2019 AT&T Intellectual Property. All rights reserved.
+ * Copyright © 2025 Deutsche Telekom. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,20 +20,20 @@
 
 package org.onap.aai.util.delta;
 
-import java.util.Map;
 import java.util.Set;
 
-import org.onap.aai.kafka.DeltaProducer;
-import lombok.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
-@Value
-public class DeltaEvents {
-    
-    String transactionId;
-    String sourceName;
-    String schemaVersion;
-    Map<String, ObjectDelta> objectDeltas;
-    DeltaProducer deltaProducer;
-    boolean relationshipDeltaEnabled;
-    Set<String> allowedActions;
+import lombok.Data;
+
+@Data
+@Component
+@ConfigurationProperties(prefix = "delta.events")
+public class DeltaEventsConfig {
+    private boolean enabled = false;
+    private Set<String> actions = Set.of();
+    private boolean relationshipEnabled = false;
+    private Set<String> nodeTypes = Set.of();
 }
+

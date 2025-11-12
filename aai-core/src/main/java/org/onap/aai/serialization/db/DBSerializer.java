@@ -105,6 +105,7 @@ import org.onap.aai.setup.SchemaVersions;
 import org.onap.aai.util.AAIConfig;
 import org.onap.aai.util.AAIConstants;
 import org.onap.aai.util.delta.DeltaAction;
+import org.onap.aai.util.delta.DeltaEventsConfig;
 import org.onap.aai.util.delta.ObjectDelta;
 import org.onap.aai.util.delta.PropertyDelta;
 import org.onap.aai.util.delta.PropertyDeltaFactory;
@@ -113,6 +114,7 @@ import org.onap.aai.workarounds.NamingExceptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.env.Environment;
 
 public class DBSerializer {
 
@@ -146,6 +148,8 @@ public class DBSerializer {
     private int notificationDepth;
     private boolean isDeltaEventsEnabled;
     private boolean isMultiTenancyEnabled;
+    private Set<String> deltaEventNodeTypes;
+    private boolean isRelationshipDeltaEnabled;
 
     /**
      * Instantiates a new DB serializer.
@@ -285,10 +289,18 @@ public class DBSerializer {
         setEdgeIngestor(ei);
         EdgeSerializer es = ctx.getBean(EdgeSerializer.class);
         setEdgeSerializer(es);
-        isDeltaEventsEnabled = Boolean.parseBoolean(
-                SpringContextAware.getApplicationContext().getEnvironment().getProperty("delta.events.enabled", FALSE));
-        isMultiTenancyEnabled = Boolean.parseBoolean(SpringContextAware.getApplicationContext().getEnvironment()
-                .getProperty("multi.tenancy.enabled", FALSE));
+        Environment env = ctx.getEnvironment();
+        DeltaEventsConfig deltaConfig = ctx.getBean(DeltaEventsConfig.class);
+        isMultiTenancyEnabled = Boolean.parseBoolean(env.getProperty("multi.tenancy.enabled", FALSE));
+        isDeltaEventsEnabled = deltaConfig.isEnabled();
+        isRelationshipDeltaEnabled = deltaConfig.isRelationshipEnabled();
+        deltaEventNodeTypes = deltaConfig.getNodeTypes();
+    }
+
+    private boolean isEligibleForDeltaEvent(Vertex v) {
+        String nodeType = v.property(AAIProperties.NODE_TYPE).isPresent()
+                            ? v.property(AAIProperties.NODE_TYPE).value().toString(): "";
+        return isDeltaEventsEnabled && (deltaEventNodeTypes.isEmpty() || deltaEventNodeTypes.contains(nodeType));
     }
 
     public void setEdgeSerializer(EdgeSerializer edgeSer) {
@@ -336,7 +348,7 @@ public class DBSerializer {
             v.property(AAIProperties.LAST_MOD_TS, currentTimeMillis);
             v.property(AAIProperties.LAST_MOD_SOURCE_OF_TRUTH, this.sourceOfTruth);
         } else {
-            if (isDeltaEventsEnabled) {
+            if (isEligibleForDeltaEvent(v)) {
                 standardVertexPropsDeltas(v, timeNowInSec);
             }
             v.property(AAIProperties.RESOURCE_VERSION, timeNowInSec);
@@ -579,7 +591,7 @@ public class DBSerializer {
                             } else {
                                 v.property(dbProperty, value);
                             }
-                            if (isDeltaEventsEnabled) {
+                            if (isEligibleForDeltaEvent(v)) {
                                 createDeltaProperty(uri, value, dbProperty, oldValue);
                             }
                             this.updatedVertexes.putIfAbsent(v, false);
@@ -587,7 +599,7 @@ public class DBSerializer {
                     } else {
                         if (oldValue != null) {
                             v.property(dbProperty).remove();
-                            if (isDeltaEventsEnabled) {
+                            if (isEligibleForDeltaEvent(v)) {
                                 addPropDelta(uri, dbProperty,
                                         PropertyDeltaFactory.getDelta(DeltaAction.DELETE, oldValue),
                                         DeltaAction.UPDATE);
@@ -608,7 +620,7 @@ public class DBSerializer {
                     }
                 } else {
                     // simple list case
-                    if (isDeltaEventsEnabled) {
+                    if (isEligibleForDeltaEvent(v)) {
                         String uri = getURIForVertex(v).toString();
                         List<Object> oldVal = engine.getListProperty(v, property);
                         engine.setListProperty(v, property, list);
@@ -1050,7 +1062,7 @@ public class DBSerializer {
         }
 
         for (Path path : toRemove) {
-            if (isDeltaEventsEnabled) {
+            if (isEligibleForDeltaEvent(v)) {
                 deltaForEdge(mainUri, path.get(1), DeltaAction.DELETE_REL, DeltaAction.UPDATE);
             }
             this.updatedVertexes.putIfAbsent(v, false);
@@ -1062,7 +1074,7 @@ public class DBSerializer {
             try {
                 Edge e = edgeSer.addEdge(this.engine.asAdmin().getTraversalSource(), v, create.getValue0(),
                         create.getValue1());
-                if (isDeltaEventsEnabled) {
+                if (isEligibleForDeltaEvent(v)) {
                     deltaForEdge(mainUri, e, DeltaAction.CREATE_REL, DeltaAction.UPDATE);
                 }
                 this.updatedVertexes.putIfAbsent(v, false);
@@ -1074,13 +1086,15 @@ public class DBSerializer {
     }
 
     private void deltaForEdge(String mainUri, Edge edge, DeltaAction edgeAction, DeltaAction mainAction) {
-        RelationshipDelta relationshipDelta =
-                new RelationshipDelta(edgeAction, edge.inVertex().property(AAIProperties.AAI_UUID).value().toString(),
-                        edge.outVertex().property(AAIProperties.AAI_UUID).value().toString(),
-                        edge.inVertex().property(AAIProperties.AAI_URI).value().toString(),
-                        edge.outVertex().property(AAIProperties.AAI_URI).value().toString(), edge.label());
-        edge.properties().forEachRemaining(p -> relationshipDelta.addProp(p.key(), p.value().toString()));
-        addRelationshipDelta(mainUri, relationshipDelta, mainAction);
+        if(isRelationshipDeltaEnabled)  {
+            RelationshipDelta relationshipDelta =
+                    new RelationshipDelta(edgeAction, edge.inVertex().property(AAIProperties.AAI_UUID).value().toString(),
+                            edge.outVertex().property(AAIProperties.AAI_UUID).value().toString(),
+                            edge.inVertex().property(AAIProperties.AAI_URI).value().toString(),
+                            edge.outVertex().property(AAIProperties.AAI_URI).value().toString(), edge.label());
+            edge.properties().forEachRemaining(p -> relationshipDelta.addProp(p.key(), p.value().toString()));
+            addRelationshipDelta(mainUri, relationshipDelta, mainAction);
+        }
     }
 
     /**
@@ -1184,7 +1198,7 @@ public class DBSerializer {
                 }
             }
             e = edgeSer.addTreeEdge(this.engine.asAdmin().getTraversalSource(), parent, child);
-            if (isDeltaEventsEnabled) {
+            if (isEligibleForDeltaEvent(child)) {
                 deltaForEdge(child.property(AAIProperties.AAI_URI).value().toString(), e, DeltaAction.CREATE_REL,
                         DeltaAction.CREATE);
             }
@@ -1804,7 +1818,7 @@ public class DBSerializer {
                 e = this.getEdgeBetween(EdgeType.COUSIN, inputVertex, relatedVertex, label);
                 if (e == null) {
                     e = edgeSer.addEdge(this.engine.asAdmin().getTraversalSource(), inputVertex, relatedVertex, label);
-                    if (isDeltaEventsEnabled) {
+                    if (isEligibleForDeltaEvent(inputVertex)) {
                         deltaForEdge(inputVertex.property(AAIProperties.AAI_URI).value().toString(), e,
                                 DeltaAction.CREATE_REL, DeltaAction.UPDATE);
                     }
@@ -1986,7 +2000,7 @@ public class DBSerializer {
             throw new AAIException(AAI_6129, e);
         }
         if (edge != null) {
-            if (isDeltaEventsEnabled) {
+            if (isEligibleForDeltaEvent(inputVertex)) {
                 String mainUri = inputVertex.property(AAIProperties.AAI_URI).value().toString();
                 deltaForEdge(mainUri, edge, DeltaAction.DELETE_REL, DeltaAction.UPDATE);
             }
@@ -2035,7 +2049,7 @@ public class DBSerializer {
 
         for (Vertex v : vertices) {
             LOGGER.debug("Removing vertex {} with label {}", v.id(), v.label());
-            if (isDeltaEventsEnabled) {
+            if (isEligibleForDeltaEvent(v)) {
                 deltaForVertexDelete(v);
             }
             // add the cousin vertexes of v to have their resource-version updated and notified on.
