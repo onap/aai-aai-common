@@ -33,6 +33,40 @@
       "message": "~~I don\u0027t think we should name this `service` when the class is actually about exposing configuration.\nAs such I would suggest to rename this to `DeltaEventsConfiguration` with a `@Configuration` annotation~~\nEdit: After thinking this further, we could also just make the `DeltaEventsConfig` class that you are constructing here an `@Configuration` bean, which would make this class obsolete.\nThen you could directly autowire that in the `NotificationService` instead of going through this additional class",
       "revId": "aa7186abd45be911fb7e0d618e4e111d2bea152a",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3a85bc88_a1524ce8",
+        "filename": "aai-core/src/main/java/org/onap/aai/util/delta/DeltaEvents.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 7849
+      },
+      "writtenOn": "2025-11-12T14:46:32Z",
+      "side": 1,
+      "message": "From my point of view, this class is doing too much. It is both an entity with properties, but also contains all the sending logic.\nAt some point in time we should refactor this to better separate these concerns.\nI think doing that in this CR would be too much, but it would also help performance I guess because it saves the reinitialization of the service related logic for each entity",
+      "revId": "aa7186abd45be911fb7e0d618e4e111d2bea152a",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b974bd71_589cb3e9",
+        "filename": "aai-core/src/main/java/org/onap/aai/util/delta/DeltaEventsConfig.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 7849
+      },
+      "writtenOn": "2025-11-12T14:46:32Z",
+      "side": 1,
+      "message": "As suggested in the other commit, this could be annotated with `@Configuration`",
+      "revId": "aa7186abd45be911fb7e0d618e4e111d2bea152a",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
     }
   ]
 }
