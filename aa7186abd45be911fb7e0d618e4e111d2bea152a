@@ -18,6 +18,24 @@
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5583b6d5_affb3c57",
+        "filename": "aai-core/src/main/java/org/onap/aai/rest/notification/DeltaEventsService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 8423
+      },
+      "writtenOn": "2025-11-14T05:06:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d6a6c59e_b4d24e72",
+      "revId": "aa7186abd45be911fb7e0d618e4e111d2bea152a",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "da0bbd52_f2c4a723",
@@ -31,6 +49,24 @@
       "writtenOn": "2025-11-12T14:40:04Z",
       "side": 1,
       "message": "~~I don\u0027t think we should name this `service` when the class is actually about exposing configuration.\nAs such I would suggest to rename this to `DeltaEventsConfiguration` with a `@Configuration` annotation~~\nEdit: After thinking this further, we could also just make the `DeltaEventsConfig` class that you are constructing here an `@Configuration` bean, which would make this class obsolete.\nThen you could directly autowire that in the `NotificationService` instead of going through this additional class",
+      "revId": "aa7186abd45be911fb7e0d618e4e111d2bea152a",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fffa1f9b_1759ffda",
+        "filename": "aai-core/src/main/java/org/onap/aai/rest/notification/DeltaEventsService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 8423
+      },
+      "writtenOn": "2025-11-14T05:06:08Z",
+      "side": 1,
+      "message": "Updated this class removing the current logic and using it to add service logic of `DeltaEvents` class",
+      "parentUuid": "da0bbd52_f2c4a723",
       "revId": "aa7186abd45be911fb7e0d618e4e111d2bea152a",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
     },
@@ -52,6 +88,24 @@
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f273fcd7_0a7a5b56",
+        "filename": "aai-core/src/main/java/org/onap/aai/util/delta/DeltaEvents.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 8423
+      },
+      "writtenOn": "2025-11-14T05:06:08Z",
+      "side": 1,
+      "message": "Service logic moved to `DeltaEventsService`.",
+      "parentUuid": "3a85bc88_a1524ce8",
+      "revId": "aa7186abd45be911fb7e0d618e4e111d2bea152a",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b974bd71_589cb3e9",
@@ -65,6 +119,24 @@
       "writtenOn": "2025-11-12T14:46:32Z",
       "side": 1,
       "message": "As suggested in the other commit, this could be annotated with `@Configuration`",
+      "revId": "aa7186abd45be911fb7e0d618e4e111d2bea152a",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ea8460de_a5949112",
+        "filename": "aai-core/src/main/java/org/onap/aai/util/delta/DeltaEventsConfig.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 8423
+      },
+      "writtenOn": "2025-11-14T05:06:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b974bd71_589cb3e9",
       "revId": "aa7186abd45be911fb7e0d618e4e111d2bea152a",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
     }
