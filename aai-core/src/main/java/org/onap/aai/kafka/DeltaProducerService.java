@@ -32,13 +32,16 @@ import lombok.RequiredArgsConstructor;
 public class DeltaProducerService implements DeltaProducer {
 
   private final KafkaTemplate<String,DeltaEvent> kafkaTemplate;
-  @Value("${aai.notifications.enabled:true}")
-  boolean notificationsEnabled;
+  @Value("${delta.events.enabled:false}")
+  boolean deltaEventsEnabled;
+
+  @Value("${delta.events.topic.name:DELTA}")
+  String deltaTopic;
 
   @Override
   public void sendNotification(DeltaEvent deltaEvent) {
-    if(notificationsEnabled) {
-      kafkaTemplate.send("DELTA", deltaEvent);
+    if(deltaEventsEnabled) {
+      kafkaTemplate.send(deltaTopic, deltaEvent);
     }
   }
 }

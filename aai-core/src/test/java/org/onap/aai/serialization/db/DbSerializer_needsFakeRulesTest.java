@@ -42,9 +42,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.onap.aai.config.ConfigConfiguration;
 import org.onap.aai.config.IntrospectionConfig;
-import org.onap.aai.config.KafkaConfig;
 import org.onap.aai.config.SpringContextAware;
-import org.onap.aai.config.XmlFormatTransformerConfiguration;
 import org.onap.aai.db.props.AAIProperties;
 import org.onap.aai.edges.EdgeIngestor;
 import org.onap.aai.exceptions.AAIException;
@@ -54,15 +52,14 @@ import org.onap.aai.introspection.LoaderFactory;
 import org.onap.aai.introspection.ModelType;
 import org.onap.aai.nodes.NodeIngestor;
 import org.onap.aai.parsers.query.QueryParser;
-import org.onap.aai.rest.notification.NotificationService;
 import org.onap.aai.serialization.engines.JanusGraphDBEngine;
 import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
-import org.onap.aai.serialization.queryformats.QueryFormatTestHelper;
 import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.setup.SchemaVersions;
-import org.onap.aai.util.AAIConstants;
+import org.onap.aai.util.delta.DeltaEventsConfig;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -71,12 +68,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(
         classes = {ConfigConfiguration.class, AAICoreFakeEdgesConfigTranslator.class, NodeIngestor.class,
-                EdgeIngestor.class, EdgeSerializer.class, SpringContextAware.class, IntrospectionConfig.class,
-                XmlFormatTransformerConfiguration.class, LoaderFactory.class, NotificationService.class,
-                KafkaConfig.class})
+                EdgeIngestor.class, EdgeSerializer.class, SpringContextAware.class, IntrospectionConfig.class, LoaderFactory.class})
 @TestPropertySource(
         properties = {"schema.translator.list = config", "schema.nodes.location=src/test/resources/onap/oxm",
-                "schema.edges.location=src/test/resources/onap/dbedgerules","aai.notifications.enabled=false"})
+                "schema.edges.location=src/test/resources/onap/dbedgerules"})
+@EnableConfigurationProperties(DeltaEventsConfig.class)
 public class DbSerializer_needsFakeRulesTest {
 
     // to use, set thrown.expect to whatever your test needs
