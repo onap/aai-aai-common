@@ -29,6 +29,7 @@ import org.onap.aai.introspection.MoxyLoader;
 import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.setup.SchemaVersions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -44,7 +45,7 @@ public class IntrospectionConfig {
     NodesConfiguration nodesConfiguration;
 
     @Bean
-    public Map<SchemaVersion, MoxyLoader> moxyLoaderInstance(SchemaVersions schemaVersions) {
+    public Map<SchemaVersion, MoxyLoader> moxyLoaderInstance(@Qualifier("schemaVersions") SchemaVersions schemaVersions) {
         for (SchemaVersion version : schemaVersions.getVersions()) {
             if (!moxyInstanceMap.containsKey(version)) {
                 moxyInstanceMap.put(version, new MoxyLoader(version, nodesConfiguration.nodeIngestor()));
