@@ -30,7 +30,7 @@
 
     <groupId>org.onap.aai.aai-common</groupId>
     <artifactId>aai-common</artifactId>
-    <version>1.17.0-SNAPSHOT</version>
+    <version>1.17.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>aai-aai-common</name>
     <description>Contains all of the common code for resources and traversal repos</description>
@@ -60,7 +60,7 @@
     <properties>
         <aai.common.version>${project.version}</aai.common.version>
         <aai.generate.schema>true</aai.generate.schema>
-  <maven.compiler.release>17</maven.compiler.release>
+        <maven.compiler.release>17</maven.compiler.release>
         <sitePath>/content/sites/site/org/onap/aai/aai-common/${project.artifactId}/${project.version}</sitePath>
         <onap.nexus.url>https://nexus.onap.org</onap.nexus.url>
         <onap.nexus.snapshot.path>/content/repositories/snapshots/</onap.nexus.snapshot.path>
