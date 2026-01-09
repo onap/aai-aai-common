@@ -32,6 +32,7 @@ import org.onap.aai.dbgen.SchemaGenerator;
 import org.onap.aai.dbgen.SchemaGenerator4Hist;
 import org.onap.aai.dbmap.AAIGraphConfig;
 import org.onap.aai.exceptions.AAIException;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -85,7 +86,7 @@ public class GraphConfig {
   }
 
   @Bean
-  public GraphTraversalSource graphTraversalSource(Graph graph) {
+  public GraphTraversalSource graphTraversalSource(@Qualifier("graph") Graph graph) {
     return graph.traversal();
   }
 

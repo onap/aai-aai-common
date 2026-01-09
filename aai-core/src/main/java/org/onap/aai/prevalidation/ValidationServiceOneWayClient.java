@@ -23,12 +23,19 @@ package org.onap.aai.prevalidation;
 import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+
+import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.core5.http.io.SocketConfig;
+import org.apache.hc.core5.util.Timeout;
 
 import org.onap.aai.restclient.OneWaySSLRestClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.util.MultiValueMap;
 
 public class ValidationServiceOneWayClient extends OneWaySSLRestClient {
@@ -45,13 +52,24 @@ public class ValidationServiceOneWayClient extends OneWaySSLRestClient {
     }
 
     @Override
-    protected HttpComponentsClientHttpRequestFactory getHttpRequestFactory() throws Exception {
-        HttpComponentsClientHttpRequestFactory requestFactory = super.getHttpRequestFactory();
-        requestFactory.setConnectionRequestTimeout(timeout);
-        // Manual migration to `SocketConfig.Builder.setSoTimeout(Timeout)` necessary; see: https://docs.spring.io/spring-framework/docs/6.0.0/javadoc-api/org/springframework/http/client/HttpComponentsClientHttpRequestFactory.html#setReadTimeout(int)
-        requestFactory.setReadTimeout(timeout);
-        requestFactory.setConnectTimeout(timeout);
-        return requestFactory;
+    protected HttpClient getClient() throws Exception {
+
+        PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
+        connectionManager.setDefaultSocketConfig(
+            SocketConfig.custom()
+                .setSoTimeout(Timeout.of(timeout, TimeUnit.MILLISECONDS))
+                .build()
+        );
+
+        RequestConfig requestConfig = RequestConfig.custom()
+            .setConnectionRequestTimeout(Timeout.of(timeout, TimeUnit.MILLISECONDS))
+            .setResponseTimeout(Timeout.of(timeout, TimeUnit.MILLISECONDS))
+            .build();
+
+        return HttpClients.custom()
+            .setConnectionManager(connectionManager)
+            .setDefaultRequestConfig(requestConfig)
+            .build();
     }
 
     @Override
