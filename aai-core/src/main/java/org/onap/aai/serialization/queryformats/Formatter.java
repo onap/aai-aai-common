@@ -23,6 +23,8 @@ package org.onap.aai.serialization.queryformats;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import io.micrometer.observation.annotation.Observed;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -129,6 +131,7 @@ public class Formatter {
 
     }
 
+    @Observed
     public JsonObject output(List<Object> queryResults) {
         return output(queryResults, null);
     }

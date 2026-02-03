@@ -23,6 +23,8 @@ package org.onap.aai.introspection;
 import com.google.common.base.CaseFormat;
 import com.google.common.base.Joiner;
 
+import io.micrometer.observation.annotation.Observed;
+
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -324,6 +326,7 @@ public class MoxyStrategy extends Introspector {
     }
 
     @Override
+    @Observed
     public String marshal(MarshallerProperties properties) {
         StringWriter result = new StringWriter();
         try {

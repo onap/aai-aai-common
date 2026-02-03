@@ -41,6 +41,8 @@ import org.onap.aai.introspection.Loader;
 import org.onap.aai.parsers.query.QueryParser;
 import org.onap.aai.parsers.query.TraversalStrategy;
 
+import io.micrometer.observation.annotation.Observed;
+
 /**
  * The Class TraversalQuery.
  */
@@ -88,6 +90,7 @@ public class TraversalQuery<E> extends GraphTraversalBuilder<E> {
      * @{inheritDoc}
      */
     @Override
+    @Observed(name = "TraversalQuery.createQueryFromURI")
     public QueryParser createQueryFromURI(URI uri) throws UnsupportedEncodingException, AAIException {
         return factory.buildURIParser(uri);
     }

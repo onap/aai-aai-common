@@ -36,6 +36,8 @@ import org.onap.aai.parsers.query.QueryParser;
 import org.onap.aai.parsers.query.TraversalStrategy;
 import org.onap.aai.parsers.query.UniqueStrategy;
 
+import io.micrometer.observation.annotation.Observed;
+
 /**
  * The Class GremlinUnique.
  */
@@ -77,6 +79,7 @@ public class GremlinUnique<E> extends GremlinQueryBuilder<E> {
      * @{inheritDoc}
      */
     @Override
+    @Observed(name = "GremlinUnique.createQueryFromURI")
     public QueryParser createQueryFromURI(URI uri) throws UnsupportedEncodingException, AAIException {
         return factory.buildURIParser(uri);
     }

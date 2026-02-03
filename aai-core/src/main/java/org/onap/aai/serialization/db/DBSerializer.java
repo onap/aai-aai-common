@@ -22,6 +22,8 @@ package org.onap.aai.serialization.db;
 
 import com.google.common.base.CaseFormat;
 
+import io.micrometer.observation.annotation.Observed;
+
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
@@ -1359,6 +1361,7 @@ public class DBSerializer {
      * @throws AAIUnknownObjectException
      * @throws URISyntaxException
      */
+    @Observed(name = "DBSerializer.dbToObject")
     private Introspector dbToObject(Introspector obj, Vertex v, Set<Vertex> seen, int depth, boolean nodeOnly,
             String cleanUp, boolean isSkipRelatedTo) throws AAIException, UnsupportedEncodingException {
 

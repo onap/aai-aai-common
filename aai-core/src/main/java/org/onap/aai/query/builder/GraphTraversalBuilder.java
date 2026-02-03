@@ -25,6 +25,8 @@ package org.onap.aai.query.builder;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
+import io.micrometer.observation.annotation.Observed;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -979,6 +981,7 @@ public abstract class GraphTraversalBuilder<E> extends QueryBuilder<E> {
     }
 
     @Override
+    @Observed(name = "GraphTraversalBuilder.toList")
     public List<E> toList() {
         if (this.completeTraversal == null) {
             executeQuery();

@@ -27,6 +27,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
 
+import io.micrometer.observation.annotation.Observed;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
@@ -191,7 +193,7 @@ public class HttpEntry {
         return this.process(requests, sourceOfTruth, groups, true, null);
     }
 
-
+    @Observed(name = "HttpEntry.process")
     public Pair<Boolean, List<Pair<URI, Response>>> process(List<DBRequest> requests, String sourceOfTruth,
             Set<String> groups, boolean enableResourceVersion, QueryOptions queryOptions) throws AAIException {
 
@@ -655,6 +657,7 @@ public class HttpEntry {
 
     }
 
+    @Observed(name = "HttpEntry.getObjectFromDb")
     private Introspector getObjectFromDb(List<Vertex> results, DBSerializer serializer, QueryParser query,
             Introspector obj, URI uri, int depth, boolean nodeOnly, String cleanUp, boolean isSkipRelatedTo)
             throws AAIException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,

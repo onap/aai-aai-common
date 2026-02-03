@@ -35,6 +35,8 @@ import org.onap.aai.introspection.Loader;
 import org.onap.aai.parsers.query.QueryParser;
 import org.onap.aai.parsers.query.TraversalStrategy;
 
+import io.micrometer.observation.annotation.Observed;
+
 /**
  * The Class GremlinTraversal.
  */
@@ -76,6 +78,7 @@ public class GremlinTraversal<E> extends GremlinQueryBuilder<E> {
      * @{inheritDoc}
      */
     @Override
+    @Observed(name = "GremlinTraversal.createQueryFromURI")
     public QueryParser createQueryFromURI(URI uri) throws UnsupportedEncodingException, AAIException {
         return factory.buildURIParser(uri);
     }

@@ -26,6 +26,8 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
+import io.micrometer.observation.annotation.Observed;
+
 import java.util.*;
 
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
@@ -943,6 +945,7 @@ public abstract class GremlinQueryBuilder<E> extends QueryBuilder<E> {
     }
 
     @Override
+    @Observed(name = "GremlinQueryBuilder.toList")
     public List<E> toList() {
         if (this.completeTraversal == null) {
             executeQuery();
