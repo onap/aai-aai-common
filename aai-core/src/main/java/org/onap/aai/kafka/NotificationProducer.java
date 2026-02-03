@@ -22,9 +22,7 @@ package org.onap.aai.kafka;
 
 import org.onap.aai.domain.notificationEvent.NotificationEvent;
 import org.onap.aai.rest.notification.UEBNotification;
-import org.springframework.stereotype.Service;
 
-@Service
 public interface NotificationProducer {
   public void sendNotification(NotificationEvent notificationEvent);
   public void sendUEBNotification(UEBNotification uebNotification);

@@ -21,9 +21,7 @@
 package org.onap.aai.kafka;
 
 import org.onap.aai.domain.deltaEvent.DeltaEvent;
-import org.springframework.stereotype.Service;
 
-@Service
 public interface DeltaProducer {
   public void sendNotification(DeltaEvent notificationEvent);
 }

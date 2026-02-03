@@ -26,14 +26,7 @@ import java.util.stream.Collectors;
 import jakarta.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.stereotype.Component;
 
-@Component("schemaConfigVersions")
-@ConditionalOnExpression("'${schema.translator.list:config}'.contains('config') || '${schema.service.versions.override:false}'.equals('true')")
-@PropertySource(value = "classpath:schema-ingest.properties", ignoreResourceNotFound = true)
-@PropertySource(value = "file:${schema.ingest.file}", ignoreResourceNotFound = true)
 public class SchemaConfigVersions extends SchemaVersions {
 
     @Value("#{'${schema.version.list:''}'.split(',')}")

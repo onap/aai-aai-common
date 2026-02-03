@@ -23,11 +23,9 @@ package org.onap.aai.kafka;
 import org.onap.aai.domain.deltaEvent.DeltaEvent;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 
-@Service
 @RequiredArgsConstructor
 public class DeltaProducerService implements DeltaProducer {
 
