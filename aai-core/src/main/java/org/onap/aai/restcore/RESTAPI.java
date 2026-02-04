@@ -33,6 +33,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import io.opentelemetry.context.Context;
+import io.opentelemetry.context.Scope;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -350,9 +352,21 @@ public class RESTAPI {
             String timeoutByApp = AAIConfig.get(tba);
             String timeoutDefaultLimit = AAIConfig.get(tdl);
             String sourceOfTruth = headers.getRequestHeaders().getFirst("X-FromAppId");
+
             if (isTimeoutEnabled(sourceOfTruth, timeoutEnabled, timeoutByApp, timeoutDefaultLimit)) {
                 executor = Executors.newSingleThreadExecutor();
-                handler = executor.submit(c);
+
+                // Capture current context
+                Context context = Context.current();
+
+                // Wrap the callable to propagate context
+                Callable<Response> wrappedCallable = () -> {
+                    try (Scope scope = context.makeCurrent()) {
+                        return c.call();
+                    }
+                };
+
+                handler = executor.submit(wrappedCallable);
                 response = executeProcess(handler, sourceOfTruth, timeoutByApp, timeoutDefaultLimit, httpMethod,
                         headers, info);
             } else {
