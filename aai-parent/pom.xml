@@ -39,6 +39,7 @@ limitations under the License.
 
   <properties>
     <maven.compiler.release>11</maven.compiler.release>
+    <maven.compiler.parameters>true</maven.compiler.parameters>
     <!-- update this just prior to release or figure out something with version.properties -->
     <aai.release.version>${aai.common.version}</aai.release.version>
     <aai.schema.service.version>1.12.7</aai.schema.service.version>
