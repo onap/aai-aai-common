@@ -20,9 +20,9 @@
 
 package org.onap.aai.logging;
 
-import ch.qos.logback.access.PatternLayout;
+import ch.qos.logback.access.common.PatternLayout;
 
-public class CustomLogPatternLayoutEncoder extends ch.qos.logback.access.PatternLayoutEncoder {
+public class CustomLogPatternLayoutEncoder extends ch.qos.logback.access.common.PatternLayoutEncoder {
 
     /**
      * @{inheritDoc}

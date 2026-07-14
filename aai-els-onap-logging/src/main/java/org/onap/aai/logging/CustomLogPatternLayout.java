@@ -20,9 +20,19 @@
 
 package org.onap.aai.logging;
 
-public class CustomLogPatternLayout extends ch.qos.logback.access.PatternLayout {
-    static {
-        defaultConverterMap.put("z", CNName.class.getName());
-        defaultConverterMap.put("y", DME2RestFlag.class.getName());
+import ch.qos.logback.core.pattern.DynamicConverter;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Supplier;
+
+public class CustomLogPatternLayout extends ch.qos.logback.access.common.PatternLayout {
+
+    @Override
+    public Map<String, Supplier<DynamicConverter>> getDefaultConverterSupplierMap() {
+        Map<String, Supplier<DynamicConverter>> map = new HashMap<>(super.getDefaultConverterSupplierMap());
+        map.put("z", CNName::new);
+        map.put("y", DME2RestFlag::new);
+        return map;
     }
 }
