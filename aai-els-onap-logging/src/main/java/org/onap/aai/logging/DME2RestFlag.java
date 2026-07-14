@@ -20,8 +20,8 @@
 
 package org.onap.aai.logging;
 
-import ch.qos.logback.access.pattern.AccessConverter;
-import ch.qos.logback.access.spi.IAccessEvent;
+import ch.qos.logback.access.common.pattern.AccessConverter;
+import ch.qos.logback.access.common.spi.IAccessEvent;
 
 public class DME2RestFlag extends AccessConverter {
 

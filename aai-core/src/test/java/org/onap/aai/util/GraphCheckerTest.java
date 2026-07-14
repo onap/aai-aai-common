@@ -19,7 +19,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.onap.aai.AAISetup;
 import org.onap.aai.config.GraphConfig;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 
@@ -33,7 +33,7 @@ public class GraphCheckerTest extends AAISetup {
   @Mock JanusGraphTransaction transaction;
   @Mock GraphTraversalSource traversalSource;
   @Mock GraphTraversal<Vertex, Vertex> traversal;
-  @MockBean JanusGraph graph;
+  @MockitoBean JanusGraph graph;
   @Autowired GraphChecker graphChecker;
 
   @Before

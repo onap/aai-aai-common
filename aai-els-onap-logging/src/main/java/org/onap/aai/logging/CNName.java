@@ -22,8 +22,8 @@ package org.onap.aai.logging;
 
 import static java.util.Base64.getDecoder;
 
-import ch.qos.logback.access.pattern.AccessConverter;
-import ch.qos.logback.access.spi.IAccessEvent;
+import ch.qos.logback.access.common.pattern.AccessConverter;
+import ch.qos.logback.access.common.spi.IAccessEvent;
 
 import java.security.cert.X509Certificate;
 

@@ -20,7 +20,8 @@
 
 package org.onap.aai.logging;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -30,9 +31,9 @@ public class CustomLogPatternLayoutTest {
 
     @Test
     public void defaultConverterTest() {
-
-        assertEquals(customLogPatternLayout.getDefaultConverterMap().get("z"), CNName.class.getName());
-        assertEquals(customLogPatternLayout.getDefaultConverterMap().get("y"), DME2RestFlag.class.getName());
-
+        assertNotNull(customLogPatternLayout.getDefaultConverterSupplierMap().get("z"));
+        assertNotNull(customLogPatternLayout.getDefaultConverterSupplierMap().get("y"));
+        assertTrue(customLogPatternLayout.getDefaultConverterSupplierMap().get("z").get() instanceof CNName);
+        assertTrue(customLogPatternLayout.getDefaultConverterSupplierMap().get("y").get() instanceof DME2RestFlag);
     }
 }

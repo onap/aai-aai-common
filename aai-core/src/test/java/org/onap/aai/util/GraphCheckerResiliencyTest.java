@@ -28,6 +28,7 @@ import java.io.IOException;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.onap.aai.IntegrationTest;
 import org.onap.aai.JanusgraphCassandraConfiguration;
@@ -47,6 +48,9 @@ import eu.rekawek.toxiproxy.Proxy;
 import eu.rekawek.toxiproxy.ToxiproxyClient;
 import eu.rekawek.toxiproxy.model.ToxicDirection;
 
+@Disabled
+// Test is working, but Jenkins nodes are lacking a docker environment.
+// Can be enabled again, once the repo is migrated to github actions
 @Testcontainers
 @Import(JanusgraphCassandraConfiguration.class)
 @ContextConfiguration(classes = {

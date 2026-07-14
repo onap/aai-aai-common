@@ -98,16 +98,16 @@ import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 import org.onap.aai.util.AAIConfig;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.HttpStatus;
 
 @RunWith(value = Parameterized.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class HttpEntryTest extends AAISetup {
 
-    @MockBean
+    @MockitoBean
     ValidationService validationService;
-    @MockBean
+    @MockitoBean
     NotificationService notificationService;
 
     protected static final MediaType APPLICATION_JSON = MediaType.valueOf("application/json");
