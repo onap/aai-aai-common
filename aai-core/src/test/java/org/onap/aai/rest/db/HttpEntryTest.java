@@ -63,7 +63,6 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.javatuples.Pair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.After;
@@ -81,6 +80,7 @@ import org.onap.aai.edges.enums.EdgeProperty;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
+import org.onap.aai.introspection.ModelType;
 import org.onap.aai.parsers.query.QueryParser;
 import org.onap.aai.prevalidation.ValidationService;
 import org.onap.aai.query.builder.Pageable;
@@ -131,6 +131,7 @@ public class HttpEntryTest extends AAISetup {
         return Arrays.asList(new Object[][] { { QueryStyle.TRAVERSAL }, { QueryStyle.TRAVERSAL_URI } });
     }
 
+    private GraphBinding binding;
     private Loader loader;
     private TransactionalGraphEngine dbEngine;
     private GraphTraversalSource traversal;
@@ -169,9 +170,10 @@ public class HttpEntryTest extends AAISetup {
         aaiRequestContextList = new ArrayList<>();
         aaiRequestContextList.add("");
 
-        traversalHttpEntry.setHttpEntryProperties(schemaVersions.getDefaultVersion());
-        loader = traversalHttpEntry.getLoader();
-        dbEngine = traversalHttpEntry.getDbEngine();
+        binding = graphSessionFactory.bind(ModelType.MOXY, QueryStyle.TRAVERSAL, schemaVersions.getDefaultVersion());
+        binding.startTransaction();
+        loader = binding.loader();
+        dbEngine = binding.dbEngine();
         traversal = dbEngine.tx().traversal();
 
         when(httpHeaders.getAcceptableMediaTypes()).thenReturn(outputMediaTypes);
@@ -191,7 +193,7 @@ public class HttpEntryTest extends AAISetup {
 
     @After
     public void rollback() {
-        dbEngine.rollback();
+        binding.rollback();
     }
 
     @Test
@@ -207,7 +209,7 @@ public class HttpEntryTest extends AAISetup {
         JSONObject expectedResponseBody = new JSONObject()
                 .put("hostname", "theHostname")
                 .put("equip-type", "theEquipType");
-        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri);
+        Response response = doRequest(binding, HttpMethod.GET, uri);
         JSONObject actualResponseBody = new JSONObject(response.getEntity().toString());
 
         JSONAssert.assertEquals(expectedResponseBody, actualResponseBody, JSONCompareMode.NON_EXTENSIBLE);
@@ -244,7 +246,7 @@ public class HttpEntryTest extends AAISetup {
                 .put(pserver2));
 
         uri = "/cloud-infrastructure/pservers";
-        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri);
+        Response response = doRequest(binding, HttpMethod.GET, uri);
         JSONObject actualResponseBody = new JSONObject(response.getEntity().toString());
 
         JSONAssert.assertEquals(expectedResponseBody, actualResponseBody, JSONCompareMode.NON_EXTENSIBLE);
@@ -278,7 +280,7 @@ public class HttpEntryTest extends AAISetup {
 
         uri = "/cloud-infrastructure/pservers";
         QueryOptions queryOptions = QueryOptions.builder().pageable(new Pageable(1, 1)).build();
-        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri, queryOptions);
+        Response response = doRequest(binding, HttpMethod.GET, uri, queryOptions);
         JSONObject actualResponseBody = new JSONObject(response.getEntity().toString());
 
         assertNull(response.getHeaderString("total-results"));
@@ -288,7 +290,7 @@ public class HttpEntryTest extends AAISetup {
                 any());
 
         queryOptions = QueryOptions.builder().pageable(new Pageable(0, 5).includeTotalCount()).build();
-        response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri, queryOptions);
+        response = doRequest(binding, HttpMethod.GET, uri, queryOptions);
         actualResponseBody = new JSONObject(response.getEntity().toString());
         assertEquals(2, actualResponseBody.getJSONArray("pserver").length());
     }
@@ -299,14 +301,14 @@ public class HttpEntryTest extends AAISetup {
 
         uri = "/cloud-infrastructure/pservers";
         QueryOptions queryOptions = QueryOptions.builder().pageable(new Pageable(0, 1)).build();
-        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri, queryOptions);
+        Response response = doRequest(binding, HttpMethod.GET, uri, queryOptions);
 
         assertTrue(response.getEntity().toString().contains(
                 "Node Not Found:No Node of type pserver found at: /cloud-infrastructure/pservers"));
         assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatus());
 
         queryOptions = QueryOptions.builder().pageable(new Pageable(0, 1).includeTotalCount()).build();
-        response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri, queryOptions);
+        response = doRequest(binding, HttpMethod.GET, uri, queryOptions);
 
         assertTrue(response.getEntity().toString().contains(
                 "Node Not Found:No Node of type pserver found at: /cloud-infrastructure/pservers"));
@@ -342,7 +344,7 @@ public class HttpEntryTest extends AAISetup {
         uri = "/cloud-infrastructure/pservers";
         QueryOptions queryOptions = QueryOptions.builder().pageable(new Pageable(1, 1).includeTotalCount())
                 .build();
-        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri, queryOptions);
+        Response response = doRequest(binding, HttpMethod.GET, uri, queryOptions);
         JSONObject actualResponseBody = new JSONObject(response.getEntity().toString());
         String totalCount = response.getHeaderString("total-results");
         String totalPages = response.getHeaderString("total-pages");
@@ -355,7 +357,7 @@ public class HttpEntryTest extends AAISetup {
                 any());
 
         queryOptions = QueryOptions.builder().pageable(new Pageable(0, 2)).build();
-        response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri, queryOptions);
+        response = doRequest(binding, HttpMethod.GET, uri, queryOptions);
         actualResponseBody = new JSONObject(response.getEntity().toString());
         assertEquals(2, actualResponseBody.getJSONArray("pserver").length());
     }
@@ -390,7 +392,7 @@ public class HttpEntryTest extends AAISetup {
         uri = "/cloud-infrastructure/pservers";
         QueryOptions queryOptions = QueryOptions.builder()
                 .sort(Sort.builder().property("equip-type").direction(Direction.ASC).build()).build();
-        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri, queryOptions);
+        Response response = doRequest(binding, HttpMethod.GET, uri, queryOptions);
         JSONObject actualResponseBody = new JSONObject(response.getEntity().toString());
         assertEquals("theEquipType",
                 actualResponseBody.getJSONArray("pserver").getJSONObject(0).getString("equip-type"));
@@ -400,7 +402,7 @@ public class HttpEntryTest extends AAISetup {
         // descending
         queryOptions = QueryOptions.builder()
                 .sort(Sort.builder().property("equip-type").direction(Direction.DESC).build()).build();
-        response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri, queryOptions);
+        response = doRequest(binding, HttpMethod.GET, uri, queryOptions);
         actualResponseBody = new JSONObject(response.getEntity().toString());
         assertEquals("theEquipType2",
                 actualResponseBody.getJSONArray("pserver").getJSONObject(0).getString("equip-type"));
@@ -412,7 +414,7 @@ public class HttpEntryTest extends AAISetup {
     public void thatObjectsCanNotBeFound() throws UnsupportedEncodingException, AAIException {
         String uri = "/cloud-infrastructure/pservers/pserver/junit-test2";
 
-        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri);
+        Response response = doRequest(binding, HttpMethod.GET, uri);
         assertEquals("The pserver is not found", 404, response.getStatus());
         verify(notificationService, never()).generateEvents(any(), anyInt(), any(), any(), any(), any(), any(),
                 any());
@@ -423,7 +425,7 @@ public class HttpEntryTest extends AAISetup {
         String uri = "/cloud-infrastructure/pservers/pserver/theHostname";
         String requestBody = new JSONObject().put("hostname", "theHostname").toString();
 
-        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, requestBody);
+        Response response = doRequest(binding, HttpMethod.PUT, uri, requestBody);
         assertEquals("Expecting the pserver to be created", 201, response.getStatus());
         verify(notificationService, times(1)).generateEvents(any(), anyInt(), any(), any(), any(), any(), any(),
                 any());
@@ -439,7 +441,7 @@ public class HttpEntryTest extends AAISetup {
                 .put("resource-version", "123")
                 .toString();
 
-        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, requestBody);
+        Response response = doRequest(binding, HttpMethod.PUT, uri, requestBody);
         ErrorResponse errorResponseEntity = mapper.readValue(response.getEntity().toString(),
                 ErrorResponse.class);
         assertEquals("Expecting the pserver to be created", 412, response.getStatus());
@@ -465,7 +467,7 @@ public class HttpEntryTest extends AAISetup {
                 .put("resource-version", "123")
                 .toString();
 
-        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, requestBody);
+        Response response = doRequest(binding, HttpMethod.PUT, uri, requestBody);
         assertEquals("Expecting the pserver to be updated", 200, response.getStatus());
         assertTrue("That old properties are removed",
                 traversal.V().has("hostname", "updatedHostname").hasNot("number-of-cpus").hasNext());
@@ -489,7 +491,7 @@ public class HttpEntryTest extends AAISetup {
                 .put("resource-version", "456")
                 .toString();
 
-        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, requestBody);
+        Response response = doRequest(binding, HttpMethod.PUT, uri, requestBody);
         ErrorResponse errorResponseEntity = mapper.readValue(response.getEntity().toString(),
                 ErrorResponse.class);
         assertEquals("Expecting the update to fail", 412, response.getStatus());
@@ -517,8 +519,8 @@ public class HttpEntryTest extends AAISetup {
                 .put("is-maint", "true")
                 .toString();
 
-        doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, requestBody);
-        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, requestBody);
+        doRequest(binding, HttpMethod.PUT, uri, requestBody);
+        Response response = doRequest(binding, HttpMethod.PUT, uri, requestBody);
         ErrorResponse errorResponseEntity = mapper.readValue(response.getEntity().toString(),
                 ErrorResponse.class);
         assertEquals("Request should fail when no resource-version is provided", 412, response.getStatus());
@@ -538,7 +540,7 @@ public class HttpEntryTest extends AAISetup {
         String uri = "/cloud-infrastructure/pservers/pserver/hostname/p-interfaces/p-interface/p1";
         String requestBody = new JSONObject().put("interface-name", "p1").toString();
 
-        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, requestBody);
+        Response response = doRequest(binding, HttpMethod.PUT, uri, requestBody);
         assertEquals("response is successful", 201, response.getStatus());
         assertTrue("p-interface was created",
                 traversal.V().has("aai-node-type", "p-interface").has("interface-name", "p1")
@@ -565,7 +567,7 @@ public class HttpEntryTest extends AAISetup {
         String requestBody = new JSONObject()
                 .put("hostname", "new-hostname")
                 .toString();
-        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.MERGE_PATCH, uri,
+        Response response = doRequest(binding, HttpMethod.MERGE_PATCH, uri,
                 requestBody);
         assertEquals("Expected the pserver to be updated", 200, response.getStatus());
         assertTrue("object should be updated while keeping old properties",
@@ -626,7 +628,7 @@ public class HttpEntryTest extends AAISetup {
                 .put("relationship-label", "org.onap.relationships.inventory.LocatedIn")
                 .toString();
 
-        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT_EDGE, uri,
+        Response response = doRequest(binding, HttpMethod.PUT_EDGE, uri,
                 requestBody);
         assertEquals("Expected the pserver relationship to be created", 200, response.getStatus());
         GraphTraversal<Vertex, Vertex> vertexQuery = traversal.V()
@@ -684,7 +686,7 @@ public class HttpEntryTest extends AAISetup {
                                 schemaVersions.getDefaultVersion().toString()))
                 .put("relationship-label", "org.onap.relationships.inventory.LocatedIn")
                 .toString();
-        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT_EDGE, uri,
+        Response response = doRequest(binding, HttpMethod.PUT_EDGE, uri,
                 requestBody);
         ServiceException serviceException = mapper
                 .readValue(response.getEntity().toString(), ErrorResponse.class)
@@ -731,7 +733,7 @@ public class HttpEntryTest extends AAISetup {
                 .put("relationship-label", "does.not.exist")
                 .toString();
 
-        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT_EDGE, uri,
+        Response response = doRequest(binding, HttpMethod.PUT_EDGE, uri,
                 requestBody);
         ServiceException serviceException = mapper
                 .readValue(response.getEntity().toString(), ErrorResponse.class)
@@ -762,7 +764,7 @@ public class HttpEntryTest extends AAISetup {
 
         queryParameters.add("format", "pathed");
         String requestBody = "";
-        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET,
+        Response response = doRequest(binding, HttpMethod.GET,
                 "/cloud-infrastructure/pservers");
         queryParameters.remove("format");
 
@@ -802,7 +804,7 @@ public class HttpEntryTest extends AAISetup {
                 .next();
 
         uri = "/cloud-infrastructure/complexes/complex/related-to-complex/related-to/pservers";
-        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri);
+        Response response = doRequest(binding, HttpMethod.GET, uri);
 
         assertEquals("Expected the response to be successful", 200, response.getStatus());
         assertThat("Related pserver is returned", response.getEntity().toString(),
@@ -835,7 +837,7 @@ public class HttpEntryTest extends AAISetup {
                 .next();
 
         uri = "/network/generic-vnfs/generic-vnf/abstract-generic-vnf/related-to/pservers";
-        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri);
+        Response response = doRequest(binding, HttpMethod.GET, uri);
         assertThat("Related to pserver is returned.", response.getEntity().toString(),
                 containsString("\"hostname\":\"abstract-pserver\""));
         verify(notificationService, times(1)).generateEvents(any(), anyInt(), any(), any(), any(), any(), any(),
@@ -876,7 +878,7 @@ public class HttpEntryTest extends AAISetup {
 
         // Get Relationship
         uri = "/cloud-infrastructure/pservers/pserver/related-to-pserver";
-        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET_RELATIONSHIP, uri);
+        Response response = doRequest(binding, HttpMethod.GET_RELATIONSHIP, uri);
         Relationship[] relationships = mapper
                 .readValue(response.getEntity().toString(), RelationshipWrapper.class)
                 .getRelationships();
@@ -925,7 +927,7 @@ public class HttpEntryTest extends AAISetup {
         // Get Relationship
         uri = "/cloud-infrastructure/pservers/pserver/related-to-pserver";
         queryParameters.add("format", "resource");
-        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET_RELATIONSHIP, uri);
+        Response response = doRequest(binding, HttpMethod.GET_RELATIONSHIP, uri);
 
         JSONObject actualResponseBody = new JSONObject(response.getEntity().toString());
 
@@ -994,7 +996,7 @@ public class HttpEntryTest extends AAISetup {
                 .put("relationship-label", "org.onap.relationships.inventory.LocatedIn")
                 .toString();
 
-        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.DELETE_EDGE, uri,
+        Response response = doRequest(binding, HttpMethod.DELETE_EDGE, uri,
                 requestBody);
         assertEquals("Expected the relationship to be deleted", 204, response.getStatus());
         assertFalse("Edge should not exist after deletion",
@@ -1015,7 +1017,7 @@ public class HttpEntryTest extends AAISetup {
                 .property(AAIProperties.RESOURCE_VERSION, "123")
                 .next();
 
-        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET_RELATIONSHIP, uri);
+        Response response = doRequest(binding, HttpMethod.GET_RELATIONSHIP, uri);
         assertEquals("Expected 500 for unmapped AAI_6149 when no relationships found", 500,
                 response.getStatus());
         assertThat(response.getEntity().toString(), containsString("ERR.5.4.4000"));
@@ -1052,7 +1054,7 @@ public class HttpEntryTest extends AAISetup {
                 .next();
 
         queryParameters.add("nodes-only", "");
-        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, pserverUri);
+        Response response = doRequest(binding, HttpMethod.GET, pserverUri);
         queryParameters.remove("nodes-only");
 
         assertEquals("Expected the pserver to be returned", 200, response.getStatus());
@@ -1065,34 +1067,30 @@ public class HttpEntryTest extends AAISetup {
 
     @Test
     public void setDepthNullReturnsZeroForCurrentVersion() throws AAIException {
-        traversalHttpEntry.setHttpEntryProperties(schemaVersions.getDefaultVersion());
         Introspector obj = loader.introspectorFromName("pserver");
-        int depth = traversalHttpEntry.setDepth(obj, null);
+        int depth = dbRequestProcessor.setDepth(schemaVersions.getDefaultVersion(), obj, null);
         assertEquals("Depth should be 0 when depthParam is null and version >= depthVersion", 0, depth);
     }
 
     @Test
     public void setDepthAllReturnsMaximumDepth() throws AAIException {
-        traversalHttpEntry.setHttpEntryProperties(schemaVersions.getDefaultVersion());
         Introspector obj = loader.introspectorFromName("pserver");
-        int depth = traversalHttpEntry.setDepth(obj, "all");
+        int depth = dbRequestProcessor.setDepth(schemaVersions.getDefaultVersion(), obj, "all");
         assertEquals("Depth should be MAXIMUM_DEPTH when depthParam is \"all\"",
                 AAIProperties.MAXIMUM_DEPTH.intValue(), depth);
     }
 
     @Test
     public void setDepthIntegerReturnsExpectedValue() throws AAIException {
-        traversalHttpEntry.setHttpEntryProperties(schemaVersions.getDefaultVersion());
         Introspector obj = loader.introspectorFromName("pserver");
-        int depth = traversalHttpEntry.setDepth(obj, "3");
+        int depth = dbRequestProcessor.setDepth(schemaVersions.getDefaultVersion(), obj, "3");
         assertEquals("Depth should be 3 when depthParam is \"3\"", 3, depth);
     }
 
     @Test(expected = AAIException.class)
     public void setDepthInvalidParamThrowsException() throws AAIException {
-        traversalHttpEntry.setHttpEntryProperties(schemaVersions.getDefaultVersion());
         Introspector obj = loader.introspectorFromName("pserver");
-        traversalHttpEntry.setDepth(obj, "notANumber");
+        dbRequestProcessor.setDepth(schemaVersions.getDefaultVersion(), obj, "notANumber");
     }
 
     @Test
@@ -1121,13 +1119,14 @@ public class HttpEntryTest extends AAISetup {
                 .rawRequestContent(body2).build();
 
         List<DBRequest> batchRequests = Arrays.asList(request1, request2);
-        Pair<Boolean, List<Pair<URI, Response>>> result = traversalHttpEntry.process(batchRequests, "JUNIT");
+        ProcessResult result = dbRequestProcessor.process(binding, batchRequests,
+                ProcessOptions.forSourceOfTruth("JUNIT").build());
 
-        assertTrue("All requests should succeed", result.getValue0());
-        assertEquals("Should have two responses", 2, result.getValue1().size());
-        assertEquals("First request should return 201", 201, result.getValue1().get(0).getValue1().getStatus());
+        assertTrue("All requests should succeed", result.success());
+        assertEquals("Should have two responses", 2, result.results().size());
+        assertEquals("First request should return 201", 201, result.results().get(0).response().getStatus());
         assertEquals("Second request should return 201", 201,
-                result.getValue1().get(1).getValue1().getStatus());
+                result.results().get(1).response().getStatus());
         assertTrue("pserver 1 should exist in graph",
                 traversal.V().has("aai-node-type", "pserver").has("hostname", "batch-pserver-1")
                         .hasNext());
@@ -1161,30 +1160,26 @@ public class HttpEntryTest extends AAISetup {
                 any());
     }
 
-    private Response doRequest(HttpEntry httpEntry, Loader loader, TransactionalGraphEngine dbEngine,
-            HttpMethod method,
+    private Response doRequest(GraphBinding binding, HttpMethod method,
             String uri) throws UnsupportedEncodingException, AAIException {
-        return doRequest(httpEntry, loader, dbEngine, method, uri, null, null);
+        return doRequest(binding, method, uri, null, null);
     }
 
-    private Response doRequest(HttpEntry httpEntry, Loader loader, TransactionalGraphEngine dbEngine,
-            HttpMethod method,
+    private Response doRequest(GraphBinding binding, HttpMethod method,
             String uri, String requestBody) throws UnsupportedEncodingException, AAIException {
-        return doRequest(httpEntry, loader, dbEngine, method, uri, requestBody, null);
+        return doRequest(binding, method, uri, requestBody, null);
     }
 
-    private Response doRequest(HttpEntry httpEntry, Loader loader, TransactionalGraphEngine dbEngine,
-            HttpMethod method,
+    private Response doRequest(GraphBinding binding, HttpMethod method,
             String uri, QueryOptions queryOptions) throws UnsupportedEncodingException, AAIException {
-        return doRequest(httpEntry, loader, dbEngine, method, uri, null, queryOptions);
+        return doRequest(binding, method, uri, null, queryOptions);
     }
 
-    private Response doRequest(HttpEntry httpEntry, Loader loader, TransactionalGraphEngine dbEngine,
-            HttpMethod method,
+    private Response doRequest(GraphBinding binding, HttpMethod method,
             String uri, String requestBody, QueryOptions queryOptions)
             throws UnsupportedEncodingException, AAIException {
         URI uriObject = UriBuilder.fromPath(uri).build();
-        QueryParser uriQuery = dbEngine.getQueryBuilder().createQueryFromURI(uriObject);
+        QueryParser uriQuery = binding.dbEngine().getQueryBuilder().createQueryFromURI(uriObject);
         String objType;
         if (!uriQuery.getContainerType().equals("")) {
             objType = uriQuery.getContainerType();
@@ -1196,9 +1191,9 @@ public class HttpEntryTest extends AAISetup {
         }
         Introspector obj;
         if (method.equals(HttpMethod.GET) || method.equals(HttpMethod.GET_RELATIONSHIP)) {
-            obj = loader.introspectorFromName(objType);
+            obj = binding.loader().introspectorFromName(objType);
         } else {
-            obj = loader.unmarshal(objType, requestBody,
+            obj = binding.loader().unmarshal(objType, requestBody,
                     org.onap.aai.restcore.MediaType.getEnum("application/json"));
         }
 
@@ -1211,9 +1206,9 @@ public class HttpEntryTest extends AAISetup {
 
         List<DBRequest> dbRequestList = Collections.singletonList(dbRequest);
 
-        Pair<Boolean, List<Pair<URI, Response>>> responsesTuple = httpEntry.process(dbRequestList, "JUNIT",
-                Collections.emptySet(), true, queryOptions);
-        return responsesTuple.getValue1().get(0).getValue1();
+        ProcessResult result = dbRequestProcessor.process(binding, dbRequestList,
+                ProcessOptions.forSourceOfTruth("JUNIT").queryOptions(queryOptions).build());
+        return result.first().response();
     }
 
     private Response doDelete(String resourceVersion, String uri, String nodeType)
@@ -1222,20 +1217,19 @@ public class HttpEntryTest extends AAISetup {
 
         URI uriObject = UriBuilder.fromPath(uri).build();
 
-        QueryParser uriQuery = dbEngine.getQueryBuilder().createQueryFromURI(uriObject);
+        QueryParser uriQuery = binding.dbEngine().getQueryBuilder().createQueryFromURI(uriObject);
 
         String content = "";
 
-        Introspector obj = loader.introspectorFromName(nodeType);
+        Introspector obj = binding.loader().introspectorFromName(nodeType);
 
         DBRequest dbRequest = new DBRequest.Builder(HttpMethod.DELETE, uriObject, uriQuery, obj, httpHeaders,
                 uriInfo,
                 "JUNIT-TRANSACTION").rawRequestContent(content).build();
 
-        Pair<Boolean, List<Pair<URI, Response>>> responsesTuple = traversalHttpEntry.process(
-                Arrays.asList(dbRequest),
-                "JUNIT");
-        return responsesTuple.getValue1().get(0).getValue1();
+        ProcessResult result = dbRequestProcessor.process(binding, Arrays.asList(dbRequest),
+                ProcessOptions.forSourceOfTruth("JUNIT").build());
+        return result.first().response();
     }
 
     @Test
@@ -1244,8 +1238,7 @@ public class HttpEntryTest extends AAISetup {
         System.setProperty("BUNDLECONFIG_DIR", "src/main/test/resources");
 
         String depthParam = AAIConfig.get("aai.rest.getall.depthparam");
-        traversalHttpEntry.setHttpEntryProperties(schemaVersions.getDefaultVersion());
-        int depth = traversalHttpEntry.setDepth(null, depthParam);
+        int depth = dbRequestProcessor.setDepth(schemaVersions.getDefaultVersion(), null, depthParam);
         assertEquals(AAIProperties.MAXIMUM_DEPTH.intValue(), depth);
     }
 
@@ -1262,7 +1255,7 @@ public class HttpEntryTest extends AAISetup {
         JSONObject expectedResponseBody = new JSONObject()
                 .put("hostname", "theHostname")
                 .put("equip-type", "theEquipType");
-        Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.GET, uri);
+        Response response = doRequest(binding, HttpMethod.GET, uri);
         JSONObject actualResponseBody = new JSONObject(response.getEntity().toString());
 
         JSONAssert.assertEquals(expectedResponseBody, actualResponseBody, JSONCompareMode.NON_EXTENSIBLE);
