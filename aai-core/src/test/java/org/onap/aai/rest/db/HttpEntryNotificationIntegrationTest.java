@@ -43,7 +43,6 @@ import jakarta.ws.rs.core.UriBuilder;
 import jakarta.ws.rs.core.UriInfo;
 
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
-import org.javatuples.Pair;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -57,6 +56,7 @@ import org.onap.aai.parsers.query.QueryParser;
 import org.onap.aai.query.builder.QueryOptions;
 import org.onap.aai.rest.notification.UEBNotification;
 import org.onap.aai.restcore.HttpMethod;
+import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 import org.springframework.test.annotation.DirtiesContext;
 
@@ -64,6 +64,7 @@ import org.springframework.test.annotation.DirtiesContext;
 public class HttpEntryNotificationIntegrationTest extends AAISetup {
 
   private static final MediaType APPLICATION_JSON = MediaType.valueOf("application/json");
+  private GraphBinding binding;
   private Loader loader;
   private TransactionalGraphEngine dbEngine;
   private GraphTraversalSource traversal;
@@ -95,9 +96,10 @@ public class HttpEntryNotificationIntegrationTest extends AAISetup {
     aaiRequestContextList = new ArrayList<>();
     aaiRequestContextList.add("");
 
-    traversalHttpEntry.setHttpEntryProperties(schemaVersions.getDefaultVersion());
-    loader = traversalHttpEntry.getLoader();
-    dbEngine = traversalHttpEntry.getDbEngine();
+    binding = graphSessionFactory.bind(ModelType.MOXY, QueryStyle.TRAVERSAL, schemaVersions.getDefaultVersion());
+    binding.startTransaction();
+    loader = binding.loader();
+    dbEngine = binding.dbEngine();
     traversal = dbEngine.tx().traversal();
 
     when(httpHeaders.getAcceptableMediaTypes()).thenReturn(outputMediaTypes);
@@ -117,33 +119,32 @@ public class HttpEntryNotificationIntegrationTest extends AAISetup {
 
   @After
   public void rollback() {
-    dbEngine.rollback();
+    binding.rollback();
   }
 
   @Test
   public void notificationOnRelatedToTest() throws UnsupportedEncodingException, AAIException {
 
-    Loader ld = loaderFactory.createLoaderForVersion(ModelType.MOXY, schemaVersions.getDefaultVersion());
     UEBNotification uebNotification = Mockito.spy(new UEBNotification(loaderFactory, schemaVersions));
-    traversalHttpEntry.setHttpEntryProperties(schemaVersions.getDefaultVersion(), uebNotification);
+    GraphBinding binding =
+        graphSessionFactory.bind(ModelType.MOXY, QueryStyle.TRAVERSAL, schemaVersions.getDefaultVersion());
+    binding.startTransaction();
 
-    Loader loader = traversalHttpEntry.getLoader();
-    TransactionalGraphEngine dbEngine = traversalHttpEntry.getDbEngine();
     // Put pserver
     String uri = "/cloud-infrastructure/pservers/pserver/junit-edge-test-pserver";
     String content = "{\"hostname\":\"junit-edge-test-pserver\"}";
-    doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, content);
+    doRequest(binding, uebNotification, HttpMethod.PUT, uri, content);
     // Put complex
     uri = "/cloud-infrastructure/complexes/complex/junit-edge-test-complex";
     content = "{\"physical-location-id\":\"junit-edge-test-complex\",\"physical-location-type\":\"AAIDefault\",\"street1\":\"AAIDefault\",\"city\":\"AAIDefault\",\"state\":\"NJ\",\"postal-code\":\"07748\",\"country\":\"USA\",\"region\":\"US\"}";
-    doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT, uri, content);
+    doRequest(binding, uebNotification, HttpMethod.PUT, uri, content);
 
     // PutEdge
     uri = "/cloud-infrastructure/complexes/complex/junit-edge-test-complex/relationship-list/relationship";
     content = "{\"related-to\":\"pserver\",\"related-link\":\"/aai/" + schemaVersions.getDefaultVersion().toString()
         + "/cloud-infrastructure/pservers/pserver/junit-edge-test-pserver\",\"relationship-label\":\"org.onap.relationships.inventory.LocatedIn\"}";
 
-    Response response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.PUT_EDGE, uri,
+    Response response = doRequest(binding, uebNotification, HttpMethod.PUT_EDGE, uri,
         content);
 
     assertEquals("Expected the pserver relationship to be deleted", 200, response.getStatus());
@@ -154,7 +155,7 @@ public class HttpEntryNotificationIntegrationTest extends AAISetup {
         uebNotification.getEvents().get(1).getEntity().toString(),
         containsString("cloud-infrastructure/pservers/pserver/junit-edge-test-pserver"));
 
-    response = doRequest(traversalHttpEntry, loader, dbEngine, HttpMethod.DELETE_EDGE, uri, content);
+    response = doRequest(binding, uebNotification, HttpMethod.DELETE_EDGE, uri, content);
     assertEquals("Expected the pserver relationship to be deleted", 204, response.getStatus());
     assertEquals("Two notifications", 2, uebNotification.getEvents().size());
     assertEquals("Notification generated for DELETE edge", "UPDATE",
@@ -162,19 +163,19 @@ public class HttpEntryNotificationIntegrationTest extends AAISetup {
     assertThat("Event body for the edge delete does not have the related to",
         uebNotification.getEvents().get(0).getEntity().toString(),
         not(containsString("cloud-infrastructure/pservers/pserver/junit-edge-test-pserver")));
-    dbEngine.rollback();
+    binding.rollback();
 
   }
 
-  private Response doRequest(HttpEntry httpEntry, Loader loader, TransactionalGraphEngine dbEngine, HttpMethod method,
+  private Response doRequest(GraphBinding binding, UEBNotification notification, HttpMethod method,
       String uri, String requestBody) throws UnsupportedEncodingException, AAIException {
-    return doRequest(httpEntry, loader, dbEngine, method, uri, requestBody, null);
+    return doRequest(binding, notification, method, uri, requestBody, null);
   }
 
-  private Response doRequest(HttpEntry httpEntry, Loader loader, TransactionalGraphEngine dbEngine, HttpMethod method,
+  private Response doRequest(GraphBinding binding, UEBNotification notification, HttpMethod method,
       String uri, String requestBody, QueryOptions queryOptions) throws UnsupportedEncodingException, AAIException {
     URI uriObject = UriBuilder.fromPath(uri).build();
-    QueryParser uriQuery = dbEngine.getQueryBuilder().createQueryFromURI(uriObject);
+    QueryParser uriQuery = binding.dbEngine().getQueryBuilder().createQueryFromURI(uriObject);
     String objType;
     if (!uriQuery.getContainerType().equals("")) {
       objType = uriQuery.getContainerType();
@@ -186,9 +187,10 @@ public class HttpEntryNotificationIntegrationTest extends AAISetup {
     }
     Introspector obj;
     if (method.equals(HttpMethod.GET) || method.equals(HttpMethod.GET_RELATIONSHIP)) {
-      obj = loader.introspectorFromName(objType);
+      obj = binding.loader().introspectorFromName(objType);
     } else {
-      obj = loader.unmarshal(objType, requestBody, org.onap.aai.restcore.MediaType.getEnum("application/json"));
+      obj = binding.loader().unmarshal(objType, requestBody,
+          org.onap.aai.restcore.MediaType.getEnum("application/json"));
     }
 
     DBRequest.Builder builder = new DBRequest.Builder(method, uriObject, uriQuery, obj, httpHeaders, uriInfo,
@@ -199,8 +201,8 @@ public class HttpEntryNotificationIntegrationTest extends AAISetup {
 
     List<DBRequest> dbRequestList = Collections.singletonList(dbRequest);
 
-    Pair<Boolean, List<Pair<URI, Response>>> responsesTuple = httpEntry.process(dbRequestList, "JUNIT",
-        Collections.emptySet(), true, queryOptions);
-    return responsesTuple.getValue1().get(0).getValue1();
+    ProcessResult result = dbRequestProcessor.process(binding, dbRequestList,
+        ProcessOptions.forSourceOfTruth("JUNIT").notification(notification).queryOptions(queryOptions).build());
+    return result.first().response();
   }
 }
