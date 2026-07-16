@@ -38,7 +38,6 @@
         <aai.docker.namespace>onap</aai.docker.namespace>
         <aai.build.directory>${project.build.directory}/${project.artifactId}-build/
         </aai.build.directory>
-        <docker.fabric.version>0.28.0</docker.fabric.version>
     </properties>
 
     <modules>

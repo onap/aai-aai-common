@@ -34,7 +34,6 @@ limitations under the License.
 	<packaging>jar</packaging>
 	<properties>
 		<jacoco.line.coverage.limit>0.0</jacoco.line.coverage.limit>
-		<mockito.core.version>3.4.0</mockito.core.version>
 		<!-- Start of Default ONAP Schema Properties -->
 		<aai.wiki.link>https://wiki.onap.org/</aai.wiki.link>
 		<gendoc.version>v15</gendoc.version>
