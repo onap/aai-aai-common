@@ -46,9 +46,11 @@ import org.onap.aai.config.SpringContextAware;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
+import org.onap.aai.introspection.ModelType;
 import org.onap.aai.parsers.query.QueryParser;
 import org.onap.aai.restcore.HttpMethod;
 import org.onap.aai.restcore.MediaType;
+import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 
 import lombok.SneakyThrows;
@@ -68,15 +70,18 @@ public class HttpEntryTransactionTest extends AAISetup {
 
   @Test
   public void thatDBRequestsAreWritten() throws AAIException, UnsupportedEncodingException {
-    HttpEntry httpEntry = SpringContextAware.getBean("requestScopedTraversalUriHttpEntry", HttpEntry.class);
-    httpEntry.setHttpEntryProperties(schemaVersions.getDefaultVersion());
-    TransactionalGraphEngine dbEngine = httpEntry.getDbEngine();
-    Loader loader = httpEntry.getLoader();
+    GraphSessionFactory graphSessionFactory = SpringContextAware.getBean(GraphSessionFactory.class);
+    DbRequestProcessor dbRequestProcessor = SpringContextAware.getBean(DbRequestProcessor.class);
+    GraphBinding binding =
+        graphSessionFactory.bind(ModelType.MOXY, QueryStyle.TRAVERSAL_URI, schemaVersions.getDefaultVersion());
+    binding.startTransaction();
+    TransactionalGraphEngine dbEngine = binding.dbEngine();
+    Loader loader = binding.loader();
 
     List<String> hostnames = Arrays.asList("test1", "test2", "test3");
     List<DBRequest> dbRequests = createDbRequests(dbEngine, loader, hostnames);
 
-    httpEntry.process(dbRequests, SERVICE_NAME);
+    dbRequestProcessor.process(binding, dbRequests, ProcessOptions.forSourceOfTruth(SERVICE_NAME).build());
 
     GraphTraversalSource source = dbEngine.startTransaction().traversal();
     Long pserverCount = source.V().has("aai-node-type","pserver").count().next();
@@ -86,10 +91,13 @@ public class HttpEntryTransactionTest extends AAISetup {
   @Test
   // same test, only that JanusgraphException is thrown
   public void thatDBRequestsAreRolledBack() throws AAIException, UnsupportedEncodingException {
-    HttpEntry httpEntry = SpringContextAware.getBean("requestScopedTraversalUriHttpEntry", HttpEntry.class);
-    httpEntry.setHttpEntryProperties(schemaVersions.getDefaultVersion());
-    TransactionalGraphEngine dbEngine = httpEntry.getDbEngine();
-    Loader loader = httpEntry.getLoader();
+    GraphSessionFactory graphSessionFactory = SpringContextAware.getBean(GraphSessionFactory.class);
+    DbRequestProcessor dbRequestProcessor = SpringContextAware.getBean(DbRequestProcessor.class);
+    GraphBinding binding =
+        graphSessionFactory.bind(ModelType.MOXY, QueryStyle.TRAVERSAL_URI, schemaVersions.getDefaultVersion());
+    binding.startTransaction();
+    TransactionalGraphEngine dbEngine = binding.dbEngine();
+    Loader loader = binding.loader();
 
     List<String> hostnames = Arrays.asList("test1", "test2", "test3");
     List<DBRequest> dbRequests = createDbRequests(dbEngine, loader, hostnames);
@@ -100,7 +108,7 @@ public class HttpEntryTransactionTest extends AAISetup {
     dbRequests.set(1, request2Spy);
     when(uriQuerySpy.getQueryBuilder()).thenThrow(new JanusGraphException(""));
 
-    httpEntry.process(dbRequests, SERVICE_NAME);
+    dbRequestProcessor.process(binding, dbRequests, ProcessOptions.forSourceOfTruth(SERVICE_NAME).build());
 
     GraphTraversalSource source = dbEngine.startTransaction().traversal();
     Long pserverCount = source.V().has("aai-node-type","pserver").count().next();

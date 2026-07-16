@@ -30,6 +30,8 @@ import org.onap.aai.edges.EdgeIngestor;
 import org.onap.aai.introspection.LoaderFactory;
 import org.onap.aai.introspection.MoxyLoader;
 import org.onap.aai.nodes.NodeIngestor;
+import org.onap.aai.rest.db.DbRequestProcessor;
+import org.onap.aai.rest.db.GraphSessionFactory;
 import org.onap.aai.rest.db.HttpEntry;
 import org.onap.aai.rest.notification.DeltaEventsService;
 import org.onap.aai.rest.notification.NotificationService;
@@ -75,6 +77,12 @@ public abstract class DataLinkSetup {
 
     @Autowired
     protected HttpEntry traversalUriHttpEntry;
+
+    @Autowired
+    protected GraphSessionFactory graphSessionFactory;
+
+    @Autowired
+    protected DbRequestProcessor dbRequestProcessor;
 
     @Autowired
     protected NodeIngestor nodeIngestor;

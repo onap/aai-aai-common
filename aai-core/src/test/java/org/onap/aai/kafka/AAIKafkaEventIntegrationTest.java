@@ -43,11 +43,13 @@ import org.onap.aai.PayloadUtil;
 import org.onap.aai.domain.notificationEvent.NotificationEvent;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
-import org.onap.aai.introspection.Loader;
+import org.onap.aai.introspection.ModelType;
 import org.onap.aai.parsers.query.QueryParser;
 import org.onap.aai.rest.db.DBRequest;
+import org.onap.aai.rest.db.GraphBinding;
+import org.onap.aai.rest.db.ProcessOptions;
 import org.onap.aai.restcore.HttpMethod;
-import org.onap.aai.serialization.engines.TransactionalGraphEngine;
+import org.onap.aai.serialization.engines.QueryStyle;
 import org.onap.aai.setup.SchemaVersion;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
@@ -132,14 +134,16 @@ public class AAIKafkaEventIntegrationTest extends AAISetup {
         Consumer<String, String> consumer = consumerFactory.createConsumer();
         consumer.subscribe(Collections.singletonList("AAI-EVENT"));
 
-        traversalUriHttpEntry.setHttpEntryProperties(new SchemaVersion("v14"));
+        GraphBinding binding = graphSessionFactory.bind(ModelType.MOXY, QueryStyle.TRAVERSAL_URI,
+                new SchemaVersion("v14"));
+        binding.startTransaction();
         String pserverUri = "/aai/v14/cloud-infrastructure/pservers/pserver/pserver1";
         String entity = new String(Files.readAllBytes(Path.of("src/test/resources/payloads/templates/pserver.json"))).replace("${hostname}", "pserver1");
-        DBRequest dbRequest = createDBRequest(pserverUri, entity);
+        DBRequest dbRequest = createDBRequest(binding, pserverUri, entity);
         List<DBRequest> dbRequests = new ArrayList<>();
         dbRequests.add(dbRequest);
 
-        traversalUriHttpEntry.process(dbRequests, "test");
+        dbRequestProcessor.process(binding, dbRequests, ProcessOptions.forSourceOfTruth("test").build());
 
         ConsumerRecords<String, String> consumerRecords = KafkaTestUtils.getRecords(consumer, Duration.ofSeconds(10));
         assertFalse(consumerRecords.isEmpty());
@@ -151,13 +155,11 @@ public class AAIKafkaEventIntegrationTest extends AAISetup {
     }
 
     @SneakyThrows
-    private DBRequest createDBRequest(String uri, String entity) {
-        TransactionalGraphEngine dbEngine = traversalUriHttpEntry.getDbEngine();
-        Loader loader = traversalUriHttpEntry.getLoader();
+    private DBRequest createDBRequest(GraphBinding binding, String uri, String entity) {
         URI uriObject = new URI(uri);
-        QueryParser uriQuery = dbEngine.getQueryBuilder().createQueryFromURI(uriObject);
+        QueryParser uriQuery = binding.dbEngine().getQueryBuilder().createQueryFromURI(uriObject);
         String objName = uriQuery.getResultType();
-        Introspector obj = loader.unmarshal(objName, entity,
+        Introspector obj = binding.loader().unmarshal(objName, entity,
             org.onap.aai.restcore.MediaType.getEnum("application/json"));
         return new DBRequest.Builder(HttpMethod.PUT, uriObject, uriQuery, obj, headersMock, uriInfoMock, "someTransaction")
             .rawRequestContent(entity)

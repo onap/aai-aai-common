@@ -23,9 +23,16 @@
 
 package org.onap.aai.config;
 
+import org.onap.aai.introspection.LoaderFactory;
 import org.onap.aai.introspection.ModelType;
+import org.onap.aai.rest.db.DbRequestProcessor;
+import org.onap.aai.rest.db.GraphSessionFactory;
 import org.onap.aai.rest.db.HttpEntry;
+import org.onap.aai.rest.notification.NotificationService;
 import org.onap.aai.serialization.engines.QueryStyle;
+import org.onap.aai.setup.SchemaVersions;
+import org.onap.aai.transforms.XmlFormatTransformer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -43,6 +50,27 @@ public class RestBeanConfig {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JakartaXmlBindAnnotationModule());
         return objectMapper;
+    }
+
+    /**
+     * Stateless replacement for the session-factory half of {@link HttpEntry}. A single
+     * singleton is safe to share; each {@code bind(...)} call returns a fresh binding.
+     */
+    @Bean
+    public GraphSessionFactory graphSessionFactory(LoaderFactory loaderFactory) {
+        return new GraphSessionFactory(loaderFactory);
+    }
+
+    /**
+     * Stateless replacement for the request-processing half of {@link HttpEntry}. A single
+     * singleton is safe to share; all per-request state is derived from the arguments.
+     */
+    @Bean
+    public DbRequestProcessor dbRequestProcessor(NotificationService notificationService,
+            XmlFormatTransformer xmlFormatTransformer, SchemaVersions schemaVersions, LoaderFactory loaderFactory,
+            @Value("${schema.uri.base.path}") String basePath) {
+        return new DbRequestProcessor(notificationService, xmlFormatTransformer, schemaVersions, loaderFactory,
+                basePath);
     }
 
     @Bean(name = "traversalUriHttpEntry")

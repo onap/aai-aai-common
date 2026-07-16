@@ -33,6 +33,8 @@ import org.onap.aai.introspection.MoxyLoader;
 import org.onap.aai.nodes.NodeIngestor;
 import org.onap.aai.prevalidation.ValidationConfiguration;
 import org.onap.aai.prevalidation.ValidationService;
+import org.onap.aai.rest.db.DbRequestProcessor;
+import org.onap.aai.rest.db.GraphSessionFactory;
 import org.onap.aai.rest.db.HttpEntry;
 import org.onap.aai.rest.notification.DeltaEventsService;
 import org.onap.aai.rest.notification.NotificationService;
@@ -82,6 +84,12 @@ public abstract class AAISetup {
 
     @Autowired
     protected HttpEntry traversalUriHttpEntry;
+
+    @Autowired
+    protected GraphSessionFactory graphSessionFactory;
+
+    @Autowired
+    protected DbRequestProcessor dbRequestProcessor;
 
     @Autowired
     protected NodeIngestor nodeIngestor;
