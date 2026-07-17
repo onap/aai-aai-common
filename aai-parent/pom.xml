@@ -49,7 +49,7 @@ limitations under the License.
     <commons.compress.version>1.27.1</commons.compress.version>
     <commons.configuration2.version>2.10.1</commons.configuration2.version>
     <commons.io.version>2.16.1</commons.io.version>
-    <commons.lang3.version>3.15.0</commons.lang3.version>
+    <commons.lang3.version>3.18.0</commons.lang3.version>
     <commons.net.version>3.8.0</commons.net.version>
     <commons.text.version>1.15.0</commons.text.version>
     <docker.fabric.version>0.40.2</docker.fabric.version>
@@ -78,7 +78,13 @@ limitations under the License.
       -->
     <spring.boot.version>3.5.16</spring.boot.version>
     <jersey.version>3.1.11</jersey.version>
-    <netty.version>4.1.130.Final</netty.version>
+    <netty.version>4.1.136.Final</netty.version>
+    <!-- CVE overrides for libraries otherwise managed by the Spring Boot BOM.
+         Imported/declared before spring-boot-dependencies below so they win.
+         Drop these once the Spring Boot BOM ships versions >= these. -->
+    <jackson.bom.version>2.21.5</jackson.bom.version>
+    <tomcat.version>10.1.56</tomcat.version>
+    <logback.version>1.5.36</logback.version>
     <json.path.version>2.2.0</json.path.version>
     <json.version>20240303</json.version>
     <slf4j.version>2.0.17</slf4j.version>
@@ -122,6 +128,42 @@ limitations under the License.
         <version>${netty.version}</version>
         <type>pom</type>
         <scope>import</scope>
+      </dependency>
+      <!-- CVE overrides: import/declare before spring-boot-dependencies so these win.
+           - jackson-bom 2.21.5: CVE-2026-59889, CVE-2026-54515
+           - tomcat 10.1.56:     CVE-2026-59083
+           - logback 1.5.36:     CVE-2026-13006 -->
+      <dependency>
+        <groupId>com.fasterxml.jackson</groupId>
+        <artifactId>jackson-bom</artifactId>
+        <version>${jackson.bom.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.tomcat.embed</groupId>
+        <artifactId>tomcat-embed-core</artifactId>
+        <version>${tomcat.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.tomcat.embed</groupId>
+        <artifactId>tomcat-embed-el</artifactId>
+        <version>${tomcat.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.tomcat.embed</groupId>
+        <artifactId>tomcat-embed-websocket</artifactId>
+        <version>${tomcat.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-core</artifactId>
+        <version>${logback.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>${logback.version}</version>
       </dependency>
       <dependency>
         <groupId>org.springframework.boot</groupId>
