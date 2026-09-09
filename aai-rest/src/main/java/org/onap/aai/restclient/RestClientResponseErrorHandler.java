@@ -43,7 +43,7 @@ public class RestClientResponseErrorHandler implements ResponseErrorHandler {
                 return true;
             }
 
-            if (clientHttpResponse.getRawStatusCode() % 100 == 5) {
+            if (clientHttpResponse.getStatusCode().is5xxServerError()) {
                 logger.debug("Call returned a error " + clientHttpResponse.getStatusText());
                 return true;
             }
