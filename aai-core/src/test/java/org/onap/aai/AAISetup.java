@@ -23,6 +23,7 @@ package org.onap.aai;
 import java.lang.reflect.Field;
 import java.util.Map;
 
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -44,6 +45,7 @@ import org.onap.aai.util.delta.DeltaEventsConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.rules.SpringClassRule;
@@ -92,6 +94,9 @@ public abstract class AAISetup {
     @Autowired
     protected SchemaVersions schemaVersions;
 
+    @Autowired
+    protected ApplicationContext applicationContext;
+
     @Value("${schema.uri.base.path}")
     protected String basePath;
 
@@ -99,6 +104,19 @@ public abstract class AAISetup {
     protected String maxOccurs;
 
     protected static final String SERVICE_NAME = "JUNIT";
+
+    /**
+     * SpringContextAware keeps the ApplicationContext in a static field, and every Introspector
+     * resolves its NodeIngestor and LoaderFactory from there rather than from the context of the
+     * test that created it. Whichever context was built last therefore decides which schema
+     * versions an Introspector can see, so without this rebind a test marshalling a v14 object
+     * silently picks up the versions of another test class (e.g. the v1-v4 list of DataLinkSetup)
+     * depending on the order surefire happens to run the suite in.
+     */
+    @Before
+    public void bindSpringContextToThisTest() {
+        applicationContext.getBean(SpringContextAware.class).setApplicationContext(applicationContext);
+    }
 
     @BeforeClass
     public static void setupBundleconfig() throws Exception {

@@ -43,6 +43,14 @@ public class AAIConfigCommandLinePropGetter {
      * AAIConfigCommandLinePropGetter propertyname
      */
     public static void main(String[] args) {
+        try {
+            printProperty(args);
+        } finally {
+            System.exit(0);
+        }
+    }
+
+    static void printProperty(String[] args) {
         if (args.length != 1) {
             // System.out.println("only one property may be requested at a time");
             // System.out.println("usage: AAIConfigCommandLinePropGetter propertyname");
@@ -58,10 +66,7 @@ public class AAIConfigCommandLinePropGetter {
             }
         } catch (AAIException e) {
             // System.out.println("exception:" + e.toString()); //TODO is this reasonable?
-        } finally {
-            System.exit(0);
         }
-
     }
 
 }

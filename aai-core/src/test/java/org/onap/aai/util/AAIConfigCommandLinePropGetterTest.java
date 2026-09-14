@@ -20,9 +20,12 @@
 
 package org.onap.aai.util;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 
-import java.security.Permission;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 
 import org.junit.After;
 import org.junit.Before;
@@ -31,73 +34,44 @@ import org.onap.aai.AAISetup;
 
 public class AAIConfigCommandLinePropGetterTest extends AAISetup {
 
-    private SecurityManager m;
-    private TestSecurityManager sm;
+    private final ByteArrayOutputStream testOut = new ByteArrayOutputStream();
+    private PrintStream oldOutputStream;
 
     @Before
-    public void setUp() {
-        m = System.getSecurityManager();
-        sm = new TestSecurityManager();
-        System.setSecurityManager(sm);
+    public void captureStdout() {
+        oldOutputStream = System.out;
+        System.setOut(new PrintStream(testOut));
     }
 
     @After
-    public void tearDown() {
-        System.setSecurityManager(m);
+    public void restoreStdout() {
+        System.setOut(oldOutputStream);
     }
 
     @Test
-    public void testMainNoArgs() {
-        try {
-            AAIConfigCommandLinePropGetter.main(new String[] {});
-        } catch (SecurityException se) {
-            // assert main method ends with System.exit(0)
-            assertEquals("0", se.getMessage());
-        }
+    public void testPrintsRequestedProperty() {
+        AAIConfigCommandLinePropGetter.printProperty(new String[] {"aai.config.checktime"});
+
+        assertTrue(testOut.toString().contains("1000"));
     }
 
     @Test
-    public void testMainReadProp() {
-        try {
-            AAIConfigCommandLinePropGetter.main(new String[] {"aai.primary.filetransfer.serverlist"});
-        } catch (SecurityException se) {
-            // assert main method ends with System.exit(0)
-            assertEquals("0", se.getMessage());
-        }
+    public void testSwallowsUnknownPropertyException() {
+        AAIConfigCommandLinePropGetter.printProperty(new String[] {"aai.property.that.does.not.exist"});
+
+        assertFalse(testOut.toString().contains("aai.property.that.does.not.exist"));
     }
 
     @Test
-    public void testMainOneArg() {
-        try {
-            AAIConfigCommandLinePropGetter.main(new String[] {"one"});
-        } catch (SecurityException se) {
-            // assert main method ends with System.exit(0)
-            assertEquals("0", se.getMessage());
-        }
+    public void testPrintsFirstPropertyWhenMoreThanOneRequested() {
+        AAIConfigCommandLinePropGetter.printProperty(new String[] {"aai.config.checktime", "aai.server.url"});
+
+        assertTrue(testOut.toString().contains("1000"));
     }
 
     @Test
-    public void testMainMoreThanOneArg() {
-        try {
-            AAIConfigCommandLinePropGetter.main(new String[] {"one", "two"});
-        } catch (SecurityException se) {
-            // assert main method ends with System.exit(0)
-            assertEquals("0", se.getMessage());
-        }
-    }
-}
-
-
-class TestSecurityManager extends SecurityManager {
-    @Override
-    public void checkPermission(Permission permission) {
-        if ("exitVM".equals(permission.getName())) {
-            throw new SecurityException("System.exit attempted and blocked.");
-        }
-    }
-
-    @Override
-    public void checkExit(int status) {
-        throw new SecurityException(Integer.toString(status));
+    public void testFailsWhenNoPropertyRequested() {
+        assertThrows(ArrayIndexOutOfBoundsException.class,
+                () -> AAIConfigCommandLinePropGetter.printProperty(new String[] {}));
     }
 }
