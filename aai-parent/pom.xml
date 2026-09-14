@@ -79,7 +79,6 @@ limitations under the License.
     <plexus.utils.version>4.0.2</plexus.utils.version>
     <reflections.version>0.9.10</reflections.version>
     <lombok.version>1.18.42</lombok.version>
-    <testcontainers.version>1.20.4</testcontainers.version>
 
     <sonar.jacoco.reportPath />
     <sonar.jacoco.itReportPath />
@@ -319,11 +318,6 @@ limitations under the License.
         <groupId>jakarta.xml.bind</groupId>
         <artifactId>jakarta.xml.bind-api</artifactId>
         <version>4.0.4</version>
-      </dependency>
-      <dependency>
-        <groupId>org.glassfish.jaxb</groupId>
-        <artifactId>jaxb-runtime</artifactId>
-        <version>3.0.2</version>
       </dependency>
 
       <dependency>

@@ -137,12 +137,6 @@ limitations under the License.
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.hamcrest</groupId>
-			<artifactId>hamcrest-junit</artifactId>
-			<version>2.0.0.0</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
 			<scope>test</scope>
@@ -331,7 +325,6 @@ limitations under the License.
 		<dependency>
 			<groupId>org.testcontainers</groupId>
 			<artifactId>testcontainers</artifactId>
-			<version>${testcontainers.version}</version>
 			<scope>test</scope>
 			<exclusions>
 					<exclusion>
@@ -343,19 +336,16 @@ limitations under the License.
 		<dependency>
 			<groupId>org.testcontainers</groupId>
 			<artifactId>junit-jupiter</artifactId>
-			<version>${testcontainers.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 				<groupId>org.testcontainers</groupId>
 				<artifactId>cassandra</artifactId>
-				<version>${testcontainers.version}</version>
 				<scope>test</scope>
 		</dependency>
 		<dependency>
 				<groupId>org.testcontainers</groupId>
 				<artifactId>toxiproxy</artifactId>
-				<version>${testcontainers.version}</version>
 				<scope>test</scope>
 		</dependency>
 		<dependency>
