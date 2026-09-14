@@ -13,13 +13,9 @@
     <artifactId>aai-failover</artifactId>
 
     <dependencies>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context</artifactId>
-		</dependency>
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>spring-aspects</artifactId>
+            <artifactId>spring-context</artifactId>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -34,6 +30,14 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
         </dependency>
     </dependencies>
 </project>

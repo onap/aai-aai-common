@@ -121,11 +121,6 @@ limitations under the License.
 			<artifactId>commons-cli</artifactId>
 	</dependency>
 		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-text</artifactId>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
 		<groupId>org.junit.vintage</groupId>
 		<artifactId>junit-vintage-engine</artifactId>
 		<scope>test</scope>
@@ -148,11 +143,6 @@ limitations under the License.
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.hamcrest</groupId>
-			<artifactId>hamcrest-core</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
 			<scope>test</scope>
@@ -160,11 +150,6 @@ limitations under the License.
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish</groupId>
-			<artifactId>jakarta.json</artifactId>
-			<version>2.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.janusgraph</groupId>
@@ -204,10 +189,6 @@ limitations under the License.
 				<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.googlecode.json-simple</groupId>
-			<artifactId>json-simple</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>jakarta.xml.bind</groupId>
 			<artifactId>jakarta.xml.bind-api</artifactId>
 		</dependency>
@@ -226,6 +207,7 @@ limitations under the License.
 		<dependency>
 			<groupId>com.jayway.jsonpath</groupId>
 			<artifactId>json-path</artifactId>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.jayway.jsonpath</groupId>
@@ -241,20 +223,13 @@ limitations under the License.
 			<artifactId>jackson-module-jakarta-xmlbind-annotations</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.glassfish.jersey.core</groupId>
-			<artifactId>jersey-client</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.jersey.media</groupId>
-			<artifactId>jersey-media-json-jackson</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.tinkerpop</groupId>
 			<artifactId>gremlin-core</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.tinkerpop</groupId>
 			<artifactId>tinkergraph-gremlin</artifactId>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>io.micrometer</groupId>
@@ -271,17 +246,8 @@ limitations under the License.
 			<artifactId>slf4j-api</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>xml-apis</groupId>
-			<artifactId>xml-apis</artifactId>
-			<version>1.4.01</version>
-		</dependency>
-		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.bazaarvoice.jolt</groupId>
-			<artifactId>jolt-complete</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
@@ -294,6 +260,7 @@ limitations under the License.
 		<dependency>
 			<groupId>ch.qos.logback.access</groupId>
 			<artifactId>logback-access-common</artifactId>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.github.fge</groupId>
@@ -310,14 +277,6 @@ limitations under the License.
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-expression</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-webmvc</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -365,14 +324,6 @@ limitations under the License.
 			<artifactId>jackson-annotations</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.fasterxml.jackson.dataformat</groupId>
-			<artifactId>jackson-dataformat-xml</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.dataformat</groupId>
-			<artifactId>jackson-dataformat-yaml</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<scope>provided</scope>
@@ -406,6 +357,73 @@ limitations under the License.
 				<artifactId>toxiproxy</artifactId>
 				<version>${testcontainers.version}</version>
 				<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish</groupId>
+			<artifactId>jakarta.json</artifactId>
+			<version>2.0.1</version>
+			<!-- JSON-P provider: loaded via SPI at runtime, never referenced at compile time -->
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-configuration2</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.bazaarvoice.jolt</groupId>
+			<artifactId>jolt-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.bazaarvoice.jolt</groupId>
+			<artifactId>json-utils</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.janusgraph</groupId>
+			<artifactId>janusgraph-driver</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.onap.aai.aai-common</groupId>
+			<artifactId>aai-rest</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.onap.aai.aai-common</groupId>
+			<artifactId>aai-els-onap-logging</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-beans</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.annotation</groupId>
+			<artifactId>jakarta.annotation-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.ws.rs</groupId>
+			<artifactId>jakarta.ws.rs-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-autoconfigure</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents.core5</groupId>
+			<artifactId>httpcore5</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.kafka</groupId>
+			<artifactId>kafka-clients</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.groovy</groupId>
+			<artifactId>groovy</artifactId>
 		</dependency>
 	</dependencies>
 
