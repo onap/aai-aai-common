@@ -31,10 +31,15 @@ import java.util.Scanner;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.onap.aai.edges.enums.AAIDirection;
 import org.onap.aai.edges.enums.EdgeType;
 
 public class EdgeRuleQueryTest {
     private DocumentContext testRules;
+    // Kept out of test.json: that file is also fed through real EdgeRule ingestion
+    // (TestUtilConfigTranslator), where direction "NONE" fails Direction.valueOf; and any
+    // added rule breaks EdgeIngestorLocalTest.getAllRulesTest's exact unfiltered count for v10.
+    private DocumentContext directionRules;
     private String readStart = "$.rules.[?]";
 
     /* **** DATA SETUP **** */
@@ -47,6 +52,13 @@ public class EdgeRuleQueryTest {
         scanner.close();
 
         this.testRules = JsonPath.parse(json);
+
+        InputStream directionIs = getClass().getResourceAsStream("/edgeRules/directionAndPrivateTest.json");
+        Scanner directionScanner = new Scanner(directionIs);
+        String directionJson = directionScanner.useDelimiter("\\Z").next();
+        directionScanner.close();
+
+        this.directionRules = JsonPath.parse(directionJson);
     }
 
     /* **** TESTS **** */
@@ -129,5 +141,63 @@ public class EdgeRuleQueryTest {
         EdgeRuleQuery q = new EdgeRuleQuery.Builder("foo").edgeType(EdgeType.TREE).build();
         List<Object> results = testRules.read(readStart, q.getFilter());
         assertTrue(results.size() == 2);
+    }
+
+    @Test
+    public void testFromOnly() {
+        // "foo" as a from-only query must match foo>bar, foo>bar, foo>baz but not quux>foo
+        EdgeRuleQuery q = new EdgeRuleQuery.Builder("foo").fromOnly().build();
+        List<Object> results = testRules.read(readStart, q.getFilter());
+        assertTrue(results.size() == 3);
+    }
+
+    @Test
+    public void testToOnly() {
+        // "foo" as a to-only query must match only quux>foo
+        EdgeRuleQuery q = new EdgeRuleQuery.Builder("foo").toOnly().build();
+        List<Object> results = testRules.read(readStart, q.getFilter());
+        assertTrue(results.size() == 1);
+        assertTrue(results.get(0).toString().contains("dancesWith"));
+    }
+
+    @Test
+    public void testDirectionBoth() {
+        EdgeRuleQuery q = new EdgeRuleQuery.Builder("corge", "grault").direction(AAIDirection.BOTH).build();
+        List<Object> results = directionRules.read(readStart, q.getFilter());
+        assertTrue(results.size() == 1);
+    }
+
+    @Test
+    public void testDirectionNone() {
+        EdgeRuleQuery q = new EdgeRuleQuery.Builder("corge", "waldo").direction(AAIDirection.NONE).build();
+        List<Object> results = directionRules.read(readStart, q.getFilter());
+        assertTrue(results.size() == 1);
+    }
+
+    @Test
+    public void testDirectionOutAlsoMatchesBoth() {
+        // addDirection(OUT) queries for direction in [OUT, BOTH]
+        EdgeRuleQuery q = new EdgeRuleQuery.Builder("corge", "grault").direction(AAIDirection.OUT).build();
+        List<Object> results = directionRules.read(readStart, q.getFilter());
+        assertTrue(results.size() == 1);
+    }
+
+    @Test
+    public void testDirectionInAlsoMatchesBoth() {
+        // addDirection(IN) queries for direction in [IN, BOTH]
+        EdgeRuleQuery q = new EdgeRuleQuery.Builder("corge", "grault").direction(AAIDirection.IN).build();
+        List<Object> results = directionRules.read(readStart, q.getFilter());
+        assertTrue(results.size() == 1);
+    }
+
+    @Test
+    public void testPrivateTrueMatchesOnlyPrivateRules() {
+        EdgeRuleQuery privateQuery = new EdgeRuleQuery.Builder("corge", "grault").setPrivate(true).build();
+        List<Object> results = directionRules.read(readStart, privateQuery.getFilter());
+        assertTrue(results.size() == 1);
+
+        EdgeRuleQuery nonPrivateNode = new EdgeRuleQuery.Builder("corge", "waldo").setPrivate(true).build();
+        List<Object> noResults = directionRules.read(readStart, nonPrivateNode.getFilter());
+        assertTrue(noResults.isEmpty());
     }
 }
