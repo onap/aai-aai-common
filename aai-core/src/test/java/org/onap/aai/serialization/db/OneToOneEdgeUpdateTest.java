@@ -204,7 +204,7 @@ public class OneToOneEdgeUpdateTest extends AAISetup {
                         .marshal(false);
 
         assertThat(gvnfBLatestView, hasJsonPath("$.l-interfaces.l-interface[*]", hasSize(1)));
-        assertThat(gvnfBLatestView, not(hasJsonPath("$.l-interfaces.l-interface[*].sriov-vfs.sriov-vf[*]")));
+        assertThat(gvnfBLatestView, hasJsonPath("$.l-interfaces.l-interface[*].sriov-vfs.sriov-vf[*]", hasSize(0)));
         assertThat(gvnfBLatestView,
                 hasJsonPath("$.l-interfaces.l-interface[*].relationship-list.relationship[*].related-link",
                         containsInAnyOrder("/aai/" + schemaVersions.getDefaultVersion() + sriovVfUri)));

@@ -189,7 +189,8 @@ public class EdgerPairCanBeBothCousinAndParentChildTest extends AAISetup {
                         .marshal(false);
 
         assertThat(gvnfBLatestView, hasJsonPath("$.lag-interfaces.lag-interface[*]", hasSize(1)));
-        assertThat(gvnfBLatestView, not(hasJsonPath("$.lag-interfaces.lag-interface[*].l-interfaces.l-interface[*]")));
+        assertThat(gvnfBLatestView,
+                hasJsonPath("$.lag-interfaces.lag-interface[*].l-interfaces.l-interface[*]", hasSize(0)));
         assertThat(gvnfBLatestView,
                 hasJsonPath("$.lag-interfaces.lag-interface[*].relationship-list.relationship[*].related-link",
                         containsInAnyOrder("/aai/" + schemaVersions.getDefaultVersion() + lintUri)));
