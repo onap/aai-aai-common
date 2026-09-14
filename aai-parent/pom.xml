@@ -50,7 +50,6 @@ limitations under the License.
     <commons.configuration2.version>2.10.1</commons.configuration2.version>
     <commons.io.version>2.16.1</commons.io.version>
     <commons.lang3.version>3.18.0</commons.lang3.version>
-    <commons.net.version>3.8.0</commons.net.version>
     <commons.text.version>1.15.0</commons.text.version>
     <docker.fabric.version>0.40.2</docker.fabric.version>
     <eclipse.persistence.version>4.0.9</eclipse.persistence.version>
@@ -65,17 +64,6 @@ limitations under the License.
     <jopt.simple.version>5.0.4</jopt.simple.version>
     <jsonassert.version>1.5.1</jsonassert.version>
     <json.patch.version>1.9</json.patch.version>
-    <!--
-        JSONPath has an bug when it tries to parse an expression
-        when nesting reaches three levels so an junit was failing
-        when it was moving to an library of 2.3.0 or above
-        There seems to be no new releases since 2017 so not sure if
-        this library is still active or not
-        We might need to move away from this library but its in the core logic
-        and would take some time to refactor
-        Please don't upgrade to 2.3.0 or above for nexus iq or security scans
-        as it could potentially break our code
-      -->
     <spring.boot.version>3.5.16</spring.boot.version>
     <jersey.version>3.1.11</jersey.version>
     <netty.version>4.1.136.Final</netty.version>
@@ -88,7 +76,6 @@ limitations under the License.
     <json.path.version>3.0.0</json.path.version>
     <json.version>20240303</json.version>
     <slf4j.version>2.0.17</slf4j.version>
-    <opencsv.version>3.1</opencsv.version>
     <plexus.utils.version>4.0.2</plexus.utils.version>
     <reflections.version>0.9.10</reflections.version>
     <lombok.version>1.18.42</lombok.version>
@@ -110,7 +97,6 @@ limitations under the License.
     <sonar.scanner.version>3.7.0.1746</sonar.scanner.version>
 
     <json.simple.version>1.1.1</json.simple.version>
-    <aspectj.version>1.9.1</aspectj.version>
   </properties>
 
   <dependencyManagement>
@@ -227,17 +213,7 @@ limitations under the License.
         <version>${slf4j.version}</version>
       </dependency>
 
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>jcl-over-slf4j</artifactId>
-        <version>${slf4j.version}</version>
-      </dependency>
 
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>jul-to-slf4j</artifactId>
-        <version>${slf4j.version}</version>
-      </dependency>
 
       <dependency>
         <groupId>org.hamcrest</groupId>
@@ -279,6 +255,12 @@ limitations under the License.
       <dependency>
         <groupId>org.janusgraph</groupId>
         <artifactId>janusgraph-inmemory</artifactId>
+        <version>${janusgraph.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.janusgraph</groupId>
+        <artifactId>janusgraph-driver</artifactId>
         <version>${janusgraph.version}</version>
       </dependency>
 
@@ -398,10 +380,17 @@ limitations under the License.
       </dependency>
 
       <dependency>
-        <groupId>com.opencsv</groupId>
-        <artifactId>opencsv</artifactId>
-        <version>${opencsv.version}</version>
+        <groupId>com.bazaarvoice.jolt</groupId>
+        <artifactId>jolt-core</artifactId>
+        <version>${jolt.version}</version>
       </dependency>
+
+      <dependency>
+        <groupId>com.bazaarvoice.jolt</groupId>
+        <artifactId>json-utils</artifactId>
+        <version>${jolt.version}</version>
+      </dependency>
+
 
       <dependency>
         <groupId>commons-io</groupId>
@@ -421,17 +410,7 @@ limitations under the License.
         <version>2.2.29</version>
       </dependency>
 
-      <dependency>
-        <groupId>org.aspectj</groupId>
-        <artifactId>aspectjrt</artifactId>
-        <version>${aspectj.version}</version>
-      </dependency>
 
-      <dependency>
-        <groupId>io.swagger.core.v3</groupId>
-        <artifactId>swagger-annotations-jakarta</artifactId>
-        <version>2.2.25</version>
-      </dependency>
 
       <dependency>
         <groupId>org.onap.aai.schema-service</groupId>
@@ -470,11 +449,6 @@ limitations under the License.
         <version>${reflections.version}</version>
       </dependency>
 
-      <dependency>
-        <groupId>commons-net</groupId>
-        <artifactId>commons-net</artifactId>
-        <version>${commons.net.version}</version>
-      </dependency>
 
       <dependency>
         <groupId>org.projectlombok</groupId>
