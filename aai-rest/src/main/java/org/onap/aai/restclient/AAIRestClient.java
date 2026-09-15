@@ -48,7 +48,7 @@ public class AAIRestClient extends TwoWaySSLRestClient {
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         httpHeaders.add("Real-Time", "true");
         headers.forEach(httpHeaders::add);
-        return httpHeaders;
+        return httpHeaders.asMultiValueMap();
     }
 
 }

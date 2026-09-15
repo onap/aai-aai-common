@@ -21,9 +21,11 @@
 package org.onap.aai.restclient;
 
 import java.io.IOException;
+import java.net.URI;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.ResponseErrorHandler;
@@ -52,6 +54,7 @@ public class RestClientResponseErrorHandler implements ResponseErrorHandler {
     }
 
     @Override
-    public void handleError(ClientHttpResponse clientHttpResponse) throws IOException {
+    public void handleError(URI url, HttpMethod method, ClientHttpResponse clientHttpResponse)
+            throws IOException {
     }
 }
