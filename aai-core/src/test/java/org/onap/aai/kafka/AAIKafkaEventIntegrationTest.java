@@ -38,6 +38,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.onap.aai.AAISetup;
 import org.onap.aai.PayloadUtil;
 import org.onap.aai.domain.notificationEvent.NotificationEvent;
@@ -101,6 +102,7 @@ public class AAIKafkaEventIntegrationTest extends AAISetup {
 
     @Before
     public void setup() {
+    MockitoAnnotations.openMocks(this);
         when(headersMock.getAcceptableMediaTypes()).thenReturn(Collections.singletonList(MediaType.APPLICATION_JSON_TYPE));
         when(uriInfoMock.getQueryParameters(anyBoolean())).thenReturn(queryParamsMock);
         when(queryParamsMock.getFirst("depth")).thenReturn("0");
