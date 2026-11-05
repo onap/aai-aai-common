@@ -172,7 +172,7 @@ public class RestClientTest {
   private static MultiValueMap<String, String> createHeaders(Map<String, String> headers) {
     HttpHeaders httpHeaders = new HttpHeaders();
     headers.forEach(httpHeaders::add);
-    return httpHeaders;
+    return httpHeaders.asMultiValueMap();
   }
 
   private static final class TestRestClient extends RestClient {

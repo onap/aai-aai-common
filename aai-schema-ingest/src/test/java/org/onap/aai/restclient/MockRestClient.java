@@ -38,8 +38,8 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.boot.web.client.RestTemplateCustomizer;
+import org.springframework.boot.restclient.RestTemplateBuilder;
+import org.springframework.boot.restclient.RestTemplateCustomizer;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;

@@ -77,6 +77,10 @@ public class KafkaConfig {
         props.put(JsonSerializer.ADD_TYPE_INFO_HEADERS, false);
         props.put(ProducerConfig.RETRIES_CONFIG, retries);
         props.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, maxInFlightConnections);
+        // enable.idempotence defaults to true but requires max.in.flight <= 5. Kafka 3.x silently
+        // disabled idempotence when max.in.flight exceeded that; Kafka 4.x throws instead, so the
+        // long-standing effective behaviour has to be stated explicitly to keep it.
+        props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, false);
 
         if (saslJaasConfig == null) {
             logger.info("Not using any authentication for kafka interaction");

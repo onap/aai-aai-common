@@ -87,7 +87,7 @@ public class ValidationServiceNoAuthClient extends NoAuthRestClient {
         httpHeaders.add("X-FromAppId", appName);
         httpHeaders.add("X-TransactionId", UUID.randomUUID().toString());
         headers.forEach(httpHeaders::add);
-        return httpHeaders;
+        return httpHeaders.asMultiValueMap();
     }
 
 }

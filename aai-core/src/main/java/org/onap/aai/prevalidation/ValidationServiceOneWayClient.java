@@ -89,7 +89,7 @@ public class ValidationServiceOneWayClient extends OneWaySSLRestClient {
         httpHeaders.add("X-TransactionId", UUID.randomUUID().toString());
         httpHeaders.add("X-TransactionId", appName);
         headers.forEach(httpHeaders::add);
-        return httpHeaders;
+        return httpHeaders.asMultiValueMap();
     }
 
 }
