@@ -206,13 +206,13 @@ public class ValidationService {
             Object responseBody = responseEntity.getBody();
             if (isSuccess(responseEntity)) {
                 LOGGER.debug("Validation Service returned following response status code {} and body {}",
-                        responseEntity.getStatusCodeValue(), responseEntity.getBody());
+                        responseEntity.getStatusCode().value(), responseEntity.getBody());
             } else if (responseBody != null) {
                 Validation validation = getValidation(responseBody);
 
                 if (validation == null) {
                     LOGGER.debug("Validation Service following status code {} with body {}",
-                            responseEntity.getStatusCodeValue(), responseEntity.getBody());
+                            responseEntity.getStatusCode().value(), responseEntity.getBody());
                 } else {
                     violations = extractViolations(validation);
                 }

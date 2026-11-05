@@ -41,6 +41,7 @@ import org.janusgraph.core.JanusGraphException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.onap.aai.AAISetup;
 import org.onap.aai.config.SpringContextAware;
 import org.onap.aai.exceptions.AAIException;
@@ -61,6 +62,7 @@ public class HttpEntryTransactionTest extends AAISetup {
 
   @Before
   public void setup() {
+  MockitoAnnotations.openMocks(this);
     when(uriInfoMock.getQueryParameters(anyBoolean())).thenReturn(queryParamsMock);
     when(queryParamsMock.getFirst("depth")).thenReturn("0");
     when(headersMock.getRequestHeader("aai-request-context")).thenReturn(null);

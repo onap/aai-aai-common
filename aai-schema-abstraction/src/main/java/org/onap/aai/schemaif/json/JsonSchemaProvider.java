@@ -147,10 +147,10 @@ public class JsonSchemaProvider implements SchemaProvider {
 
         ResponseEntity<byte[]> response = restTemplate.exchange(url, HttpMethod.GET, entity, byte[].class);
 
-        if (response.getStatusCodeValue() == HttpStatus.NOT_FOUND.value()) {
+        if (response.getStatusCode().value() == HttpStatus.NOT_FOUND.value()) {
             log.warn("PVD0500E | Unable to load schema: {}", "version " + version + " not found");
             throw new SchemaProviderException("Schema version " + version + " not found");
-        } else if (response.getStatusCodeValue() != HttpStatus.OK.value()) {
+        } else if (response.getStatusCode().value() != HttpStatus.OK.value()) {
             log.error("PVD0500E | Unable to load schema: {}", "version " + version + " not found");
             throw new SchemaProviderException("Error getting schema version " + version + ":" + response.getBody());
         }

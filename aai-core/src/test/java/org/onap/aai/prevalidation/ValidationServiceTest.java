@@ -52,6 +52,7 @@ import org.onap.aai.restclient.RestClient;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.boot.test.system.OutputCaptureRule;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 public class ValidationServiceTest {
@@ -137,13 +138,12 @@ public class ValidationServiceTest {
         String validationResponse =
                 PayloadUtil.getResourcePayload("prevalidation/success-response-with-empty-violations.json");
 
-        ResponseEntity responseEntity = Mockito.mock(ResponseEntity.class, Mockito.RETURNS_DEEP_STUBS);
+        // A real ResponseEntity rather than a deep-stub mock: HttpStatusCode is a sealed interface,
+        // so RETURNS_DEEP_STUBS cannot mock the return type of getStatusCode().
+        ResponseEntity<String> responseEntity = new ResponseEntity<>(validationResponse, HttpStatus.OK);
 
         Mockito.when(restClient.execute(eq(ValidationService.VALIDATION_ENDPOINT), eq(HttpMethod.POST), any(),
                 anyString())).thenReturn(responseEntity);
-
-        Mockito.when(responseEntity.getStatusCodeValue()).thenReturn(200);
-        Mockito.when(responseEntity.getBody()).thenReturn(validationResponse);
 
         Mockito.doReturn(true).when(validationService).isSuccess(responseEntity);
 

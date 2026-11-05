@@ -335,17 +335,17 @@ limitations under the License.
 		</dependency>
 		<dependency>
 			<groupId>org.testcontainers</groupId>
-			<artifactId>junit-jupiter</artifactId>
+			<artifactId>testcontainers-junit-jupiter</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 				<groupId>org.testcontainers</groupId>
-				<artifactId>cassandra</artifactId>
+				<artifactId>testcontainers-cassandra</artifactId>
 				<scope>test</scope>
 		</dependency>
 		<dependency>
 				<groupId>org.testcontainers</groupId>
-				<artifactId>toxiproxy</artifactId>
+				<artifactId>testcontainers-toxiproxy</artifactId>
 				<scope>test</scope>
 		</dependency>
 		<dependency>

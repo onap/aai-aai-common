@@ -114,7 +114,6 @@ public class RestClientTest {
   public void responseErrorHandlerMapsOnlyForbiddenAndServerErrors(int statusCode, boolean expectedError) throws Exception {
     ClientHttpResponse response = mock(ClientHttpResponse.class);
     when(response.getStatusCode()).thenReturn(HttpStatusCode.valueOf(statusCode));
-    when(response.getRawStatusCode()).thenReturn(statusCode);
     when(response.getStatusText()).thenReturn("status");
 
     assertEquals(expectedError, new RestClientResponseErrorHandler().hasError(response));
