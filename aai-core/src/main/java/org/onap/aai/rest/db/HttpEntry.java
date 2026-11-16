@@ -600,7 +600,7 @@ public class HttpEntry {
         }
 
         if (success) {
-            notificationService.generateEvents(notification, notificationDepth, sourceOfTruth, serializer, transactionId, queryEngine, mainVertexesToNotifyOn, version);
+            notificationService.generateEvents(notification, notificationDepth, sourceOfTruth, serializer, dbEngine, transactionId, queryEngine, mainVertexesToNotifyOn, version);
         } else {
             notification.clearEvents();
         }

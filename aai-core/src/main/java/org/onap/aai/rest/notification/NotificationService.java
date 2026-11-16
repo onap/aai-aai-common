@@ -23,6 +23,7 @@ package org.onap.aai.rest.notification;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -31,12 +32,14 @@ import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.onap.aai.db.props.AAIProperties;
+import org.onap.aai.domain.notificationEvent.NotificationEvent;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.LoaderFactory;
 import org.onap.aai.kafka.NotificationProducer;
 import org.onap.aai.prevalidation.ValidationService;
 import org.onap.aai.serialization.db.DBSerializer;
+import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 import org.onap.aai.serialization.engines.query.QueryEngine;
 import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.util.AAIConfig;
@@ -84,10 +87,11 @@ public class NotificationService {
   }
 
   /**
-   * Generate notification events for the resulting db requests.
+   * Generate notification events for the resulting db requests. The events are built inside the
+   * open transaction but only sent once {@code dbEngine} has committed it.
    */
   public void generateEvents(UEBNotification notification, int notificationDepth, String sourceOfTruth, DBSerializer serializer,
-      String transactionId,
+      TransactionalGraphEngine dbEngine, String transactionId,
       QueryEngine queryEngine, Set<Vertex> mainVertexesToNotifyOn, SchemaVersion schemaVersion) throws AAIException {
     if (notificationDepth == AAIProperties.MINIMUM_DEPTH) {
       serializer.getUpdatedVertexes().entrySet().stream()
@@ -115,15 +119,18 @@ public class NotificationService {
       validationService.validate(notification.getEvents());
     }
 
-    notificationProducer.sendUEBNotification(notification);
+    List<NotificationEvent> events = notification.getEvents();
+    dbEngine.afterCommit(() -> events.forEach(notificationProducer::sendNotification));
     if (isDeltaEventsEnabled) {
-      try {
-        DeltaEvents deltaEvents = new DeltaEvents(transactionId, sourceOfTruth, schemaVersion.toString(),
-            serializer.getObjectDeltas(), deltaProducer, isRelationshipDeltaEnabled, deltaEventActionSet);
-        deltaService.triggerEvents(deltaEvents);
-      } catch (Exception e) {
-        LOGGER.error("Error sending Delta Events", e);
-      }
+      DeltaEvents deltaEvents = new DeltaEvents(transactionId, sourceOfTruth, schemaVersion.toString(),
+          serializer.getObjectDeltas(), deltaProducer, isRelationshipDeltaEnabled, deltaEventActionSet);
+      dbEngine.afterCommit(() -> {
+        try {
+          deltaService.triggerEvents(deltaEvents);
+        } catch (Exception e) {
+          LOGGER.error("Error sending Delta Events", e);
+        }
+      });
     }
   }
 

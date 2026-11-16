@@ -215,7 +215,7 @@ public class HttpEntryTest extends AAISetup {
         JSONAssert.assertEquals(expectedResponseBody, actualResponseBody, JSONCompareMode.NON_EXTENSIBLE);
         assertEquals("Expected the pserver to be returned", 200, response.getStatus());
         verify(notificationService, times(1)).generateEvents(any(), anyInt(), any(), any(), any(), any(), any(),
-                any());
+                any(), any());
     }
 
     @Test
@@ -252,7 +252,7 @@ public class HttpEntryTest extends AAISetup {
         JSONAssert.assertEquals(expectedResponseBody, actualResponseBody, JSONCompareMode.NON_EXTENSIBLE);
         assertEquals("Expected the pservers to be returned", 200, response.getStatus());
         verify(notificationService, times(1)).generateEvents(any(), anyInt(), any(), any(), any(), any(), any(),
-                any());
+                any(), any());
     }
 
     @Test
@@ -287,7 +287,7 @@ public class HttpEntryTest extends AAISetup {
         assertEquals(1, actualResponseBody.getJSONArray("pserver").length());
         assertEquals("Expected the pservers to be returned", 200, response.getStatus());
         verify(notificationService, times(1)).generateEvents(any(), anyInt(), any(), any(), any(), any(), any(),
-                any());
+                any(), any());
 
         queryOptions = QueryOptions.builder().pageable(new Pageable(0, 5).includeTotalCount()).build();
         response = doRequest(binding, HttpMethod.GET, uri, queryOptions);
@@ -314,7 +314,7 @@ public class HttpEntryTest extends AAISetup {
                 "Node Not Found:No Node of type pserver found at: /cloud-infrastructure/pservers"));
         assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatus());
         verify(notificationService, never()).generateEvents(any(), anyInt(), any(), any(), any(), any(), any(),
-                any());
+                any(), any());
 
     }
 
@@ -354,7 +354,7 @@ public class HttpEntryTest extends AAISetup {
         assertEquals(1, actualResponseBody.getJSONArray("pserver").length());
         assertEquals("Expected the pservers to be returned", 200, response.getStatus());
         verify(notificationService, times(1)).generateEvents(any(), anyInt(), any(), any(), any(), any(), any(),
-                any());
+                any(), any());
 
         queryOptions = QueryOptions.builder().pageable(new Pageable(0, 2)).build();
         response = doRequest(binding, HttpMethod.GET, uri, queryOptions);
@@ -417,7 +417,7 @@ public class HttpEntryTest extends AAISetup {
         Response response = doRequest(binding, HttpMethod.GET, uri);
         assertEquals("The pserver is not found", 404, response.getStatus());
         verify(notificationService, never()).generateEvents(any(), anyInt(), any(), any(), any(), any(), any(),
-                any());
+                any(), any());
     }
 
     @Test
@@ -428,7 +428,7 @@ public class HttpEntryTest extends AAISetup {
         Response response = doRequest(binding, HttpMethod.PUT, uri, requestBody);
         assertEquals("Expecting the pserver to be created", 201, response.getStatus());
         verify(notificationService, times(1)).generateEvents(any(), anyInt(), any(), any(), any(), any(), any(),
-                any());
+                any(), any());
     }
 
     @Test
@@ -449,7 +449,7 @@ public class HttpEntryTest extends AAISetup {
                 "Resource version specified on create:resource-version passed for create of /cloud-infrastructure/pservers/pserver/theHostname",
                 errorResponseEntity.getRequestError().getServiceException().getVariables().get(2));
         verify(notificationService, never()).generateEvents(any(), anyInt(), any(), any(), any(), any(), any(),
-                any());
+                any(), any());
     }
 
     @Test
@@ -472,7 +472,7 @@ public class HttpEntryTest extends AAISetup {
         assertTrue("That old properties are removed",
                 traversal.V().has("hostname", "updatedHostname").hasNot("number-of-cpus").hasNext());
         verify(notificationService, times(1)).generateEvents(any(), anyInt(), any(), any(), any(), any(), any(),
-                any());
+                any(), any());
     }
 
     @Test
@@ -499,7 +499,7 @@ public class HttpEntryTest extends AAISetup {
                 "Precondition Failed:resource-version MISMATCH for update of /cloud-infrastructure/pservers/pserver/updatedHostname",
                 errorResponseEntity.getRequestError().getServiceException().getVariables().get(2));
         verify(notificationService, never()).generateEvents(any(), anyInt(), any(), any(), any(), any(), any(),
-                any());
+                any(), any());
     }
 
     @Test
@@ -552,7 +552,7 @@ public class HttpEntryTest extends AAISetup {
                         .has("aai-node-type", "pserver")
                         .has("hostname", "hostname").hasNext());
         verify(notificationService, times(1)).generateEvents(any(), anyInt(), any(), any(), any(), any(), any(),
-                any());
+                any(), any());
     }
 
     @Test
@@ -574,7 +574,7 @@ public class HttpEntryTest extends AAISetup {
                 traversal.V().has("aai-node-type", "pserver").has("hostname", "new-hostname")
                         .has("equip-type", "the-equip-type").hasNext());
         verify(notificationService, times(1)).generateEvents(any(), anyInt(), any(), any(), any(), any(), any(),
-                any());
+                any(), any());
     }
 
     @Test
@@ -593,7 +593,7 @@ public class HttpEntryTest extends AAISetup {
                 !traversal.V().has("aai-node-type", "pserver").has("hostname", "the-hostname")
                         .hasNext());
         verify(notificationService, times(1)).generateEvents(any(), anyInt(), any(), any(), any(), any(), any(),
-                any());
+                any(), any());
     }
 
     @Test
@@ -645,7 +645,7 @@ public class HttpEntryTest extends AAISetup {
         assertTrue("p-server has incoming edge from complex", vertexQuery.hasNext());
         assertTrue("Created Edge has expected properties", edgeQuery.hasNext());
         verify(notificationService, times(1)).generateEvents(any(), anyInt(), any(), any(), any(), any(), any(),
-                any());
+                any(), any());
     }
 
     @Test
@@ -773,7 +773,7 @@ public class HttpEntryTest extends AAISetup {
         assertThat(responseEntity, containsString("/cloud-infrastructure/pservers/pserver/pserver-1"));
         assertThat(responseEntity, containsString("/cloud-infrastructure/pservers/pserver/pserver-2"));
         verify(notificationService, times(1)).generateEvents(any(), anyInt(), any(), any(), any(), any(), any(),
-                any());
+                any(), any());
     }
 
     @Test
@@ -810,7 +810,7 @@ public class HttpEntryTest extends AAISetup {
         assertThat("Related pserver is returned", response.getEntity().toString(),
                 containsString("\"hostname\":\"related-to-pserver\""));
         verify(notificationService, times(1)).generateEvents(any(), anyInt(), any(), any(), any(), any(), any(),
-                any());
+                any(), any());
 
     }
 
@@ -841,7 +841,7 @@ public class HttpEntryTest extends AAISetup {
         assertThat("Related to pserver is returned.", response.getEntity().toString(),
                 containsString("\"hostname\":\"abstract-pserver\""));
         verify(notificationService, times(1)).generateEvents(any(), anyInt(), any(), any(), any(), any(), any(),
-                any());
+                any(), any());
     }
 
     @Test
@@ -891,7 +891,7 @@ public class HttpEntryTest extends AAISetup {
                 relationships[0].getRelationshipData()[0].getRelationshipKey());
         assertEquals("related-to-complex", relationships[0].getRelationshipData()[0].getRelationshipValue());
         verify(notificationService, times(1)).generateEvents(any(), anyInt(), any(), any(), any(), any(), any(),
-                any());
+                any(), any());
     }
 
     @Test
@@ -952,7 +952,7 @@ public class HttpEntryTest extends AAISetup {
         JSONAssert.assertEquals(expectedResponseBody, actualResponseBody, JSONCompareMode.NON_EXTENSIBLE);
         queryParameters.remove("format");
         verify(notificationService, times(1)).generateEvents(any(), anyInt(), any(), any(), any(), any(), any(),
-                any());
+                any(), any());
     }
 
     @Test
@@ -1003,7 +1003,7 @@ public class HttpEntryTest extends AAISetup {
                 traversal.V().has("aai-node-type", "pserver").has("hostname", "delete-edge-pserver")
                         .out("org.onap.relationships.inventory.LocatedIn").hasNext());
         verify(notificationService, times(1)).generateEvents(any(), anyInt(), any(), any(), any(), any(), any(),
-                any());
+                any(), any());
     }
 
     @Test
@@ -1024,7 +1024,7 @@ public class HttpEntryTest extends AAISetup {
         assertThat(response.getEntity().toString(),
                 containsString("No relationship found of type pserver at the given URI"));
         verify(notificationService, never()).generateEvents(any(), anyInt(), any(), any(), any(), any(), any(),
-                any());
+                any(), any());
     }
 
     @Test
@@ -1062,7 +1062,7 @@ public class HttpEntryTest extends AAISetup {
                 response.getEntity().toString(),
                 org.hamcrest.Matchers.not(containsString("relationship-list")));
         verify(notificationService, times(1)).generateEvents(any(), anyInt(), any(), any(), any(), any(), any(),
-                any());
+                any(), any());
     }
 
     @Test
@@ -1157,7 +1157,7 @@ public class HttpEntryTest extends AAISetup {
                 traversal.V().has("aai-node-type", "pserver").has("hostname", "delete-version-pserver")
                         .hasNext());
         verify(notificationService, never()).generateEvents(any(), anyInt(), any(), any(), any(), any(), any(),
-                any());
+                any(), any());
     }
 
     private Response doRequest(GraphBinding binding, HttpMethod method,
@@ -1270,6 +1270,6 @@ public class HttpEntryTest extends AAISetup {
         JSONAssert.assertEquals(expectedResponseBody, actualResponseBody, JSONCompareMode.NON_EXTENSIBLE);
         assertEquals("Expected the pserver to be returned", 200, response.getStatus());
         verify(notificationService, times(1)).generateEvents(any(), anyInt(), any(), any(), any(), any(), any(),
-                any());
+                any(), any());
     }
 }

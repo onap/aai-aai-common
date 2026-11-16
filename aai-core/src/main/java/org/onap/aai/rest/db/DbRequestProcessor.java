@@ -500,7 +500,7 @@ public class DbRequestProcessor {
 
         if (success) {
             notificationService.generateEvents(notification, notificationDepth, options.sourceOfTruth(), serializer,
-                    transactionId, queryEngine, mainVertexesToNotifyOn, binding.version());
+                    binding.dbEngine(), transactionId, queryEngine, mainVertexesToNotifyOn, binding.version());
         } else {
             notification.clearEvents();
         }

@@ -22,6 +22,7 @@
 
 package org.onap.aai.serialization.engines;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -40,6 +41,9 @@ import org.onap.aai.serialization.db.GraphSingleton;
 import org.onap.aai.serialization.engines.query.GraphTraversalQueryEngine;
 import org.onap.aai.serialization.engines.query.QueryEngine;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public abstract class TransactionalGraphEngine {
 
     protected GraphSingleton singleton = null;
@@ -50,6 +54,7 @@ public abstract class TransactionalGraphEngine {
     protected GraphTraversalSource currentTraversal = null;
     protected GraphTraversalSource readOnlyTraversal = null;
     private final Admin admin;
+    private final List<Runnable> afterCommitActions = new ArrayList<>();
 
     /**
      * Instantiates a new transactional graph engine.
@@ -224,6 +229,7 @@ public abstract class TransactionalGraphEngine {
     }
 
     public void rollback() {
+        afterCommitActions.clear();
         if (this.tx() != null) {
             this.tx().tx().rollback();
             this.currentTx = null;
@@ -233,11 +239,32 @@ public abstract class TransactionalGraphEngine {
     }
 
     public void commit() {
+        List<Runnable> actions = new ArrayList<>(afterCommitActions);
+        afterCommitActions.clear();
         if (this.tx() != null) {
             this.tx().tx().commit();
             this.currentTx = null;
             this.currentTraversal = null;
             this.readOnlyTraversal = null;
+            runAfterCommitActions(actions);
+        }
+    }
+
+    /**
+     * Registers an action to run once the current transaction has been committed successfully.
+     * The action is discarded if the transaction is rolled back or the commit fails.
+     */
+    public void afterCommit(Runnable action) {
+        afterCommitActions.add(action);
+    }
+
+    private void runAfterCommitActions(List<Runnable> actions) {
+        for (Runnable action : actions) {
+            try {
+                action.run();
+            } catch (RuntimeException e) {
+                log.error("After-commit action failed", e);
+            }
         }
     }
 

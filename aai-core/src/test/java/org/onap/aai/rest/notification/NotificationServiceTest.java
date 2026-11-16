@@ -26,6 +26,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.io.UnsupportedEncodingException;
@@ -33,6 +34,7 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -41,18 +43,24 @@ import jakarta.ws.rs.core.Response.Status;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.util.detached.DetachedVertex;
 import org.apache.tinkerpop.gremlin.structure.util.detached.DetachedVertexProperty;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.onap.aai.AAISetup;
 import org.onap.aai.db.props.AAIProperties;
+import org.onap.aai.domain.notificationEvent.NotificationEvent;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.LoaderFactory;
+import org.onap.aai.introspection.ModelType;
 import org.onap.aai.kafka.NotificationProducerService;
 import org.onap.aai.prevalidation.ValidationService;
 import org.onap.aai.serialization.db.DBSerializer;
+import org.onap.aai.serialization.engines.JanusGraphDBEngine;
+import org.onap.aai.serialization.engines.QueryStyle;
+import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 import org.onap.aai.serialization.engines.query.QueryEngine;
 import org.onap.aai.setup.SchemaVersion;
 import org.onap.aai.setup.SchemaVersions;
@@ -71,6 +79,9 @@ public class NotificationServiceTest extends AAISetup {
   @Mock Introspector introspector;
   @Mock DeltaProducer deltaProducer;
   @Mock DeltaEventsService deltaService;
+  @Mock NotificationEvent notificationEvent;
+
+  TransactionalGraphEngine dbEngine;
 
   boolean isDeltaEventsEnabled = false;
   boolean isRelationshipDeltaEnabled = true;
@@ -94,7 +105,16 @@ public class NotificationServiceTest extends AAISetup {
     notificationService = new NotificationService(validationService, loaderFactory, basePath, notificationProducerService,deltaProducer, deltaConfig, deltaService);
     when(schemaVersions.getDefaultVersion()).thenReturn(new SchemaVersion("v29"));
     doNothing().when(uebNotification).createNotificationEvent(any(),any(),any(),any(),any(),any(),any());
-    doNothing().when(notificationProducerService).sendUEBNotification(any());
+    when(uebNotification.getEvents()).thenReturn(List.of(notificationEvent));
+
+    dbEngine = new JanusGraphDBEngine(QueryStyle.TRAVERSAL,
+        super.loaderFactory.createLoaderForVersion(ModelType.MOXY, super.schemaVersions.getDefaultVersion()));
+    dbEngine.startTransaction();
+  }
+
+  @After
+  public void tearDown() {
+    dbEngine.rollback();
   }
 
   @Test
@@ -112,11 +132,15 @@ public class NotificationServiceTest extends AAISetup {
     SchemaVersion schemaVersion = new SchemaVersion("v29");
     when(dbSerializer.getUpdatedVertexes()).thenReturn(Collections.emptyMap());
 
-    notificationService.generateEvents(uebNotification, AAIProperties.MINIMUM_DEPTH, "sourceOfTruth", dbSerializer, "transactionId", queryEngine, mainVertexesToNotifyOn, schemaVersion);
+    notificationService.generateEvents(uebNotification, AAIProperties.MINIMUM_DEPTH, "sourceOfTruth", dbSerializer, dbEngine, "transactionId", queryEngine, mainVertexesToNotifyOn, schemaVersion);
 
     verify(uebNotification, times(1)).createNotificationEvent(eq("transactionId"), eq("sourceOfTruth"), eq(Status.OK), eq(URI.create("/aai/v29/pservers/pserver/hostname")), eq(introspector), any(), eq("/aai"));
     verify(validationService, times(1)).validate(anyList());
-    verify(notificationProducerService, times(1)).sendUEBNotification(uebNotification);
+    verifyNoInteractions(notificationProducerService);
+
+    dbEngine.commit();
+
+    verify(notificationProducerService, times(1)).sendNotification(notificationEvent);
   }
 
   @Test
@@ -135,8 +159,21 @@ public class NotificationServiceTest extends AAISetup {
     when(dbSerializer.getUpdatedVertexes()).thenReturn(Collections.emptyMap());
 
     notificationService = new NotificationService(validationService, loaderFactory, basePath, notificationProducerService,deltaProducer, deltaConfig, deltaService);
-    notificationService.generateEvents(uebNotification, AAIProperties.MINIMUM_DEPTH, "sourceOfTruth", dbSerializer, "transactionId", queryEngine, mainVertexesToNotifyOn, schemaVersion);
+    notificationService.generateEvents(uebNotification, AAIProperties.MINIMUM_DEPTH, "sourceOfTruth", dbSerializer, dbEngine, "transactionId", queryEngine, mainVertexesToNotifyOn, schemaVersion);
 
-    verify(notificationProducerService, times(1)).sendUEBNotification(uebNotification);
+    dbEngine.commit();
+
+    verify(notificationProducerService, times(1)).sendNotification(notificationEvent);
+  }
+
+  @Test
+  public void thatNoNotificationsAreSentWhenTheTransactionIsRolledBack() throws AAIException {
+    SchemaVersion schemaVersion = new SchemaVersion("v29");
+    when(dbSerializer.getUpdatedVertexes()).thenReturn(Collections.emptyMap());
+
+    notificationService.generateEvents(uebNotification, AAIProperties.MINIMUM_DEPTH, "sourceOfTruth", dbSerializer, dbEngine, "transactionId", queryEngine, new HashSet<>(), schemaVersion);
+    dbEngine.rollback();
+
+    verifyNoInteractions(notificationProducerService);
   }
 }

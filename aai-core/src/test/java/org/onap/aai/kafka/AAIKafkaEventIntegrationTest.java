@@ -19,7 +19,9 @@
  */
 package org.onap.aai.kafka;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.when;
 
@@ -34,6 +36,9 @@ import java.util.List;
 
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.common.TopicPartition;
+import org.apache.tinkerpop.gremlin.process.traversal.P;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -44,13 +49,16 @@ import org.onap.aai.PayloadUtil;
 import org.onap.aai.domain.notificationEvent.NotificationEvent;
 import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
+import org.onap.aai.introspection.Loader;
 import org.onap.aai.introspection.ModelType;
 import org.onap.aai.parsers.query.QueryParser;
 import org.onap.aai.rest.db.DBRequest;
 import org.onap.aai.rest.db.GraphBinding;
+import org.onap.aai.rest.db.HttpEntry;
 import org.onap.aai.rest.db.ProcessOptions;
 import org.onap.aai.restcore.HttpMethod;
 import org.onap.aai.serialization.engines.QueryStyle;
+import org.onap.aai.serialization.engines.TransactionalGraphEngine;
 import org.onap.aai.setup.SchemaVersion;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
@@ -85,6 +93,11 @@ import lombok.extern.slf4j.Slf4j;
           "aai.notifications.enabled=true"
         })
 public class AAIKafkaEventIntegrationTest extends AAISetup {
+
+    private static final Duration EVENT_TIMEOUT = Duration.ofSeconds(10);
+    private static final Duration NO_EVENT_TIMEOUT = Duration.ofSeconds(2);
+
+    private Consumer<String, String> consumer;
 
     @Mock
     private KafkaTemplate<String, String> kafkaTemplate;
@@ -131,37 +144,100 @@ public class AAIKafkaEventIntegrationTest extends AAISetup {
         });
     }
 
-    @Test
-    public void thatEventsAreBeingCreated() throws AAIException, IOException {
-        Consumer<String, String> consumer = consumerFactory.createConsumer();
-        consumer.subscribe(Collections.singletonList("AAI-EVENT"));
+    @After
+    public void tearDown() {
+        if (consumer != null) {
+            consumer.close();
+        }
+        GraphBinding binding = graphSessionFactory.bind(ModelType.MOXY, QueryStyle.TRAVERSAL_URI,
+                new SchemaVersion("v14"));
+        binding.startTransaction().traversal().V()
+                .has("hostname", P.within("pserver1", "rolled-back-pserver", "http-entry-pserver"))
+                .drop().iterate();
+        binding.commit();
+    }
 
+    @Test
+    public void thatEventsArePublishedOnlyAfterTheTransactionIsCommitted() throws AAIException, IOException {
+        subscribe();
         GraphBinding binding = graphSessionFactory.bind(ModelType.MOXY, QueryStyle.TRAVERSAL_URI,
                 new SchemaVersion("v14"));
         binding.startTransaction();
-        String pserverUri = "/aai/v14/cloud-infrastructure/pservers/pserver/pserver1";
-        String entity = new String(Files.readAllBytes(Path.of("src/test/resources/payloads/templates/pserver.json"))).replace("${hostname}", "pserver1");
-        DBRequest dbRequest = createDBRequest(binding, pserverUri, entity);
-        List<DBRequest> dbRequests = new ArrayList<>();
-        dbRequests.add(dbRequest);
 
-        dbRequestProcessor.process(binding, dbRequests, ProcessOptions.forSourceOfTruth("test").build());
+        dbRequestProcessor.process(binding, List.of(createPserverRequest(binding.dbEngine(), binding.loader(), "pserver1")),
+                ProcessOptions.forSourceOfTruth("test").build());
 
-        ConsumerRecords<String, String> consumerRecords = KafkaTestUtils.getRecords(consumer, Duration.ofSeconds(10));
-        assertFalse(consumerRecords.isEmpty());
-        String expectedResponse = PayloadUtil.getExpectedPayload("pserver-event.json");
+        assertTrue(eventsFor("pserver1", NO_EVENT_TIMEOUT).isEmpty());
 
-        consumerRecords.forEach(consumerRecord -> {
-            JSONAssert.assertEquals(expectedResponse, consumerRecord.value(), JSONCompareMode.LENIENT);
+        binding.commit();
+
+        List<String> events = eventsFor("pserver1", EVENT_TIMEOUT);
+        assertEquals(1, events.size());
+        JSONAssert.assertEquals(PayloadUtil.getExpectedPayload("pserver-event.json"), events.get(0),
+                JSONCompareMode.LENIENT);
+    }
+
+    @Test
+    public void thatNoEventsArePublishedWhenTheTransactionIsRolledBack() throws AAIException {
+        subscribe();
+        GraphBinding binding = graphSessionFactory.bind(ModelType.MOXY, QueryStyle.TRAVERSAL_URI,
+                new SchemaVersion("v14"));
+        binding.startTransaction();
+
+        dbRequestProcessor.process(binding,
+                List.of(createPserverRequest(binding.dbEngine(), binding.loader(), "rolled-back-pserver")),
+                ProcessOptions.forSourceOfTruth("test").build());
+        binding.rollback();
+
+        assertTrue(eventsFor("rolled-back-pserver", NO_EVENT_TIMEOUT).isEmpty());
+    }
+
+    @Test
+    public void thatHttpEntryPublishesEventsOnlyAfterTheTransactionIsCommitted() throws AAIException {
+        subscribe();
+        HttpEntry httpEntry = traversalUriHttpEntry.setHttpEntryProperties(new SchemaVersion("v14"));
+        TransactionalGraphEngine dbEngine = httpEntry.getDbEngine();
+
+        httpEntry.process(List.of(createPserverRequest(dbEngine, httpEntry.getLoader(), "http-entry-pserver")), "test");
+
+        assertTrue(eventsFor("http-entry-pserver", NO_EVENT_TIMEOUT).isEmpty());
+
+        dbEngine.commit();
+
+        assertEquals(1, eventsFor("http-entry-pserver", EVENT_TIMEOUT).size());
+    }
+
+    private void subscribe() {
+        TopicPartition partition = new TopicPartition("AAI-EVENT", 0);
+        consumer = consumerFactory.createConsumer();
+        consumer.assign(List.of(partition));
+        consumer.seekToEnd(List.of(partition));
+        consumer.position(partition);
+    }
+
+    private List<String> eventsFor(String hostname, Duration timeout) {
+        List<String> events = new ArrayList<>();
+        KafkaTestUtils.getRecords(consumer, timeout).forEach(consumerRecord -> {
+            if (consumerRecord.value().contains("/pservers/pserver/" + hostname + "\"")) {
+                events.add(consumerRecord.value());
+            }
         });
+        return events;
     }
 
     @SneakyThrows
-    private DBRequest createDBRequest(GraphBinding binding, String uri, String entity) {
+    private DBRequest createPserverRequest(TransactionalGraphEngine dbEngine, Loader loader, String hostname) {
+        String entity = new String(Files.readAllBytes(Path.of("src/test/resources/payloads/templates/pserver.json")))
+                .replace("${hostname}", hostname);
+        return createDBRequest(dbEngine, loader, "/aai/v14/cloud-infrastructure/pservers/pserver/" + hostname, entity);
+    }
+
+    @SneakyThrows
+    private DBRequest createDBRequest(TransactionalGraphEngine dbEngine, Loader loader, String uri, String entity) {
         URI uriObject = new URI(uri);
-        QueryParser uriQuery = binding.dbEngine().getQueryBuilder().createQueryFromURI(uriObject);
+        QueryParser uriQuery = dbEngine.getQueryBuilder().createQueryFromURI(uriObject);
         String objName = uriQuery.getResultType();
-        Introspector obj = binding.loader().unmarshal(objName, entity,
+        Introspector obj = loader.unmarshal(objName, entity,
             org.onap.aai.restcore.MediaType.getEnum("application/json"));
         return new DBRequest.Builder(HttpMethod.PUT, uriObject, uriQuery, obj, headersMock, uriInfoMock, "someTransaction")
             .rawRequestContent(entity)
