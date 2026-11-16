@@ -1233,6 +1233,15 @@ public class HttpEntryTest extends AAISetup {
     }
 
     @Test
+    public void thatAnEmptyRequestListIsProcessedAsSuccessWithoutResults() throws AAIException {
+        ProcessResult result = dbRequestProcessor.process(binding, Collections.emptyList(),
+                ProcessOptions.forSourceOfTruth("JUNIT").build());
+
+        assertTrue(result.success());
+        assertTrue(result.results().isEmpty());
+    }
+
+    @Test
     public void setDepthTest() throws AAIException {
         System.setProperty("AJSC_HOME", ".");
         System.setProperty("BUNDLECONFIG_DIR", "src/main/test/resources");

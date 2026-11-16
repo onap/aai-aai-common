@@ -90,6 +90,9 @@ public class DbRequestProcessor {
     @Observed(name = "DbRequestProcessor.process")
     public ProcessResult process(GraphBinding binding, List<DBRequest> requests, ProcessOptions options)
             throws AAIException {
+        if (requests == null || requests.isEmpty()) {
+            return new ProcessResult(true, List.of());
+        }
 
         int notificationDepth = options.notificationDepth();
         UEBNotification notification = options.notification() != null
@@ -108,11 +111,7 @@ public class DbRequestProcessor {
         Set<Vertex> mainVertexesToNotifyOn = new LinkedHashSet<>();
         AaiDBMetricLog metricLog = new AaiDBMetricLog(AAIConstants.AAI_RESOURCES_MS);
 
-        String outputMediaType = null;
-        if (requests != null && !requests.isEmpty()) {
-            HttpHeaders headers = requests.get(0).getHeaders();
-            outputMediaType = getMediaType(headers.getAcceptableMediaTypes());
-        }
+        String outputMediaType = getMediaType(requests.get(0).getHeaders().getAcceptableMediaTypes());
 
         String transactionId = requests.get(0).getTransactionId();
         boolean success = true;
@@ -558,7 +557,6 @@ public class DbRequestProcessor {
 
     }
 
-    @Observed(name = "DbRequestProcessor.getObjectFromDb")
     private Introspector getObjectFromDb(List<Vertex> results, DBSerializer serializer, QueryParser query,
             Introspector obj, URI uri, int depth, boolean nodeOnly, String cleanUp, boolean isSkipRelatedTo)
             throws AAIException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
