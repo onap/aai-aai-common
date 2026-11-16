@@ -39,10 +39,15 @@ import org.onap.aai.exceptions.AAIException;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.introspection.Loader;
 import org.onap.aai.introspection.LoaderFactory;
+import org.onap.aai.introspection.ModelType;
 import org.onap.aai.parsers.query.QueryParser;
 import org.onap.aai.parsers.uri.URIToObject;
 import org.onap.aai.rest.db.DBRequest;
-import org.onap.aai.rest.db.HttpEntry;
+import org.onap.aai.rest.db.DbRequestProcessor;
+import org.onap.aai.rest.db.GraphBinding;
+import org.onap.aai.rest.db.GraphSessionFactory;
+import org.onap.aai.rest.db.ProcessOptions;
+import org.onap.aai.rest.db.ProcessResult;
 import org.onap.aai.rest.notification.UEBNotification;
 import org.onap.aai.restcore.HttpMethod;
 import org.onap.aai.restcore.RESTAPI;
@@ -63,9 +68,9 @@ import jakarta.ws.rs.core.UriInfo;
 
 public class HttpTestUtil extends RESTAPI {
 
-    protected HttpEntry traversalHttpEntry;
+    protected GraphSessionFactory graphSessionFactory;
 
-    protected HttpEntry traversalUriHttpEntry;
+    protected DbRequestProcessor dbRequestProcessor;
 
     private static final Logger logger = LoggerFactory.getLogger(HttpTestUtil.class);
 
@@ -95,8 +100,8 @@ public class HttpTestUtil extends RESTAPI {
 
     public HttpTestUtil(QueryStyle qs, String acceptType) {
         this.queryStyle = qs;
-        traversalHttpEntry = SpringContextAware.getBean("traversalUriHttpEntry", HttpEntry.class);
-        traversalUriHttpEntry = SpringContextAware.getBean("traversalUriHttpEntry", HttpEntry.class);
+        graphSessionFactory = SpringContextAware.getBean(GraphSessionFactory.class);
+        dbRequestProcessor = SpringContextAware.getBean(DbRequestProcessor.class);
         loaderFactory = SpringContextAware.getBean(LoaderFactory.class);
         schemaVersions = (SchemaVersions) SpringContextAware.getBean("schemaVersions");
         notification = null;
@@ -109,8 +114,8 @@ public class HttpTestUtil extends RESTAPI {
 
     public HttpTestUtil(QueryStyle qs, UEBNotification uebNotification, int notificationDepth, String acceptType) {
         this.queryStyle = qs;
-        this.traversalHttpEntry = SpringContextAware.getBean("traversalUriHttpEntry", HttpEntry.class);
-        this.traversalUriHttpEntry = SpringContextAware.getBean("traversalUriHttpEntry", HttpEntry.class);
+        this.graphSessionFactory = SpringContextAware.getBean(GraphSessionFactory.class);
+        this.dbRequestProcessor = SpringContextAware.getBean(DbRequestProcessor.class);
         this.loaderFactory = SpringContextAware.getBean(LoaderFactory.class);
         this.schemaVersions = (SchemaVersions) SpringContextAware.getBean("schemaVersions");
         this.notification = uebNotification;
@@ -166,6 +171,7 @@ public class HttpTestUtil extends RESTAPI {
         Response response = null;
         boolean success = true;
         TransactionalGraphEngine dbEngine = null;
+        GraphBinding binding = null;
 
         try {
 
@@ -196,13 +202,10 @@ public class HttpTestUtil extends RESTAPI {
                 }
                 Mockito.when(uriInfo.getPath()).thenReturn(uri);
 
-                if (notification != null) {
-                    traversalHttpEntry.setHttpEntryProperties(version, notification, notificationDepth);
-                } else {
-                    traversalHttpEntry.setHttpEntryProperties(version);
-                }
-                Loader loader = traversalHttpEntry.getLoader();
-                dbEngine = traversalHttpEntry.getDbEngine();
+                binding = graphSessionFactory.bind(ModelType.MOXY, QueryStyle.TRAVERSAL_URI, version);
+                binding.startTransaction();
+                Loader loader = binding.loader();
+                dbEngine = binding.dbEngine();
 
                 URI uriObject = UriBuilder.fromPath(uri).build();
                 URIToObject uriToObject = new URIToObject(loader, uriObject);
@@ -232,9 +235,12 @@ public class HttpTestUtil extends RESTAPI {
 
             }
 
-            Pair<Boolean, List<Pair<URI, Response>>> responsesTuple =
-                    traversalHttpEntry.process(dbRequestList, "JUNIT");
-            response = responsesTuple.getValue1().get(0).getValue1();
+            ProcessOptions.Builder opts = ProcessOptions.forSourceOfTruth("JUNIT");
+            if (notification != null) {
+                opts.notification(notification).notificationDepth(notificationDepth);
+            }
+            ProcessResult result = dbRequestProcessor.process(binding, dbRequestList, opts.build());
+            response = result.first().response();
 
         } catch (AAIException e) {
             response = this.consumerExceptionResponseGenerator(httpHeaders, uriInfo, HttpMethod.PUT, e);
@@ -271,6 +277,7 @@ public class HttpTestUtil extends RESTAPI {
         Response response = null;
         boolean success = true;
         TransactionalGraphEngine dbEngine = null;
+        GraphBinding binding = null;
 
         try {
 
@@ -296,13 +303,10 @@ public class HttpTestUtil extends RESTAPI {
             }
             Mockito.when(uriInfo.getPath()).thenReturn(uri);
 
-            if (notification != null) {
-                traversalHttpEntry.setHttpEntryProperties(version, notification, notificationDepth);
-            } else {
-                traversalHttpEntry.setHttpEntryProperties(version);
-            }
-            Loader loader = traversalHttpEntry.getLoader();
-            dbEngine = traversalHttpEntry.getDbEngine();
+            binding = graphSessionFactory.bind(ModelType.MOXY, QueryStyle.TRAVERSAL_URI, version);
+            binding.startTransaction();
+            Loader loader = binding.loader();
+            dbEngine = binding.dbEngine();
 
             URI uriObject = UriBuilder.fromPath(uri).build();
             URIToObject uriToObject = new URIToObject(loader, uriObject);
@@ -324,9 +328,12 @@ public class HttpTestUtil extends RESTAPI {
             List<DBRequest> dbRequestList = new ArrayList<>();
             dbRequestList.add(dbRequest);
 
-            Pair<Boolean, List<Pair<URI, Response>>> responsesTuple =
-                    traversalHttpEntry.process(dbRequestList, "JUNIT");
-            response = responsesTuple.getValue1().get(0).getValue1();
+            ProcessOptions.Builder opts = ProcessOptions.forSourceOfTruth("JUNIT");
+            if (notification != null) {
+                opts.notification(notification).notificationDepth(notificationDepth);
+            }
+            ProcessResult result = dbRequestProcessor.process(binding, dbRequestList, opts.build());
+            response = result.first().response();
 
         } catch (AAIException e) {
             response = this.consumerExceptionResponseGenerator(httpHeaders, uriInfo, HttpMethod.PUT, e);
@@ -367,6 +374,7 @@ public class HttpTestUtil extends RESTAPI {
         Response response = null;
         boolean success = true;
         TransactionalGraphEngine dbEngine = null;
+        GraphBinding binding = null;
 
         try {
 
@@ -391,13 +399,10 @@ public class HttpTestUtil extends RESTAPI {
                 version = schemaVersions.getDefaultVersion();
             }
 
-            if (notification != null) {
-                traversalHttpEntry.setHttpEntryProperties(version, notification, notificationDepth);
-            } else {
-                traversalHttpEntry.setHttpEntryProperties(version);
-            }
-            Loader loader = traversalHttpEntry.getLoader();
-            dbEngine = traversalHttpEntry.getDbEngine();
+            binding = graphSessionFactory.bind(ModelType.MOXY, QueryStyle.TRAVERSAL_URI, version);
+            binding.startTransaction();
+            Loader loader = binding.loader();
+            dbEngine = binding.dbEngine();
 
             URI uriObject = UriBuilder.fromPath(uri).build();
 
@@ -430,9 +435,12 @@ public class HttpTestUtil extends RESTAPI {
             List<DBRequest> dbRequestList = new ArrayList<>();
             dbRequestList.add(dbRequest);
 
-            Pair<Boolean, List<Pair<URI, Response>>> responsesTuple =
-                    traversalHttpEntry.process(dbRequestList, "JUNIT");
-            response = responsesTuple.getValue1().get(0).getValue1();
+            ProcessOptions.Builder opts = ProcessOptions.forSourceOfTruth("JUNIT");
+            if (notification != null) {
+                opts.notification(notification).notificationDepth(notificationDepth);
+            }
+            ProcessResult result = dbRequestProcessor.process(binding, dbRequestList, opts.build());
+            response = result.first().response();
 
         } catch (AAIException e) {
             response = this.consumerExceptionResponseGenerator(httpHeaders, uriInfo, HttpMethod.PUT, e);
@@ -471,6 +479,7 @@ public class HttpTestUtil extends RESTAPI {
         Response response = null;
         boolean success = true;
         TransactionalGraphEngine dbEngine = null;
+        GraphBinding binding = null;
 
         try {
 
@@ -499,13 +508,10 @@ public class HttpTestUtil extends RESTAPI {
                 }
 
                 Mockito.when(uriInfo.getPath()).thenReturn(uri);
-                if (notification != null) {
-                    traversalHttpEntry.setHttpEntryProperties(version, notification, notificationDepth);
-                } else {
-                    traversalHttpEntry.setHttpEntryProperties(version);
-                }
-                Loader loader = traversalHttpEntry.getLoader();
-                dbEngine = traversalHttpEntry.getDbEngine();
+                binding = graphSessionFactory.bind(ModelType.MOXY, QueryStyle.TRAVERSAL_URI, version);
+                binding.startTransaction();
+                Loader loader = binding.loader();
+                dbEngine = binding.dbEngine();
 
                 URI uriObject = UriBuilder.fromPath(uri).build();
                 URIToObject uriToObject = new URIToObject(loader, uriObject);
@@ -534,9 +540,12 @@ public class HttpTestUtil extends RESTAPI {
 
                 dbRequestList.add(dbRequest);
             }
-            Pair<Boolean, List<Pair<URI, Response>>> responsesTuple =
-                    traversalHttpEntry.process(dbRequestList, "JUNIT");
-            response = responsesTuple.getValue1().get(0).getValue1();
+            ProcessOptions.Builder opts = ProcessOptions.forSourceOfTruth("JUNIT");
+            if (notification != null) {
+                opts.notification(notification).notificationDepth(notificationDepth);
+            }
+            ProcessResult result = dbRequestProcessor.process(binding, dbRequestList, opts.build());
+            response = result.first().response();
 
         } catch (AAIException e) {
             response = this.consumerExceptionResponseGenerator(httpHeaders, uriInfo, HttpMethod.DELETE, e);
